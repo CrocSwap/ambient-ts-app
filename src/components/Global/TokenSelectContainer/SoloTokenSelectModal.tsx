@@ -28,7 +28,7 @@ import {
     removeWrappedNative,
     isWrappedNativeToken,
 } from '../../../ambient-utils/dataLayer';
-import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import WarningBox from '../../RangeActionModal/WarningBox/WarningBox';
 import {
     TradeDataContext,
     TradeDataContextIF,
@@ -328,6 +328,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                             isWrappedNativeToken(validatedInput) && (
                                 <WarningBox
                                     title=''
+                                    color='red'
                                     details={WETH_WARNING}
                                     noBackground
                                     button={
