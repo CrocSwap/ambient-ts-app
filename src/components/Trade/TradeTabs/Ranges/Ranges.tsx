@@ -1239,7 +1239,8 @@ const addMoreData = async() => {
                     : !isAccountView
                     // ? '105%' //turned into 100% after moving footer display out of flexcontainer
                     ? '100%'
-                      : '100%',
+                      : '100%'
+                , position: 'relative' 
             }}
             >
             <div>{headerColumnsDisplay}</div>

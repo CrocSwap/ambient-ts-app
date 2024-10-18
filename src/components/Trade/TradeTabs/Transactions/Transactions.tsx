@@ -11,7 +11,8 @@ import {
     useRef,
     useState,
 } from 'react';
-import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
+import { fetchPoolRecentChanges, fetchUserRecentChanges } from '../../../../ambient-utils/api';
+
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
 import {
@@ -69,11 +70,13 @@ import {
 } from '../../../../styled/Components/TransactionTable';
 import Spinner from '../../../Global/Spinner/Spinner';
 import NoTableData from '../NoTableData/NoTableData';
-import TableRows from '../TableRows';
+// import TableRows from '../TableRows';
 import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 import { useSortedTxs } from '../useSortedTxs';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
+import { fetchPoolUserChanges } from '../../../../ambient-utils/api/fetchPoolUserChanges';
+import { UserDataContext } from '../../../../contexts';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -83,6 +86,7 @@ interface propsIF {
     setSelectedDate?: Dispatch<number | undefined>;
     setSelectedInsideTab?: Dispatch<number>;
     fullLayoutActive?: boolean;
+    accountAddress?: string | undefined
 }
 
 function Transactions(props: propsIF) {
@@ -94,6 +98,7 @@ function Transactions(props: propsIF) {
         setSelectedInsideTab,
         isAccountView,
         fullLayoutActive,
+        accountAddress
     } = props;
 
     const {
@@ -119,6 +124,10 @@ function Transactions(props: propsIF) {
     const { tokens } = useContext<TokenContextIF>(TokenContext);
 
     const {
+        userAddress,
+    } = useContext(UserDataContext);
+
+    const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext<SidebarStateIF>(SidebarContext);
 
@@ -141,6 +150,7 @@ function Transactions(props: propsIF) {
     const quoteTokenSymbol: string = quoteToken?.symbol;
     const baseTokenSymbol: string = baseToken?.symbol;
 
+
     
     const showAllData = !isAccountView && showAllDataSelection;
 
@@ -153,11 +163,23 @@ function Transactions(props: propsIF) {
 
     // ref holding scrollable element (to attach event listener)
     
+    const getInitialChangesData = () => {
+        let ret: TransactionIF[] = [];
+        if(isAccountView ){
+            ret = activeAccountTransactionData ? activeAccountTransactionData : [];
+        }
+        else if(showAllData){
+            ret = transactionsByPool.changes;
+        }else{
+            ret =  userTransactionsByPool.changes;
+        }
+
+        return ret;
+    }
     const [fetchedTransactions, setFetchedTransactions] = useState<Changes>({
         dataReceived: false,
-        changes: [...transactionsByPool.changes],
+        changes: [...getInitialChangesData()],
     });
-
 
     const [hotTransactions, setHotTransactions] = useState<TransactionIF[]>([]);
 
@@ -177,13 +199,37 @@ function Transactions(props: propsIF) {
 
     const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
 
-    useEffect(() => {
+
+    const resetInfiniteScrollData = () => {
         setPagesVisible([0, 1]);
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
         setLastFetchedCount(0);
         setHotTransactions([]);
+    }
+
+    useEffect(() => {
+        resetInfiniteScrollData();
     }, [selectedBaseAddress + selectedQuoteAddress]);
+
+    
+    useEffect(() => {
+        resetInfiniteScrollData();
+        setFetchedTransactions({
+            dataReceived: false,
+            changes: [...getInitialChangesData()],
+        })
+    }, [showAllData])
+
+    useEffect(() => {
+        if(pagesVisible[0] === 0 && fetchedTransactions.changes.length === 0) {
+            resetInfiniteScrollData();
+            setFetchedTransactions({
+                dataReceived: false,
+                changes: [...getInitialChangesData()],
+            })
+        }
+    }, [activeAccountTransactionData])
 
     useEffect(() => {
         // clear fetched transactions when switching pools
@@ -196,10 +242,10 @@ function Transactions(props: propsIF) {
     }, [transactionsByPool.changes]);
 
     
-    const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
-    useEffect(() => {
-        setShowInfiniteScroll(!isAccountView && showAllData);
-    }, [isAccountView, showAllData]);
+    // const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
+    // useEffect(() => {
+    //     setShowInfiniteScroll(!isAccountView && showAllData);
+    // }, [isAccountView, showAllData]);
 
     
 
@@ -210,9 +256,10 @@ function Transactions(props: propsIF) {
     const transactionData = useMemo<TransactionIF[]>(
         () =>
             isAccountView
-                ? activeAccountTransactionData || []
+                // ? activeAccountTransactionData || []
+                ? fetchedTransactions.changes
                 : !showAllData
-                  ? userTransactionsByPool.changes
+                  ? fetchedTransactions.changes
                   : fetchedTransactions.changes,
         [
             activeAccountTransactionData,
@@ -238,7 +285,7 @@ function Transactions(props: propsIF) {
     ] = useSortedTxs('time', txDataToDisplay);
 
     const sortedTxDataToDisplay = useMemo<TransactionIF[]>(() => {
-        return isCandleSelected || isAccountView
+        return isCandleSelected
             ? sortedTransactions
             : sortedTransactions.slice(
                   pagesVisible[0] * 50,
@@ -248,6 +295,7 @@ function Transactions(props: propsIF) {
 
 
     useEffect(() => {
+        if(!showAllData) return;
         const existingChanges = new Set(
             fetchedTransactions.changes.map(
                 (change) => change.txHash || change.txId,
@@ -271,6 +319,33 @@ function Transactions(props: propsIF) {
             }
         }
     }, [transactionsByPool]);
+
+    useEffect(() => {
+        if(showAllData) return;
+        const existingChanges = new Set(
+            fetchedTransactions.changes.map(
+                (change) => change.txHash || change.txId,
+            ),
+        ); // Adjust if using a different unique identifier
+
+        const uniqueChanges = userTransactionsByPool.changes.filter(
+            (change) => !existingChanges.has(change.txHash || change.txId),
+        );
+
+        if (uniqueChanges.length > 0) {
+            if(pagesVisible[0] === 0){
+                setFetchedTransactions((prev) => {
+                    return {
+                        dataReceived: true,
+                        changes: [...uniqueChanges, ...prev.changes],
+                    };
+                });
+            }else{
+                updateHotTransactions(uniqueChanges);
+            }
+        }
+    }, [userTransactionsByPool]);
+    
 
     const updateHotTransactions = (changes: TransactionIF[]) => {
 
@@ -632,9 +707,7 @@ function Transactions(props: propsIF) {
         
     }
 
-
     const addMoreData = async() => {
-        
         setMoreDataLoading(true);
         // retrieve pool recent changes
             if(!crocEnv || !provider){
@@ -642,22 +715,59 @@ function Transactions(props: propsIF) {
                 return;
             }
             else{
-                const poolChangesJsonData = await fetchPoolRecentChanges({
-                    tokenList: tokens.tokenUniv,
-                    base: selectedBaseAddress,
-                    quote: selectedQuoteAddress,
-                    poolIdx: poolIndex,
-                    chainId: chainId,
-                    n: 50,
-                    timeBefore: oldestTxTime,
-                    crocEnv: crocEnv,
-                    graphCacheUrl: activeNetwork.graphCacheUrl,
-                    provider: provider,
-                    cachedFetchTokenPrice: cachedFetchTokenPrice,
-                    cachedQuerySpotPrice: cachedQuerySpotPrice,
-                    cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
-                });
+                let poolChangesJsonData;
+                if(showAllData && !isAccountView){
+                    poolChangesJsonData = await fetchPoolRecentChanges({
+                        tokenList: tokens.tokenUniv,
+                        base: selectedBaseAddress,
+                        quote: selectedQuoteAddress,
+                        poolIdx: poolIndex,
+                        chainId: chainId,
+                        n: 50,
+                        timeBefore: oldestTxTime,
+                        crocEnv: crocEnv,
+                        graphCacheUrl: activeNetwork.graphCacheUrl,
+                        provider: provider,
+                        cachedFetchTokenPrice: cachedFetchTokenPrice,
+                        cachedQuerySpotPrice: cachedQuerySpotPrice,
+                        cachedTokenDetails: cachedTokenDetails,
+                        cachedEnsResolve: cachedEnsResolve,
+                    });
+                }else if(!showAllData && !isAccountView && userAddress){
+                    poolChangesJsonData = await fetchPoolUserChanges({ 
+                        tokenList: tokens.tokenUniv,
+                        base: selectedBaseAddress,
+                        quote: selectedQuoteAddress,
+                        poolIdx: poolIndex,
+                        chainId: chainId,
+                        user: userAddress,
+                        n: 50,
+                        timeBefore: oldestTxTime,
+                        crocEnv: crocEnv,
+                        graphCacheUrl: activeNetwork.graphCacheUrl,
+                        provider: provider,
+                        cachedFetchTokenPrice: cachedFetchTokenPrice,
+                        cachedQuerySpotPrice: cachedQuerySpotPrice,
+                        cachedTokenDetails: cachedTokenDetails,
+                        cachedEnsResolve: cachedEnsResolve,
+                    })
+                }else if(accountAddress || userAddress){
+                    const userParam = accountAddress && accountAddress.length > 0 ? accountAddress : (userAddress ? userAddress : '')
+                    poolChangesJsonData = await fetchUserRecentChanges({ 
+                        tokenList: tokens.tokenUniv,
+                        chainId: chainId,
+                        user: userParam,
+                        n: 50,
+                        timeBefore: oldestTxTime,
+                        crocEnv: crocEnv,
+                        graphCacheUrl: activeNetwork.graphCacheUrl,
+                        provider: provider,
+                        cachedFetchTokenPrice: cachedFetchTokenPrice,
+                        cachedQuerySpotPrice: cachedQuerySpotPrice,
+                        cachedTokenDetails: cachedTokenDetails,
+                        cachedEnsResolve: cachedEnsResolve,
+                    })
+                }
                     if (poolChangesJsonData && poolChangesJsonData.length > 0) {
                         const cleanData = dataDiffCheck(poolChangesJsonData);
 
@@ -836,8 +946,6 @@ function Transactions(props: propsIF) {
                             </>
                         );
                     })}
-                    {showInfiniteScroll ? 
-                    (
                     <TableRowsInfiniteScroll
                         type='Transaction'
                         data={sortedTxDataToDisplay}
@@ -854,27 +962,13 @@ function Transactions(props: propsIF) {
                         setLastFetchedCount={setLastFetchedCount}
                         moreDataLoading={moreDataLoading}
                         />
-
-                    )
-                    :
-                    (<TableRows
-                        type='Transaction'
-                        data={sortedTransactions.filter(
-                            (tx) => tx.changeType !== 'cross',
-                        )}
-                        fullData={sortedTransactions}
-                        tableView={tableView}
-                        isAccountView={isAccountView}
-                    />)
-                    }
-                
             </ul>
         </div>
     );
 
     if (isSmallScreen)
         return (
-            <div style={{ overflow: 'scroll', height: '100%' }}>
+            <div style={{ overflow: 'scroll', height: '100%', position: 'relative'}}>
                 <div
                     style={{
                         position: 'sticky',
@@ -893,7 +987,7 @@ function Transactions(props: propsIF) {
         );
 
     return (
-        <FlexContainer flexDirection='column' style={{ height: '100%' }}>
+        <FlexContainer flexDirection='column' style={{ height: '100%', position: 'relative' }}>
             <div>{headerColumnsDisplay}</div>
             <div
                 style={{

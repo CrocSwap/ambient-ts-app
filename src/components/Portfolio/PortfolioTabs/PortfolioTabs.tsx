@@ -218,7 +218,7 @@ export default function PortfolioTabs(props: propsIF) {
                 tokenList: tokens.tokenUniv,
                 user: accountToSearch,
                 chainId: chainId,
-                n: 200, // fetch last 200 changes,
+                n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
                 graphCacheUrl: activeNetwork.graphCacheUrl,
                 provider,
@@ -338,6 +338,7 @@ export default function PortfolioTabs(props: propsIF) {
         changesInSelectedCandle: undefined,
         isAccountView: true,
         fullLayoutActive: fullLayoutActive,
+        accountAddress: resolvedAddress
     };
 
     // Props for <Orders/> React Element

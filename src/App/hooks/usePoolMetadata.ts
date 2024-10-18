@@ -582,6 +582,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     poolIdx:
                                         props.chainData.poolIndex.toString(),
                                     chainId: props.chainData.chainId,
+                                    n: '100'
                                 }),
                         )
                             .then((response) => response.json())

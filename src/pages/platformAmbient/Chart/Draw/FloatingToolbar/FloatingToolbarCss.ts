@@ -81,6 +81,8 @@ const OptionsTab = styled.div`
     box-shadow: 0px 2px 3px 2px #0d1117;
     align-items: end;
 
+    z-index: 1000;
+
     margin: 4px;
     padding: 4px;
 
@@ -106,6 +108,8 @@ const OptionsTabSize = styled.div<{
     align-items: center;
     justify-content: center;
     cursor: pointer;
+
+    z-index: 1000;
 
     background: ${({ backgroundColor }) =>
         backgroundColor ? backgroundColor : 'transparent'};
