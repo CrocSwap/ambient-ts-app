@@ -968,7 +968,7 @@ function Transactions(props: propsIF) {
 
     if (isSmallScreen)
         return (
-            <div style={{ overflow: 'scroll', height: '100%' }}>
+            <div style={{ overflow: 'scroll', height: '100%', position: 'relative'}}>
                 <div
                     style={{
                         position: 'sticky',
