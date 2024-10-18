@@ -732,6 +732,14 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
             let isDefault = true;
 
+            setColorPicker(() => {
+                return {
+                    lineColor: '#7371fc',
+                    borderColor: '#7371fc',
+                    background: '#7371fc',
+                };
+            });
+
             if (
                 item[changedItemIndex].type === 'Brush' ||
                 item[changedItemIndex].type === 'Ray'

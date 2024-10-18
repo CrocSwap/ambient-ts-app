@@ -21,6 +21,7 @@ const ToolbarContainer = styled.div<{
             &::-webkit-scrollbar {
                 width: 0;
                 display: none;
+                color:'transparent transparent';
             }
         
             &::-webkit-scrollbar-thumb {
@@ -40,7 +41,7 @@ const ToolbarContainer = styled.div<{
 
     background: ${({ backgroundColor }) => backgroundColor};
     height: ${({ height }) => height + 'px'};
-
+    left:0;
     display: flex;
     position: absolute;
 
@@ -48,6 +49,7 @@ const ToolbarContainer = styled.div<{
     grid-row: 3;
     transition: all 600ms ease-in-out;
     z-index: 20;
+    scrollbar-color: auto;
 `;
 
 const ScrollableDiv = styled.div<{ height: string; isHover: boolean }>`

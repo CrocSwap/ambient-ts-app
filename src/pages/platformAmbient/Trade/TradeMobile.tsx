@@ -352,7 +352,7 @@ export default function TradeMobile(props: propsIF) {
         )}
         <AnimatePresence initial={false} custom={direction}>
             <motion.div
-                key={activeTab}
+                key={isFuta ? futaActiveTab : activeTab}
                 custom={direction}
                 variants={slideVariants}
                 initial='enter'
@@ -369,7 +369,7 @@ export default function TradeMobile(props: propsIF) {
                     width: '100%', // Ensure full width of content
                 }}
             >
-                {tabs.find((tab) => tab.id === activeTab)?.data}
+                {tabs.find((tab) => tab.id === (isFuta ? futaActiveTab : activeTab))?.data}
             </motion.div>
         </AnimatePresence>
     </div>

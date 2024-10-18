@@ -35,6 +35,7 @@ import {
     LabelSettingsArrow,
     SliderContainer,
     AlphaSlider,
+    LineWidthOptionsCont,
 } from './FloatingToolbarSettingsCss';
 import { SketchPicker } from 'react-color';
 import {
@@ -263,15 +264,15 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 const oldData = structuredClone(item[changedItemIndex]);
 
                 const oldColor =
-                    item[changedItemIndex].extraData[selectedFibLevel]
+                    item[changedItemIndex].extraData[selectedFibLevel - 1]
                         .lineColor;
 
                 if (oldColor !== colorCodeLine) {
                     item[changedItemIndex].extraData[
-                        selectedFibLevel
+                        selectedFibLevel - 1
                     ].lineColor = colorCodeLine;
                     item[changedItemIndex].extraData[
-                        selectedFibLevel
+                        selectedFibLevel - 1
                     ].areaColor = colorCodeArea;
 
                     saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
@@ -487,17 +488,25 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                             closeAllOptions('lineSize');
                                         }}
                                     >
-                                        <LineWidthOptions
-                                            backgroundColor={'#cfd7e3'}
-                                            style={{
-                                                borderTopWidth:
-                                                    selectedDrawnShape?.data
-                                                        .line.lineWidth + 'px',
-                                            }}
-                                        ></LineWidthOptions>
+                                        <LineWidthOptionsCont
+                                            disabled={
+                                                !selectedDrawnShape?.data.line
+                                                    .active
+                                            }
+                                        >
+                                            <LineWidthOptions
+                                                backgroundColor={'#cfd7e3'}
+                                                style={{
+                                                    borderTopWidth:
+                                                        selectedDrawnShape?.data
+                                                            .line.lineWidth +
+                                                        'px',
+                                                }}
+                                            ></LineWidthOptions>
+                                        </LineWidthOptionsCont>
+
                                         {selectedDrawnShape &&
-                                            (isLineSizeOptionTabActive ||
-                                                isBorderSizeOptionTabActive) && (
+                                            isLineSizeOptionTabActive && (
                                                 <OptionsTab
                                                     style={{
                                                         transform:
@@ -511,15 +520,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                             <OptionsTabSize
                                                                 backgroundColor={
                                                                     item.value ===
-                                                                    (isLineSizeOptionTabActive
-                                                                        ? selectedDrawnShape
-                                                                              .data
-                                                                              .line
-                                                                              .lineWidth
-                                                                        : selectedDrawnShape
-                                                                              .data
-                                                                              .border
-                                                                              .lineWidth)
+                                                                    selectedDrawnShape
+                                                                        .data
+                                                                        .line
+                                                                        .lineWidth
                                                                         ? '#434c58'
                                                                         : undefined
                                                                 }
@@ -579,8 +583,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                             alt=''
                                         />
                                         {selectedDrawnShape &&
-                                            (isLineStyleOptionTabActive ||
-                                                isBorderStyleOptionTabActive) && (
+                                            isLineStyleOptionTabActive && (
                                                 <OptionsTab
                                                     style={{
                                                         transform:
@@ -595,15 +598,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                                 backgroundColor={
                                                                     item
                                                                         .value[0] ===
-                                                                    (isLineStyleOptionTabActive
-                                                                        ? selectedDrawnShape
-                                                                              .data
-                                                                              .line
-                                                                              .dash[0]
-                                                                        : selectedDrawnShape
-                                                                              .data
-                                                                              .border
-                                                                              .dash[0])
+                                                                    selectedDrawnShape
+                                                                        .data
+                                                                        .line
+                                                                        .dash[0]
                                                                         ? '#434c58'
                                                                         : undefined
                                                                 }
@@ -715,15 +713,64 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                             closeAllOptions('borderSize');
                                         }}
                                     >
-                                        <LineWidthOptions
-                                            backgroundColor={'#cfd7e3'}
-                                            style={{
-                                                borderTopWidth:
-                                                    selectedDrawnShape?.data
-                                                        .border.lineWidth +
-                                                    'px',
-                                            }}
-                                        ></LineWidthOptions>
+                                        <LineWidthOptionsCont
+                                            disabled={
+                                                !selectedDrawnShape?.data.line
+                                                    .active
+                                            }
+                                        >
+                                            <LineWidthOptions
+                                                backgroundColor={'#cfd7e3'}
+                                                style={{
+                                                    borderTopWidth:
+                                                        selectedDrawnShape?.data
+                                                            .border.lineWidth +
+                                                        'px',
+                                                }}
+                                            ></LineWidthOptions>
+                                        </LineWidthOptionsCont>
+
+                                        {selectedDrawnShape &&
+                                            isBorderSizeOptionTabActive && (
+                                                <OptionsTab
+                                                    style={{
+                                                        transform:
+                                                            'translateY(62%)',
+                                                        position: 'absolute',
+                                                        width: '130px',
+                                                    }}
+                                                >
+                                                    {sizeOptions.map(
+                                                        (item, index) => (
+                                                            <OptionsTabSize
+                                                                backgroundColor={
+                                                                    item.value ===
+                                                                    selectedDrawnShape
+                                                                        .data
+                                                                        .border
+                                                                        .lineWidth
+                                                                        ? '#434c58'
+                                                                        : undefined
+                                                                }
+                                                                key={index}
+                                                                onClick={(
+                                                                    e: MouseEvent<HTMLElement>,
+                                                                ) => {
+                                                                    e.stopPropagation();
+                                                                    handleEditSize(
+                                                                        item.value,
+                                                                        isLineSizeOptionTabActive,
+                                                                        isBorderSizeOptionTabActive,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {item.icon}{' '}
+                                                                {item.name}
+                                                            </OptionsTabSize>
+                                                        ),
+                                                    )}
+                                                </OptionsTab>
+                                            )}
                                     </OptionStyleContainer>
 
                                     <OptionStyleContainer
@@ -759,6 +806,53 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                             }
                                             alt=''
                                         />
+                                        {selectedDrawnShape &&
+                                            isBorderStyleOptionTabActive && (
+                                                <OptionsTab
+                                                    style={{
+                                                        transform:
+                                                            'translateY(60%)',
+                                                        position: 'absolute',
+                                                        width: '130px',
+                                                    }}
+                                                >
+                                                    {styleOptions.map(
+                                                        (item, index) => (
+                                                            <OptionsTabStyle
+                                                                backgroundColor={
+                                                                    item
+                                                                        .value[0] ===
+                                                                    selectedDrawnShape
+                                                                        .data
+                                                                        .border
+                                                                        .dash[0]
+                                                                        ? '#434c58'
+                                                                        : undefined
+                                                                }
+                                                                key={index}
+                                                                onClick={(
+                                                                    e: MouseEvent<HTMLElement>,
+                                                                ) => {
+                                                                    e.stopPropagation();
+                                                                    handleEditStyle(
+                                                                        item.value,
+                                                                        isLineStyleOptionTabActive,
+                                                                        isBorderStyleOptionTabActive,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        item.icon
+                                                                    }
+                                                                    alt=''
+                                                                />{' '}
+                                                                {item.name}
+                                                            </OptionsTabStyle>
+                                                        ),
+                                                    )}
+                                                </OptionsTab>
+                                            )}
                                     </OptionStyleContainer>
                                 </LineSettingsRight>
                             </LineSettings>
@@ -878,31 +972,20 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                     event.stopPropagation();
                                                     closeAllOptions(
                                                         'fib',
-                                                        index,
+                                                        index + 1,
                                                     );
                                                 }}
                                             ></OptionColor>
 
                                             {isFibBackgroundTabActive &&
-                                                index === selectedFibLevel && (
+                                                index + 1 ===
+                                                    selectedFibLevel && (
                                                     <ColorPickerTab
                                                         style={{
                                                             position:
                                                                 'absolute',
                                                             zIndex: 199,
-                                                            top:
-                                                                70 +
-                                                                Number(
-                                                                    Math.floor(
-                                                                        (selectedFibLevel +
-                                                                            2) /
-                                                                            2,
-                                                                    ).toFixed(
-                                                                        0,
-                                                                    ),
-                                                                ) *
-                                                                    32 +
-                                                                'px',
+                                                            top: '15px',
                                                         }}
                                                         onClick={(
                                                             event: MouseEvent<HTMLElement>,
@@ -916,7 +999,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                                     ? selectedDrawnShape
                                                                           ?.data
                                                                           .extraData[
-                                                                          selectedFibLevel
+                                                                          selectedFibLevel -
+                                                                              1
                                                                       ]
                                                                           .lineColor
                                                                     : colorPicker.background
@@ -1218,55 +1302,68 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     )}
             </FloatingToolbarSettingsContainer>
 
-            {(isLineColorPickerTabActive ||
-                isBorderColorPickerTabActive ||
-                isBackgroundColorPickerTabActive) && (
-                <ColorPickerTab
-                    style={
-                        isNearestWindow
-                            ? {
-                                  bottom: '70px',
-                                  position: 'absolute',
-                                  zIndex: 199,
-                              }
-                            : {
-                                  position: 'absolute',
-                                  top:
-                                      (isLineColorPickerTabActive
-                                          ? 60
-                                          : isBorderColorPickerTabActive
-                                            ? 90
-                                            : 120) + 'px',
-                                  left: '85px',
-                              }
-                    }
-                    onClick={(event: MouseEvent<HTMLElement>) =>
-                        event.stopPropagation()
-                    }
-                >
-                    <SketchPicker
-                        color={
-                            isLineColorPickerTabActive
-                                ? colorPicker.lineColor
-                                : isBorderColorPickerTabActive
-                                  ? colorPicker.borderColor
-                                  : colorPicker.background
+            {selectedDrawnShape &&
+                (isLineColorPickerTabActive ||
+                    isBorderColorPickerTabActive ||
+                    isBackgroundColorPickerTabActive) && (
+                    <ColorPickerTab
+                        style={
+                            isNearestWindow
+                                ? {
+                                      bottom: '70px',
+                                      position: 'absolute',
+                                      zIndex: 199,
+                                  }
+                                : {
+                                      position: 'absolute',
+                                      top:
+                                          (isLineColorPickerTabActive
+                                              ? 30
+                                              : isBorderColorPickerTabActive
+                                                ? 30 +
+                                                  (!excludeLineOptions.includes(
+                                                      selectedDrawnShape?.data
+                                                          .type,
+                                                  )
+                                                      ? 30
+                                                      : 0)
+                                                : 60 +
+                                                  (!excludeLineOptions.includes(
+                                                      selectedDrawnShape?.data
+                                                          .type,
+                                                  )
+                                                      ? 30
+                                                      : 0)) + 'px',
+                                      left: '85px',
+                                  }
                         }
-                        width={'170px'}
-                        onChange={(item, event) => {
-                            event.stopPropagation();
-                            {
-                                handleEditColor(
-                                    item,
-                                    isLineColorPickerTabActive,
-                                    isBorderColorPickerTabActive,
-                                    isBackgroundColorPickerTabActive,
-                                );
+                        onClick={(event: MouseEvent<HTMLElement>) =>
+                            event.stopPropagation()
+                        }
+                    >
+                        <SketchPicker
+                            color={
+                                isLineColorPickerTabActive
+                                    ? colorPicker.lineColor
+                                    : isBorderColorPickerTabActive
+                                      ? colorPicker.borderColor
+                                      : colorPicker.background
                             }
-                        }}
-                    />
-                </ColorPickerTab>
-            )}
+                            width={'170px'}
+                            onChange={(item, event) => {
+                                event.stopPropagation();
+                                {
+                                    handleEditColor(
+                                        item,
+                                        isLineColorPickerTabActive,
+                                        isBorderColorPickerTabActive,
+                                        isBackgroundColorPickerTabActive,
+                                    );
+                                }
+                            }}
+                        />
+                    </ColorPickerTab>
+                )}
         </>
     );
 }
