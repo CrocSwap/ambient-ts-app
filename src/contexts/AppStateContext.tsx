@@ -25,6 +25,10 @@ import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
 import { useWeb3Modal } from '@web3modal/ethers/react';
 
 export interface AppStateContextIF {
+    announcements: {
+        show: boolean;
+        close: () => void;
+    },
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
     appHeaderDropdown: {
         isActive: boolean;
@@ -134,8 +138,23 @@ export const AppStateContextProvider = (props: {
     const [_, hasAgreedTerms] = useTermsAgreed();
     const { open: openW3Modal } = useWeb3Modal();
 
+    // logic and handling for the announcements bar, needs to be centralized
+    // ... as the component is instantiated multiple times
+    const SHOW_ANNOUNCEMENTS = true;
+    const [
+        showAnnouncements,
+        setShowAnnouncements
+    ] = useState<boolean>(SHOW_ANNOUNCEMENTS);
+    function closeAnnouncements(): void {
+        setShowAnnouncements(false);
+    }
+
     const appStateContext = useMemo(
         () => ({
+            announcements: {
+                show: showAnnouncements,
+                close: closeAnnouncements,
+            },
             appOverlay: {
                 isActive: isAppOverlayActive,
                 setIsActive: setIsAppOverlayActive,
@@ -176,6 +195,7 @@ export const AppStateContextProvider = (props: {
         [
             // Dependency list includes the memoized use*() values from above and any primitives
             // directly references in above appState object
+            showAnnouncements,
             snackbar,
             globalPopup,
             isChatOpen,
