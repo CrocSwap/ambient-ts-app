@@ -9,7 +9,7 @@ import scrollLogo from '../../../assets/images/logos/scroll_brand_logo.svg';
 
 import Stats from '../Stats/AmbientStats';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
-import TopPools from '../TopPools/TopPools';
+import TopPools from '../TopPoolsHome/TopPoolsHome';
 import Investors from './Investors';
 import { useContext, useEffect, useState } from 'react';
 import {
