@@ -117,7 +117,7 @@ export const ChartContainer = styled.div<{
         }
     `}
 
-    ${({ isFuta }) => (isFuta ? 'padding-bottom: 30px;' : '')}
+    ${({ isFuta,fullScreen }) => (isFuta && !fullScreen  ? 'padding-bottom: 30px;' : '')}
 
     &::-webkit-scrollbar {
         display: none;
