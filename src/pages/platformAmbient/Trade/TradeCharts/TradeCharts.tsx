@@ -492,6 +492,16 @@ function TradeCharts(props: propsIF) {
                     onClick={() => {
                         if (isPoolDropdownOpen) setIsPoolDropdownOpen(false);
                     }}
+                    onTouchStart={(e: React.TouchEvent) => {
+                        e.stopPropagation();  // Prevent swipe from propagating to tab change
+                    }}
+                    onTouchMove={(e: React.TouchEvent) => {
+                        e.stopPropagation();  // Prevent swipe from propagating to tab change
+                    }}
+                    onTouchEnd={(e: React.TouchEvent) => {
+                        e.stopPropagation();  // Prevent swipe from propagating to tab change
+                    }}
+                
                 >
                     <TradeCandleStickChart
                         changeState={props.changeState}
