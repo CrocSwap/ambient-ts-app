@@ -16,7 +16,6 @@ export default function ChartTooltip(props: propsIF) {
     const { showTooltip, currentData } = props;
 
     const mobileView = useMediaQuery('(min-width: 768px)');
-    const smallScreen = useMediaQuery('(max-width: 900px)');
 
     const { chartSettings, isToolbarOpen, isFullScreen } =
         useContext(ChartContext);
@@ -47,10 +46,7 @@ export default function ChartTooltip(props: propsIF) {
             {showTooltip && currentData ? (
                 <CurrentDataDiv isFuta={isFuta}>
                     <p>
-                        {(isFuta && !mobileView) ||
-                        (!isFuta && smallScreen && mobileView)
-                            ? ''
-                            : `${topToken.symbol}/${bottomToken.symbol} ${matchingCandleTime?.readable} `}
+                        {isFuta && !mobileView ? '' : `${topToken.symbol}/${bottomToken.symbol} ${matchingCandleTime?.readable} `}
                         {`O: ${getDollarPrice(isDenomBase ? currentData.invPriceOpenExclMEVDecimalCorrected : currentData.priceOpenExclMEVDecimalCorrected).formattedValue} `}
                         {`H: ${getDollarPrice(isDenomBase ? currentData.invMinPriceExclMEVDecimalCorrected : currentData.maxPriceExclMEVDecimalCorrected).formattedValue} `}
                         {`L: ${getDollarPrice(isDenomBase ? currentData.invMaxPriceExclMEVDecimalCorrected : currentData.minPriceExclMEVDecimalCorrected).formattedValue} `}
