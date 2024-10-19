@@ -332,9 +332,7 @@ function ChartToolbar() {
             ref={toolbarRef}
             backgroundColor={
                 isFuta
-                    ? mobileView || smallScreen
-                        ? 'transparent'
-                        : 'var(--dark1)'
+                    ? 'transparent'
                     : mobileView
                       ? 'var(--dark1)'
                       : 'var(--dark2)'
