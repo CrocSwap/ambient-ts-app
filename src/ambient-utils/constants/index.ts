@@ -168,7 +168,7 @@ export const DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES =
 export const WALLETCONNECT_PROJECT_ID = import.meta.env
     .VITE_WALLETCONNECT_PROJECT_ID
     ? import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
-    : '37e833557d495d07825c0c6815ac9d93';
+    : '4698477998162ad97b05880f2c03a82c';
 
 export const CROCODILE_LABS_LINKS = [
     'https://twitter.com/',
@@ -181,4 +181,5 @@ export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
 
 export const CURRENT_AUCTION_VERSION = 1;
 
-export const SHOW_TUTOS_DEFAULT = import.meta.env.VITE_SHOW_TUTOS_DEFAULT || false;
+export const SHOW_TUTOS_DEFAULT =
+    import.meta.env.VITE_SHOW_TUTOS_DEFAULT || false;
