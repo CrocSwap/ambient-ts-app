@@ -1,17 +1,15 @@
-import React, {
+import {
     useEffect,
     useState,
     memo,
     useContext,
     useCallback,
 } from 'react';
-import { useLocation } from 'react-router-dom';
-import { AnimateSharedLayout } from 'framer-motion';
-import Account from './Account/Account';
+import { Link, useLocation } from 'react-router-dom';
+import { AnimateSharedLayout, motion } from 'framer-motion';
+import UserMenu from './UserMenu/UserMenu';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
-// import { BiGitBranch } from 'react-icons/bi';
-// import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -19,7 +17,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
     getFormattedNumber,
@@ -32,26 +29,15 @@ import {
     swapParamsIF,
     useLinkGen,
 } from '../../../utils/hooks/useLinkGen';
-import {
-    HeaderClasses,
-    LogoContainer,
-    LogoText,
-    NavigationLink,
-    PrimaryHeader,
-    PrimaryNavigation,
-    RightSide,
-    TradeNowDiv,
-    UnderlinedMotionDiv,
-} from '../../../styled/Components/Header';
 import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
-// import { version as appVersion } from '../../../../package.json';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import { BrandContext } from '../../../contexts/BrandContext';
+import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
+import styles from './PageHeader.module.css';
 
 const PageHeader = function () {
     const {
@@ -59,7 +45,7 @@ const PageHeader = function () {
         setCrocEnv,
         chainData: { chainId, poolIndex: poolId },
     } = useContext(CrocEnvContext);
-    const { headerImage } = useContext(BrandContext);
+    const { headerImage } = useContext<BrandContextIF>(BrandContext);
 
     const {
         walletModal: { open: openWalletModal },
@@ -105,7 +91,7 @@ const PageHeader = function () {
         disconnectUser();
     }, []);
 
-    const accountProps = {
+    const userMenuProps = {
         accountAddress: accountAddress,
         accountAddressFull: isUserConnected && userAddress ? userAddress : '',
         ensName: ensName || '',
@@ -360,23 +346,27 @@ const PageHeader = function () {
 
     const routeDisplay = (
         <AnimateSharedLayout>
-            <PrimaryNavigation
+            <nav
+                className={styles.primaryNavigation}
                 id='primary_navigation'
-                dataVisible={mobileNavToggle}
+               
             >
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
-                        <NavigationLink
+                        <Link
+                            className={`${styles.navigationLink}
+                        ${
+                            isActive(
+                                link.title,
+                                link.destination,
+                                location.pathname,
+                            )
+                                ? styles.activeNavigationLink
+                                : ''
+                        }
+                        
+                        `}
                             tabIndex={0}
-                            className={
-                                isActive(
-                                    link.title,
-                                    link.destination,
-                                    location.pathname,
-                                )
-                                    ? HeaderClasses.active
-                                    : HeaderClasses.inactive
-                            }
                             to={link.destination}
                             key={idx}
                         >
@@ -386,11 +376,16 @@ const PageHeader = function () {
                                 link.title,
                                 link.destination,
                                 location.pathname,
-                            ) && <UnderlinedMotionDiv layoutId='underline' />}
-                        </NavigationLink>
+                            ) && (
+                                <motion.span
+                                    className={styles.underlineMotion}
+                                    layoutId='underline'
+                                />
+                            )}
+                        </Link>
                     ) : null,
                 )}
-            </PrimaryNavigation>
+            </nav>
         </AnimateSharedLayout>
     );
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
@@ -413,66 +408,63 @@ const PageHeader = function () {
     }, []);
 
     return (
-        <PrimaryHeader
-            data-testid={'page-header'}
-            fixed={false}
-            style={{ position: 'sticky', top: 0, zIndex: 10 }}
-        >
-            <div
-                onClick={(event: React.MouseEvent) => {
-                    event?.stopPropagation();
-                    if (appHeaderDropdown.isActive) {
-                        appHeaderDropdown.setIsActive(false);
-                    }
-                }}
+        <>
+            <header
+                className={styles.primaryHeader}
+                data-testid={'page-header'}
+                style={{ position: 'sticky', top: 0, zIndex: 10 }}
             >
-                <LogoContainer to='/' aria-label='Home'>
-                    {desktopScreen ? (
-                        <img src={headerImage} alt='ambient' />
+                <div
+                    onClick={(event: React.MouseEvent) => {
+                        event?.stopPropagation();
+                        if (appHeaderDropdown.isActive) {
+                            appHeaderDropdown.setIsActive(false);
+                        }
+                    }}
+                >
+                    <Link
+                        to='/'
+                        className={styles.logoContainer}
+                        aria-label='Home'
+                    >
+                        {desktopScreen ? (
+                            <img src={headerImage} alt='ambient' />
+                        ) : (
+                            <img
+                                className={styles.logoText}
+                                src={logo}
+                                    alt='ambient'
+                                    width='70px'
+                            />
+                        )}
+                    </Link>
+                </div>
+                {routeDisplay}
+                <div className={styles.rightSide}>
+                    {show ? (
+                        <div className={styles.tradeNowDiv}>
+                            <TradeNowButton
+                                inNav
+                                fieldId='trade_now_btn_in_page_header'
+                            />
+                        </div>
                     ) : (
-                        <LogoText src={logo} alt='ambient' />
+                        <div>
+                            <FlexContainer
+                                alignItems='center'
+                                gap={8}
+                                overflow='visible'
+                            >
+                                <NetworkSelector />
+                                {!isUserConnected && connectWagmiButton}
+                                <UserMenu {...userMenuProps} />
+                            </FlexContainer>
+                        </div>
                     )}
-                </LogoContainer>
-            </div>
-            {routeDisplay}
-            <RightSide>
-                {show ? (
-                    <TradeNowDiv justifyContent='flex-end' alignItems='center'>
-                        <TradeNowButton
-                            inNav
-                            fieldId='trade_now_btn_in_page_header'
-                        />
-                    </TradeNowDiv>
-                ) : (
-                    <div>
-                        <FlexContainer
-                            alignItems='center'
-                            gap={8}
-                            overflow='visible'
-                        >
-                            {/* {desktopScreen && (
-                                <FlexContainer fontSize='body' color={'orange'}>
-                                    {APP_ENVIRONMENT !== 'production' ? (
-                                        <FlexContainer
-                                            alignItems='center'
-                                            gap={4}
-                                        >
-                                            {`${BRANCH_NAME} - v${appVersion}`}
-                                            {APP_ENVIRONMENT !== 'testnet' && (
-                                                <BiGitBranch color='yellow' />
-                                            )}
-                                        </FlexContainer>
-                                    ) : null}
-                                </FlexContainer>
-                            )} */}
-                            <NetworkSelector />
-                            {!isUserConnected && connectWagmiButton}
-                            <Account {...accountProps} />
-                        </FlexContainer>
-                    </div>
-                )}
-            </RightSide>
-        </PrimaryHeader>
+                </div>
+            </header>
+            {/* {isDevMenuEnabled && showDevMenu && <MobileDropdown />} */}
+        </>
     );
 };
 

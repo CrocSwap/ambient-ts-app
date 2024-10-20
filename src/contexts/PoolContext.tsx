@@ -50,7 +50,8 @@ export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
 export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
 
-    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+    const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =
+        useContext(TradeDataContext);
 
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,
@@ -112,7 +113,13 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         poolIdx: chainData.poolIndex,
     };
 
-    const poolData = useFetchPoolStats(poolArg, undefined, true, true);
+    const poolData = useFetchPoolStats(
+        poolArg,
+        undefined,
+        true,
+        true,
+        didUserFlipDenom,
+    );
 
     const [dailyVol] = useState<number | undefined>();
 

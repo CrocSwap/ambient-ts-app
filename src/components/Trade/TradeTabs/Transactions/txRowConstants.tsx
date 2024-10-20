@@ -407,7 +407,7 @@ export const txRowConstants = (props: propsIF) => {
                         <div>
                             <span style={{ textTransform: 'none' }}>
                                 {tx.baseSymbol} / {tx.quoteSymbol}
-                            </span>
+                            </span>{' '}
                             <FiExternalLink
                                 size={10}
                                 color='white'

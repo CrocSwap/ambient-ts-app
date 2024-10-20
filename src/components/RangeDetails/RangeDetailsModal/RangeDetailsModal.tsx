@@ -6,7 +6,6 @@ import {
     BlastRewardsDataIF,
     PositionServerIF,
 } from '../../../ambient-utils/types';
-import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
 import RangeDetailsSimplify from '.././RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
@@ -37,6 +36,7 @@ import {
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
 import { fetchPositionRewardsData } from '../../../ambient-utils/api/fetchPositionRewards';
+import DetailsHeader from '../../Global/DetailsHeader/DetailsHeader';
 
 interface propsIF {
     position: PositionIF;
@@ -81,6 +81,7 @@ function RangeDetailsModal(props: propsIF) {
         ambientOrMax: highRangeDisplay,
         baseTokenCharacter,
         quoteTokenCharacter,
+        userMatchesConnectedAccount,
     } = useProcessRange(position, crocEnv, userAddress);
 
     const [serverPositionId, setServerPositionId] = useState<
@@ -316,9 +317,11 @@ function RangeDetailsModal(props: propsIF) {
                         getFormattedNumber({
                             value:
                                 basePrice.usdPrice *
-                                    positionLiqBaseDecimalCorrected +
+                                    (positionLiqBaseDecimalCorrected +
+                                        feesLiqBaseDecimalCorrected) +
                                 quotePrice.usdPrice *
-                                    positionLiqQuoteDecimalCorrected,
+                                    (positionLiqQuoteDecimalCorrected +
+                                        feesLiqQuoteDecimalCorrected),
                             zeroDisplay: '0',
                             prefix: '$',
                         }),
@@ -329,8 +332,11 @@ function RangeDetailsModal(props: propsIF) {
                         getFormattedNumber({
                             value:
                                 basePrice.usdPrice *
-                                    positionLiqBaseDecimalCorrected +
-                                quotePrice * positionLiqQuoteDecimalCorrected,
+                                    (positionLiqBaseDecimalCorrected +
+                                        feesLiqBaseDecimalCorrected) +
+                                quotePrice *
+                                    (positionLiqQuoteDecimalCorrected +
+                                        feesLiqQuoteDecimalCorrected),
                             zeroDisplay: '0',
                             prefix: '$',
                         }),
@@ -341,8 +347,11 @@ function RangeDetailsModal(props: propsIF) {
                         getFormattedNumber({
                             value:
                                 quotePrice.usdPrice *
-                                    positionLiqQuoteDecimalCorrected +
-                                basePrice * positionLiqBaseDecimalCorrected,
+                                    (positionLiqQuoteDecimalCorrected +
+                                        feesLiqQuoteDecimalCorrected) +
+                                basePrice *
+                                    (positionLiqBaseDecimalCorrected +
+                                        feesLiqBaseDecimalCorrected),
                             zeroDisplay: '0',
                             prefix: '$',
                         }),
@@ -383,6 +392,7 @@ function RangeDetailsModal(props: propsIF) {
                     setServerPositionId(json?.data?.positionId);
                     // temporarily skip ENS fetch
                     const skipENSFetch = true;
+                    const forceOnchainLiqUpdate = userMatchesConnectedAccount;
                     const positionPayload = json?.data as PositionServerIF;
                     const positionStats = await getPositionData(
                         positionPayload,
@@ -395,6 +405,7 @@ function RangeDetailsModal(props: propsIF) {
                         cachedTokenDetails,
                         cachedEnsResolve,
                         skipENSFetch,
+                        forceOnchainLiqUpdate,
                     );
 
                     setUpdatedPositionApy(positionStats.aprEst * 100);
@@ -406,6 +417,7 @@ function RangeDetailsModal(props: propsIF) {
         !!crocEnv,
         !!provider,
         chainId,
+        userMatchesConnectedAccount,
     ]);
 
     const [blastRewardsData, setBlastRewardsData] =
@@ -488,13 +500,16 @@ function RangeDetailsModal(props: propsIF) {
     return (
         <Modal usingCustomHeader onClose={onClose}>
             <div className={styles.outer_container}>
-                <RangeDetailsHeader
-                    onClose={onClose}
-                    copyRangeDetailsToClipboard={copyRangeDetailsToClipboard}
-                    showShareComponent={showShareComponent}
-                    setShowShareComponent={setShowShareComponent}
-                    handleCopyPositionId={handleCopyPositionId}
-                />
+            <DetailsHeader
+    onClose={onClose}
+    handleCopyAction={handleCopyPositionId}
+    copyToClipboard={copyRangeDetailsToClipboard}
+    showShareComponent={showShareComponent}
+    setShowShareComponent={setShowShareComponent}
+    tooltipCopyAction='Copy position slot ID to clipboard'
+    tooltipCopyImage='Copy shareable image'
+/>
+
                 {showShareComponent ? (
                     shareComponent
                 ) : (

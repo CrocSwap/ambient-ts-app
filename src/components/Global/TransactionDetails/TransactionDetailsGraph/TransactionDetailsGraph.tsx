@@ -17,7 +17,7 @@ import {
     lineValue,
     renderCanvasArray,
     setCanvasResolution,
-} from '../../../../pages/Chart/ChartUtils/chartUtils';
+} from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { useMediaQuery } from '@material-ui/core';
 import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
@@ -962,9 +962,13 @@ export default function TransactionDetailsGraph(
             context.fillStyle = 'rgba(189,189,189,0.6)';
             context.font = '10px Lexend Deca';
 
-            const factor = mobileView ? 7 : 5;
+            const factor = mobileView ? 7 :  5 ;
 
-            const tickTempValues = scaleData.xScale.ticks(factor);
+            let tickTempValues = scaleData.xScale.ticks(factor);
+            
+            if (!mobileView && tickTempValues.length > 7) {                
+                tickTempValues = scaleData.xScale.ticks(3);
+            }            
 
             tickTempValues.map((tick: any) => {
                 if (

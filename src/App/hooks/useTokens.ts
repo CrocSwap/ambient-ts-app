@@ -205,17 +205,28 @@ export const useTokens = (
                 fetchAndFormatList(uri),
             );
         // resolve all promises for token lists
-        Promise.all(tokenListPromises)
-            // remove `undefined` values (URIs that did not produce a valid response)
-            .then((lists) => lists.filter((l) => l !== undefined))
-            // record token lists in local storage + persist in local storage
-            .then((lists) => {
+        Promise.allSettled(tokenListPromises).then((results) => {
+            // Filter out promises that were rejected and extract values from fulfilled ones
+            const fulfilledLists = results
+                .filter(
+                    (
+                        result,
+                    ): result is PromiseFulfilledResult<
+                        TokenListIF | undefined
+                    > => result.status === 'fulfilled',
+                )
+                .map((result) => result.value)
+                .filter((l) => l !== undefined); // remove `undefined` values (URIs that did not produce a valid response)
+
+            // Record token lists in local storage + persist in local storage
+            fulfilledLists.length &&
                 localStorage.setItem(
                     localStorageKeys.tokenLists,
-                    JSON.stringify(lists),
+                    JSON.stringify(fulfilledLists),
                 );
-                setTokenLists(lists as TokenListIF[]);
-            });
+            fulfilledLists.length &&
+                setTokenLists(fulfilledLists as TokenListIF[]);
+        });
     }, []);
 
     // fn to verify a token is on a known list or user-acknowledged

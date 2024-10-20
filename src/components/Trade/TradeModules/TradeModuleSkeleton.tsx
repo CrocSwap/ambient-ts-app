@@ -8,6 +8,7 @@ import { FlexContainer, GridContainer } from '../../../styled/Common';
 import {
     AcknowledgeLink,
     AcknowledgeText,
+    LPButton,
 } from '../../../styled/Components/TradeModules';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
@@ -17,8 +18,14 @@ import Button from '../../Form/Button';
 import TradeLinks from './TradeLinks';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import {
+    brand,
+    excludedTokenAddresses,
+} from '../../../ambient-utils/constants';
+import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
+import { openInNewTab } from '../../../ambient-utils/dataLayer';
 
 interface PropsIF {
     chainId: string;
@@ -65,6 +72,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const { tokenA, tokenB, limitTick, areDefaultTokensUpdatedForChain } =
         useContext(TradeDataContext);
+    const isFuta = brand === 'futa';
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
@@ -76,13 +84,36 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         return !tokens.verify(tokenB.address);
     }, [tokenB.address, tokens]);
 
+    const smallScreen = useMediaQuery('(max-width: 768px)');
+
+    const lowercaseExcludedAddresses = useMemo(
+        () => excludedTokenAddresses.map((addr) => addr.toLowerCase()),
+        [excludedTokenAddresses],
+    );
+
+    const tokenAIsExcludedToken = useMemo(() => {
+        return lowercaseExcludedAddresses.includes(
+            tokenA.address.toLowerCase(),
+        );
+    }, [tokenA.address, lowercaseExcludedAddresses]);
+
+    const tokenBIsExcludedToken = useMemo(() => {
+        return lowercaseExcludedAddresses.includes(
+            tokenB.address.toLowerCase(),
+        );
+    }, [tokenB.address, lowercaseExcludedAddresses]);
+
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
         // !Important   any changes to verbiage in this code block must be approved
         // !Important   ... by Doug, get in writing by email or request specific
         // !Important   ... review for a pull request on GitHub
         let text: string;
-        if (needConfirmTokenA && needConfirmTokenB) {
+        if (tokenAIsExcludedToken) {
+            text = `This ${tokenA.symbol} token has been identified as a potentially fraudulent token. Please be sure this is the actual token you want to trade. Many tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (tokenBIsExcludedToken) {
+            text = `This ${tokenB.symbol} token has been identified as a potentially fraudulent token. Please be sure this is the actual token you want to trade. Many tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (needConfirmTokenA && needConfirmTokenB) {
             text = `The tokens ${tokenA.symbol || tokenA.name} and ${
                 tokenB.symbol || tokenB.name
             } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
@@ -101,10 +132,15 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     }, [needConfirmTokenA, needConfirmTokenB, tokenA.symbol, tokenB.symbol]);
 
     const formattedAckTokenMessage = ackTokenMessage.replace(
-        /\b(not)\b/g,
+        /\b(not|(?<!many\s)fraudulent)\b/gi,
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
-    const smallScreen = useMediaQuery('(max-width: 500px)');
+
+    const poolLinkParams: poolParamsIF = {
+        chain: chainId,
+        tokenA: tokenA.address,
+        tokenB: tokenB.address,
+    };
 
     return (
         <>
@@ -120,12 +156,9 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     </TutorialButton>
                 </FlexContainer>
             )}{' '}
-            <ContentContainer
-                isOnTradeRoute={!isSwapPage}
-                noPadding={smallScreen && !isSwapPage}
-            >
+            <ContentContainer isOnTradeRoute={!isSwapPage}>
                 {header}
-                {isSwapPage || (
+                {!isSwapPage && !smallScreen && !isFuta && (
                     <TradeLinks
                         chainId={chainId}
                         tokenA={tokenA}
@@ -145,7 +178,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     flexDirection='column'
                     gap={8}
                     margin='8px 0 0 0'
-                    padding='0 32px'
+                    padding={isFuta ? '0 16px' : '0 32px'}
                 >
                     {transactionDetails}
                     <SmolRefuelLink />
@@ -220,6 +253,28 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                         />
                     )}
                     {warnings && warnings}
+                    {isFuta && (
+                        <LPButton
+                            onClick={() =>
+                                openInNewTab(
+                                    'https://testnet.ambient.finance/trade/pool/' +
+                                        // 'https://ambient.finance/trade/pool/' +
+                                        Object.entries(poolLinkParams)
+                                            .map(
+                                                (
+                                                    tup: [
+                                                        string,
+                                                        string | number,
+                                                    ],
+                                                ) => tup.join('='),
+                                            )
+                                            .join('&'),
+                                )
+                            }
+                        >
+                            Looking to LP?
+                        </LPButton>
+                    )}
                 </FlexContainer>
             </ContentContainer>
             {modal}

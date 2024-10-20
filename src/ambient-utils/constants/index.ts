@@ -1,3 +1,4 @@
+import { brand } from './networks';
 export * from './networks';
 export * from './blacklist';
 export * from './defaultTokens';
@@ -101,7 +102,7 @@ export const SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 // External links
 export const DOCS_LINK = 'https://docs.ambient.finance/';
 export const GITHUB_LINK = 'https://github.com/CrocSwap';
-export const TWITTER_LINK = 'https://twitter.com/ambient_finance';
+export const TWITTER_LINK = 'https://x.com/ambient_finance';
 export const DISCORD_LINK = 'https://discord.gg/ambient-finance';
 export const MEDIUM_LINK = 'https://crocswap.medium.com/';
 export const CORPORATE_LINK = 'https://www.crocswap.com/';
@@ -146,24 +147,30 @@ export const REQUEST_TIMEOUT_DELAY = import.meta.env.VITE_REQUEST_TIMEOUT_DELAY
 export const NETWORK_ACCESS = import.meta.env.NETWORK_ACCESS || 'disabled';
 export const CACHE_UPDATE_FREQ_IN_MS = 60000; // 1 minute
 
-export const DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES = import.meta.env
-    .VITE_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES
-    ? parseFloat(
-          import.meta.env.VITE_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
-      )
-    : undefined;
+export const DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES =
+    brand === 'futa'
+        ? Infinity
+        : import.meta.env.VITE_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES
+          ? parseFloat(
+                import.meta.env
+                    .VITE_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
+            )
+          : undefined;
 
-export const DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES = import.meta.env
-    .VITE_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES
-    ? parseFloat(
-          import.meta.env.VITE_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
-      )
-    : undefined;
+export const DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES =
+    brand === 'futa'
+        ? Infinity
+        : import.meta.env.VITE_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES
+          ? parseFloat(
+                import.meta.env
+                    .VITE_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
+            )
+          : undefined;
 
 export const WALLETCONNECT_PROJECT_ID = import.meta.env
     .VITE_WALLETCONNECT_PROJECT_ID
     ? import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
-    : '37e833557d495d07825c0c6815ac9d93';
+    : '4698477998162ad97b05880f2c03a82c';
 
 export const CROCODILE_LABS_LINKS = [
     'https://twitter.com/',
@@ -173,3 +180,8 @@ export const CROCODILE_LABS_LINKS = [
 
 export const LS_USER_VERIFY_TOKEN = 'CHAT_user_verify';
 export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
+
+export const CURRENT_AUCTION_VERSION = 1;
+
+export const SHOW_TUTOS_DEFAULT =
+    import.meta.env.VITE_SHOW_TUTOS_DEFAULT || false;

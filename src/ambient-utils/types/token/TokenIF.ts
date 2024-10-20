@@ -1,7 +1,7 @@
 import { tokenListURIs } from '../../constants';
 
 // string-union type of all acceptable values for `fromList` property
-type uris = typeof tokenListURIs[keyof typeof tokenListURIs];
+type uris = (typeof tokenListURIs)[keyof typeof tokenListURIs];
 export type otherTokenSources = 'on_chain_by_URL_param';
 type tokenProvenances = uris | otherTokenSources;
 

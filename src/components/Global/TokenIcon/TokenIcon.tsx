@@ -153,6 +153,7 @@ function TokenIcon(props: propsIF) {
         <NoTokenIcon
             tokenInitial={getTokenCharacter(token, alt) || ''}
             width={getIconWidth(size)}
+            isFutaList={token?.fromList?.includes('futa')}
         />
     );
 

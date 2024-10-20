@@ -14,6 +14,29 @@
 }
 
 /* ===== Scrollbar CSS ===== */
+/* Firefox */
+/* .content-container,
+.content-container-trade {
+    scrollbar-width: none;
+} */
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body::-webkit-scrollbar-track {
+    background: transparent;
+}
+body::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+        0deg,
+        var(--accent1) 0%,
+        var(--accent5) 49.48%,
+        var(--accent1) 100%
+    );
+
+    box-shadow: 0px 0px 0px 100000vh black;
+}
 
 body {
     background: var(--dark1);
@@ -21,7 +44,6 @@ body {
 
 html {
     background: var(--dark1);
-    scrollbar-width: none;
     color: var(--text1);
     height: 100%;
 }
@@ -41,12 +63,6 @@ button:hover > svg {
     cursor: pointer;
 }
 
-/* button,
-svg,
-a {
-    transition: var(--transition);
-} */
-
 a {
     color: unset;
     text-decoration: none;
@@ -59,8 +75,6 @@ input:disabled {
 }
 
 body {
-    overflow-x: hidden;
-
     min-height: 100%;
     max-height: 100%;
 
@@ -76,10 +90,6 @@ footer {
   right: 0;
  bottom: 0; */
     margin-top: auto;
-}
-
-.swap-body {
-    height: calc(100vh - (var(--footer-height) + 2rem));
 }
 
 h3:focus-visible,
@@ -146,7 +156,7 @@ p:focus-visible {
     align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.7);
-    z-index: 4;
+    z-index: 99;
 
     background: rgba(1, 0, 16, 0.25);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -221,7 +231,54 @@ input[type='number'] {
     appearance: textfield;
     -moz-appearance: textfield;
 }
-.custom_scroll_ambient {
+
+/* -----------------------FUTA------------ */
+
+.futa_main {
+    scrollbar-color: var(--accent1) var(--dark2);
+}
+.futa_main::-webkit-scrollbar {
+    width: 12px;
+    border-radius: 0 !important;
+}
+
+.futa_main::-webkit-scrollbar-thumb {
+    background: var(--accent1);
+    border-radius: 0 !important;
+}
+
+.futa_main::-webkit-scrollbar-track {
+    background: var(--dark2);
+    border: 1px solid var(--accent1);
+    border-radius: 0 !important;
+}
+
+.futa_main::-webkit-scrollbar-button:vertical:start:decrement {
+    background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12,5 5,12 19,12" fill="%23FFFFFF"/></svg>')
+        no-repeat center;
+    background-size: 50%;
+}
+
+.futa_main::-webkit-scrollbar-button:vertical:end:increment {
+    background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12,19 5,12 19,12" fill="%23FFFFFF"/></svg>')
+        no-repeat center;
+    background-size: 50%;
+
+    width: 20px;
+    height: 20px;
+    background-color: red;
+}
+
+.futa_main::-webkit-scrollbar-button {
+    height: 12px;
+    background-color: #00ffff;
+    border-radius: 0 !important;
+}
+
+.custom-resizable-handle-futa {
+    background-color: red;
+    width: 200px;
+    overflow-y: scroll !important;
     overflow-y: auto !important;
 }
 .custom_scroll_ambient::-webkit-scrollbar,
@@ -242,17 +299,13 @@ input[type='number'] {
         ) !important;
     background-origin: border-box !important;
     background-clip: content-box, border-box !important; /* Clip the border to show gradient */
-    min-height: 50px !important; /* Set the minimum height for the scrollbar thumb */;
-   
-    
-    
+    min-height: 50px !important; /* Set the minimum height for the scrollbar thumb */
 }
 .custom_scroll_ambient::-webkit-scrollbar-track,
 .content-container::-webkit-scrollbar-track {
     background: #06060c !important; /* Background color of the scrollbar track */
     border-radius: 8px !important; /* Adjust the border radius as needed */
-    padding: 2px !important; /* Add padding to the track */;
-  
+    padding: 2px !important; /* Add padding to the track */
 }
 
 @media only screen and (max-width: 600px) {
@@ -264,14 +317,35 @@ input[type='number'] {
         position: fixed;
         top: 56px;
         bottom: 64px;
+        left: 0;
+        right: 0;
         z-index: 2;
+        pointer-events: none;
+        /* display: none; */
     }
-    .swap-body {
-        /* max-height: 86.5vh; */
-        overflow-y: hidden;
 
-        max-height: calc(100vh - 7.5rem);
-    }
+    .custom_scroll_ambient::-webkit-scrollbar {
+        width: 5px !important;
+      }
+      
+ 
+      /* Handle */
+      .custom_scroll_ambient::-webkit-scrollbar-thumb {
+        background: 
+        linear-gradient(
+            0deg,
+            var(--accent1) 0%,
+            var(--accent5) 49.48%,
+            var(--accent1) 100%
+        ) !important;
+      }
+
+      /* .custom_scroll_ambient{
+        scrollbar-width: thin;
+scrollbar-color: transparent;
+      } */
+
+
 }
 
 @media only screen and (min-width: 1280px) {
@@ -279,10 +353,13 @@ input[type='number'] {
         overflow-y: auto;
         overflow-x: hidden;
         height: calc(100vh - 56px);
-
+        
         background: var(--dark1);
+       
     }
     .content-container-trade {
         background: var(--dark1);
     }
 }
+
+

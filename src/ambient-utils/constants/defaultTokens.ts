@@ -49,6 +49,15 @@ export const mainnetSWETH: TokenIF = {
     symbol: 'swETH',
 };
 
+export const mainnetRSWETH: TokenIF = {
+    address: '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://etherscan.io/token/images/rsweth_32.png?=v3',
+    name: 'Restaked Swell ETH',
+    symbol: 'rswETH',
+};
+
 export const mainnetLIDO: TokenIF = {
     address: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
     chainId: 1,
@@ -434,6 +443,16 @@ export const scrollWeETH: TokenIF = {
         'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
 };
 
+export const scrollScroll: TokenIF = {
+    name: 'Scroll',
+    address: '0xd29687c813d741e2f938f4ac377128810e217b1b',
+    symbol: 'SCR',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/50571/thumb/scroll.jpg?1728376125',
+};
+
 export const scrollSCROLLY: TokenIF = {
     name: 'Scrolly The Map',
     address: '0xb65aD8d81d1E4Cb2975352338805AF6e39BA8Be8',
@@ -697,6 +716,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetWstETH,
     mainnetMATIC,
     mainnetSWETH,
+    mainnetRSWETH,
     mainnetMKR,
     mainnetLIDO,
     mainnetLUSD,
@@ -740,6 +760,7 @@ export const defaultTokens: TokenIF[] = [
     scrollWrappedETH,
     scrollWstETH,
     scrollWeETH,
+    scrollScroll,
     scrollSCROLLY,
     scrollSTG,
     scrollSCRIBES,

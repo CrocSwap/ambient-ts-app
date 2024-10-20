@@ -20,14 +20,12 @@ import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
 
-// interface for props for react functional component
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
     connectedAccountActive?: boolean;
     isAccountView: boolean;
 }
 
-// main react functional component
 function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
@@ -52,6 +50,7 @@ function Orders(props: propsIF) {
         limitOrdersByPool,
         unindexedNonFailedSessionLimitOrderUpdates,
     } = useContext(GraphDataContext);
+
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
 
@@ -150,7 +149,7 @@ function Orders(props: propsIF) {
         useSortedLimits('time', limitOrderData);
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 750px)');
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
     const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
@@ -164,13 +163,6 @@ function Orders(props: propsIF) {
               ? 'medium'
               : 'large';
 
-    // Changed this to have the sort icon be inline with the last row rather than under it
-    const walID = (
-        <>
-            <p>Position ID</p>
-            Wallet
-        </>
-    );
     const sideType = (
         <>
             <p>Type</p>
@@ -203,24 +195,19 @@ function Orders(props: propsIF) {
         },
         {
             name: 'Position ID',
-            className: 'ID',
-            show: tableView === 'large',
-            slug: 'id',
+            className: 'position_id',
+            show:
+                tableView === 'large' ||
+                (tableView === 'medium' && isAccountView),
+            slug: 'positionid',
             sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
-            show: tableView === 'large' && !isAccountView,
+            show: !isAccountView,
             slug: 'wallet',
             sortable: showAllData,
-        },
-        {
-            name: walID,
-            className: 'wallet_it',
-            show: tableView !== 'large',
-            slug: 'walletid',
-            sortable: !isAccountView,
         },
         {
             name: 'Limit Price',
@@ -357,17 +344,11 @@ function Orders(props: propsIF) {
             activeUserPositionsByPoolLength={activeUserLimitOrdersByPool.length}
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewOrder}>
+        <div onKeyDown={handleKeyDownViewOrder} style={{ height: '100%' }}>
             <ul
                 ref={listRef}
-                id='current_row_scroll'
-                style={
-                    isSmallScreen
-                        ? isAccountView
-                            ? { maxHeight: 'calc(100svh - 310px)' }
-                            : { height: 'calc(100svh - 330px)' }
-                        : undefined
-                }
+                // id='current_row_scroll'
+                style={{ height: '100%' }}
             >
                 {!isAccountView &&
                     relevantTransactionsByType.length > 0 &&
@@ -395,6 +376,25 @@ function Orders(props: propsIF) {
             </ul>
         </div>
     );
+
+    if (isSmallScreen)
+        return (
+            <div style={{ overflow: 'scroll', height: '100%' }}>
+                <div
+                    style={{
+                        position: 'sticky',
+                        top: 0,
+                        background: 'var(--dark2',
+                        zIndex: '1',
+                    }}
+                >
+                    {headerColumnsDisplay}
+                </div>
+                <div style={{ overflowY: 'scroll', height: '100%' }}>
+                    {orderDataOrNull}
+                </div>
+            </div>
+        );
 
     return (
         <FlexContainer

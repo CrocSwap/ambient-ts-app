@@ -1,3 +1,4 @@
+import { Step } from 'intro.js-react';
 export interface LikeDislikePayload {
     userId: string | undefined;
     actionType: number;
@@ -53,4 +54,31 @@ export interface UserAvatarDataIF {
     avatarImage: string;
     avatarThumbnail: string;
     avatarCompressed: string;
+}
+
+
+export interface TutorialStepExternalComponent{
+    component: JSX.Element;
+    placement?: 'nav-end'|'nav-before'|'nav-after' 
+}
+
+export interface TutorialIF {
+    lsKey: string;
+    steps: Step[];
+    disableDefault?: boolean;
+    externalComponents?: Map<string, TutorialStepExternalComponent>;
+}
+
+export interface TutorialStepIF {
+    element?: string | HTMLElement | Element;
+    intro: string | React.ReactNode;
+    position?: string;
+    title?: string;
+    tooltipClass?: string;
+    highlightClass?: string;
+    assignment?: string;
+    actionTrigger?: string;
+    actionOnComplete?: string;
+    component? : JSX.Element;
+    navigate?: { label: string; path: string };
 }

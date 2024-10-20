@@ -48,6 +48,8 @@ export interface CandleContextIF {
     timeOfEndCandle: number | undefined;
     isCondensedModeEnabled: boolean;
     setIsCondensedModeEnabled: Dispatch<SetStateAction<boolean>>;
+    showFutaCandles: boolean;
+    setShowFutaCandles: Dispatch<SetStateAction<boolean>>;
 }
 
 export const CandleContext = createContext<CandleContextIF>(
@@ -97,6 +99,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     >();
 
     const [isCondensedModeEnabled, setIsCondensedModeEnabled] = useState(true);
+    const [showFutaCandles, setShowFutaCandles] = useState(false);
 
     const [isFetchingCandle, setIsFetchingCandle] = useState(false);
     const [isFinishRequest, setIsFinishRequest] = useState(false);
@@ -134,7 +137,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     setNumCandlesFetched({
                         candleCount: candleData?.candles.length || 0,
                         switchPeriodFlag: !numCandlesFetched?.switchPeriodFlag,
-                    });          
+                    });
                 }
             }
         }
@@ -175,6 +178,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         timeOfEndCandle,
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
+        showFutaCandles,
+        setShowFutaCandles,
     };
 
     useEffect(() => {
@@ -234,25 +239,25 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     useEffect(() => {
         if (isCandleDataNull) {
             const newInt = setInterval(() => {
-                setCandleScale((prev) => {
-                    return {
-                        lastCandleDate: undefined,
-                        nCandles: 200,
-                        isFetchForTimeframe: !prev.isFetchForTimeframe,
-                        isShowLatestCandle: true,
-                        isFetchFirst200Candle: true,
-                    };
-                });
+                setCandleScale((prev) => ({
+                    lastCandleDate: undefined,
+                    nCandles: 200,
+                    isFetchForTimeframe: !prev.isFetchForTimeframe,
+                    isShowLatestCandle: true,
+                    isFetchFirst200Candle: true,
+                }));
             }, 10000);
 
             offlineFetcherRef.current = newInt;
             setOfflineFetcher(newInt);
         } else {
             clearInterval(offlineFetcherRef.current);
+            offlineFetcherRef.current = undefined;
         }
 
         return () => {
             clearInterval(offlineFetcherRef.current);
+            offlineFetcherRef.current = undefined;
         };
     }, [isCandleDataNull]);
 

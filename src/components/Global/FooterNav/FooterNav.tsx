@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { RiHome4Fill, RiSwapBoxFill } from 'react-icons/ri';
-import { GiTrade } from 'react-icons/gi';
-import { MdAccountBox, MdOutlineExplore } from 'react-icons/md';
-import { BsFillChatDotsFill } from 'react-icons/bs';
-import { motion } from 'framer-motion';
+import { RiChat3Line } from 'react-icons/ri';
+import { MdOutlineExplore } from 'react-icons/md';
+import { HiArrowsRightLeft } from 'react-icons/hi2';
+import { VscAccount } from 'react-icons/vsc';
+
 import styles from './FooterNav.module.css';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
@@ -12,7 +12,6 @@ import {
     chainNumToString,
     checkEoaHexAddress,
 } from '../../../ambient-utils/dataLayer';
-// import { SidebarContext } from '../../contexts/SidebarContext';
 
 const FooterNav: React.FC = () => {
     const location = useLocation();
@@ -36,23 +35,21 @@ const FooterNav: React.FC = () => {
         tokenB: tokenB.address,
     });
 
-    // const { hideOnMobile } = useContext(SidebarContext);
-
     const linksData = [
-        { title: 'Home', destination: '/', icon: RiHome4Fill },
-        {
-            title: 'Swap',
-            destination: `/swap/${paramsSlug}`,
-            icon: RiSwapBoxFill,
-        },
+        // { title: 'Home', destination: '/', icon: RiHome2Line },
+        // {
+        //     title: 'Swap',
+        //     destination: `/swap/${paramsSlug}`,
+        //     icon: RiSwapBoxFill,
+        // },
         {
             title: 'Trade',
             destination: `${tradeDestination}${paramsSlug}`,
-            icon: GiTrade,
+            icon: HiArrowsRightLeft,
         },
         { title: 'Explore', destination: '/explore', icon: MdOutlineExplore },
-        { title: 'Account', destination: '/account/', icon: MdAccountBox },
-        { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
+        { title: 'Account', destination: '/account/', icon: VscAccount },
+        { title: 'Chat', destination: '/chat/', icon: RiChat3Line },
     ];
 
     const path = location.pathname;
@@ -63,59 +60,47 @@ const FooterNav: React.FC = () => {
     useEffect(() => {
         const currentPath = location.pathname;
 
-        if (currentPath.includes('/swap')) {
-            setActiveIndex(1); // Swap
-        } else if (currentPath.includes('/trade')) {
-            setActiveIndex(2); // Trade
+        // if (currentPath.includes('/swap')) {
+        //     setActiveIndex(1); // Swap
+        // } else
+        if (currentPath.includes('/trade')) {
+            setActiveIndex(0); // Trade
         } else if (currentPath.includes('/explore')) {
-            setActiveIndex(3); // Explore
+            setActiveIndex(1); // Explore
         } else if (
             currentPath.includes('/account') ||
             isAddressEns ||
             isAddressHex
         ) {
-            setActiveIndex(4); // Account
+            setActiveIndex(2); // Account
         } else if (currentPath.includes('/chat')) {
-            setActiveIndex(5); // Chat
+            setActiveIndex(3); // Chat
         } else {
-            setActiveIndex(0); // Home
+            setActiveIndex(-1); // Home
         }
     }, [location.pathname]);
 
     return (
         <div className={styles.nav}>
             {linksData.map((link, index) => (
-                <motion.div
-                    key={link.destination}
+                <div
+                    key={index}
                     className={`${styles.navItem} ${index === activeIndex ? styles.active : ''}`}
                     onClick={() => setActiveIndex(index)}
-                    initial={{ flexGrow: 1 }}
-                    animate={{ flexGrow: index === activeIndex ? 3 : 1 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 >
                     <Link to={link.destination} className={styles.link}>
                         <link.icon
                             size={24}
                             color={
-                                index === activeIndex ? 'var(--accent1)' : ''
+                                index === activeIndex
+                                    ? 'var(--accent1)'
+                                    : 'var(--text1)'
                             }
                             className={styles.icon}
                         />
-                        <motion.span
-                            className={styles.navText}
-                            initial={{ opacity: 0, width: 0 }}
-                            animate={{
-                                opacity: index === activeIndex ? 1 : 0,
-                                width: index === activeIndex ? 'auto' : 0,
-                                display:
-                                    index === activeIndex ? 'inline' : 'none',
-                            }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            {link.title}
-                        </motion.span>
+                        <span className={styles.navText}>{link.title}</span>
                     </Link>
-                </motion.div>
+                </div>
             ))}
         </div>
     );

@@ -1,0 +1,32 @@
+.mobileContainer {
+    padding: 8px 16px;
+    height: var(--content-height-mobile);
+}
+
+.desktopContainer {
+    padding: 0px 16px;
+    height: 100%;
+    height: var(--content-height);
+    overflow-y: hidden;
+    /* height: calc(100vh - 85px); */
+}
+
+.consoleChartComponent {
+
+    display: flex;
+    flex: 1;
+}
+
+.auctionChartContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    height: 100%;
+}
+
+.auctionsTickerContainer {
+    height: 100%;
+    display: grid;
+    gap: 1rem;
+}

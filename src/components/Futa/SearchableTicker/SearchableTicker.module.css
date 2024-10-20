@@ -1,0 +1,365 @@
+.container,
+.content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+   
+}
+
+.header > h3 {
+    font-size: 36px;
+    text-transform: uppercase;
+}
+
+.filter_options {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+
+.search_and_filter {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+.text_search_box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 24px;
+    padding: 0px 4px 0px 8px;
+    gap: 4px;
+    background-color: var(--dark2);
+}
+
+.text_search_box > input {
+    width: 100%;
+    padding: 0 8px;
+    background: transparent;
+    color: var(--text1);
+    outline: none;
+    border: none;
+    opacity: 1;
+    transition: all var(--animation-speed) ease-in;
+    cursor: normal;
+    font-size: 12px;
+}
+
+.searchInput::placeholder {
+    color: var(--text2);
+}
+
+.sort_toggles {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+.buttonOn, .buttonOff {
+    width: 110px;
+    height: 25px;
+    border: 1px solid var(--dark3);
+    background: var(--dark3);
+    color: var(--text2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+}
+
+.buttonOn, .buttonOff:hover {
+    transition: all var(--animation-speed) ease-in-out;
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
+}
+
+.eyeOn {
+    transition: all var(--animation-speed) ease-in-out;
+    color: var(--accent1);
+}
+
+.filters {
+    position: relative;
+}
+
+.timeDropdownContent {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 180px 25px;
+    align-items: center;
+}
+.timeDropdownButton {
+    border-left: 4px solid var(--accent1, #62ebf1);
+    background: var(--dark2);
+    display: flex;
+    padding: 4px 4px 4px 8px;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    height: 25px;
+    width: 100%;
+    text-transform: uppercase;
+}
+.timeDropdownButton p {
+    font-size: 14px;
+    color: var(--accent1);
+}
+
+.sort_direction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.hi:hover {
+    color: var(--accent1);
+    opacity: 50%;
+}
+.dropdown {
+    height: auto;
+    width: calc(100% - 25px);
+    background-color: var(--dark2);
+    position: absolute;
+    top: 30px;
+    overflow-y: scroll;
+    padding: 4px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+   
+}
+.timeItem {
+    font-size: 12px;
+    color: var(--text1);
+    transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
+    padding: 0 4px;
+    text-transform: uppercase;
+}
+
+.timeItem:hover {
+    background: var(--accent3);
+}
+
+.tickerItemContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 30px;
+    border-left: 4px solid var(--accent2);
+    border-right: 4px solid var(--accent2);
+    align-items: center;
+ 
+    font-size: 18px;
+    color: var(--text1);
+    transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
+    vertical-align: middle;
+
+    
+    height: 32px;
+    
+}
+
+.tickerItemContainer:hover {
+    background: var(--dark4);
+}
+.tickerItemContainer p:first-of-type {
+    text-transform: uppercase;
+}
+.tickerItemContainer p:not(:nth-of-type(3)) {
+    padding: 0 8px;
+}
+
+.tickerItemContainer p:nth-of-type(3),
+.tickerHeader p:nth-of-type(3) {
+    text-align: end;
+  
+}
+
+.statusContainer {
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.tickerStatus {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  
+}
+.tickerTableContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tickerHeader {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 30px;
+    color: var(--text3);
+    font-size: 12px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    padding-left: 12px;
+}
+
+.tickerHeader span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--text3);
+}
+.tickerTableContent {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    height: 100%;
+    overflow-y: scroll;
+    scrollbar-color: var(--dark2) var(--dark2);
+    padding-bottom: 1rem;
+}
+.scrolling{
+    scrollbar-color: var(--accent1) var(--dark2);
+}
+
+
+
+
+
+
+
+
+.active{ background: #28585D; }
+.hoverActive {
+    background: var(--dark4);
+}
+.marketCap {
+    text-align: end;
+}
+
+.marketCapHeader {
+    text-align: end;
+    padding: 0 12px;
+}
+
+.noAuctionsContent{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 2rem 0;
+}
+
+.noAuctionsContent p{
+    color: var(--text2)
+}
+
+.noAuctionsContent button{
+    display: flex;
+    padding: 2px 8px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    outline: none;
+    background: var(--accent1, #0ccdff);
+    color: var(--dark1);
+    border: none;
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
+    margin: 0 auto;
+    text-transform: uppercase;
+}
+
+
+.noAuctionsContent button:hover{
+    background: var(--accent2)
+}
+@media (min-width: 780px){
+    .container{
+        display: grid;
+    }
+
+    .tickerTableContainer{
+      height: 100%;
+    }
+    .tickerTableContent{
+        height: 100%;
+       
+    }
+}
+
+@media (min-width: 1280px) {
+    .content h2 {
+        color: var(--text1, #ceffff);
+        font-size: 36px;
+        text-transform: uppercase;
+    }
+}
+
+
+
+@media (max-width: 968px) {
+    .filter_options {
+        flex-wrap: wrap;
+    }
+
+    .sort_toggles {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .contentContainer{
+        height: calc(100vh - 186px) !important;
+        justify-content: space-between;
+        padding-bottom: 1rem;
+       
+    }
+
+}
+
+@media (max-width: 768px) {
+    .contentContainer{
+        padding-bottom: 0;
+    }
+
+    .tickerTableContent{
+        margin-bottom: 3rem;
+    }
+
+}
+
+
+.container{
+    display: flex;
+    flex-direction: column;
+}

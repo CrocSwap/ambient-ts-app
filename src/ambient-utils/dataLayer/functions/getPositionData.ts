@@ -27,6 +27,7 @@ export const getPositionData = async (
     cachedTokenDetails: FetchContractDetailsFn,
     cachedEnsResolve: FetchAddrFn,
     skipENSFetch?: boolean,
+    forceOnchainLiqUpdate?: boolean,
 ): Promise<PositionIF> => {
     const newPosition = {
         serverPositionId: position.positionId,
@@ -240,7 +241,7 @@ export const getPositionData = async (
     // newPosition.liqRefreshTime = 0;
 
     if (position.positionType == 'ambient') {
-        if (newPosition.liqRefreshTime === 0) {
+        if (newPosition.liqRefreshTime === 0 || forceOnchainLiqUpdate) {
             const pos = crocEnv.positions(
                 position.base,
                 position.quote,
@@ -257,7 +258,13 @@ export const getPositionData = async (
         newPosition.positionLiqQuote =
             newPosition.positionLiq / Math.sqrt(await poolPriceNonDisplay);
     } else if (position.positionType == 'concentrated') {
-        if (newPosition.liqRefreshTime === 0) {
+        if (
+            newPosition.liqRefreshTime === 0 ||
+            (newPosition.liqRefreshTime !== 0 &&
+                newPosition.concLiq === 0 &&
+                newPosition.rewardLiq !== 0) ||
+            forceOnchainLiqUpdate
+        ) {
             const pos = crocEnv.positions(
                 position.base,
                 position.quote,
