@@ -29,6 +29,7 @@ import TradeCharts from './TradeCharts/TradeCharts';
 import TradeTabs2 from '../../../components/Trade/TradeTabs/TradeTabs2';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import { CandleDataIF } from '../../../ambient-utils/types';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 
 interface propsIF {
     poolPrice: string;
@@ -125,7 +126,8 @@ export default function TradeMobile(props: propsIF) {
         candleTime: chartSettings.candleTime.global,
         tokens,
     };
-
+    const {  isBottomSheetOpen } =
+    useBottomSheet();
     const [availableHeight, setAvailableHeight] = useState<number>(
         window.innerHeight,
     );
@@ -221,7 +223,9 @@ export default function TradeMobile(props: propsIF) {
     
     
     const mobileTabs = (
-        <div className={styles.mobile_tabs_container}>
+        <div className={styles.mobile_tabs_container}
+        style={{zIndex: isBottomSheetOpen ? 0 : 2}}
+        >
             {tabs.map((tab) => (
                 <button
                     key={tab.id}
@@ -283,7 +287,7 @@ export default function TradeMobile(props: propsIF) {
         {!isFuta && mobileTabs}
         <div
             className={styles.mobile_header}
-            style={{ padding: isFuta ? '8px' : '' }}
+            style={{ padding: isFuta ? '8px' : '', zIndex: isBottomSheetOpen ? 0: '2' }}
         >
             <div
                 className={styles.mobile_token_icons}

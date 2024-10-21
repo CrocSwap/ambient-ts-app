@@ -53,8 +53,7 @@ export default function App() {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
 
-    const {  isBottomSheetOpen } =
-    useBottomSheet();
+
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
@@ -178,9 +177,14 @@ export default function App() {
                 )}
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
-            {!isBottomSheetOpen && footerDisplay}
+
+           
             <GlobalPopup data-theme={skin.active} />
             <SnackbarComponent />
+          
+
+            { footerDisplay}
+         
             {isWalletModalOpen && <GateWalletModal />}
             {isCSSModalOpen && <CSSModal close={() => closeCSSModal()} />}
         </>
