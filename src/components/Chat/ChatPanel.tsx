@@ -107,7 +107,7 @@ function ChatPanel(props: propsIF) {
     const [mentionIndex, setMentionIndex] = useState(-1);
     // eslint-disable-next-line
     const [notConnectedUserInterval, setNotConnectedUserInterval] =
-        useState<NodeJS.Timer>();
+        useState<NodeJS.Timeout>();
 
     // that block toggled when message count limit is handled --------------------------------------------
 
