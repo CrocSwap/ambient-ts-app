@@ -29,7 +29,6 @@ import Navbar from '../components/Futa/Navbar/Navbar';
 import Footer from '../components/Futa/Footer/Footer';
 import { useModal } from '../components/Global/Modal/useModal';
 import CSSModal from '../pages/common/CSSDebug/CSSModal';
-import { useBottomSheet } from '../contexts/BottomSheetContext';
 
 /** ***** React Function *******/
 export default function App() {
@@ -52,9 +51,6 @@ export default function App() {
     const {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
-
-    const {  isBottomSheetOpen } =
-    useBottomSheet();
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
@@ -141,12 +137,6 @@ export default function App() {
         };
     }, [isCSSModalOpen]);
 
-    const footerDisplay = platformName === 'futa' ? (
-        <Footer data-theme={skin.active} />
-    ) : (
-        ambientFooter
-    )
-
     return (
         <>
             {location.pathname == '/' && platformName !== 'futa' && (
@@ -178,7 +168,11 @@ export default function App() {
                 )}
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
-            {!isBottomSheetOpen && footerDisplay}
+            {platformName === 'futa' ? (
+                <Footer data-theme={skin.active} />
+            ) : (
+                ambientFooter
+            )}
             <GlobalPopup data-theme={skin.active} />
             <SnackbarComponent />
             {isWalletModalOpen && <GateWalletModal />}
