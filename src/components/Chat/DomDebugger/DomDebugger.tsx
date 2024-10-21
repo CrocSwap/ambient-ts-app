@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { getLS } from '../ChatUtils';
 import styles from './DomDebugger.module.css';
 import { clearDomDebug } from './DomDebuggerUtils';
@@ -18,13 +18,23 @@ import { clearDomDebug } from './DomDebuggerUtils';
 //   })();
 
 export default function DomDebugger() {
+
+    
     const debugWhiteList = [
         'localhost',
         'proven-chat-test',
         'ambient-proven-test',
     ];
 
+    
+    const domDebuggerRef = useRef<HTMLDivElement>(null);
+
     const [debugEnabled, setDebugEnabled] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const isDraggingRef = useRef<boolean>();
+    isDraggingRef.current = isDragging;
+    const [dragStart, setDragStart] = useState([0,0]);
+
     useEffect(() => {
         const lsVal = getLS('debugEnabled');
         if (lsVal) {
@@ -39,10 +49,46 @@ export default function DomDebugger() {
         }
     }, []);
 
+
+    const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+
+        console.log(e)
+        setIsDragging(true);
+        setDragStart([e.clientX, e.clientY]);
+    }
+    
+    const onMouseUp = (e: React.MouseEvent<HTMLDivElement> )=> {
+        console.log(e)
+        setIsDragging(false);
+    }
+
+    const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) =>{
+        if(!isDraggingRef.current) return;
+
+
+        const diffX = e.clientX - dragStart[0];
+        const diffY = e.clientX - dragStart[1] * -1;
+
+        if(domDebuggerRef.current){
+            const el = domDebuggerRef.current;
+
+            el.style.left = diffX + 'px';
+            el.style.top = diffY + 'px';
+
+
+
+        }
+
+
+
+    }
+
+
     return (
         <>
             {debugEnabled && (
                 <div
+                    ref={domDebuggerRef}
                     id='dom-debugger'
                     className={
                         styles.dom_debugger_wrapper + '  ' + styles.active
@@ -55,6 +101,7 @@ export default function DomDebugger() {
                     >
                         clear
                     </div>
+                    <div className={styles.dom_debug_toolbar} onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove}></div>
                     <div className={styles.dom_debug_nodes_wrapper}></div>
                 </div>
             )}

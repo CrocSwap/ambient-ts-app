@@ -18,7 +18,7 @@ import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
 import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
 import { TradeDataContext } from './TradeDataContext';
 
-interface Changes {
+export interface Changes {
     dataReceived: boolean;
     changes: Array<TransactionIF>;
 }
@@ -31,11 +31,11 @@ interface LimitOrdersByUser {
     dataReceived: boolean;
     limitOrders: LimitOrderIF[];
 }
-interface PositionsByPool {
+export interface PositionsByPool {
     dataReceived: boolean;
     positions: Array<PositionIF>;
 }
-interface LimitOrdersByPool {
+export interface LimitOrdersByPool {
     dataReceived: boolean;
     limitOrders: LimitOrderIF[];
 }

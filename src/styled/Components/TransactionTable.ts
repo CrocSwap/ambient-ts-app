@@ -326,3 +326,38 @@ export const HideEmptyPositionContainer = styled.button`
         font-size: 12px;
     }
 `;
+
+export const ScrollToTopButton = styled.button`
+    position: absolute;
+    right: 1rem;
+    top: 0rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent1);
+    border-bottom-left-radius: 4px;
+    color: var(--text1);
+    padding: 8px;
+    outline: none;
+    border: none;
+    z-index: 2;
+    cursor: pointer;
+`;
+
+export const ScrollToTopButtonMobile = styled.button`
+    position: absolute;
+    background: var(--accent1);
+    color: var(--text1);
+    padding: 8px;
+    outline: none;
+    z-index: 2;
+    cursor: pointer;
+    width: 2.5rem;
+    height: 2.5rem;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    border-radius: 100vw;
+    display: block;
+    border: none;
+`;
