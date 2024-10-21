@@ -87,6 +87,10 @@ export const TradeDataContextProvider = (props: {
         chainData.chainId,
     );
 
+    useEffect(() => {
+        console.log({ dfltTokenA, dfltTokenB });
+    }, [dfltTokenA, dfltTokenB]);
+
     // Limit NoGoZone
     const [noGoZoneBoundaries, setNoGoZoneBoundaries] = useState([0, 0]);
 
@@ -279,7 +283,6 @@ export const TradeDataContextProvider = (props: {
         noGoZoneBoundaries,
         setNoGoZoneBoundaries,
     };
-
 
     return (
         <TradeDataContext.Provider value={tradeDataContext}>
