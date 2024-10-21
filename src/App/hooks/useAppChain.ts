@@ -124,6 +124,7 @@ export const useAppChain = (): {
                             while (templateURL.includes('/')) {
                                 templateURL = templateURL.substring(1);
                             }
+                            console.log('reloading 4');
                             linkGenCurrent.navigate(templateURL);
                         } else {
                             if (
@@ -135,10 +136,12 @@ export const useAppChain = (): {
                                 );
                             } else if (pathname.includes('chain')) {
                                 if (!ignoreFirst) {
+                                    console.log('reloading 1');
                                     linkGenCurrent.navigate(
                                         `chain=${incomingChainFromWallet}`,
                                     );
                                 } else {
+                                    console.log('reloading 2');
                                     setIgnoreFirst(false);
                                     if (chainInURLValidated)
                                         switchNetwork(
@@ -158,14 +161,24 @@ export const useAppChain = (): {
                                     activeNetwork.chainId !=
                                     incomingChainFromWallet
                                 ) {
+                                    console.log('reloading 2');
                                     window.location.reload();
                                 }
                             } else {
+                                console.log('reloading 3');
                                 linkGenCurrent.navigate();
                             }
                         }
                         if (activeNetwork.chainId != incomingChainFromWallet) {
-                            window.location.reload();
+                            console.log(
+                                'setting network to: ' +
+                                    incomingChainFromWallet,
+                            );
+                            setActiveNetwork(
+                                findNetworkData(incomingChainFromWallet),
+                            );
+                            // console.log('reloading');
+                            // window.location.reload();
                         } else {
                             setIgnoreFirst(false);
                         }
@@ -229,6 +242,7 @@ export const useAppChain = (): {
         } else if (linkGenCurrent.currentPage === 'swap') {
             linkGenSwap.navigate(`chain=${network.chainId}`);
         } else if (pathname.includes('chain')) {
+            console.log('navigating 6');
             linkGenCurrent.navigate(`chain=${network.chainId}`);
         } else if (
             isPathUserAddress ||
@@ -237,6 +251,7 @@ export const useAppChain = (): {
         ) {
             window.location.reload();
         } else {
+            console.log('navigating 5');
             linkGenCurrent.navigate();
         }
         window.location.reload();

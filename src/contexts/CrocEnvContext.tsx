@@ -168,6 +168,10 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
+    useEffect(() => {
+        console.log({ initUrl, defaultUrlParams });
+    }, [initUrl, defaultUrlParams]);
+
     const nodeUrl = ['0x1'].includes(chainData.chainId)
         ? MAINNET_RPC_URL
         : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
