@@ -74,12 +74,12 @@ export const MAINNET_RPC_URL =
 export const BLAST_RPC_URL =
     import.meta.env.VITE_BLAST_RPC_URL !== undefined
         ? import.meta.env.VITE_BLAST_RPC_URL
-        : 'https://rpc.blast.io/';
+        : 'https://rpc.blast.io';
 
 export const SCROLL_RPC_URL =
     import.meta.env.VITE_SCROLL_RPC_URL !== undefined
         ? import.meta.env.VITE_SCROLL_RPC_URL
-        : 'https://rpc.scroll.io/';
+        : 'https://rpc.scroll.io';
 
 export const SEPOLIA_RPC_URL =
     import.meta.env.VITE_SEPOLIA_RPC_URL !== undefined
