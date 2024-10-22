@@ -21,7 +21,6 @@ import FAQPoints from '../pages/common/FAQ/FAQPoints';
 import PrivacyPolicy from '../pages/common/PrivacyPolicy/PrivacyPolicy';
 import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
 import TestPage from '../pages/common/TestPage/TestPage';
-import Vanity from '../pages/platformAmbient/Vanity/Vanity';
 
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
