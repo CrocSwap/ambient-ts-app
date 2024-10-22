@@ -185,6 +185,9 @@ const PlatformAmbientRoutes: React.FC = () => {
             <Route path='faq' element={<Navigate to='/faq/points' replace />} />
             <Route path='faq/points' element={<FAQPoints />} />
             <Route path='/v/:params' element={<Vanity />} />
+            <Route path='/vanity/:params' element={<Vanity />} />
+            <Route path='/l/:params' element={<Vanity />} />
+            <Route path='/link/:params' element={<Vanity />} />
             <Route path='faq/points/:params' element={<FAQPoints />} />
             {IS_LOCAL_ENV && <Route path='testpage' element={<TestPage />} />}
             {IS_LOCAL_ENV && (
