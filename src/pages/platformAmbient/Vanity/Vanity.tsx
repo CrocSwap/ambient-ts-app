@@ -5,10 +5,10 @@ function Vanity() {
     const { params } = useParams();
 
     let destination = '/';
-
-    switch (params) {
+    switch (params?.toUpperCase()) {
         case 'SCRETH':
         case 'ETHSCR':
+        case 'SCR':
             destination =
                 '/trade/market/chain=0x82750&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xd29687c813d741e2f938f4ac377128810e217b1b';
             break;
