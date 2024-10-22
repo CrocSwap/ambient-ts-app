@@ -83,17 +83,7 @@ body {
     /* padding: 0 1rem; */
 }
 
-footer {
-    /* To make page 100vh, turn off the footer position sticky and turn on absolute then style the footer based on route. */
-    position: absolute;
-  /* position: sticky; */
-  right: 0;
- bottom: 0;
- left: 0;
- right: 0;
- width: 100%;
-    margin-top: auto;
-}
+
 
 h3:focus-visible,
 h2:focus-visible,
@@ -117,7 +107,7 @@ p:focus-visible {
     align-items: center;
     right: 0;
     bottom: 0px;
-    z-index: 999;
+    z-index: 1;
 }
 
 .primary_apr {

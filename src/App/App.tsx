@@ -52,7 +52,8 @@ export default function App() {
     const {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
-
+    const {  isBottomSheetOpen } =
+    useBottomSheet();
 
 
     const containerStyle = currentLocation.includes('trade')
@@ -116,7 +117,7 @@ export default function App() {
                 currentLocation !== '/faq' &&
                 !currentLocation.includes('/chat') &&
                 isChatEnabled && <ChatPanel isFullScreen={false} />}
-            {showMobileVersion && <FooterNav />}
+           
         </div>
     );
 
@@ -143,7 +144,7 @@ export default function App() {
     const footerDisplay = platformName === 'futa' ? (
         <Footer data-theme={skin.active} />
     ) : (
-        ambientFooter
+        showMobileVersion && <FooterNav />
     )
 
     return (
@@ -182,8 +183,8 @@ export default function App() {
             <GlobalPopup data-theme={skin.active} />
             <SnackbarComponent />
           
-
-            { footerDisplay}
+                { ambientFooter}
+            {!isBottomSheetOpen && footerDisplay}
          
             {isWalletModalOpen && <GateWalletModal />}
             {isCSSModalOpen && <CSSModal close={() => closeCSSModal()} />}
