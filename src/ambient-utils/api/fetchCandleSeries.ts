@@ -249,11 +249,7 @@ function decorateCandleData(
     const PRE_BURN_TIME = 1686176723; // Based on mainnet deployment
 
     return payload
-        .filter(
-            (p) =>
-                //  p.priceOpen > 0 &&
-                p.time > PRE_BURN_TIME,
-        )
+        .filter((p) => p.priceOpen > 0 && p.time > PRE_BURN_TIME)
         .map((p) => {
             const baseDecMult = 1 / Math.pow(10, baseDecimals);
             const quoteDecMult = 1 / Math.pow(10, quoteDecimals);
