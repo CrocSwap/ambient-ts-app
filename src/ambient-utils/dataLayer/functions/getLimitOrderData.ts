@@ -25,7 +25,6 @@ export const getLimitOrderData = async (
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     cachedEnsResolve: FetchAddrFn,
-    skipENSFetch?: boolean,
 ): Promise<LimitOrderIF> => {
     if (!provider) throw Error('Can not proceed without an assigned provider');
     const newOrder = { ...order } as LimitOrderIF;
@@ -42,9 +41,7 @@ export const getLimitOrderData = async (
         Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
     );
 
-    newOrder.ensResolution = skipENSFetch
-        ? ''
-        : (await cachedEnsResolve(order.user)) ?? '';
+    newOrder.ensResolution = (await cachedEnsResolve(order.user)) ?? '';
 
     const basePricePromise = cachedFetchTokenPrice(
         baseTokenAddress,
