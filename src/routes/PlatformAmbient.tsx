@@ -21,6 +21,7 @@ import FAQPoints from '../pages/common/FAQ/FAQPoints';
 import PrivacyPolicy from '../pages/common/PrivacyPolicy/PrivacyPolicy';
 import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
 import TestPage from '../pages/common/TestPage/TestPage';
+import Vanity from '../pages/platformAmbient/Vanity/Vanity';
 
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
@@ -184,6 +185,10 @@ const PlatformAmbientRoutes: React.FC = () => {
             <Route path='privacy' element={<PrivacyPolicy />} />
             <Route path='faq' element={<Navigate to='/faq/points' replace />} />
             <Route path='faq/points' element={<FAQPoints />} />
+            <Route path='/v/:params' element={<Vanity />} />
+            <Route path='/vanity/:params' element={<Vanity />} />
+            <Route path='/l/:params' element={<Vanity />} />
+            <Route path='/link/:params' element={<Vanity />} />
             <Route path='faq/points/:params' element={<FAQPoints />} />
             <Route path='/v/:params' element={<Vanity />} />
             {IS_LOCAL_ENV && <Route path='testpage' element={<TestPage />} />}
