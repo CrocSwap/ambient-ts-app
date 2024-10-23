@@ -194,12 +194,12 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         );
 
         const poolStats24hAgo = {
-            baseFees: poolStats?.baseFees || 0,
+            baseFees: poolStats?.baseFees24hAgo || 0,
             baseTvl: poolStats?.baseTvl || 0,
-            baseVolume: poolStats?.baseVolume || 0,
-            quoteFees: poolStats?.quoteFees || 0,
+            baseVolume: poolStats?.baseVolume24hAgo || 0,
+            quoteFees: poolStats?.quoteFees24hAgo || 0,
             quoteTvl: poolStats?.quoteTvl || 0,
-            quoteVolume: poolStats?.quoteVolume || 0,
+            quoteVolume: poolStats?.quoteVolume24hAgo || 0,
             feeRate: poolStats?.feeRate || 0,
             lastPriceIndic: poolStats?.priceIndic24hAgo || 0,
             lastPriceLiq: poolStats?.priceLiq24hAgo || 0,

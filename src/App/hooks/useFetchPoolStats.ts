@@ -342,18 +342,18 @@ const useFetchPoolStats = (
             );
 
             const poolStats24hAgo = {
-                baseFees: currentPoolStats?.baseFees || 0,
+                baseFees: currentPoolStats?.baseFees24hAgo || 0,
                 baseTvl: currentPoolStats?.baseTvl || 0,
-                baseVolume: currentPoolStats?.baseVolume || 0,
-                quoteFees: currentPoolStats?.quoteFees || 0,
+                baseVolume: currentPoolStats?.baseVolume24hAgo || 0,
+                quoteFees: currentPoolStats?.quoteFees24hAgo || 0,
                 quoteTvl: currentPoolStats?.quoteTvl || 0,
-                quoteVolume: currentPoolStats?.quoteVolume || 0,
+                quoteVolume: currentPoolStats?.quoteVolume24hAgo || 0,
                 feeRate: currentPoolStats?.feeRate || 0,
                 lastPriceIndic: currentPoolStats?.priceIndic24hAgo || 0,
                 lastPriceLiq: currentPoolStats?.priceLiq24hAgo || 0,
                 lastPriceSwap: currentPoolStats?.priceSwap24hAgo || 0,
                 latestTime: currentPoolStats?.latestTime || 0,
-                isHistorical: false,
+                isHistorical: true,
             };
 
             const expandedPoolStats24hAgo = await expandPoolStats(

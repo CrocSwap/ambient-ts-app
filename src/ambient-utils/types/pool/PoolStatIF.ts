@@ -51,6 +51,10 @@ export interface SinglePoolDataIF {
     priceIndic24hAgo: number;
     priceLiq24hAgo: number;
     priceSwap24hAgo: number;
+    baseVolume24hAgo: number;
+    quoteVolume24hAgo: number;
+    baseFees24hAgo: number;
+    quoteFees24hAgo: number;
     quote: string;
     quoteFees: number;
     quoteTvl: number;
