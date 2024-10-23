@@ -9,7 +9,7 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 export const BLAST_RPC_URL =
     import.meta.env.VITE_BLAST_RPC_URL !== undefined
         ? import.meta.env.VITE_BLAST_RPC_URL
-        : 'https://rpc.blast.io/';
+        : 'https://rpc.blast.io';
 
 const chain = {
     chainId: 81457,
