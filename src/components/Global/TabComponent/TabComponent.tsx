@@ -190,7 +190,6 @@ export default function TabComponent(props: TabPropsIF) {
             <div className={styles.tab_icon_container}>
                 <DefaultTooltip
                     title={label}
-                    placeholder={'bottom'}
                     arrow
                     enterDelay={400}
                     leaveDelay={200}
@@ -245,14 +244,14 @@ export default function TabComponent(props: TabPropsIF) {
                             : null}
 
                         {/* {desktopView && ( */}
-                            <button
-                                className={styles.label_button}
-                                role='tab'
-                                aria-selected={item.label === selectedTab.label}
-                                tabIndex={0}
-                            >
-                                {item.label}
-                            </button>
+                        <button
+                            className={styles.label_button}
+                            role='tab'
+                            aria-selected={item.label === selectedTab.label}
+                            tabIndex={0}
+                        >
+                            {item.label}
+                        </button>
                         {/* )} */}
                         {item.label === selectedTab.label && (
                             <div className={styles.underline} />
@@ -302,18 +301,18 @@ export default function TabComponent(props: TabPropsIF) {
                         ? handleMobileMenuIcon(item.icon, item.label)
                         : null}
                     {/* {desktopView && ( */}
-                        <button
-                            className={`${styles.item_label} ${
-                                item.label === selectedTab.label
-                                    ? styles.selected
-                                    : ''
-                            }`}
-                            role='tab'
-                            aria-selected={item.label === selectedTab.label}
-                        >
-                            {' '}
-                            {item.label}
-                        </button>
+                    <button
+                        className={`${styles.item_label} ${
+                            item.label === selectedTab.label
+                                ? styles.selected
+                                : ''
+                        }`}
+                        role='tab'
+                        aria-selected={item.label === selectedTab.label}
+                    >
+                        {' '}
+                        {item.label}
+                    </button>
                     {/* // )} */}
 
                     {item.label === selectedTab.label && (
@@ -336,7 +335,6 @@ export default function TabComponent(props: TabPropsIF) {
 
     return (
         <div
-        
             className={styles.tab_window}
             style={{ background: backgroundStyle }}
             role='tablist'
