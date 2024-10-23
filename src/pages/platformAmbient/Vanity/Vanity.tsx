@@ -10,6 +10,7 @@ function Vanity() {
             case 'SCRETH':
             case 'ETHSCR':
             case 'SCR':
+            case 'SCROLL':
                 destination =
                     '/trade/market/chain=0x82750&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xd29687c813d741e2f938f4ac377128810e217b1b';
                 break;
@@ -27,7 +28,7 @@ function Vanity() {
                 break;
         }
 
-        window.location.href = destination;
+        window.location.replace(destination);
     }, [params]);
 
     return null; // No need to render anything since we're redirecting
