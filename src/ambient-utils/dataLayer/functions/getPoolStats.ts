@@ -105,6 +105,7 @@ const fetchPoolStats = async (
 const fetchAllPoolStats = async (
     chainId: string,
     graphCacheUrl: string,
+    _cacheTimeTag: number | string,
     with24hPrices?: boolean,
 ): Promise<PoolStatsServerIF | undefined> => {
     const allPoolStatsEndpoint = GCGO_OVERRIDE_URL
@@ -567,6 +568,7 @@ export type PoolStatsFn = (
 export type AllPoolStatsFn = (
     chain: string,
     graphCacheUrl: string,
+    _cacheTimeTag: number | string,
     with24hPrices?: boolean,
 ) => Promise<SinglePoolDataIF[]>;
 

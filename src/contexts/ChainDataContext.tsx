@@ -146,6 +146,10 @@ export const ChainDataContextProvider = (props: {
         Date.now() / (isUserIdle ? 60000 : 10000),
     ); // poll for new gas price every 60 seconds when user is idle, every 10 seconds when user is active
 
+    const poolStatsPollingCacheTime = Math.floor(
+        Date.now() / (isUserIdle ? 120000 : 30000),
+    ); // poll for new pool stats every 120 seconds when user is idle, every 30 seconds when user is active
+
     useEffect(() => {
         fetchGasPrice();
     }, [gasPricePollingCacheTime]);
@@ -199,6 +203,7 @@ export const ChainDataContextProvider = (props: {
             const allPoolStats = await cachedAllPoolStatsFetch(
                 chainData.chainId,
                 activeNetwork.graphCacheUrl,
+                poolStatsPollingCacheTime,
                 true,
             );
 
@@ -212,7 +217,7 @@ export const ChainDataContextProvider = (props: {
 
     useEffect(() => {
         updateAllPoolStats();
-    }, [chainData.chainId, gasPricePollingCacheTime]);
+    }, [chainData.chainId, poolStatsPollingCacheTime]);
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
