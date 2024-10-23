@@ -16,6 +16,17 @@ export default defineConfig({
             // e.g. use TypeScript check
             typescript: true,
         }),
+        {
+            name: 'html-transform',
+            transformIndexHtml(html) {
+                return html
+                    .replace(/__BUILD_TIME__/g, Date.now().toString())
+                    .replace(
+                        /__VERSION__/g,
+                        process.env.npm_package_version || '1.0.0',
+                    );
+            },
+        },
     ],
     define: {
         'import.meta.env': {},
