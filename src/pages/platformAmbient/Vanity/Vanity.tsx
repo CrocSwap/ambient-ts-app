@@ -28,7 +28,7 @@ function Vanity() {
                 break;
         }
 
-        window.location.href = destination;
+        window.location.replace(destination);
     }, [params]);
 
     return null; // No need to render anything since we're redirecting
