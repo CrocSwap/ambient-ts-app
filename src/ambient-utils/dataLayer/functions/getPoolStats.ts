@@ -308,6 +308,7 @@ interface PoolStatsServerIF {
     baseFees: number;
     quoteFees: number;
     lastPriceIndic: number;
+    lastPriceSwap: number;
     feeRate: number;
     isHistorical: boolean;
 }
@@ -363,7 +364,7 @@ const get24hChange = async (
                 return;
             }
             const payload = json.data as PoolStatsServerIF;
-            return payload.lastPriceIndic;
+            return payload.lastPriceSwap;
         });
 
     const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
@@ -383,7 +384,7 @@ const get24hChange = async (
                 return;
             }
             const payload = json.data as PoolStatsServerIF;
-            return payload.lastPriceIndic;
+            return payload.lastPriceSwap;
         });
 
     const ydayPrice = await ydayQuery;

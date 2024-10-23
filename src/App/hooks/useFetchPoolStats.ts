@@ -373,7 +373,7 @@ const useFetchPoolStats = (
             const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
             const nowPrice = localPoolPriceNonDisplay[1];
-            const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
+            const ydayPrice = expandedPoolStats24hAgo?.lastPriceSwap;
 
             const priceChangeResult =
                 ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0

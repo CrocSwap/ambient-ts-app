@@ -18,7 +18,6 @@ import {
 } from '../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from './CrocEnvContext';
-import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
 import { PoolContext } from './PoolContext';
 import {
@@ -149,15 +148,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // pool index
         const poolIdx: number = lookupChain(chainId).poolIndex;
 
-        // spot price for pool
-        const spotPrice: number = await cachedQuerySpotPrice(
-            crocEnv,
-            pool.base.address,
-            pool.quote.address,
-            chainId,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-        );
-
         const poolStats = allPoolStats?.find(
             (poolStat: SinglePoolDataIF) =>
                 poolStat.base.toLowerCase() ===
@@ -225,8 +215,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
         const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
-        const nowPrice = spotPrice;
-        const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
+        const nowPrice = expandedPoolStatsNow?.lastPriceSwap;
+        const ydayPrice = expandedPoolStats24hAgo?.lastPriceSwap;
 
         const feesTotalNow = expandedPoolStatsNow?.feesTotalUsd;
         const feesTotal24hAgo = expandedPoolStats24hAgo?.feesTotalUsd;
@@ -307,12 +297,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // display price, inverted if necessary
         const displayPrice: number = shouldInvert
             ? 1 /
-              toDisplayPrice(spotPrice, pool.base.decimals, pool.quote.decimals)
-            : toDisplayPrice(
-                  spotPrice,
-                  pool.base.decimals,
-                  pool.quote.decimals,
-              );
+              toDisplayPrice(nowPrice, pool.base.decimals, pool.quote.decimals)
+            : toDisplayPrice(nowPrice, pool.base.decimals, pool.quote.decimals);
 
         const tokenPriceForUsd = shouldInvert
             ? (
@@ -335,7 +321,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // return variable
         const poolData: PoolDataIF = {
             ...pool,
-            spotPrice,
+            spotPrice: nowPrice,
             displayPrice: getFormattedNumber({
                 value: displayPrice,
                 abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
