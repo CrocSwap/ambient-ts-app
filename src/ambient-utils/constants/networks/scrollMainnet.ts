@@ -16,7 +16,7 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 export const SCROLL_RPC_URL =
     import.meta.env.VITE_SCROLL_RPC_URL !== undefined
         ? import.meta.env.VITE_SCROLL_RPC_URL
-        : 'https://rpc.scroll.io/';
+        : 'https://rpc.scroll.io';
 
 const chain = {
     chainId: 534352,
