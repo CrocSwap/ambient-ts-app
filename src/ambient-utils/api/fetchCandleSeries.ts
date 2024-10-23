@@ -222,13 +222,13 @@ async function expandPoolStats(
     const basePrice = baseUsdPrice
         ? baseUsdPrice
         : displayPrice && quoteUsdPrice
-        ? quoteUsdPrice / displayPrice
-        : 0.0;
+          ? quoteUsdPrice / displayPrice
+          : 0.0;
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
         : displayPrice && baseUsdPrice
-        ? baseUsdPrice * displayPrice
-        : 0.0;
+          ? baseUsdPrice * displayPrice
+          : 0.0;
 
     return decorateCandleData(
         payload,
