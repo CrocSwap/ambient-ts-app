@@ -151,6 +151,12 @@ const [hotTransactions, setHotTransactions] = useState<PositionIF[]>([]);
 
 const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
 
+const EXTRA_REQUEST_COUNT = 10;
+
+const [extraRequestCredit, setExtraRequestCredit] = useState(EXTRA_REQUEST_COUNT);
+const extraRequestCreditRef = useRef<number>();
+extraRequestCreditRef.current = extraRequestCredit;
+
 
 const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
 
@@ -181,6 +187,7 @@ useEffect(() => {
     setMoreDataAvailable(true);
     setLastFetchedCount(0);
     setHotTransactions([]);
+    setExtraRequestCredit(EXTRA_REQUEST_COUNT);
 }, [selectedBaseAddress + selectedQuoteAddress]);
 
 const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
@@ -320,18 +327,18 @@ useEffect(() => {
     else{
         const existingChanges = new Set(
             fetchedTransactions.positions.map(
-                // (change) => change.positionHash || change.positionId,
                 (change) => change.positionId,
             ),
         ); // Adjust if using a different unique identifier
 
         const uniqueChanges = positionsByPool.positions.filter(
-            // (change) => !existingChanges.has(change.positionHash || change.positionId),
             (change) => !existingChanges.has(change.positionId) && change.positionLiq !== 0,
         );
 
         if (uniqueChanges.length > 0) {
             if(pagesVisible[0] === 0){
+                console.log(extraRequestCredit, setExtraRequestCredit)
+                console.log('>>> setting fetched transactions')
                 setFetchedTransactions((prev) => {
                     return {
                         dataReceived: true,
@@ -358,6 +365,8 @@ useEffect(() => {
         setPageDataCount(getInitialDataPageCounts());
         setPageDataCountShouldReset(false);
     }
+
+    
 }, [fetchedTransactions])
 
 
@@ -385,8 +394,8 @@ const fetchNewData = async(OLDEST_TIME:number):Promise<PositionIF[]> => {
             })
                 .then((poolChangesJsonData) => {
                     if(poolChangesJsonData && poolChangesJsonData.length > 0){
-                        // resolve(poolChangesJsonData as PositionIF[]);
-                        resolve((poolChangesJsonData as PositionIF[]).filter(e=>e.positionLiq !== 0));
+                        resolve(poolChangesJsonData as PositionIF[]);
+                        // resolve((poolChangesJsonData as PositionIF[]).filter(e=>e.positionLiq !== 0));
                     }else{
                         resolve([]);
                     }
@@ -416,7 +425,7 @@ const dataDiffCheck = (dirty: PositionIF[]):PositionIF[] => {
 }
 
 const getOldestTime = (data: PositionIF[]):number => {
-    let oldestTime = 0;
+    let oldestTime = Infinity;
     if(data.length > 0){
         oldestTime = data.reduce((min, order) => {
             return order.latestUpdateTime < min
@@ -427,7 +436,9 @@ const getOldestTime = (data: PositionIF[]):number => {
     return oldestTime;
 }
 
+
 const addMoreData = async() => {
+        console.log('add more data')
         setMoreDataLoading(true);
             const targetCount = 30;
             let addedDataCount = 0;
@@ -436,20 +447,36 @@ const addMoreData = async() => {
             let oldestTimeParam = oldestTxTime;
             while((addedDataCount < targetCount)){
                 // fetch data
-                const dirtyData = await fetchNewData(oldestTimeParam);
+                let dirtyData = await fetchNewData(oldestTimeParam);
+                const oldestTimeTemp = getOldestTime(dirtyData);
+                oldestTimeParam = oldestTimeTemp < oldestTimeParam ? oldestTimeTemp : oldestTimeParam;
+                
+                dirtyData = dirtyData.filter(e=>e.positionLiq !== 0);
+
                 if (dirtyData.length == 0){
+                    const creditVal = extraRequestCreditRef.current !== undefined ? extraRequestCreditRef.current : extraRequestCredit;
+                    console.log('extra req credit', creditVal, ' oldest time', oldestTimeParam)
+                    if(creditVal > 0){
+                        console.log('setting into' , creditVal - 1)
+                        setExtraRequestCredit(creditVal - 1);
+                        continue;
+                    }
                     break;
                 }
                 // check diff
                 const cleanData = dataDiffCheck(dirtyData);
                 if (cleanData.length == 0){
+                    // const creditVal = extraRequestCreditRef.current ? extraRequestCreditRef.current : extraRequestCredit;
+                    // console.log('clean data zero :((', creditVal)
+                    // if(creditVal > 0){
+                    //     setExtraRequestCredit(creditVal - 1);
+                    //     continue;
+                    // }
                     break;
                 }
                 else {
                     addedDataCount += cleanData.length;
                     newTxData.push(...cleanData);
-                    const oldestTimeTemp = getOldestTime(newTxData);
-                    oldestTimeParam = oldestTimeTemp < oldestTimeParam ? oldestTimeTemp : oldestTimeParam;
                 }
             }
             if(addedDataCount > 0){
@@ -471,6 +498,7 @@ const addMoreData = async() => {
                     prev[0] + 1,
                     prev[1] + 1,
                 ]);
+                setExtraRequestCredit(EXTRA_REQUEST_COUNT);
             }else{
                 setMoreDataAvailable(false);
             }
@@ -514,6 +542,7 @@ const addMoreData = async() => {
                 : 0,
         [rangeData],
     );
+    console.log(oldestTxTime)
 
     // ------------------------------------------------------------------------------------------------------------------------------
     

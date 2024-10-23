@@ -360,6 +360,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
                                 n: '100',
+                                // n: '200',
                             }),
                     )
                         .then((response) => response.json())
