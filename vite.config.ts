@@ -31,8 +31,6 @@ export default defineConfig({
     define: {
         'import.meta.env': {},
         global: {},
-        __BUILD_TIME__: JSON.stringify(Date.now()),
-        __VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
     },
     server: {
         port: 3000,
