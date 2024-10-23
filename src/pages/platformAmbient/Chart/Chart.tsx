@@ -928,7 +928,10 @@ export default function Chart(props: propsIF) {
 
                 const rectCanvas = canvas.getBoundingClientRect();
                 const width = rectCanvas.width;
+
                 scaleData.xScale.range([0, width]);
+                scaleData.drawingLinearxScale.range([0, width]);
+
                 const lastDateArray = timeGaps
                     .sort((a, b) => b.range[1] - a.range[1])
                     .filter((i) => i.isAddedPixel);
@@ -965,6 +968,7 @@ export default function Chart(props: propsIF) {
                                     );
                                 }
                                 scaleData.xScale.domain([min, maxDom]);
+                                scaleData.drawingLinearxScale.domain([min, maxDom]);
 
                                 element.isAddedPixel = true;
                             }
@@ -2664,6 +2668,7 @@ export default function Chart(props: propsIF) {
             const domain = [newDomainMin, newDomainMax];
 
             scaleData?.xScale.domain([domain[0], domain[1]]);
+            scaleData?.drawingLinearxScale.domain([domain[0], domain[1]]);
         }
     }
 
@@ -3106,6 +3111,7 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
+                    scaleData?.drawingLinearxScale.range([0, event.detail.width]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     ctx.setLineDash([4, 2]);
                     crosshairVerticalCanvas.context(ctx);
@@ -3149,13 +3155,13 @@ export default function Chart(props: propsIF) {
 
         if (scaleData && lineSeries) {
             const rayLine = createAnnotationLineSeries(
-                scaleData?.xScale.copy(),
+                scaleData?.drawingLinearxScale.copy(),
                 scaleData?.yScale,
                 denomInBase,
             );
 
             const bandArea = createBandArea(
-                scaleData?.xScale.copy(),
+                scaleData?.drawingLinearxScale.copy(),
                 scaleData?.yScale,
                 denomInBase,
             );
@@ -3199,8 +3205,8 @@ export default function Chart(props: propsIF) {
                                     item.type === 'DPRange'
                                 ) {
                                     const range = [
-                                        scaleData?.xScale(item.data[0].x),
-                                        scaleData?.xScale(item.data[1].x),
+                                        scaleData?.drawingLinearxScale(item.data[0].x),
+                                        scaleData?.drawingLinearxScale(item.data[1].x),
                                     ];
 
                                     bandArea.xScale().range(range);
@@ -3342,7 +3348,7 @@ export default function Chart(props: propsIF) {
                                         const lineOfDPRange =
                                             createPointsOfDPRangeLine(
                                                 item.data,
-                                                scaleData.xScale,
+                                                scaleData.drawingLinearxScale,
                                             );
 
                                         lineOfDPRange?.forEach((line) => {
@@ -3404,8 +3410,8 @@ export default function Chart(props: propsIF) {
                                         );
 
                                         const width = Math.abs(
-                                            scaleData.xScale(item.data[0].x) -
-                                                scaleData.xScale(
+                                            scaleData.drawingLinearxScale(item.data[0].x) -
+                                                scaleData.drawingLinearxScale(
                                                     item.data[1].x,
                                                 ),
                                         );
@@ -3447,16 +3453,16 @@ export default function Chart(props: propsIF) {
 
                                         const diff =
                                             Math.abs(
-                                                scaleData.xScale(
+                                                scaleData.drawingLinearxScale(
                                                     item.data[0].x,
                                                 ) -
-                                                    scaleData.xScale(
+                                                    scaleData.drawingLinearxScale(
                                                         item.data[1].x,
                                                     ),
                                             ) / 2;
 
                                         const infoLabelXAxisData =
-                                            scaleData.xScale(
+                                            scaleData.drawingLinearxScale(
                                                 Math.min(
                                                     item.data[0].x,
                                                     item.data[1].x,
@@ -3580,7 +3586,7 @@ export default function Chart(props: propsIF) {
                                             );
                                             const showCandleCount =
                                                 getCandleCount(
-                                                    scaleData.xScale,
+                                                    scaleData.drawingLinearxScale,
                                                     visibleCandleData,
                                                     [min, max],
                                                     period,
@@ -3655,15 +3661,15 @@ export default function Chart(props: propsIF) {
                                 if (item.type === 'Ray') {
                                     rayLine
                                         .xScale()
-                                        .domain(scaleData.xScale.domain());
+                                        .domain(scaleData.drawingLinearxScale.domain());
 
                                     rayLine
                                         .yScale()
                                         .domain(scaleData.yScale.domain());
 
                                     const range = [
-                                        scaleData.xScale(item.data[0].x),
-                                        scaleData.xScale.range()[1],
+                                        scaleData.drawingLinearxScale(item.data[0].x),
+                                        scaleData.drawingLinearxScale.range()[1],
                                     ];
 
                                     rayLine.xScale().range(range);
@@ -3749,16 +3755,16 @@ export default function Chart(props: propsIF) {
 
                                     const range = [
                                         item.extendLeft
-                                            ? scaleData.xScale.range()[0]
-                                            : scaleData?.xScale(
+                                            ? scaleData.drawingLinearxScale.range()[0]
+                                            : scaleData?.drawingLinearxScale(
                                                   Math.min(
                                                       item.data[0].x,
                                                       item.data[1].x,
                                                   ),
                                               ),
                                         item.extendRight
-                                            ? scaleData.xScale.range()[1]
-                                            : scaleData?.xScale(
+                                            ? scaleData.drawingLinearxScale.range()[1]
+                                            : scaleData?.drawingLinearxScale(
                                                   Math.max(
                                                       item.data[0].x,
                                                       item.data[1].x,
@@ -3845,7 +3851,7 @@ export default function Chart(props: propsIF) {
                                             lineMeasures &&
                                             ctx
                                         ) {
-                                            const buffer = scaleData.xScale(
+                                            const buffer = scaleData.drawingLinearxScale(
                                                 Math.min(
                                                     lineData[0].x,
                                                     lineData[1].x,
@@ -3958,14 +3964,14 @@ export default function Chart(props: propsIF) {
                                                         'Left'
                                                     ) {
                                                         location =
-                                                            scaleData.xScale.domain()[0];
+                                                            scaleData.drawingLinearxScale.domain()[0];
                                                     } else if (
                                                         item.labelPlacement ===
                                                         'Right'
                                                     ) {
                                                         if (item.extendRight) {
                                                             location =
-                                                                scaleData.xScale.domain()[1];
+                                                                scaleData.drawingLinearxScale.domain()[1];
                                                         } else {
                                                             location = Math.max(
                                                                 lineData[0].x,
@@ -3981,7 +3987,7 @@ export default function Chart(props: propsIF) {
                                                                   lineData[0].x,
                                                                   lineData[1].x,
                                                               )
-                                                            : scaleData.xScale.domain()[1];
+                                                            : scaleData.drawingLinearxScale.domain()[1];
                                                 } else {
                                                     location =
                                                         item.labelPlacement ===
@@ -3998,7 +4004,7 @@ export default function Chart(props: propsIF) {
                                             }
 
                                             const linePlacement =
-                                                scaleData.xScale(location) +
+                                                scaleData.drawingLinearxScale(location) +
                                                 (alignment === 'right'
                                                     ? -10
                                                     : alignment === 'left'
@@ -4204,6 +4210,7 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
+                    scaleData?.drawingLinearxScale.range([0, event.detail.width]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     ctx.setLineDash([5, 3]);
                     marketLine.context(ctx);

@@ -118,7 +118,7 @@ function DrawCanvas(props: DrawCanvasProps) {
     const { isCondensedModeEnabled } = useContext(CandleContext);
 
     const circleSeries = createCircle(
-        scaleData?.xScale,
+        scaleData?.drawingLinearxScale,
         scaleData?.yScale,
         50,
         1,
@@ -132,9 +132,9 @@ function DrawCanvas(props: DrawCanvasProps) {
     const getDollarPrice = useDollarPrice();
 
     function createScaleForBandArea(x: number, x2: number) {
-        const newXScale = scaleData?.xScale.copy();
+        const newXScale = scaleData?.drawingLinearxScale.copy();
 
-        newXScale.range([scaleData?.xScale(x), scaleData?.xScale(x2)]);
+        newXScale.range([scaleData?.drawingLinearxScale(x), scaleData?.drawingLinearxScale(x2)]);
 
         return newXScale;
     }
@@ -142,7 +142,7 @@ function DrawCanvas(props: DrawCanvasProps) {
     useEffect(() => {
         if (scaleData) {
             const lineSeries = createLinearLineSeries(
-                scaleData?.xScale,
+                scaleData?.drawingLinearxScale,
                 scaleData?.yScale,
                 denomInBase,
                 drawSettings[activeDrawingType].line,
@@ -150,7 +150,7 @@ function DrawCanvas(props: DrawCanvasProps) {
             setLineSeries(() => lineSeries);
 
             const borderLineSeries = createLinearLineSeries(
-                scaleData?.xScale,
+                scaleData?.drawingLinearxScale,
                 scaleData?.yScale,
                 denomInBase,
                 drawSettings[activeDrawingType].border,
@@ -159,7 +159,7 @@ function DrawCanvas(props: DrawCanvasProps) {
             setBorderLineSeries(() => borderLineSeries);
 
             const annotationLineSeries = createAnnotationLineSeries(
-                scaleData?.xScale.copy(),
+                scaleData?.drawingLinearxScale.copy(),
                 scaleData?.yScale,
                 denomInBase,
             );
@@ -272,7 +272,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         }
 
         const snappedTime = findSnapTime(
-            scaleData?.xScale.invert(offsetX),
+            scaleData?.drawingLinearxScale.invert(offsetX),
             period,
         );
 
@@ -281,11 +281,11 @@ function DrawCanvas(props: DrawCanvasProps) {
         const checkVisibleCandle = visibleCandleData.length === 0;
 
         if (!checkVisibleCandle && nearest) {
-            const lastDateLocation = scaleData.xScale(
+            const lastDateLocation = scaleData.drawingLinearxScale(
                 visibleCandleData[0].time * 1000,
             );
 
-            const firstDateLocation = scaleData.xScale(
+            const firstDateLocation = scaleData.drawingLinearxScale(
                 visibleCandleData[visibleCandleData.length - 1].time * 1000,
             );
 
@@ -407,8 +407,8 @@ function DrawCanvas(props: DrawCanvasProps) {
                 );
 
                 if (activeDrawingType !== 'Ray') {
-                    const firstValueX = scaleData?.xScale(tempLineData[0].x);
-                    const firstValueY = scaleData?.yScale(tempLineData[0].y);
+                    const firstValueX = scaleData?.drawingLinearxScale(tempLineData[0].x);
+                    const firstValueY = scaleData?.drawingLinearxScale(tempLineData[0].y);
 
                     const checkThreshold = Math.hypot(
                         offsetX - firstValueX,
@@ -514,7 +514,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                 if (valueY > 0) {
                     const newBandScale = createScaleForBandArea(
                         tempLineData[0].x,
-                        scaleData.xScale.invert(offsetX),
+                        scaleData.drawingLinearxScale.invert(offsetX),
                     );
 
                     const bandArea = createBandArea(
@@ -631,8 +631,8 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     scaleData.yScale(lineData[1].y),
                             );
                             const side = Math.abs(
-                                scaleData.xScale(lineData[0].x) -
-                                    scaleData.xScale(lineData[1].x),
+                                scaleData.drawingLinearxScale(lineData[0].x) -
+                                    scaleData.drawingLinearxScale(lineData[1].x),
                             );
 
                             const distance = opposite / side;
@@ -641,15 +641,15 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 side / 4 > 80
                                     ? Math.abs(lineData[0].x - lineData[1].x) /
                                       4
-                                    : scaleData.xScale.invert(
-                                          scaleData.xScale(lineData[0].x) + 80,
+                                    : scaleData.drawingLinearxScale.invert(
+                                          scaleData.drawingLinearxScale(lineData[0].x) + 80,
                                       ) - lineData[0].x;
 
                             const minAngleTextLength =
                                 lineData[0].x +
                                 minAngleLineLength +
-                                scaleData.xScale.invert(
-                                    scaleData.xScale(lineData[0].x) + 20,
+                                scaleData.drawingLinearxScale.invert(
+                                    scaleData.drawingLinearxScale(lineData[0].x) + 20,
                                 ) -
                                 lineData[0].x;
 
@@ -679,9 +679,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 lineData[1].y > lineData[0].y ? 0 : -supplement;
 
                             const radius =
-                                scaleData.xScale(
+                                scaleData.drawingLinearxScale(
                                     lineData[0].x + minAngleLineLength,
-                                ) - scaleData.xScale(lineData[0].x);
+                                ) - scaleData.drawingLinearxScale(lineData[0].x);
 
                             if (ctx) {
                                 ctx.setLineDash([5, 3]);
@@ -689,7 +689,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                                 ctx.beginPath();
                                 ctx.arc(
-                                    scaleData.xScale(lineData[0].x),
+                                    scaleData.drawingLinearxScale(lineData[0].x),
                                     scaleData.yScale(lineData[0].y),
                                     radius,
                                     arcX,
@@ -711,7 +711,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     (lineData[1].y > lineData[0].y ? '' : '-') +
                                         angleDisplay.toFixed(0).toString() +
                                         'º',
-                                    scaleData.xScale(minAngleTextLength),
+                                    scaleData.drawingLinearxScale(minAngleTextLength),
                                     scaleData.yScale(lineData[0].y),
                                 );
 
@@ -753,9 +753,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                     } as bandLineData;
 
                     const range = [
-                        scaleData?.xScale(lineData[0].x),
-                        scaleData?.xScale(lineData[1].x),
+                        scaleData?.drawingLinearxScale(lineData[0].x),
+                        scaleData?.drawingLinearxScale(lineData[1].x),
                     ];
+
+                    console.log(scaleData.drawingLinearxScale.domain(), scaleData.xScale.domain())
 
                     bandArea.xScale().range(range);
 
@@ -776,7 +778,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     if (activeDrawingType === 'DPRange') {
                         const lineOfBand = createPointsOfDPRangeLine(
                             lineData,
-                            scaleData.xScale,
+                            scaleData.drawingLinearxScale,
                         );
 
                         if (drawSettings[activeDrawingType].border.active) {
@@ -796,8 +798,8 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 scaleData.yScale(lineData[1].y),
                         );
                         const width = Math.abs(
-                            scaleData.xScale(lineData[0].x) -
-                                scaleData.xScale(lineData[1].x),
+                            scaleData.drawingLinearxScale(lineData[0].x) -
+                                scaleData.drawingLinearxScale(lineData[1].x),
                         );
 
                         const firstPointYAxisData =
@@ -887,7 +889,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                             ctx.beginPath();
                             ctx.fillStyle = 'rgb(34,44,58)';
                             ctx.fillRect(
-                                scaleData.xScale(infoLabelXAxisData) -
+                                scaleData.drawingLinearxScale(infoLabelXAxisData) -
                                     infoLabelWidth / 2,
                                 dpRangeLabelYPlacement,
                                 infoLabelWidth,
@@ -929,14 +931,14 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     heightAsPercentage.toString() +
                                     '%)  ' +
                                     dpRangeTickPrice,
-                                scaleData.xScale(infoLabelXAxisData),
+                                scaleData.drawingLinearxScale(infoLabelXAxisData),
                                 dpRangeLabelYPlacement + 16,
                             );
 
                             const min = Math.min(lineData[0].x, lineData[1].x);
                             const max = Math.max(lineData[0].x, lineData[1].x);
                             const showCandleCount = getCandleCount(
-                                scaleData.xScale,
+                                scaleData.drawingLinearxScale,
                                 visibleCandleData,
                                 [min, max],
                                 period,
@@ -945,7 +947,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                             ctx.fillText(
                                 showCandleCount + ' bars,  ' + lengthAsDate,
-                                scaleData.xScale(infoLabelXAxisData),
+                                scaleData.drawingLinearxScale(infoLabelXAxisData),
                                 dpRangeLabelYPlacement + 33,
                             );
                             ctx.fillText(
@@ -953,7 +955,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     formatDollarAmountAxis(
                                         totalVolumeCovered,
                                     ).replace('$', ''),
-                                scaleData.xScale(infoLabelXAxisData),
+                                scaleData.drawingLinearxScale(infoLabelXAxisData),
                                 dpRangeLabelYPlacement + 50,
                             );
                         }
@@ -1003,11 +1005,11 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                     const range = [
                         localDrawSettings.extendLeft
-                            ? scaleData.xScale.range()[0]
-                            : scaleData?.xScale(data[0].x),
+                            ? scaleData.drawingLinearxScale.range()[0]
+                            : scaleData?.drawingLinearxScale(data[0].x),
                         localDrawSettings.extendRight
-                            ? scaleData.xScale.range()[1]
-                            : scaleData?.xScale(data[1].x),
+                            ? scaleData.drawingLinearxScale.range()[1]
+                            : scaleData?.drawingLinearxScale(data[1].x),
                     ];
 
                     annotationLineSeries.xScale().range(range);
@@ -1134,9 +1136,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                             if (localDrawSettings.extendLeft) {
                                 location =
                                     localDrawSettings.labelPlacement === 'Left'
-                                        ? scaleData.xScale.domain()[0]
+                                        ? scaleData.drawingLinearxScale.domain()[0]
                                         : localDrawSettings.extendRight
-                                          ? scaleData.xScale.domain()[1]
+                                          ? scaleData.drawingLinearxScale.domain()[1]
                                           : Math.max(
                                                 lineData[0].x,
                                                 lineData[1].x,
@@ -1145,7 +1147,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 location =
                                     localDrawSettings.labelPlacement === 'Left'
                                         ? Math.min(lineData[0].x, lineData[1].x)
-                                        : scaleData.xScale.domain()[1];
+                                        : scaleData.drawingLinearxScale.domain()[1];
                             } else {
                                 location =
                                     localDrawSettings.labelPlacement === 'Left'
@@ -1157,7 +1159,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                             }
 
                             const linePlacement =
-                                scaleData.xScale(location) +
+                                scaleData.drawingLinearxScale(location) +
                                 (alignment === 'right' ? -10 : +10);
 
                             ctx.fillText(

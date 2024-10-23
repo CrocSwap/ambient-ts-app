@@ -108,9 +108,9 @@ export type scaleData = {
     xScaleTime: d3.ScaleTime<number, number>;
     yScale: d3.ScaleLinear<number, number>;
     volumeScale: d3.ScaleLinear<number, number>;
-    xExtent: [number, number];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     priceRange: any;
+    drawingLinearxScale: d3.ScaleLinear<number, number>;
 };
 
 export type crosshair = {
