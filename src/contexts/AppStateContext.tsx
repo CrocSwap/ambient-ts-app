@@ -52,6 +52,10 @@ export interface AppStateContextIF {
     dismissTopBannerPopup: () => void;
     isUserIdle: boolean;
     isUserIdle20min: boolean;
+    layout: {
+        contentHeight: number;
+        viewportHeight: number;
+    };
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
@@ -69,6 +73,48 @@ export const AppStateContextProvider = (props: {
     const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
     const [isUserIdle, setIsUserIdle] = useState(false);
     const [isUserIdle20min, setIsUserIdle20min] = useState(false);
+
+    // layout---------------
+
+    const NAVBAR_HEIGHT = 56;
+    const FOOTER_HEIGHT = 56;
+    const TOTAL_FIXED_HEIGHT = NAVBAR_HEIGHT + FOOTER_HEIGHT;
+
+    const [dimensions, setDimensions] = useState({
+        contentHeight: window.innerHeight - TOTAL_FIXED_HEIGHT,
+        viewportHeight: window.innerHeight,
+    });
+    // Add this useEffect for handling resize
+useEffect(() => {
+    const calculateHeights = () => {
+        const viewportHeight = window.innerHeight;
+        setDimensions({
+            contentHeight: viewportHeight - TOTAL_FIXED_HEIGHT,
+            viewportHeight
+        });
+    };
+
+    // Debounced resize handler for performance
+    let timeoutId: NodeJS.Timeout;
+    const handleResize = () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(calculateHeights, 150);
+    };
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Initial calculation
+    calculateHeights();
+
+    // Cleanup
+    return () => {
+        window.removeEventListener('resize', handleResize);
+        clearTimeout(timeoutId);
+    };
+}, []);
+
+    //  end of layout------------
 
     window.ononline = () => setIsUserOnline(true);
     window.onoffline = () => setIsUserOnline(false);
@@ -140,6 +186,10 @@ export const AppStateContextProvider = (props: {
                 isActive: isAppOverlayActive,
                 setIsActive: setIsAppOverlayActive,
             },
+            layout: {
+                contentHeight: dimensions.contentHeight,
+                viewportHeight: dimensions.viewportHeight
+            },
             appHeaderDropdown: {
                 isActive: isAppHeaderDropdown,
                 setIsActive: setIsAppHeaderDropdown,
@@ -195,6 +245,8 @@ export const AppStateContextProvider = (props: {
             dismissPointSystemPopup,
             showTopPtsBanner,
             dismissTopBannerPopup,
+            dimensions.contentHeight,
+            dimensions.viewportHeight,
         ],
     );
 

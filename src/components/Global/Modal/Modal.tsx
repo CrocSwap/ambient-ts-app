@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BiArrowBack } from 'react-icons/bi';
 import { RiCloseFill } from 'react-icons/ri';
@@ -40,6 +40,13 @@ export default function Modal(props: ModalPropsIF) {
         useBottomSheet();
     const isMobile = useMediaQuery('(max-width: 500px)');
 
+    useEffect(() => {
+        console.log({isMobile})
+    }, [isMobile])
+    
+    // Track initialization to avoid rendering until states are fully resolved
+    const [isInitialized, setIsInitialized] = useState(false);
+
     const escFunction = useCallback((event: KeyboardEvent) => {
         if (event.key === 'Escape') {
             handleClose();
@@ -60,6 +67,7 @@ export default function Modal(props: ModalPropsIF) {
         } else if (!isMobile && isBottomSheetOpen) {
             closeBottomSheet();
         }
+        setIsInitialized(true);  // Mark as initialized after states resolve
     }, [isMobile, isBottomSheetOpen, openBottomSheet, closeBottomSheet]);
 
     // Handle closing both modal and bottom sheet
@@ -80,16 +88,18 @@ export default function Modal(props: ModalPropsIF) {
             <div className={styles.header_right}>
                 {headerRightItems}
                 <span />
-                {!isMobile && <RiCloseFill
-                    id='close_modal_button'
-                    size={27}
-                    className={styles.close_button}
-                    onClick={handleClose}
-                    role='button'
-                    tabIndex={-1}
-                    aria-label='Close modal button'
-                    style={{ cursor: 'pointer' }}
-                />}
+                {!isMobile && (
+                    <RiCloseFill
+                        id="close_modal_button"
+                        size={27}
+                        className={styles.close_button}
+                        onClick={handleClose}
+                        role="button"
+                        tabIndex={-1}
+                        aria-label="Close modal button"
+                        style={{ cursor: 'pointer' }}
+                    />
+                )}
             </div>
         </header>
     ) : null;
@@ -98,15 +108,20 @@ export default function Modal(props: ModalPropsIF) {
         <footer className={styles.modal_footer}>{footer}</footer>
     ) : null;
 
+    // Avoid rendering anything until initialization is complete
+    if (!isInitialized) {
+        return null;  // Prevent rendering modal or bottom sheet until initialization
+    }
+
     if (isMobile && isBottomSheetOpen) {
         // Render Bottom Sheet style for mobile
         return (
             <>
                 <motion.div
                     className={styles.modal_overlay}
-                    initial='hidden'
+                    initial="hidden"
                     animate={{ opacity: 1 }}
-                    exit='hidden'
+                    exit="hidden"
                     onClick={handleClose}
                 />
                 <motion.div
@@ -119,7 +134,7 @@ export default function Modal(props: ModalPropsIF) {
                         damping: 25,
                         stiffness: 200,
                     }}
-                    drag='y'
+                    drag="y"
                     dragConstraints={{ top: 0 }}
                     dragElastic={0.2}
                     onDragEnd={(e, info) => {
@@ -130,9 +145,7 @@ export default function Modal(props: ModalPropsIF) {
                         <div className={styles.drag_handle} />
                     </div>
                     {headerJSX}
-                    <section className={styles.modal_content}>
-                        {children}
-                    </section>
+                    <section className={styles.modal_content}>{children}</section>
                     {footerJSX}
                 </motion.div>
             </>
@@ -146,8 +159,8 @@ export default function Modal(props: ModalPropsIF) {
                 id={GLOBAL_MODAL_COMPONENT_ID}
                 className={styles.outside_modal}
                 onMouseDown={handleClose}
-                role='dialog'
-                aria-modal='true'
+                role="dialog"
+                aria-modal="true"
             >
                 <motion.div
                     initial={{ opacity: 0, scale: 0.5 }}
@@ -161,7 +174,7 @@ export default function Modal(props: ModalPropsIF) {
                     tabIndex={0}
                     aria-label={`${title} modal`}
                 >
-                    <Container boxShadow='gradient'>
+                    <Container boxShadow="gradient">
                         {headerJSX}
                         <section className={styles.modal_content}>
                             {children}

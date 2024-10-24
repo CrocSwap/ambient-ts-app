@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { RiChat3Line } from 'react-icons/ri';
 import { MdOutlineExplore } from 'react-icons/md';
@@ -13,7 +13,8 @@ import {
     checkEoaHexAddress,
 } from '../../../ambient-utils/dataLayer';
 
-const FooterNav: React.FC = () => {
+// Memoize the FooterNav component
+const FooterNav: React.FC = React.memo(() => {
     const location = useLocation();
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -21,7 +22,7 @@ const FooterNav: React.FC = () => {
         ? '/trade/market/'
         : location.pathname.includes('trade/limit')
           ? '/trade/limit/'
-          : location.pathname.includes('trade/pool')
+          : location.pathname.includes('trade/pool/')
             ? '/trade/pool/'
             : location.pathname.includes('trade/edit')
               ? '/trade/edit/'
@@ -36,12 +37,6 @@ const FooterNav: React.FC = () => {
     });
 
     const linksData = [
-        // { title: 'Home', destination: '/', icon: RiHome2Line },
-        // {
-        //     title: 'Swap',
-        //     destination: `/swap/${paramsSlug}`,
-        //     icon: RiSwapBoxFill,
-        // },
         {
             title: 'Trade',
             destination: `${tradeDestination}${paramsSlug}`,
@@ -60,9 +55,6 @@ const FooterNav: React.FC = () => {
     useEffect(() => {
         const currentPath = location.pathname;
 
-        // if (currentPath.includes('/swap')) {
-        //     setActiveIndex(1); // Swap
-        // } else
         if (currentPath.includes('/trade')) {
             setActiveIndex(0); // Trade
         } else if (currentPath.includes('/explore')) {
@@ -80,13 +72,18 @@ const FooterNav: React.FC = () => {
         }
     }, [location.pathname]);
 
+    // Memoize the onClick handler to avoid re-creation on each render
+    const handleNavClick = useCallback((index: number) => {
+        setActiveIndex(index);
+    }, []);
+
     return (
         <div className={styles.nav}>
             {linksData.map((link, index) => (
                 <div
                     key={index}
                     className={`${styles.navItem} ${index === activeIndex ? styles.active : ''}`}
-                    onClick={() => setActiveIndex(index)}
+                    onClick={() => handleNavClick(index)} // Use memoized handler
                 >
                     <Link to={link.destination} className={styles.link}>
                         <link.icon
@@ -104,6 +101,9 @@ const FooterNav: React.FC = () => {
             ))}
         </div>
     );
-};
+});
+
+// Add a displayName for debugging and tools like React DevTools
+FooterNav.displayName = 'FooterNav';
 
 export default FooterNav;
