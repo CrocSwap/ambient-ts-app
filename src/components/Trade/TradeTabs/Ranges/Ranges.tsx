@@ -224,7 +224,7 @@ const updatePageDataCount = (dataCount: number) => {
     })
 }
 
-const dataPerPage = 50;
+const dataPerPage = 200;
 const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
 const [pageDataCount, setPageDataCount] = useState<PageDataCountIF>(getInitialDataPageCounts());
 const pageDataCountRef = useRef<PageDataCountIF>();
