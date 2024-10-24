@@ -200,6 +200,7 @@ export const ChainDataContextProvider = (props: {
 
     async function updateAllPoolStats(): Promise<void> {
         try {
+            console.log(chainData.chainId);
             const allPoolStats = await cachedAllPoolStatsFetch(
                 chainData.chainId,
                 activeNetwork.graphCacheUrl,
