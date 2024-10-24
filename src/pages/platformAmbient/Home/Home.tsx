@@ -1,7 +1,7 @@
 import Hero from '../../../components/Home/Landing/Hero';
 import LandingSections from '../../../components/Home/Landing/LandingSections';
 import Stats from '../../../components/Home/Stats/AmbientStats';
-import TopPools from '../../../components/Home/TopPools/TopPools';
+import TopPoolsHome from '../../../components/Home/TopPoolsHome/TopPoolsHome';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../../components/Home/Landing/MobileLandingSections';
 import { Link } from 'react-router-dom';
@@ -68,7 +68,7 @@ export default function Home() {
                 </PointSystemContainer>
             )}
             <div>
-                <TopPools />
+                <TopPoolsHome />
                 {showDexStats && <Stats />}
             </div>
             <LandingSections />
