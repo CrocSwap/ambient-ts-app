@@ -151,9 +151,9 @@ const [hotTransactions, setHotTransactions] = useState<PositionIF[]>([]);
 
 const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
 
-const EXTRA_REQUEST_COUNT = 10;
+const EXTRA_REQUEST_CREDIT_COUNT = 10;
 
-const [extraRequestCredit, setExtraRequestCredit] = useState(EXTRA_REQUEST_COUNT);
+const [extraRequestCredit, setExtraRequestCredit] = useState(EXTRA_REQUEST_CREDIT_COUNT);
 const extraRequestCreditRef = useRef<number>();
 extraRequestCreditRef.current = extraRequestCredit;
 
@@ -187,7 +187,7 @@ useEffect(() => {
     setMoreDataAvailable(true);
     setLastFetchedCount(0);
     setHotTransactions([]);
-    setExtraRequestCredit(EXTRA_REQUEST_COUNT);
+    setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
 }, [selectedBaseAddress + selectedQuoteAddress]);
 
 const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
@@ -542,8 +542,6 @@ const addMoreData = async() => {
                 : 0,
         [rangeData],
     );
-    console.log(oldestTxTime)
-
     // ------------------------------------------------------------------------------------------------------------------------------
     
 

@@ -92,6 +92,7 @@ function TableRowsInfiniteScroll({
     const txSpanSelectorForBindMethod =  'div[data-label="hidden-id"]';
 
     const debugMode = true;
+    const markRows = false;
     const[manualMode, setManualMode] = useState(false);
     const manualModeRef = useRef<boolean>();
     manualModeRef.current = manualMode;
@@ -314,7 +315,7 @@ function TableRowsInfiniteScroll({
 
                 const row = span.closest('div[data-type="infinite-scroll-row"]') as HTMLDivElement;
                 if(row){
-                    if (debugMode) {
+                    if (debugMode && markRows) {
                         row.style.background = pos == ScrollPosition.BOTTOM ? 'purple' : 'cyan';
                     }
                     addToActionHistory(InfScrollAction.SUCCESS);
@@ -343,7 +344,7 @@ function TableRowsInfiniteScroll({
         const rows = document.querySelectorAll(`#infinite_scroll_wrapper_${wrapperID} > div`);
         if (rows.length > 0) {
             const firstRow = rows[0] as HTMLDivElement;
-            if (debugMode) {
+            if (debugMode && markRows) {
                 firstRow.style.backgroundColor = 'orange';
             }
 
@@ -363,7 +364,7 @@ function TableRowsInfiniteScroll({
             //     (row as HTMLDivElement).style.backgroundColor = 'transparent';
             // });
             const lastRow = rows[rows.length - 1] as HTMLDivElement;
-            if (debugMode) {
+            if (debugMode && markRows) {
                 lastRow.style.backgroundColor = 'blue';
             }
 
