@@ -165,8 +165,6 @@ export async function expandPoolStats(
     const baseUsdPrice = (await basePricePromise)?.usdPrice;
     const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
 
-    console.log({ baseUsdPrice, quoteUsdPrice, base, quote });
-
     const baseTokenListed = tokenList.find(
         (token) => token.address.toLowerCase() === base.toLowerCase(),
     );
