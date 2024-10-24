@@ -498,7 +498,7 @@ const addMoreData = async() => {
                     prev[0] + 1,
                     prev[1] + 1,
                 ]);
-                setExtraRequestCredit(EXTRA_REQUEST_COUNT);
+                setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
             }else{
                 setMoreDataAvailable(false);
             }
