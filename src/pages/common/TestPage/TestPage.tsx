@@ -3,6 +3,13 @@
 
 import { useState } from 'react';
 import SwipeableTabs from '../../TestPage/SwipeableTabs';
+import HexReveal from '../../platformFuta/Home/Animations/HexReveal';
+import FadingText from '../../platformFuta/Home/Animations/FadingText';
+import FadingTextGrid from '../../platformFuta/Home/Animations/FadingTextGrid';
+import { FlexContainer } from '../../../styled/Common';
+import FutaLanding2 from '../../platformFuta/Home/FutaLandings/NewLandings/FutaLanding2';
+import FutaLandingNav from '../../platformFuta/Home/FutaLandings/FutaLandingNav';
+import FutaNewLanding from '../../platformFuta/Home/FutaLandings/NewLandings/FutaNewLanding';
 
 
 
@@ -17,17 +24,12 @@ export default function TestPage() {
     ];
   
     return (
-      <div>
-        {/* Control buttons in another component */}
-        <div>
-          <button onClick={() => setActiveTab(0)}>Go to Trade</button>
-          <button onClick={() => setActiveTab(1)}>Go to Explore</button>
-          <button onClick={() => setActiveTab(2)}>Go to Account</button>
-          <button onClick={() => setActiveTab(3)}>Go to Chat</button>
-        </div>
-  
-        {/* Pass activeTab and setActiveTab to SwipeableTabs */}
-        <SwipeableTabs tabs={tabData} activeTab={activeTab} setActiveTab={setActiveTab} />
-      </div>
+      // <FlexContainer justifyContent='center' alignItems='center' style={{width: '100vw', height: '100vh'}}>
+
+      //   <FadingTextGrid/>
+      // </FlexContainer>
+    
+      <FutaNewLanding/>
+      // <FutaLandingNav/>
     );
   };

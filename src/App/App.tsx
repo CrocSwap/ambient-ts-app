@@ -178,7 +178,7 @@ export default function App() {
                 )}
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
-            {!isBottomSheetOpen && footerDisplay}
+            {/* {!isBottomSheetOpen && footerDisplay} */}
             <GlobalPopup data-theme={skin.active} />
             <SnackbarComponent />
             {isWalletModalOpen && <GateWalletModal />}

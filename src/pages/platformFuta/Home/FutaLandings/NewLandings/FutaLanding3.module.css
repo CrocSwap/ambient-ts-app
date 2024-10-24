@@ -1,0 +1,46 @@
+.container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 48px;
+    padding: 0 16px;
+   
+}
+
+.container img{
+    width: 350px;
+    margin: 0 auto;
+}
+
+.container h3{
+    color: var(--base-text1, #AACFD1);
+font-family: "Fira Mono";
+font-size: 36px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+text-align: start;
+width: 100%;
+}
+
+.content{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    text-align: start;
+   
+    gap: 1rem;
+}
+
+@media only screen and (max-width: 375px) {
+.container{
+    gap: 1rem;
+}
+.container img{
+    width: 180px;
+}
+}
