@@ -688,7 +688,7 @@ function TableRowsInfiniteScroll({
 
 
                 {
-                    // !isTableReadyRef.current &&
+                    !isTableReadyRef.current &&
                     (<div className={styles.data_fetching_panel}> 
                         {/* <div className={styles.data_fetching_text}>
                         More data is loading...
