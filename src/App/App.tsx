@@ -47,6 +47,7 @@ export default function App() {
         appHeaderDropdown,
         showPointSystemPopup,
         dismissPointSystemPopup,
+        layout
     } = useContext(AppStateContext);
     const { platformName, skin, showPoints } = useContext(BrandContext);
     const {
@@ -55,7 +56,7 @@ export default function App() {
     const {  isBottomSheetOpen } =
     useBottomSheet();
 
-
+    console.log({layout})
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
         : 'content-container';
