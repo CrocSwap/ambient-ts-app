@@ -25,20 +25,23 @@
 }
 @keyframes barAnim2{
     0%{
-        left: -20%;
+        left: -10%;
         width: 10%;
         opacity: .3;
+        background-color: var(--accent2);
     }
     
     50%{
-        width: 20%;
+        width: 30%;
         opacity: 1;
+        background-color: var(--accent1);
     }
     
     100%{
         width: 10%;
         left: 120%;
-        opacity: .7;
+        opacity: .2;
+        background-color: var(--accent2);
     }
 }
 
@@ -47,7 +50,7 @@
     position: absolute;
     bottom: 0;
     width: 100%;
-    padding: .5rem 1rem;
+    /* padding: .5rem 1rem; */
     text-align: center;
     background-color: var(--dark1);
     z-index: 4;

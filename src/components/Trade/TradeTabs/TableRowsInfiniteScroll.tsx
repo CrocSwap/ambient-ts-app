@@ -522,6 +522,11 @@ function TableRowsInfiniteScroll({
         }
     }, [moreDataAvailable])
 
+    useEffect(() => {
+        bindTableReadyState(!moreDataLoading);
+    }, [moreDataLoading])
+
+
 
 
     const addToActionHistory = (actionType: InfScrollAction) => {
@@ -685,9 +690,9 @@ function TableRowsInfiniteScroll({
                 {
                     !isTableReadyRef.current &&
                     (<div className={styles.data_fetching_panel}> 
-                        <div className={styles.data_fetching_text}>
+                        {/* <div className={styles.data_fetching_text}>
                         More data is loading...
-                        </div>
+                        </div> */}
                         {/* <div className={styles.data_fetching_bar}></div> */}
                         <div className={styles.data_fetching_bar2}></div>
                     </div>)
