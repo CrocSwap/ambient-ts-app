@@ -35,9 +35,9 @@ export default function Explore(props: ExploreIF) {
         isActiveNetworkMainnet,
     } = useContext(ChainDataContext);
 
-    const getLimitedPools = async (): Promise<void> => {
+    const getAllPoolData = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
-            pools.getLimited(poolList, crocEnv, chainData.chainId);
+            pools.getAll(poolList, crocEnv, chainData.chainId);
         }
     };
 
@@ -55,9 +55,7 @@ export default function Explore(props: ExploreIF) {
             // clear text in DOM for time since last update
             pools.reset();
             // use metadata to get expanded pool data
-            getLimitedPools().then(() => {
-                pools.getExtra(poolList, crocEnv, chainData.chainId);
-            });
+            getAllPoolData();
         }
     };
 
