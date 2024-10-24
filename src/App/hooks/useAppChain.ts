@@ -158,6 +158,9 @@ export const useAppChain = (): {
                                     activeNetwork.chainId !=
                                     incomingChainFromWallet
                                 ) {
+                                    // !IMPORTANT:  not this one
+                                    // alert('wow!');
+                                    // console.log('wow');
                                     window.location.reload();
                                 }
                             } else {
@@ -165,6 +168,7 @@ export const useAppChain = (): {
                             }
                         }
                         if (activeNetwork.chainId != incomingChainFromWallet) {
+                            // !IMPORTANT:  not this one
                             window.location.reload();
                         } else {
                             setIgnoreFirst(false);
@@ -235,11 +239,15 @@ export const useAppChain = (): {
             isPathUserXpOrLeaderboard ||
             isPathOnExplore
         ) {
+            // this one is specific to user account pages
+            // !IMPORTANT:  not this one
             window.location.reload();
         } else {
             linkGenCurrent.navigate();
         }
-        window.location.reload();
+        // this one seems to be necessary for chain switching, when disabled
+        // ... the app appears to switch chains but doesn't get any pool data
+        // window.location.reload();
     }
 
     // data from the SDK about the current chain in the connected wallet
