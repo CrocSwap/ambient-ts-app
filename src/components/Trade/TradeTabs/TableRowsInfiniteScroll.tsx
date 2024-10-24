@@ -13,6 +13,7 @@ import TableRows from './TableRows';
 import { TxSortType } from './useSortedTxs';
 import { LimitSortType } from './useSortedLimits';
 import { RangeSortType } from './useSortedPositions';
+import styles from './TableRowsInfiniteScroll.module.css';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -165,11 +166,11 @@ function TableRowsInfiniteScroll({
 
     const bindTableReadyState = (newState: boolean) => {
         if(newState === true){
-            setTransactionTableOpacity('1');
+            // setTransactionTableOpacity('1');
             setIsTableReady(true);
         }
         else{
-            setTransactionTableOpacity('.5');
+            // setTransactionTableOpacity('.5');
             setIsTableReady(false);
         }
     }
@@ -196,11 +197,11 @@ function TableRowsInfiniteScroll({
         }
     };
     
-    const setTransactionTableOpacity = (val: string) => {
-        if(wrapperEl){
-            wrapperEl.style.opacity = val;
-        }
-    };
+    // const setTransactionTableOpacity = (val: string) => {
+    //     if(wrapperEl){
+    //         wrapperEl.style.opacity = val;
+    //     }
+    // };
 
 
     const triggerAutoScroll = (
@@ -679,6 +680,20 @@ function TableRowsInfiniteScroll({
                 {
                     renderDebugData()
                 }
+
+
+                {
+                    !isTableReadyRef.current &&
+                    (<div className={styles.data_fetching_panel}> 
+                        <div className={styles.data_fetching_text}>
+                        More data is loading...
+                        </div>
+                        {/* <div className={styles.data_fetching_bar}></div> */}
+                        <div className={styles.data_fetching_bar2}></div>
+                    </div>)
+                
+                }
+                
 
         </>
     );
