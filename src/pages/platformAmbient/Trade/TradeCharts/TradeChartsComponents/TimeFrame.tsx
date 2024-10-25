@@ -13,7 +13,9 @@ function TimeFrame(props: propsIF) {
 
 
     const mobileView = useMediaQuery('(max-width: 968px)');
-
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     const dropdownItemRef = useRef<HTMLDivElement>(null);
  
@@ -53,7 +55,7 @@ function TimeFrame(props: propsIF) {
         </div>
     );
 
-    if (mobileView) return timeFrameMobile;
+    if (mobileView || tabletView) return timeFrameMobile;
 
     return (
         <div

@@ -43,6 +43,7 @@ import { ColorObjIF } from '../../../Chart/ChartSettings/ChartSettings';
 import Spinner from '../../../../components/Global/Spinner/Spinner';
 import { LabelSettingsArrow } from '../../Chart/Draw/FloatingToolbar/FloatingToolbarSettingsCss';
 import Divider from '../../../../components/Global/Divider/Divider';
+import { LuSettings } from 'react-icons/lu';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -106,6 +107,9 @@ function TradeCharts(props: propsIF) {
         setIsFullScreen: setIsChartFullScreen,
         chartCanvasRef,
         chartThemeColors,
+        contextmenu,
+        setContextmenu,
+        setContextMenuPlacement,
     } = useContext(ChartContext);
 
     const { isCondensedModeEnabled, setIsCondensedModeEnabled } =
@@ -117,6 +121,9 @@ function TradeCharts(props: propsIF) {
 
     const { pathname } = useLocation();
     const smallScreen = useMediaQuery('(max-width: 768px)');
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     const isFuta = ['futa'].includes(platformName);
 
@@ -452,6 +459,37 @@ function TradeCharts(props: propsIF) {
         </section>
     );
 
+    const timeFrameContentTablet = (
+        <section
+            style={{
+                justifyContent: 'space-between',
+                padding: '0px 1rem 1rem 1rem',
+            }}
+            className={styles.time_frame_container}
+        >
+            <div className={styles.mobile_settings_row}>
+                <p className={styles.mobile_settings_header}>Time Frame:</p>
+                <TimeFrame candleTime={chartSettings.candleTime.global} />
+            </div>
+
+            <LuSettings
+                size={20}
+                onClick={() => {
+                    setContextmenu(!contextmenu);
+                    setContextMenuPlacement(() => {
+                        return {
+                            top: 200,
+                            left: (window.innerWidth / 2) - 150,
+                            isReversed: false,
+                        };
+                    });
+                }}
+                id='chart_settings_tooltip_tablet'
+                color='var(--text2)'
+            />
+        </section>
+    );
+
     const extendedOptions = (
         <div className={styles.conxtext_options}>
             <Divider></Divider>
@@ -558,6 +596,8 @@ function TradeCharts(props: propsIF) {
                 </Modal>
             )}
         </>
+    ) : tabletView ? (
+        timeFrameContentTablet
     ) : (
         timeFrameContentDesktop
     );
