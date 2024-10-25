@@ -126,6 +126,7 @@ export type chartItemStates = {
     setShowFeeRate: React.Dispatch<React.SetStateAction<boolean>>;
     liqMode: string;
     showSwap: boolean;
+    setShowSwap: React.Dispatch<React.SetStateAction<boolean>>;
     showLiquidity: boolean;
     showHistorical: boolean;
 };

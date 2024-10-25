@@ -40,6 +40,7 @@ import { ColorObjIF } from './ChartSettings';
 import { BrandContext } from '../../../contexts/BrandContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../../platformAmbient/Chart/ChartUtils/chartConstants';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface ContextMenuContentIF {
     chartThemeColors: ChartThemeIF;
@@ -90,6 +91,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         setShowTvl,
         showVolume,
         setShowVolume,
+        showSwap,
+        setShowSwap,
     } = props.chartItemStates;
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
@@ -104,6 +107,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         quoteToken: { symbol: quoteTokenSymbol },
         isDenomBase,
     } = useContext(TradeDataContext);
+
+    const { isUserConnected } = useContext(UserDataContext);
 
     const [priceInOption, setPriceInOption] = useState<string>(
         !isTradeDollarizationEnabled
@@ -341,21 +346,31 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             checked: showVolume,
             action: setShowVolume,
             selection: 'Show Volume',
+            label: 'volume',
         },
         {
             checked: showTvl,
             action: setShowTvl,
             selection: 'Show TVL',
+            label: 'tvl',
         },
         {
             checked: showFeeRate,
             action: setShowFeeRate,
             selection: 'Show Fee Rate',
+            label: 'feerate',
         },
         {
             checked: isCondensedModeEnabled,
             action: setIsCondensedModeEnabled,
             selection: 'Hide empty candles',
+            label: 'condensedMode',
+        },
+        {
+            checked: showSwap,
+            action: setShowSwap,
+            selection: 'Show Buys/Sells',
+            label: 'swap',
         },
     ];
 
@@ -398,26 +413,34 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         <>
             <>
                 <CheckListContainer>
-                    {checkListContent.map((item, index) => (
-                        <CheckList key={index}>
-                            <StyledCheckbox
-                                checked={item.checked}
-                                onClick={() => item.action(!item.checked)}
-                            >
-                                <Icon
-                                    viewBox='0 0 24 24'
-                                    style={{ width: '24px', height: '24px' }}
-                                >
-                                    <polyline points='20 6 9 17 4 12' />
-                                </Icon>
-                            </StyledCheckbox>
-                            <ContextMenuContextText>
-                                {['futa'].includes(platformName)
-                                    ? item.selection.toUpperCase()
-                                    : item.selection}
-                            </ContextMenuContextText>
-                        </CheckList>
-                    ))}
+                    {checkListContent.map(
+                        (item, index) =>
+                            (item.label !== 'swap' || isUserConnected) && (
+                                <CheckList key={index}>
+                                    <StyledCheckbox
+                                        checked={item.checked}
+                                        onClick={() =>
+                                            item.action(!item.checked)
+                                        }
+                                    >
+                                        <Icon
+                                            viewBox='0 0 24 24'
+                                            style={{
+                                                width: '24px',
+                                                height: '24px',
+                                            }}
+                                        >
+                                            <polyline points='20 6 9 17 4 12' />
+                                        </Icon>
+                                    </StyledCheckbox>
+                                    <ContextMenuContextText>
+                                        {['futa'].includes(platformName)
+                                            ? item.selection.toUpperCase()
+                                            : item.selection}
+                                    </ContextMenuContextText>
+                                </CheckList>
+                            ),
+                    )}
                 </CheckListContainer>
 
                 <SelectionContainer>

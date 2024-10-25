@@ -180,6 +180,7 @@ function TradeCharts(props: propsIF) {
             setShowVolume,
             liqMode: chartSettings.poolOverlay.overlay,
             showSwap,
+            setShowSwap,
             showLiquidity,
             showHistorical,
         };
@@ -456,22 +457,6 @@ function TradeCharts(props: propsIF) {
             <Divider></Divider>
 
             <div className={styles.conxtext_options_section}>
-                <div className={styles.options_header}>Volume:</div>
-                <div className={styles.options_content}>
-                    <VolumeTVLFee
-                        setShowVolume={setShowVolume}
-                        setShowTvl={setShowTvl}
-                        setShowFeeRate={setShowFeeRate}
-                        showVolume={showVolume}
-                        showTvl={showTvl}
-                        showFeeRate={showFeeRate}
-                    />
-                </div>
-            </div>
-
-            <Divider></Divider>
-
-            <div className={styles.conxtext_options_section}>
                 <div className={styles.options_header}>Curve/Depth:</div>
                 <div className={styles.options_content}>
                     <CurveDepth overlayMethods={chartSettings.poolOverlay} />
@@ -487,23 +472,6 @@ function TradeCharts(props: propsIF) {
                 </div>
             </div>
 
-            <Divider></Divider>
-
-            {isUserConnected && (
-                <div className={styles.conxtext_options_section}>
-                    <div className={styles.options_header}>Order History:</div>
-                    <div className={styles.options_content}>
-                        <OrderHistoryDisplay
-                            setShowHistorical={setShowHistorical}
-                            setShowSwap={setShowSwap}
-                            setShowLiquidity={setShowLiquidity}
-                            showLiquidity={showLiquidity}
-                            showHistorical={showHistorical}
-                            showSwap={showSwap}
-                        />
-                    </div>
-                </div>
-            )}
         </div>
     );
 
