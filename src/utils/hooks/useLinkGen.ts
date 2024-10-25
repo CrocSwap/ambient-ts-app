@@ -164,11 +164,13 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
 
     // fn to build a full URL including params AND navigate the user
     function navigateUser(paramsObj?: anyParamsIF | string): void {
+        console.log('>>>> navigateUser', paramsObj)
         navigate(getFullURL(paramsObj));
     }
 
     // fn with same mode of action as `navigateUser()` with history stack replacement
     function redirectUser(paramsObj?: anyParamsIF | string): void {
+        console.log('>>>> redirectUser', paramsObj)
         navigate(getFullURL(paramsObj), { replace: true });
     }
 
