@@ -69,6 +69,7 @@ export default function NetworkSelector(props: propsIF) {
 
     // click handler for network switching (does not handle Canto link)
     async function handleClick(chn: ChainSpec): Promise<void> {
+        console.log('>>>> NetworkSelecor.tsx > handleClick', chn)
         if (isConnected) {
             await switchNetwork(parseInt(chn.chainId));
             if (chainParam || networkParam) {

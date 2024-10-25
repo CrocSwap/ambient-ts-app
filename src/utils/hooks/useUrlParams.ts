@@ -174,7 +174,6 @@ export const useUrlParams = (
 
     // fn to update the current URL without a navigation event
     function updateURL(changes: updatesIF): void {
-        console.log('update URL >>>>>>>>>>>>>>>>>>>>>>>>>>')
         // copy of the current URL param map
         const workingMap: Map<validParamsType, string> = urlParamMap;
         // process any updates to existing k-v pairs (also adds new ones)
