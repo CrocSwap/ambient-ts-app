@@ -145,6 +145,8 @@ function Ranges(props: propsIF) {
 });
 
 const [infiniteScrollLock, setInfiniteScrollLock] = useState(false);
+const infiniteScrollLockRef = useRef<boolean>();
+infiniteScrollLockRef.current = infiniteScrollLock;
 
 const fetchedTransactionsRef = useRef<PositionsByPool>();
 fetchedTransactionsRef.current = fetchedTransactions;
@@ -502,7 +504,7 @@ const addMoreData = async() => {
                 }
             }
             if(addedDataCount > 0){
-                if(infiniteScrollLock){
+                if(infiniteScrollLockRef.current){
                     updateInitialDataPageCounts(fetchedTransactions.positions.length + newTxData.length);
                 }
                 else{
