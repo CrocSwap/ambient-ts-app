@@ -144,7 +144,7 @@ function Ranges(props: propsIF) {
     positions: [...positionsByPool.positions.filter(e=>e.positionLiq !== 0)],
 });
 
-const [infiniteScrollLock, setInfiniteScrollLock] = useState(false);
+const [infiniteScrollLock, setInfiniteScrollLock] = useState(true);
 const infiniteScrollLockRef = useRef<boolean>();
 infiniteScrollLockRef.current = infiniteScrollLock;
 
@@ -192,7 +192,7 @@ useEffect(() => {
     setLastFetchedCount(0);
     setHotTransactions([]);
     setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
-    setInfiniteScrollLock(false);
+    setInfiniteScrollLock(true);
 }, [selectedBaseAddress + selectedQuoteAddress]);
 
 const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
@@ -377,13 +377,12 @@ useEffect(() => {
         setPagesVisible([0, 1]);
         setPageDataCount(getInitialDataPageCounts());
         setPageDataCountShouldReset(false);
-        setInfiniteScrollLock(false);
+        setInfiniteScrollLock(true);
     }
 
-    if(fetchedTransactions.positions.length < 10){
-        if(!infiniteScrollLock){
-            setInfiniteScrollLock(true);
-            addMoreData();
+    if(fetchedTransactionsRef.current && fetchedTransactionsRef.current.positions.length < 10){
+        if(infiniteScrollLockRef.current){
+            addMoreData(true);
         }
     }
     else{
@@ -461,8 +460,8 @@ const getOldestTime = (data: PositionIF[]):number => {
 }
 
 
-const addMoreData = async() => {
-        console.log('add more data')
+const addMoreData = async(byPassIncrementPage?: boolean) => {
+        console.log('add more data', byPassIncrementPage)
         setMoreDataLoading(true);
             const targetCount = 30;
             let addedDataCount = 0;
@@ -504,8 +503,9 @@ const addMoreData = async() => {
                 }
             }
             if(addedDataCount > 0){
-                if(infiniteScrollLockRef.current){
-                    updateInitialDataPageCounts(fetchedTransactions.positions.length + newTxData.length);
+                if(byPassIncrementPage){
+                    const currTxsLen = fetchedTransactionsRef.current ? fetchedTransactionsRef.current.positions.length : fetchedTransactions.positions.length;
+                    setPageDataCount(updateInitialDataPageCounts(currTxsLen + addedDataCount));
                 }
                 else{
                     setLastFetchedCount(addedDataCount);
@@ -1232,6 +1232,7 @@ const addMoreData = async() => {
                         lastFetchedCount={lastFetchedCount}
                         setLastFetchedCount={setLastFetchedCount}
                         moreDataLoading={moreDataLoading}
+                        componentLock={infiniteScrollLockRef.current}
                         />
                     )
                     :

@@ -277,7 +277,7 @@ function TableRowsInfiniteScroll({
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '1rem', top: '3rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
             <div style={{display: 'none',position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '2rem', top: '1.2rem'}}>Rows : {renderedRows}</div>
             <div style={{left: '1rem', top: '0rem', color: 'rgba(255, 150,30)', position: 'absolute',  background: 'black'}}>{actionHistory}</div>
-            <div style={{right: '0rem', top: '1.2rem', display: 'block', width:'1rem', height: '1rem', borderRadius: '50vw', position: 'absolute',  background: reqLockRef.current === true ? 'red': 'green'}}></div>
+            <div style={{right: '0rem', top: '1.2rem', display: 'block', width:'1rem', height: '1rem', borderRadius: '50vw', position: 'absolute',  background: componentLock === true ? 'red': 'green'}}></div>
             {pageDataCount && pageDataCount.length > 0
             &&
             (<div style={{position: 'absolute',  background: 'black', color: 'cyan', left: '1rem', top: '4.5rem'}}>
