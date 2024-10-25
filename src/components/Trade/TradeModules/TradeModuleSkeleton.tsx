@@ -144,6 +144,28 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         tokenB: tokenB.address,
     };
 
+    const tokenAExplorerLink = (needConfirmTokenA || tokenAIsExcludedToken) && (
+        <AcknowledgeLink
+            href={blockExplorer + 'token/' + tokenA.address}
+            rel={'noopener noreferrer'}
+            target='_blank'
+            aria-label={`approve ${tokenA.symbol}`}
+        >
+            {tokenA.symbol || tokenA.name} <FiExternalLink />
+        </AcknowledgeLink>
+    );
+
+    const tokenBExplorerLink = (needConfirmTokenB || tokenBIsExcludedToken) && (
+        <a
+            href={blockExplorer + 'token/' + tokenB.address}
+            rel={'noopener noreferrer'}
+            target='_blank'
+            aria-label={`approve ${tokenB.symbol}`}
+        >
+            {tokenB.symbol || tokenB.name} <FiExternalLink />
+        </a>
+    );
+
     return (
         <>
             {isTutorialActive && (
@@ -203,45 +225,14 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                                         ></AcknowledgeText>
                                     )}
                                 {areDefaultTokensUpdatedForChain &&
-                                    (needConfirmTokenA ||
-                                        needConfirmTokenB) && (
+                                    ackTokenMessage && (
                                         <GridContainer
                                             numCols={2}
                                             gap={16}
                                             margin='4px 0'
                                         >
-                                            {needConfirmTokenA && (
-                                                <AcknowledgeLink
-                                                    href={
-                                                        blockExplorer +
-                                                        'token/' +
-                                                        tokenA.address
-                                                    }
-                                                    rel={'noopener noreferrer'}
-                                                    target='_blank'
-                                                    aria-label={`approve ${tokenA.symbol}`}
-                                                >
-                                                    {tokenA.symbol ||
-                                                        tokenA.name}{' '}
-                                                    <FiExternalLink />
-                                                </AcknowledgeLink>
-                                            )}
-                                            {needConfirmTokenB && (
-                                                <a
-                                                    href={
-                                                        blockExplorer +
-                                                        'token/' +
-                                                        tokenB.address
-                                                    }
-                                                    rel={'noopener noreferrer'}
-                                                    target='_blank'
-                                                    aria-label={`approve ${tokenB.symbol}`}
-                                                >
-                                                    {tokenB.symbol ||
-                                                        tokenB.name}{' '}
-                                                    <FiExternalLink />
-                                                </a>
-                                            )}
+                                            {tokenAExplorerLink}
+                                            {tokenBExplorerLink}
                                         </GridContainer>
                                     )}
                             </>
@@ -262,6 +253,13 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                                 __html: formattedAckTokenMessage,
                             }}
                         ></AcknowledgeText>
+                    ) : null}
+                    {!isUserConnected &&
+                    (tokenAIsExcludedToken || tokenBIsExcludedToken) ? (
+                        <GridContainer numCols={2} gap={16} margin='4px 0'>
+                            {tokenAExplorerLink}
+                            {tokenBExplorerLink}
+                        </GridContainer>
                     ) : null}
                     {warnings && warnings}
                     {isFuta && (
