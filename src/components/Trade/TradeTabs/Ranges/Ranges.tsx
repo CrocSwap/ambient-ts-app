@@ -215,8 +215,17 @@ const getInitialDataPageCounts = () => {
         pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
         counts: counts
     }
-
+    
 }
+
+const updateInitialDataPageCounts = (dataCount:number) => {
+    
+    return {
+        pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
+        counts: [Math.ceil(dataCount / 2), Math.floor(dataCount / 2)]
+    }
+}
+
 
 const updatePageDataCount = (dataCount: number) => {
     setPageDataCount(prev => {
@@ -493,6 +502,19 @@ const addMoreData = async() => {
                 }
             }
             if(addedDataCount > 0){
+                if(infiniteScrollLock){
+                    updateInitialDataPageCounts(fetchedTransactions.positions.length + newTxData.length);
+                }
+                else{
+                    setLastFetchedCount(addedDataCount);
+                    updatePageDataCount(addedDataCount);
+                    setExtraPagesAvailable((prev) => prev + 1);
+                    setPagesVisible((prev) => [
+                        prev[0] + 1,
+                        prev[1] + 1,
+                    ]);
+                    setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
+                }
                  // new data found
                  setFetchedTransactions((prev) => {
                     const sortedData = sortData([
@@ -504,14 +526,6 @@ const addMoreData = async() => {
                         positions: sortedData,
                     };
                 })
-                 setLastFetchedCount(addedDataCount);
-                 updatePageDataCount(addedDataCount);
-                setExtraPagesAvailable((prev) => prev + 1);
-                setPagesVisible((prev) => [
-                    prev[0] + 1,
-                    prev[1] + 1,
-                ]);
-                setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
             }else{
                 setMoreDataAvailable(false);
             }
