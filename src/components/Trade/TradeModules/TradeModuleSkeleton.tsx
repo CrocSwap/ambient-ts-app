@@ -22,7 +22,7 @@ import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import {
     brand,
-    excludedTokenAddresses,
+    excludedTokenAddressesLowercase,
 } from '../../../ambient-utils/constants';
 import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
 import { openInNewTab } from '../../../ambient-utils/dataLayer';
@@ -86,22 +86,17 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const smallScreen = useMediaQuery('(max-width: 768px)');
 
-    const lowercaseExcludedAddresses = useMemo(
-        () => excludedTokenAddresses.map((addr) => addr.toLowerCase()),
-        [excludedTokenAddresses],
-    );
-
     const tokenAIsExcludedToken = useMemo(() => {
-        return lowercaseExcludedAddresses.includes(
+        return excludedTokenAddressesLowercase.includes(
             tokenA.address.toLowerCase(),
         );
-    }, [tokenA.address, lowercaseExcludedAddresses]);
+    }, [tokenA.address, excludedTokenAddressesLowercase]);
 
     const tokenBIsExcludedToken = useMemo(() => {
-        return lowercaseExcludedAddresses.includes(
+        return excludedTokenAddressesLowercase.includes(
             tokenB.address.toLowerCase(),
         );
-    }, [tokenB.address, lowercaseExcludedAddresses]);
+    }, [tokenB.address, excludedTokenAddressesLowercase]);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {

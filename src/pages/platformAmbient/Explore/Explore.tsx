@@ -12,7 +12,7 @@ import { LuRefreshCcw, LuSearch } from 'react-icons/lu';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
 import DexTokens from '../../../components/Global/Explore/DexTokens/DexTokens';
-import { excludedTokenAddresses } from '../../../ambient-utils/constants';
+import { excludedTokenAddressesLowercase } from '../../../ambient-utils/constants';
 
 interface ExploreIF {
     view: 'pools' | 'tokens';
@@ -121,15 +121,12 @@ export default function Explore(props: ExploreIF) {
     const [searchQueryToken, setSearchQueryToken] = useState<string>('');
 
     // Filter out excluded addresses
-    const lowercaseExcludedAddresses = excludedTokenAddresses.map((addr) =>
-        addr.toLowerCase(),
-    );
     const filteredPoolsNoExcludedTokens = pools.all.filter(
         (pool) =>
-            !lowercaseExcludedAddresses.includes(
+            !excludedTokenAddressesLowercase.includes(
                 pool.base.address.toLowerCase(),
             ) &&
-            !lowercaseExcludedAddresses.includes(
+            !excludedTokenAddressesLowercase.includes(
                 pool.quote.address.toLowerCase(),
             ),
     );

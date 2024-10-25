@@ -3,7 +3,7 @@ import {
     GCGO_OVERRIDE_URL,
     ZERO_ADDRESS,
     ethereumMainnet,
-    excludedTokenAddresses,
+    excludedTokenAddressesLowercase,
     mainnetETH,
 } from '../../constants';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
@@ -455,12 +455,9 @@ export async function getChainStats(
             }
 
             // Filter out excluded addresses
-            const lowercaseExcludedAddresses = excludedTokenAddresses.map(
-                (addr) => addr.toLowerCase(),
-            );
             const filteredData = json.data.filter(
                 (item: { tokenAddr: string }) =>
-                    !lowercaseExcludedAddresses.includes(
+                    !excludedTokenAddressesLowercase.includes(
                         item.tokenAddr.toLowerCase(),
                     ),
             );
