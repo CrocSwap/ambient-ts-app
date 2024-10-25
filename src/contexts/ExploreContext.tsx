@@ -5,7 +5,6 @@ import {
     createContext,
     useContext,
     useEffect,
-    useMemo,
     useState,
 } from 'react';
 import { CachedDataContext } from './CachedDataContext';
@@ -18,7 +17,6 @@ import {
 } from '../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from './CrocEnvContext';
-import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
 import { PoolContext } from './PoolContext';
 import {
     useTokenStatsIF,
@@ -30,12 +28,8 @@ import { ChainDataContext } from './ChainDataContext';
 export interface ExploreContextIF {
     pools: {
         all: Array<PoolDataIF>;
-        getLimited(poolList: PoolIF[], crocEnv: CrocEnv, chainId: string): void;
-        getExtra: (
-            poolList: PoolIF[],
-            crocEnv: CrocEnv,
-            chainId: string,
-        ) => void;
+        getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
+
         reset: () => void;
     };
     topTokensOnchain: useTokenStatsIF;
@@ -78,8 +72,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { tokens } = useContext(TokenContext);
     const { allPoolStats } = useContext(ChainDataContext);
 
-    const [limitedPools, setLimitedPools] = useState<Array<PoolDataIF>>([]);
-    const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
+    const [allPools, setAllPools] = useState<Array<PoolDataIF>>([]);
     const [isExploreDollarizationEnabled, setIsExploreDollarizationEnabled] =
         useState(
             localStorage.getItem('isExploreDollarizationEnabled') === 'true',
@@ -96,29 +89,16 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         }
     }, [isExploreDollarizationEnabled]);
 
-    const allPools = useMemo(
-        () => limitedPools.concat(extraPools),
-        [limitedPools, extraPools],
-    );
     // metadata only
     const { poolList } = useContext(PoolContext);
-
-    const getLimitedPools = async (): Promise<void> => {
-        if (crocEnv && poolList.length) {
-            getLimitedPoolData(poolList, crocEnv, chainData.chainId);
-        }
-    };
 
     const getAllPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
-            setLimitedPools([]);
-            setExtraPools([]);
+            setAllPools([]);
             // use metadata to get expanded pool data
-            getLimitedPools().then(() => {
-                getExtraPoolData(poolList, crocEnv, chainData.chainId);
-            });
+            getAllPoolData(poolList, crocEnv, chainData.chainId);
         }
     };
 
@@ -348,73 +328,20 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         return poolData;
     }
 
-    // meta function to apply pool data get fn to an array of pools
-    function getLimitedPoolData(
+    function getAllPoolData(
         poolList: PoolIF[],
         crocEnv: CrocEnv,
         chainId: string,
     ): void {
-        const ambientTokens = ambientTokenList.tokens;
-        const limitedPoolList = poolList.filter((pool) => {
-            const baseToken = ambientTokens.find(
-                (token) =>
-                    token.address.toLowerCase() ===
-                    pool.base.address.toLowerCase(),
-            );
-            const quoteToken = ambientTokens.find(
-                (token) =>
-                    token.address.toLowerCase() ===
-                    pool.quote.address.toLowerCase(),
-            );
-            return baseToken && quoteToken;
-        });
-        const limitedPoolData = limitedPoolList.map((pool: PoolIF) =>
+        const allPoolData = poolList.map((pool: PoolIF) =>
             getPoolData(pool, crocEnv, chainId),
         );
-
-        Promise.all(limitedPoolData)
+        Promise.all(allPoolData)
             .then((results: Array<PoolDataIF>) => {
                 const filteredPoolData = results.filter(
                     (pool) => pool.spotPrice > 0,
                 );
-                setLimitedPools(filteredPoolData);
-            })
-            .catch((err) => {
-                console.warn(err);
-                // re-enable autopolling to attempt more data fetches
-            });
-    }
-
-    // meta function to apply pool data get fn to an array of pools
-    function getExtraPoolData(
-        poolList: PoolIF[],
-        crocEnv: CrocEnv,
-        chainId: string,
-    ): void {
-        const ambientTokens = ambientTokenList.tokens;
-        const extraPoolList = poolList.filter((pool) => {
-            const baseToken = ambientTokens.find(
-                (token) =>
-                    token.address.toLowerCase() ===
-                    pool.base.address.toLowerCase(),
-            );
-            const quoteToken = ambientTokens.find(
-                (token) =>
-                    token.address.toLowerCase() ===
-                    pool.quote.address.toLowerCase(),
-            );
-            return !(baseToken && quoteToken);
-        });
-
-        const extraPoolData = extraPoolList.map((pool: PoolIF) =>
-            getPoolData(pool, crocEnv, chainId),
-        );
-        Promise.all(extraPoolData)
-            .then((results: Array<PoolDataIF>) => {
-                const filteredPoolData = results.filter(
-                    (pool) => pool.spotPrice > 0,
-                );
-                setExtraPools(filteredPoolData);
+                setAllPools(filteredPoolData);
             })
             .catch((err) => {
                 console.warn(err);
@@ -434,11 +361,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const exploreContext: ExploreContextIF = {
         pools: {
             all: allPools,
-            getLimited: getLimitedPoolData,
-            getExtra: getExtraPoolData,
+            getAll: getAllPools,
             reset: () => {
-                setLimitedPools([]);
-                setExtraPools([]);
+                setAllPools([]);
             },
         },
         topTokensOnchain: dexTokens,
