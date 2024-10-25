@@ -124,7 +124,14 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
             text = '';
         }
         return text;
-    }, [needConfirmTokenA, needConfirmTokenB, tokenA.symbol, tokenB.symbol]);
+    }, [
+        needConfirmTokenA,
+        needConfirmTokenB,
+        tokenA.symbol,
+        tokenB.symbol,
+        tokenAIsExcludedToken,
+        tokenBIsExcludedToken,
+    ]);
 
     const formattedAckTokenMessage = ackTokenMessage.replace(
         /\b(not|(?<!many\s)fraudulent)\b/gi,
@@ -247,6 +254,15 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             flat
                         />
                     )}
+                    {!isUserConnected &&
+                    (tokenAIsExcludedToken || tokenBIsExcludedToken) ? (
+                        <AcknowledgeText
+                            fontSize='body'
+                            dangerouslySetInnerHTML={{
+                                __html: formattedAckTokenMessage,
+                            }}
+                        ></AcknowledgeText>
+                    ) : null}
                     {warnings && warnings}
                     {isFuta && (
                         <LPButton
