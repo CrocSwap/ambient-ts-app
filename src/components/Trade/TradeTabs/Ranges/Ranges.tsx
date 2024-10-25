@@ -144,6 +144,8 @@ function Ranges(props: propsIF) {
     positions: [...positionsByPool.positions.filter(e=>e.positionLiq !== 0)],
 });
 
+const [infiniteScrollLock, setInfiniteScrollLock] = useState(false);
+
 const fetchedTransactionsRef = useRef<PositionsByPool>();
 fetchedTransactionsRef.current = fetchedTransactions;
 
@@ -188,6 +190,7 @@ useEffect(() => {
     setLastFetchedCount(0);
     setHotTransactions([]);
     setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
+    setInfiniteScrollLock(false);
 }, [selectedBaseAddress + selectedQuoteAddress]);
 
 const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
@@ -337,7 +340,6 @@ useEffect(() => {
 
         if (uniqueChanges.length > 0) {
             if(pagesVisible[0] === 0){
-                console.log(extraRequestCredit, setExtraRequestCredit)
                 console.log('>>> setting fetched transactions')
                 setFetchedTransactions((prev) => {
                     return {
@@ -364,6 +366,17 @@ useEffect(() => {
         setPagesVisible([0, 1]);
         setPageDataCount(getInitialDataPageCounts());
         setPageDataCountShouldReset(false);
+        setInfiniteScrollLock(false);
+    }
+
+    if(fetchedTransactions.positions.length < 10){
+        if(!infiniteScrollLock){
+            setInfiniteScrollLock(true);
+            addMoreData();
+        }
+    }
+    else{
+        setInfiniteScrollLock(false);
     }
 
     

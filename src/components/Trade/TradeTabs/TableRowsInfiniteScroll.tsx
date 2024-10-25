@@ -33,6 +33,7 @@ interface propsIF {
     lastFetchedCount?: number
     setLastFetchedCount?: Dispatch<SetStateAction<number>>;
     moreDataLoading: boolean;
+    componentLock?: boolean;
 }
 
 enum ScrollDirection {
@@ -72,7 +73,8 @@ function TableRowsInfiniteScroll({
     dataPerPage,
     lastFetchedCount,
     setLastFetchedCount,
-    moreDataLoading
+    moreDataLoading,
+    componentLock
     
 }: propsIF) {
 
@@ -104,6 +106,9 @@ function TableRowsInfiniteScroll({
 
     const moreDataLoadingRef = useRef<boolean>();
     moreDataLoadingRef.current = moreDataLoading;
+
+    const componentLockRef = useRef<boolean>();
+    componentLockRef.current = componentLock;
 
 
     const lastRowRef = useRef<HTMLDivElement | null>(null);
@@ -475,7 +480,7 @@ function TableRowsInfiniteScroll({
     }
 
     useEffect(() => {
-        if(moreDataLoadingRef.current) return;    
+        if(moreDataLoadingRef.current || componentLockRef.current) return;    
         resetLastSeen();
         const observer = new IntersectionObserver(
             (entries) => {
