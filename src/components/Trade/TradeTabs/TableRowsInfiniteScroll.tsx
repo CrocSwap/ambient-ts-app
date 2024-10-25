@@ -94,7 +94,7 @@ function TableRowsInfiniteScroll({
     //     'div:nth-child(2)';
     const txSpanSelectorForBindMethod =  'div[data-label="hidden-id"]';
 
-    const debugMode = true;
+    const debugMode = false;
     const markRows = false;
     const[manualMode, setManualMode] = useState(false);
     const manualModeRef = useRef<boolean>();
