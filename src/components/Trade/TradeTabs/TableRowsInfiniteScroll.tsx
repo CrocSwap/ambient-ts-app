@@ -200,6 +200,7 @@ function TableRowsInfiniteScroll({
                 doIphoneFix();
             }, 100)
         }
+        lockShift();
     };
     
     // const setTransactionTableOpacity = (val: string) => {
