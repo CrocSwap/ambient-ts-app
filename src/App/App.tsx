@@ -47,16 +47,13 @@ export default function App() {
         appHeaderDropdown,
         showPointSystemPopup,
         dismissPointSystemPopup,
-        layout
     } = useContext(AppStateContext);
     const { platformName, skin, showPoints } = useContext(BrandContext);
     const {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
-    const {  isBottomSheetOpen } =
-    useBottomSheet();
+    const { isBottomSheetOpen } = useBottomSheet();
 
-    console.log({layout})
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
         : 'content-container';
@@ -118,7 +115,6 @@ export default function App() {
                 currentLocation !== '/faq' &&
                 !currentLocation.includes('/chat') &&
                 isChatEnabled && <ChatPanel isFullScreen={false} />}
-           
         </div>
     );
 
@@ -142,11 +138,12 @@ export default function App() {
         };
     }, [isCSSModalOpen]);
 
-    const footerDisplay = platformName === 'futa' ? (
-        <Footer data-theme={skin.active} />
-    ) : (
-        showMobileVersion && <FooterNav />
-    )
+    const footerDisplay =
+        platformName === 'futa' ? (
+            <Footer data-theme={skin.active} />
+        ) : (
+            showMobileVersion && <FooterNav />
+        );
 
     return (
         <>
@@ -180,13 +177,12 @@ export default function App() {
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
 
-           
             <GlobalPopup data-theme={skin.active} />
             <SnackbarComponent />
-          
-                { ambientFooter}
+
+            {ambientFooter}
             {!isBottomSheetOpen && footerDisplay}
-         
+
             {isWalletModalOpen && <GateWalletModal />}
             {isCSSModalOpen && <CSSModal close={() => closeCSSModal()} />}
         </>
