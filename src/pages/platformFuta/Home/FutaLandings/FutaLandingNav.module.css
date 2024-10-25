@@ -6,9 +6,12 @@
     height: 185px;
     position: fixed;
     bottom: 0;
-    background: var(--dark1);
+    background: #07070B;
     padding: 0 16px;
 
+}
+.desktopFuta{
+    display: none;
 }
 
 .leftSection {
@@ -60,8 +63,16 @@
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+
 }
 
+.mainText{
+ 
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+margin-bottom: -8px;
+}
 .enterButton {
     display: flex;
   
@@ -78,7 +89,7 @@
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    margin-bottom: 12px;
+    margin-bottom: 6px;
     
 }
 
@@ -122,3 +133,40 @@
     letter-spacing: -0.36px;
 }
 
+
+
+@media only screen and (min-width: 768px) {
+    .desktopFuta{
+        display: flex;
+    }
+
+    .mainText{
+ 
+     
+    margin-bottom: -20px;
+    }
+
+    .leftSection{
+        display: flex;
+        align-items: flex-end;
+        gap: 34px;
+    }
+    .fuText,
+    .taText,
+    .mainText span {
+    font-size:96px ;
+}
+
+.enterButton button{
+   padding: 12px 24px;
+}
+
+.verticalText{
+    font-size: 14px;
+}
+
+.numberList button{
+    font-size: 24px;
+}
+
+}

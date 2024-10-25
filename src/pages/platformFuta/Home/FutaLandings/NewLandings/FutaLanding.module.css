@@ -6,7 +6,7 @@
     align-items: center;
     flex-direction: column;
     padding: 96px 16px 128px 16px;
-   
+    
 
 }
 
@@ -18,7 +18,7 @@
     gap: 1rem;
 }
 .container p {
-    color: var(--text1, #aacfd1);
+    color: var(--base-text1, #AACFD1);
     text-align: center;
 
     /* Mono 24 */
@@ -34,8 +34,7 @@
     padding: 8px 16px;
     justify-content: center;
     align-items: center;
-    background: var(--text1, #aacfd1);
-
+    background: var(--base-text1, #AACFD1);
     color: var(--dark1, #0d0f13);
     text-align: center;
     /* Mono 24 */
@@ -44,4 +43,14 @@
     font-style: normal;
     font-weight: 400;
     line-height: normal;
+    outline: none;
+    border: none;
+}
+
+@media only screen and (min-width: 768px) {
+    .container p {
+font-size: 64px;
+
+    }
+
 }

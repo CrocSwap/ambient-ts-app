@@ -7,6 +7,7 @@
     align-items: center;
     gap: 48px;
     padding: 0 16px;
+    background-color: transparent;
    
 }
 
@@ -17,7 +18,7 @@
 
 .container h3{
     color: var(--base-text1, #AACFD1);
-font-family: "Fira Mono";
+    font-family: "Fira Mono";
 font-size: 36px;
 font-style: normal;
 font-weight: 500;
@@ -36,6 +37,12 @@ width: 100%;
     gap: 1rem;
 }
 
+.content p{
+    color: var(--base-text2, #939C9E);
+
+}
+
+
 @media only screen and (max-width: 375px) {
 .container{
     gap: 1rem;
@@ -43,4 +50,34 @@ width: 100%;
 .container img{
     width: 180px;
 }
+}
+
+@media only screen and (min-width: 768px) {
+
+    .container{
+       display: grid;
+       grid-template-columns: 1fr 1fr;
+       align-items: center;
+       padding: 0 130px;
+    }
+    .imgContainer{
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+        height: 100%;
+    }
+    .imgContainer img{
+        width: 460px;
+    }
+.container h3{
+    font-size: 48px;
+    font-weight: 400;
+
+}
+
+.content p{
+    font-size: 20px;
+}
+
+
 }

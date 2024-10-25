@@ -73,3 +73,31 @@ line-height: normal;
 }
 
 }
+
+@media only screen and (min-width: 768px) {
+    .container{
+        display: grid;
+        grid-template-columns: 0.6fr 1fr;
+        align-items: center;
+        padding: 0 130px;
+     }
+     .imgContainer{
+         display: flex;
+         justify-content: flex-end;
+         align-items: flex-end;
+         height: 100%;
+     }
+     .imgContainer img{
+         width: 460px;
+     }
+ .container h3{
+     font-size: 48px;
+     font-weight: 400;
+ }
+ 
+ .content p{
+     font-size: 20px;
+ }
+
+
+}

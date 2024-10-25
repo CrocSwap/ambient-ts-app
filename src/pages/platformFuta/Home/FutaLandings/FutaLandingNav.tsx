@@ -1,4 +1,7 @@
+import { FaAngleDown, FaChevronDown } from 'react-icons/fa';
 import styles from './FutaLandingNav.module.css';
+import { IoIosArrowDown } from 'react-icons/io';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     scrollToSection: ScrollToSectionFn;
@@ -8,8 +11,26 @@ type ScrollToSectionFn = (index: number) => void;
 
 export default function FutaLandingNav(props: propsIF) {
     const { scrollToSection, activeSection } = props;
+    const sections = ['00', '01', '02', '03', '04'];
 
-    console.log({ activeSection });
+    const handleNextSection = () => {
+        const nextIndex = (activeSection + 1) % sections.length;
+        scrollToSection(nextIndex);
+    };
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
+    const futaText = (
+        <div className={styles.centerSection}>
+            <div className={styles.mainText}>
+                <span className={styles.fuText}>FU</span>
+                <span>/</span>
+                <span className={styles.taText}>TA</span>
+            </div>
+            <div className={styles.enterButton}>
+                <button>/ENTER</button>
+            </div>
+        </div>
+    );
 
     return (
         <div className={styles.container}>
@@ -17,22 +38,13 @@ export default function FutaLandingNav(props: propsIF) {
                 <div className={styles.verticalText}>
                     FULLY UNIVERSAL TICKER AUCTION
                 </div>
+                <div className={styles.desktopFuta}>{futaText}</div>
             </div>
-            <div className={styles.centerSection}>
-                <div className={styles.mainText}>
-                    <span className={styles.fuText}>FU</span>
-                    <span>/</span>
-                    <span className={styles.taText}>TA</span>
-                </div>
-                <div className={styles.enterButton}>
-                    <button>/ENTER</button>
-                    
-                   
-                </div>
-            </div>
+            {showMobileVersion ? futaText : <IoIosArrowDown size={120} onClick={handleNextSection} style={{cursor: 'pointer'}} />}
+
             <div className={styles.rightSection}>
                 <div className={styles.numberList}>
-                    {['00', '01', '02', '03', '04'].map((num, index) => (
+                    {sections.map((num, index) => (
                         <button
                             key={index}
                             onClick={() => scrollToSection(index)}
