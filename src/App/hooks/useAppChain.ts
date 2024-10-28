@@ -216,6 +216,7 @@ export const useAppChain = (): {
         console.log('>>> choose network', network);
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
         const { pathname } = window.location;
+        console.log('>>> choose network > pathname', pathname);
 
         setActiveNetwork(network);
         const isPathENS = pathname.slice(1)?.includes('.eth');
