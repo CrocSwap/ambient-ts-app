@@ -246,7 +246,9 @@ export const useAppChain = (): {
             console.log('>>> choose network > default');
                 linkGenCurrent.navigate();
         }
-        //     window.location.reload();
+        setTimeout(() => {
+            window.location.reload();
+        }, 100);
     }
 
     // data from the SDK about the current chain in the connected wallet
