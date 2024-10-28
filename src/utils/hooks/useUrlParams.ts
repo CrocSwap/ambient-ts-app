@@ -49,8 +49,10 @@ export const useUrlParams = (
     provider: ethers.Provider,
 ): urlParamsMethodsIF => {
     const { params } = useParams();
+    console.log('>>>> useUrlParams > params', params)
     const { setTokenA, setTokenB, setLimitTick } = useContext(TradeDataContext);
     const { cachedFetchTopPairedToken } = useContext(CachedDataContext);
+    console.log('>>>> useUrlParams > cachedFetchTopPairedToken', cachedFetchTopPairedToken)
 
     // this is used for updating the URL bar
     // also for when params need to be re-parsed because the page has changed
