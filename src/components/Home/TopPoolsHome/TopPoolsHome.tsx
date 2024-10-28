@@ -17,7 +17,7 @@ interface TopPoolsPropsIF {
 }
 
 // eslint-disable-next-line
-export default function TopPools(props: TopPoolsPropsIF) {
+export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
         topPools,

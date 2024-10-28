@@ -38,6 +38,7 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 import styles from './PageHeader.module.css';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 
 const PageHeader = function () {
     const {
@@ -53,6 +54,8 @@ const PageHeader = function () {
     } = useContext(AppStateContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
+    const {  isBottomSheetOpen } =
+    useBottomSheet();
 
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
@@ -412,7 +415,7 @@ const PageHeader = function () {
             <header
                 className={styles.primaryHeader}
                 data-testid={'page-header'}
-                style={{ position: 'sticky', top: 0, zIndex: 10 }}
+                style={{ position: 'sticky', top: 0, zIndex: isBottomSheetOpen ? 0 : 10 }}
             >
                 <div
                     onClick={(event: React.MouseEvent) => {
