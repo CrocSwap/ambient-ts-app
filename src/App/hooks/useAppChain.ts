@@ -212,7 +212,7 @@ export const useAppChain = (): {
     // fn to allow user to manually switch chains in the app because everything
     // ... else in this file responds to changes in the browser environment
     function chooseNetwork(network: NetworkIF): void {
-        const tmtDelay = 1;
+        const tmtDelay = 0;
         console.log('>>> choose network', network);
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
         const { pathname } = window.location;
