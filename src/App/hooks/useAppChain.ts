@@ -238,6 +238,7 @@ export const useAppChain = (): {
         } else if (pathname.includes('chain')) {
             console.log('>>> choose network > chain');
             setTimeout(() => {
+                console.log('>>> choose network > chain > navigate');   
                 linkGenCurrent.navigate(`chain=${network.chainId}`);
             }, tmtDelay);
         } else if (

@@ -88,10 +88,13 @@ export default function NetworkSelector(props: propsIF) {
             setTimeout(() => {
             if (chainParam || networkParam) {
                 // navigate to index page only if chain/network search param present
+                console.log('>>> choose network > chainParam || networkParam', chainParam, networkParam);
                 linkGenIndex.navigate();
             }
         }, 100);
     }
+    console.log('>>> choose network > supportedNetworks[chn.chainId]', supportedNetworks[chn.chainId]);
+    console.log(supportedNetworks);
     chooseNetwork(supportedNetworks[chn.chainId]);
         }
     }
