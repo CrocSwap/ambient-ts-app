@@ -91,8 +91,8 @@ export default function NetworkSelector(props: propsIF) {
                 linkGenIndex.navigate();
             }
         }, 5000);
-        chooseNetwork(supportedNetworks[chn.chainId]);
-        }
+    }
+    chooseNetwork(supportedNetworks[chn.chainId]);
         }
     }
 

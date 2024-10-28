@@ -226,21 +226,33 @@ export const useAppChain = (): {
             linkGenCurrent.currentPage === 'initpool' ||
             linkGenCurrent.currentPage === 'reposition'
         ) {
-            linkGenPool.navigate(`chain=${network.chainId}`);
+            setTimeout(() => {
+                linkGenPool.navigate(`chain=${network.chainId}`);
+            }, 5000);
         } else if (linkGenCurrent.currentPage === 'swap') {
-            linkGenSwap.navigate(`chain=${network.chainId}`);
+            setTimeout(() => {
+                linkGenSwap.navigate(`chain=${network.chainId}`);
+            }, 5000);
         } else if (pathname.includes('chain')) {
-            linkGenCurrent.navigate(`chain=${network.chainId}`);
+            setTimeout(() => {
+                linkGenCurrent.navigate(`chain=${network.chainId}`);
+            }, 5000);
         } else if (
             isPathUserAddress ||
             isPathUserXpOrLeaderboard ||
             isPathOnExplore
         ) {
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
         } else {
-            linkGenCurrent.navigate();
+            setTimeout(() => {
+                linkGenCurrent.navigate();
+            }, 5000);
         }
-        window.location.reload();
+        setTimeout(() => {
+            window.location.reload();
+        }, 5000);
     }
 
     // data from the SDK about the current chain in the connected wallet
