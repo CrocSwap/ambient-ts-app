@@ -98,7 +98,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
-        console.log('>>>> createDefaultUrlParams > chainId', chainId)
         const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] =
             getDefaultPairForChain(chainData.chainId);
 
@@ -156,8 +155,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         const poolParams: poolParamsIF = {
             ...swapParams,
         };
-
-        console.log('>>>> createDefaultUrlParams > swap', linkGenSwap.getFullURL(swapParams))
 
         return {
             swap: linkGenSwap.getFullURL(swapParams),
