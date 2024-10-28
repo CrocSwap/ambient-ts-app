@@ -82,7 +82,7 @@ export default function NetworkSelector(props: propsIF) {
                         linkGenIndex.navigate();
                     }
                 }
-            }, 5000);
+            }, 100);
         } else {
             if(!skipNavigate) {
             setTimeout(() => {
@@ -90,7 +90,7 @@ export default function NetworkSelector(props: propsIF) {
                 // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();
             }
-        }, 5000);
+        }, 100);
     }
     chooseNetwork(supportedNetworks[chn.chainId]);
         }

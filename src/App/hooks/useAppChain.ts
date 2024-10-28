@@ -212,6 +212,7 @@ export const useAppChain = (): {
     // fn to allow user to manually switch chains in the app because everything
     // ... else in this file responds to changes in the browser environment
     function chooseNetwork(network: NetworkIF): void {
+        const tmtDelay = 0;
         console.log('>>> choose network', network);
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
         const { pathname } = window.location;
@@ -226,33 +227,37 @@ export const useAppChain = (): {
             linkGenCurrent.currentPage === 'initpool' ||
             linkGenCurrent.currentPage === 'reposition'
         ) {
+            console.log('>>> choose network > initpool or reposition');
             setTimeout(() => {
                 linkGenPool.navigate(`chain=${network.chainId}`);
-            }, 5000);
+            }, tmtDelay);
         } else if (linkGenCurrent.currentPage === 'swap') {
             setTimeout(() => {
                 linkGenSwap.navigate(`chain=${network.chainId}`);
-            }, 5000);
+            }, tmtDelay);
         } else if (pathname.includes('chain')) {
+            console.log('>>> choose network > chain');
             setTimeout(() => {
                 linkGenCurrent.navigate(`chain=${network.chainId}`);
-            }, 5000);
+            }, tmtDelay);
         } else if (
             isPathUserAddress ||
             isPathUserXpOrLeaderboard ||
             isPathOnExplore
         ) {
+            console.log('>>> choose network > user address or xp or leaderboard or explore');
             setTimeout(() => {
                 window.location.reload();
-            }, 5000);
+            }, tmtDelay);
         } else {
+            console.log('>>> choose network > default');
             setTimeout(() => {
                 linkGenCurrent.navigate();
-            }, 5000);
+            }, tmtDelay);
         }
-        setTimeout(() => {
-            window.location.reload();
-        }, 5000);
+        // setTimeout(() => {
+        //     window.location.reload();
+        // }, tmtDelay);
     }
 
     // data from the SDK about the current chain in the connected wallet
