@@ -49,10 +49,8 @@ export const useUrlParams = (
     provider: ethers.Provider,
 ): urlParamsMethodsIF => {
     const { params } = useParams();
-    console.log('>>>> useUrlParams > params', params)
     const { setTokenA, setTokenB, setLimitTick } = useContext(TradeDataContext);
     const { cachedFetchTopPairedToken } = useContext(CachedDataContext);
-    console.log('>>>> useUrlParams > cachedFetchTopPairedToken', cachedFetchTopPairedToken)
 
     // this is used for updating the URL bar
     // also for when params need to be re-parsed because the page has changed
@@ -179,6 +177,7 @@ export const useUrlParams = (
 
     // fn to update the current URL without a navigation event
     function updateURL(changes: updatesIF): void {
+        console.log('>>>> useUrlParams > updateURL > changes', changes)
         // copy of the current URL param map
         const workingMap: Map<validParamsType, string> = urlParamMap;
         // process any updates to existing k-v pairs (also adds new ones)
@@ -225,6 +224,7 @@ export const useUrlParams = (
         addr: string,
         chainId: string,
     ): Promise<TokenIF | undefined> {
+        console.log('>>>> useUrlParams > getTokenByAddress > addr, chainId', addr, chainId)
         // Don't run until the token map has loaded. Otherwise, we may spuriously query a token
         // on-chain that has mapped data
         if (tokensOnChain.length === 0) {
@@ -260,6 +260,7 @@ export const useUrlParams = (
         addrB: string,
         chainToUse: string,
     ): Promise<[TokenIF, TokenIF] | undefined> {
+        console.log('>>>> useUrlParams > resolveTokenData > addrA, addrB, chainToUse', addrA, addrB, chainToUse)
         const [tokenA, tokenB] = await Promise.all([
             getTokenByAddress(addrA, chainToUse),
             getTokenByAddress(addrB, chainToUse),
@@ -289,7 +290,7 @@ export const useUrlParams = (
                 tokenAddrB,
                 chainToUse,
             );
-
+            console.log('>>>> useUrlParams > processTokenAddr > tokenPair', tokenPair)
             // prevent race condition involving lookup and fetching contract
             if (!flag) return;
             // If both tokens are valid and have data for this chain, use those
@@ -302,7 +303,7 @@ export const useUrlParams = (
 
         try {
             const chainToUse = urlParamMap.get('chain') || dfltChainId;
-
+            console.log('>>>> useUrlParams > processTokenAddr > chainToUse', chainToUse)
             const tokenA = urlParamMap.get('tokenA');
             const tokenB = urlParamMap.get('tokenB');
             if (tokenA && tokenB) {
