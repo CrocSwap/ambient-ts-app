@@ -212,7 +212,6 @@ export const useAppChain = (): {
     // fn to allow user to manually switch chains in the app because everything
     // ... else in this file responds to changes in the browser environment
     function chooseNetwork(network: NetworkIF): void {
-        const tmtDelay = 0;
         console.log('>>> choose network', network);
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
         const { pathname } = window.location;
@@ -229,37 +228,25 @@ export const useAppChain = (): {
             linkGenCurrent.currentPage === 'reposition'
         ) {
             console.log('>>> choose network > initpool or reposition');
-            setTimeout(() => {
                 linkGenPool.navigate(`chain=${network.chainId}`);
-            }, tmtDelay);
         } else if (linkGenCurrent.currentPage === 'swap') {
-            setTimeout(() => {
                 linkGenSwap.navigate(`chain=${network.chainId}`);
-            }, tmtDelay);
         } else if (pathname.includes('chain')) {
             console.log('>>> choose network > chain');
-            setTimeout(() => {
                 console.log('>>> choose network > chain > navigate');   
                 linkGenCurrent.navigate(`chain=${network.chainId}`);
-            }, tmtDelay);
         } else if (
             isPathUserAddress ||
             isPathUserXpOrLeaderboard ||
             isPathOnExplore
         ) {
             console.log('>>> choose network > user address or xp or leaderboard or explore');
-            setTimeout(() => {
                 window.location.reload();
-            }, tmtDelay);
         } else {
             console.log('>>> choose network > default');
-            setTimeout(() => {
                 linkGenCurrent.navigate();
-            }, tmtDelay);
         }
-        // setTimeout(() => {
         //     window.location.reload();
-        // }, tmtDelay);
     }
 
     // data from the SDK about the current chain in the connected wallet

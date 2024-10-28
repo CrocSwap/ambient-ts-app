@@ -71,31 +71,22 @@ export default function NetworkSelector(props: propsIF) {
     async function handleClick(chn: ChainSpec): Promise<void> {
         console.log('>>>> NetworkSelecor.tsx > handleClick', chn)
         console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        const skipNavigate = false;
         // debugger
         if (isConnected) {
             await switchNetwork(parseInt(chn.chainId));
-            setTimeout(() => {
                 if (chainParam || networkParam) {
                     // navigate to index page only if chain/network search param present
-                    if(!skipNavigate) {
-                        linkGenIndex.navigate();
-                    }
+                    linkGenIndex.navigate();
                 }
-            }, 100);
         } else {
-            if(!skipNavigate) {
-            setTimeout(() => {
             if (chainParam || networkParam) {
                 // navigate to index page only if chain/network search param present
                 console.log('>>> choose network > chainParam || networkParam', chainParam, networkParam);
                 linkGenIndex.navigate();
             }
-        }, 100);
-    }
-    console.log('>>> choose network > supportedNetworks[chn.chainId]', supportedNetworks[chn.chainId]);
-    console.log(supportedNetworks);
-    chooseNetwork(supportedNetworks[chn.chainId]);
+        console.log('>>> choose network > supportedNetworks[chn.chainId]', supportedNetworks[chn.chainId]);
+        console.log(supportedNetworks);
+        chooseNetwork(supportedNetworks[chn.chainId]);
         }
     }
 
