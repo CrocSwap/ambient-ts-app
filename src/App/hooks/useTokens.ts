@@ -72,6 +72,15 @@ export const useTokens = (
     // User acknowledge tokens
     const [ackTokens, setAckTokens] = useState<TokenIF[]>(INIT_ACK);
 
+    // Hardcoded list of excluded tokens
+    const excludedTokens = [
+        {
+            // mistake on coingecko's scroll lsit
+            address: '0x7122985656e38bdc0302db86685bb972b145bd3c',
+            chainId: 534352,
+        },
+    ];
+
     // Universe of tokens within the given chain. Combines both tokens from
     // lists and user-acknowledge tokens
     const tokenMap = useMemo<Map<string, TokenIF>>(() => {
@@ -81,7 +90,18 @@ export const useTokens = (
             // .reverse()
             .flatMap((tl) => tl.tokens)
             .concat(ackTokens)
-            .filter((t) => chainNumToString(t.chainId) === chainId)
+            .filter((t) => {
+                // First filter by chainId
+                if (chainNumToString(t.chainId) !== chainId) return false;
+
+                // Then check if token is in exclusion list
+                return !excludedTokens.some(
+                    (excluded) =>
+                        excluded.address.toLowerCase() ===
+                            t.address.toLowerCase() &&
+                        excluded.chainId === t.chainId,
+                );
+            })
             .forEach((t) => {
                 // list URI of this iteration of the token
                 const originatingList: string = t.fromList ?? 'unknown';
