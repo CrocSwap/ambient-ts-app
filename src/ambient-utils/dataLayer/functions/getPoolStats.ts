@@ -1,10 +1,9 @@
 import { CrocEnv, bigIntToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
 import {
-    CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
     ZERO_ADDRESS,
     ethereumMainnet,
-    excludedTokenAddresses,
+    excludedTokenAddressesLowercase,
     mainnetETH,
 } from '../../constants';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
@@ -219,35 +218,27 @@ export async function expandPoolStats(
         return mainnetEthPrice?.usdPrice;
     };
 
-    const getSpotPrice = async () => {
-        const spotPrice = await cachedQuerySpotPrice(
-            crocEnv,
-            base,
-            quote,
-            chainId,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-        );
-        const displayPoolPrice = toDisplayPrice(
-            spotPrice,
-            baseDecimals,
-            quoteDecimals,
-        );
-        return displayPoolPrice;
-    };
+    const lastPriceSwap = payload.lastPriceSwap;
+
+    const displayPoolPrice = toDisplayPrice(
+        lastPriceSwap,
+        baseDecimals,
+        quoteDecimals,
+    );
 
     const basePrice = baseUsdPrice
         ? baseUsdPrice
         : isETHorStakedEthToken(base)
           ? (await getEthPrice()) || 0.0
           : quoteUsdPrice
-            ? quoteUsdPrice / (await getSpotPrice())
+            ? quoteUsdPrice / displayPoolPrice
             : 0.0;
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
         : isETHorStakedEthToken(quote)
           ? (await getEthPrice()) || 0.0
           : baseUsdPrice
-            ? baseUsdPrice * (await getSpotPrice())
+            ? baseUsdPrice * displayPoolPrice
             : 0.0;
 
     return decoratePoolStats(
@@ -464,12 +455,9 @@ export async function getChainStats(
             }
 
             // Filter out excluded addresses
-            const lowercaseExcludedAddresses = excludedTokenAddresses.map(
-                (addr) => addr.toLowerCase(),
-            );
             const filteredData = json.data.filter(
                 (item: { tokenAddr: string }) =>
-                    !lowercaseExcludedAddresses.includes(
+                    !excludedTokenAddressesLowercase.includes(
                         item.tokenAddr.toLowerCase(),
                     ),
             );
