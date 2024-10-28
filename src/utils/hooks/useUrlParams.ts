@@ -110,6 +110,7 @@ export const useUrlParams = (
 
     // redirect user to default params if params received are malformed
     useEffect(() => {
+        console.log('>>>> useUrlParams > urlParamMap', urlParamMap)
         // array of keys deconstructed from params string
         const paramKeys: validParamsType[] = [...urlParamMap.keys()];
         // logic to redirect a user to current URL with default params
