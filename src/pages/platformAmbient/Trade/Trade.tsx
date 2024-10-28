@@ -97,9 +97,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
       
     } = useContext(TradeDataContext);
 
-    console.log('>>>> Trade > tokens, chainaID, provider', tokens,chainId, provider)
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
-    console.log('>>>> Trade > urlParamMap', urlParamMap)
 
     const [transactionFilter, setTransactionFilter] = useState<CandleDataIF>();
     const [selectedDate, setSelectedDate] = useState<number | undefined>();
