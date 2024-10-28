@@ -71,7 +71,7 @@ export default function NetworkSelector(props: propsIF) {
     async function handleClick(chn: ChainSpec): Promise<void> {
         console.log('>>>> NetworkSelecor.tsx > handleClick', chn)
         console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        const skipNavigate = true;
+        const skipNavigate = false;
         // debugger
         if (isConnected) {
             await switchNetwork(parseInt(chn.chainId));
