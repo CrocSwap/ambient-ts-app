@@ -51,6 +51,14 @@
             "symbol": "rswETH"
         },
         {
+            "name": "StakeStone Ether",
+            "address": "0x7122985656e38bdc0302db86685bb972b145bd3c",
+            "symbol": "STONE",
+            "decimals": 18,
+            "chainId": 1,
+            "logoURI": "https://etherscan.io/token/images/stakestone_32.png"
+        },
+        {
             "name": "Maker",
             "address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
             "chainId": 1,
@@ -374,11 +382,11 @@
         },
         {
             "name": "StakeStone Ether",
-            "address": "0x80137510979822322193FC997d400D5A6C747bf7",
+            "address": "0x80137510979822322193fc997d400d5a6c747bf7",
             "symbol": "STONE",
             "decimals": 18,
             "chainId": 534352,
-            "logoURI": ""
+            "logoURI": "https://etherscan.io/token/images/stakestone_32.png"
         },
         {
             "name": "StargateToken",
