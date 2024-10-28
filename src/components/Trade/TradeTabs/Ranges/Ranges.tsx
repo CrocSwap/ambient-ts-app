@@ -144,12 +144,22 @@ function Ranges(props: propsIF) {
     positions: [...positionsByPool.positions.filter(e=>e.positionLiq !== 0)],
 });
 
+const [infiniteScrollLock, setInfiniteScrollLock] = useState(true);
+const infiniteScrollLockRef = useRef<boolean>();
+infiniteScrollLockRef.current = infiniteScrollLock;
+
 const fetchedTransactionsRef = useRef<PositionsByPool>();
 fetchedTransactionsRef.current = fetchedTransactions;
 
 const [hotTransactions, setHotTransactions] = useState<PositionIF[]>([]);
 
 const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
+
+const EXTRA_REQUEST_CREDIT_COUNT = 10;
+
+const [extraRequestCredit, setExtraRequestCredit] = useState(EXTRA_REQUEST_CREDIT_COUNT);
+const extraRequestCreditRef = useRef<number>();
+extraRequestCreditRef.current = extraRequestCredit;
 
 
 const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
@@ -181,6 +191,8 @@ useEffect(() => {
     setMoreDataAvailable(true);
     setLastFetchedCount(0);
     setHotTransactions([]);
+    setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
+    setInfiniteScrollLock(true);
 }, [selectedBaseAddress + selectedQuoteAddress]);
 
 const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
@@ -205,8 +217,17 @@ const getInitialDataPageCounts = () => {
         pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
         counts: counts
     }
-
+    
 }
+
+const updateInitialDataPageCounts = (dataCount:number) => {
+    
+    return {
+        pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
+        counts: [Math.ceil(dataCount / 2), Math.floor(dataCount / 2)]
+    }
+}
+
 
 const updatePageDataCount = (dataCount: number) => {
     setPageDataCount(prev => {
@@ -217,7 +238,7 @@ const updatePageDataCount = (dataCount: number) => {
     })
 }
 
-const dataPerPage = 50;
+const dataPerPage = 200;
 const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
 const [pageDataCount, setPageDataCount] = useState<PageDataCountIF>(getInitialDataPageCounts());
 const pageDataCountRef = useRef<PageDataCountIF>();
@@ -320,18 +341,17 @@ useEffect(() => {
     else{
         const existingChanges = new Set(
             fetchedTransactions.positions.map(
-                // (change) => change.positionHash || change.positionId,
                 (change) => change.positionId,
             ),
         ); // Adjust if using a different unique identifier
 
         const uniqueChanges = positionsByPool.positions.filter(
-            // (change) => !existingChanges.has(change.positionHash || change.positionId),
             (change) => !existingChanges.has(change.positionId) && change.positionLiq !== 0,
         );
 
         if (uniqueChanges.length > 0) {
             if(pagesVisible[0] === 0){
+                console.log('>>> setting fetched transactions')
                 setFetchedTransactions((prev) => {
                     return {
                         dataReceived: true,
@@ -357,7 +377,19 @@ useEffect(() => {
         setPagesVisible([0, 1]);
         setPageDataCount(getInitialDataPageCounts());
         setPageDataCountShouldReset(false);
+        setInfiniteScrollLock(true);
     }
+
+    if(fetchedTransactionsRef.current && fetchedTransactionsRef.current.positions.length < 10){
+        if(infiniteScrollLockRef.current){
+            addMoreData(true);
+        }
+    }
+    else{
+        setInfiniteScrollLock(false);
+    }
+
+    
 }, [fetchedTransactions])
 
 
@@ -385,8 +417,8 @@ const fetchNewData = async(OLDEST_TIME:number):Promise<PositionIF[]> => {
             })
                 .then((poolChangesJsonData) => {
                     if(poolChangesJsonData && poolChangesJsonData.length > 0){
-                        // resolve(poolChangesJsonData as PositionIF[]);
-                        resolve((poolChangesJsonData as PositionIF[]).filter(e=>e.positionLiq !== 0));
+                        resolve(poolChangesJsonData as PositionIF[]);
+                        // resolve((poolChangesJsonData as PositionIF[]).filter(e=>e.positionLiq !== 0));
                     }else{
                         resolve([]);
                     }
@@ -416,7 +448,7 @@ const dataDiffCheck = (dirty: PositionIF[]):PositionIF[] => {
 }
 
 const getOldestTime = (data: PositionIF[]):number => {
-    let oldestTime = 0;
+    let oldestTime = Infinity;
     if(data.length > 0){
         oldestTime = data.reduce((min, order) => {
             return order.latestUpdateTime < min
@@ -427,7 +459,9 @@ const getOldestTime = (data: PositionIF[]):number => {
     return oldestTime;
 }
 
-const addMoreData = async() => {
+
+const addMoreData = async(byPassIncrementPage?: boolean) => {
+        console.log('add more data', byPassIncrementPage)
         setMoreDataLoading(true);
             const targetCount = 30;
             let addedDataCount = 0;
@@ -436,23 +470,53 @@ const addMoreData = async() => {
             let oldestTimeParam = oldestTxTime;
             while((addedDataCount < targetCount)){
                 // fetch data
-                const dirtyData = await fetchNewData(oldestTimeParam);
+                let dirtyData = await fetchNewData(oldestTimeParam);
+                const oldestTimeTemp = getOldestTime(dirtyData);
+                oldestTimeParam = oldestTimeTemp < oldestTimeParam ? oldestTimeTemp : oldestTimeParam;
+                
+                dirtyData = dirtyData.filter(e=>e.positionLiq !== 0);
+
                 if (dirtyData.length == 0){
+                    const creditVal = extraRequestCreditRef.current !== undefined ? extraRequestCreditRef.current : extraRequestCredit;
+                    console.log('extra req credit', creditVal, ' oldest time', oldestTimeParam)
+                    if(creditVal > 0){
+                        console.log('setting into' , creditVal - 1)
+                        setExtraRequestCredit(creditVal - 1);
+                        continue;
+                    }
                     break;
                 }
                 // check diff
                 const cleanData = dataDiffCheck(dirtyData);
                 if (cleanData.length == 0){
+                    // const creditVal = extraRequestCreditRef.current ? extraRequestCreditRef.current : extraRequestCredit;
+                    // console.log('clean data zero :((', creditVal)
+                    // if(creditVal > 0){
+                    //     setExtraRequestCredit(creditVal - 1);
+                    //     continue;
+                    // }
                     break;
                 }
                 else {
                     addedDataCount += cleanData.length;
                     newTxData.push(...cleanData);
-                    const oldestTimeTemp = getOldestTime(newTxData);
-                    oldestTimeParam = oldestTimeTemp < oldestTimeParam ? oldestTimeTemp : oldestTimeParam;
                 }
             }
             if(addedDataCount > 0){
+                if(byPassIncrementPage){
+                    const currTxsLen = fetchedTransactionsRef.current ? fetchedTransactionsRef.current.positions.length : fetchedTransactions.positions.length;
+                    setPageDataCount(updateInitialDataPageCounts(currTxsLen + addedDataCount));
+                }
+                else{
+                    setLastFetchedCount(addedDataCount);
+                    updatePageDataCount(addedDataCount);
+                    setExtraPagesAvailable((prev) => prev + 1);
+                    setPagesVisible((prev) => [
+                        prev[0] + 1,
+                        prev[1] + 1,
+                    ]);
+                    setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
+                }
                  // new data found
                  setFetchedTransactions((prev) => {
                     const sortedData = sortData([
@@ -464,13 +528,6 @@ const addMoreData = async() => {
                         positions: sortedData,
                     };
                 })
-                 setLastFetchedCount(addedDataCount);
-                 updatePageDataCount(addedDataCount);
-                setExtraPagesAvailable((prev) => prev + 1);
-                setPagesVisible((prev) => [
-                    prev[0] + 1,
-                    prev[1] + 1,
-                ]);
             }else{
                 setMoreDataAvailable(false);
             }
@@ -514,7 +571,6 @@ const addMoreData = async() => {
                 : 0,
         [rangeData],
     );
-
     // ------------------------------------------------------------------------------------------------------------------------------
     
 
@@ -1176,6 +1232,7 @@ const addMoreData = async() => {
                         lastFetchedCount={lastFetchedCount}
                         setLastFetchedCount={setLastFetchedCount}
                         moreDataLoading={moreDataLoading}
+                        componentLock={infiniteScrollLockRef.current}
                         />
                     )
                     :

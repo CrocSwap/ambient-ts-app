@@ -13,6 +13,7 @@ import TableRows from './TableRows';
 import { TxSortType } from './useSortedTxs';
 import { LimitSortType } from './useSortedLimits';
 import { RangeSortType } from './useSortedPositions';
+import styles from './TableRowsInfiniteScroll.module.css';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -32,6 +33,7 @@ interface propsIF {
     lastFetchedCount?: number
     setLastFetchedCount?: Dispatch<SetStateAction<number>>;
     moreDataLoading: boolean;
+    componentLock?: boolean;
 }
 
 enum ScrollDirection {
@@ -71,7 +73,8 @@ function TableRowsInfiniteScroll({
     dataPerPage,
     lastFetchedCount,
     setLastFetchedCount,
-    moreDataLoading
+    moreDataLoading,
+    componentLock
     
 }: propsIF) {
 
@@ -92,6 +95,7 @@ function TableRowsInfiniteScroll({
     const txSpanSelectorForBindMethod =  'div[data-label="hidden-id"]';
 
     const debugMode = false;
+    const markRows = false;
     const[manualMode, setManualMode] = useState(false);
     const manualModeRef = useRef<boolean>();
     manualModeRef.current = manualMode;
@@ -102,6 +106,9 @@ function TableRowsInfiniteScroll({
 
     const moreDataLoadingRef = useRef<boolean>();
     moreDataLoadingRef.current = moreDataLoading;
+
+    const componentLockRef = useRef<boolean>();
+    componentLockRef.current = componentLock;
 
 
     const lastRowRef = useRef<HTMLDivElement | null>(null);
@@ -164,11 +171,11 @@ function TableRowsInfiniteScroll({
 
     const bindTableReadyState = (newState: boolean) => {
         if(newState === true){
-            setTransactionTableOpacity('1');
+            // setTransactionTableOpacity('1');
             setIsTableReady(true);
         }
         else{
-            setTransactionTableOpacity('.5');
+            // setTransactionTableOpacity('.5');
             setIsTableReady(false);
         }
     }
@@ -193,13 +200,14 @@ function TableRowsInfiniteScroll({
                 doIphoneFix();
             }, 100)
         }
+        lockShift();
     };
     
-    const setTransactionTableOpacity = (val: string) => {
-        if(wrapperEl){
-            wrapperEl.style.opacity = val;
-        }
-    };
+    // const setTransactionTableOpacity = (val: string) => {
+    //     if(wrapperEl){
+    //         wrapperEl.style.opacity = val;
+    //     }
+    // };
 
 
     const triggerAutoScroll = (
@@ -267,10 +275,18 @@ function TableRowsInfiniteScroll({
             <span style={{fontSize: '.72rem'}}>
             <div style={{display: 'none', padding: '.5rem 1rem', background: 'black', color: `${isTableReady ? 'rgba(0, 255,0)' : 'rgba(255, 0,0)'}`, position: 'absolute', left: '1rem', top: '1.7rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>Ready? : </div>
             <div style={{display: 'none', padding: '.5rem 1rem', background: 'black', color: 'rgba(0, 255,0)', opacity: manualModeRef.current ? '1':'.7', position: 'absolute', right: '3rem', top: '0rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>{manualModeRef.current ? 'Manual' : 'Auto'} Mode</div>
-            <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '1rem', top: '0rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
+            <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '1rem', top: '3rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
             <div style={{display: 'none',position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '2rem', top: '1.2rem'}}>Rows : {renderedRows}</div>
             <div style={{left: '1rem', top: '0rem', color: 'rgba(255, 150,30)', position: 'absolute',  background: 'black'}}>{actionHistory}</div>
-            <div style={{right: '0rem', top: '1.2rem', display: 'block', width:'1rem', height: '1rem', borderRadius: '50vw', position: 'absolute',  background: reqLockRef.current === true ? 'red': 'green'}}></div>
+            <div style={{right: '0rem', top: '1.2rem', display: 'block', width:'1rem', height: '1rem', borderRadius: '50vw', position: 'absolute',  background: componentLock === true ? 'red': 'green'}}></div>
+            {pageDataCount && pageDataCount.length > 0
+            &&
+            (<div style={{position: 'absolute',  background: 'black', color: 'cyan', left: '1rem', top: '4.5rem'}}>
+                Data Counts: [{pageDataCount.map(e=> e + ' ')}]
+            </div>)
+            }
+            
+
             </span>
             </>)
         }else{
@@ -314,7 +330,7 @@ function TableRowsInfiniteScroll({
 
                 const row = span.closest('div[data-type="infinite-scroll-row"]') as HTMLDivElement;
                 if(row){
-                    if (debugMode) {
+                    if (debugMode && markRows) {
                         row.style.background = pos == ScrollPosition.BOTTOM ? 'purple' : 'cyan';
                     }
                     addToActionHistory(InfScrollAction.SUCCESS);
@@ -343,7 +359,7 @@ function TableRowsInfiniteScroll({
         const rows = document.querySelectorAll(`#infinite_scroll_wrapper_${wrapperID} > div`);
         if (rows.length > 0) {
             const firstRow = rows[0] as HTMLDivElement;
-            if (debugMode) {
+            if (debugMode && markRows) {
                 firstRow.style.backgroundColor = 'orange';
             }
 
@@ -363,7 +379,7 @@ function TableRowsInfiniteScroll({
             //     (row as HTMLDivElement).style.backgroundColor = 'transparent';
             // });
             const lastRow = rows[rows.length - 1] as HTMLDivElement;
-            if (debugMode) {
+            if (debugMode && markRows) {
                 lastRow.style.backgroundColor = 'blue';
             }
 
@@ -465,7 +481,7 @@ function TableRowsInfiniteScroll({
     }
 
     useEffect(() => {
-        if(moreDataLoadingRef.current) return;    
+        if(moreDataLoadingRef.current || componentLockRef.current) return;    
         resetLastSeen();
         const observer = new IntersectionObserver(
             (entries) => {
@@ -519,6 +535,11 @@ function TableRowsInfiniteScroll({
             bindTableReadyState(true);
         }
     }, [moreDataAvailable])
+
+    useEffect(() => {
+        bindTableReadyState(!moreDataLoading);
+    }, [moreDataLoading])
+
 
 
 
@@ -678,6 +699,20 @@ function TableRowsInfiniteScroll({
                 {
                     renderDebugData()
                 }
+
+
+                {
+                    !isTableReadyRef.current &&
+                    (<div className={styles.data_fetching_panel}> 
+                        {/* <div className={styles.data_fetching_text}>
+                        More data is loading...
+                        </div> */}
+                        {/* <div className={styles.data_fetching_bar}></div> */}
+                        <div className={styles.data_fetching_bar2}></div>
+                    </div>)
+                
+                }
+                
 
         </>
     );
