@@ -77,7 +77,6 @@ export const TradeDataContextProvider = (props: {
 }) => {
     const { chainData, activeNetwork, chooseNetwork } =
         useContext(TokenBalanceContext);
-    console.log('>>>> TradeDataContextProvider > activeNetwork', activeNetwork)
 
     const { tokens } = useContext(TokenContext);
 

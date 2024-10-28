@@ -69,8 +69,6 @@ export default function NetworkSelector(props: propsIF) {
 
     // click handler for network switching (does not handle Canto link)
     async function handleClick(chn: ChainSpec): Promise<void> {
-        console.log('>>>> NetworkSelecor.tsx > handleClick', chn)
-        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!')
         // debugger
         if (isConnected) {
             await switchNetwork(parseInt(chn.chainId));
@@ -81,11 +79,8 @@ export default function NetworkSelector(props: propsIF) {
         } else {
             if (chainParam || networkParam) {
                 // navigate to index page only if chain/network search param present
-                console.log('>>> choose network > chainParam || networkParam', chainParam, networkParam);
                 linkGenIndex.navigate();
             }
-        console.log('>>> choose network > supportedNetworks[chn.chainId]', supportedNetworks[chn.chainId]);
-        console.log(supportedNetworks);
         chooseNetwork(supportedNetworks[chn.chainId]);
         }
     }
