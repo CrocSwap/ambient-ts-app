@@ -86,8 +86,6 @@ export const useTokens = (
     const tokenMap = useMemo<Map<string, TokenIF>>(() => {
         const retMap = new Map<string, TokenIF>();
         tokenLists
-            // Reverse add, so higher priority lists overwrite lower priority
-            // .reverse()
             .flatMap((tl) => tl.tokens)
             .concat(ackTokens)
             .filter((t) => {
@@ -116,6 +114,14 @@ export const useTokens = (
                     deepToken.listedBy = deepToken.listedBy?.concat(
                         tknFromMap.listedBy,
                     );
+                    // prevent overwriting ambient token list values
+                    if (tknFromMap.listedBy?.includes(tokenListURIs.ambient)) {
+                        deepToken.address = tknFromMap.address;
+                        deepToken.symbol = tknFromMap.symbol;
+                        deepToken.name = tknFromMap.name;
+                        deepToken.logoURI = tknFromMap.logoURI;
+                        deepToken.decimals = tknFromMap.decimals;
+                    }
                 }
                 // add updated deep copy to the Map
                 retMap.set(deepToken.address.toLowerCase(), deepToken);
@@ -141,7 +147,13 @@ export const useTokens = (
         if (tokenMap.size) {
             const newArray = [...tokenMap.values()];
             for (const token of tokenBalances ?? []) {
-                if (!newArray.some((tkn) => tkn.address === token.address)) {
+                if (
+                    !newArray.some(
+                        (tkn) =>
+                            tkn.address.toLowerCase() ===
+                            token.address.toLowerCase(),
+                    )
+                ) {
                     newArray.push(token);
                 }
             }
@@ -149,7 +161,13 @@ export const useTokens = (
         } else {
             const newArray = [...defaultTokens];
             for (const token of tokenBalances ?? []) {
-                if (!newArray.some((tkn) => tkn.address === token.address)) {
+                if (
+                    !newArray.some(
+                        (tkn) =>
+                            tkn.address.toLowerCase() ===
+                            token.address.toLowerCase(),
+                    )
+                ) {
                     newArray.push(token);
                 }
             }
