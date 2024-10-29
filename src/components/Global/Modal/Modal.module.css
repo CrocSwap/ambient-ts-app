@@ -1,3 +1,18 @@
+/* Overlay that covers the whole screen with a blur effect */
+.modal_overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 999;
+
+}
+
+/* Modal container (for desktop) */
 .outside_modal {
     position: fixed;
     left: 0;
@@ -7,7 +22,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.7);
     z-index: 99999999;
 
     background: rgba(1, 0, 16, 0.25);
@@ -16,10 +30,9 @@
     -webkit-backdrop-filter: blur(15px);
     border-radius: var(--border-radius);
     transition: var(--transition);
-
-    
 }
 
+/* Modal body */
 .modal_body {
     border: solid 1px;
     border-color: var(--accent1);
@@ -38,17 +51,13 @@
     color: var(--text1);
     /* min-height: 80vh; */
 
-   
-}
-
-.box_shadow {
-    box-shadow: var(--gradient-box-shadow);
 }
 
 .no_background_modal {
     background: transparent;
 }
 
+/* Modal header */
 .modal_header {
     height: 50px;
     display: flex;
@@ -69,24 +78,14 @@
     padding-left: 27px;
 }
 
+/* Modal content */
 .modal_content {
-    /* padding: 20px; */
-
     border-radius: var(--border-radius);
-
     scrollbar-width: 5px !important;
     scrollbar-color: var(--accent1) var(--dark2);
-
-    /* min-height: 250px; */
-}
-.drag_handle {
-    width: 40px;
-    height: 5px;
-    background-color: var(--accent1);
-    border-radius: 2.5px;
-    margin: 0 auto;
 }
 
+/* Close button styles */
 .modal_header svg:hover {
     color: var(--text1);
 }
@@ -95,39 +94,79 @@
     cursor: pointer !important;
 }
 
+/* Footer */
+.modal_footer {
+    padding: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Bottom Sheet (for mobile) */
+.bottom_sheet {
+    
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* padding-bottom: 56px; */
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0px -2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    background: var(--dark1);
+    border: 1px solid var(--dark3);
+    transition:
+        height 0.3s ease,
+        backdrop-filter 0.3s ease;
+
+        max-height: 70sdh;
+        overflow-y: auto;
+        z-index: 999;
+       
+        
+}
+
+/* Drag handle for bottom sheet */
+.sheet_handle {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.drag_handle {
+    width: 40px;
+    height: 5px;
+    background-color: var(--accent1);
+    border-radius: 2.5px;
+}
+
+/* Bottom sheet header */
+.sheet_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sheet_title {
+    font-size: 18px;
+    font-weight: 300;
+    margin: 0;
+}
+
+.sheet_content {
+    padding: 16px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Responsiveness for larger screens */
 @media only screen and (min-width: 500px) {
     .modal_body {
         min-width: 400px;
     }
-}
-
-@media only screen and (max-width: 500px) {
-    .outside_modal {
-        backdrop-filter: blur(2px);
-        -webkit-backdrop-filter: blur(2px);
-        
-    }
-    .modal_body {
-        bottom: 0;
-        position: absolute;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-        border-bottom: none;
-        width: 100svw;
-
-        border-color: var(--dark3);
-
-        /* min-height: 80vh; */
-    }
-
-    .modal_content {
-        width: 100%;
-    }
-}
-
-
-
-.modal_content{
-    scrollbar-width: 5px !important;
-    scrollbar-color: var(--accent1) var(--dark2); 
 }
