@@ -114,6 +114,7 @@ export const useTokens = (
                     deepToken.listedBy = deepToken.listedBy?.concat(
                         tknFromMap.listedBy,
                     );
+                    // prevent overwriting ambient token list values
                     if (tknFromMap.listedBy?.includes(tokenListURIs.ambient)) {
                         deepToken.address = tknFromMap.address;
                         deepToken.symbol = tknFromMap.symbol;
