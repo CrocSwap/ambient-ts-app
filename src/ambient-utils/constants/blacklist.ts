@@ -162,11 +162,12 @@ export const checkBlacklist = (addr: string) => {
     return isOnBlacklist;
 };
 
-export const excludedTokenAddresses = [
-    '0xd294412741ee08aa3a35ac179ff0b4d9d7fefb27', // fake SCR
+export const excludedTokenAddressesLowercase = [
+    '0xd294412741ee08aa3a35ac179ff0b4d9d7fefb27'.toLowerCase(), // fake SCR
     ...(import.meta.env.VITE_EXCLUDED_TOKEN_ADDRESSES || '')
         .split(',')
-        .filter(Boolean),
+        .filter(Boolean)
+        .map((address: string) => address.toLowerCase()),
 ];
 
 // if blacklist is not already lowercase

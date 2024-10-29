@@ -57,9 +57,8 @@ export default function Level(props: propsIF) {
                   ? userAddress
                   : '';
             const avatarData = await getAvatarRest(walletID);
-            setShownAvatar(
-                getAvatarComponent(walletID, avatarData, 50, false, true),
-            );
+
+            setShownAvatar(getAvatarComponent(walletID, avatarData, 50, true));
         })();
     }, [resolvedAddress, userAddress]);
 

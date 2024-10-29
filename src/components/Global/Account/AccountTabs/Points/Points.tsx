@@ -3,7 +3,7 @@ import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 import {
     ambiLogo,
     blastLogo,
-} from '../../../../RangeDetails/PriceInfo/PriceInfo';
+} from '../../../DetailModals/RangeDetails/PriceInfo/PriceInfo';
 import PointsRow from './PointsRow';
 import {
     BlastUserXpDataIF,
@@ -42,66 +42,78 @@ export default function Points(props: propsIF) {
               : `/${userAddress}/xp`;
 
     return (
-        <FlexContainer fullHeight flexDirection='column' justifyContent='space-between'>
+        <FlexContainer
+            fullHeight
+            flexDirection='column'
+            justifyContent='space-between'
+        >
             <div>
-            <div>
-                <PointsRow
-                    shortName={'AMBI'}
-                    longName={'Ambient Points'}
-                    pointsAccrued={
-                        connectedAccountActive
-                            ? connectedUserXp.dataReceived === true
-                                ? (
-                                      connectedUserXp.data?.globalPoints ?? 0
-                                  ).toLocaleString()
-                                : '...'
-                            : resolvedUserXp.dataReceived === true
-                              ? (
-                                    resolvedUserXp.data?.globalPoints ?? 0
-                                ).toLocaleString()
-                              : '...'
-                    }
-                    logo={ambiLogo}
-                />
-            </div>
-            {isActiveNetworkBlast ? (
                 <div>
-                    <div>
-                        <PointsRow
-                            shortName={'BLAST'}
-                            longName={'Blast Points'}
-                            pointsAccrued={
-                                connectedAccountActive
-                                    ? connectedUserBlastXp.dataReceived === true
-                                        ? connectedUserBlastXp.data?.points ??
-                                          '0'
-                                        : '...'
-                                    : resolvedUserBlastXp.dataReceived === true
-                                      ? resolvedUserBlastXp.data?.points ?? '0'
-                                      : '...'
-                            }
-                            logo={blastLogo}
-                        />
-                    </div>
-                    <div>
-                        <PointsRow
-                            shortName={'BLAST'}
-                            longName={'Blast Gold'}
-                            pointsAccrued={
-                                connectedAccountActive
-                                    ? connectedUserBlastXp.dataReceived === true
-                                        ? connectedUserBlastXp.data?.gold ?? '0'
-                                        : '...'
-                                    : resolvedUserBlastXp.dataReceived === true
-                                      ? resolvedUserBlastXp.data?.gold ?? '0'
-                                      : '...'
-                            }
-                            logo={blastLogo}
-                        />
-                    </div>
+                    <PointsRow
+                        shortName={'AMBI'}
+                        longName={'Ambient Points'}
+                        pointsAccrued={
+                            connectedAccountActive
+                                ? connectedUserXp.dataReceived === true
+                                    ? (
+                                          connectedUserXp.data?.globalPoints ??
+                                          0
+                                      ).toLocaleString()
+                                    : '...'
+                                : resolvedUserXp.dataReceived === true
+                                  ? (
+                                        resolvedUserXp.data?.globalPoints ?? 0
+                                    ).toLocaleString()
+                                  : '...'
+                        }
+                        logo={ambiLogo}
+                    />
                 </div>
+                {isActiveNetworkBlast ? (
+                    <div>
+                        <div>
+                            <PointsRow
+                                shortName={'BLAST'}
+                                longName={'Blast Points'}
+                                pointsAccrued={
+                                    connectedAccountActive
+                                        ? connectedUserBlastXp.dataReceived ===
+                                          true
+                                            ? connectedUserBlastXp.data
+                                                  ?.points ?? '0'
+                                            : '...'
+                                        : resolvedUserBlastXp.dataReceived ===
+                                            true
+                                          ? resolvedUserBlastXp.data?.points ??
+                                            '0'
+                                          : '...'
+                                }
+                                logo={blastLogo}
+                            />
+                        </div>
+                        <div>
+                            <PointsRow
+                                shortName={'BLAST'}
+                                longName={'Blast Gold'}
+                                pointsAccrued={
+                                    connectedAccountActive
+                                        ? connectedUserBlastXp.dataReceived ===
+                                          true
+                                            ? connectedUserBlastXp.data?.gold ??
+                                              '0'
+                                            : '...'
+                                        : resolvedUserBlastXp.dataReceived ===
+                                            true
+                                          ? resolvedUserBlastXp.data?.gold ??
+                                            '0'
+                                          : '...'
+                                }
+                                logo={blastLogo}
+                            />
+                        </div>
+                    </div>
                 ) : undefined}
-                </div>
+            </div>
             <FlexContainer
                 fullWidth
                 justifyContent='center'

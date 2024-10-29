@@ -7,15 +7,13 @@ import {
     useMemo,
     useState,
 } from 'react';
-import {
-    GCGO_OVERRIDE_URL,
-    CACHE_UPDATE_FREQ_IN_MS,
-} from '../../ambient-utils/constants';
+import { GCGO_OVERRIDE_URL } from '../../ambient-utils/constants';
 import {
     LimitOrderIF,
     LimitOrderServerIF,
     PositionIF,
     PositionServerIF,
+    SinglePoolDataIF,
     TokenIF,
     TransactionIF,
     TransactionServerIF,
@@ -39,8 +37,8 @@ import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
-import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { ChainDataContext } from '../../contexts';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -86,7 +84,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         limitOrdersByPool,
     } = useContext(GraphDataContext);
 
-    const { cachedGetLiquidityFee } = useContext(CachedDataContext);
+    const { allPoolStats } = useContext(ChainDataContext);
 
     const {
         server: { isEnabled: isServerEnabled },
@@ -297,6 +295,18 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         }
     }, [newLeaderboardByPoolData, baseTokenAddress + quoteTokenAddress]);
 
+    useEffect(() => {
+        const currentPoolData = allPoolStats?.find(
+            (poolStat: SinglePoolDataIF) =>
+                poolStat.base.toLowerCase() ===
+                    baseTokenAddress.toLowerCase() &&
+                poolStat.quote.toLowerCase() ===
+                    quoteTokenAddress.toLowerCase(),
+        );
+
+        setLiquidityFee(currentPoolData?.feeRate || 0);
+    }, [allPoolStats]);
+
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
         if (
@@ -308,20 +318,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             if (baseTokenAddress && quoteTokenAddress) {
                 // retrieve pool liquidity provider fee
                 if (props.isServerEnabled) {
-                    cachedGetLiquidityFee(
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                        props.chainData.poolIndex,
-                        props.chainData.chainId,
-                        props.graphCacheUrl,
-                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-                    )
-                        .then((liquidityFeeNum) => {
-                            if (liquidityFeeNum)
-                                setLiquidityFee(liquidityFeeNum);
-                        })
-                        .catch(console.error);
-
                     // retrieve pool_positions
                     const allPositionsCacheEndpoint = GCGO_OVERRIDE_URL
                         ? GCGO_OVERRIDE_URL + '/pool_positions?'

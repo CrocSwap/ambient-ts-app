@@ -68,10 +68,13 @@ function OrderHeader(props: propsIF) {
                         alignRight
                             ? 'flex-end'
                             : alignCenter
-                            ? 'center'
-                            : 'flex-start'
+                              ? 'center'
+                              : 'flex-start'
                     }
-                    style={{ cursor: sortable ? 'pointer' : 'default' }}
+                    style={{
+                        cursor: sortable ? 'pointer' : 'default',
+                        paddingRight: alignRight ? '10px' : '0',
+                    }}
                     onClick={() => handleClick(slug as LimitSortType)}
                 >
                     <Text
@@ -81,8 +84,8 @@ function OrderHeader(props: propsIF) {
                             alignRight
                                 ? 'right'
                                 : alignCenter
-                                ? 'center'
-                                : 'left'
+                                  ? 'center'
+                                  : 'left'
                         }
                         style={{ textTransform: 'none' }}
                     >
