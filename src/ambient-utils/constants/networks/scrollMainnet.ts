@@ -35,10 +35,10 @@ export const scrollMainnet: NetworkIF = {
     marketData: '0x82750',
     defaultPair: [scrollETH, scrollUSDC],
     topPools: [
-        new TopPool(scrollScroll, scrollETH, lookupChain('0x82750').poolIndex),
         new TopPool(scrollETH, scrollUSDC, lookupChain('0x82750').poolIndex),
-        new TopPool(scrollETH, scrollUSDT, lookupChain('0x82750').poolIndex),
+        new TopPool(scrollScroll, scrollETH, lookupChain('0x82750').poolIndex),
         new TopPool(scrollETH, scrollWBTC, lookupChain('0x82750').poolIndex),
+        new TopPool(scrollETH, scrollUSDT, lookupChain('0x82750').poolIndex),
         new TopPool(scrollWrsETH, scrollETH, lookupChain('0x82750').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {

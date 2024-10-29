@@ -2,20 +2,14 @@
 // import { BrandContext } from '../../contexts/BrandContext';
 
 
+
 export default function TestPage() {
-    // const { skin } = useContext(BrandContext);
-
-
-
-
-    return (
+    
+    
+      return (
         <div>
-            {/* <button onClick={() => skin.changeTo('purple_dark')}>
-                Purple Dark
-            </button>
-            <button onClick={() => skin.changeTo('futa_dark')}>
-                Orange Dark
-            </button> */}
+          <h1>Swipeable Tabs Example</h1>
+      
         </div>
-    );
-}
+      );
+    };
