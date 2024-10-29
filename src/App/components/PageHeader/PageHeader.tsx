@@ -415,7 +415,7 @@ const PageHeader = function () {
             <header
                 className={styles.primaryHeader}
                 data-testid={'page-header'}
-                style={{ position: 'sticky', top: 0, zIndex: isBottomSheetOpen ? 0 : 10 }}
+                style={{ position: 'sticky', top: 0, zIndex: isBottomSheetOpen ? 0.1 : 10 }}
             >
                 <div
                     onClick={(event: React.MouseEvent) => {
