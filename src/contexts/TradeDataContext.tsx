@@ -14,8 +14,8 @@ import {
     isStablePair,
     translateTokenSymbol,
 } from '../ambient-utils/dataLayer';
-import { TokenBalanceContext } from './TokenBalanceContext';
 import { TokenContext } from './TokenContext';
+import { AppStateContextIF, AppStateContext } from './AppStateContext';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -49,17 +49,12 @@ export interface TradeDataContextIF {
     setLimitTick: React.Dispatch<React.SetStateAction<number | undefined>>;
     setPoolPriceNonDisplay: React.Dispatch<React.SetStateAction<number>>;
     setSlippageTolerance: React.Dispatch<React.SetStateAction<number>>;
-
-    chainData: ChainSpec;
-    activeNetwork: NetworkIF;
-    chooseNetwork: (network: NetworkIF) => void;
     defaultRangeWidthForActivePool: number;
     getDefaultRangeWidthForTokenPair: (
         chainId: string,
         baseAddress: string,
         quoteAddress: string,
     ) => number;
-
     noGoZoneBoundaries: number[];
     setNoGoZoneBoundaries: React.Dispatch<React.SetStateAction<number[]>>;
 }
@@ -75,8 +70,7 @@ export const TradeDataContext = createContext<TradeDataContextIF>(
 export const TradeDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const { chainData, activeNetwork, chooseNetwork } =
-        useContext(TokenBalanceContext);
+    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
 
@@ -272,8 +266,6 @@ export const TradeDataContextProvider = (props: {
         setPoolPriceNonDisplay,
         setSlippageTolerance,
         chainData,
-        activeNetwork,
-        chooseNetwork,
         defaultRangeWidthForActivePool,
         getDefaultRangeWidthForTokenPair,
         noGoZoneBoundaries,

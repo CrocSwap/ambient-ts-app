@@ -15,10 +15,10 @@ import {
     CandleScaleIF,
     CandlesByPoolAndDurationIF,
 } from '../ambient-utils/types';
-import { AppStateContext } from './AppStateContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
-import { CrocEnvContext } from './CrocEnvContext';
+import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
@@ -69,7 +69,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         numCandlesFetched,
         setNumCandlesFetched,
     } = useContext(ChartContext);
-    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
+    const { chainData, activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
+    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },

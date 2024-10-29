@@ -32,11 +32,11 @@ import {
     SCROLL_RPC_URL,
 } from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
-import { TradeDataContext } from './TradeDataContext';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { TokenContext } from './TokenContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
 
-interface UrlRoutesTemplate {
+interface UrlRoutesTemplateIF {
     swap: string;
     market: string;
     limit: string;
@@ -46,14 +46,11 @@ interface UrlRoutesTemplate {
 export interface CrocEnvContextIF {
     crocEnv: CrocEnv | undefined;
     setCrocEnv: (val: CrocEnv | undefined) => void;
-    selectedNetwork: NetworkIF;
     chainData: ChainSpec;
     topPools: PoolIF[];
     ethMainnetUsdPrice: number | undefined;
-    defaultUrlParams: UrlRoutesTemplate;
+    defaultUrlParams: UrlRoutesTemplateIF;
     provider: Provider;
-    activeNetwork: NetworkIF;
-    chooseNetwork: (network: NetworkIF) => void;
     mainnetProvider: Provider | undefined;
     scrollProvider: Provider | undefined;
     blastProvider: Provider | undefined;
@@ -78,8 +75,8 @@ const sepoliaProvider = new BatchedJsonRpcProvider(SEPOLIA_RPC_URL, 11155111, {
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const { chainData, activeNetwork, chooseNetwork } =
-        useContext(TradeDataContext);
+    const { chainData, activeNetwork } =
+        useContext<AppStateContextIF>(AppStateContext);
 
     const { userAddress, walletChain } = useContext(UserDataContext);
     const { walletProvider } = useWeb3ModalProvider();
@@ -97,7 +94,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
-    function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
+    function createDefaultUrlParams(chainId: string): UrlRoutesTemplateIF {
         const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] =
             getDefaultPairForChain(chainData.chainId);
 
@@ -166,7 +163,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
 
     const initUrl = createDefaultUrlParams(chainData.chainId);
     const [defaultUrlParams, setDefaultUrlParams] =
-        useState<UrlRoutesTemplate>(initUrl);
+        useState<UrlRoutesTemplateIF>(initUrl);
 
     const nodeUrl = ['0x1'].includes(chainData.chainId)
         ? MAINNET_RPC_URL
@@ -271,10 +268,9 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     }, [chainData.chainId]);
 
     // data returned by this context
-    const crocEnvContext = {
+    const crocEnvContext: CrocEnvContextIF = {
         crocEnv,
         setCrocEnv,
-        selectedNetwork: activeNetwork,
         chainData,
         topPools,
         ethMainnetUsdPrice,
@@ -283,8 +279,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         mainnetProvider,
         scrollProvider,
         blastProvider,
-        activeNetwork,
-        chooseNetwork,
     };
 
     return (

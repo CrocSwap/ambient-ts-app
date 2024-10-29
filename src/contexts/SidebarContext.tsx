@@ -13,13 +13,12 @@ import {
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
-import { AppStateContext } from './AppStateContext';
-import { CrocEnvContext } from './CrocEnvContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
 import { ReceiptContext } from './ReceiptContext';
 import { TransactionReceipt } from 'ethers';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 
-export interface SidebarStateIF {
+export interface SidebarContextIF {
     recentPools: recentPoolsMethodsIF;
     sidebar: sidebarMethodsIF;
     hideOnMobile: boolean;
@@ -28,18 +27,16 @@ export interface SidebarStateIF {
     isPoolDropdownOpen: boolean;
 }
 
-export const SidebarContext = createContext<SidebarStateIF>(
-    {} as SidebarStateIF,
+export const SidebarContext = createContext<SidebarContextIF>(
+    {} as SidebarContextIF,
 );
 
 export const SidebarContextProvider = (props: { children: ReactNode }) => {
     // logic to open a snackbar notification
     const {
+        chainData,
         snackbar: { open: openSnackbar },
-    } = useContext(AppStateContext);
-
-    // data on the active chain in the app
-    const { chainData } = useContext(CrocEnvContext);
+    } = useContext<AppStateContextIF>(AppStateContext);
 
     // all receipts stored in the current user session (array of stringified JSONs)
     const { allReceipts } = useContext(ReceiptContext);

@@ -23,6 +23,9 @@ import {
 } from '../App/functions/localStorage';
 import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
 import { useWeb3Modal } from '@web3modal/ethers/react';
+import { useAppChain } from '../App/hooks/useAppChain';
+import { ChainSpec } from '@crocswap-libs/sdk';
+import { NetworkIF } from '../ambient-utils/types';
 
 export interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -52,6 +55,9 @@ export interface AppStateContextIF {
     dismissTopBannerPopup: () => void;
     isUserIdle: boolean;
     isUserIdle20min: boolean;
+    chainData: ChainSpec;
+    activeNetwork: NetworkIF;
+    chooseNetwork: (network: NetworkIF) => void;
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
@@ -133,70 +139,6 @@ export const AppStateContextProvider = (props: {
 
     const [_, hasAgreedTerms] = useTermsAgreed();
     const { open: openW3Modal } = useWeb3Modal();
-
-    const appStateContext = useMemo(
-        () => ({
-            appOverlay: {
-                isActive: isAppOverlayActive,
-                setIsActive: setIsAppOverlayActive,
-            },
-            appHeaderDropdown: {
-                isActive: isAppHeaderDropdown,
-                setIsActive: setIsAppHeaderDropdown,
-            },
-            globalPopup,
-            snackbar,
-            tutorial: {
-                isActive: isTutorialMode,
-                setIsActive: setIsTutorialMode,
-            },
-            chat: {
-                isOpen: isChatOpen,
-                setIsOpen: setIsChatOpen,
-                isEnabled: isChatEnabled,
-                setIsEnabled: setIsChatEnabled,
-            },
-            server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
-            isUserIdle,
-            isUserIdle20min,
-            subscriptions: { isEnabled: areSubscriptionsEnabled },
-            walletModal: {
-                isOpen: isGateWalletModalOpen,
-                open: () => {
-                    if (!hasAgreedTerms || VIEW_ONLY) openGateWalletModal();
-                    else openW3Modal();
-                },
-                close: closeGateWalletModal,
-            },
-            showPointSystemPopup,
-            dismissPointSystemPopup,
-            showTopPtsBanner,
-            dismissTopBannerPopup,
-        }),
-        [
-            // Dependency list includes the memoized use*() values from above and any primitives
-            // directly references in above appState object
-            snackbar,
-            globalPopup,
-            isChatOpen,
-            isChatEnabled,
-            isServerEnabled,
-            isUserOnline,
-            isUserIdle,
-            areSubscriptionsEnabled,
-            isAppOverlayActive,
-            isTutorialMode,
-            isGateWalletModalOpen,
-            openGateWalletModal,
-            closeGateWalletModal,
-            isAppHeaderDropdown,
-            setIsAppHeaderDropdown,
-            showPointSystemPopup,
-            dismissPointSystemPopup,
-            showTopPtsBanner,
-            dismissTopBannerPopup,
-        ],
-    );
 
     const onIdle = () => {
         setIsUserIdle(true);
@@ -307,6 +249,78 @@ export const AppStateContextProvider = (props: {
             return () => clearInterval(interval);
         }
     }, [isChatEnabled, CHAT_ENABLED]);
+
+    const { chainData, activeNetwork, chooseNetwork } = useAppChain();
+
+    const appStateContext = useMemo(
+        () => ({
+            appOverlay: {
+                isActive: isAppOverlayActive,
+                setIsActive: setIsAppOverlayActive,
+            },
+            appHeaderDropdown: {
+                isActive: isAppHeaderDropdown,
+                setIsActive: setIsAppHeaderDropdown,
+            },
+            globalPopup,
+            snackbar,
+            tutorial: {
+                isActive: isTutorialMode,
+                setIsActive: setIsTutorialMode,
+            },
+            chat: {
+                isOpen: isChatOpen,
+                setIsOpen: setIsChatOpen,
+                isEnabled: isChatEnabled,
+                setIsEnabled: setIsChatEnabled,
+            },
+            server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+            isUserIdle,
+            isUserIdle20min,
+            subscriptions: { isEnabled: areSubscriptionsEnabled },
+            walletModal: {
+                isOpen: isGateWalletModalOpen,
+                open: () => {
+                    if (!hasAgreedTerms || VIEW_ONLY) openGateWalletModal();
+                    else openW3Modal();
+                },
+                close: closeGateWalletModal,
+            },
+            showPointSystemPopup,
+            dismissPointSystemPopup,
+            showTopPtsBanner,
+            dismissTopBannerPopup,
+            chainData,
+            activeNetwork,
+            chooseNetwork,
+        }),
+        [
+            // Dependency list includes the memoized use*() values from above and any primitives
+            // directly references in above appState object
+            snackbar,
+            globalPopup,
+            isChatOpen,
+            isChatEnabled,
+            isServerEnabled,
+            isUserOnline,
+            isUserIdle,
+            areSubscriptionsEnabled,
+            isAppOverlayActive,
+            isTutorialMode,
+            isGateWalletModalOpen,
+            openGateWalletModal,
+            closeGateWalletModal,
+            isAppHeaderDropdown,
+            setIsAppHeaderDropdown,
+            showPointSystemPopup,
+            dismissPointSystemPopup,
+            showTopPtsBanner,
+            dismissTopBannerPopup,
+            chainData,
+            activeNetwork,
+            chooseNetwork,
+        ],
+    );
 
     return (
         <AppStateContext.Provider value={appStateContext}>

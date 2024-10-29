@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { NetworkIF, TokenIF } from '../ambient-utils/types';
 import { UserDataContext } from './UserDataContext';
-import { useAppChain } from '../App/hooks/useAppChain';
 import { ChainSpec } from '@crocswap-libs/sdk';
 
 export interface NftListByChain {
@@ -43,9 +42,6 @@ export interface TokenBalanceContextIF {
     setNFTFetchSettings: React.Dispatch<
         React.SetStateAction<NftFetchSettingsIF>
     >;
-    chainData: ChainSpec;
-    activeNetwork: NetworkIF;
-    chooseNetwork: (network: NetworkIF) => void;
 }
 
 export const TokenBalanceContext = createContext<TokenBalanceContextIF>(
@@ -58,8 +54,6 @@ export const TokenBalanceContextProvider = (props: {
     const [tokenBalances, setTokenBalances] = React.useState<
         TokenIF[] | undefined
     >(undefined);
-
-    const { chainData, activeNetwork, chooseNetwork } = useAppChain();
 
     const [NFTData, setNFTData] = React.useState<NftListByChain[] | undefined>(
         undefined,
@@ -115,9 +109,6 @@ export const TokenBalanceContextProvider = (props: {
         setNFTData,
         NFTFetchSettings,
         setNFTFetchSettings,
-        chainData,
-        activeNetwork,
-        chooseNetwork,
     };
 
     return (

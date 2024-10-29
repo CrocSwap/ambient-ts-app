@@ -12,7 +12,7 @@ import { TradeTokenContext } from './TradeTokenContext';
 import { TradeDataContext } from './TradeDataContext';
 import { getMoneynessRankByAddr } from '../ambient-utils/dataLayer';
 
-interface UserPreferenceIF {
+export interface UserPreferenceContextIF {
     favePools: favePoolsMethodsIF;
     swapSlippage: SlippageMethodsIF;
     mintSlippage: SlippageMethodsIF;
@@ -30,8 +30,8 @@ interface UserPreferenceIF {
     };
 }
 
-export const UserPreferenceContext = createContext<UserPreferenceIF>(
-    {} as UserPreferenceIF,
+export const UserPreferenceContext = createContext<UserPreferenceContextIF>(
+    {} as UserPreferenceContextIF,
 );
 
 export const UserPreferenceContextProvider = (props: {
@@ -101,7 +101,7 @@ export const UserPreferenceContextProvider = (props: {
         return cssDebugMap.get(k);
     }
 
-    const userPreferencesProps: UserPreferenceIF = {
+    const userPreferencesProps: UserPreferenceContextIF = {
         favePools: useFavePools(),
         swapSlippage: useSlippage('swap'),
         mintSlippage: useSlippage('mint'),

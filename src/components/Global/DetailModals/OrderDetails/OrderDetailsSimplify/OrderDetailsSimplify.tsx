@@ -6,15 +6,15 @@ import moment from 'moment';
 import { FiCopy } from 'react-icons/fi';
 import { memo, useContext } from 'react';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { AppStateContext, AppStateContextIF } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext, CrocEnvContextIF } from '../../../../../contexts/CrocEnvContext';
 import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { useMediaQuery } from '@material-ui/core';
-import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { UserDataContext, UserDataContextIF } from '../../../../../contexts/UserDataContext';
 import InfoRow from '../../../InfoRow';
 import { LimitOrderIF } from '../../../../../ambient-utils/types';
 
-interface OrderDetailsSimplifyPropsIF {
+interface propsIF {
     limitOrder: LimitOrderIF;
     timeFirstMintMemo: number;
     baseCollateralDisplay: string | undefined;
@@ -38,9 +38,7 @@ interface OrderDetailsSimplifyPropsIF {
 }
 
 // TODO: refactor to using styled-components
-function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
-    const showMobileVersion = useMediaQuery('(max-width: 768px)');
-
+function OrderDetailsSimplify(props: propsIF) {
     const {
         isBid,
         isOrderFilled,
@@ -55,9 +53,12 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         timeFirstMintMemo,
     } = props;
 
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
-
-    const { userAddress } = useContext(UserDataContext);
+    const {
+        chainData,
+        snackbar: { open: openSnackbar },
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { userAddress } = useContext<UserDataContextIF>(UserDataContext);
 
     const {
         ensName,
@@ -85,18 +86,13 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         elapsedTimeSinceCrossString,
     } = useProcessOrder(limitOrder, crocEnv, userAddress, isAccountView);
 
-    const showFullAddresses = useMediaQuery('(min-width: 768px)');
-
-    const {
-        snackbar: { open: openSnackbar },
-    } = useContext(AppStateContext);
+    const showMobileVersion = useMediaQuery<boolean>('(max-width: 768px)');
+    const showFullAddresses = useMediaQuery<boolean>('(min-width: 768px)');
 
     const [_, copy] = useCopyToClipboard();
 
     function handleCopyPositionHash() {
         copy(posHash.toString());
-        // setCopiedData(posHash.toString());
-
         openSnackbar(`${posHash.toString()} copied`, 'info');
     }
 

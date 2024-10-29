@@ -7,7 +7,7 @@ import {
     useEffect,
     useState,
 } from 'react';
-import { CachedDataContext } from './CachedDataContext';
+import { CachedDataContext, CachedDataContextIF } from './CachedDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { PoolIF, SinglePoolDataIF } from '../ambient-utils/types';
 import {
@@ -16,14 +16,15 @@ import {
     expandPoolStats,
 } from '../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { CrocEnvContext } from './CrocEnvContext';
+import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
 import { PoolContext } from './PoolContext';
 import {
     useTokenStatsIF,
     useTokenStats,
 } from '../pages/platformAmbient/Explore/useTokenStats';
-import { TokenContext } from './TokenContext';
-import { ChainDataContext } from './ChainDataContext';
+import { TokenContext, TokenContextIF } from './TokenContext';
+import { ChainDataContext, ChainDataContextIF } from './ChainDataContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
 
 export interface ExploreContextIF {
     pools: {
@@ -60,17 +61,18 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
+    const { chainData, activeNetwork, } = useContext<AppStateContextIF>(AppStateContext);
     const {
-        // cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
-    } = useContext(CachedDataContext);
-
-    const { crocEnv, chainData, activeNetwork, provider } =
-        useContext(CrocEnvContext);
-    const { tokens } = useContext(TokenContext);
-    const { allPoolStats } = useContext(ChainDataContext);
+    } = useContext<CachedDataContextIF>(CachedDataContext);
+    const { crocEnv, provider } =
+        useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { tokens } = useContext<TokenContextIF>(TokenContext);
+    const { allPoolStats } = useContext<ChainDataContextIF>(ChainDataContext);
+    // metadata only
+    const { poolList } = useContext(PoolContext);
 
     const [allPools, setAllPools] = useState<Array<PoolDataIF>>([]);
     const [isExploreDollarizationEnabled, setIsExploreDollarizationEnabled] =
@@ -89,8 +91,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         }
     }, [isExploreDollarizationEnabled]);
 
-    // metadata only
-    const { poolList } = useContext(PoolContext);
 
     const getAllPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present

@@ -19,6 +19,7 @@ import {
     sampleBrandAssets,
 } from '../assets/branding';
 import { UserDataContext } from './UserDataContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
 
 const PREMIUM_THEMES_IN_ENV = {
     theme1: 'VITE_THEME_1_ACCOUNTS',
@@ -49,7 +50,7 @@ export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
 
 export const BrandContextProvider = (props: { children: ReactNode }) => {
     const { userAddress } = useContext(UserDataContext);
-    const { chainData } = useContext(TradeDataContext);
+    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
 
     // brand asset set to consume as specified in environmental variable
     // can also provide a fallback if a custom brand is missing values

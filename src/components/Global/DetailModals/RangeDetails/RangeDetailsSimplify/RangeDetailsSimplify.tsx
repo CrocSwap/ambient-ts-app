@@ -10,14 +10,14 @@ import moment from 'moment';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { memo, useContext } from 'react';
 import { FiCopy } from 'react-icons/fi';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { AppStateContext, AppStateContextIF } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext, CrocEnvContextIF } from '../../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
-import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { UserDataContext, UserDataContextIF } from '../../../../../contexts/UserDataContext';
 import InfoRow from '../../../InfoRow';
-import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import { ChainDataContext, ChainDataContextIF } from '../../../../../contexts/ChainDataContext';
 
-interface RangeDetailsSimplifyPropsIF {
+interface propsIF {
     position: PositionIF;
     timeFirstMintMemo: number;
     baseFeesDisplay: string | undefined;
@@ -27,8 +27,7 @@ interface RangeDetailsSimplifyPropsIF {
     blastRewardsData: BlastRewardsDataIF;
 }
 
-// TODO: refactor to using styled-components
-function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
+function RangeDetailsSimplify(props: propsIF) {
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     const {
@@ -40,8 +39,10 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         blastRewardsData,
         timeFirstMintMemo,
     } = props;
-    const { userAddress } = useContext(UserDataContext);
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
+    const { userAddress } = useContext<UserDataContextIF>(UserDataContext);
+    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { isActiveNetworkBlast } = useContext<ChainDataContextIF>(ChainDataContext);
 
     const {
         ensName,
@@ -52,7 +53,6 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         userNameToDisplay,
         posHashTruncated,
         posHash,
-        // blockExplorer,
         isOwnerActiveAccount,
         ownerId,
         usdValue,
@@ -76,17 +76,15 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         elapsedTimeSinceFirstMintString,
     } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
-    const showFullAddresses = useMediaQuery('(min-width: 768px)');
+    const showFullAddresses = useMediaQuery<boolean>('(min-width: 768px)');
 
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
-
     const [_, copy] = useCopyToClipboard();
 
-    function handleOpenWallet() {
+    function handleOpenWallet(): void {
         const walletUrl = isOwnerActiveAccount ? '/account' : `/${ownerId}`;
         window.open(walletUrl);
     }
@@ -123,12 +121,6 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             window.open(adressUrl);
         }
     }
-    // const txContent = (
-    //     <div className={styles.link_row} onClick={handleOpenExplorer}>
-    //         <p>{posHashTruncated}</p>
-    //         <RiExternalLinkLine />
-    //     </div>
-    // );
 
     const posHashContent = (
         <div className={styles.link_row} onClick={handleCopyPositionHash}>

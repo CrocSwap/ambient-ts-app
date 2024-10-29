@@ -5,6 +5,7 @@ import React, {
     useEffect,
     useState,
     useContext,
+    ReactNode,
 } from 'react';
 import useWebSocket from 'react-use-websocket';
 import {
@@ -19,18 +20,20 @@ import {
 } from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
 import { SinglePoolDataIF, TokenIF } from '../ambient-utils/types';
-import { CachedDataContext } from './CachedDataContext';
-import { CrocEnvContext } from './CrocEnvContext';
-import { TokenContext } from './TokenContext';
+import { CachedDataContext, CachedDataContextIF } from './CachedDataContext';
+import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
+import { TokenContext, TokenContextIF } from './TokenContext';
 import {
     BlastUserXpDataIF,
     UserDataContext,
+    UserDataContextIF,
     UserXpDataIF,
 } from './UserDataContext';
 import {
     NftDataIF,
     NftListByChain,
     TokenBalanceContext,
+    TokenBalanceContextIF,
 } from './TokenBalanceContext';
 import {
     expandTokenBalances,
@@ -41,12 +44,12 @@ import {
     IDexTokenBalances,
 } from '../ambient-utils/api';
 import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
-import { AppStateContext } from './AppStateContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
 import moment from 'moment';
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
-import { ReceiptContext } from './ReceiptContext';
+import { ReceiptContext, ReceiptContextIF } from './ReceiptContext';
 
-interface ChainDataContextIF {
+export interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
     setGasPriceinGwei: Dispatch<SetStateAction<number | undefined>>;
     lastBlockNumber: number;
@@ -67,20 +70,21 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 );
 
 export const ChainDataContextProvider = (props: {
-    children: React.ReactNode;
+    children: ReactNode;
 }) => {
-    const { isUserIdle } = useContext(AppStateContext);
+    const {
+        chainData,
+        activeNetwork,
+        isUserIdle
+    } = useContext<AppStateContextIF>(AppStateContext);
     const {
         setTokenBalances,
         setNFTData,
         NFTFetchSettings,
         setNFTFetchSettings,
-    } = useContext(TokenBalanceContext);
-
-    const { sessionReceipts } = useContext(ReceiptContext);
-
-    const { chainData, activeNetwork, crocEnv, provider } =
-        useContext(CrocEnvContext);
+    } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
+    const { sessionReceipts } = useContext<ReceiptContextIF>(ReceiptContext);
+    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const {
         cachedFetchAmbientListWalletBalances,
         cachedFetchDexBalances,
@@ -88,9 +92,8 @@ export const ChainDataContextProvider = (props: {
         cachedTokenDetails,
         cachedFetchNFT,
         cachedAllPoolStatsFetch,
-    } = useContext(CachedDataContext);
-    const { tokens } = useContext(TokenContext);
-
+    } = useContext<CachedDataContextIF>(CachedDataContext);
+    const { tokens } = useContext<TokenContextIF>(TokenContext);
     const {
         userAddress,
         isUserConnected,
@@ -98,7 +101,7 @@ export const ChainDataContextProvider = (props: {
         isfetchNftTriggered,
         nftTestWalletAddress,
         setNftTestWalletAddress,
-    } = useContext(UserDataContext);
+    } = useContext<UserDataContextIF>(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 
@@ -519,18 +522,18 @@ export const ChainDataContextProvider = (props: {
         });
     }, [crocEnv, chainData.chainId]);
 
-    const [connectedUserXp, setConnectedUserXp] = React.useState<UserXpDataIF>({
+    const [connectedUserXp, setConnectedUserXp] = useState<UserXpDataIF>({
         dataReceived: false,
         data: undefined,
     });
 
     const [connectedUserBlastXp, setConnectedUserBlastXp] =
-        React.useState<BlastUserXpDataIF>({
+        useState<BlastUserXpDataIF>({
             dataReceived: false,
             data: undefined,
         });
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (userAddress) {
             fetchUserXpData({
                 user: userAddress,

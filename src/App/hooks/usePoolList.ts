@@ -2,17 +2,18 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
 import { PoolIF, GCServerPoolIF, TokenIF } from '../../ambient-utils/types';
 import { fetchPoolList } from '../../ambient-utils/api';
-import { TokenContext } from '../../contexts/TokenContext';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { TokenContext, TokenContextIF } from '../../contexts/TokenContext';
+import { AppStateContext } from '../../contexts';
+import { AppStateContextIF } from '../../contexts/AppStateContext';
 
 export const usePoolList = (
     graphCacheUrl: string,
     crocEnv?: CrocEnv,
 ): PoolIF[] => {
+    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
     const {
         tokens: { verify, getTokenByAddress, tokenUniv },
-    } = useContext(TokenContext);
-    const { chainData } = useContext(CrocEnvContext);
+    } = useContext<TokenContextIF>(TokenContext);
 
     const [poolList, setPoolList] = useState<PoolIF[]>([]);
 

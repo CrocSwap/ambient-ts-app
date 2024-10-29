@@ -29,10 +29,9 @@ import {
     useSidebarSearch,
     sidebarSearchIF,
 } from '../../hooks/useSidebarSearch';
-import { SidebarContext } from '../../../contexts/SidebarContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { SidebarContext, SidebarContextIF } from '../../../contexts/SidebarContext';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { CachedDataContext, CachedDataContextIF } from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import { FlexContainer } from '../../../styled/Common';
 import {
@@ -49,14 +48,13 @@ import {
     TransactionsIcon,
 } from '../../../styled/Components/Sidebar';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { AppStateContext, AppStateContextIF } from '../../../contexts/AppStateContext';
 
 function Sidebar() {
-    const { sidebar, hideOnMobile } = useContext(SidebarContext);
-
-    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
-    const { chainData: chainData } = useContext(CrocEnvContext);
+    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
+    const { sidebar, hideOnMobile } = useContext<SidebarContextIF>(SidebarContext);
+    const { cachedQuerySpotPrice } = useContext<CachedDataContextIF>(CachedDataContext);
     const { tokens } = useContext(TokenContext);
-
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
 

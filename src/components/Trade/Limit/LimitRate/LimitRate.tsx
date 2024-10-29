@@ -8,9 +8,9 @@ import {
     useState,
 } from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../../contexts/PoolContext';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
+import { PoolContext, PoolContextIF } from '../../../../contexts/PoolContext';
+import { TradeTableContext, TradeTableContextIF } from '../../../../contexts/TradeTableContext';
 import { removeLeadingZeros } from '../../../../ambient-utils/dataLayer';
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
 import { updatesIF } from '../../../../utils/hooks/useUrlParams';
@@ -20,7 +20,7 @@ import {
     LimitRateButtonContainer,
     TokenQuantityInput,
 } from '../../../../styled/Components/TradeModules';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeDataContext, TradeDataContextIF } from '../../../../contexts/TradeDataContext';
 import {
     linkGenMethodsIF,
     useLinkGen,
@@ -31,7 +31,7 @@ import {
 } from '../../../../ambient-utils/dataLayer/functions/pinTick';
 import { ExplanationButton } from '../../../Form/Icons/Icons.styles';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
 import { Chip } from '../../../Form/Chip';
 
 interface propsIF {
@@ -56,15 +56,14 @@ export default function LimitRate(props: propsIF) {
     } = props;
 
     const {
-        chainData: { gridSize },
-        crocEnv,
-    } = useContext(CrocEnvContext);
+        chainData,
+        globalPopup: { open: openGlobalPopup },
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const { pool, usdPriceInverse, isTradeDollarizationEnabled, poolData } =
-        useContext(PoolContext);
-    const { showOrderPulseAnimation } = useContext(TradeTableContext);
+        useContext<PoolContextIF>(PoolContext);
+    const { showOrderPulseAnimation } = useContext<TradeTableContextIF>(TradeTableContext);
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-    const { chainData } = useContext(CrocEnvContext);
-
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const {
         isDenomBase,
@@ -76,19 +75,17 @@ export default function LimitRate(props: propsIF) {
         tokenB,
         isTokenABase: isBid,
         currentPoolPriceTick,
-    } = useContext(TradeDataContext);
-    const {
-        globalPopup: { open: openGlobalPopup },
-    } = useContext(AppStateContext);
+    } = useContext<TradeDataContextIF>(TradeDataContext);
+
     const { basePrice, quotePrice, poolPriceDisplay } = poolData;
 
-    const side =
+    const side: 'buy'|'sell' =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
 
     const increaseTick = (): void => {
         if (limitTick !== undefined) {
             setSelectedPreset(undefined);
-            const newLimitTick: number = limitTick + gridSize;
+            const newLimitTick: number = limitTick + chainData.gridSize;
             setLimitTick(newLimitTick);
             updateURL({ update: [['limitTick', newLimitTick]] });
             setPriceInputFieldBlurred(true);
@@ -98,7 +95,7 @@ export default function LimitRate(props: propsIF) {
     const decreaseTick = (): void => {
         if (limitTick !== undefined) {
             setSelectedPreset(undefined);
-            const newLimitTick: number = limitTick - gridSize;
+            const newLimitTick: number = limitTick - chainData.gridSize;
             setLimitTick(newLimitTick);
             updateURL({ update: [['limitTick', newLimitTick]] });
             setPriceInputFieldBlurred(true);
@@ -156,15 +153,15 @@ export default function LimitRate(props: propsIF) {
         (async () => {
             if (currentPoolPriceTick !== undefined) {
                 let newTopOfBookLimit = isSellTokenBase
-                    ? pinTickToTickLower(currentPoolPriceTick, gridSize) -
-                      gridSize
-                    : pinTickToTickUpper(currentPoolPriceTick, gridSize) +
-                      gridSize;
+                    ? pinTickToTickLower(currentPoolPriceTick, chainData.gridSize) -
+                    chainData.gridSize
+                    : pinTickToTickUpper(currentPoolPriceTick, chainData.gridSize) +
+                    chainData.gridSize;
                 const willFail = await willLimitFail(newTopOfBookLimit);
                 if (willFail) {
                     newTopOfBookLimit = isSellTokenBase
-                        ? newTopOfBookLimit - gridSize
-                        : newTopOfBookLimit + gridSize;
+                        ? newTopOfBookLimit - chainData.gridSize
+                        : newTopOfBookLimit + chainData.gridSize;
                 }
                 setTopOfBookTickValue(newTopOfBookLimit);
                 if (selectedPreset === 0) {
@@ -174,15 +171,15 @@ export default function LimitRate(props: propsIF) {
                 }
             }
         })();
-    }, [currentPoolPriceTick, isSellTokenBase, gridSize, selectedPreset]);
+    }, [currentPoolPriceTick, isSellTokenBase, chainData.gridSize, selectedPreset]);
 
     const updateLimitWithButton = (percent: number) => {
         if (!currentPoolPriceTick) return;
         const lowTick = currentPoolPriceTick - percent * 100;
         const highTick = currentPoolPriceTick + percent * 100;
         const pinnedTick: number = isSellTokenBase
-            ? pinTickToTickLower(lowTick, gridSize)
-            : pinTickToTickUpper(highTick, gridSize);
+            ? pinTickToTickLower(lowTick, chainData.gridSize)
+            : pinTickToTickUpper(highTick, chainData.gridSize);
 
         switch (percent) {
             case 1:
@@ -212,8 +209,8 @@ export default function LimitRate(props: propsIF) {
 
             if (limit) {
                 const pinnedTick: number = isSellTokenBase
-                    ? pinTickLower(limit, gridSize)
-                    : pinTickUpper(limit, gridSize);
+                    ? pinTickLower(limit, chainData.gridSize)
+                    : pinTickUpper(limit, chainData.gridSize);
                 setLimitTick(pinnedTick);
 
                 const newLimitNum = parseFloat(value);

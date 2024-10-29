@@ -22,7 +22,6 @@ import {
     useSidebarSearch,
 } from '../../../App/hooks/useSidebarSearch';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { MdClose } from 'react-icons/md';
 import SidebarSearchResults from '../../../App/components/Sidebar/SidebarSearchResults/SidebarSearchResults';
@@ -37,6 +36,7 @@ import { HeaderButtons, HeaderText } from '../../../styled/Components/Chart';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import useKeyPress from '../../../App/hooks/useKeyPress';
+import { AppStateContext, AppStateContextIF } from '../../../contexts/AppStateContext';
 
 interface optionItem {
     id: number;
@@ -45,8 +45,8 @@ interface optionItem {
 }
 
 const DropdownSearch = () => {
+    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
-    const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);

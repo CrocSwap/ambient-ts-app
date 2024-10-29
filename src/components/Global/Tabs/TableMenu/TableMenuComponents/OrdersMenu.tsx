@@ -18,11 +18,11 @@ import {
     linkGenMethodsIF,
     limitParamsIF,
 } from '../../../../../utils/hooks/useLinkGen';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { AppStateContext, AppStateContextIF } from '../../../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -55,7 +55,7 @@ export default function OrdersMenu(props: propsIF) {
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 
-    const { chainData } = useContext(CrocEnvContext);
+    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
