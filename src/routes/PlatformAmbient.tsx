@@ -7,6 +7,7 @@ import Trade from '../pages/platformAmbient/Trade/Trade';
 import ChatPanel from '../components/Chat/ChatPanel';
 import InitPool from '../pages/platformAmbient/InitPool/InitPool';
 import Portfolio from '../pages/platformAmbient/Portfolio/Portfolio';
+import Vanity from '../pages/platformAmbient/Vanity/Vanity';
 import Explore from '../pages/platformAmbient/Explore/Explore';
 import Swap from '../pages/platformAmbient/Swap/Swap';
 import NotFound from '../pages/common/NotFound/NotFound';
@@ -20,7 +21,6 @@ import FAQPoints from '../pages/common/FAQ/FAQPoints';
 import PrivacyPolicy from '../pages/common/PrivacyPolicy/PrivacyPolicy';
 import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
 import TestPage from '../pages/common/TestPage/TestPage';
-import Vanity from '../pages/platformAmbient/Vanity/Vanity';
 
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
@@ -189,6 +189,7 @@ const PlatformAmbientRoutes: React.FC = () => {
             <Route path='/l/:params' element={<Vanity />} />
             <Route path='/link/:params' element={<Vanity />} />
             <Route path='faq/points/:params' element={<FAQPoints />} />
+            <Route path='/v/:params' element={<Vanity />} />
             {IS_LOCAL_ENV && <Route path='testpage' element={<TestPage />} />}
             {IS_LOCAL_ENV && (
                 <Route path='template/form' element={<ExampleForm />} />

@@ -52,7 +52,7 @@ export default function CandleLineChart(props: LineChartIF) {
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('re-rending chart');
         if (tradeTableState === 'Expanded') return;
-        if (data && data.length > 0 && scaleData) {
+        if (data && data.length > 0 && scaleData && showFutaCandles) {
             if (!showLatest) {
                 const domainLeft = scaleData?.xScale.domain()[0];
                 const domainRight = scaleData?.xScale.domain()[1];
@@ -70,7 +70,7 @@ export default function CandleLineChart(props: LineChartIF) {
                 ]);
             }
         }
-    }, [tradeTableState, lastCandleData?.time]);
+    }, [tradeTableState, lastCandleData?.time, showFutaCandles]);
 
     useEffect(() => {
         if (scaleData !== undefined && chartThemeColors && d3CanvasArea) {

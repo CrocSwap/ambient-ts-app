@@ -68,10 +68,13 @@ function TransactionHeader(props: TransactionHeaderPropsIF) {
                         alignRight
                             ? 'flex-end'
                             : alignCenter
-                            ? 'center'
-                            : 'flex-start'
+                              ? 'center'
+                              : 'flex-start'
                     }
-                    style={{ cursor: sortable ? 'pointer' : 'default' }}
+                    style={{
+                        cursor: sortable ? 'pointer' : 'default',
+                        paddingRight: alignRight ? '10px' : '0',
+                    }}
                     onClick={() => handleClick(slug as TxSortType)}
                 >
                     <Text
@@ -81,8 +84,8 @@ function TransactionHeader(props: TransactionHeaderPropsIF) {
                             alignRight
                                 ? 'right'
                                 : alignCenter
-                                ? 'center'
-                                : 'left'
+                                  ? 'center'
+                                  : 'left'
                         }
                         style={{ textTransform: 'none' }}
                     >
