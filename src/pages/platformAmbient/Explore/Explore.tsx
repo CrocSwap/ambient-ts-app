@@ -12,6 +12,7 @@ import { LuRefreshCcw, LuSearch } from 'react-icons/lu';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
 import DexTokens from '../../../components/Global/Explore/DexTokens/DexTokens';
+import { excludedTokenAddressesLowercase } from '../../../ambient-utils/constants';
 
 interface ExploreIF {
     view: 'pools' | 'tokens';
@@ -22,7 +23,7 @@ export default function Explore(props: ExploreIF) {
     // full expanded data set
     const {
         pools,
-        tokens,
+        topTokensOnchain,
         isExploreDollarizationEnabled,
         setIsExploreDollarizationEnabled,
     } = useContext(ExploreContext);
@@ -34,17 +35,17 @@ export default function Explore(props: ExploreIF) {
         isActiveNetworkMainnet,
     } = useContext(ChainDataContext);
 
-    const getLimitedPools = async (): Promise<void> => {
+    const getAllPoolData = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
-            pools.getLimited(poolList, crocEnv, chainData.chainId);
+            pools.getAll(poolList, crocEnv, chainData.chainId);
         }
     };
 
     // trigger process to fetch and format token data when page loads with
     // ... gatekeeping to prevent re-fetch if data is already loaded
     useEffect(() => {
-        if (crocEnv !== undefined && tokens.data.length === 0) {
-            tokens.update();
+        if (crocEnv !== undefined && topTokensOnchain.data.length === 0) {
+            topTokensOnchain.update();
         }
     }, [crocEnv !== undefined]);
 
@@ -54,9 +55,7 @@ export default function Explore(props: ExploreIF) {
             // clear text in DOM for time since last update
             pools.reset();
             // use metadata to get expanded pool data
-            getLimitedPools().then(() => {
-                pools.getExtra(poolList, crocEnv, chainData.chainId);
-            });
+            getAllPoolData();
         }
     };
 
@@ -103,7 +102,7 @@ export default function Explore(props: ExploreIF) {
                 getAllPools();
                 break;
             case 'tokens':
-                tokens.update();
+                topTokensOnchain.update();
                 break;
         }
     }
@@ -121,9 +120,20 @@ export default function Explore(props: ExploreIF) {
     const [searchQueryPool, setSearchQueryPool] = useState<string>('');
     const [searchQueryToken, setSearchQueryToken] = useState<string>('');
 
+    // Filter out excluded addresses
+    const filteredPoolsNoExcludedTokens = pools.all.filter(
+        (pool) =>
+            !excludedTokenAddressesLowercase.includes(
+                pool.base.address.toLowerCase(),
+            ) &&
+            !excludedTokenAddressesLowercase.includes(
+                pool.quote.address.toLowerCase(),
+            ),
+    );
+
     const filteredPools =
         searchQueryPool.length >= 2
-            ? pools.all.filter((pool: PoolIF) => {
+            ? filteredPoolsNoExcludedTokens.filter((pool: PoolIF) => {
                   const lowerCaseQuery = searchQueryPool.toLowerCase();
                   return (
                       pool.base.name.toLowerCase().includes(lowerCaseQuery) ||
@@ -132,11 +142,11 @@ export default function Explore(props: ExploreIF) {
                       pool.quote.symbol.toLowerCase().includes(lowerCaseQuery)
                   );
               })
-            : pools.all;
+            : filteredPoolsNoExcludedTokens;
 
     const filteredTokens =
         searchQueryToken.length >= 2
-            ? tokens.data.filter((token) => {
+            ? topTokensOnchain.data.filter((token) => {
                   const lowerCaseQuery = searchQueryToken.toLowerCase();
                   return (
                       token.tokenMeta?.name
@@ -147,7 +157,7 @@ export default function Explore(props: ExploreIF) {
                           .includes(lowerCaseQuery)
                   );
               })
-            : tokens.data;
+            : topTokensOnchain.data;
 
     const searchInputRef = useRef<HTMLDivElement>(null);
 
@@ -189,63 +199,65 @@ export default function Explore(props: ExploreIF) {
     );
 
     const optionsContent = (
-        <div className={`${styles.options_content} ${view === 'tokens' ? styles.pools_options_content: ''}`}>
-        {inputContainer}
-        {view === 'pools' && (
+        <div
+            className={`${styles.options_content} ${view === 'tokens' ? styles.pools_options_content : ''}`}
+        >
+            {inputContainer}
+            {view === 'pools' && (
+                <DefaultTooltip
+                    interactive
+                    title={
+                        isExploreDollarizationEnabled
+                            ? 'Switch to prices in native currency'
+                            : 'Switch to prices in USD'
+                    }
+                    enterDelay={500}
+                >
+                    <div className={styles.refresh_container}>
+                        <button
+                            className={styles.refresh_button}
+                            onClick={() =>
+                                setIsExploreDollarizationEnabled(
+                                    (prev) => !prev,
+                                )
+                            }
+                        >
+                            {
+                                <AiOutlineDollarCircle
+                                    size={20}
+                                    id='trade_dollarized_prices_button'
+                                    aria-label='Toggle dollarized prices button'
+                                    style={{
+                                        color: isExploreDollarizationEnabled
+                                            ? 'var(--accent1)'
+                                            : undefined,
+                                    }}
+                                />
+                            }
+                        </button>
+                    </div>
+                </DefaultTooltip>
+            )}
             <DefaultTooltip
                 interactive
                 title={
-                    isExploreDollarizationEnabled
-                        ? 'Switch to prices in native currency'
-                        : 'Switch to prices in USD'
+                    view === 'pools'
+                        ? 'Refresh Top Pools'
+                        : 'Refresh Active Tokens'
                 }
                 enterDelay={500}
             >
                 <div className={styles.refresh_container}>
                     <button
                         className={styles.refresh_button}
-                        onClick={() =>
-                            setIsExploreDollarizationEnabled(
-                                (prev) => !prev,
-                            )
-                        }
+                        onClick={() => handleRefresh()}
                     >
-                        {
-                            <AiOutlineDollarCircle
-                                size={20}
-                                id='trade_dollarized_prices_button'
-                                aria-label='Toggle dollarized prices button'
-                                style={{
-                                    color: isExploreDollarizationEnabled
-                                        ? 'var(--accent1)'
-                                        : undefined,
-                                }}
-                            />
-                        }
+                        <LuRefreshCcw size={20} />
                     </button>
                 </div>
             </DefaultTooltip>
-        )}
-        <DefaultTooltip
-            interactive
-            title={
-                view === 'pools'
-                    ? 'Refresh Top Pools'
-                    : 'Refresh Active Tokens'
-            }
-            enterDelay={500}
-        >
-            <div className={styles.refresh_container}>
-                <button
-                    className={styles.refresh_button}
-                    onClick={() => handleRefresh()}
-                >
-                    <LuRefreshCcw size={20} />
-                </button>
-            </div>
-        </DefaultTooltip>
-    </div>
-    )
+        </div>
+    );
 
     function handleToggle() {
         changeView(view);
@@ -259,9 +271,8 @@ export default function Explore(props: ExploreIF) {
             <h2 className={styles.title_text}>{titleTextForDOM}</h2>
             </div> */}
             <div className={styles.options_wrapper}>
-           
-            <h2 className={styles.title_text}>{titleTextForDOM}</h2>
-           {optionsContent}
+                <h2 className={styles.title_text}>{titleTextForDOM}</h2>
+                {optionsContent}
             </div>
 
             {view === 'pools' && (

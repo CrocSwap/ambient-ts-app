@@ -272,7 +272,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                             }}
                             size={{
                                 width: '100%',
-                                height: chartHeights.current,
+                                height: isFuta ? '100%' : chartHeights.current,
                             }}
                             minHeight={4}
                             onResize={(

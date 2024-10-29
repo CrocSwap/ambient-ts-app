@@ -9,7 +9,7 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 export const BLAST_RPC_URL =
     import.meta.env.VITE_BLAST_RPC_URL !== undefined
         ? import.meta.env.VITE_BLAST_RPC_URL
-        : 'https://rpc.blast.io/';
+        : 'https://rpc.blast.io';
 
 const chain = {
     chainId: 81457,
@@ -29,8 +29,8 @@ export const blast: NetworkIF = {
     defaultPair: [blastETH, blastUSDB],
     topPools: [
         new TopPool(blastETH, blastUSDB, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastETH, blastBLAST, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastEzETH, blastETH, lookupChain('0x13e31').poolIndex),
+        new TopPool(blastBLAST, blastETH, lookupChain('0x13e31').poolIndex),
+        new TopPool(blastEzETH, blastUSDB, lookupChain('0x13e31').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
