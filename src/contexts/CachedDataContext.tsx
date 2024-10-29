@@ -32,6 +32,8 @@ import {
     memoizeGetUserAuctionsList,
     memoizeGetAuctionStatus,
     AuctionStatusQueryFn,
+    AllPoolStatsFn,
+    memoizeAllPoolStats,
 } from '../ambient-utils/dataLayer';
 import { NFTQueryFn, memoizeFetchNFT } from '../ambient-utils/api/fetchNft';
 
@@ -40,6 +42,7 @@ export interface CachedDataIF {
     cachedFetchDexBalances: DexBalancesQueryFn;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedPoolStatsFetch: PoolStatsFn;
+    cachedAllPoolStatsFetch: AllPoolStatsFn;
     cachedGet24hChange: Change24Fn;
     cachedGetLiquidityFee: LiquidityFeeFn;
     cachedGetGlobalAuctionsList: GlobalAuctionListQueryFn;
@@ -68,6 +71,7 @@ export const CachedDataContextProvider = (props: {
         cachedFetchDexBalances: memoizeFetchDexBalances(),
         cachedFetchTokenPrice: memoizeTokenPrice(),
         cachedPoolStatsFetch: memoizePoolStats(),
+        cachedAllPoolStatsFetch: memoizeAllPoolStats(),
         cachedGet24hChange: memoizeGet24hChange(),
         cachedGetLiquidityFee: memoizeGetLiquidityFee(),
         cachedGetGlobalAuctionsList: memoizeGetGlobalAuctionsList(),

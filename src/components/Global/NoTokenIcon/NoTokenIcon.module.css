@@ -16,7 +16,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: default;
+    cursor: pointer;
 }
 
 .sub_container {

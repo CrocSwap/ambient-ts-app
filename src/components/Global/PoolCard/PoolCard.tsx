@@ -27,6 +27,7 @@ export default function PoolCard(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const [isHovered, setIsHovered] = useState(false);

@@ -54,6 +54,10 @@
 }
 .settings_apply_button_container {
     width: 100%;
+
+    gap: 15px;
+    padding: 10px;
+    
     display: flex;
     justify-content: center;
     align-items: center;

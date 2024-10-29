@@ -18,7 +18,7 @@ import {
     supportedNetworks,
 } from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
-import { TokenIF } from '../ambient-utils/types';
+import { SinglePoolDataIF, TokenIF } from '../ambient-utils/types';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
@@ -59,6 +59,7 @@ interface ChainDataContextIF {
     isActiveNetworkMainnet: boolean;
     isActiveNetworkL2: boolean;
     nativeTokenUsdPrice: number | undefined;
+    allPoolStats: SinglePoolDataIF[] | undefined;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -86,6 +87,7 @@ export const ChainDataContextProvider = (props: {
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedFetchNFT,
+        cachedAllPoolStatsFetch,
     } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
 
@@ -130,6 +132,28 @@ export const ChainDataContextProvider = (props: {
 
     const BLOCK_NUM_POLL_MS = isUserIdle ? 30000 : 5000; // poll for new block every 30 seconds when user is idle, every 5 seconds when user is active
 
+    const fetchGasPrice = async () => {
+        const newGasPrice =
+            await supportedNetworks[chainData.chainId].getGasPriceInGwei(
+                provider,
+            );
+        if (gasPriceInGwei !== newGasPrice) {
+            setGasPriceinGwei(newGasPrice);
+        }
+    };
+
+    const gasPricePollingCacheTime = Math.floor(
+        Date.now() / (isUserIdle ? 60000 : 10000),
+    ); // poll for new gas price every 60 seconds when user is idle, every 10 seconds when user is active
+
+    const poolStatsPollingCacheTime = Math.floor(
+        Date.now() / (isUserIdle ? 120000 : 30000),
+    ); // poll for new pool stats every 120 seconds when user is idle, every 30 seconds when user is active
+
+    useEffect(() => {
+        fetchGasPrice();
+    }, [gasPricePollingCacheTime]);
+
     async function pollBlockNum(): Promise<void> {
         const nodeUrl = ['0x1'].includes(chainData.chainId)
             ? MAINNET_RPC_URL
@@ -140,21 +164,8 @@ export const ChainDataContextProvider = (props: {
                 : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
                   ? SCROLL_RPC_URL
                   : blockPollingUrl;
-        // const nodeUrl =
-        //     chainData.nodeUrl.toLowerCase().includes('infura') &&
-        //     import.meta.env.VITE_INFURA_KEY
-        //         ? chainData.nodeUrl.slice(0, -32) +
-        //           import.meta.env.VITE_INFURA_KEY
-        //         : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-        //           ? BLAST_RPC_URL
-        //           : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-        //             ? SCROLL_RPC_URL
-        //             : blockPollingUrl;
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
-            // const lastBlockNumber = await fetchBlockNumber(
-            //     'http://scroll-sepolia-rpc.01no.de:8545',
-            // );
             if (lastBlockNumber > 0) {
                 setLastBlockNumber(lastBlockNumber);
                 setRpcNodeStatus('active');
@@ -182,6 +193,31 @@ export const ChainDataContextProvider = (props: {
         // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(interval);
     }, [chainData.chainId, BLOCK_NUM_POLL_MS]);
+
+    const [allPoolStats, setAllPoolStats] = useState<
+        SinglePoolDataIF[] | undefined
+    >();
+
+    async function updateAllPoolStats(): Promise<void> {
+        try {
+            const allPoolStats = await cachedAllPoolStatsFetch(
+                chainData.chainId,
+                activeNetwork.graphCacheUrl,
+                poolStatsPollingCacheTime,
+                true,
+            );
+
+            if (allPoolStats) {
+                setAllPoolStats(allPoolStats);
+            }
+        } catch (error) {
+            console.log({ error });
+        }
+    }
+
+    useEffect(() => {
+        updateAllPoolStats();
+    }, [chainData.chainId, poolStatsPollingCacheTime]);
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
@@ -224,24 +260,6 @@ export const ChainDataContextProvider = (props: {
             }
         }
     }, [lastNewHeadMessage]);
-
-    const fetchGasPrice = async () => {
-        const newGasPrice =
-            await supportedNetworks[chainData.chainId].getGasPriceInGwei(
-                provider,
-            );
-        if (gasPriceInGwei !== newGasPrice) {
-            setGasPriceinGwei(newGasPrice);
-        }
-    };
-
-    const gasPricePollingCacheTime = Math.floor(
-        Date.now() / (isUserIdle ? 60000 : 10000),
-    ); // poll for new gas price every 60 seconds when user is idle, every 10 seconds when user is active
-
-    useEffect(() => {
-        fetchGasPrice();
-    }, [gasPricePollingCacheTime]);
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
@@ -574,6 +592,7 @@ export const ChainDataContextProvider = (props: {
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
         isActiveNetworkL2,
+        allPoolStats,
         nativeTokenUsdPrice,
     };
 
