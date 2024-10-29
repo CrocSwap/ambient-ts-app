@@ -141,6 +141,7 @@ export const TradeDataContextProvider = (props: {
         React.useState<boolean>(false);
 
     const { baseToken, quoteToken, isTokenABase } = useMemo(() => {
+        console.log('>>>> TradeDataContext > useMemo > tokenA, tokenB', tokenA, tokenB)
         const [baseTokenAddress] = sortBaseQuoteTokens(
             tokenA.address,
             tokenB.address,
@@ -160,7 +161,7 @@ export const TradeDataContextProvider = (props: {
                 isTokenABase: false,
             };
         }
-    }, [tokenA, tokenB]);
+    }, [tokenA, tokenB, activeNetwork]);
 
     const toggleDidUserFlipDenom = () => {
         setDidUserFlipDenom(!didUserFlipDenom);
