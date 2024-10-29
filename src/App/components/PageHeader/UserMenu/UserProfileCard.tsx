@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom';
 import { getChainExplorer } from '../../../../ambient-utils/dataLayer';
 import { getAvatarComponent } from '../../../../components/Chat/ChatRenderUtils';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import styles from './UserProfileCard.module.css'
+import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
 
-interface LevelDropdownPropsIF {
+interface propsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
@@ -18,15 +18,13 @@ interface LevelDropdownPropsIF {
     isMobileDropdown?: boolean;
 }
 
-export default function UserProfileCard(props: LevelDropdownPropsIF) {
+export default function UserProfileCard(props: propsIF) {
     const { ensName, accountAddress, handleCopyAddress, accountAddressFull, isMobileDropdown } =
         props;
-    const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
     const { userAddress, resolvedAddressFromContext, userAvatarData } =
         useContext(UserDataContext);
-    const blockExplorer = getChainExplorer(chainId);
+    const blockExplorer = getChainExplorer(chainData.chainId);
     const link = resolvedAddressFromContext
         ? `/${resolvedAddressFromContext}`
         : `/${userAddress}`;
@@ -38,11 +36,9 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
                     userAvatarData &&
                     getAvatarComponent(userAddress, userAvatarData, 50)}
             </Link>
-
             <FlexContainer alignItems='center' flexDirection='column'>
                 <div className={styles.nameDisplay}>
                     <h2>{ensName !== '' ? ensName : accountAddress}</h2>
-
                     <IconWithTooltip
                         title={`${'View wallet address on block explorer'}`}
                         placement='right'
@@ -56,7 +52,6 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
                             <FiExternalLink />
                         </a>
                     </IconWithTooltip>
-
                     <IconWithTooltip
                         title={`${'Copy wallet address to clipboard'}`}
                         placement='right'
@@ -71,7 +66,7 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
                 </div>
                 <div className={styles.walletDisplay}>
                     <p>Connected Wallet:</p>
-                    <p>{props.accountAddress}</p>
+                    <p>{accountAddress}</p>
                 </div>
             </FlexContainer>
         </div>

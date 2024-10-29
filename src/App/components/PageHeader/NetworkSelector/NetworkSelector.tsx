@@ -21,7 +21,7 @@ import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
 import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { BrandContext } from '../../../../contexts/BrandContext';
+import { BrandContext, BrandContextIF } from '../../../../contexts/BrandContext';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -30,6 +30,7 @@ interface propsIF {
     customBR?: string;
 }
 import { motion } from 'framer-motion';
+import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
 
 interface NetworkIF {
     id: string;
@@ -48,10 +49,10 @@ export default function NetworkSelector(props: propsIF) {
         chooseNetwork,
         chainData: { chainId },
         chainData,
-    } = useContext(CrocEnvContext);
-    const { networks, platformName, includeCanto } = useContext(BrandContext);
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { networks, platformName, includeCanto } = useContext<BrandContextIF>(BrandContext);
     const { switchNetwork } = useSwitchNetwork();
-    const smallScreen = useMediaQuery('(max-width: 600px)');
+    const smallScreen: boolean = useMediaQuery('(max-width: 600px)');
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const [searchParams, setSearchParams] = useSearchParams();

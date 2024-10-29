@@ -3,7 +3,7 @@ import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenIF } from '../../../../../ambient-utils/types';
-import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
+import { CachedDataContext, CachedDataContextIF } from '../../../../../contexts/CachedDataContext';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
 import styles from './WalletDropdown.module.css'
 
@@ -12,12 +12,13 @@ import {
     ZERO_ADDRESS,
     supportedNetworks,
 } from '../../../../../ambient-utils/constants';
-import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
+import { TokenBalanceContext, TokenBalanceContextIF } from '../../../../../contexts/TokenBalanceContext';
 import UserProfileCard from '../UserProfileCard';
-import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import { ChainDataContext, ChainDataContextIF } from '../../../../../contexts/ChainDataContext';
 import { Link } from 'react-router-dom';
+import { AppStateContext, AppStateContextIF } from '../../../../../contexts/AppStateContext';
 
-interface WalletDropdownPropsIF {
+interface propsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
@@ -34,7 +35,7 @@ interface TokenAmountDisplayPropsIF {
     value?: string;
 }
 
-export default function WalletDropdown(props: WalletDropdownPropsIF) {
+export default function WalletDropdown(props: propsIF) {
     const {
         ensName,
         accountAddress,
@@ -43,14 +44,12 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         clickLogout,
         hideProfileCard
     } = props;
-    const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
     const { isActiveNetworkBlast, nativeTokenUsdPrice } =
-        useContext(ChainDataContext);
+        useContext<ChainDataContextIF>(ChainDataContext);
 
-    const { tokenBalances } = useContext(TokenBalanceContext);
-    const defaultPair = supportedNetworks[chainId].defaultPair;
+    const { tokenBalances } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
+    const defaultPair = supportedNetworks[chainData.chainId].defaultPair;
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
@@ -61,7 +60,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 defaultPair[1].address.toLowerCase(),
         );
     }, [tokenBalances]);
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { cachedFetchTokenPrice } = useContext<CachedDataContextIF>(CachedDataContext);
 
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF): JSX.Element {
         const { logo, symbol, amount, value } = props;
@@ -121,7 +120,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
         setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
         Promise.resolve(
-            cachedFetchTokenPrice(usdcData.address, chainId, crocEnv),
+            cachedFetchTokenPrice(usdcData.address, chainData.chainId, crocEnv),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
@@ -138,7 +137,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 setUsdcUsdValueForDom(undefined);
             }
         });
-    }, [crocEnv, chainId, JSON.stringify(usdcData)]);
+    }, [crocEnv, chainData.chainId, JSON.stringify(usdcData)]);
 
     const nativeCombinedBalance =
         nativeData?.walletBalance !== undefined
