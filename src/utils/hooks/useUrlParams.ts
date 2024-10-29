@@ -113,6 +113,7 @@ export const useUrlParams = (
     // redirect user to default params if params received are malformed
     useEffect(() => {
         console.log('>>>> useUrlParams > urlParamMap', urlParamMap)
+        console.log('>>>> useUrlParams > urlParamMap >> requiredParams', requiredParams)
         // array of keys deconstructed from params string
         const paramKeys: validParamsType[] = [...urlParamMap.keys()];
         // logic to redirect a user to current URL with default params
@@ -306,6 +307,7 @@ export const useUrlParams = (
             console.log('>>>> useUrlParams > processTokenAddr > chainToUse', chainToUse)
             const tokenA = urlParamMap.get('tokenA');
             const tokenB = urlParamMap.get('tokenB');
+            console.log('>>>> useUrlParams > processTokenAddr > tokenA, tokenB', tokenA, tokenB)
             if (tokenA && tokenB) {
                 processTokenAddr(tokenA, tokenB, chainToUse);
             }
