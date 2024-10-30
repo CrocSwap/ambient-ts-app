@@ -177,7 +177,7 @@ const PlatformAmbientRoutes: React.FC = () => {
             {/* refactor EXPLORE as a nested route */}
             <Route
                 path='explore'
-                element={<Navigate to={defaultUrlParams.pool} replace />}
+                element={<Navigate replace to='/explore/pools' />}
             />
             <Route path='explore/pools' element={<Explore view='pools' />} />
             <Route path='explore/tokens' element={<Explore view='tokens' />} />
