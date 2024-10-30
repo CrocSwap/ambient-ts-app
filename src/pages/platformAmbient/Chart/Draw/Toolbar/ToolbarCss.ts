@@ -48,7 +48,7 @@ const ToolbarContainer = styled.div<{
     grid-column: 2;
     grid-row: 3;
     transition: all 600ms ease-in-out;
-    z-index: 2;
+    z-index: 6;
     scrollbar-color: auto;
 `;
 
