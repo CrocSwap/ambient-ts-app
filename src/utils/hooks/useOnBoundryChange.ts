@@ -12,8 +12,8 @@ const useOnBoundryChange = (
     checkFrequency: number,
     handler: (newBoundries: ElementBoundry) => void,
 ) => {
-    const [boundryChecker, setBoundryChecker] = useState<NodeJS.Timer>();
-    const checkerRef = useRef<NodeJS.Timer>();
+    const [boundryChecker, setBoundryChecker] = useState<NodeJS.Timeout>();
+    const checkerRef = useRef<NodeJS.Timeout>();
     checkerRef.current = boundryChecker;
 
     const [elementWidth, setElementWidth] = useState<number>();
