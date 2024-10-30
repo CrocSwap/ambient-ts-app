@@ -105,7 +105,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     // get expanded pool metadata
     useEffect(() => {
         if (crocEnv !== undefined && poolList.length > 0) {
-            console.log('getting all pools');
             getAllPools();
         }
     }, [crocEnv, poolList.length]);
