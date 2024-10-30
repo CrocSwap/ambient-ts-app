@@ -348,7 +348,7 @@ export default function Chart(props: propsIF) {
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
             ? 1 / poolPriceWithoutDenom
-            : poolPriceWithoutDenom ?? 0
+            : (poolPriceWithoutDenom ?? 0)
         : 0;
 
     const d3Container = useRef<HTMLDivElement | null>(null);
@@ -455,6 +455,9 @@ export default function Chart(props: propsIF) {
         useState<boolean>(false);
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     const drawSettings = useDrawSettings(chartThemeColors);
     const getDollarPrice = useDollarPrice();
@@ -1441,7 +1444,26 @@ export default function Chart(props: propsIF) {
                                 startTouch.clientY ===
                                     event.sourceEvent.changedTouches[0].clientY
                             ) {
-                                openMobileSettingsModal();
+                                if (tabletView) {
+                                    setContextmenu(true);
+
+                                    const screenHeight = window.innerHeight;
+
+                                    const diff =
+                                        screenHeight - startTouch.clientY;
+
+                                    setContextMenuPlacement(() => {
+                                        return {
+                                            top: startTouch.clientY,
+                                            left: startTouch.clientX,
+                                            isReversed: diff < 350,
+                                        };
+                                    });
+
+                                    event.preventDefault();
+                                } else {
+                                    openMobileSettingsModal();
+                                }
                             }
 
                             if (

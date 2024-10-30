@@ -41,14 +41,14 @@ const ToolbarContainer = styled.div<{
 
     background: ${({ backgroundColor }) => backgroundColor};
     height: ${({ height }) => height + 'px'};
-    left:0;
+    left: 0;
     display: flex;
     position: absolute;
 
     grid-column: 2;
     grid-row: 3;
     transition: all 600ms ease-in-out;
-    z-index: 20;
+    z-index: 6;
     scrollbar-color: auto;
 `;
 

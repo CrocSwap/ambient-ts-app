@@ -38,6 +38,7 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext, ReceiptContextIF } from '../../../contexts/ReceiptContext';
 import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 import styles from './PageHeader.module.css';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 
 const PageHeader = function () {
     const {
@@ -69,6 +70,7 @@ const PageHeader = function () {
     const { userAddress, isUserConnected, disconnectUser, ensName } =
         useContext<UserDataContextIF>(UserDataContext);
     const { resetReceiptData } = useContext<ReceiptContextIF>(ReceiptContext);
+    const { isBottomSheetOpen } = useBottomSheet();
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -410,7 +412,7 @@ const PageHeader = function () {
             <header
                 className={styles.primaryHeader}
                 data-testid={'page-header'}
-                style={{ position: 'sticky', top: 0, zIndex: 10 }}
+                style={{ position: 'sticky', top: 0, zIndex: isBottomSheetOpen ? 0.1 : 10 }}
             >
                 <div
                     onClick={(event: React.MouseEvent) => {

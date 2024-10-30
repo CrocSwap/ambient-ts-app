@@ -111,8 +111,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isResetRequest: false,
     });
 
-    const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timer>();
-    const offlineFetcherRef = useRef<NodeJS.Timer>();
+    const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timeout>();
+    const offlineFetcherRef = useRef<NodeJS.Timeout>();
     offlineFetcherRef.current = offlineFetcher;
 
     useEffect(() => {
