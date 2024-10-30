@@ -104,12 +104,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     // get expanded pool metadata
     useEffect(() => {
-        // wait 5 seconds to get data
-        setTimeout(() => {
-            if (crocEnv !== undefined && poolList.length > 0) {
-                getAllPools();
-            }
-        }, 5000);
+        if (crocEnv !== undefined && poolList.length > 0) {
+            getAllPools();
+        }
     }, [crocEnv, poolList.length]);
 
     // fn to get data on a single pool
