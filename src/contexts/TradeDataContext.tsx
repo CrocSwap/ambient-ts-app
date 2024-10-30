@@ -14,9 +14,8 @@ import {
     isStablePair,
     translateTokenSymbol,
 } from '../ambient-utils/dataLayer';
-// import { TokenBalanceContext } from './TokenBalanceContext';
-import { TokenContext } from './TokenContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
+import { TokenContext } from './TokenContext';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -77,8 +76,8 @@ export const TradeDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const { chainData, activeNetwork, chooseNetwork } =
-    useContext(TokenBalanceContext);
-    
+        useContext(TokenBalanceContext);
+
     const { tokens } = useContext(TokenContext);
 
     const savedTokenASymbol = localStorage.getItem('tokenA');
@@ -132,7 +131,7 @@ export const TradeDataContextProvider = (props: {
               : dfltTokenB,
     );
 
-    
+
     const [
         areDefaultTokensUpdatedForChain,
         setAreDefaultTokensUpdatedForChain,
@@ -162,7 +161,7 @@ export const TradeDataContextProvider = (props: {
                 isTokenABase: false,
             };
         }
-    }, [tokenA, tokenB, activeNetwork]);
+    }, [tokenA, tokenB]);
 
     const toggleDidUserFlipDenom = () => {
         setDidUserFlipDenom(!didUserFlipDenom);

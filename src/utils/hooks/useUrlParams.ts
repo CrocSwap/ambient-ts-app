@@ -151,12 +151,7 @@ export const useUrlParams = (
         }
 
         // redirect user if any required URL params are missing
-        if(areParamsMissing){
-            console.log('>>> params missing');
-            redirectUser();
-        }
-        // areParamsMissing && redirectUser();
-        
+        areParamsMissing && redirectUser();
         // array of parameter tuples from URL
         const paramTuples: Array<[validParamsType, string]> = [
             ...urlParamMap.entries(),
@@ -164,16 +159,14 @@ export const useUrlParams = (
         // run a validation fn against each param tuple
         paramTuples.forEach((pT: [validParamsType, string]) =>
             validateParam(pT),
-    );
-    // fn to validate each parameter tuple, will redirect user to the default
-    // ... parameterization on current route if validation fails
-    function validateParam(p: [validParamsType, string]): void {
-        const [key, val] = p;
-        if (key === 'chain') {
-                console.log('>>> validateParam > key === chain');
+        );
+        // fn to validate each parameter tuple, will redirect user to the default
+        // ... parameterization on current route if validation fails
+        function validateParam(p: [validParamsType, string]): void {
+            const [key, val] = p;
+            if (key === 'chain') {
                 validateChain(val) || redirectUser();
             } else if (key === 'tokenA' || key === 'tokenB') {
-                console.log('>>> validateParam > key === tokenA');
                 validateAddress(val) || redirectUser();
             }
         }

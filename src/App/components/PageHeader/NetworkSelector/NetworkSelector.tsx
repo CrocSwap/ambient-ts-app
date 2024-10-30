@@ -71,16 +71,16 @@ export default function NetworkSelector(props: propsIF) {
     async function handleClick(chn: ChainSpec): Promise<void> {
         if (isConnected) {
             await switchNetwork(parseInt(chn.chainId));
-                if (chainParam || networkParam) {
-                    // navigate to index page only if chain/network search param present
-                    linkGenIndex.navigate();
-                }
-            } else {
-                if (chainParam || networkParam) {
-                    // navigate to index page only if chain/network search param present
-                    linkGenIndex.navigate();
+            if (chainParam || networkParam) {
+                // navigate to index page only if chain/network search param present
+                linkGenIndex.navigate();
             }
-         chooseNetwork(supportedNetworks[chn.chainId]);
+        } else {
+            if (chainParam || networkParam) {
+                // navigate to index page only if chain/network search param present
+                linkGenIndex.navigate();
+        }
+            chooseNetwork(supportedNetworks[chn.chainId]);
         }
     }
 
@@ -116,7 +116,6 @@ export default function NetworkSelector(props: propsIF) {
                     }
                 }
             } else {
-                
                 setSearchParams('');
             }
         }
