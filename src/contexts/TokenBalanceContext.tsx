@@ -106,8 +106,6 @@ export const TokenBalanceContextProvider = (props: {
         });
     };
 
-    console.log('>>>> TokenBalanceContext > chainData', chainData)
-
     const tokenBalanceContext = {
         tokenBalances,
         resetTokenBalances,

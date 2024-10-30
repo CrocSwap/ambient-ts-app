@@ -50,7 +50,6 @@ export const useAppChain = (): {
         if (typeof output === 'string' && !validateChainId(output)) {
             output = null;
         }
-        console.log('>>>> useAppChain > getChainFromURL > output', output)
         return output;
     }
 
@@ -213,10 +212,8 @@ export const useAppChain = (): {
     // fn to allow user to manually switch chains in the app because everything
     // ... else in this file responds to changes in the browser environment
     function chooseNetwork(network: NetworkIF): void {
-        console.log('>>> choose network', network);
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
         const { pathname } = window.location;
-        console.log('>>> choose network > pathname', pathname);
 
         setActiveNetwork(network);
         const isPathENS = pathname.slice(1)?.includes('.eth');
@@ -228,27 +225,22 @@ export const useAppChain = (): {
             linkGenCurrent.currentPage === 'initpool' ||
             linkGenCurrent.currentPage === 'reposition'
         ) {
-            console.log('>>> choose network > initpool or reposition');
                 linkGenPool.navigate(`chain=${network.chainId}`);
         } else if (linkGenCurrent.currentPage === 'swap') {
                 linkGenSwap.navigate(`chain=${network.chainId}`);
         } else if (pathname.includes('chain')) {
-            console.log('>>> choose network > chain');
-                console.log('>>> choose network > chain > navigate');   
                 linkGenCurrent.navigate(`chain=${network.chainId}`);
         } else if (
             isPathUserAddress ||
             isPathUserXpOrLeaderboard ||
             isPathOnExplore
         ) {
-            console.log('>>> choose network > user address or xp or leaderboard or explore');
                 window.location.reload();
         } else {
-            console.log('>>> choose network > default');
                 linkGenCurrent.navigate();
         }
         // setTimeout(() => {
-        //     window.location.reload();
+            window.location.reload();
         // }, 300);
     }
 
@@ -260,9 +252,6 @@ export const useAppChain = (): {
         // return output varibale (chain data)
         return output;
     }, [activeNetwork.chainId]);
-
-    console.log('>>>> useAppChain > chainData', chainData)
-    console.log('>>>> useAppChain > activeNetwork', activeNetwork)
 
     return {
         chainData,

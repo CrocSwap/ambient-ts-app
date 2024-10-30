@@ -59,7 +59,6 @@ export const useUrlParams = (
 
     // generate an array of required params in the URL based on route
     const requiredParams = useMemo<validParamsType[]>(() => {
-        console.log('>>>> useUrlParams > requiredParams > linkGenCurrent.currentPage', linkGenCurrent.currentPage)
         // name of page currently in the DOM
         const pageName: pageNames = linkGenCurrent.currentPage;
         // global params for all parameterized pathways
@@ -87,7 +86,6 @@ export const useUrlParams = (
 
     // map of all params in the current URL string
     const urlParamMap = useMemo<Map<validParamsType, string>>(() => {
-        console.log('>>>> useUrlParams > params', params)
         // get URL parameters or empty string if undefined
         const fixedParams = params ?? '';
         // output variable
@@ -112,8 +110,6 @@ export const useUrlParams = (
 
     // redirect user to default params if params received are malformed
     useEffect(() => {
-        console.log('>>>> useUrlParams > urlParamMap', urlParamMap)
-        console.log('>>>> useUrlParams > urlParamMap >> requiredParams', requiredParams)
         // array of keys deconstructed from params string
         const paramKeys: validParamsType[] = [...urlParamMap.keys()];
         // logic to redirect a user to current URL with default params
@@ -145,7 +141,6 @@ export const useUrlParams = (
                 ),
             )
                 .then((result) => {
-                    console.log('>>>> gonna useUrlParams > urlParamMap > redirectUser > result', result)
                     linkGenSwap.redirect({
                         chain: chainToUse,
                         tokenA: result || ZERO_ADDRESS,
@@ -156,7 +151,12 @@ export const useUrlParams = (
         }
 
         // redirect user if any required URL params are missing
-        areParamsMissing && redirectUser();
+        if(areParamsMissing){
+            console.log('>>> params missing');
+            redirectUser();
+        }
+        // areParamsMissing && redirectUser();
+        
         // array of parameter tuples from URL
         const paramTuples: Array<[validParamsType, string]> = [
             ...urlParamMap.entries(),
@@ -164,14 +164,16 @@ export const useUrlParams = (
         // run a validation fn against each param tuple
         paramTuples.forEach((pT: [validParamsType, string]) =>
             validateParam(pT),
-        );
-        // fn to validate each parameter tuple, will redirect user to the default
-        // ... parameterization on current route if validation fails
-        function validateParam(p: [validParamsType, string]): void {
-            const [key, val] = p;
-            if (key === 'chain') {
+    );
+    // fn to validate each parameter tuple, will redirect user to the default
+    // ... parameterization on current route if validation fails
+    function validateParam(p: [validParamsType, string]): void {
+        const [key, val] = p;
+        if (key === 'chain') {
+                console.log('>>> validateParam > key === chain');
                 validateChain(val) || redirectUser();
             } else if (key === 'tokenA' || key === 'tokenB') {
+                console.log('>>> validateParam > key === tokenA');
                 validateAddress(val) || redirectUser();
             }
         }
@@ -179,7 +181,6 @@ export const useUrlParams = (
 
     // fn to update the current URL without a navigation event
     function updateURL(changes: updatesIF): void {
-        console.log('>>>> useUrlParams > updateURL > changes', changes)
         // copy of the current URL param map
         const workingMap: Map<validParamsType, string> = urlParamMap;
         // process any updates to existing k-v pairs (also adds new ones)
@@ -226,7 +227,6 @@ export const useUrlParams = (
         addr: string,
         chainId: string,
     ): Promise<TokenIF | undefined> {
-        console.log('>>>> useUrlParams > getTokenByAddress > addr, chainId', addr, chainId)
         // Don't run until the token map has loaded. Otherwise, we may spuriously query a token
         // on-chain that has mapped data
         if (tokensOnChain.length === 0) {
@@ -262,7 +262,6 @@ export const useUrlParams = (
         addrB: string,
         chainToUse: string,
     ): Promise<[TokenIF, TokenIF] | undefined> {
-        console.log('>>>> useUrlParams > resolveTokenData > addrA, addrB, chainToUse', addrA, addrB, chainToUse)
         const [tokenA, tokenB] = await Promise.all([
             getTokenByAddress(addrA, chainToUse),
             getTokenByAddress(addrB, chainToUse),
@@ -280,9 +279,6 @@ export const useUrlParams = (
     }
 
     useEffect((): (() => void) => {
-        console.log('>>>> gonna set tokenB', urlParamMap)
-        console.log('>>>> gonna set tokenB', window.location.pathname)
-        console.log('................................')
         let flag = true;
 
         const processTokenAddr = async (
@@ -295,7 +291,6 @@ export const useUrlParams = (
                 tokenAddrB,
                 chainToUse,
             );
-            console.log('>>>> useUrlParams > processTokenAddr > tokenPair', tokenPair)
             // prevent race condition involving lookup and fetching contract
             if (!flag) return;
             // If both tokens are valid and have data for this chain, use those
@@ -308,10 +303,8 @@ export const useUrlParams = (
 
         try {
             const chainToUse = urlParamMap.get('chain') || dfltChainId;
-            console.log('>>>> useUrlParams > processTokenAddr > chainToUse', chainToUse)
             const tokenA = urlParamMap.get('tokenA');
             const tokenB = urlParamMap.get('tokenB');
-            console.log('>>>> useUrlParams > processTokenAddr > tokenA, tokenB', tokenA, tokenB)
             if (tokenA && tokenB) {
                 processTokenAddr(tokenA, tokenB, chainToUse);
             }

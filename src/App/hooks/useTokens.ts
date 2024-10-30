@@ -68,7 +68,6 @@ export const useTokens = (
 ): tokenMethodsIF => {
     // Token universe
     const [tokenLists, setTokenLists] = useState<TokenListIF[]>(INIT_LIST);
-    console.log('>>>> useTokens > chainID', chainId)
 
     // User acknowledge tokens
     const [ackTokens, setAckTokens] = useState<TokenIF[]>(INIT_ACK);

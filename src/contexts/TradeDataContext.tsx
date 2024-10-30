@@ -133,9 +133,6 @@ export const TradeDataContextProvider = (props: {
     );
 
     
-    console.log('>>>> TradeDataContext >  dfltTokenB',  dfltTokenB.address)
-    console.log('>>>> TradeDataContext >  tokenB',  tokenB.address)
-
     const [
         areDefaultTokensUpdatedForChain,
         setAreDefaultTokensUpdatedForChain,
@@ -146,7 +143,6 @@ export const TradeDataContextProvider = (props: {
         React.useState<boolean>(false);
 
     const { baseToken, quoteToken, isTokenABase } = useMemo(() => {
-        console.log('>>>> TradeDataContext > useMemo > tokenA, tokenB', tokenA, tokenB)
         const [baseTokenAddress] = sortBaseQuoteTokens(
             tokenA.address,
             tokenB.address,

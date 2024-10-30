@@ -23,7 +23,7 @@ import TestPage from '../pages/common/TestPage/TestPage';
 
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
-    console.log('>>>> gonna defaultUrlParams', defaultUrlParams)
+    console.log('???? gonna defaultUrlParams', defaultUrlParams)
 
 
     return (
@@ -36,33 +36,35 @@ const PlatformAmbientRoutes: React.FC = () => {
                     element={<Navigate replace to='/trade/market'/>}
                 />
                 <Route
-                    path='market'
-                    element={<Navigate replace to={defaultUrlParams.market}  />}
-                />
-                <Route
                     path='market/:params'
                     element={<TradeSwap isOnTradeRoute={true} />}
                 />
-                <Route
-                    path='limit'
-                    element={<Navigate to={defaultUrlParams.limit} replace />}
-                />
+              
                 <Route path='limit/:params' element={<Limit />} />
-                <Route
-                    path='pool'
-                    element={<Navigate to={defaultUrlParams.pool} replace />}
-                />
+             
                 <Route path='pool/:params' element={<Range />} />
-                <Route
-                    path='reposition'
-                    element={<Navigate to={defaultUrlParams.pool} replace />}
-                />
                 <Route path='reposition/:params' element={<Reposition />} />
                 <Route
                     path='edit/'
                     element={<Navigate to='/trade/market' replace />}
                 />
             </Route>
+            <Route
+                    path='trade/market'
+                    element={<Navigate replace to={defaultUrlParams.market}  />}
+                />
+                  <Route
+                    path='trade/limit'
+                    element={<Navigate replace to={defaultUrlParams.limit}  />}
+                />
+                   <Route
+                    path='trade/pool'
+                    element={<Navigate to={defaultUrlParams.pool} replace />}
+                />
+                <Route
+                    path='trade/reposition'
+                    element={<Navigate to={defaultUrlParams.pool} replace />}
+                />
             <Route
                 path='chat'
                 element={<ChatPanel isFullScreen={true} appPage={true} />}
