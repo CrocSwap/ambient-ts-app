@@ -32,38 +32,38 @@ const PlatformAmbientRoutes: React.FC = () => {
             <Route path='trade' element={<Trade />}>
                 <Route
                     path=''
-                    element={<Navigate replace to='/trade/market'/>}
+                    element={<Navigate replace to={defaultUrlParams.market} />}
                 />
                 <Route
                     path='market/:params'
                     element={<TradeSwap isOnTradeRoute={true} />}
                 />
-              
+
                 <Route path='limit/:params' element={<Limit />} />
-             
+
                 <Route path='pool/:params' element={<Range />} />
                 <Route path='reposition/:params' element={<Reposition />} />
                 <Route
                     path='edit/'
-                    element={<Navigate to='/trade/market' replace />}
+                    element={<Navigate replace to={defaultUrlParams.market} />}
                 />
             </Route>
             <Route
-                    path='trade/market'
-                    element={<Navigate replace to={defaultUrlParams.market}  />}
-                />
-                  <Route
-                    path='trade/limit'
-                    element={<Navigate replace to={defaultUrlParams.limit}  />}
-                />
-                   <Route
-                    path='trade/pool'
-                    element={<Navigate to={defaultUrlParams.pool} replace />}
-                />
-                <Route
-                    path='trade/reposition'
-                    element={<Navigate to={defaultUrlParams.pool} replace />}
-                />
+                path='trade/market'
+                element={<Navigate replace to={defaultUrlParams.market} />}
+            />
+            <Route
+                path='trade/limit'
+                element={<Navigate replace to={defaultUrlParams.limit} />}
+            />
+            <Route
+                path='trade/pool'
+                element={<Navigate to={defaultUrlParams.pool} replace />}
+            />
+            <Route
+                path='trade/reposition'
+                element={<Navigate to={defaultUrlParams.pool} replace />}
+            />
             <Route
                 path='chat'
                 element={<ChatPanel isFullScreen={true} appPage={true} />}
@@ -177,7 +177,7 @@ const PlatformAmbientRoutes: React.FC = () => {
             {/* refactor EXPLORE as a nested route */}
             <Route
                 path='explore'
-                element={<Navigate to='/explore/pools' replace />}
+                element={<Navigate to={defaultUrlParams.pool} replace />}
             />
             <Route path='explore/pools' element={<Explore view='pools' />} />
             <Route path='explore/tokens' element={<Explore view='tokens' />} />
