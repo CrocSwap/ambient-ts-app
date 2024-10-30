@@ -260,35 +260,6 @@ const StyledSelectbox = styled.div`
     align-items: center;
 `;
 
-const ConxtextOptionsContainer = styled.div`
-    width: 100%;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: center;
-
-    font-size: var(--body-size);
-    line-height: 15px;
-    letter-spacing: -0.02em;
-    text-align: center;
-    text-wrap: nowrap;
-
-    height: 35px;
-
-    background-color: var(--dark2);
-`;
-
-const ConxtextOptionsHeader = styled.div`
-    width: 100%;
-
-    display: flex;
-    justify-content: start;
-    align-items: center;
-
-    padding-left: 8px;
-`;
-
 const ConxtextOptions = styled.div`
     width: 100%;
 
@@ -296,10 +267,6 @@ const ConxtextOptions = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: start;
-
-    z-index: 99999;
-
-    background-color: var(--dark2);
 `;
 
 const ConxtextOptionsSection = styled.div`
@@ -309,9 +276,13 @@ const ConxtextOptionsSection = styled.div`
     grid-template-columns: 50% 50%;
     align-items: center;
 
-    padding-left: 15px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    letter-spacing: -0.02em;
+    text-align: center;
+    text-wrap: nowrap;
 
-    height: 35px;
+    height: 30px;
 `;
 
 const OptionsHeader = styled.div`
@@ -319,7 +290,7 @@ const OptionsHeader = styled.div`
     justify-content: start;
     align-items: center;
 
-    color: var(--text2);
+    color: var(--text1);
 `;
 
 const OptionsContent = styled.div`
@@ -376,8 +347,6 @@ export {
     StyledCheckbox,
     Icon,
     StyledSelectbox,
-    ConxtextOptionsContainer,
-    ConxtextOptionsHeader,
     ConxtextOptions,
     ConxtextOptionsSection,
     OptionsHeader,

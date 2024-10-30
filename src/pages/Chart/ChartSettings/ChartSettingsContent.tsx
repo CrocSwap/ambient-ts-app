@@ -17,8 +17,6 @@ import {
     ContextMenuContextText,
     ContextMenuFooter,
     ConxtextOptions,
-    ConxtextOptionsContainer,
-    ConxtextOptionsHeader,
     ConxtextOptionsSection,
     FooterButtons,
     FooterContextText,
@@ -138,7 +136,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             : 'USD',
     );
 
-    const [extendContextOptions, setExtendContextOptions] = useState(false);
+    // const [extendContextOptions, setExtendContextOptions] = useState(false);
 
     const handlePriceInChange = (option: string) => {
         setIsTradeDollarizationEnabled(
@@ -485,17 +483,17 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             <Divider></Divider>
 
             <ConxtextOptionsSection>
-                <OptionsHeader>Curve/Depth:</OptionsHeader>
-                <OptionsContent>
-                    <CurveDepth overlayMethods={chartSettings.poolOverlay} />
-                </OptionsContent>
+                <OptionsHeader>Chart Scale:</OptionsHeader>
+                <OptionsContent>{resetAndRescaleMobileDisplay}</OptionsContent>
             </ConxtextOptionsSection>
 
             <Divider></Divider>
 
             <ConxtextOptionsSection>
-                <OptionsHeader>Chart Scale:</OptionsHeader>
-                <OptionsContent>{resetAndRescaleMobileDisplay}</OptionsContent>
+                <OptionsHeader>Curve/Depth:</OptionsHeader>
+                <OptionsContent>
+                    <CurveDepth overlayMethods={chartSettings.poolOverlay} />
+                </OptionsContent>
             </ConxtextOptionsSection>
         </ConxtextOptions>
     );
@@ -503,26 +501,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
     return (
         <>
             <>
-                {isMobile && (
-                    <ConxtextOptionsContainer>
-                        <ConxtextOptionsHeader
-                            onClick={(event: MouseEvent<HTMLElement>) => {
-                                event.stopPropagation();
-                                setExtendContextOptions((prev) => !prev);
-                            }}
-                        >
-                            <div>Context Settings</div>
-                            <LabelSettingsArrow
-                                style={{ margin: '12px' }}
-                                isActive={extendContextOptions}
-                                width={6}
-                                height={6}
-                            ></LabelSettingsArrow>
-                        </ConxtextOptionsHeader>
-
-                        {extendContextOptions && <> {extendedOptions} </>}
-                    </ConxtextOptionsContainer>
-                )}
+                {isMobile && extendedOptions}
 
                 <CheckListContainer>
                     {checkListContent.map(
