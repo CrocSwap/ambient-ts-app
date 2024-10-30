@@ -49,22 +49,17 @@ export default function Explore(props: ExploreIF) {
         }
     }, [crocEnv !== undefined]);
 
-    const getAllPools = async (): Promise<void> => {
+    const refreshPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
             pools.reset();
+            // pause for a moment to allow spinner to appear
+            await new Promise((resolve) => setTimeout(resolve, 100));
             // use metadata to get expanded pool data
             getAllPoolData();
         }
     };
-
-    // get expanded pool metadata, if not already fetched
-    useEffect(() => {
-        if (crocEnv !== undefined && poolList.length === 0) {
-            getAllPools();
-        }
-    }, [crocEnv, poolList.length]);
 
     // logic to handle onClick navigation action
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -99,7 +94,7 @@ export default function Explore(props: ExploreIF) {
     function handleRefresh(): void {
         switch (view) {
             case 'pools':
-                getAllPools();
+                refreshPools();
                 break;
             case 'tokens':
                 topTokensOnchain.update();
