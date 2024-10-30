@@ -114,3 +114,76 @@
 .non_active_selected_button, .futa_non_active_selected_button {
     color: var(--text2);
 }
+
+.conxtext_options_container {
+    width: 100%;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+
+    font-size: var(--body-size);
+    line-height: 15px;
+    letter-spacing: -0.02em;
+    text-align: center;
+    text-wrap: nowrap;
+
+    height: 35px;
+
+    background-color: var(--dark2);
+    /* padding-bottom: 10px; */
+}
+
+.conxtext_options_header {
+    width: 100%;
+    
+    display: flex;
+    justify-content: start;
+    align-items: center;
+
+    padding-left: 8px;
+}
+
+.conxtext_options {
+    width: 100%;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+
+    z-index: 99999;
+
+    background-color: var(--dark2);
+}
+
+
+.conxtext_options_section {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 50% 50%;
+    align-items: center;
+
+    padding-left: 15px;
+
+    height: 35px;
+}
+
+.options_header {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+
+    color: var(--text2);
+}
+
+.options_content {
+    display: flex;
+    justify-content: end;
+
+    padding-right: 4px;
+}
+
+
