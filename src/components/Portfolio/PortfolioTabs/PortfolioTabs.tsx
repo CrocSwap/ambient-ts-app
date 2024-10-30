@@ -49,7 +49,7 @@ import {
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import medal from '../../../assets/images/icons/medal.svg';
-import { AppStateContext } from '../../../contexts/AppStateContext';
+import { AppStateContext, AppStateContextIF } from '../../../contexts/AppStateContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useLocation } from 'react-router-dom';
 
@@ -84,16 +84,15 @@ export default function PortfolioTabs(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
-    } = useContext(AppStateContext);
+        activeNetwork,
+        chainData: { chainId },
+    } = useContext<AppStateContextIF>(AppStateContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
-
     const {
         crocEnv,
-        activeNetwork,
         provider,
-        chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =

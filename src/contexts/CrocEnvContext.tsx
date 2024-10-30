@@ -20,7 +20,7 @@ import {
     swapParamsIF,
     useLinkGen,
 } from '../utils/hooks/useLinkGen';
-import { NetworkIF, PoolIF, TokenIF } from '../ambient-utils/types';
+import { PoolIF, TokenIF } from '../ambient-utils/types';
 import {
     APP_ENVIRONMENT,
     ethereumMainnet,

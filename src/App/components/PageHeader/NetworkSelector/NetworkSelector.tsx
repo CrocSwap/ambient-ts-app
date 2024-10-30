@@ -2,8 +2,6 @@
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import { useContext, useEffect, useState } from 'react';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-
 import { supportedNetworks } from '../../../../ambient-utils/constants';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useSearchParams } from 'react-router-dom';

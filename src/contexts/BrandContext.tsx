@@ -7,7 +7,6 @@ import {
 } from 'react';
 import { skins } from '../App/hooks/useSkin';
 import { brandIF, fontSets, heroItem } from '../assets/branding/types';
-import { TradeDataContext } from './TradeDataContext';
 import { chainIds } from '../ambient-utils/types';
 import {
     blastBrandAssets,

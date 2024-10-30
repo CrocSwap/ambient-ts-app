@@ -1,12 +1,15 @@
-import React, {
+import {
     createContext,
+    Dispatch,
+    ReactNode,
+    SetStateAction,
     useContext,
     useEffect,
     useMemo,
     useState,
 } from 'react';
-import { NetworkIF, TokenIF } from '../ambient-utils/types';
-import { ChainSpec, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
+import { TokenIF } from '../ambient-utils/types';
+import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { getDefaultPairForChain, mainnetETH } from '../ambient-utils/constants';
 import {
     isBtcPair,
@@ -14,7 +17,7 @@ import {
     isStablePair,
     translateTokenSymbol,
 } from '../ambient-utils/dataLayer';
-import { TokenContext } from './TokenContext';
+import { TokenContext, TokenContextIF } from './TokenContext';
 import { AppStateContextIF, AppStateContext } from './AppStateContext';
 
 export interface TradeDataContextIF {
@@ -35,20 +38,20 @@ export interface TradeDataContextIF {
     currentPoolPriceTick: number;
     slippageTolerance: number;
 
-    setTokenA: React.Dispatch<React.SetStateAction<TokenIF>>;
-    setTokenB: React.Dispatch<React.SetStateAction<TokenIF>>;
-    setDenomInBase: React.Dispatch<React.SetStateAction<boolean>>;
-    setIsTokenAPrimary: React.Dispatch<React.SetStateAction<boolean>>;
-    setDidUserFlipDenom: React.Dispatch<React.SetStateAction<boolean>>;
+    setTokenA: Dispatch<SetStateAction<TokenIF>>;
+    setTokenB: Dispatch<SetStateAction<TokenIF>>;
+    setDenomInBase: Dispatch<SetStateAction<boolean>>;
+    setIsTokenAPrimary: Dispatch<SetStateAction<boolean>>;
+    setDidUserFlipDenom: Dispatch<SetStateAction<boolean>>;
     toggleDidUserFlipDenom: () => void;
-    setSoloToken: React.Dispatch<React.SetStateAction<TokenIF>>;
-    setShouldSwapDirectionReverse: React.Dispatch<
-        React.SetStateAction<boolean>
+    setSoloToken: Dispatch<SetStateAction<TokenIF>>;
+    setShouldSwapDirectionReverse: Dispatch<
+        SetStateAction<boolean>
     >;
-    setPrimaryQuantity: React.Dispatch<React.SetStateAction<string>>;
-    setLimitTick: React.Dispatch<React.SetStateAction<number | undefined>>;
-    setPoolPriceNonDisplay: React.Dispatch<React.SetStateAction<number>>;
-    setSlippageTolerance: React.Dispatch<React.SetStateAction<number>>;
+    setPrimaryQuantity: Dispatch<SetStateAction<string>>;
+    setLimitTick: Dispatch<SetStateAction<number | undefined>>;
+    setPoolPriceNonDisplay: Dispatch<SetStateAction<number>>;
+    setSlippageTolerance: Dispatch<SetStateAction<number>>;
     defaultRangeWidthForActivePool: number;
     getDefaultRangeWidthForTokenPair: (
         chainId: string,
@@ -56,7 +59,7 @@ export interface TradeDataContextIF {
         quoteAddress: string,
     ) => number;
     noGoZoneBoundaries: number[];
-    setNoGoZoneBoundaries: React.Dispatch<React.SetStateAction<number[]>>;
+    setNoGoZoneBoundaries: Dispatch<SetStateAction<number[]>>;
 }
 
 export const TradeDataContext = createContext<TradeDataContextIF>(
@@ -68,11 +71,10 @@ export const TradeDataContext = createContext<TradeDataContextIF>(
 // pair is necessary at load time
 
 export const TradeDataContextProvider = (props: {
-    children: React.ReactNode;
+    children: ReactNode;
 }) => {
     const { chainData } = useContext<AppStateContextIF>(AppStateContext);
-
-    const { tokens } = useContext(TokenContext);
+    const { tokens } = useContext<TokenContextIF>(TokenContext);
 
     const savedTokenASymbol = localStorage.getItem('tokenA');
     const savedTokenBSymbol = localStorage.getItem('tokenB');
@@ -109,7 +111,7 @@ export const TradeDataContextProvider = (props: {
     const shouldReverseDefaultTokens =
         isSavedTokenADefaultB || isSavedTokenBDefaultA;
 
-    const [tokenA, setTokenA] = React.useState<TokenIF>(() => {
+    const [tokenA, setTokenA] = useState<TokenIF>(() => {
         return firstTokenMatchingA
             ? firstTokenMatchingA
             : shouldReverseDefaultTokens
@@ -117,7 +119,7 @@ export const TradeDataContextProvider = (props: {
               : dfltTokenA;
     });
 
-    const [tokenB, setTokenB] = React.useState<TokenIF>(
+    const [tokenB, setTokenB] = useState<TokenIF>(
         firstTokenMatchingB
             ? firstTokenMatchingB
             : shouldReverseDefaultTokens
@@ -128,11 +130,11 @@ export const TradeDataContextProvider = (props: {
     const [
         areDefaultTokensUpdatedForChain,
         setAreDefaultTokensUpdatedForChain,
-    ] = React.useState<boolean>(false);
-    const [isDenomBase, setDenomInBase] = React.useState<boolean>(true);
+    ] = useState<boolean>(false);
+    const [isDenomBase, setDenomInBase] = useState<boolean>(true);
     // TODO: this can likely be refactored out
     const [didUserFlipDenom, setDidUserFlipDenom] =
-        React.useState<boolean>(false);
+        useState<boolean>(false);
 
     const { baseToken, quoteToken, isTokenABase } = useMemo(() => {
         const [baseTokenAddress] = sortBaseQuoteTokens(
@@ -160,15 +162,15 @@ export const TradeDataContextProvider = (props: {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
 
-    const [soloToken, setSoloToken] = React.useState(mainnetETH);
+    const [soloToken, setSoloToken] = useState<TokenIF>(mainnetETH);
 
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
-        React.useState(false);
+        useState<boolean>(false);
 
-    const [primaryQuantity, setPrimaryQuantity] = React.useState(
+    const [primaryQuantity, setPrimaryQuantity] = useState<string>(
         localStorage.getItem('primaryQuantity') || '',
     );
-    const [isTokenAPrimary, setIsTokenAPrimary] = React.useState<boolean>(
+    const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(
         localStorage.getItem('isTokenAPrimary') !== null
             ? localStorage.getItem('isTokenAPrimary') === 'true'
             : true,
@@ -193,10 +195,10 @@ export const TradeDataContextProvider = (props: {
         localStorage.setItem('primaryQuantity', primaryQuantity);
     }, [primaryQuantity]);
 
-    const [limitTick, setLimitTick] = React.useState<number | undefined>(
+    const [limitTick, setLimitTick] = useState<number | undefined>(
         undefined,
     );
-    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = React.useState(0);
+    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
 
     const currentPoolPriceTick = useMemo(
         () =>
@@ -211,7 +213,7 @@ export const TradeDataContextProvider = (props: {
         setDidUserFlipDenom(false);
     }, [baseToken.address + quoteToken.address]);
 
-    const [slippageTolerance, setSlippageTolerance] = React.useState(0.5);
+    const [slippageTolerance, setSlippageTolerance] = useState<number>(0.5);
 
     const getDefaultRangeWidthForTokenPair = (
         chainId: string,

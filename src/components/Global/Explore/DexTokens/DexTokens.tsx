@@ -8,10 +8,10 @@ import {
     PoolIF,
     TokenIF,
 } from '../../../../ambient-utils/types';
-import { PoolContext } from '../../../../contexts/PoolContext';
+import { PoolContext, PoolContextIF } from '../../../../contexts/PoolContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { usePoolList2 } from '../../../../App/hooks/usePoolList2';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
 import { isWrappedNativeToken } from '../../../../ambient-utils/dataLayer';
 import AssignSort from '../AssignSort';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
@@ -19,6 +19,7 @@ import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useToken
 import ExploreToggle from '../ExploreToggle/ExploreToggle';
 import TokenRow from '../TokenRow/TokenRow';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
+import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
 
 export type columnSlugs =
     | 'token'
@@ -59,7 +60,9 @@ function DexTokens(props: propsIF) {
         handleToggle,
     } = props;
 
-    const { findPool } = useContext(PoolContext);
+    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
+
+    const { findPool } = useContext<PoolContextIF>(PoolContext);
     const isPWA = useIsPWA();
 
 
@@ -72,7 +75,7 @@ function DexTokens(props: propsIF) {
     // this logic is here to patch cases where existing logic to identify a token pool fails,
     // ... this is not an optimal location but works as a stopgap that minimizes needing to
     // ... alter existing logic or type annotation in the component tree
-    const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const unfilteredPools: GCServerPoolIF[] = usePoolList2(
         activeNetwork.graphCacheUrl,
         crocEnv,

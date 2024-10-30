@@ -41,13 +41,13 @@ import {
 } from '../../../../contexts/TokenContext';
 import {
     CachedDataContext,
-    CachedDataIF,
+    CachedDataContextIF,
 } from '../../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
 import {
     SidebarContext,
-    SidebarStateIF,
+    SidebarContextIF,
 } from '../../../../contexts/SidebarContext';
 import { TransactionRow as TransactionRowStyled } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
@@ -91,6 +91,8 @@ function Transactions(props: propsIF) {
     } = props;
 
     const {
+        activeNetwork,
+        chainData: { chainId, poolIndex },
         server: { isEnabled: isServerEnabled },
     } = useContext<AppStateContextIF>(AppStateContext);
     const { isCandleSelected } = useContext<CandleContextIF>(CandleContext);
@@ -99,13 +101,11 @@ function Transactions(props: propsIF) {
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
-    } = useContext<CachedDataIF>(CachedDataContext);
+    } = useContext<CachedDataContextIF>(CachedDataContext);
     const { chartSettings } = useContext<ChartContextIF>(ChartContext);
     const {
         crocEnv,
-        activeNetwork,
         provider,
-        chainData: { chainId, poolIndex },
     } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
     const { setOutsideControl, showAllData: showAllDataSelection } =
@@ -114,7 +114,7 @@ function Transactions(props: propsIF) {
 
     const {
         sidebar: { isOpen: isSidebarOpen },
-    } = useContext<SidebarStateIF>(SidebarContext);
+    } = useContext<SidebarContextIF>(SidebarContext);
 
     const candleTime: candleTimeIF = chartSettings.candleTime.global;
 

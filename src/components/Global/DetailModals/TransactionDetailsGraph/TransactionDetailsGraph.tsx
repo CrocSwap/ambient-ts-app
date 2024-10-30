@@ -3,13 +3,13 @@ import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import './TransactionDetailsGraph.css';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
 import Spinner from '../../Spinner/Spinner';
 import {
     formatAmountChartData,
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { CachedDataContext, CachedDataContextIF } from '../../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
 import moment from 'moment';
@@ -25,6 +25,7 @@ import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
 import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { FlexContainer } from '../../../../styled/Common';
+import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -45,9 +46,10 @@ export default function TransactionDetailsGraph(
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
     } = props;
-    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
+    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
+    const { chainData, crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
-        useContext(CachedDataContext);
+        useContext<CachedDataContextIF>(CachedDataContext);
 
     const oneHourMiliseconds = 60 * 60 * 1000;
     const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;

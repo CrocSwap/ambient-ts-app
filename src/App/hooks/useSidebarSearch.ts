@@ -24,6 +24,7 @@ import {
 import { PoolContext } from '../../contexts/PoolContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { fetchEnsAddress } from '../../ambient-utils/api';
+import { AppStateContext, AppStateContextIF } from '../../contexts/AppStateContext';
 
 // types specifying which results set should render in the dom
 // `standard` ⮕ standard sidebar content
@@ -56,6 +57,7 @@ export const useSidebarSearch = (
     limitOrderList: LimitOrderIF[],
     tokens: tokenMethodsIF,
 ): sidebarSearchIF => {
+    const { activeNetwork, chainData } = useContext<AppStateContextIF>(AppStateContext);
     const { poolList } = useContext(PoolContext);
 
     // needed to resolve ENS addresses entered by user
@@ -362,9 +364,6 @@ export const useSidebarSearch = (
 
     // data returned when querying address as a wallet
     const [outputWallets, setOutputWallets] = useState<walletHexAndENS[]>([]);
-
-    // environmental data needed for wallet query
-    const { activeNetwork, chainData } = useContext(CrocEnvContext);
 
     // logic to query search input as a wallet
     useEffect(() => {

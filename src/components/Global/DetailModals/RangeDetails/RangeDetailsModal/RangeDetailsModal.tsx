@@ -48,17 +48,16 @@ interface propsIF {
 }
 
 function RangeDetailsModal(props: propsIF) {
+    const { position, isAccountView, onClose } = props;
+
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     const [showShareComponent, setShowShareComponent] = useState(true);
     const { isDenomBase } = useContext(TradeDataContext);
     const {
-        chainData: { chainId, poolIndex },
         provider,
         crocEnv,
-        activeNetwork,
     } = useContext(CrocEnvContext);
-    const { position, isAccountView, onClose } = props;
 
     const {
         base: baseTokenAddress,
@@ -77,7 +76,6 @@ function RangeDetailsModal(props: propsIF) {
 
     const {
         posHash,
-        // serverPositionId,
         isAmbient,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
@@ -94,6 +92,8 @@ function RangeDetailsModal(props: propsIF) {
     >();
 
     const {
+        activeNetwork,
+        chainData: { chainId, poolIndex },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {

@@ -20,7 +20,7 @@ import { TokenContext, TokenContextIF } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import {
     CachedDataContext,
-    CachedDataIF,
+    CachedDataContextIF,
 } from '../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import Modal from '../Modal/Modal';
@@ -57,7 +57,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         isFuta = false,
     } = props;
 
-    const { cachedTokenDetails } = useContext<CachedDataIF>(CachedDataContext);
+    const { cachedTokenDetails } = useContext<CachedDataContextIF>(CachedDataContext);
     const {
         chainData: { chainId },
         provider,

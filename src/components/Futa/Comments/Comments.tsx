@@ -13,7 +13,6 @@ import CommentCard from './CommentCard/CommentCard';
 import CommentInput from './CommentInput/CommentInput';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import useChatApi from '../../Chat/Service/ChatApi';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import DomDebugger from '../../Chat/DomDebugger/DomDebugger';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 
@@ -25,6 +24,7 @@ import {
 } from '../../Chat/ChatUtils';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useOnBoundryChange from '../../../utils/hooks/useOnBoundryChange';
+import { AppStateContext, AppStateContextIF } from '../../../contexts/AppStateContext';
 
 type ShimmerListProps = {
     count: number;
@@ -40,13 +40,14 @@ const ShimmerList: React.FC<ShimmerListProps> = ({ count }) => {
     );
 };
 
-interface CommentsProps {
+interface propsIF {
     isForTrade?: boolean;
     isSmall?: boolean;
     resizeEffectorSelector?: string;
 }
 
-function Comments(props: CommentsProps) {
+function Comments(props: propsIF) {
+    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const { ticker } = useParams();
 
@@ -93,7 +94,6 @@ function Comments(props: CommentsProps) {
     const [userId, setUserId] = useState('');
     const { userAddress, ensName, isUserConnected } =
         useContext(UserDataContext);
-    const { selectedNetwork } = useContext(CrocEnvContext);
     const { saveUser } = useChatApi();
     const [fetchedMessageCount, setFetchedMessageCount] = useState(0);
 
@@ -286,7 +286,7 @@ function Comments(props: CommentsProps) {
                 userAddress,
                 null,
                 null,
-                selectedNetwork.chainId,
+                activeNetwork.chainId,
             );
             setTimeout(() => {
                 scrollToBottom();
@@ -478,10 +478,6 @@ function Comments(props: CommentsProps) {
                                         {unreadMessageCount > 1 ? 's' : ''}
                                     </div>
                                 )}
-
-                            {/* <div className={styles.debug_btn} onClick={() => {scrollToMessage('669112bc1ce48e351edddd2d')}}></div> */}
-
-                            {/* </div> */}
                             <CommentInput
                                 commentInputDispatch={commentInputDispatch}
                                 currentUserID={userId}
