@@ -13,6 +13,7 @@ import { ChartThemeIF } from '../../../contexts/ChartContext';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { chartItemStates } from '../../platformAmbient/Chart/ChartUtils/chartUtils';
 import ChartSettingsContent from './ChartSettingsContent';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface ContextMenuIF {
     contextMenuPlacement?: { top: number; left: number; isReversed: boolean };
@@ -61,6 +62,10 @@ export default function ChartSettings(props: ContextMenuIF) {
     const [isSaving, setIsSaving] = useState(false);
     const [applyDefault, setApplyDefault] = useState(false);
     const [reverseColorObj, setReverseColorObj] = useState(false);
+
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     useEffect(() => {
         d3.select(contextMenuRef.current).on(
@@ -141,7 +146,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                     applyDefault={applyDefault}
                     isSaving={isSaving}
                     setIsSaving={setIsSaving}
-                    isMobile={false}
+                    isMobile={tabletView}
                     // render={render}
                 />
             </ContextMenu>
