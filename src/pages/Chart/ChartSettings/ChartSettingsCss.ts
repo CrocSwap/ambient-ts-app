@@ -28,8 +28,6 @@ const ContextMenu = styled.div`
 
     padding: 8px 16px 8px 16px;
 
-    gap: 16px;
-
     border-radius: 4px;
 
     background: var(--dark1);
@@ -47,6 +45,8 @@ const ContextMenuHeader = styled.div`
     flex-direction: row;
 
     justify-content: space-between;
+
+    padding-bottom: 10px;
 `;
 
 const ContextMenuHeaderText = styled.div`
@@ -95,7 +95,7 @@ const CheckListContainer = styled.div`
 
 const CheckList = styled.div`
     position: relative;
-    
+
     display: flex;
 
     flex-direction: row;
@@ -260,6 +260,72 @@ const StyledSelectbox = styled.div`
     align-items: center;
 `;
 
+const ConxtextOptions = styled.div`
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+`;
+
+const ConxtextOptionsSection = styled.div`
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 50% 50%;
+    align-items: center;
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    letter-spacing: -0.02em;
+    text-align: center;
+    text-wrap: nowrap;
+
+    height: 30px;
+`;
+
+const OptionsHeader = styled.div`
+    display: flex;
+    justify-content: start;
+    align-items: center;
+
+    color: var(--text1);
+`;
+
+const OptionsContent = styled.div`
+    display: flex;
+    justify-content: end;
+
+    padding-right: 4px;
+`;
+
+const MobileSettingsRow = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+`;
+
+const SelectedButton = styled.button<{
+    isActive: boolean | undefined;
+}>`
+    background: transparent;
+    transition: var(--transition);
+    cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+
+    color: ${({ isActive }) => (isActive ? 'var(--text1)' : 'var(--text2)')};
+
+    text-align: center;
+
+    outline: none;
+    border: none;
+    padding: 1px 8px;
+    position: relative;
+`;
+
 export {
     ChartSettingsContainer,
     ContextMenu,
@@ -281,4 +347,10 @@ export {
     StyledCheckbox,
     Icon,
     StyledSelectbox,
+    ConxtextOptions,
+    ConxtextOptionsSection,
+    OptionsHeader,
+    OptionsContent,
+    MobileSettingsRow,
+    SelectedButton,
 };

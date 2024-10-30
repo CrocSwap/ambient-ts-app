@@ -95,8 +95,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const getAllPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
-            // clear text in DOM for time since last update
-            setAllPools([]);
             // use metadata to get expanded pool data
             getAllPoolData(poolList, crocEnv, chainData.chainId);
         }
@@ -104,12 +102,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     // get expanded pool metadata
     useEffect(() => {
-        // wait 5 seconds to get data
-        setTimeout(() => {
-            if (crocEnv !== undefined && poolList.length > 0) {
-                getAllPools();
-            }
-        }, 5000);
+        if (crocEnv !== undefined && poolList.length > 0) {
+            getAllPools();
+        }
     }, [crocEnv, poolList.length]);
 
     // fn to get data on a single pool
