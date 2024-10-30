@@ -41,8 +41,8 @@ import { CandleContext, PoolContext } from '../../../../contexts';
 import ChartSettingsContent from '../../../Chart/ChartSettings/ChartSettingsContent';
 import { ColorObjIF } from '../../../Chart/ChartSettings/ChartSettings';
 import Spinner from '../../../../components/Global/Spinner/Spinner';
-import { LabelSettingsArrow } from '../../Chart/Draw/FloatingToolbar/FloatingToolbarSettingsCss';
-import Divider from '../../../../components/Global/Divider/Divider';
+// import { LabelSettingsArrow } from '../../Chart/Draw/FloatingToolbar/FloatingToolbarSettingsCss';
+// import Divider from '../../../../components/Global/Divider/Divider';
 import { LuSettings } from 'react-icons/lu';
 // interface for React functional component props
 interface propsIF {
@@ -190,6 +190,13 @@ function TradeCharts(props: propsIF) {
             setShowSwap,
             showLiquidity,
             showHistorical,
+            showLatest,
+            setShowLatest,
+            setLatest,
+            rescale,
+            setRescale,
+            reset,
+            setReset,
         };
     }, [
         isMarketOrLimitModule,
@@ -227,20 +234,13 @@ function TradeCharts(props: propsIF) {
     const [applyDefault, setApplyDefault] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
-    const [extendContextOptions, setExtendContextOptions] = useState(false);
-
     const handleModalOnClose = () => {
-        if (
-            shouldDisableChartSettings &&
-            !isSelecboxActive &&
-            !extendContextOptions
-        ) {
+        if (shouldDisableChartSettings && !isSelecboxActive) {
             closeMobileSettingsModal();
         } else {
             setShouldDisableChartSettings(true);
             setSelectedColorObj(undefined);
             setIsSelecboxActive(false);
-            setExtendContextOptions(false);
         }
     };
 
@@ -248,8 +248,6 @@ function TradeCharts(props: propsIF) {
         setShouldDisableChartSettings(true);
         setSelectedColorObj(undefined);
         setIsSelecboxActive(false);
-        setExtendContextOptions(false);
-
         setIsSaving(true);
 
         const savedTimeOut = setTimeout(() => {
@@ -345,63 +343,6 @@ function TradeCharts(props: propsIF) {
         </div>
     );
 
-    const resetAndRescaleMobileDisplay = (
-        <div className={styles.mobile_settings_row}>
-            {showLatest && (
-                <div className={styles.settings_container}>
-                    <button
-                        onClick={() => {
-                            if (rescale) {
-                                setReset(true);
-                            } else {
-                                setLatest(true);
-                            }
-                        }}
-                        className={styles.non_active_selected_button}
-                        aria-label='Show latest.'
-                    >
-                        Latest
-                    </button>
-                </div>
-            )}
-
-            <div className={styles.settings_container}>
-                <button
-                    onClick={() => {
-                        setReset(true);
-                        setRescale(true);
-                    }}
-                    className={
-                        reset
-                            ? styles.active_selected_button
-                            : styles.non_active_selected_button
-                    }
-                    aria-label='Reset.'
-                >
-                    Reset
-                </button>
-            </div>
-
-            <div className={styles.settings_container}>
-                <button
-                    onClick={() => {
-                        setRescale((prevState) => {
-                            return !prevState;
-                        });
-                    }}
-                    className={
-                        rescale
-                            ? styles.active_selected_button
-                            : styles.non_active_selected_button
-                    }
-                    aria-label='Auto rescale.'
-                >
-                    Auto
-                </button>
-            </div>
-        </div>
-    );
-
     const timeFrameContentDesktop = (
         <section className={styles.time_frame_container}>
             {!isMobileSettingsModalOpen && (
@@ -479,7 +420,7 @@ function TradeCharts(props: propsIF) {
                     setContextMenuPlacement(() => {
                         return {
                             top: 200,
-                            left: (window.innerWidth / 2) - 150,
+                            left: window.innerWidth / 2 - 150,
                             isReversed: false,
                         };
                     });
@@ -490,36 +431,12 @@ function TradeCharts(props: propsIF) {
         </section>
     );
 
-    const extendedOptions = (
-        <div className={styles.conxtext_options}>
-            <Divider></Divider>
-
-            <div className={styles.conxtext_options_section}>
-                <div className={styles.options_header}>Curve/Depth:</div>
-                <div className={styles.options_content}>
-                    <CurveDepth overlayMethods={chartSettings.poolOverlay} />
-                </div>
-            </div>
-
-            <Divider></Divider>
-
-            <div className={styles.conxtext_options_section}>
-                <div className={styles.options_header}>Chart Scale:</div>
-                <div className={styles.options_content}>
-                    {resetAndRescaleMobileDisplay}
-                </div>
-            </div>
-
-        </div>
-    );
-
     const settingsContent = chartThemeColors && (
         <section
             onClick={() => {
                 setShouldDisableChartSettings(true);
                 setSelectedColorObj(undefined);
                 setIsSelecboxActive(false);
-                setExtendContextOptions(false);
             }}
             className={styles.time_frame_container}
         >
@@ -548,25 +465,6 @@ function TradeCharts(props: propsIF) {
         <>
             {isMobileSettingsModalOpen && (
                 <Modal onClose={handleModalOnClose} title='Chart Settings'>
-                    <div className={styles.conxtext_options_container}>
-                        <div
-                            onClick={() =>
-                                setExtendContextOptions((prev) => !prev)
-                            }
-                            className={styles.conxtext_options_header}
-                        >
-                            <div>Context Settings</div>
-                            <LabelSettingsArrow
-                                style={{ margin: '12px' }}
-                                isActive={extendContextOptions}
-                                width={8}
-                                height={8}
-                            ></LabelSettingsArrow>
-                        </div>
-
-                        {extendContextOptions && <> {extendedOptions} </>}
-                    </div>
-
                     {settingsContent}
 
                     <div className={styles.settings_apply_button_container}>

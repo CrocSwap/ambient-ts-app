@@ -16,10 +16,18 @@ import {
     ColorPickerContainer,
     ContextMenuContextText,
     ContextMenuFooter,
+    ConxtextOptions,
+    ConxtextOptionsContainer,
+    ConxtextOptionsHeader,
+    ConxtextOptionsSection,
     FooterButtons,
     FooterContextText,
     Icon,
+    MobileSettingsRow,
     OptionColor,
+    OptionsContent,
+    OptionsHeader,
+    SelectedButton,
     SelectionContainer,
     StyledCheckbox,
     StyledSelectbox,
@@ -41,6 +49,8 @@ import { BrandContext } from '../../../contexts/BrandContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../../platformAmbient/Chart/ChartUtils/chartConstants';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import Divider from '@material-ui/core/Divider/Divider';
+import CurveDepth from '../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/CurveDepth';
 
 interface ContextMenuContentIF {
     chartThemeColors: ChartThemeIF;
@@ -93,14 +103,24 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         setShowVolume,
         showSwap,
         setShowSwap,
+        showLatest,
+        setLatest,
+        rescale,
+        setRescale,
+        setReset,
+        reset,
     } = props.chartItemStates;
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
 
     const { skin, platformName } = useContext(BrandContext);
-    const { defaultChartSettings, setColorChangeTrigger, setContextmenu } =
-        useContext(ChartContext);
+    const {
+        defaultChartSettings,
+        setColorChangeTrigger,
+        setContextmenu,
+        chartSettings,
+    } = useContext(ChartContext);
 
     const {
         baseToken: { symbol: baseTokenSymbol },
@@ -117,6 +137,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 : baseTokenSymbol
             : 'USD',
     );
+
+    const [extendContextOptions, setExtendContextOptions] = useState(false);
 
     const handlePriceInChange = (option: string) => {
         setIsTradeDollarizationEnabled(
@@ -409,9 +431,99 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         },
     ];
 
+    const resetAndRescaleMobileDisplay = (
+        <MobileSettingsRow>
+            {showLatest && (
+                <div>
+                    <SelectedButton
+                        onClick={() => {
+                            if (rescale) {
+                                setReset(true);
+                            } else {
+                                setLatest(true);
+                            }
+                        }}
+                        isActive={false}
+                        aria-label='Show latest.'
+                    >
+                        Latest
+                    </SelectedButton>
+                </div>
+            )}
+
+            <div>
+                <SelectedButton
+                    onClick={() => {
+                        setReset(true);
+                        setRescale(true);
+                    }}
+                    isActive={reset}
+                    aria-label='Reset.'
+                >
+                    Reset
+                </SelectedButton>
+            </div>
+
+            <div>
+                <SelectedButton
+                    onClick={() => {
+                        setRescale((prevState) => {
+                            return !prevState;
+                        });
+                    }}
+                    isActive={rescale ? true : false}
+                    aria-label='Auto rescale.'
+                >
+                    Auto
+                </SelectedButton>
+            </div>
+        </MobileSettingsRow>
+    );
+
+    const extendedOptions = (
+        <ConxtextOptions>
+            <Divider></Divider>
+
+            <ConxtextOptionsSection>
+                <OptionsHeader>Curve/Depth:</OptionsHeader>
+                <OptionsContent>
+                    <CurveDepth overlayMethods={chartSettings.poolOverlay} />
+                </OptionsContent>
+            </ConxtextOptionsSection>
+
+            <Divider></Divider>
+
+            <ConxtextOptionsSection>
+                <OptionsHeader>Chart Scale:</OptionsHeader>
+                <OptionsContent>{resetAndRescaleMobileDisplay}</OptionsContent>
+            </ConxtextOptionsSection>
+        </ConxtextOptions>
+    );
+
     return (
         <>
             <>
+                {isMobile && (
+                    <ConxtextOptionsContainer>
+                        <ConxtextOptionsHeader
+                            onClick={(event: MouseEvent<HTMLElement>) => {
+                                event.stopPropagation();
+                                setExtendContextOptions((prev) => !prev);
+                            }}
+                        >
+                            <div>Context Settings</div>
+                            <LabelSettingsArrow
+                                style={{ margin: '12px' }}
+                                isActive={extendContextOptions}
+                                width={6}
+                                height={6}
+                            ></LabelSettingsArrow>
+                        </ConxtextOptionsHeader>
+
+                        {extendContextOptions && <> {extendedOptions} </>}
+                    </ConxtextOptionsContainer>
+                )}
+
                 <CheckListContainer>
                     {checkListContent.map(
                         (item, index) =>
