@@ -95,8 +95,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const getAllPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
-            // clear text in DOM for time since last update
-            setAllPools([]);
             // use metadata to get expanded pool data
             getAllPoolData(poolList, crocEnv, chainData.chainId);
         }
