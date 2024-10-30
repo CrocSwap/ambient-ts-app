@@ -23,7 +23,6 @@ import TestPage from '../pages/common/TestPage/TestPage';
 
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
-    console.log('???? gonna defaultUrlParams', defaultUrlParams)
 
 
     return (

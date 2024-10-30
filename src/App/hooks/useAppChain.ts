@@ -239,7 +239,7 @@ export const useAppChain = (): {
         } else {
             linkGenCurrent.navigate();
         }
-            window.location.reload();
+        window.location.reload();
     }
 
     // data from the SDK about the current chain in the connected wallet

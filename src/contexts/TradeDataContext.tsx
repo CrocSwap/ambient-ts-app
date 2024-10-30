@@ -131,7 +131,6 @@ export const TradeDataContextProvider = (props: {
               : dfltTokenB,
     );
 
-
     const [
         areDefaultTokensUpdatedForChain,
         setAreDefaultTokensUpdatedForChain,

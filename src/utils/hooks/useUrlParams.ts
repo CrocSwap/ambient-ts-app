@@ -284,6 +284,7 @@ export const useUrlParams = (
                 tokenAddrB,
                 chainToUse,
             );
+
             // prevent race condition involving lookup and fetching contract
             if (!flag) return;
             // If both tokens are valid and have data for this chain, use those
@@ -296,6 +297,7 @@ export const useUrlParams = (
 
         try {
             const chainToUse = urlParamMap.get('chain') || dfltChainId;
+
             const tokenA = urlParamMap.get('tokenA');
             const tokenB = urlParamMap.get('tokenB');
             if (tokenA && tokenB) {
