@@ -145,6 +145,7 @@ export const useUrlParams = (
                 ),
             )
                 .then((result) => {
+                    console.log('>>>> gonna useUrlParams > urlParamMap > redirectUser > result', result)
                     linkGenSwap.redirect({
                         chain: chainToUse,
                         tokenA: result || ZERO_ADDRESS,
@@ -279,6 +280,9 @@ export const useUrlParams = (
     }
 
     useEffect((): (() => void) => {
+        console.log('>>>> gonna set tokenB', urlParamMap)
+        console.log('>>>> gonna set tokenB', window.location.pathname)
+        console.log('................................')
         let flag = true;
 
         const processTokenAddr = async (

@@ -171,8 +171,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
 
     // fn with same mode of action as `navigateUser()` with history stack replacement
     function redirectUser(paramsObj?: anyParamsIF | string): void {
-        console.log('>>>> redirectUser', paramsObj)
-        console.log('>>>> redirectUser > getFullURL', getFullURL(paramsObj))
+        console.log('>>>> gonna redirect redirectUser > getFullURL', getFullURL(paramsObj))
         navigate(getFullURL(paramsObj), { replace: true });
     }
 

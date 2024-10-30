@@ -50,6 +50,7 @@ export const useAppChain = (): {
         if (typeof output === 'string' && !validateChainId(output)) {
             output = null;
         }
+        console.log('>>>> useAppChain > getChainFromURL > output', output)
         return output;
     }
 
@@ -259,6 +260,9 @@ export const useAppChain = (): {
         // return output varibale (chain data)
         return output;
     }, [activeNetwork.chainId]);
+
+    console.log('>>>> useAppChain > chainData', chainData)
+    console.log('>>>> useAppChain > activeNetwork', activeNetwork)
 
     return {
         chainData,

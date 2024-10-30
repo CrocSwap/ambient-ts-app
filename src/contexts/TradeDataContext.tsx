@@ -14,8 +14,9 @@ import {
     isStablePair,
     translateTokenSymbol,
 } from '../ambient-utils/dataLayer';
-import { TokenBalanceContext } from './TokenBalanceContext';
+// import { TokenBalanceContext } from './TokenBalanceContext';
 import { TokenContext } from './TokenContext';
+import { TokenBalanceContext } from './TokenBalanceContext';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -76,8 +77,8 @@ export const TradeDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const { chainData, activeNetwork, chooseNetwork } =
-        useContext(TokenBalanceContext);
-
+    useContext(TokenBalanceContext);
+    
     const { tokens } = useContext(TokenContext);
 
     const savedTokenASymbol = localStorage.getItem('tokenA');
@@ -130,6 +131,10 @@ export const TradeDataContextProvider = (props: {
               ? dfltTokenA
               : dfltTokenB,
     );
+
+    
+    console.log('>>>> TradeDataContext >  dfltTokenB',  dfltTokenB.address)
+    console.log('>>>> TradeDataContext >  tokenB',  tokenB.address)
 
     const [
         areDefaultTokensUpdatedForChain,

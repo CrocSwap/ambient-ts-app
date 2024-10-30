@@ -23,6 +23,7 @@ import TestPage from '../pages/common/TestPage/TestPage';
 
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
+    console.log('>>>> gonna defaultUrlParams', defaultUrlParams)
 
 
     return (
@@ -32,11 +33,11 @@ const PlatformAmbientRoutes: React.FC = () => {
             <Route path='trade' element={<Trade />}>
                 <Route
                     path=''
-                    element={<Navigate to='/trade/market' replace />}
+                    element={<Navigate replace to='/trade/market'/>}
                 />
                 <Route
                     path='market'
-                    element={<Navigate to={defaultUrlParams.market} replace />}
+                    element={<Navigate replace to={defaultUrlParams.market}  />}
                 />
                 <Route
                     path='market/:params'

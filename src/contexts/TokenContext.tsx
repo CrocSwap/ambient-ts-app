@@ -25,6 +25,7 @@ export const TokenContext = createContext<TokenContextIF>({} as TokenContextIF);
 export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     // TODO: possible option to merge TokenBalanceContext with TokenContext
     const { tokenBalances, chainData } = useContext(TokenBalanceContext);
+    console.log('>>>> TokenContext > chainData', chainData)
     const tokens = useTokens(chainData.chainId, tokenBalances);
     const { addRecentToken, getRecentTokens } = useRecentTokens(
         chainData.chainId,
