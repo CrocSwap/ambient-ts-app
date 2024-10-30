@@ -57,6 +57,9 @@ export default function PoolData(props: PoolDataIF) {
     } = props;
 
     const mobileView = useMediaQuery('(max-width: 500px)');
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     function PairDataItem(props: PairDataItemIF) {
         const { label, value, color, onClick } = props;
@@ -71,7 +74,7 @@ export default function PoolData(props: PoolDataIF) {
                 aria-label={`${label} is ${value}`}
                 style={{
                     cursor: onClick ? 'pointer' : 'default',
-                    width: mobileView ? 'auto' : '90px',
+                    width: mobileView ? 'auto' : tabletView ? '75px' : '90px',
                 }}
                 onClick={onClick ?? undefined}
             >
