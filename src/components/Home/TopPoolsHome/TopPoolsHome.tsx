@@ -64,7 +64,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         };
 
         fetchSpotPrices();
-    }, [crocEnv === undefined, chainId, poolPriceCacheTime]);
+    }, [crocEnv, poolPriceCacheTime, JSON.stringify(poolData)]);
 
     return (
         <TopPoolContainer flexDirection='column' gap={16}>
