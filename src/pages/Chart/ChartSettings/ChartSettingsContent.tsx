@@ -16,10 +16,16 @@ import {
     ColorPickerContainer,
     ContextMenuContextText,
     ContextMenuFooter,
+    ConxtextOptions,
+    ConxtextOptionsSection,
     FooterButtons,
     FooterContextText,
     Icon,
+    MobileSettingsRow,
     OptionColor,
+    OptionsContent,
+    OptionsHeader,
+    SelectedButton,
     SelectionContainer,
     StyledCheckbox,
     StyledSelectbox,
@@ -40,6 +46,9 @@ import { ColorObjIF } from './ChartSettings';
 import { BrandContext } from '../../../contexts/BrandContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../../platformAmbient/Chart/ChartUtils/chartConstants';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import Divider from '@material-ui/core/Divider/Divider';
+import CurveDepth from '../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/CurveDepth';
 
 interface ContextMenuContentIF {
     chartThemeColors: ChartThemeIF;
@@ -90,20 +99,34 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         setShowTvl,
         showVolume,
         setShowVolume,
+        showSwap,
+        setShowSwap,
+        showLatest,
+        setLatest,
+        rescale,
+        setRescale,
+        setReset,
+        reset,
     } = props.chartItemStates;
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
 
     const { skin, platformName } = useContext(BrandContext);
-    const { defaultChartSettings, setColorChangeTrigger, setContextmenu } =
-        useContext(ChartContext);
+    const {
+        defaultChartSettings,
+        setColorChangeTrigger,
+        setContextmenu,
+        chartSettings,
+    } = useContext(ChartContext);
 
     const {
         baseToken: { symbol: baseTokenSymbol },
         quoteToken: { symbol: quoteTokenSymbol },
         isDenomBase,
     } = useContext(TradeDataContext);
+
+    const { isUserConnected } = useContext(UserDataContext);
 
     const [priceInOption, setPriceInOption] = useState<string>(
         !isTradeDollarizationEnabled
@@ -112,6 +135,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 : baseTokenSymbol
             : 'USD',
     );
+
+    // const [extendContextOptions, setExtendContextOptions] = useState(false);
 
     const handlePriceInChange = (option: string) => {
         setIsTradeDollarizationEnabled(
@@ -341,21 +366,31 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             checked: showVolume,
             action: setShowVolume,
             selection: 'Show Volume',
+            label: 'volume',
         },
         {
             checked: showTvl,
             action: setShowTvl,
             selection: 'Show TVL',
+            label: 'tvl',
         },
         {
             checked: showFeeRate,
             action: setShowFeeRate,
             selection: 'Show Fee Rate',
+            label: 'feerate',
         },
         {
             checked: isCondensedModeEnabled,
             action: setIsCondensedModeEnabled,
             selection: 'Hide empty candles',
+            label: 'condensedMode',
+        },
+        {
+            checked: showSwap,
+            action: setShowSwap,
+            selection: 'Show Buys/Sells',
+            label: 'swap',
         },
     ];
 
@@ -394,30 +429,109 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         },
     ];
 
+    const resetAndRescaleMobileDisplay = (
+        <MobileSettingsRow>
+            {showLatest && (
+                <div>
+                    <SelectedButton
+                        onClick={() => {
+                            if (rescale) {
+                                setReset(true);
+                            } else {
+                                setLatest(true);
+                            }
+                        }}
+                        isActive={false}
+                        aria-label='Show latest.'
+                    >
+                        Latest
+                    </SelectedButton>
+                </div>
+            )}
+
+            <div>
+                <SelectedButton
+                    onClick={() => {
+                        setReset(true);
+                        setRescale(true);
+                    }}
+                    isActive={reset}
+                    aria-label='Reset.'
+                >
+                    Reset
+                </SelectedButton>
+            </div>
+
+            <div>
+                <SelectedButton
+                    onClick={() => {
+                        setRescale((prevState) => {
+                            return !prevState;
+                        });
+                    }}
+                    isActive={rescale ? true : false}
+                    aria-label='Auto rescale.'
+                >
+                    Auto
+                </SelectedButton>
+            </div>
+        </MobileSettingsRow>
+    );
+
+    const extendedOptions = (
+        <ConxtextOptions>
+            <Divider></Divider>
+
+            <ConxtextOptionsSection>
+                <OptionsHeader>Chart Scale:</OptionsHeader>
+                <OptionsContent>{resetAndRescaleMobileDisplay}</OptionsContent>
+            </ConxtextOptionsSection>
+
+            <Divider></Divider>
+
+            <ConxtextOptionsSection>
+                <OptionsHeader>Curve/Depth:</OptionsHeader>
+                <OptionsContent>
+                    <CurveDepth overlayMethods={chartSettings.poolOverlay} />
+                </OptionsContent>
+            </ConxtextOptionsSection>
+        </ConxtextOptions>
+    );
+
     return (
         <>
             <>
+                {isMobile && extendedOptions}
+
                 <CheckListContainer>
-                    {checkListContent.map((item, index) => (
-                        <CheckList key={index}>
-                            <StyledCheckbox
-                                checked={item.checked}
-                                onClick={() => item.action(!item.checked)}
-                            >
-                                <Icon
-                                    viewBox='0 0 24 24'
-                                    style={{ width: '24px', height: '24px' }}
-                                >
-                                    <polyline points='20 6 9 17 4 12' />
-                                </Icon>
-                            </StyledCheckbox>
-                            <ContextMenuContextText>
-                                {['futa'].includes(platformName)
-                                    ? item.selection.toUpperCase()
-                                    : item.selection}
-                            </ContextMenuContextText>
-                        </CheckList>
-                    ))}
+                    {checkListContent.map(
+                        (item, index) =>
+                            (item.label !== 'swap' || isUserConnected) && (
+                                <CheckList key={index}>
+                                    <StyledCheckbox
+                                        checked={item.checked}
+                                        onClick={() =>
+                                            item.action(!item.checked)
+                                        }
+                                    >
+                                        <Icon
+                                            viewBox='0 0 24 24'
+                                            style={{
+                                                width: '24px',
+                                                height: '24px',
+                                            }}
+                                        >
+                                            <polyline points='20 6 9 17 4 12' />
+                                        </Icon>
+                                    </StyledCheckbox>
+                                    <ContextMenuContextText>
+                                        {['futa'].includes(platformName)
+                                            ? item.selection.toUpperCase()
+                                            : item.selection}
+                                    </ContextMenuContextText>
+                                </CheckList>
+                            ),
+                    )}
                 </CheckListContainer>
 
                 <SelectionContainer>
