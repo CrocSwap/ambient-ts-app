@@ -2,7 +2,7 @@ import styles from './LevelDropdown.module.css'
 import UserProfileCard from '../UserProfileCard';
 import { UserXpDataIF } from '../../../../../contexts/UserDataContext';
 import UserLevelDisplay from '../../../../../components/Global/LevelsCard/UserLevelDisplay';
-interface LevelDropdownPropsIF {
+interface propsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
@@ -11,7 +11,7 @@ interface LevelDropdownPropsIF {
   
 }
 
-export default function LevelDropdown(props: LevelDropdownPropsIF) {
+export default function LevelDropdown(props: propsIF) {
     const { ensName, handleCopyAddress, connectedUserXp, accountAddressFull } =
         props;
 

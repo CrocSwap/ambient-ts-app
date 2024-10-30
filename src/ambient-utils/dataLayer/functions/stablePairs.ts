@@ -38,6 +38,7 @@ import {
     scrollWeETH,
     scrollsUSDe,
     scrollSOLVBTC,
+    mainnetSTONE,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -134,6 +135,7 @@ export const STAKED_ETH_TOKENS = [
     mainnetWstETH.address,
     mainnetSWETH.address,
     mainnetRSWETH.address,
+    mainnetSTONE.address,
     scrollWstETH.address,
     scrollWrsETH.address,
     scrollSTONE.address,

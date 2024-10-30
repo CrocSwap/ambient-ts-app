@@ -110,16 +110,14 @@ export const ChartContainer = styled.div<{
             background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
         }
             
-        @media ((min-width: 801px) and (max-width:1200px)) {
-            padding-bottom: 30px;
-        }
+      
 
         @media (max-width: 320px) {
             padding-bottom: 80px;
         }
     `}
 
-    ${({ isFuta }) => (isFuta ? 'padding-bottom: 30px;' : '')}
+    ${({ isFuta,fullScreen }) => (isFuta && !fullScreen  ? 'padding-bottom: 30px;' : '')}
 
     &::-webkit-scrollbar {
         display: none;

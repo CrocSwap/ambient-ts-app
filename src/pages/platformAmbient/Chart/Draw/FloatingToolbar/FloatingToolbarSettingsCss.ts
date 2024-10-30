@@ -89,11 +89,6 @@ const OptionStyleContainer = styled.div<{
 
     padding: 1px;
     display: flex;
-
-    &:hover {
-        filter: ${({ disabled }) =>
-            disabled ? 'brightness(1)' : 'brightness(1.2)'};
-    }
 `;
 
 const LabelStyleContainer = styled.div`
@@ -170,9 +165,13 @@ const LineSettingsLeft = styled.div`
 `;
 
 const LineSettingsRight = styled.div`
-    align-items: center;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
 
     gap: 10px;
 `;
@@ -195,6 +194,7 @@ const FibLineSettings = styled.div`
 `;
 
 const FibLineOptions = styled.div`
+    position: relative;
     align-items: center;
     justify-content: center;
     display: grid;
@@ -298,7 +298,6 @@ const ListItem = styled.ul<{
 const CheckboxContainer = styled.div`
     display: flex;
 
-
     vertical-align: middle;
 `;
 
@@ -324,6 +323,24 @@ const StyledCheckbox = styled.div<{
     }
 
     cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+
+    &:hover {
+        filter: ${({ disabled }) =>
+            disabled ? 'brightness(1)' : 'brightness(1.2)'};
+    }
+`;
+
+const LineWidthOptionsCont = styled.div<{
+    disabled: boolean;
+}>`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: ${({ disabled }) => (disabled ? '#242f3f' : '#2f3d52')};
+
+    width: 100%;
+    height: 100%;
 
     &:hover {
         filter: ${({ disabled }) =>
@@ -568,4 +585,5 @@ export {
     LabelSettingsArrow,
     SliderContainer,
     AlphaSlider,
+    LineWidthOptionsCont,
 };

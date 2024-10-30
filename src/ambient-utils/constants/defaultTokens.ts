@@ -58,6 +58,15 @@ export const mainnetRSWETH: TokenIF = {
     symbol: 'rswETH',
 };
 
+export const mainnetSTONE: TokenIF = {
+    name: 'StakeStone Ether',
+    address: '0x7122985656e38bdc0302db86685bb972b145bd3c',
+    symbol: 'STONE',
+    decimals: 18,
+    chainId: 1,
+    logoURI: 'https://etherscan.io/token/images/stakestone_32.png',
+};
+
 export const mainnetLIDO: TokenIF = {
     address: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
     chainId: 1,
@@ -717,6 +726,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetMATIC,
     mainnetSWETH,
     mainnetRSWETH,
+    mainnetSTONE,
     mainnetMKR,
     mainnetLIDO,
     mainnetLUSD,
