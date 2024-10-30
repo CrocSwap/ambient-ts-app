@@ -45,16 +45,16 @@ const PlatformAmbientRoutes: React.FC = () => {
                 <Route path='reposition/:params' element={<Reposition />} />
                 <Route
                     path='edit/'
-                    element={<Navigate replace to={defaultUrlParams.market} />}
+                    element={<Navigate to={defaultUrlParams.pool} replace />}
                 />
             </Route>
             <Route
                 path='trade/market'
-                element={<Navigate replace to={defaultUrlParams.market} />}
+                element={<Navigate to={defaultUrlParams.market} replace />}
             />
             <Route
                 path='trade/limit'
-                element={<Navigate replace to={defaultUrlParams.limit} />}
+                element={<Navigate to={defaultUrlParams.limit} replace />}
             />
             <Route
                 path='trade/pool'
@@ -172,12 +172,12 @@ const PlatformAmbientRoutes: React.FC = () => {
             />
             <Route
                 path='swap'
-                element={<Navigate replace to={defaultUrlParams.swap} />}
+                element={<Navigate to={defaultUrlParams.swap} replace />}
             />
             {/* refactor EXPLORE as a nested route */}
             <Route
                 path='explore'
-                element={<Navigate replace to='/explore/pools' />}
+                element={<Navigate to='/explore/pools' replace />}
             />
             <Route path='explore/pools' element={<Explore view='pools' />} />
             <Route path='explore/tokens' element={<Explore view='tokens' />} />
