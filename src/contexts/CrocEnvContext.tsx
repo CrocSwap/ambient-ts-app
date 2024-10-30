@@ -22,7 +22,6 @@ import {
 } from '../utils/hooks/useLinkGen';
 import { PoolIF, TokenIF } from '../ambient-utils/types';
 import {
-    APP_ENVIRONMENT,
     ethereumMainnet,
     mainnetETH,
     getDefaultPairForChain,
@@ -75,10 +74,9 @@ const sepoliaProvider = new BatchedJsonRpcProvider(SEPOLIA_RPC_URL, 11155111, {
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const { chainData, activeNetwork } =
-        useContext<AppStateContextIF>(AppStateContext);
+    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
 
-    const { userAddress, walletChain } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
     const { walletProvider } = useWeb3ModalProvider();
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
     const { tokens } = useContext(TokenContext);
@@ -199,14 +197,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             const w3provider = new ethers.BrowserProvider(walletProvider);
             signer = await w3provider.getSigner();
         }
-        if (APP_ENVIRONMENT === 'local') {
-            console.debug({ provider });
-            console.debug({ signer });
-            console.debug({ crocEnv });
-        }
         if (!provider && !signer) {
-            APP_ENVIRONMENT === 'local' &&
-                console.debug('setting crocEnv to undefined');
             setCrocEnv(undefined);
             return;
         } else if (provider) {
@@ -219,14 +210,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     };
     useEffect(() => {
         setNewCrocEnv();
-    }, [
-        crocEnv === undefined,
-        chainData.chainId,
-        walletProvider,
-        userAddress,
-        activeNetwork.chainId,
-        walletChain,
-    ]);
+    }, [provider, walletProvider]);
 
     useEffect(() => {
         if (provider && crocEnv) {
