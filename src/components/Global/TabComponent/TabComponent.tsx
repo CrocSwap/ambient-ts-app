@@ -192,7 +192,6 @@ export default function TabComponent(props: TabPropsIF) {
             <div className={styles.tab_icon_container}>
                 <DefaultTooltip
                     title={label}
-                    placeholder={'bottom'}
                     arrow
                     enterDelay={400}
                     leaveDelay={200}
