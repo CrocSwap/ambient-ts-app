@@ -22,7 +22,6 @@ import {
 } from '../utils/hooks/useLinkGen';
 import { PoolIF, TokenIF } from '../ambient-utils/types';
 import {
-    APP_ENVIRONMENT,
     ethereumMainnet,
     mainnetETH,
     getDefaultPairForChain,
@@ -75,10 +74,9 @@ const sepoliaProvider = new BatchedJsonRpcProvider(SEPOLIA_RPC_URL, 11155111, {
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const { chainData, activeNetwork } =
-        useContext<AppStateContextIF>(AppStateContext);
+    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
 
-    const { userAddress, walletChain } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
     const { walletProvider } = useWeb3ModalProvider();
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
     const { tokens } = useContext(TokenContext);
@@ -199,56 +197,20 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             const w3provider = new ethers.BrowserProvider(walletProvider);
             signer = await w3provider.getSigner();
         }
-        if (APP_ENVIRONMENT === 'local') {
-            console.debug({ provider });
-            console.debug({ signer });
-            console.debug({ crocEnv });
-        }
         if (!provider && !signer) {
-            APP_ENVIRONMENT === 'local' &&
-                console.debug('setting crocEnv to undefined');
             setCrocEnv(undefined);
             return;
-        } else if (!signer && !!crocEnv) {
-            APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
-            return;
-        } else if (provider && !crocEnv) {
+        } else if (provider) {
             const newCrocEnv = new CrocEnv(
                 provider,
                 signer ? signer : undefined,
             );
             setCrocEnv(newCrocEnv);
-        } else {
-            // If signer and provider are set to different chains (as can happen)
-            // after a network switch, it causes a lot of performance killing timeouts
-            // and errors
-            if (
-                (await signer?.provider?.getNetwork())?.chainId ==
-                (await provider.getNetwork()).chainId
-            ) {
-                const newCrocEnv = new CrocEnv(provider, signer);
-                APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
-                setCrocEnv(newCrocEnv);
-            } else if (signer) {
-                // Since this is a weird case, it's best not to rush things - maybe this happens
-                // during the short moment while the network is switching already, idk.
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                // await useSwitchNetwork().switchNetwork(
-                //     Number(chainData.chainId),
-                // );
-            }
         }
     };
     useEffect(() => {
         setNewCrocEnv();
-    }, [
-        crocEnv === undefined,
-        chainData.chainId,
-        walletProvider,
-        userAddress,
-        activeNetwork.chainId,
-        walletChain,
-    ]);
+    }, [provider, walletProvider]);
 
     useEffect(() => {
         if (provider && crocEnv) {

@@ -1,5 +1,5 @@
 import PoolCard from '../../Global/PoolCard/PoolCard';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { Link } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -27,14 +27,18 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const show4TopPools = useMediaQuery('(max-width: 1500px)');
     const show3TopPools = useMediaQuery('(min-height: 700px)');
-    const poolData = showMobileVersion
-        ? show3TopPools
-            ? topPools.slice(0, 3)
-            : topPools.slice(0, 2)
-        : show4TopPools
-          ? topPools.slice(0, 4)
-          : topPools;
 
+    const poolData = useMemo(
+        () =>
+            showMobileVersion
+                ? show3TopPools
+                    ? topPools.slice(0, 3)
+                    : topPools.slice(0, 2)
+                : show4TopPools
+                  ? topPools.slice(0, 4)
+                  : topPools,
+        [showMobileVersion, show3TopPools, show4TopPools, topPools],
+    );
     const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
 
     const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
@@ -64,7 +68,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         };
 
         fetchSpotPrices();
-    }, [crocEnv === undefined, chainId, poolPriceCacheTime]);
+    }, [crocEnv, poolPriceCacheTime, JSON.stringify(poolData)]);
 
     return (
         <TopPoolContainer flexDirection='column' gap={16}>
