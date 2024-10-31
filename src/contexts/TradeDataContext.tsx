@@ -45,9 +45,7 @@ export interface TradeDataContextIF {
     setDidUserFlipDenom: Dispatch<SetStateAction<boolean>>;
     toggleDidUserFlipDenom: () => void;
     setSoloToken: Dispatch<SetStateAction<TokenIF>>;
-    setShouldSwapDirectionReverse: Dispatch<
-        SetStateAction<boolean>
-    >;
+    setShouldSwapDirectionReverse: Dispatch<SetStateAction<boolean>>;
     setPrimaryQuantity: Dispatch<SetStateAction<string>>;
     setLimitTick: Dispatch<SetStateAction<number | undefined>>;
     setPoolPriceNonDisplay: Dispatch<SetStateAction<number>>;
@@ -70,9 +68,7 @@ export const TradeDataContext = createContext<TradeDataContextIF>(
 // since these will get updated by useUrlParams() in any context where a
 // pair is necessary at load time
 
-export const TradeDataContextProvider = (props: {
-    children: ReactNode;
-}) => {
+export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     const { chainData } = useContext<AppStateContextIF>(AppStateContext);
     const { tokens } = useContext<TokenContextIF>(TokenContext);
 
@@ -127,14 +123,31 @@ export const TradeDataContextProvider = (props: {
               : dfltTokenB,
     );
 
+    useEffect(() => {
+        // update tokenA and tokenB when chain changes
+        setTokenA(
+            firstTokenMatchingA
+                ? firstTokenMatchingA
+                : shouldReverseDefaultTokens
+                  ? dfltTokenB
+                  : dfltTokenA,
+        );
+        setTokenB(
+            firstTokenMatchingB
+                ? firstTokenMatchingB
+                : shouldReverseDefaultTokens
+                  ? dfltTokenA
+                  : dfltTokenB,
+        );
+    }, [chainData.chainId]);
+
     const [
         areDefaultTokensUpdatedForChain,
         setAreDefaultTokensUpdatedForChain,
     ] = useState<boolean>(false);
     const [isDenomBase, setDenomInBase] = useState<boolean>(true);
     // TODO: this can likely be refactored out
-    const [didUserFlipDenom, setDidUserFlipDenom] =
-        useState<boolean>(false);
+    const [didUserFlipDenom, setDidUserFlipDenom] = useState<boolean>(false);
 
     const { baseToken, quoteToken, isTokenABase } = useMemo(() => {
         const [baseTokenAddress] = sortBaseQuoteTokens(
@@ -195,9 +208,7 @@ export const TradeDataContextProvider = (props: {
         localStorage.setItem('primaryQuantity', primaryQuantity);
     }, [primaryQuantity]);
 
-    const [limitTick, setLimitTick] = useState<number | undefined>(
-        undefined,
-    );
+    const [limitTick, setLimitTick] = useState<number | undefined>(undefined);
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
 
     const currentPoolPriceTick = useMemo(
@@ -273,7 +284,6 @@ export const TradeDataContextProvider = (props: {
         noGoZoneBoundaries,
         setNoGoZoneBoundaries,
     };
-
 
     return (
         <TradeDataContext.Provider value={tradeDataContext}>
