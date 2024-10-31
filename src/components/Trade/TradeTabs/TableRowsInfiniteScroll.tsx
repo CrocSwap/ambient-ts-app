@@ -89,14 +89,10 @@ function TableRowsInfiniteScroll({
 
     const wrapperID = tableKey ? tableKey : '';
 
-    // const txSpanSelectorForScrollMethod =  isSmallScreen ? `#infinite_scroll_wrapper_${wrapperID} > div > div:nth-child(1) > div:nth-child(1) > span`:
-    //     `#infinite_scroll_wrapper_${wrapperID} > div > div:nth-child(2) > div > span`;
     const txSpanSelectorForScrollMethod =  `#infinite_scroll_wrapper_${wrapperID} div[data-label='hidden-id'] > span`;
-    // const txSpanSelectorForBindMethod =  isSmallScreen ? 'div:nth-child(1)':
-    //     'div:nth-child(2)';
     const txSpanSelectorForBindMethod =  'div[data-label="hidden-id"]';
 
-    const debugMode = true;
+    const debugMode = false;
     const markRows = false;
     const[manualMode, setManualMode] = useState(false);
     const manualModeRef = useRef<boolean>();
@@ -197,11 +193,9 @@ function TableRowsInfiniteScroll({
 
     const bindTableReadyState = (newState: boolean) => {
         if(newState === true){
-            // setTransactionTableOpacity('1');
             setIsTableReady(true);
         }
         else{
-            // setTransactionTableOpacity('.5');
             setIsTableReady(false);
         }
     }
@@ -229,13 +223,6 @@ function TableRowsInfiniteScroll({
         lockShift();
     };
     
-    // const setTransactionTableOpacity = (val: string) => {
-    //     if(wrapperEl){
-    //         wrapperEl.style.opacity = val;
-    //     }
-    // };
-
-
     const triggerAutoScroll = (
         direction: ScrollDirection,
     ) => {
@@ -330,11 +317,10 @@ function TableRowsInfiniteScroll({
         if(isIOS()){
             setTimeout(() => {
                 if(wrapperEl){
-                    // addToActionHistory(InfScrollAction.SLIGHT_SCROLL);
                     wrapperEl.scrollBy({
-                        top: -2,    // scroll vertically by 2px
-                        left: 0,   // scroll horizontally by 0px (you can adjust this if needed)
-                        behavior: 'smooth' // enables smooth scrolling
+                        top: -2,   
+                        left: 0,   
+                        behavior: 'smooth' 
                       });
                 }
             }, tmReadyState);
@@ -521,7 +507,7 @@ function TableRowsInfiniteScroll({
                 }
             },
             {
-                threshold: 0.1, // Trigger when 10% of the element is visible
+                threshold: 0.1,
             },
         );
 
@@ -618,7 +604,7 @@ function TableRowsInfiniteScroll({
                 }
             },
             {
-                threshold: 0.1, // Trigger when 10% of the element is visible
+                threshold: 0.1,
             },
         );
 
