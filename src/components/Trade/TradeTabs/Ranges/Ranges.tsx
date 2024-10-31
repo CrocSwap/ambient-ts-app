@@ -170,6 +170,9 @@ function Ranges(props: propsIF) {
 
     // TODO: Use these as media width constants
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
+    const isTabletScreen = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
     const isLargeScreen = useMediaQuery('(min-width: 2000px)');
     const isLargeScreenAccount = useMediaQuery('(min-width: 1600px)');
 
@@ -180,7 +183,7 @@ function Ranges(props: propsIF) {
             !isLargeScreenAccount &&
             isSidebarOpen)
             ? 'small'
-            : !isSmallScreen && !isLargeScreen
+            : (!isSmallScreen && !isLargeScreen) || isTabletScreen
               ? 'medium'
               : 'large';
 

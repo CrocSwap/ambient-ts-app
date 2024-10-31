@@ -221,11 +221,6 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         poolPriceChangeString
     }
 
-
-
-
-
-
     if (showMobileVersion) return (
         <TradeMobile {...tradeMobileProps} />
     )

@@ -64,7 +64,9 @@ function TradeTabs2(props: propsIF) {
     const { isUserConnected, userAddress } = useContext(UserDataContext);
 
     const smallScreen = useMediaQuery('(max-width: 768px)');
-
+    const isTabletScreen = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     const selectedBaseAddress = baseToken.address;
     const selectedQuoteAddress = quoteToken.address;
@@ -177,7 +179,42 @@ function TradeTabs2(props: propsIF) {
                   icon: rangePositionsImage,
                   showRightSideOption: false,
               },
-             
+          ];
+
+    const tradeTabDataTablet = isCandleSelected
+        ? [
+              {
+                  label: 'Transactions',
+                  content: <Transactions {...transactionsProps} />,
+                  icon: recentTransactionsImage,
+                  showRightSideOption: true,
+              },
+          ]
+        : [
+              {
+                  label: 'Transactions',
+                  content: <Transactions {...transactionsProps} />,
+                  icon: recentTransactionsImage,
+                  showRightSideOption: false,
+              },
+              {
+                  label: 'Limits',
+                  content: <Orders {...ordersProps} />,
+                  icon: openOrdersImage,
+                  showRightSideOption: false,
+              },
+              {
+                  label: 'Liquidity',
+                  content: <Ranges {...rangesProps} />,
+                  icon: rangePositionsImage,
+                  showRightSideOption: false,
+              },
+              {
+                  label: 'Leaderboard',
+                  content: <Leaderboard />,
+                  icon: leaderboard,
+                  showRightSideOption: false,
+              },
           ];
 
     // -------------------------------END OF DATA-----------------------------------------
@@ -265,14 +302,24 @@ function TradeTabs2(props: propsIF) {
                         tradeTableState !== 'Expanded'
                             ? 'var(--border-radius)'
                             : '',
-                    border: smallScreen ? '1px solid var(--dark3)' : ''
+                    border: smallScreen ? '1px solid var(--dark3)' : '',
                 }}
             >
                 {isCandleSelected ? selectedMessageContent : null}
                 <TabComponent
-                    data={smallScreen ? tradeTabDataMobile :  tradeTabData}
-                    rightTabOptions={ !smallScreen &&
-                        <PositionsOnlyToggle {...positionsOnlyToggleProps} />
+                    data={
+                        smallScreen
+                            ? tradeTabDataMobile
+                            : isTabletScreen
+                              ? tradeTabDataTablet
+                              : tradeTabData
+                    }
+                    rightTabOptions={
+                        !smallScreen && (
+                            <PositionsOnlyToggle
+                                {...positionsOnlyToggleProps}
+                            />
+                        )
                     }
                 />
             </FlexContainer>

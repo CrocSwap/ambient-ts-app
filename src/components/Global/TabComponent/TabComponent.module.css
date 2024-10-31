@@ -18,6 +18,64 @@
     overflow: hidden;
 }
 
+.navbar_header_container {
+    display: grid;
+
+    grid-template-columns: 70% 30%;
+}
+
+.navbar_header_tablet_container {
+    display: grid;
+
+    grid-template-columns: 90% 10%;
+}
+
+.tabs_header_container {
+    display: grid;
+    grid-template-columns: repeat(5, 20%);
+}
+
+.tabs_header_tablet_container {
+    display: grid;
+    grid-template-columns: repeat(4, 25%);
+}
+
+.single_tab {
+    position: relative;
+
+    display: flex;
+
+    justify-content: start;
+    align-items: center;
+
+    padding: 6px 10px;
+
+    cursor: pointer;
+}
+
+.active_label_container_tablet,
+.active_label_container,
+.nonactive_label_container {
+    outline: none;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text3);
+}
+
+.active_label_container_tablet {
+    color: var(--accent1);
+}
+
+.active_label_container {
+    font-size: 15px;
+    color: var(--accent1);
+}
+
 .tab_ul,
 .tab_ul li,
 .tab_ul_left {
@@ -55,7 +113,7 @@
     font-weight: 500;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-list-style-type: none;
+    list-style-type: none;
 }
 
 .label_button {
@@ -87,7 +145,6 @@ list-style-type: none;
     color: var(--accent1);
     transition: var(--transition);
 }
-
 
 .selected button,
 .non_selected button {
@@ -204,11 +261,8 @@ list-style-type: none;
     }
 
     .tap_option_right {
-        width: 30%;
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        align-items: baseline;
-        max-height: 44px;
     }
 }

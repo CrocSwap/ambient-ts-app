@@ -210,17 +210,21 @@ function Transactions(props: propsIF) {
 
     // TODO: Use these as media width constants
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
+    const isTabletScreen = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
     const isLargeScreen: boolean = useMediaQuery('(min-width: 1600px)');
 
-    const tableView: 'small' | 'medium' | 'large' = isSmallScreen
-        ? 'small'
-        : (!isSmallScreen && !isLargeScreen) ||
-            (isAccountView &&
-                isLargeScreen &&
-                isSidebarOpen &&
-                fullLayoutActive === false)
-          ? 'medium'
-          : 'large';
+    const tableView: 'small' | 'medium' | 'large' =
+        isSmallScreen || isTabletScreen
+            ? 'small'
+            : (!isSmallScreen && !isLargeScreen) ||
+                (isAccountView &&
+                    isLargeScreen &&
+                    isSidebarOpen &&
+                    fullLayoutActive === false)
+              ? 'medium'
+              : 'large';
 
     const getCandleData = (): Promise<void> | undefined =>
         crocEnv &&
