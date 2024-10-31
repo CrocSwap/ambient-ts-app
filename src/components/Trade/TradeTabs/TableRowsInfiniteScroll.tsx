@@ -654,7 +654,6 @@ function TableRowsInfiniteScroll({
     }
 
     useEffect(() => {
-        console.log(lastFetchedCount);
         if(lastFetchedCount && lastFetchedCount > 0 && setLastFetchedCount){
             triggerAutoScroll(ScrollDirection.DOWN);
             setTimeout(() => {
@@ -699,8 +698,6 @@ function TableRowsInfiniteScroll({
                 {
                     renderDebugData()
                 }
-
-
                 {
                     !isTableReadyRef.current &&
                     (<div className={styles.data_fetching_panel}> 
