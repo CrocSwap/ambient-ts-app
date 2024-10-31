@@ -19,11 +19,7 @@ interface TopPoolsPropsIF {
 // eslint-disable-next-line
 export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
-    const {
-        topPools,
-        crocEnv,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { topPools, crocEnv } = useContext(CrocEnvContext);
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const show4TopPools = useMediaQuery('(max-width: 1500px)');
     const show3TopPools = useMediaQuery('(min-height: 700px)');
@@ -39,6 +35,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
                   : topPools,
         [showMobileVersion, show3TopPools, show4TopPools, topPools],
     );
+
     const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
 
     const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
@@ -52,7 +49,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
                     crocEnv,
                     pool.base.address,
                     pool.quote.address,
-                    chainId,
+                    pool.chainId,
                     poolPriceCacheTime,
                 ).catch((error) => {
                     console.error(
