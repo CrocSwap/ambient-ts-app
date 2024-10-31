@@ -61,14 +61,11 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { chainData, activeNetwork, } = useContext<AppStateContextIF>(AppStateContext);
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-    } = useContext<CachedDataContextIF>(CachedDataContext);
-    const { crocEnv, provider } =
-        useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { chainData, activeNetwork } =
+        useContext<AppStateContextIF>(AppStateContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext<CachedDataContextIF>(CachedDataContext);
+    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const { tokens } = useContext<TokenContextIF>(TokenContext);
     const { allPoolStats } = useContext<ChainDataContextIF>(ChainDataContext);
     // metadata only
@@ -91,7 +88,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         }
     }, [isExploreDollarizationEnabled]);
 
-
     const getAllPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
@@ -103,9 +99,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     // get expanded pool metadata
     useEffect(() => {
         if (crocEnv !== undefined && poolList.length > 0) {
+            setAllPools([]);
             getAllPools();
         }
-    }, [crocEnv, poolList.length]);
+    }, [JSON.stringify(poolList)]);
 
     // fn to get data on a single pool
     async function getPoolData(
