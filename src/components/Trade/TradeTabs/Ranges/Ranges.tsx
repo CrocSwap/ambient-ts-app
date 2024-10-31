@@ -380,7 +380,7 @@ useEffect(() => {
         setInfiniteScrollLock(true);
     }
 
-    if(fetchedTransactionsRef.current && fetchedTransactionsRef.current.positions.length < 10){
+    if(fetchedTransactionsRef.current && fetchedTransactionsRef.current.positions.length < 40){
         if(infiniteScrollLockRef.current){
             addMoreData(true);
         }
@@ -461,7 +461,6 @@ const getOldestTime = (data: PositionIF[]):number => {
 
 
 const addMoreData = async(byPassIncrementPage?: boolean) => {
-        console.log('add more data', byPassIncrementPage)
         setMoreDataLoading(true);
             const targetCount = 30;
             let addedDataCount = 0;
@@ -1233,6 +1232,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                         setLastFetchedCount={setLastFetchedCount}
                         moreDataLoading={moreDataLoading}
                         componentLock={infiniteScrollLockRef.current}
+                        scrollOnTopTresholdRatio={.05}
                         />
                     )
                     :

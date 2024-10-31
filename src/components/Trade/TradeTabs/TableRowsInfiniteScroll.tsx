@@ -34,6 +34,7 @@ interface propsIF {
     setLastFetchedCount?: Dispatch<SetStateAction<number>>;
     moreDataLoading: boolean;
     componentLock?: boolean;
+    scrollOnTopTresholdRatio?: number;
 }
 
 enum ScrollDirection {
@@ -74,7 +75,8 @@ function TableRowsInfiniteScroll({
     lastFetchedCount,
     setLastFetchedCount,
     moreDataLoading,
-    componentLock
+    componentLock,
+    scrollOnTopTresholdRatio
     
 }: propsIF) {
 
@@ -94,7 +96,7 @@ function TableRowsInfiniteScroll({
     //     'div:nth-child(2)';
     const txSpanSelectorForBindMethod =  'div[data-label="hidden-id"]';
 
-    const debugMode = false;
+    const debugMode = true;
     const markRows = false;
     const[manualMode, setManualMode] = useState(false);
     const manualModeRef = useRef<boolean>();
@@ -396,6 +398,9 @@ function TableRowsInfiniteScroll({
     const couldFirstPageLoop = () => {
         if(dataPerPage && pageDataCount && pagesVisibleRef.current && pageDataCount.length > pagesVisibleRef.current[0]){
             const firstPageIndex = pagesVisibleRef.current[0];
+            if(scrollOnTopTresholdRatio){
+                return pageDataCount[firstPageIndex] / dataPerPage < scrollOnTopTresholdRatio; 
+            }
             return pageDataCount[firstPageIndex] / dataPerPage < .5; 
         }
 
