@@ -159,6 +159,30 @@ function TableRowsInfiniteScroll({
 
     const [actionHistory, setActionHistory] = useState('');
 
+
+    const bindTmLockAutoScroll = () => {
+        const baseTimeout = 2000;
+        if(lastFetchedCount && lastFetchedCount > 0){
+            if(lastFetchedCount >= 30){
+                return baseTimeout;
+            }else if ( lastFetchedCount >= 15){
+                return baseTimeout * .75;
+            } else{
+                return baseTimeout * .5;
+            }
+
+        }else{
+            return baseTimeout;
+        }
+    }
+
+    const tmReadyState = 100;
+    const tmLockShift = 500;
+    const tmLockReq = 700;
+    const tmLockAutoScroll = bindTmLockAutoScroll();
+
+
+
     const bindWrapperEl = () => {
         if(isSmallScreen){
             return document.getElementById(`infinite_scroll_wrapper_${wrapperID}`)?.parentElement;
@@ -200,7 +224,7 @@ function TableRowsInfiniteScroll({
                     behavior: 'instant' as ScrollBehavior,
                 });
                 doIphoneFix();
-            }, 100)
+            }, tmReadyState)
         }
         lockShift();
     };
@@ -214,7 +238,6 @@ function TableRowsInfiniteScroll({
 
     const triggerAutoScroll = (
         direction: ScrollDirection,
-        timeout?: number,
     ) => {
         bindTableReadyState(true);
         setAutoScroll(true);
@@ -223,18 +246,18 @@ function TableRowsInfiniteScroll({
             () => {
                 setAutoScroll(false);
             },
-            timeout ? timeout : 2000,
+            tmLockAutoScroll,
         );
         setTimeout(() => {
             bindTableReadyState(true)
-        }, 300)
+        }, tmReadyState)
     };
 
     const lockShift = () => {
         setShiftLock(true);
         setTimeout(() => {
             setShiftLock(false);
-        }, 500);
+        }, tmLockShift);
     }
 
     const shiftUp = (): void => {
@@ -245,7 +268,7 @@ function TableRowsInfiniteScroll({
         lockShift();
         setTimeout(() => {
             bindTableReadyState(true);
-        }, 100)
+        }, tmReadyState)
         setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
         triggerAutoScroll(ScrollDirection.UP);
         addToActionHistory(InfScrollAction.SHIFT_UP);
@@ -259,7 +282,7 @@ function TableRowsInfiniteScroll({
         lockShift();
         setTimeout(() => {
             bindTableReadyState(true);
-        }, 100)
+        }, tmReadyState)
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
         triggerAutoScroll(ScrollDirection.DOWN);
         addToActionHistory(InfScrollAction.SHIFT_DOWN)
@@ -314,7 +337,7 @@ function TableRowsInfiniteScroll({
                         behavior: 'smooth' // enables smooth scrolling
                       });
                 }
-            }, 100)
+            }, tmReadyState);
         }
     }
 
@@ -343,16 +366,6 @@ function TableRowsInfiniteScroll({
                     doIphoneFix();
                     
                 }
-                // const row = span.parentElement?.parentElement as HTMLDivElement;
-
-                // const parent = row.parentElement as HTMLDivElement;
-                // if (debugMode) {
-                //     parent.style.background = pos == ScrollPosition.BOTTOM ? 'purple' : 'cyan';
-                // }
-                // parent.scrollIntoView({
-                //     block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
-                //     behavior: 'instant' as ScrollBehavior,
-                // });
             }
         });
     };
@@ -376,10 +389,6 @@ function TableRowsInfiniteScroll({
     const bindLastSeenRow = (): void => {
         const rows = document.querySelectorAll(`#infinite_scroll_wrapper_${wrapperID} > div`);
         if (rows.length > 0) {
-            // const lastRow = rows[rows.length - 1] as HTMLDivElement;
-            // rows.forEach((row) => {
-            //     (row as HTMLDivElement).style.backgroundColor = 'transparent';
-            // });
             const lastRow = rows[rows.length - 1] as HTMLDivElement;
             if (debugMode && markRows) {
                 lastRow.style.backgroundColor = 'blue';
@@ -632,39 +641,25 @@ function TableRowsInfiniteScroll({
         setReqLock(true);
         setTimeout(() => {
             setReqLock(false);
-        }, 700);
+        }, tmLockReq);
     }
 
 
     const addMoreData = async() => {
-        // setMoreDataLoading(true);
-
         if(reqLockRef.current === true) return;
         lockReq();
         await fetcherFunction();
         addToActionHistory(InfScrollAction.ADD_MORE_DATA)
         lockShift();
-        // setMoreDataLoading(false);
-        // if(changePage){
-        //     setExtraPagesAvailable((prev) => prev + 1);
-        //     setPagesVisible((prev) => [
-        //         prev[0] + 1,
-        //         prev[1] + 1,
-        //     ]);
-            
-        //     triggerAutoScroll(ScrollDirection.DOWN);
-        // }else{
-        //     bindTableReadyState(true);
-        // }
     }
 
     useEffect(() => {
+        console.log(lastFetchedCount);
         if(lastFetchedCount && lastFetchedCount > 0 && setLastFetchedCount){
             triggerAutoScroll(ScrollDirection.DOWN);
-            // doScroll();
             setTimeout(() => {
                 setLastFetchedCount(0);
-            }, 500)
+            }, tmLockShift)
         }
     }, [lastFetchedCount])
 
@@ -709,10 +704,6 @@ function TableRowsInfiniteScroll({
                 {
                     !isTableReadyRef.current &&
                     (<div className={styles.data_fetching_panel}> 
-                        {/* <div className={styles.data_fetching_text}>
-                        More data is loading...
-                        </div> */}
-                        {/* <div className={styles.data_fetching_bar}></div> */}
                         <div className={styles.data_fetching_bar2}></div>
                     </div>)
                 
