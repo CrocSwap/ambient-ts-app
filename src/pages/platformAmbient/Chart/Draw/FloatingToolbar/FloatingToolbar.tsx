@@ -1096,7 +1096,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         ),
                 )}
             </FloatingDiv>
-            {divTop && (
+            {divTop !== undefined && (
                 <FloatingDropdownOptions
                     ref={floatingMenuDivRef}
                     style={{
