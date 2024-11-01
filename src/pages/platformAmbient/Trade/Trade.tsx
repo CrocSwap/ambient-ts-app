@@ -9,7 +9,6 @@ import {
     useCallback,
     memo,
     useRef,
-    
 } from 'react';
 
 // START: Import JSX Components
@@ -57,7 +56,6 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const { futaActiveTab } = props;
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
-
     const {
         chainData: { chainId },
         provider,
@@ -89,13 +87,8 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const { setOutsideControl, setSelectedOutsideTab } =
         useContext(TradeTableContext);
 
-    const {
-        baseToken,
-        quoteToken,
-        isDenomBase,
-        limitTick,
-      
-    } = useContext(TradeDataContext);
+    const { baseToken, quoteToken, isDenomBase, limitTick } =
+        useContext(TradeDataContext);
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
@@ -129,7 +122,6 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         unselectCandle();
     }, [chartSettings.candleTime.global.time, baseToken.name, quoteToken.name]);
 
-
     const [
         isMobileSettingsModalOpen,
         openMobileSettingsModal,
@@ -161,7 +153,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const {
         poolPriceDisplay,
         poolPriceChangePercent,
-        
+
         usdPrice,
         isTradeDollarizationEnabled,
     } = useContext(PoolContext);
@@ -194,9 +186,6 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
 
     const poolPriceChangeString =
         poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent;
-
-
-
 
     const tradeMobileProps = {
         changeState: changeState,
@@ -237,7 +226,12 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                     flexDirection='column'
                     fullWidth
                     background='dark2'
-                    style={{ height: 'calc(100vh - 56px)' }}
+                    style={{
+                        height: 'calc(100vh - 56px)',
+                        ...(isChartFullScreen
+                            ? { gridColumnStart: 1, gridColumnEnd: 3 }
+                            : {}),
+                    }}
                     ref={canvasRef}
                 >
                     {showTopPtsBanner && showPoints && (
@@ -259,6 +253,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                                 !isChartFullScreen &&
                                 !isFuta
                             }
+                            isChartFullScreen={isChartFullScreen}
                             isFuta={isFuta}
                             enable={{
                                 bottom: !isChartFullScreen,
@@ -272,7 +267,10 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                             }}
                             size={{
                                 width: '100%',
-                                height: isFuta ? '100%' : chartHeights.current,
+                                height:
+                                    isFuta || isChartFullScreen
+                                        ? '100%'
+                                        : chartHeights.current,
                             }}
                             minHeight={4}
                             onResize={(

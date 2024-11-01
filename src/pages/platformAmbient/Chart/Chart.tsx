@@ -4604,7 +4604,8 @@ export default function Chart(props: propsIF) {
             setHandleDocumentEvent(event);
             if (
                 d3Container.current &&
-                !d3Container.current.contains(event.target)
+                !d3Container.current.contains(event.target) &&
+                event.target.id !== 'trade_chart_full_screen_button'
             ) {
                 setIsShowFloatingToolbar(false);
             }
