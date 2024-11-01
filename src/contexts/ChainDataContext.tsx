@@ -55,6 +55,7 @@ interface ChainDataContextIF {
     connectedUserXp: UserXpDataIF;
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
+    isActiveNetworkPlume: boolean;
     isActiveNetworkScroll: boolean;
     isActiveNetworkMainnet: boolean;
     isActiveNetworkL2: boolean;
@@ -109,6 +110,8 @@ export const ChainDataContextProvider = (props: {
     const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(
         chainData.chainId,
     );
+
+    const isActiveNetworkPlume = ['0x18230'].includes(chainData.chainId);
 
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(
         chainData.chainId,
@@ -589,6 +592,7 @@ export const ChainDataContextProvider = (props: {
         connectedUserBlastXp,
         setGasPriceinGwei,
         isActiveNetworkBlast,
+        isActiveNetworkPlume,
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
         isActiveNetworkL2,

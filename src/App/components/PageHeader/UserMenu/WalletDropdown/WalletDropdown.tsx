@@ -5,7 +5,7 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenIF } from '../../../../../ambient-utils/types';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
-import styles from './WalletDropdown.module.css'
+import styles from './WalletDropdown.module.css';
 
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
@@ -24,7 +24,7 @@ interface WalletDropdownPropsIF {
     clickOutsideHandler: () => void;
     clickLogout: () => void;
     accountAddressFull: string;
-    hideProfileCard? : boolean
+    hideProfileCard?: boolean;
 }
 
 interface TokenAmountDisplayPropsIF {
@@ -41,12 +41,12 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         handleCopyAddress,
         clickOutsideHandler,
         clickLogout,
-        hideProfileCard
+        hideProfileCard,
     } = props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { isActiveNetworkBlast, nativeTokenUsdPrice } =
+    const { isActiveNetworkBlast, nativeTokenUsdPrice, isActiveNetworkPlume } =
         useContext(ChainDataContext);
 
     const { tokenBalances } = useContext(TokenBalanceContext);
@@ -54,25 +54,31 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
-    const usdcData: TokenIF | undefined = useMemo(() => {
+
+    const secondDefaultTokenData: TokenIF | undefined = useMemo(() => {
         return tokenBalances?.find(
             (tkn: TokenIF) =>
                 tkn.address.toLowerCase() ===
                 defaultPair[1].address.toLowerCase(),
         );
     }, [tokenBalances]);
+
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF): JSX.Element {
         const { logo, symbol, amount, value } = props;
         const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${value} dollars`;
         return (
-            <section className={styles.tokenContainer} tabIndex={0} aria-label={ariaLabel}>
-                <div className={styles.logoName} >
+            <section
+                className={styles.tokenContainer}
+                tabIndex={0}
+                aria-label={ariaLabel}
+            >
+                <div className={styles.logoName}>
                     <img src={logo} alt='' />
                     <h3>{symbol}</h3>
                 </div>
-                <div className={styles.tokenAmount} >
+                <div className={styles.tokenAmount}>
                     <h3>{amount}</h3>
                     <h6>{value !== undefined ? value : '...'}</h6>
                 </div>
@@ -80,10 +86,10 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         );
     }
 
-    const [usdcBalanceForDom, setUsdcBalanceForDom] = useState<
+    const [secondTokenBalanceForDom, setSecondTokenBalanceForDom] = useState<
         string | undefined
     >();
-    const [usdcUsdValueForDom, setUsdcUsdValueForDom] = useState<
+    const [secondTokenUsdValueForDom, setSecondTokenUsdValueForDom] = useState<
         string | undefined
     >();
 
@@ -92,53 +98,63 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     useEffect(() => {
         if (!crocEnv) return;
 
-        if (usdcData === undefined) {
-            setUsdcUsdValueForDom(undefined);
-            setUsdcBalanceForDom(undefined);
+        if (secondDefaultTokenData === undefined) {
+            setSecondTokenUsdValueForDom(undefined);
+            setSecondTokenBalanceForDom(undefined);
             return;
         }
-        const usdcCombinedBalance =
-            usdcData.walletBalance !== undefined
+        const secondTokenCombinedBalance =
+            secondDefaultTokenData.walletBalance !== undefined
                 ? (
-                      BigInt(usdcData.walletBalance) +
-                      BigInt(usdcData.dexBalance ?? '0')
+                      BigInt(secondDefaultTokenData.walletBalance) +
+                      BigInt(secondDefaultTokenData.dexBalance ?? '0')
                   ).toString()
                 : undefined;
-        const usdcCombinedBalanceDisplay =
-            usdcData && usdcCombinedBalance
-                ? toDisplayQty(usdcCombinedBalance, usdcData.decimals)
-                : undefined;
-        const usdcCombinedBalanceDisplayNum = usdcCombinedBalanceDisplay
-            ? parseFloat(usdcCombinedBalanceDisplay ?? '0')
-            : undefined;
 
-        const usdcCombinedBalanceDisplayTruncated =
-            usdcCombinedBalanceDisplayNum !== 0
+        const secondTokenCombinedBalanceDisplay =
+            secondDefaultTokenData && secondTokenCombinedBalance
+                ? toDisplayQty(
+                      secondTokenCombinedBalance,
+                      secondDefaultTokenData.decimals,
+                  )
+                : undefined;
+
+        const secondTokenCombinedBalanceDisplayNum =
+            secondTokenCombinedBalanceDisplay
+                ? parseFloat(secondTokenCombinedBalanceDisplay ?? '0')
+                : undefined;
+
+        const secondTokenCombinedBalanceDisplayTruncated =
+            secondTokenCombinedBalanceDisplayNum !== 0
                 ? getFormattedNumber({
-                      value: usdcCombinedBalanceDisplayNum,
+                      value: secondTokenCombinedBalanceDisplayNum,
                   })
                 : '0.00';
 
-        setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
+        setSecondTokenBalanceForDom(secondTokenCombinedBalanceDisplayTruncated);
         Promise.resolve(
-            cachedFetchTokenPrice(usdcData.address, chainId, crocEnv),
+            cachedFetchTokenPrice(
+                secondDefaultTokenData.address,
+                chainId,
+                crocEnv,
+            ),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
                     (price &&
                         price?.usdPrice *
-                            (usdcCombinedBalanceDisplayNum ?? 0)) ??
+                            (secondTokenCombinedBalanceDisplayNum ?? 0)) ??
                     0;
                 const usdValueTruncated = getFormattedNumber({
                     value: usdValueNum,
                     isUSD: true,
                 });
-                setUsdcUsdValueForDom(usdValueTruncated);
+                setSecondTokenUsdValueForDom(usdValueTruncated);
             } else {
-                setUsdcUsdValueForDom(undefined);
+                setSecondTokenUsdValueForDom(undefined);
             }
         });
-    }, [crocEnv, chainId, JSON.stringify(usdcData)]);
+    }, [crocEnv, chainId, JSON.stringify(secondDefaultTokenData)]);
 
     const nativeCombinedBalance =
         nativeData?.walletBalance !== undefined
@@ -147,13 +163,16 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                   BigInt(nativeData.dexBalance ?? '0')
               ).toString()
             : undefined;
+
     const nativeCombinedBalanceDisplay =
         nativeData && nativeCombinedBalance
             ? toDisplayQty(nativeCombinedBalance, nativeData.decimals)
             : undefined;
+
     const nativeCombinedBalanceDisplayNum = nativeCombinedBalanceDisplay
         ? parseFloat(nativeCombinedBalanceDisplay ?? '0')
         : undefined;
+
     const nativeCombinedBalanceTruncated =
         nativeCombinedBalanceDisplayNum !== undefined
             ? getFormattedNumber({
@@ -192,48 +211,65 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     if (isActiveNetworkBlast) {
         tokensData.push({
             symbol: 'USDB',
-            amount: usdcBalanceForDom
-                ? parseFloat(usdcBalanceForDom ?? '0') === 0
+            amount: secondTokenBalanceForDom
+                ? parseFloat(secondTokenBalanceForDom ?? '0') === 0
                     ? '0.00'
-                    : usdcBalanceForDom
+                    : secondTokenBalanceForDom
                 : '...',
-            value: usdcUsdValueForDom
-                ? parseFloat(usdcUsdValueForDom ?? '0') === 0
+            value: secondTokenUsdValueForDom
+                ? parseFloat(secondTokenUsdValueForDom ?? '0') === 0
                     ? '$0.00'
-                    : usdcUsdValueForDom
+                    : secondTokenUsdValueForDom
                 : '...',
             logo: 'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
+        });
+    } else if (isActiveNetworkPlume) {
+        tokensData.push({
+            symbol: 'pUSD',
+            amount: secondTokenBalanceForDom
+                ? parseFloat(secondTokenBalanceForDom ?? '0') === 0
+                    ? '0.00'
+                    : secondTokenBalanceForDom
+                : '...',
+            value: secondTokenUsdValueForDom
+                ? parseFloat(secondTokenUsdValueForDom ?? '0') === 0
+                    ? '$0.00'
+                    : secondTokenUsdValueForDom
+                : '...',
+            logo: 'https://img.cryptorank.io/coins/plume_network1716480863760.png',
         });
     } else {
         tokensData.push({
             symbol: 'USDC',
-            amount: usdcBalanceForDom
-                ? parseFloat(usdcBalanceForDom ?? '0') === 0
+            amount: secondTokenBalanceForDom
+                ? parseFloat(secondTokenBalanceForDom ?? '0') === 0
                     ? '0.00'
-                    : usdcBalanceForDom
+                    : secondTokenBalanceForDom
                 : '...',
-            value: usdcUsdValueForDom
-                ? parseFloat(usdcUsdValueForDom ?? '0') === 0
+            value: secondTokenUsdValueForDom
+                ? parseFloat(secondTokenUsdValueForDom ?? '0') === 0
                     ? '$0.00'
-                    : usdcUsdValueForDom
+                    : secondTokenUsdValueForDom
                 : '...',
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
         });
     }
 
     return (
-        <div className={styles.walletWrapper}
-            style={{padding: hideProfileCard ? '0' : ''}}
-            
+        <div
+            className={styles.walletWrapper}
+            style={{ padding: hideProfileCard ? '0' : '' }}
             tabIndex={0}
             aria-label={`Wallet menu for ${ensName ? ensName : accountAddress}`}
         >
-           {!hideProfileCard && <UserProfileCard
-                ensName={ensName !== '' ? ensName : ''}
-                accountAddress={props.accountAddress}
-                handleCopyAddress={handleCopyAddress}
-                accountAddressFull={props.accountAddressFull}
-            />}
+            {!hideProfileCard && (
+                <UserProfileCard
+                    ensName={ensName !== '' ? ensName : ''}
+                    accountAddress={props.accountAddress}
+                    handleCopyAddress={handleCopyAddress}
+                    accountAddressFull={props.accountAddressFull}
+                />
+            )}
             <section className={styles.walletContent}>
                 {tokensData.map((tokenData) => (
                     <TokenAmountDisplay
@@ -249,18 +285,21 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     />
                 ))}
             </section>
-            {!hideProfileCard && <div className={styles.actionsContainer}>
-                <Link className={styles.accountLink}
-                    to={'/account'}
-                    aria-label='Go to the account page '
-                    tabIndex={0}
-                    onClick={clickOutsideHandler}
-                >
-                    <CgProfile />
-                    My Account
-                </Link>
-                <LogoutButton onClick={clickLogout} />
-            </div>}
+            {!hideProfileCard && (
+                <div className={styles.actionsContainer}>
+                    <Link
+                        className={styles.accountLink}
+                        to={'/account'}
+                        aria-label='Go to the account page '
+                        tabIndex={0}
+                        onClick={clickOutsideHandler}
+                    >
+                        <CgProfile />
+                        My Account
+                    </Link>
+                    <LogoutButton onClick={clickLogout} />
+                </div>
+            )}
         </div>
     );
 }
