@@ -282,7 +282,11 @@ export default function NetworkSelector(props: propsIF) {
                     marginTop={'50px'}
                     marginRight={smallScreen ? '70px' : ''}
                     titleWidth={'80px'}
-                    title={lookupChain(chainId).displayName}
+                    title={
+                        chainId === '0x18230'
+                            ? 'Plume Devnet'
+                            : lookupChain(chainId).displayName
+                    }
                     expandable={networks.length > 1}
                     logo={
                         lookupChain(chainId)
