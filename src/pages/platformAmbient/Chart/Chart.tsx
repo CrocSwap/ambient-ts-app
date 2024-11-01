@@ -350,7 +350,7 @@ export default function Chart(props: propsIF) {
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
             ? 1 / poolPriceWithoutDenom
-            : poolPriceWithoutDenom ?? 0
+            : (poolPriceWithoutDenom ?? 0)
         : 0;
 
     const d3Container = useRef<HTMLDivElement | null>(null);
@@ -4582,7 +4582,8 @@ export default function Chart(props: propsIF) {
             setHandleDocumentEvent(event);
             if (
                 d3Container.current &&
-                !d3Container.current.contains(event.target)
+                !d3Container.current.contains(event.target) &&
+                event.target.id !== 'trade_chart_full_screen_button'
             ) {
                 setIsShowFloatingToolbar(false);
             }
