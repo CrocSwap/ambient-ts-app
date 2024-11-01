@@ -16,6 +16,8 @@ import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext
 import UserProfileCard from '../UserProfileCard';
 import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 import { Link } from 'react-router-dom';
+import processLogoSrc from '../../../../../components/Global/TokenIcon/processLogoSrc';
+import { TokenContext } from '../../../../../contexts';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -28,7 +30,7 @@ interface WalletDropdownPropsIF {
 }
 
 interface TokenAmountDisplayPropsIF {
-    logo: string;
+    logoUri: string;
     symbol: string;
     amount: string;
     value?: string;
@@ -50,6 +52,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         useContext(ChainDataContext);
 
     const { tokenBalances } = useContext(TokenBalanceContext);
+    const { tokens } = useContext(TokenContext);
+
     const defaultPair = supportedNetworks[chainId].defaultPair;
     const nativeData: TokenIF | undefined =
         tokenBalances &&
@@ -66,7 +70,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF): JSX.Element {
-        const { logo, symbol, amount, value } = props;
+        const { logoUri, symbol, amount, value } = props;
         const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${value} dollars`;
         return (
             <section
@@ -75,7 +79,14 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 aria-label={ariaLabel}
             >
                 <div className={styles.logoName}>
-                    <img src={logo} alt='' />
+                    <img
+                        src={processLogoSrc({
+                            token: tokens.getTokensByNameOrSymbol(symbol)[0],
+                            symbol: symbol,
+                            sourceURI: logoUri,
+                        })}
+                        alt=''
+                    />
                     <h3>{symbol}</h3>
                 </div>
                 <div className={styles.tokenAmount}>
@@ -205,7 +216,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     : nativeCombinedBalanceTruncated
                 : '...',
             value: nativeTokenMainnetUsdValueTruncated,
-            logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+            logoUri:
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
         },
     ];
     if (isActiveNetworkBlast) {
@@ -221,7 +233,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     ? '$0.00'
                     : secondTokenUsdValueForDom
                 : '...',
-            logo: 'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
+            logoUri:
+                'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
         });
     } else if (isActiveNetworkPlume) {
         tokensData.push({
@@ -236,7 +249,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     ? '$0.00'
                     : secondTokenUsdValueForDom
                 : '...',
-            logo: 'https://img.cryptorank.io/coins/plume_network1716480863760.png',
+            logoUri:
+                'https://img.cryptorank.io/coins/plume_network1716480863760.png',
         });
     } else {
         tokensData.push({
@@ -251,7 +265,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     ? '$0.00'
                     : secondTokenUsdValueForDom
                 : '...',
-            logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+            logoUri:
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
         });
     }
 
@@ -280,7 +295,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         }
                         value={tokenData.value}
                         symbol={tokenData.symbol}
-                        logo={tokenData.logo}
+                        logoUri={tokenData.logoUri}
                         key={JSON.stringify(tokenData)}
                     />
                 ))}
