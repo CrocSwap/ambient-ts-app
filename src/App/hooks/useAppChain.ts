@@ -225,7 +225,7 @@ export const useAppChain = (): {
         const isPathENS = pathname.slice(1)?.includes('.eth');
         const isPathHexEoaAddress = checkEoaHexAddress(pathname);
         const isPathUserAddress = isPathENS || isPathHexEoaAddress;
-        // const isPathUserXpOrLeaderboard = pathname.includes('/xp');
+        const isPathUserXpOrLeaderboard = pathname.includes('/xp');
         if (
             linkGenCurrent.currentPage === 'initpool' ||
             linkGenCurrent.currentPage === 'reposition'
@@ -235,10 +235,7 @@ export const useAppChain = (): {
             linkGenSwap.navigate(`chain=${network.chainId}`);
         } else if (pathname.includes('chain')) {
             linkGenCurrent.navigate(`chain=${network.chainId}`);
-        } else if (
-            isPathUserAddress
-            // || isPathUserXpOrLeaderboard
-        ) {
+        } else if (isPathUserAddress || isPathUserXpOrLeaderboard) {
             // this one is specific to user account pages
             // !IMPORTANT:  not this one
             window.location.reload();

@@ -72,10 +72,24 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { poolList } = useContext(PoolContext);
 
     const [allPools, setAllPools] = useState<Array<PoolDataIF>>([]);
+    const [intermediaryPoolData, setIntermediaryPoolData] = useState<
+        Array<PoolDataIF>
+    >([]);
     const [isExploreDollarizationEnabled, setIsExploreDollarizationEnabled] =
         useState(
             localStorage.getItem('isExploreDollarizationEnabled') === 'true',
         );
+
+    // used to prevent displaying data for a previous network after switching networks
+    useEffect(() => {
+        if (intermediaryPoolData.length) {
+            if (intermediaryPoolData[0].chainId === chainData.chainId) {
+                setAllPools(intermediaryPoolData);
+            }
+        } else {
+            setAllPools([]);
+        }
+    }, [chainData.chainId, intermediaryPoolData]);
 
     useEffect(() => {
         const savedDollarizationPreference =
@@ -99,7 +113,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     // get expanded pool metadata
     useEffect(() => {
         if (crocEnv !== undefined && poolList.length > 0) {
-            setAllPools([]);
+            setIntermediaryPoolData([]);
             getAllPools();
         }
     }, [JSON.stringify(poolList)]);
@@ -333,7 +347,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 const filteredPoolData = results.filter(
                     (pool) => pool.spotPrice > 0,
                 );
-                setAllPools(filteredPoolData);
+                setIntermediaryPoolData(filteredPoolData);
             })
             .catch((err) => {
                 console.warn(err);
@@ -355,7 +369,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             all: allPools,
             getAll: getAllPools,
             reset: () => {
-                setAllPools([]);
+                setIntermediaryPoolData([]);
             },
         },
         topTokensOnchain: dexTokens,
