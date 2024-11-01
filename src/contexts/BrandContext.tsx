@@ -1,10 +1,4 @@
-import {
-    ReactNode,
-    createContext,
-    useContext,
-    useMemo,
-    useState,
-} from 'react';
+import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
 import { skins } from '../App/hooks/useSkin';
 import { brandIF, fontSets, heroItem } from '../assets/branding/types';
 import { TradeDataContext } from './TradeDataContext';
@@ -17,6 +11,7 @@ import {
     ambientTestnetBrandAssets,
     futaBrandAssets,
     sampleBrandAssets,
+    plumeSepoliaBrandAssets,
 } from '../assets/branding';
 import { UserDataContext } from './UserDataContext';
 
@@ -86,6 +81,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return ambientProductionBrandAssets;
             case 'ambientTestnet':
                 return ambientTestnetBrandAssets;
+            case 'plumeSepolia':
+                return plumeSepoliaBrandAssets;
             default:
                 return defaultBrandAssets;
         }
@@ -123,7 +120,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         return networkPrefs
             ? networkPrefs.hero
             : [{ content: 'ambient', processAs: 'separator' }];
-    };
+    }
 
     // data to be returned to the app
     const brandData: BrandContextIF = {

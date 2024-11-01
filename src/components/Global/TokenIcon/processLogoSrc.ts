@@ -29,6 +29,7 @@ export default function processLogoSrc(args: argsIF): string {
     }
 
     if (localLogoLookupSymbol === 'USD+') localLogoLookupSymbol = 'USDPLUS';
+    if (localLogoLookupSymbol === 'AUSDC') localLogoLookupSymbol = 'USDC';
     if (localLogoLookupSymbol === 'PUNKETH-20')
         localLogoLookupSymbol = 'PUNKETH20';
     // return a filepath (if local) or a URI string (if remote)

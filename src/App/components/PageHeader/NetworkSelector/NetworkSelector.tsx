@@ -20,6 +20,7 @@ import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_l
 import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
 import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
+import plumeSepoliaLogo from '../../../../assets/images/networks/plume.svg';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { BrandContext } from '../../../../contexts/BrandContext';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
@@ -178,6 +179,17 @@ export default function NetworkSelector(props: propsIF) {
             condition: chainMap.has('0xaa36a7'),
         },
         {
+            id: 'plume_sepolia_network_selector',
+            chainId: '0x18230',
+            name: 'Plume',
+            logo: plumeSepoliaLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x18230'),
+        },
+        {
             id: 'scroll_sepolia_network_selector',
             chainId: '0x8274f',
             name: 'Scroll',
@@ -291,9 +303,13 @@ export default function NetworkSelector(props: propsIF) {
                                   ? blastLogo
                                   : lookupChain(chainId)
                                           .displayName.toLowerCase()
-                                          .includes('sepolia')
-                                    ? sepoliaLogo
-                                    : ETH
+                                          .includes('plume')
+                                    ? plumeSepoliaLogo
+                                    : lookupChain(chainId)
+                                            .displayName.toLowerCase()
+                                            .includes('sepolia')
+                                      ? sepoliaLogo
+                                      : ETH
                     }
                 >
                     <ul

@@ -39,6 +39,9 @@ import {
     scrollsUSDe,
     scrollSOLVBTC,
     mainnetSTONE,
+    plumeSepoliaETH,
+    plumeSepoliaUSD,
+    plumeSepoliaAUSDC,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -121,6 +124,8 @@ export const USDC_TOKENS = [
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
     scrollUSDC.address,
+    plumeSepoliaUSD.address,
+    plumeSepoliaAUSDC.address,
 ].map((x) => x.toLowerCase());
 
 export const BLAST_REWARD_TOKENS = [blastBLAST.address].map((x) =>
@@ -147,6 +152,7 @@ export const STAKED_ETH_TOKENS = [
     blastWrsETH.address,
     blastEzETH.address,
     blastWEETH.address,
+    plumeSepoliaETH.address,
 ].map((x) => x.toLowerCase());
 
 export const STAKED_BTC_TOKENS = [scrollSOLVBTC.address].map((x) =>
@@ -159,5 +165,6 @@ export const WRAPPED_NATIVE_TOKENS = [
     '0x863d7abb9c62d8bc69ea9ebc3e3583057d533e6f', // Scroll Sepolia
     '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14', // Sepolia
     '0x4300000000000000000000000000000000000004', // Blast
-    '0x4200000000000000000000000000000000000023', // Blast Seploia
+    '0x4200000000000000000000000000000000000023', // Blast Sepolia
+    '0xaA6210015fbf0855F0D9fDA3C415c1B12776Ae74', // Plume Sepolia
 ].map((x) => x.toLowerCase());

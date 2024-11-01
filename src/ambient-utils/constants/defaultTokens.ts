@@ -711,6 +711,34 @@ export const scrollSepoliaUSDC: TokenIF = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
 };
 
+export const plumeSepoliaETH: TokenIF = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 98864,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const plumeSepoliaUSD: TokenIF = {
+    name: 'Plume USD',
+    address: '0xe644F07B1316f28a7F134998e021eA9f7135F351',
+    symbol: 'pUSD',
+    decimals: 6,
+    chainId: 98864,
+    logoURI: '',
+};
+
+export const plumeSepoliaAUSDC: TokenIF = {
+    name: 'Ambient Test USDC',
+    address: '0xEF380e725648CFE1488d98973151599a75186016',
+    symbol: 'aUSDC',
+    decimals: 6,
+    chainId: 98864,
+    logoURI: '',
+};
+
 export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,
@@ -786,4 +814,7 @@ export const defaultTokens: TokenIF[] = [
     scrollSepoliaUSDC,
     scrollSepoliaWBTC,
     scrollsUSDe,
+    plumeSepoliaETH,
+    plumeSepoliaUSD,
+    plumeSepoliaAUSDC,
 ];

@@ -12,7 +12,9 @@ import {
     blastBrandAssets,
     scrollBrandAssets,
     futaBrandAssets,
+    plumeSepoliaBrandAssets,
 } from '../../../assets/branding';
+import { plumeSepolia } from './plumeSepolia';
 
 export const brand: string | undefined =
     import.meta.env.VITE_BRAND_ASSET_SET ?? '';
@@ -24,6 +26,7 @@ const networks: NetworkIF[] = [
     scrollSepolia,
     blastSepolia,
     blast,
+    plumeSepolia,
 ];
 
 function getNetworks(chns: (string | chainIds)[]): {
@@ -53,7 +56,9 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
               ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
               : brand === 'ambientTestnet'
                 ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
-                : getNetworks(Object.keys(defaultBrandAssets.networks));
+                : brand === 'plumeSepolia'
+                  ? getNetworks(Object.keys(plumeSepoliaBrandAssets.networks))
+                  : getNetworks(Object.keys(defaultBrandAssets.networks));
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
     if (brand === 'futa') {
