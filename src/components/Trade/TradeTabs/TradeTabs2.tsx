@@ -208,13 +208,7 @@ function TradeTabs2(props: propsIF) {
                   content: <Ranges {...rangesProps} />,
                   icon: rangePositionsImage,
                   showRightSideOption: false,
-              },
-              {
-                  label: 'Leaderboard',
-                  content: <Leaderboard />,
-                  icon: leaderboard,
-                  showRightSideOption: false,
-              },
+              }
           ];
 
     // -------------------------------END OF DATA-----------------------------------------

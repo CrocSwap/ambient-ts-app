@@ -215,18 +215,10 @@ export default function TabComponent(props: TabPropsIF) {
 
     const tabsWithRightOption = (
         <div
-            className={
-                isTabletScreen
-                    ? styles.navbar_header_tablet_container
-                    : styles.navbar_header_container
-            }
+            className={styles.navbar_header_container}
         >
             <div
-                className={
-                    isTabletScreen
-                        ? styles.tabs_header_tablet_container
-                        : styles.tabs_header_container
-                }
+                className={styles.tabs_header_container}
             >
                 {data.map((item) => (
                     <div
@@ -255,9 +247,7 @@ export default function TabComponent(props: TabPropsIF) {
                             tabIndex={0}
                             className={
                                 item.label === selectedTab.label
-                                    ? isTabletScreen
-                                        ? styles.active_label_container_tablet
-                                        : styles.active_label_container
+                                    ? styles.active_label_container
                                     : styles.nonactive_label_container
                             }
                         >
