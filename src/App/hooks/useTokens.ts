@@ -75,9 +75,14 @@ export const useTokens = (
     // Hardcoded list of excluded tokens
     const excludedTokens = [
         {
-            // mistake on coingecko's scroll lsit
+            // mistake on coingecko's scroll list
             address: '0x7122985656e38bdc0302db86685bb972b145bd3c',
             chainId: 534352,
+        },
+        {
+            // different sepolia USDC on Scroll-Tech's scroll list
+            address: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
+            chainId: 11155111,
         },
     ];
 
