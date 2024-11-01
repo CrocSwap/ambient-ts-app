@@ -3,6 +3,7 @@ import {
     plumeSepoliaETH,
     plumeSepoliaUSD,
     plumeSepoliaAUSDC,
+    plumeSepoliaUSDT,
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
@@ -35,6 +36,16 @@ export const plumeSepolia: NetworkIF = {
         new TopPool(
             plumeSepoliaETH,
             plumeSepoliaAUSDC,
+            lookupChain('0x18230').poolIndex,
+        ),
+        new TopPool(
+            plumeSepoliaETH,
+            plumeSepoliaUSDT,
+            lookupChain('0x18230').poolIndex,
+        ),
+        new TopPool(
+            plumeSepoliaUSD,
+            plumeSepoliaUSDT,
             lookupChain('0x18230').poolIndex,
         ),
     ],

@@ -42,6 +42,7 @@ import {
     plumeSepoliaETH,
     plumeSepoliaUSD,
     plumeSepoliaAUSDC,
+    plumeSepoliaUSDT,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -98,25 +99,6 @@ export function remapTokenIfWrappedNative(addr: string): string {
     return addr;
 }
 
-// No need to specify chain ID because token address is unique even across chains
-export const STABLE_USD_TOKENS = [
-    mainnetDAI.address,
-    mainnetUSDC.address,
-    mainnetUSDT.address,
-    mainnetLUSD.address,
-    blastUSDB.address,
-    blastUSDPLUS.address,
-    scrollUSDC.address,
-    scrollUSDT.address,
-    scrollDAI.address,
-    scrollAxlUSDC.address,
-    sepoliaUSDC.address,
-    blastSepoliaUSDB.address,
-    scrollSepoliaUSDC.address,
-    scrollUSDE.address,
-    scrollsUSDe.address,
-].map((x) => x.toLowerCase());
-
 export const USDC_TOKENS = [
     mainnetUSDC.address,
     blastUSDB.address,
@@ -127,6 +109,22 @@ export const USDC_TOKENS = [
     plumeSepoliaUSD.address,
     plumeSepoliaAUSDC.address,
 ].map((x) => x.toLowerCase());
+
+// No need to specify chain ID because token address is unique even across chains
+export const STABLE_USD_TOKENS = [
+    mainnetDAI.address,
+    mainnetUSDT.address,
+    mainnetLUSD.address,
+    blastUSDPLUS.address,
+    scrollUSDT.address,
+    scrollDAI.address,
+    scrollAxlUSDC.address,
+    scrollUSDE.address,
+    scrollsUSDe.address,
+    plumeSepoliaUSDT.address,
+]
+    .concat(USDC_TOKENS)
+    .map((x) => x.toLowerCase());
 
 export const BLAST_REWARD_TOKENS = [blastBLAST.address].map((x) =>
     x.toLowerCase(),
