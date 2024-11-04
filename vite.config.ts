@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import macrosPlugin from 'vite-plugin-babel-macros';
 import checker from 'vite-plugin-checker';
+import { execSync } from 'child_process';
 
 export default defineConfig({
     base: '/',
@@ -16,6 +17,21 @@ export default defineConfig({
             // e.g. use TypeScript check
             typescript: true,
         }),
+        {
+            name: 'html-transform',
+            transformIndexHtml(html) {
+                const gitHash = execSync('git rev-parse --short HEAD')
+                    .toString()
+                    .trim();
+                return html
+                    .replace(/__BUILD_TIME__/g, Date.now().toString())
+                    .replace(/__PRINT__/g, gitHash)
+                    .replace(
+                        /__VERSION__/g,
+                        process.env.npm_package_version || '1.0.0',
+                    );
+            },
+        },
     ],
     define: {
         'import.meta.env': {},

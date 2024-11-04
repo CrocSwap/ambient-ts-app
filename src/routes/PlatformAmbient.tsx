@@ -7,6 +7,7 @@ import Trade from '../pages/platformAmbient/Trade/Trade';
 import ChatPanel from '../components/Chat/ChatPanel';
 import InitPool from '../pages/platformAmbient/InitPool/InitPool';
 import Portfolio from '../pages/platformAmbient/Portfolio/Portfolio';
+import Vanity from '../pages/platformAmbient/Vanity/Vanity';
 import Explore from '../pages/platformAmbient/Explore/Explore';
 import Swap from '../pages/platformAmbient/Swap/Swap';
 import NotFound from '../pages/common/NotFound/NotFound';
@@ -32,34 +33,20 @@ const PlatformAmbientRoutes: React.FC = () => {
             <Route path='trade' element={<Trade />}>
                 <Route
                     path=''
-                    element={<Navigate to='/trade/market' replace />}
-                />
-                <Route
-                    path='market'
-                    element={<Navigate to={defaultUrlParams.market} replace />}
+                    element={<Navigate replace to={defaultUrlParams.market} />}
                 />
                 <Route
                     path='market/:params'
                     element={<TradeSwap isOnTradeRoute={true} />}
                 />
-                <Route
-                    path='limit'
-                    element={<Navigate to={defaultUrlParams.limit} replace />}
-                />
+
                 <Route path='limit/:params' element={<Limit />} />
-                <Route
-                    path='pool'
-                    element={<Navigate to={defaultUrlParams.pool} replace />}
-                />
+
                 <Route path='pool/:params' element={<Range />} />
-                <Route
-                    path='reposition'
-                    element={<Navigate to={defaultUrlParams.pool} replace />}
-                />
                 <Route path='reposition/:params' element={<Reposition />} />
                 <Route
                     path='edit/'
-                    element={<Navigate to='/trade/market' replace />}
+                    element={<Navigate to={defaultUrlParams.pool} replace />}
                 />
                 <Route
                     path='edit/'
@@ -67,6 +54,22 @@ const PlatformAmbientRoutes: React.FC = () => {
                 />
                 <Route path='edit/:params' element={<EditLiquidity />} />
             </Route>
+            <Route
+                path='trade/market'
+                element={<Navigate to={defaultUrlParams.market} replace />}
+            />
+            <Route
+                path='trade/limit'
+                element={<Navigate to={defaultUrlParams.limit} replace />}
+            />
+            <Route
+                path='trade/pool'
+                element={<Navigate to={defaultUrlParams.pool} replace />}
+            />
+            <Route
+                path='trade/reposition'
+                element={<Navigate to={defaultUrlParams.pool} replace />}
+            />
             <Route
                 path='chat'
                 element={<ChatPanel isFullScreen={true} appPage={true} />}
@@ -175,7 +178,7 @@ const PlatformAmbientRoutes: React.FC = () => {
             />
             <Route
                 path='swap'
-                element={<Navigate replace to={defaultUrlParams.swap} />}
+                element={<Navigate to={defaultUrlParams.swap} replace />}
             />
             {/* refactor EXPLORE as a nested route */}
             <Route
@@ -189,7 +192,12 @@ const PlatformAmbientRoutes: React.FC = () => {
             <Route path='privacy' element={<PrivacyPolicy />} />
             <Route path='faq' element={<Navigate to='/faq/points' replace />} />
             <Route path='faq/points' element={<FAQPoints />} />
+            <Route path='/v/:params' element={<Vanity />} />
+            <Route path='/vanity/:params' element={<Vanity />} />
+            <Route path='/l/:params' element={<Vanity />} />
+            <Route path='/link/:params' element={<Vanity />} />
             <Route path='faq/points/:params' element={<FAQPoints />} />
+            <Route path='/v/:params' element={<Vanity />} />
             {IS_LOCAL_ENV && <Route path='testpage' element={<TestPage />} />}
             {IS_LOCAL_ENV && (
                 <Route path='template/form' element={<ExampleForm />} />

@@ -72,16 +72,39 @@ export const useTokens = (
     // User acknowledge tokens
     const [ackTokens, setAckTokens] = useState<TokenIF[]>(INIT_ACK);
 
+    // Hardcoded list of excluded tokens
+    const excludedTokens = [
+        {
+            // mistake on coingecko's scroll list
+            address: '0x7122985656e38bdc0302db86685bb972b145bd3c',
+            chainId: 534352,
+        },
+        {
+            // different sepolia USDC on Scroll-Tech's scroll list
+            address: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
+            chainId: 11155111,
+        },
+    ];
+
     // Universe of tokens within the given chain. Combines both tokens from
     // lists and user-acknowledge tokens
     const tokenMap = useMemo<Map<string, TokenIF>>(() => {
         const retMap = new Map<string, TokenIF>();
         tokenLists
-            // Reverse add, so higher priority lists overwrite lower priority
-            // .reverse()
             .flatMap((tl) => tl.tokens)
             .concat(ackTokens)
-            .filter((t) => chainNumToString(t.chainId) === chainId)
+            .filter((t) => {
+                // First filter by chainId
+                if (chainNumToString(t.chainId) !== chainId) return false;
+
+                // Then check if token is in exclusion list
+                return !excludedTokens.some(
+                    (excluded) =>
+                        excluded.address.toLowerCase() ===
+                            t.address.toLowerCase() &&
+                        excluded.chainId === t.chainId,
+                );
+            })
             .forEach((t) => {
                 // list URI of this iteration of the token
                 const originatingList: string = t.fromList ?? 'unknown';
@@ -96,6 +119,14 @@ export const useTokens = (
                     deepToken.listedBy = deepToken.listedBy?.concat(
                         tknFromMap.listedBy,
                     );
+                    // prevent overwriting ambient token list values
+                    if (tknFromMap.listedBy?.includes(tokenListURIs.ambient)) {
+                        deepToken.address = tknFromMap.address;
+                        deepToken.symbol = tknFromMap.symbol;
+                        deepToken.name = tknFromMap.name;
+                        deepToken.logoURI = tknFromMap.logoURI;
+                        deepToken.decimals = tknFromMap.decimals;
+                    }
                 }
                 // add updated deep copy to the Map
                 retMap.set(deepToken.address.toLowerCase(), deepToken);
@@ -121,7 +152,13 @@ export const useTokens = (
         if (tokenMap.size) {
             const newArray = [...tokenMap.values()];
             for (const token of tokenBalances ?? []) {
-                if (!newArray.some((tkn) => tkn.address === token.address)) {
+                if (
+                    !newArray.some(
+                        (tkn) =>
+                            tkn.address.toLowerCase() ===
+                            token.address.toLowerCase(),
+                    )
+                ) {
                     newArray.push(token);
                 }
             }
@@ -129,7 +166,13 @@ export const useTokens = (
         } else {
             const newArray = [...defaultTokens];
             for (const token of tokenBalances ?? []) {
-                if (!newArray.some((tkn) => tkn.address === token.address)) {
+                if (
+                    !newArray.some(
+                        (tkn) =>
+                            tkn.address.toLowerCase() ===
+                            token.address.toLowerCase(),
+                    )
+                ) {
                     newArray.push(token);
                 }
             }

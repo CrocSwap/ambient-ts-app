@@ -65,6 +65,7 @@ const BASE_URL_PATHS = {
     tos: '/terms',
     testpage: '/testpage',
     account: '/account',
+    accountPoints: '/account/points',
     privacy: '/privacy',
     faq: '/faq',
     faqPoints: '/faq/points',

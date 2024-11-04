@@ -49,14 +49,15 @@ export const MainSection = styled.section<{
 export const ResizableContainer = styled(Resizable)<{
     showResizeable: boolean;
     isFuta?: boolean;
+    isChartFullScreen?: boolean;
 }>`
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
 
-    max-height: ${({ isFuta }) =>
-        isFuta ? 'calc(100% - 5px)' : 'calc(100% - 54px)'};
+    max-height: ${({ isFuta, isChartFullScreen }) =>
+        isFuta || isChartFullScreen ? 'calc(100% - 5px)' : 'calc(100% - 54px)'};
     min-height: 0px;
 
     ${({ showResizeable }) =>
@@ -85,13 +86,10 @@ export const ChartContainer = styled.div<{
             ? `
         transition: var(--transition);
         background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
-        position: fixed;
         width: 100%;
-        height: calc(100% - 56px);
+        height: 100%;
         left: 0;
         top: 56px;
-        z-index: 4;
-
         background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
     `
             : `
@@ -110,16 +108,14 @@ export const ChartContainer = styled.div<{
             background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
         }
             
-        @media ((min-width: 801px) and (max-width:1200px)) {
-            padding-bottom: 30px;
-        }
+      
 
         @media (max-width: 320px) {
             padding-bottom: 80px;
         }
     `}
 
-    ${({ isFuta }) => (isFuta ? 'padding-bottom: 30px;' : '')}
+    ${({ isFuta,fullScreen }) => (isFuta && !fullScreen  ? 'padding-bottom: 30px;' : '')}
 
     &::-webkit-scrollbar {
         display: none;

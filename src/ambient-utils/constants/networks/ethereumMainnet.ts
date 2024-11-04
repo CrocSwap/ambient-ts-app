@@ -3,7 +3,6 @@ import {
     mainnetETH,
     mainnetUSDC,
     mainnetWBTC,
-    mainnetSWETH,
     mainnetUSDT,
     mainnetDAI,
 } from '../defaultTokens';
@@ -21,7 +20,7 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 const MAINNET_RPC_URL =
     import.meta.env.VITE_MAINNET_RPC_URL !== undefined
         ? import.meta.env.VITE_MAINNET_RPC_URL
-        : 'https://ethereum-mainnet.core.chainstack.com/55818ec2ac63dfef6ff4d1a74cf14d72';
+        : 'https://eth.llamarpc.com';
 
 const chain = {
     chainId: 1,
@@ -43,8 +42,8 @@ export const ethereumMainnet: NetworkIF = {
     topPools: [
         new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetWBTC, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetETH, mainnetSWETH, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetUSDT, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetUSDT, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetDAI, lookupChain('0x1').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {

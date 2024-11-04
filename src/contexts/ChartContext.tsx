@@ -25,7 +25,11 @@ import {
 } from '../pages/platformAmbient/Chart/ChartUtils/useUndoRedo';
 import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
 import { BrandContext } from './BrandContext';
-import { drawDataHistory, selectedDrawnData, getCssVariable } from '../pages/platformAmbient/Chart/ChartUtils/chartUtils';
+import {
+    drawDataHistory,
+    selectedDrawnData,
+    getCssVariable,
+} from '../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
@@ -53,8 +57,14 @@ export interface ChartContextIF {
     isChangeScaleChart: boolean;
     setIsChangeScaleChart: React.Dispatch<boolean>;
     isCandleDataNull: boolean;
-    setNumCandlesFetched: React.Dispatch<{candleCount:number | undefined,switchPeriodFlag:boolean} >;
-    numCandlesFetched: {candleCount:number | undefined,switchPeriodFlag:boolean};
+    setNumCandlesFetched: React.Dispatch<{
+        candleCount: number | undefined;
+        switchPeriodFlag: boolean;
+    }>;
+    numCandlesFetched: {
+        candleCount: number | undefined;
+        switchPeriodFlag: boolean;
+    };
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
     isToolbarOpen: boolean;
     setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -96,11 +106,9 @@ export interface ChartContextIF {
         SetStateAction<ChartThemeIF | undefined>
     >;
     chartThemeColors: ChartThemeIF | undefined;
+    setColorChangeTrigger: React.Dispatch<SetStateAction<boolean>>;
+    colorChangeTrigger: boolean;
     defaultChartSettings: LocalChartSettingsIF;
-    localChartSettings: LocalChartSettingsIF | undefined;
-    setLocalChartSettings: React.Dispatch<
-        SetStateAction<LocalChartSettingsIF | undefined>
-    >;
     setContextmenu: React.Dispatch<SetStateAction<boolean>>;
     contextmenu: boolean;
     setShouldResetBuffer: React.Dispatch<SetStateAction<boolean>>;
@@ -258,6 +266,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         ChartThemeIF | undefined
     >(undefined);
 
+    const [colorChangeTrigger, setColorChangeTrigger] = useState(false);
+
     const [defaultChartSettings] = useState<LocalChartSettingsIF>({
         chartColors: {
             upCandleBodyColor: '--accent5',
@@ -275,23 +285,6 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         showTvl: false,
         showFeeRate: false,
     });
-
-    const [localChartSettings, setLocalChartSettings] = useState<
-        LocalChartSettingsIF | undefined
-    >(undefined);
-
-    useEffect(() => {
-        if (
-            CHART_CONTEXT_SETTINGS_LOCAL_STORAGE &&
-            localChartSettings === undefined
-        ) {
-            const parsedContextData = JSON.parse(
-                CHART_CONTEXT_SETTINGS_LOCAL_STORAGE,
-            ) as LocalChartSettingsIF;
-
-            setLocalChartSettings(parsedContextData);
-        }
-    }, [CHART_CONTEXT_SETTINGS_LOCAL_STORAGE]);
 
     // the max size is based on the max height, and is subtracting the minimum size of table and the padding around the drag bar
     useEffect(() => {
@@ -352,9 +345,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const [isToolbarOpen, setIsToolbarOpen] =
         useState<boolean>(initialIsToolbarOpen);
 
-    const [numCandlesFetched, setNumCandlesFetched] = useState<
-        {candleCount: number | undefined, switchPeriodFlag:boolean} 
-    >({candleCount:undefined,switchPeriodFlag:true});
+    const [numCandlesFetched, setNumCandlesFetched] = useState<{
+        candleCount: number | undefined;
+        switchPeriodFlag: boolean;
+    }>({ candleCount: undefined, switchPeriodFlag: true });
 
     const currentPoolString =
         undoRedoOptions.currentPool.tokenA.address +
@@ -400,9 +394,9 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setNumCandlesFetched,
         chartThemeColors,
         setChartThemeColors,
+        colorChangeTrigger,
+        setColorChangeTrigger,
         defaultChartSettings,
-        localChartSettings,
-        setLocalChartSettings,
         contextmenu,
         setContextmenu,
         contextMenuPlacement,

@@ -29,12 +29,15 @@ import Navbar from '../components/Futa/Navbar/Navbar';
 import Footer from '../components/Futa/Footer/Footer';
 import { useModal } from '../components/Global/Modal/useModal';
 import CSSModal from '../pages/common/CSSDebug/CSSModal';
+import { useBottomSheet } from '../contexts/BottomSheetContext';
+import { ChartContext } from '../contexts';
 
 /** ***** React Function *******/
 export default function App() {
     const navigate = useNavigate();
     const location = useLocation();
     const currentLocation = location.pathname;
+    const { isFullScreen } = useContext(ChartContext);
 
     const {
         chat: {
@@ -51,6 +54,7 @@ export default function App() {
     const {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
+    const { isBottomSheetOpen } = useBottomSheet();
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
@@ -112,8 +116,7 @@ export default function App() {
                 currentLocation !== '/privacy' &&
                 currentLocation !== '/faq' &&
                 !currentLocation.includes('/chat') &&
-                isChatEnabled && <ChatPanel isFullScreen={false} />}
-            {showMobileVersion && <FooterNav />}
+                isChatEnabled && !isFullScreen && <ChatPanel isFullScreen={false} />}
         </div>
     );
 
@@ -136,6 +139,13 @@ export default function App() {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [isCSSModalOpen]);
+
+    const footerDisplay =
+        platformName === 'futa' ? (
+            <Footer data-theme={skin.active} />
+        ) : (
+            showMobileVersion && <FooterNav />
+        );
 
     return (
         <>
@@ -168,13 +178,13 @@ export default function App() {
                 )}
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
-            {platformName === 'futa' ? (
-                <Footer data-theme={skin.active} />
-            ) : (
-                ambientFooter
-            )}
+
             <GlobalPopup data-theme={skin.active} />
             <SnackbarComponent />
+
+            {ambientFooter}
+            {!isBottomSheetOpen && footerDisplay}
+
             {isWalletModalOpen && <GateWalletModal />}
             {isCSSModalOpen && <CSSModal close={() => closeCSSModal()} />}
         </>

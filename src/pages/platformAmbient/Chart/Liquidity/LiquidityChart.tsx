@@ -37,6 +37,7 @@ import {
     ChartThemeIF,
     pathsToUpdateChart,
 } from '../../../../contexts/ChartContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface liquidityPropsIF {
     liqMode: string;
@@ -77,7 +78,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
             ? 1 / poolPriceWithoutDenom
-            : poolPriceWithoutDenom ?? 0
+            : (poolPriceWithoutDenom ?? 0)
         : 0;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -136,6 +137,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         colorChangeTrigger,
         setColorChangeTrigger,
     } = props;
+
+    const mobileView = useMediaQuery('(max-width: 1200px)');
 
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
@@ -264,6 +267,44 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liquidityScale === undefined,
         liquidityDepthScale === undefined,
         diffHashSig(chartThemeColors),
+    ]);
+
+    // Auto scale fo liq Curve
+    useEffect(() => {
+        // if (mobileView) {
+        const mergedLiqData = liqDataBid.concat(liqDataAsk);
+
+        try {
+            if (mergedLiqData && mergedLiqData.length === 0) return;
+
+            const { min, max }: nearestLiquidity =
+                findLiqNearest(mergedLiqData);
+
+            if (min !== undefined && max !== undefined) {
+                const visibleDomain = mergedLiqData.filter(
+                    (liqData: LiquidityDataLocal) =>
+                        liqData?.liqPrices >= min && liqData?.liqPrices <= max,
+                );
+                const maxLiq = d3.max(
+                    visibleDomain,
+                    (d: LiquidityDataLocal) => d.activeLiq,
+                );
+                if (maxLiq && parseFloat(maxLiq) !== 1 && liquidityScale) {
+                    liquidityScale.domain([0, maxLiq]);
+                }
+
+                render();
+                renderCanvasArray([d3CanvasLiq]);
+            }
+        } catch (error) {
+            console.error({ error });
+        }
+        // }
+    }, [
+        diffHashSigScaleData(scaleData, 'y'),
+        liquidityData?.depthLiqAskData,
+        liquidityData?.depthLiqBidData,
+        mobileView,
     ]);
 
     useEffect(() => {
@@ -553,7 +594,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 .on('measure', (event: CustomEvent) => {
                     liquidityScale.range([
                         event.detail.width,
-                        (event.detail.width / 10) * 6,
+                        mobileView ? 0 : (event.detail.width / 10) * 6,
                     ]);
 
                     liquidityDepthScale.range([

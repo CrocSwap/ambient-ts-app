@@ -115,6 +115,7 @@ import {
     mainCanvasElementId,
     xAxisBuffer,
     xAxisHeightPixel,
+    xAxisMobileBuffer,
 } from './ChartUtils/chartConstants';
 import OrderHistoryCanvas from './OrderHistoryCh/OrderHistoryCanvas';
 import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
@@ -180,6 +181,7 @@ interface propsIF {
     chartResetStatus: {
         isResetChart: boolean;
     };
+    openMobileSettingsModal: () => void;
 }
 
 export default function Chart(props: propsIF) {
@@ -211,6 +213,7 @@ export default function Chart(props: propsIF) {
         setIsCompletedFetchData,
         setChartResetStatus,
         chartResetStatus,
+        openMobileSettingsModal,
     } = props;
 
     const {
@@ -240,15 +243,14 @@ export default function Chart(props: propsIF) {
         setChartContainerOptions,
         chartThemeColors,
         setChartThemeColors,
-        defaultChartSettings,
-        localChartSettings,
-        setLocalChartSettings,
         contextmenu,
         setContextmenu,
         contextMenuPlacement,
         setContextMenuPlacement,
         shouldResetBuffer,
         setShouldResetBuffer,
+        colorChangeTrigger,
+        setColorChangeTrigger,
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -321,8 +323,6 @@ export default function Chart(props: propsIF) {
     const [handleDocumentEvent, setHandleDocumentEvent] = useState();
     const period = unparsedData.duration;
 
-    const [colorChangeTrigger, setColorChangeTrigger] = useState(false);
-
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
@@ -354,7 +354,7 @@ export default function Chart(props: propsIF) {
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
             ? 1 / poolPriceWithoutDenom
-            : poolPriceWithoutDenom ?? 0
+            : (poolPriceWithoutDenom ?? 0)
         : 0;
 
     const d3Container = useRef<HTMLDivElement | null>(null);
@@ -461,6 +461,9 @@ export default function Chart(props: propsIF) {
         useState<boolean>(false);
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     const drawSettings = useDrawSettings(chartThemeColors);
     const getDollarPrice = useDollarPrice();
@@ -1448,21 +1451,26 @@ export default function Chart(props: propsIF) {
                                 startTouch.clientY ===
                                     event.sourceEvent.changedTouches[0].clientY
                             ) {
-                                const canvas = d3
-                                    .select(d3CanvasMain.current)
-                                    .select('canvas')
-                                    .node() as HTMLCanvasElement;
+                                if (tabletView) {
+                                    setContextmenu(true);
 
-                                const rectCanvas =
-                                    canvas.getBoundingClientRect();
+                                    const screenHeight = window.innerHeight;
 
-                                setContextMenuPlacement({
-                                    top: rectCanvas.top,
-                                    left: rectCanvas.left + 10,
-                                    isReversed: false,
-                                });
+                                    const diff =
+                                        screenHeight - startTouch.clientY;
 
-                                setContextmenu(true);
+                                    setContextMenuPlacement(() => {
+                                        return {
+                                            top: startTouch.clientY,
+                                            left: startTouch.clientX,
+                                            isReversed: diff < 350,
+                                        };
+                                    });
+
+                                    event.preventDefault();
+                                } else {
+                                    openMobileSettingsModal();
+                                }
                             }
 
                             if (
@@ -2646,7 +2654,9 @@ export default function Chart(props: propsIF) {
             const liqBuffer =
                 liqMode === 'none' || ['futa'].includes(platformName)
                     ? 0.95
-                    : xAxisBuffer;
+                    : mobileView
+                      ? xAxisMobileBuffer
+                      : xAxisBuffer;
 
             const centerX = snappedTime;
             const diff =
@@ -4617,7 +4627,8 @@ export default function Chart(props: propsIF) {
             setHandleDocumentEvent(event);
             if (
                 d3Container.current &&
-                !d3Container.current.contains(event.target)
+                !d3Container.current.contains(event.target) &&
+                event.target.id !== 'trade_chart_full_screen_button'
             ) {
                 setIsShowFloatingToolbar(false);
             }
@@ -4758,22 +4769,27 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasMain.current).on(
                 'contextmenu',
                 (event: PointerEvent) => {
-                    if (!event.shiftKey) {
+                    if (mobileView) {
                         event.preventDefault();
-
-                        const screenHeight = window.innerHeight;
-
-                        const diff = screenHeight - event.clientY;
-
-                        setContextMenuPlacement({
-                            top: event.clientY,
-                            left: event.clientX,
-                            isReversed: diff < 350,
-                        });
-
-                        setContextmenu(true);
+                        openMobileSettingsModal();
                     } else {
-                        setContextmenu(false);
+                        if (!event.shiftKey) {
+                            event.preventDefault();
+
+                            const screenHeight = window.innerHeight;
+
+                            const diff = screenHeight - event.clientY;
+
+                            setContextMenuPlacement({
+                                top: event.clientY,
+                                left: event.clientX,
+                                isReversed: diff < 350,
+                            });
+
+                            setContextmenu(true);
+                        } else {
+                            setContextmenu(false);
+                        }
                     }
                 },
             );
@@ -5350,18 +5366,19 @@ export default function Chart(props: propsIF) {
         );
 
         const yValue = scaleData?.yScale.invert(mouseY) as number;
-
-        const yValueVolume = scaleData?.volumeScale.invert(
-            mouseY / 2,
-        ) as number;
         const selectedVolumeDataValue = nearest?.volumeUSD;
+        const volumeHeight = mainCanvasBoundingClientRect
+            ? mainCanvasBoundingClientRect.height / 10
+            : 0;
 
         const isSelectedVolume =
-            selectedVolumeDataValue && showVolume
-                ? yValueVolume <=
-                      (selectedVolumeDataValue < longestValue
-                          ? longestValue
-                          : selectedVolumeDataValue) && yValueVolume !== 0
+            selectedVolumeDataValue &&
+            showVolume &&
+            mainCanvasBoundingClientRect
+                ? mainCanvasBoundingClientRect.height -
+                      mouseY -
+                      volumeHeight * 0.5 <=
+                  volumeHeight
                     ? true
                     : false
                 : false;
@@ -5468,8 +5485,6 @@ export default function Chart(props: propsIF) {
                     scaleData.yScale((localOpen + localClose) / 2) -
                     30;
 
-                setLastCandleDataCenterY(location);
-
                 const positionX =
                     mainCanvasBoundingClientRect.left +
                     scaleData?.xScale(
@@ -5477,7 +5492,38 @@ export default function Chart(props: propsIF) {
                     ) +
                     bandwidth * 2;
 
-                setLastCandleDataCenterX(positionX);
+                const positionXReversed =
+                    mainCanvasBoundingClientRect.left +
+                    scaleData?.xScale(
+                        lastCandleData?.time * 1000 + period * 1000,
+                    ) -
+                    260 -
+                    bandwidth * 2;
+
+                const mobilePlacement =
+                    positionXReversed < 5 && mobileView
+                        ? (mainCanvasBoundingClientRect.left +
+                              window.innerWidth) /
+                          2
+                        : positionXReversed;
+
+                const checkTooltipPlacement =
+                    positionX + 260 > window.innerWidth
+                        ? mobilePlacement - 130
+                        : positionX;
+
+                const localMobile = scaleData.yScale(localOpen) - 20;
+
+                const mobileYPlacement =
+                    positionXReversed < 5 && mobileView
+                        ? localMobile < 0
+                            ? 5
+                            : localMobile
+                        : location;
+
+                setLastCandleDataCenterY(mobileYPlacement);
+
+                setLastCandleDataCenterX(checkTooltipPlacement);
             }
 
             setIsShowLastCandleTooltip(true);
@@ -6024,7 +6070,7 @@ export default function Chart(props: propsIF) {
                 style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr auto',
-                    gridTemplateRows: '1fr auto auto auto',
+                    gridTemplateRows: '1fr 0.1fr auto auto auto',
                 }}
             >
                 {platformName !== 'futa' || showFutaCandles ? (
@@ -6377,11 +6423,7 @@ export default function Chart(props: propsIF) {
                     chartItemStates={props.chartItemStates}
                     chartThemeColors={chartThemeColors}
                     setChartThemeColors={setChartThemeColors}
-                    defaultChartSettings={defaultChartSettings}
-                    localChartSettings={localChartSettings}
-                    setLocalChartSettings={setLocalChartSettings}
                     render={render}
-                    setColorChangeTrigger={setColorChangeTrigger}
                     isCondensedModeEnabled={isCondensedModeEnabled}
                     setIsCondensedModeEnabled={setIsCondensedModeEnabled}
                     setShouldDisableChartSettings={
