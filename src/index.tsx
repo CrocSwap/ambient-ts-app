@@ -53,7 +53,6 @@ const metadata = {
 const ethersConfig = defaultConfig({
     metadata,
     defaultChainId: 534352,
-    enableEmail: false,
     rpcUrl: ' ',
     enableCoinbase: true,
 });
@@ -100,7 +99,7 @@ modal.subscribeEvents((event) => {
             window.location.reload();
         } else {
             // prevents user's wallet from remaining connected to an unsupported network
-            modal.disconnect();
+            modal.close();
         }
     }
 });
