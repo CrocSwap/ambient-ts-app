@@ -61,6 +61,8 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     useEffect(() => {
         if (!crocEnv) return;
 
+        setSpotPrices([]);
+
         const fetchSpotPrices = async () => {
             const spotPricePromises = poolData.map((pool) =>
                 cachedQuerySpotPrice(
