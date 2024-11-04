@@ -751,7 +751,7 @@ function Transactions(props: propsIF) {
                         cachedTokenDetails: cachedTokenDetails,
                         cachedEnsResolve: cachedEnsResolve,
                     });
-                }else if(!showAllDataRef.current && !isAccountViewRef.current && userAddress){
+                }else if(!showAllDataRef.current && !isAccountViewRef.current && userAddressRef.current){
                     console.log('>>>> fetchPoolUserChanges')
                     poolChangesJsonData = await fetchPoolUserChanges({ 
                         tokenList: tokens.tokenUniv,
@@ -759,7 +759,7 @@ function Transactions(props: propsIF) {
                         quote: selectedQuoteAddress,
                         poolIdx: poolIndex,
                         chainId: chainId,
-                        user: userAddress,
+                        user: userAddressRef.current,
                         n: 50,
                         timeBefore: oldestTxTimeRef.current,
                         crocEnv: crocEnv,
