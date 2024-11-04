@@ -8,6 +8,7 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface IRepositionPriceInfoProps {
     position: PositionIF;
@@ -51,6 +52,8 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         valueLossExceedsThreshold,
         isCurrentPositionEmpty,
     } = props;
+
+    const { pinnedDisplayPrices } = useContext(RangeContext);
 
     const { repoSlippage } = useContext(UserPreferenceContext);
     const { liquidityFee } = useContext(GraphDataContext);
@@ -164,15 +167,17 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const isLoading =
         newBaseQtyDisplay === '...' || newQuoteQtyDisplay === '...';
 
+    const pinnedMinDisplay =
+        pinnedDisplayPrices?.pinnedMinPriceDisplayTruncated;
+    const pinnedMaxDisplay =
+        pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncated;
+
     return (
         <div className={styles.price_info_container}>
             <div className={styles.price_info_content}>
                 {/* {!isConfirmModal ? apr : null} */}
-                <aside className={styles.divider} />
 
                 <RowDisplay item1='' item2='Current' item3='Est. New' />
-                <aside className={styles.divider} />
-
                 <RowDisplay
                     item1={position?.baseSymbol}
                     item2={currentBaseQtyDisplayTruncated}
@@ -193,7 +198,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                             ? '...'
                             : rangeWidthPercentage === 100
                             ? '0'
-                            : minPriceDisplay
+                            : pinnedMinDisplay ?? minPriceDisplay
                     }
                 />
                 <RowDisplay
@@ -204,7 +209,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                             ? '...'
                             : rangeWidthPercentage === 100
                             ? '∞'
-                            : maxPriceDisplay
+                            : pinnedMaxDisplay ?? maxPriceDisplay
                     }
                 />
                 <aside className={styles.divider} />
@@ -220,7 +225,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                     negative={!isLoading && valueLossExceedsThreshold}
                 />
                 {/* <RowDisplay
-                    item1='Impact'
+                    item1='Price Impact'
                     item2={''}
                     item3={
                         isCurrentPositionEmpty || isLoading

@@ -22,6 +22,11 @@ export const APP_ENVIRONMENT: AppEnvironment =
 
 export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
+export const IS_EDIT_ENABLED =
+    import.meta.env.VITE_IS_EDIT_ENABLED !== undefined
+        ? import.meta.env.VITE_IS_EDIT_ENABLED.toLowerCase() === 'true'
+        : false;
+
 export const ANALYTICS_URL =
     import.meta.env.VITE_ANALYTICS_URL ||
     'https://ambindexer.net/analytics/run?';

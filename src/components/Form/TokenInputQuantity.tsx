@@ -41,6 +41,7 @@ interface propsIF {
     disabledContent?: React.ReactNode;
     setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
     onInitPage?: boolean;
+    disableTokenSelector?: boolean;
     customBorderRadius?: string;
     noModals?: boolean;
     usdValue?: string | undefined;

@@ -21,6 +21,8 @@ interface RangeContextIF {
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
     currentRangeInReposition: string;
     setCurrentRangeInReposition: Dispatch<SetStateAction<string>>;
+    currentRangeInEdit: string;
+    setCurrentRangeInEdit: Dispatch<SetStateAction<string>>;
     currentRangeInAdd: string;
     setCurrentRangeInAdd: Dispatch<SetStateAction<string>>;
 
@@ -32,6 +34,39 @@ interface RangeContextIF {
     setAdvancedHighTick: Dispatch<SetStateAction<number>>;
     isLinesSwitched: boolean | undefined;
     setIsLinesSwitched: Dispatch<SetStateAction<boolean | undefined>>;
+
+    pinnedDisplayPrices:
+        | {
+              pinnedMinPriceDisplay: string;
+              pinnedMaxPriceDisplay: string;
+              pinnedMinPriceDisplayTruncated: string;
+              pinnedMaxPriceDisplayTruncated: string;
+              pinnedMinPriceDisplayTruncatedWithCommas: string;
+              pinnedMaxPriceDisplayTruncatedWithCommas: string;
+              pinnedLowTick: number;
+              pinnedHighTick: number;
+              pinnedMinPriceNonDisplay: number;
+              pinnedMaxPriceNonDisplay: number;
+          }
+        | undefined;
+
+    setPinnedDisplayPrices: React.Dispatch<
+        React.SetStateAction<
+            | {
+                  pinnedMinPriceDisplay: string;
+                  pinnedMaxPriceDisplay: string;
+                  pinnedMinPriceDisplayTruncated: string;
+                  pinnedMaxPriceDisplayTruncated: string;
+                  pinnedMinPriceDisplayTruncatedWithCommas: string;
+                  pinnedMaxPriceDisplayTruncatedWithCommas: string;
+                  pinnedLowTick: number;
+                  pinnedHighTick: number;
+                  pinnedMinPriceNonDisplay: number;
+                  pinnedMaxPriceNonDisplay: number;
+              }
+            | undefined
+        >
+    >;
 }
 
 export const RangeContext = createContext<RangeContextIF>({} as RangeContextIF);
@@ -46,6 +81,7 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
 
     const [currentRangeInReposition, setCurrentRangeInReposition] =
         useState<string>('');
+    const [currentRangeInEdit, setCurrentRangeInEdit] = useState<string>('');
     const [currentRangeInAdd, setCurrentRangeInAdd] = useState<string>('');
     const [advancedMode, setAdvancedMode] = useState<boolean>(false);
     const [advancedLowTick, setAdvancedLowTick] = useState<number>(0);
@@ -58,6 +94,23 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
     const [isLinesSwitched, setIsLinesSwitched] = useState<boolean | undefined>(
         undefined,
     );
+
+    const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
+        | {
+              pinnedMinPriceDisplay: string;
+              pinnedMaxPriceDisplay: string;
+              pinnedMinPriceDisplayTruncated: string;
+              pinnedMaxPriceDisplayTruncated: string;
+              pinnedMinPriceDisplayTruncatedWithCommas: string;
+              pinnedMaxPriceDisplayTruncatedWithCommas: string;
+              pinnedLowTick: number;
+              pinnedHighTick: number;
+              pinnedMinPriceNonDisplay: number;
+              pinnedMaxPriceNonDisplay: number;
+          }
+        | undefined
+    >();
+
     const rangeContext = {
         maxRangePrice,
         setMaxRangePrice,
@@ -71,6 +124,8 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
         setChartTriggeredBy,
         currentRangeInReposition,
         setCurrentRangeInReposition,
+        currentRangeInEdit,
+        setCurrentRangeInEdit,
         currentRangeInAdd,
         setCurrentRangeInAdd,
         rangeTicksCopied,
@@ -84,6 +139,8 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
         setAdvancedHighTick,
         isLinesSwitched,
         setIsLinesSwitched,
+        pinnedDisplayPrices,
+        setPinnedDisplayPrices,
     };
 
     return (

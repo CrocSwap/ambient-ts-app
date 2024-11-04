@@ -3,9 +3,8 @@
 }
 
 .price_info_content {
-    /* background: rgb(19, 2, 2); */
     padding: 0.5rem 1.5rem;
-}
+} 
 .apr_display {
     display: flex;
     flex-direction: row;
@@ -66,7 +65,7 @@
     width: 100%;
     background: var(--dark3);
     height: 1px;
-    margin: 0.5rem auto;
+    margin: 4px auto;
     border-radius: 9999;
 }
 
@@ -74,7 +73,7 @@
     background: transparent;
     outline: none;
     border: none;
-    margin: 0.25rem 2rem 0;
+    /* margin: 0.25rem 2rem 0; */
 }
 .gas_pump_dropdown button {
     background: transparent;
@@ -122,6 +121,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    padding: 4px 0;
 }
 
 .align_center {

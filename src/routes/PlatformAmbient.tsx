@@ -21,6 +21,7 @@ import FAQPoints from '../pages/common/FAQ/FAQPoints';
 import PrivacyPolicy from '../pages/common/PrivacyPolicy/PrivacyPolicy';
 import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
 import TestPage from '../pages/common/TestPage/TestPage';
+import EditLiquidity from '../pages/platformAmbient/Trade/EditLiquidity/EditLiquidity';
 
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
@@ -47,6 +48,11 @@ const PlatformAmbientRoutes: React.FC = () => {
                     path='edit/'
                     element={<Navigate to={defaultUrlParams.pool} replace />}
                 />
+                <Route
+                    path='edit/'
+                    element={<Navigate to='/trade/market' replace />}
+                />
+                <Route path='edit/:params' element={<EditLiquidity />} />
             </Route>
             <Route
                 path='trade/market'

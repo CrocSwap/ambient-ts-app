@@ -33,7 +33,10 @@ import {
 } from './LiquiditySeries/LineSeries';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
+import {
+    ChartThemeIF,
+    pathsToUpdateChart,
+} from '../../../../contexts/ChartContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface liquidityPropsIF {
@@ -75,7 +78,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
             ? 1 / poolPriceWithoutDenom
-            : poolPriceWithoutDenom ?? 0
+            : (poolPriceWithoutDenom ?? 0)
         : 0;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -269,34 +272,33 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     // Auto scale fo liq Curve
     useEffect(() => {
         // if (mobileView) {
-            const mergedLiqData = liqDataBid.concat(liqDataAsk);
+        const mergedLiqData = liqDataBid.concat(liqDataAsk);
 
-            try {
-                if (mergedLiqData && mergedLiqData.length === 0) return;
+        try {
+            if (mergedLiqData && mergedLiqData.length === 0) return;
 
-                const { min, max }: nearestLiquidity =
-                    findLiqNearest(mergedLiqData);
+            const { min, max }: nearestLiquidity =
+                findLiqNearest(mergedLiqData);
 
-                if (min !== undefined && max !== undefined) {
-                    const visibleDomain = mergedLiqData.filter(
-                        (liqData: LiquidityDataLocal) =>
-                            liqData?.liqPrices >= min &&
-                            liqData?.liqPrices <= max,
-                    );
-                    const maxLiq = d3.max(
-                        visibleDomain,
-                        (d: LiquidityDataLocal) => d.activeLiq,
-                    );
-                    if (maxLiq && parseFloat(maxLiq) !== 1 && liquidityScale) {
-                        liquidityScale.domain([0, maxLiq]);
-                    }
-
-                    render();
-                    renderCanvasArray([d3CanvasLiq]);
+            if (min !== undefined && max !== undefined) {
+                const visibleDomain = mergedLiqData.filter(
+                    (liqData: LiquidityDataLocal) =>
+                        liqData?.liqPrices >= min && liqData?.liqPrices <= max,
+                );
+                const maxLiq = d3.max(
+                    visibleDomain,
+                    (d: LiquidityDataLocal) => d.activeLiq,
+                );
+                if (maxLiq && parseFloat(maxLiq) !== 1 && liquidityScale) {
+                    liquidityScale.domain([0, maxLiq]);
                 }
-            } catch (error) {
-                console.error({ error });
+
+                render();
+                renderCanvasArray([d3CanvasLiq]);
             }
+        } catch (error) {
+            console.error({ error });
+        }
         // }
     }, [
         diffHashSigScaleData(scaleData, 'y'),
@@ -467,9 +469,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     }, [liqBidSeries, liqAskSeries, liqDepthBidSeries, liqDepthAskSeries]);
 
     const drawCurveLines = (canvas: HTMLCanvasElement) => {
-        const isRange =
-            location.pathname.includes('pool') ||
-            location.pathname.includes('reposition');
+        const isRange = pathsToUpdateChart.some((path) =>
+            location.pathname.includes(path),
+        );
         if (isRange) {
             clipHighlightedLines(canvas);
             lineLiqSeries(liqDataAsk);
@@ -478,9 +480,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     };
 
     const drawDepthLines = (canvas: HTMLCanvasElement) => {
-        const isRange =
-            location.pathname.includes('pool') ||
-            location.pathname.includes('reposition');
+        const isRange = pathsToUpdateChart.some((path) =>
+            location.pathname.includes(path),
+        );
         if (isRange) {
             clipHighlightedLines(canvas);
             lineLiqDepthAskSeries(liqDataDepthAsk);

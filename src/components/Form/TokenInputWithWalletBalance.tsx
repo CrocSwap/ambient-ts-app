@@ -6,8 +6,6 @@ import {
 } from 'react';
 import { formatTokenInput, stringToBigInt } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
-import { RefreshButton } from '../../styled/Components/TradeModules';
-import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 import { fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
@@ -36,7 +34,7 @@ interface propsIF {
     disabledContent?: React.ReactNode;
     amountToReduceNativeTokenQty: number;
     isInitPage?: boolean | undefined;
-    tokenDecimals?: number;
+    isEditPanel?: boolean;
     percentDiffUsdValue?: number;
 }
 
@@ -61,9 +59,9 @@ function TokenInputWithWalletBalance(props: propsIF) {
         reverseTokens,
         handleToggleDexSelection,
         parseTokenInput,
-        handleRefresh,
         amountToReduceNativeTokenQty,
         isInitPage,
+        isEditPanel,
         usdValue,
         percentDiffUsdValue,
     } = props;
@@ -219,19 +217,12 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 includeWallet={walletContent}
                 showPulseAnimation={showPulseAnimation}
                 disabledContent={disabledContent}
+                disableTokenSelector={isEditPanel}
                 isPoolInitialized={isPoolInitialized}
                 walletBalance={walletBalanceDisplay}
                 usdValue={usdValueForDom}
                 percentDiffUsdValue={percentDiffUsdValue}
             />
-            {handleRefresh && (
-                <RefreshButton
-                    onClick={handleRefresh}
-                    aria-label='Refresh data'
-                >
-                    <FiRefreshCw size={18} />
-                </RefreshButton>
-            )}
         </>
     );
 }

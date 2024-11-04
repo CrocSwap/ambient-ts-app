@@ -5,6 +5,7 @@ import { FlexContainer, Text } from '../../../../../styled/Common';
 import { SelectedRangeContainer } from '../../../../../styled/Components/TradeModules';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import { GraphDataContext } from '../../../../../contexts/GraphDataContext';
+import { RangeContext } from '../../../../../contexts/RangeContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -26,9 +27,9 @@ function SelectedRange(props: propsIF) {
         setIsDenomBase,
         isTokenABase,
         isAmbient,
-        pinnedMinPriceDisplayTruncatedInBase,
+        // pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote,
-        pinnedMaxPriceDisplayTruncatedInBase,
+        // pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
         showOnlyFeeTier,
         initialPrice,
@@ -40,6 +41,8 @@ function SelectedRange(props: propsIF) {
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const { liquidityFee } = useContext(GraphDataContext);
+
+    const { pinnedDisplayPrices } = useContext(RangeContext);
 
     const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
         undefined,
@@ -53,11 +56,11 @@ function SelectedRange(props: propsIF) {
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
     const minPrice = isDenomBase
-        ? pinnedMinPriceDisplayTruncatedInBase || '...'
+        ? pinnedDisplayPrices?.pinnedMinPriceDisplayTruncated || '...'
         : pinnedMinPriceDisplayTruncatedInQuote || '...';
 
     const maxPrice = isDenomBase
-        ? pinnedMaxPriceDisplayTruncatedInBase || '...'
+        ? pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncated || '...'
         : pinnedMaxPriceDisplayTruncatedInQuote || '...';
 
     const displayPriceWithDenom =

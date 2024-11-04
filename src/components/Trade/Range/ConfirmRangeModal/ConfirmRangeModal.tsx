@@ -37,6 +37,7 @@ interface propsIF {
     tokenBQty: string;
     onClose: () => void;
     slippageTolerance: number;
+    isEditPanel?: boolean;
 }
 
 function ConfirmRangeModal(props: propsIF) {
@@ -58,6 +59,7 @@ function ConfirmRangeModal(props: propsIF) {
         tokenBQty,
         onClose = () => null,
         slippageTolerance,
+        isEditPanel,
     } = props;
 
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
@@ -200,6 +202,7 @@ function ConfirmRangeModal(props: propsIF) {
             txError={txError}
             showConfirmation={showConfirmation}
             poolTokenDisplay={poolTokenDisplay}
+            isEditPanel={isEditPanel}
             statusText={
                 !showConfirmation
                     ? memoIsAdd

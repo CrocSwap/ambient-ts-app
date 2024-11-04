@@ -50,6 +50,7 @@ function RangePriceInfo(props: propsIF) {
         setIsTradeDollarizationEnabled,
         poolPriceDisplay,
     } = useContext(PoolContext);
+
     const {
         chainData: { chainId },
         crocEnv,
@@ -210,6 +211,8 @@ function RangePriceInfo(props: propsIF) {
     );
 
     // TODO: remove unnecessary top-level wrapper
+
+    // console.log({ minimumPrice, maximumPrice });
 
     return (
         <div

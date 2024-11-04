@@ -618,7 +618,8 @@ export function getCandleCount(
 
     return dataLenght;
 }
-export function roundToNearestPreset(closest: number) {
+export function roundToNearestPreset(closest: number,isEditMode:boolean) {
+    const maxValue = isEditMode ? 99 : 100;
     if (closest < 1) {
         if (closest < 0.1) {
             return 0.1;
@@ -626,8 +627,8 @@ export function roundToNearestPreset(closest: number) {
         return Number(closest.toFixed(2));
     }
 
-    if (closest > 100) {
-        return 100;
+    if (closest > maxValue) {
+        return maxValue;
     }
 
     return Math.floor(closest);
