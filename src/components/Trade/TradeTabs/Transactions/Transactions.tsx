@@ -279,6 +279,7 @@ function Transactions(props: propsIF) {
             transactionsByPool,
             showAllData,
             fetchedTransactions,
+            isAccountView,
         ],
     );
 
