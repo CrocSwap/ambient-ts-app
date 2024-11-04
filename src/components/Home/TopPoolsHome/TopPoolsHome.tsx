@@ -19,7 +19,11 @@ interface TopPoolsPropsIF {
 // eslint-disable-next-line
 export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
-    const { topPools, crocEnv } = useContext(CrocEnvContext);
+    const {
+        topPools,
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const show4TopPools = useMediaQuery('(max-width: 1500px)');
     const show3TopPools = useMediaQuery('(min-height: 700px)');
@@ -39,6 +43,20 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
 
     const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
+    const [intermediarySpotPrices, setIntermediarySpotPrices] = useState<{
+        prices: (number | undefined)[];
+        chainId: string;
+    }>({
+        prices: [],
+        chainId: '',
+    });
+
+    useEffect(() => {
+        // prevent setting spot prices if the chainId of the intermediary spot prices is different
+        if (intermediarySpotPrices.chainId !== chainId) return;
+
+        setSpotPrices(intermediarySpotPrices.prices);
+    }, [intermediarySpotPrices]);
 
     useEffect(() => {
         if (!crocEnv) return;
@@ -61,7 +79,11 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
             );
 
             const results = await Promise.all(spotPricePromises);
-            results && setSpotPrices(results);
+            results &&
+                setIntermediarySpotPrices({
+                    prices: results,
+                    chainId: poolData[0].chainId,
+                });
         };
 
         fetchSpotPrices();
