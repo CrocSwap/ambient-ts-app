@@ -4602,7 +4602,8 @@ export default function Chart(props: propsIF) {
             setHandleDocumentEvent(event);
             if (
                 d3Container.current &&
-                !d3Container.current.contains(event.target)
+                !d3Container.current.contains(event.target) &&
+                event.target.id !== 'trade_chart_full_screen_button'
             ) {
                 setIsShowFloatingToolbar(false);
             }
@@ -5339,18 +5340,19 @@ export default function Chart(props: propsIF) {
         );
 
         const yValue = scaleData?.yScale.invert(mouseY) as number;
-
-        const yValueVolume = scaleData?.volumeScale.invert(
-            mouseY / 2,
-        ) as number;
         const selectedVolumeDataValue = nearest?.volumeUSD;
+        const volumeHeight = mainCanvasBoundingClientRect
+            ? mainCanvasBoundingClientRect.height / 10
+            : 0;
 
         const isSelectedVolume =
-            selectedVolumeDataValue && showVolume
-                ? yValueVolume <=
-                      (selectedVolumeDataValue < longestValue
-                          ? longestValue
-                          : selectedVolumeDataValue) && yValueVolume !== 0
+            selectedVolumeDataValue &&
+            showVolume &&
+            mainCanvasBoundingClientRect
+                ? mainCanvasBoundingClientRect.height -
+                      mouseY -
+                      volumeHeight * 0.5 <=
+                  volumeHeight
                     ? true
                     : false
                 : false;
@@ -6042,7 +6044,7 @@ export default function Chart(props: propsIF) {
                 style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr auto',
-                    gridTemplateRows: '1fr auto auto auto',
+                    gridTemplateRows: '1fr 0.1fr auto auto auto',
                 }}
             >
                 {platformName !== 'futa' || showFutaCandles ? (
