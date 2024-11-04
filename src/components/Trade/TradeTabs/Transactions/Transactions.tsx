@@ -736,10 +736,8 @@ function Transactions(props: propsIF) {
                 return;
             }
             else{
-                console.log('>>>> oldest tx time', new Date(oldestTxTimeRef.current * 1000).toISOString())
                 let poolChangesJsonData;
                 if(showAllDataRef.current && !isAccountViewRef.current){
-                    console.log('>>>> fetchPoolRecentChanges')
                     poolChangesJsonData = await fetchPoolRecentChanges({
                         tokenList: tokens.tokenUniv,
                         base: selectedBaseAddress,
@@ -757,7 +755,6 @@ function Transactions(props: propsIF) {
                         cachedEnsResolve: cachedEnsResolve,
                     });
                 }else if(!showAllDataRef.current && !isAccountViewRef.current && userAddressRef.current){
-                    console.log('>>>> fetchPoolUserChanges')
                     poolChangesJsonData = await fetchPoolUserChanges({ 
                         tokenList: tokens.tokenUniv,
                         base: selectedBaseAddress,
@@ -776,7 +773,6 @@ function Transactions(props: propsIF) {
                         cachedEnsResolve: cachedEnsResolve,
                     })
                 }else if(accountAddressRef.current || userAddressRef.current){
-                    console.log('>>>> fetchUserRecentChanges')
                     const userParam = accountAddress && accountAddress.length > 0 ? accountAddress : (userAddress ? userAddress : '')
                     poolChangesJsonData = await fetchUserRecentChanges({ 
                         tokenList: tokens.tokenUniv,
