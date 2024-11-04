@@ -199,6 +199,18 @@ function Transactions(props: propsIF) {
 
     const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
 
+    const showAllDataRef = useRef<boolean>(showAllData);
+    showAllDataRef.current = showAllData;
+
+    const isAccountViewRef = useRef<boolean>(isAccountView);
+    isAccountViewRef.current = isAccountView;
+
+    const userAddressRef = useRef<`0x${string}` | undefined>(userAddress);
+    userAddressRef.current = userAddress;
+
+    const accountAddressRef = useRef<string | undefined>(accountAddress);
+    accountAddressRef.current = accountAddress;
+
 
     const resetInfiniteScrollData = () => {
         setPagesVisible([0, 1]);
@@ -385,6 +397,9 @@ function Transactions(props: propsIF) {
                 : 0,
         [transactionData, showAllData],
     );
+
+    const oldestTxTimeRef = useRef<number>(oldestTxTime);
+    oldestTxTimeRef.current = oldestTxTime;
 
     const userTransacionsLength = useMemo<number>(
         () =>
@@ -707,6 +722,7 @@ function Transactions(props: propsIF) {
         
     }
 
+
     const addMoreData = async() => {
         setMoreDataLoading(true);
         // retrieve pool recent changes
@@ -715,8 +731,10 @@ function Transactions(props: propsIF) {
                 return;
             }
             else{
+                console.log('>>>> oldest tx time', new Date(oldestTxTimeRef.current * 1000).toISOString())
                 let poolChangesJsonData;
-                if(showAllData && !isAccountView){
+                if(showAllDataRef.current && !isAccountViewRef.current){
+                    console.log('>>>> fetchPoolRecentChanges')
                     poolChangesJsonData = await fetchPoolRecentChanges({
                         tokenList: tokens.tokenUniv,
                         base: selectedBaseAddress,
@@ -724,7 +742,7 @@ function Transactions(props: propsIF) {
                         poolIdx: poolIndex,
                         chainId: chainId,
                         n: 50,
-                        timeBefore: oldestTxTime,
+                        timeBefore: oldestTxTimeRef.current,
                         crocEnv: crocEnv,
                         graphCacheUrl: activeNetwork.graphCacheUrl,
                         provider: provider,
@@ -733,7 +751,8 @@ function Transactions(props: propsIF) {
                         cachedTokenDetails: cachedTokenDetails,
                         cachedEnsResolve: cachedEnsResolve,
                     });
-                }else if(!showAllData && !isAccountView && userAddress){
+                }else if(!showAllDataRef.current && !isAccountViewRef.current && userAddress){
+                    console.log('>>>> fetchPoolUserChanges')
                     poolChangesJsonData = await fetchPoolUserChanges({ 
                         tokenList: tokens.tokenUniv,
                         base: selectedBaseAddress,
@@ -742,7 +761,7 @@ function Transactions(props: propsIF) {
                         chainId: chainId,
                         user: userAddress,
                         n: 50,
-                        timeBefore: oldestTxTime,
+                        timeBefore: oldestTxTimeRef.current,
                         crocEnv: crocEnv,
                         graphCacheUrl: activeNetwork.graphCacheUrl,
                         provider: provider,
@@ -751,14 +770,15 @@ function Transactions(props: propsIF) {
                         cachedTokenDetails: cachedTokenDetails,
                         cachedEnsResolve: cachedEnsResolve,
                     })
-                }else if(accountAddress || userAddress){
+                }else if(accountAddressRef.current || userAddressRef.current){
+                    console.log('>>>> fetchUserRecentChanges')
                     const userParam = accountAddress && accountAddress.length > 0 ? accountAddress : (userAddress ? userAddress : '')
                     poolChangesJsonData = await fetchUserRecentChanges({ 
                         tokenList: tokens.tokenUniv,
                         chainId: chainId,
                         user: userParam,
                         n: 50,
-                        timeBefore: oldestTxTime,
+                        timeBefore: oldestTxTimeRef.current,
                         crocEnv: crocEnv,
                         graphCacheUrl: activeNetwork.graphCacheUrl,
                         provider: provider,
