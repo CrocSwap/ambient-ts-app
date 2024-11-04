@@ -383,7 +383,7 @@ function Transactions(props: propsIF) {
                           : min;
                   }, transactionData[0].txTime)
                 : 0,
-        [transactionData],
+        [transactionData, showAllData],
     );
 
     const userTransacionsLength = useMemo<number>(
