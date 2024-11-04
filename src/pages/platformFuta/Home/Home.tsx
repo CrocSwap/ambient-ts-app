@@ -9,6 +9,7 @@ import FutaLanding4 from './FutaLandings/FutaLanding4';
 import Hero from './Hero/Hero';
 import DotAnimation from '../../../components/Home/CarouselControl/DotAnimation';
 import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
+import FutaNewLanding from './FutaLandings/NewLandings/FutaNewLanding';
 
 function Home() {
     const {
@@ -139,6 +140,10 @@ function Home() {
             observer.disconnect();
         };
     }, [sections]);
+
+    const yes = true
+
+    if ( yes) return <FutaNewLanding/>
 
     return (
         <div>

@@ -39,8 +39,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
-      
-       
 
     const {
         isCondensedModeEnabled,
@@ -57,6 +55,12 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const { platformName } = useContext(BrandContext);
     const isFuta = ['futa'].includes(platformName);
+
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
+
+    const smallView = useMediaQuery('(max-width: 1500px)');
 
     const { activeMobileComponent } = useContext(TradeTableContext);
 
@@ -78,7 +82,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                       '',
                       undefined,
                       // height, trade charts header + chart height
-                      50 + chartHeights.current,
+                      (smallView ? 100 : 50) + chartHeights.current,
                   );
             if (blob) {
                 copy(blob);
@@ -174,11 +178,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 <HeaderButtons
                     mobileHide
                     onClick={() => {
-                        setIsChartFullScreen(!isChartFullScreen)
-                        
-
-                    }
-                    }
+                        setIsChartFullScreen(!isChartFullScreen);
+                    }}
                 >
                     <BsFullscreen
                         size={16}
@@ -193,7 +194,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 enterDelay={500}
             >
                 <HeaderButtons mobileHide onClick={copyChartToClipboard}>
-
                     <RiScreenshot2Fill
                         size={20}
                         id='trade_chart_save_image'
@@ -214,7 +214,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         setContextMenuPlacement(() => {
                             return {
                                 top: 200,
-                                left: 550,
+                                left: window.innerWidth / 2 - 150,
                                 isReversed: false,
                             };
                         });
@@ -238,10 +238,10 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 useMediaQuery('(min-width: 2000px)') ? 'center' : 'flex-start'
             }
             padding={props.tradePage ? ' 8px' : '4px 4px 8px 4px'}
-            style={{background: isFuta ? 'var(--dark1)' : 'var(--dark2)'}}
+            style={{ background: isFuta ? 'var(--dark1)' : 'var(--dark2)' }}
         >
             <TradeChartsTokenInfo />
-            {tradeTableState === 'Expanded' || showNoChartData
+            {tradeTableState === 'Expanded' || showNoChartData || tabletView
                 ? null
                 : graphSettingsContent}
         </FlexContainer>
