@@ -333,6 +333,7 @@ function Transactions(props: propsIF) {
         }
     }, [transactionsByPool]);
 
+
     useEffect(() => {
         if(showAllData) return;
         const existingChanges = new Set(
@@ -389,14 +390,17 @@ function Transactions(props: propsIF) {
 
     const oldestTxTime = useMemo(
         () =>
-            transactionData.length > 0
-                ? transactionData.reduce((min, transaction) => {
+            {
+                const dataToFilter = transactionData;
+              return dataToFilter.length > 0
+                ? dataToFilter.reduce((min, transaction) => {
                       return transaction.txTime < min
                           ? transaction.txTime
                           : min;
-                  }, transactionData[0].txTime)
-                : 0,
-        [transactionData, showAllData],
+                  }, dataToFilter[0].txTime)
+                : 0
+            },
+        [transactionData, fetchedTransactions.changes, showAllData, isAccountView],
     );
 
     const oldestTxTimeRef = useRef<number>(oldestTxTime);

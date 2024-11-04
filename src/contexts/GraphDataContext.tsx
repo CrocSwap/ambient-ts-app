@@ -510,7 +510,7 @@ export const GraphDataContextProvider = (props: {
                     crocEnv: crocEnv,
                     graphCacheUrl: activeNetwork.graphCacheUrl,
                     provider,
-                    n: 200, // fetch last 200 changes,
+                    n: 100, // fetch last 100 changes,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
