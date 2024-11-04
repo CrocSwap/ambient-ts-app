@@ -1,4 +1,3 @@
-import { FaAngleDown, FaChevronDown } from 'react-icons/fa';
 import styles from './FutaLandingNav.module.css';
 import { IoIosArrowDown } from 'react-icons/io';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';

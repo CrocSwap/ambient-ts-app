@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import fadingTextData from './fadingTextData.json';
 import FadingText from './FadingText';
 
@@ -11,16 +11,33 @@ interface FadingTextItem {
     color: string;
 }
 
-const FadingTextGrid: React.FC = () => {
+const FadingTextGrid: React.FC<{ onAnimationComplete?: () => void }> = ({ onAnimationComplete }) => {
+    useEffect(() => {
+        // Calculate the longest duration based on fadeIn and fadeOut delays and times
+        const longestDuration = Math.max(
+            ...(fadingTextData as FadingTextItem[]).map(item =>
+                item.fadeInDelay + item.fadeInTime + item.fadeOutDelay + item.fadeOutTime
+            )
+        );
+
+        // Set a timeout to call onAnimationComplete after the longest animation finishes
+        const timer = setTimeout(() => {
+            if (onAnimationComplete) onAnimationComplete();
+        }, longestDuration);
+
+        return () => clearTimeout(timer); // Cleanup on component unmount
+    }, [onAnimationComplete]);
+
     return (
         <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(11, 1fr)',
             gridTemplateRows: 'repeat(11, 1fr)',
-            gap: '10px', // Adjust gap if needed
-            position: 'relative', // Required for absolute positioning of centered elements
-            height: '500px', // Adjust height as needed
-            width: '1200px', // Adjust width as needed
+            gap: '10px',
+            position: 'relative',
+            height: '100vh',
+            width: '100vw',
+            overflow: 'hidden',
         }}>
             {(fadingTextData as FadingTextItem[]).map((item, index) => (
                 <FadingText
@@ -31,21 +48,21 @@ const FadingTextGrid: React.FC = () => {
                     fadeOutDelay={item.fadeOutDelay}
                     fadeOutTime={item.fadeOutTime}
                     color={item.color}
-                    fontSize="24px" // Keep main font size at 24px
+                    fontSize="24px"
                 />
             ))}
 
             <div style={{
-                gridColumn: '5 / span 1', // Centering the group (adjust as needed)
+                gridColumn: '5 / span 1',
                 gridRow: '6 / span 1',
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                position: 'absolute', // Absolute positioning to center within the grid
+                position: 'absolute',
                 top: '50%',
                 left: '50%',
-                transform: 'translate(-50%, -50%)', // Center the div
+                transform: 'translate(-50%, -50%)',
             }}>
                 <FadingText
                     text={'FU'}
@@ -54,21 +71,21 @@ const FadingTextGrid: React.FC = () => {
                     fadeOutDelay={8000}
                     fadeOutTime={0}
                     color="#AACFD1"
-                    fontSize="24px" // Keep main font size at 24px
+                    fontSize="24px"
                 />
             </div>
 
             <div style={{
-                gridColumn: '6 / span 1', // Centering the group (adjust as needed)
+                gridColumn: '6 / span 1',
                 gridRow: '6 / span 1',
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                position: 'absolute', // Absolute positioning to center within the grid
+                position: 'absolute',
                 top: '50%',
                 left: '50%',
-                transform: 'translate(-50%, -50%)', // Center the div
+                transform: 'translate(-50%, -50%)',
             }}>
                 <FadingText
                     text={'/'}
@@ -77,21 +94,21 @@ const FadingTextGrid: React.FC = () => {
                     fadeOutDelay={6500}
                     fadeOutTime={0}
                     color="#AACFD1"
-                    fontSize="24px" // Keep main font size at 24px
+                    fontSize="24px"
                 />
             </div>
 
             <div style={{
-                gridColumn: '7 / span 1', // Centering the group (adjust as needed)
+                gridColumn: '7 / span 1',
                 gridRow: '6 / span 1',
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                position: 'absolute', // Absolute positioning to center within the grid
+                position: 'absolute',
                 top: '50%',
                 left: '50%',
-                transform: 'translate(-50%, -50%)', // Center the div
+                transform: 'translate(-50%, -50%)',
             }}>
                 <FadingText
                     text={'TA'}
@@ -100,7 +117,7 @@ const FadingTextGrid: React.FC = () => {
                     fadeOutDelay={5000}
                     fadeOutTime={0}
                     color="#AACFD1"
-                    fontSize="24px" // Keep main font size at 24px
+                    fontSize="24px"
                 />
             </div>
         </div>

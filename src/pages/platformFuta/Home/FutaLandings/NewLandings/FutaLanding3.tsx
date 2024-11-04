@@ -1,6 +1,5 @@
 import DnaAnimation from '../../Animations/DnaAnimation'
 import styles from './FutaLanding3.module.css'
-import auctionSvg from './auction.svg'
 export default function FutaLanding3() {
     
     return (

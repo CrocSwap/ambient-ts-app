@@ -2,7 +2,7 @@
     width: 100svw;
     height: calc(100svh - 60px);
     scroll-behavior: smooth;
-    /* background: blue; */
+    
 
     
    
@@ -15,4 +15,9 @@
     height: 100%;
     display: grid;
     grid-template-rows: 1fr 185px;
+
+    background: var(--dark1);
+
+    
 }
+

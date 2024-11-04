@@ -1,5 +1,4 @@
 import styles from './FutaLanding4.module.css'
-import circleSvg from './Circle.svg'
 export default function FutaLanding4() {
     
     return (

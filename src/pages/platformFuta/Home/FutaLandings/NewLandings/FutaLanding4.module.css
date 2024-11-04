@@ -67,12 +67,17 @@ font-style: normal;
 font-weight: 500;
 line-height: normal;
 }
-@media only screen and (max-width: 375px) {
-.container{
-    gap: 1rem;
-}
+@media only screen and (max-width: 500px) {
+    .container{
+        gap: 1rem;
+    }
 
-}
+    .list{
+        flex-direction: column;
+        align-items: start;
+    }
+    
+    }
 
 @media only screen and (min-width: 768px) {
     .container{

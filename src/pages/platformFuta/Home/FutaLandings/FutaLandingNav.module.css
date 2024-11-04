@@ -6,12 +6,13 @@
     height: 185px;
     position: fixed;
     bottom: 0;
-    background: #07070B;
+    background: bvar(--dark1);
     padding: 0 16px;
 
 }
 .desktopFuta{
     display: none;
+    
 }
 
 .leftSection {
@@ -136,6 +137,10 @@ margin-bottom: -8px;
 
 
 @media only screen and (min-width: 768px) {
+
+    .container{
+        padding-bottom: 2rem;
+    }
     .desktopFuta{
         display: flex;
     }

@@ -1,5 +1,4 @@
 import styles from './FutaLanding5.module.css'
-import circleSvg from './Circle.svg'
 import { Link } from 'react-router-dom'
 export default function FutaLanding5() {
     
