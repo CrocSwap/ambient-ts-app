@@ -9,8 +9,8 @@ import {
     checkEoaHexAddress,
 } from '../../ambient-utils/dataLayer';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { NetworkIF } from '../../ambient-utils/types';
-import { supportedNetworks } from '../../ambient-utils/constants';
+import { chainIds, NetworkIF } from '../../ambient-utils/types';
+import { getNetworkData, supportedNetworks } from '../../ambient-utils/constants';
 
 export const useAppChain = (): {
     chainData: ChainSpec;
@@ -72,7 +72,15 @@ export const useAppChain = (): {
     );
 
     // memoized and validated chain ID from the connected wallet
-    const chainInWalletValidated = useRef<string | null>(getChainFromWallet());
+    const [chainInWalletValidated, setChainInWalletValidated] = useState<string|null>(getChainFromWallet());
+    const [x, setX] = useState<boolean>(true);
+    useEffect(() => {
+        const incomingChainFromWallet: string | null = getChainFromWallet();
+        if (incomingChainFromWallet) {
+            const networkData: NetworkIF = getNetworkData(incomingChainFromWallet as chainIds);
+            chooseNetwork(networkData);
+        }
+    }, [x]);
 
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
@@ -87,7 +95,7 @@ export const useAppChain = (): {
                     // if wallet chain is valid and does not match record in app, update
                     // without this gatekeeping the app refreshes itself endlessly
                     if (
-                        chainInWalletValidated.current !==
+                        chainInWalletValidated !==
                         incomingChainFromWallet
                     ) {
                         // update preserved chain ID in local storage
@@ -168,22 +176,22 @@ export const useAppChain = (): {
                             }
                         }
                         if (activeNetwork.chainId != incomingChainFromWallet) {
-                            // !IMPORTANT:  not this one
-                            window.location.reload();
+                            // // !IMPORTANT:  not this one
+                            // window.location.reload();
+                            setX(!x);
                         } else {
                             setIgnoreFirst(false);
                         }
                         // update state with new validated wallet network
-                        chainInWalletValidated.current =
-                            incomingChainFromWallet;
+                        setChainInWalletValidated(incomingChainFromWallet);
                     }
                 }
             } else {
                 // this should only ever be null
-                chainInWalletValidated.current = incomingChainFromWallet;
+                setChainInWalletValidated(incomingChainFromWallet);
             }
         }
-    }, [walletChainId, chainInWalletValidated.current]);
+    }, [walletChainId, chainInWalletValidated]);
 
     const defaultChain = getDefaultChainId();
 
@@ -206,14 +214,14 @@ export const useAppChain = (): {
     // this doesn't kick in if the user does not have a connected wallet
     useEffect(() => {
         // see if there is a connected wallet with a valid network
-        if (chainInWalletValidated.current) {
+        if (chainInWalletValidated) {
             // find network metaData for validated wallet
             const chainMetadata: NetworkIF =
-                supportedNetworks[chainInWalletValidated.current];
+                supportedNetworks[chainInWalletValidated];
             // if found, update local state with retrieved metadata
             chainMetadata && setActiveNetwork(chainMetadata);
         }
-    }, [chainInWalletValidated.current !== null]);
+    }, [chainInWalletValidated !== null]);
 
     // fn to allow user to manually switch chains in the app because everything
     // ... else in this file responds to changes in the browser environment

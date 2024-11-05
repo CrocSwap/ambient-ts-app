@@ -26,6 +26,31 @@ const networks: NetworkIF[] = [
     blast,
 ];
 
+export function getNetworkData(chn: chainIds): NetworkIF {
+    let output: NetworkIF;
+    switch(chn) {
+        case '0x1':
+            output = ethereumMainnet;
+            break;
+        case '0x82750':
+            output = scrollMainnet;
+            break;
+        case '0x13e31':
+            output = blast;
+            break;
+        case '0xaa36a7':
+            output = ethereumSepolia;
+            break;
+        case '0xa0c71fd':
+            output = blastSepolia;
+            break;
+        case '0x8274f':
+            output = scrollSepolia;
+            break;
+    }
+    return output;
+}
+
 function getNetworks(chns: (string | chainIds)[]): {
     [x: string]: NetworkIF;
 } {
