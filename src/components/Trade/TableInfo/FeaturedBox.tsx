@@ -34,7 +34,10 @@ interface FeaturedBoxPropsIF {
 export function FeaturedBox(props: FeaturedBoxPropsIF) {
     const { token, balance, value, pooled, style, isInit } = props;
     const {
-        chainData: { chainId, addrs },
+        activeNetwork: {
+            chainId,
+            chainSpec: { addrs },
+        },
     } = useContext(AppStateContext);
     const blockExplorer = getChainExplorer(chainId);
 

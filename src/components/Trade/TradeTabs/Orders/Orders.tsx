@@ -38,7 +38,7 @@ function Orders(props: propsIF) {
     } = useContext(SidebarContext);
 
     const {
-        chainData: { poolIndex },
+        activeNetwork: { poolIndex },
     } = useContext(AppStateContext);
 
     // only show all data when on trade tabs page

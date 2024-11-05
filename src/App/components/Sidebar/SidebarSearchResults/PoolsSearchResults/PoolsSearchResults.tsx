@@ -27,7 +27,7 @@ export default function PoolsSearchResults(props: propsIF) {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { crocEnv } = useContext(CrocEnvContext);
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const poolPriceCacheTime = Math.floor(Date.now() / 60000); // 60 second cache

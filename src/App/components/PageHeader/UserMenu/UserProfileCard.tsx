@@ -1,13 +1,12 @@
 import { useContext } from 'react';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
-import { getChainExplorer } from '../../../../ambient-utils/dataLayer';
 import { getAvatarComponent } from '../../../../components/Chat/ChatRenderUtils';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
-import styles from './UserProfileCard.module.css'
-import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
+import styles from './UserProfileCard.module.css';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface propsIF {
     ensName: string;
@@ -19,18 +18,24 @@ interface propsIF {
 }
 
 export default function UserProfileCard(props: propsIF) {
-    const { ensName, accountAddress, handleCopyAddress, accountAddressFull, isMobileDropdown } =
-        props;
-    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
+    const {
+        ensName,
+        accountAddress,
+        handleCopyAddress,
+        accountAddressFull,
+        isMobileDropdown,
+    } = props;
+    const { activeNetwork } = useContext(AppStateContext);
     const { userAddress, resolvedAddressFromContext, userAvatarData } =
         useContext(UserDataContext);
-    const blockExplorer = getChainExplorer(chainData.chainId);
     const link = resolvedAddressFromContext
         ? `/${resolvedAddressFromContext}`
         : `/${userAddress}`;
 
     return (
-        <div className={`${styles.nameDisplayContainer} ${isMobileDropdown && styles.mobileDropdown}`}>
+        <div
+            className={`${styles.nameDisplayContainer} ${isMobileDropdown && styles.mobileDropdown}`}
+        >
             <Link to={link}>
                 {userAddress &&
                     userAvatarData &&
@@ -46,7 +51,7 @@ export default function UserProfileCard(props: propsIF) {
                         <a
                             target='_blank'
                             rel='noreferrer'
-                            href={`${blockExplorer}address/${accountAddressFull}`}
+                            href={`${activeNetwork.blockExplorer}address/${accountAddressFull}`}
                             aria-label='View address on Etherscan'
                         >
                             <FiExternalLink />
@@ -56,7 +61,8 @@ export default function UserProfileCard(props: propsIF) {
                         title={`${'Copy wallet address to clipboard'}`}
                         placement='right'
                     >
-                        <button className={styles.copyButton}
+                        <button
+                            className={styles.copyButton}
                             onClick={handleCopyAddress}
                             aria-label='Copy address to clipboard'
                         >

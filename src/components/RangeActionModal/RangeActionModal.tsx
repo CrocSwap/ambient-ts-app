@@ -44,7 +44,10 @@ import { UserDataContext } from '../../contexts/UserDataContext';
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 import SmolRefuelLink from '../Global/SmolRefuelLink/SmolRefuelLink';
-import { AppStateContext, AppStateContextIF } from '../../contexts/AppStateContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../contexts/AppStateContext';
 
 interface propsIF {
     type: RangeModalAction;
@@ -56,15 +59,11 @@ interface propsIF {
 function RangeActionModal(props: propsIF) {
     const { type, position, onClose, isAccountView } = props;
     const {
-        activeNetwork,
-        chainData: {chainId, poolIndex},
+        activeNetwork: { graphCacheUrl, chainId, poolIndex },
     } = useContext<AppStateContextIF>(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
-    const {
-        crocEnv,
-        provider,
-        ethMainnetUsdPrice,
-    } = useContext(CrocEnvContext);
+    const { crocEnv, provider, ethMainnetUsdPrice } =
+        useContext(CrocEnvContext);
 
     const {
         isAmbient,
@@ -129,7 +128,7 @@ function RangeActionModal(props: propsIF) {
 
     const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/position_stats?'
-        : activeNetwork.graphCacheUrl + '/position_stats?';
+        : graphCacheUrl + '/position_stats?';
 
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined

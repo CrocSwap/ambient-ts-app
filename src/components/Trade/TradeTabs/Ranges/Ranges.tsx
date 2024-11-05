@@ -68,7 +68,7 @@ function Ranges(props: propsIF) {
     const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
-        chainData: { chainId, poolIndex },
+        activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
 
     const {

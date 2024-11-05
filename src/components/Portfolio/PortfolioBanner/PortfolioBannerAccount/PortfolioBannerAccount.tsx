@@ -75,7 +75,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
     const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
 
     const {
-        chainData: { blockExplorer },
+        activeNetwork: { blockExplorer },
         snackbar: { open: openSnackbar },
     } = useContext<AppStateContextIF>(AppStateContext);
 

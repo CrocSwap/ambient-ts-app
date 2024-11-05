@@ -19,7 +19,10 @@ import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
 import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { BrandContext, BrandContextIF } from '../../../../contexts/BrandContext';
+import {
+    BrandContext,
+    BrandContextIF,
+} from '../../../../contexts/BrandContext';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -28,7 +31,10 @@ interface propsIF {
     customBR?: string;
 }
 import { motion } from 'framer-motion';
-import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
 
 interface NetworkIF {
     id: string;
@@ -45,10 +51,10 @@ interface NetworkIF {
 export default function NetworkSelector(props: propsIF) {
     const {
         chooseNetwork,
-        chainData: { chainId },
-        chainData,
+        activeNetwork: { chainId },
     } = useContext<AppStateContextIF>(AppStateContext);
-    const { networks, platformName, includeCanto } = useContext<BrandContextIF>(BrandContext);
+    const { networks, platformName, includeCanto } =
+        useContext<BrandContextIF>(BrandContext);
     const { switchNetwork } = useSwitchNetwork();
     const smallScreen: boolean = useMediaQuery('(max-width: 600px)');
 
@@ -98,10 +104,7 @@ export default function NetworkSelector(props: propsIF) {
             // check if chain is supported and not the current chain in the app
             // yes → trigger machinery to switch the current network
             // no → no action except to clear the param from the URL
-            if (
-                supportedNetworks[targetChain] &&
-                targetChain !== chainData.chainId
-            ) {
+            if (supportedNetworks[targetChain] && targetChain !== chainId) {
                 // use web3modal if wallet is connected, otherwise use in-app toggle
                 if (isConnected) {
                     switchNetwork(parseInt(targetChain));

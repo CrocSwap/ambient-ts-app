@@ -79,7 +79,7 @@ function SwapTokenInput(props: propsIF) {
     const { crocEnv } = useContext(CrocEnvContext);
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);

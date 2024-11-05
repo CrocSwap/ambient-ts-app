@@ -69,15 +69,16 @@ export const TradeDataContext = createContext<TradeDataContextIF>(
 // pair is necessary at load time
 
 export const TradeDataContextProvider = (props: { children: ReactNode }) => {
-    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext<AppStateContextIF>(AppStateContext);
     const { tokens } = useContext<TokenContextIF>(TokenContext);
 
     const savedTokenASymbol = localStorage.getItem('tokenA');
     const savedTokenBSymbol = localStorage.getItem('tokenB');
 
-    const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] = getDefaultPairForChain(
-        chainData.chainId,
-    );
+    const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] =
+        getDefaultPairForChain(chainId);
 
     // Limit NoGoZone
     const [noGoZoneBoundaries, setNoGoZoneBoundaries] = useState([0, 0]);
@@ -139,7 +140,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
                   ? dfltTokenA
                   : dfltTokenB,
         );
-    }, [chainData.chainId]);
+    }, [chainId]);
 
     const [
         areDefaultTokensUpdatedForChain,
@@ -242,12 +243,12 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
 
     const defaultRangeWidthForActivePool = useMemo(() => {
         const defaultWidth = getDefaultRangeWidthForTokenPair(
-            chainData.chainId,
+            chainId,
             baseToken.address,
             quoteToken.address,
         );
         return defaultWidth;
-    }, [baseToken.address + quoteToken.address + chainData.chainId]);
+    }, [baseToken.address + quoteToken.address + chainId]);
 
     const tradeDataContext = {
         tokenA,
@@ -278,7 +279,6 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         setLimitTick,
         setPoolPriceNonDisplay,
         setSlippageTolerance,
-        chainData,
         defaultRangeWidthForActivePool,
         getDefaultRangeWidthForTokenPair,
         noGoZoneBoundaries,

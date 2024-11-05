@@ -91,8 +91,7 @@ function Transactions(props: propsIF) {
     } = props;
 
     const {
-        activeNetwork,
-        chainData: { chainId, poolIndex },
+        activeNetwork: { graphCacheUrl, chainId, poolIndex },
         server: { isEnabled: isServerEnabled },
     } = useContext<AppStateContextIF>(AppStateContext);
     const { isCandleSelected } = useContext<CandleContextIF>(CandleContext);
@@ -103,10 +102,7 @@ function Transactions(props: propsIF) {
         cachedEnsResolve,
     } = useContext<CachedDataContextIF>(CachedDataContext);
     const { chartSettings } = useContext<ChartContextIF>(ChartContext);
-    const {
-        crocEnv,
-        provider,
-    } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
     const { setOutsideControl, showAllData: showAllDataSelection } =
         useContext<TradeTableContextIF>(TradeTableContext);
@@ -235,7 +231,7 @@ function Transactions(props: propsIF) {
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
-            graphCacheUrl: activeNetwork.graphCacheUrl,
+            graphCacheUrl: graphCacheUrl,
             provider,
             cachedFetchTokenPrice: cachedFetchTokenPrice,
             cachedQuerySpotPrice: cachedQuerySpotPrice,

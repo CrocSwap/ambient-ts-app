@@ -35,7 +35,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
     const { tokenA } = useContext(TradeDataContext);
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const {

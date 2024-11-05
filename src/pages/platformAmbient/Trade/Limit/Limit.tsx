@@ -61,7 +61,7 @@ export default function Limit() {
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
     const {
-        chainData: { chainId, gridSize, poolIndex },
+        activeNetwork: { chainId, gridSize, poolIndex },
     } = useContext(AppStateContext);
     const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);

@@ -38,7 +38,7 @@ export const UserPreferenceContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const {
         baseToken: { address: baseTokenAddress },

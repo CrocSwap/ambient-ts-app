@@ -41,9 +41,7 @@ export interface PoolContextIF {
     usdPrice: number | undefined;
     usdPriceInverse: number | undefined;
     isTradeDollarizationEnabled: boolean;
-    setIsTradeDollarizationEnabled: Dispatch<
-        SetStateAction<boolean>
-    >;
+    setIsTradeDollarizationEnabled: Dispatch<SetStateAction<boolean>>;
     fdvOfDenomTokenDisplay: string | undefined;
     baseTokenFdvDisplay: string | undefined;
     quoteTokenFdvDisplay: string | undefined;
@@ -52,16 +50,15 @@ export interface PoolContextIF {
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: ReactNode }) => {
-    const { chainData, activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
+    const {
+        activeNetwork: { graphCacheUrl, chainId, poolIndex },
+    } = useContext<AppStateContextIF>(AppStateContext);
     const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
     const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
 
-    const poolList: PoolIF[] = usePoolList(
-        activeNetwork.graphCacheUrl,
-        crocEnv,
-    );
+    const poolList: PoolIF[] = usePoolList(graphCacheUrl, crocEnv);
 
     // fn to determine if a given token pair exists in `poolList`
     function findPool(
@@ -114,8 +111,8 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const poolArg: PoolIF = {
         base: baseToken,
         quote: quoteToken,
-        chainId: chainData.chainId,
-        poolIdx: chainData.poolIndex,
+        chainId: chainId,
+        poolIdx: poolIndex,
     };
 
     const poolData = useFetchPoolStats(

@@ -53,7 +53,7 @@ function MinMaxPrice(props: propsIF) {
     } = props;
 
     const {
-        chainData: { gridSize: tickSize },
+        activeNetwork: { gridSize: tickSize },
     } = useContext(AppStateContext);
     const { setAdvancedHighTick, setAdvancedLowTick } =
         useContext(RangeContext);

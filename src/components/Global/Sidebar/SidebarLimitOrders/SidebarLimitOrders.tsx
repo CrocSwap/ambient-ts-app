@@ -29,7 +29,7 @@ export default function SidebarLimitOrders(props: propsIF) {
     const { isUserConnected } = useContext(UserDataContext);
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const {
         setCurrentLimitOrderActive,

@@ -62,7 +62,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const { provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const {

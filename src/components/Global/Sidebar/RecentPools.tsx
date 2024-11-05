@@ -20,7 +20,7 @@ function RecentPools(props: propsIF) {
     const { recentPools } = useContext(SidebarContext);
     const { crocEnv } = useContext(CrocEnvContext);
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache

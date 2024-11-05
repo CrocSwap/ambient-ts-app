@@ -60,7 +60,7 @@ function RangesMenu(props: propsIF) {
     } = props;
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const {
         setRangeTicksCopied,

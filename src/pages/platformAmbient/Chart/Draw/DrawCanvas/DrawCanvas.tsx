@@ -112,7 +112,7 @@ function DrawCanvas(props: DrawCanvasProps) {
     } = props;
 
     const {
-        chainData: { poolIndex },
+        activeNetwork: { poolIndex },
     } = useContext(AppStateContext);
 
     const { isCondensedModeEnabled } = useContext(CandleContext);

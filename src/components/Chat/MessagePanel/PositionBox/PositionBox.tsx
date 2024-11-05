@@ -34,8 +34,7 @@ interface propsIF {
 
 export default function PositionBox(props: propsIF) {
     const {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        chainData: { blockExplorer, chainId },
+        activeNetwork: { blockExplorer },
     } = useContext(AppStateContext);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -266,7 +265,7 @@ that will merged manually
     }
 
     function handleOpenExplorer() {
-        // chainData may be changed!!
+        // active network may be changed!!
         if (sPositions === undefined && position !== undefined) {
             const hashMsg = message
                 .split(' ')

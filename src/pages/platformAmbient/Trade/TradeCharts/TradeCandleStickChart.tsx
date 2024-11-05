@@ -10,17 +10,25 @@ import {
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import {
     diffHashSigLiquidity,
     getPinnedPriceValuesFromTicks,
 } from '../../../../ambient-utils/dataLayer';
-import { CandleContext, CandleContextIF } from '../../../../contexts/CandleContext';
+import {
+    CandleContext,
+    CandleContextIF,
+} from '../../../../contexts/CandleContext';
 import { PoolContext, PoolContextIF } from '../../../../contexts/PoolContext';
-import { ChartContext, ChartContextIF } from '../../../../contexts/ChartContext';
-import { TradeTokenContext, TradeTokenContextIF } from '../../../../contexts/TradeTokenContext';
+import {
+    ChartContext,
+    ChartContextIF,
+} from '../../../../contexts/ChartContext';
+import {
+    TradeTokenContext,
+    TradeTokenContextIF,
+} from '../../../../contexts/TradeTokenContext';
 import Spinner from '../../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
 import {
@@ -44,8 +52,14 @@ import {
     xAxisBuffer,
 } from '../../Chart/ChartUtils/chartConstants';
 import { filterCandleWithTransaction } from '../../../Chart/ChartUtils/discontinuityScaleUtils';
-import { BrandContext, BrandContextIF } from '../../../../contexts/BrandContext';
-import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
+import {
+    BrandContext,
+    BrandContextIF,
+} from '../../../../contexts/BrandContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
 import ChartTooltip from '../../../Chart/ChartTooltip/ChartTooltip';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -75,12 +89,15 @@ function TradeCandleStickChart(props: propsIF) {
         selectedDate,
         setSelectedDate,
         updateURL,
-        openMobileSettingsModal
+        openMobileSettingsModal,
     } = props;
 
     const { liqMode } = chartItemStates;
 
-    const { chainData, isUserIdle20min } = useContext<AppStateContextIF>(AppStateContext);
+    const {
+        activeNetwork: { gridSize, poolIndex, chainId },
+        isUserIdle20min,
+    } = useContext<AppStateContextIF>(AppStateContext);
     const {
         candleData,
         isFetchingCandle,
@@ -187,7 +204,7 @@ function TradeCandleStickChart(props: propsIF) {
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
             ? 1 / poolPriceWithoutDenom
-            : poolPriceWithoutDenom ?? 0
+            : (poolPriceWithoutDenom ?? 0)
         : 0;
 
     const _tokenA = tokenPair.dataTokenA;
@@ -322,8 +339,8 @@ function TradeCandleStickChart(props: propsIF) {
                 baseTokenAddress.toLowerCase() &&
             unparsedLiquidityData.curveState.quote ===
                 quoteTokenAddress.toLowerCase() &&
-            unparsedLiquidityData.curveState.poolIdx === chainData.poolIndex &&
-            unparsedLiquidityData.curveState.chainId === chainData.chainId
+            unparsedLiquidityData.curveState.poolIdx === poolIndex &&
+            unparsedLiquidityData.curveState.chainId === chainId
         ) {
             const liqAskData: LiquidityDataLocal[] = [];
             const liqBidData: LiquidityDataLocal[] = [];
@@ -342,7 +359,7 @@ function TradeCandleStickChart(props: propsIF) {
                 quoteTokenDecimals,
                 lowTick,
                 highTick,
-                lookupChain(chainData.chainId).gridSize,
+                gridSize,
             );
 
             const limitBoundary = parseFloat(
@@ -1205,7 +1222,6 @@ function TradeCandleStickChart(props: propsIF) {
                             setChartResetStatus={setChartResetStatus}
                             chartResetStatus={chartResetStatus}
                             openMobileSettingsModal={openMobileSettingsModal}
-
                         />
                     </>
                 )}

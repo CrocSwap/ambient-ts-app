@@ -85,7 +85,7 @@ export default function PositionsSearchResults(props: propsIF) {
         useContext(SidebarContext);
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const {
         setCurrentPositionActive,

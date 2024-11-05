@@ -69,13 +69,15 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
     {} as ChainDataContextIF,
 );
 
-export const ChainDataContextProvider = (props: {
-    children: ReactNode;
-}) => {
+export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        chainData,
-        activeNetwork,
-        isUserIdle
+        activeNetwork: {
+            chainId,
+            evmRpcUrl: nodeUrl,
+            chainSpec: { wsUrl },
+            graphCacheUrl,
+        },
+        isUserIdle,
     } = useContext<AppStateContextIF>(AppStateContext);
     const {
         setTokenBalances,
@@ -109,18 +111,14 @@ export const ChainDataContextProvider = (props: {
         useState<RpcNodeStatus>('unknown');
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
-    const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(
-        chainData.chainId,
-    );
+    const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(chainId);
 
-    const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(
-        chainData.chainId,
-    );
-    const isActiveNetworkMainnet = ['0x1'].includes(chainData.chainId);
+    const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(chainId);
+    const isActiveNetworkMainnet = ['0x1'].includes(chainId);
 
     const blockPollingUrl = BLOCK_POLLING_RPC_URL
         ? BLOCK_POLLING_RPC_URL
-        : chainData.nodeUrl;
+        : nodeUrl;
 
     // array of network IDs for supported L2 networks
     const L2_NETWORKS: string[] = [
@@ -131,15 +129,13 @@ export const ChainDataContextProvider = (props: {
     ];
 
     // boolean representing whether the active network is an L2
-    const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
+    const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainId);
 
     const BLOCK_NUM_POLL_MS = isUserIdle ? 30000 : 5000; // poll for new block every 30 seconds when user is idle, every 5 seconds when user is active
 
     const fetchGasPrice = async () => {
         const newGasPrice =
-            await supportedNetworks[chainData.chainId].getGasPriceInGwei(
-                provider,
-            );
+            await supportedNetworks[chainId].getGasPriceInGwei(provider);
         if (gasPriceInGwei !== newGasPrice) {
             setGasPriceinGwei(newGasPrice);
         }
@@ -158,13 +154,13 @@ export const ChainDataContextProvider = (props: {
     }, [gasPricePollingCacheTime]);
 
     async function pollBlockNum(): Promise<void> {
-        const nodeUrl = ['0x1'].includes(chainData.chainId)
+        const nodeUrl = ['0x1'].includes(chainId)
             ? MAINNET_RPC_URL
-            : ['0xaa36a7'].includes(chainData.chainId)
+            : ['0xaa36a7'].includes(chainId)
               ? SEPOLIA_RPC_URL
-              : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+              : ['0x13e31'].includes(chainId) // use blast env variable for blast network
                 ? BLAST_RPC_URL
-                : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+                : ['0x82750'].includes(chainId) // use scroll env variable for scroll network
                   ? SCROLL_RPC_URL
                   : blockPollingUrl;
         try {
@@ -185,7 +181,7 @@ export const ChainDataContextProvider = (props: {
         pollBlockNum();
 
         // Don't use polling, use WebSocket (below) if available
-        if (chainData.wsUrl) {
+        if (wsUrl) {
             return;
         }
 
@@ -195,7 +191,7 @@ export const ChainDataContextProvider = (props: {
 
         // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(interval);
-    }, [chainData.chainId, BLOCK_NUM_POLL_MS]);
+    }, [chainId, BLOCK_NUM_POLL_MS]);
 
     const [allPoolStats, setAllPoolStats] = useState<
         SinglePoolDataIF[] | undefined
@@ -203,10 +199,10 @@ export const ChainDataContextProvider = (props: {
 
     async function updateAllPoolStats(): Promise<void> {
         try {
-            console.log(chainData.chainId);
+            console.log(chainId);
             const allPoolStats = await cachedAllPoolStatsFetch(
-                chainData.chainId,
-                activeNetwork.graphCacheUrl,
+                chainId,
+                graphCacheUrl,
                 poolStatsPollingCacheTime,
                 true,
             );
@@ -221,19 +217,19 @@ export const ChainDataContextProvider = (props: {
 
     useEffect(() => {
         updateAllPoolStats();
-    }, [chainData.chainId, poolStatsPollingCacheTime]);
+    }, [chainId, poolStatsPollingCacheTime]);
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
 
-    const wsUrl =
-        chainData.wsUrl?.toLowerCase().includes('infura') &&
+    const websocketUrl =
+        wsUrl?.toLowerCase().includes('infura') &&
         import.meta.env.VITE_INFURA_KEY
-            ? chainData.wsUrl.slice(0, -32) + import.meta.env.VITE_INFURA_KEY
-            : chainData.wsUrl;
+            ? wsUrl.slice(0, -32) + import.meta.env.VITE_INFURA_KEY
+            : wsUrl;
 
     const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
-        useWebSocket(wsUrl || null, {
+        useWebSocket(websocketUrl || null, {
             onOpen: () => {
                 sendBlockHeaderSub(
                     '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}',
@@ -292,12 +288,7 @@ export const ChainDataContextProvider = (props: {
             (localNftDataParsed && !localNftDataParsed.has(actionKey))
         ) {
             (async () => {
-                if (
-                    crocEnv &&
-                    isUserConnected &&
-                    userAddress &&
-                    chainData.chainId
-                ) {
+                if (crocEnv && isUserConnected && userAddress && chainId) {
                     try {
                         const fetchFunction = isfetchNftTriggered
                             ? fetchNFT
@@ -350,7 +341,7 @@ export const ChainDataContextProvider = (props: {
                             const mapValue: Array<NftListByChain> = [];
 
                             mapValue.push({
-                                chainId: chainData.chainId,
+                                chainId: chainId,
                                 totalNFTCount: NFTResponse.totalNFTCount,
                                 userHasNFT: userHasNFT,
                                 data: nftImgArray,
@@ -389,9 +380,9 @@ export const ChainDataContextProvider = (props: {
         crocEnv,
         isUserConnected,
         userAddress,
-        chainData.chainId,
+        chainId,
         // everyFiveMinutes,
-        activeNetwork.graphCacheUrl,
+        graphCacheUrl,
         isfetchNftTriggered,
     ]);
 
@@ -403,7 +394,7 @@ export const ChainDataContextProvider = (props: {
                 crocEnv &&
                 isUserConnected &&
                 userAddress &&
-                chainData.chainId &&
+                chainId &&
                 lastBlockNumber
             ) {
                 try {
@@ -413,7 +404,7 @@ export const ChainDataContextProvider = (props: {
                     const AmbientListWalletBalances: TokenIF[] | undefined =
                         await cachedFetchAmbientListWalletBalances({
                             address: userAddress,
-                            chain: chainData.chainId,
+                            chain: chainId,
                             crocEnv: crocEnv,
                             _refreshTime: lastBlockNumber,
                         });
@@ -423,9 +414,9 @@ export const ChainDataContextProvider = (props: {
                     // fetch exchange balances and wallet balances for tokens in user's exchange balances
                     const dexBalancesFromCache = await cachedFetchDexBalances({
                         address: userAddress,
-                        chain: chainData.chainId,
+                        chain: chainId,
                         crocEnv: crocEnv,
-                        graphCacheUrl: activeNetwork.graphCacheUrl,
+                        graphCacheUrl: graphCacheUrl,
                         _refreshTime: lastBlockNumber,
                     });
 
@@ -445,7 +436,7 @@ export const ChainDataContextProvider = (props: {
                                         tokens.tokenUniv,
                                         cachedTokenDetails,
                                         crocEnv,
-                                        chainData.chainId,
+                                        chainId,
                                     );
 
                                     if (indexOfExistingToken === -1) {
@@ -499,9 +490,9 @@ export const ChainDataContextProvider = (props: {
         crocEnv,
         isUserConnected,
         userAddress,
-        chainData.chainId,
+        chainId,
         everyFiveMinutes,
-        activeNetwork.graphCacheUrl,
+        graphCacheUrl,
         sessionReceipts.length,
     ]);
 
@@ -512,7 +503,7 @@ export const ChainDataContextProvider = (props: {
     useEffect(() => {
         if (!crocEnv) return;
         Promise.resolve(
-            cachedFetchTokenPrice(ZERO_ADDRESS, chainData.chainId, crocEnv),
+            cachedFetchTokenPrice(ZERO_ADDRESS, chainId, crocEnv),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 setNativeTokenUsdPrice(price.usdPrice);
@@ -520,7 +511,7 @@ export const ChainDataContextProvider = (props: {
                 setNativeTokenUsdPrice(undefined);
             }
         });
-    }, [crocEnv, chainData.chainId]);
+    }, [crocEnv, chainId]);
 
     const [connectedUserXp, setConnectedUserXp] = useState<UserXpDataIF>({
         dataReceived: false,
@@ -537,7 +528,7 @@ export const ChainDataContextProvider = (props: {
         if (userAddress) {
             fetchUserXpData({
                 user: userAddress,
-                chainId: chainData.chainId,
+                chainId: chainId,
             })
                 .then((data) => {
                     setConnectedUserXp({
@@ -556,7 +547,7 @@ export const ChainDataContextProvider = (props: {
             if (isActiveNetworkBlast) {
                 fetchBlastUserXpData({
                     user: userAddress,
-                    chainId: chainData.chainId,
+                    chainId: chainId,
                 })
                     .then((data) => {
                         setConnectedUserBlastXp({

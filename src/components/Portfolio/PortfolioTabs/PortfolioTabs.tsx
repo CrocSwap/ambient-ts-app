@@ -9,7 +9,7 @@ import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 // import Tokens from '../Tokens/Tokens';
-import styles from './PortfolioTabs.module.css'
+import styles from './PortfolioTabs.module.css';
 // START: Import Local Files
 import {
     getPositionData,
@@ -49,7 +49,10 @@ import {
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import medal from '../../../assets/images/icons/medal.svg';
-import { AppStateContext, AppStateContextIF } from '../../../contexts/AppStateContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../contexts/AppStateContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useLocation } from 'react-router-dom';
 
@@ -84,16 +87,12 @@ export default function PortfolioTabs(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
-        activeNetwork,
-        chainData: { chainId },
+        activeNetwork: { graphCacheUrl, chainId },
     } = useContext<AppStateContextIF>(AppStateContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
-    const {
-        crocEnv,
-        provider,
-    } = useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
@@ -116,10 +115,10 @@ export default function PortfolioTabs(props: propsIF) {
 
     const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/user_positions?'
-        : activeNetwork.graphCacheUrl + '/user_positions?';
+        : graphCacheUrl + '/user_positions?';
     const userLimitOrdersCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
-        : activeNetwork.graphCacheUrl + '/user_limit_orders?';
+        : graphCacheUrl + '/user_limit_orders?';
 
     const getLookupUserPositions = async (accountToSearch: string) =>
         fetch(
@@ -221,7 +220,7 @@ export default function PortfolioTabs(props: propsIF) {
                 chainId: chainId,
                 n: 200, // fetch last 200 changes,
                 crocEnv: crocEnv,
-                graphCacheUrl: activeNetwork.graphCacheUrl,
+                graphCacheUrl: graphCacheUrl,
                 provider,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -415,8 +414,8 @@ export default function PortfolioTabs(props: propsIF) {
     ];
 
     const dataToUse = connectedAccountActive
-    ? accountTabDataWithTokens
-    : accountTabDataWithoutTokens;
+        ? accountTabDataWithTokens
+        : accountTabDataWithoutTokens;
 
     const location = useLocation();
 
@@ -435,8 +434,8 @@ export default function PortfolioTabs(props: propsIF) {
     // TODO:    ... refactor to trigger a nav action and update state responsively
 
     const renderTabContent = (): JSX.Element | null => {
-        const selectedTabData =dataToUse.find(
-            (tab) => tab.label === activeTab
+        const selectedTabData = dataToUse.find(
+            (tab) => tab.label === activeTab,
         );
         return selectedTabData ? selectedTabData.content : null;
     };
@@ -444,27 +443,34 @@ export default function PortfolioTabs(props: propsIF) {
     const mobileTabs: JSX.Element = (
         <div className={styles.mobile_tabs_container}>
             <div className={styles.mobile_tabs_button_container}>
-                {dataToUse.filter((t) => t.label !== 'Points').map((tab) => (
-                    <button
-                        key={tab.label}
-                        onClick={() => setActiveTab(tab.label)}
-                        style={{
-                            color: tab.label === activeTab ? 'var(--accent1)' : 'var(--text2)',
-                            borderBottom: tab.label === activeTab ? '1px solid var(--accent1)' : '1px solid transparent'
-                        }}
-                    >
-                        <span className={styles.tabLabel}>{tab.label}</span>
-                    </button>
-                ))}
+                {dataToUse
+                    .filter((t) => t.label !== 'Points')
+                    .map((tab) => (
+                        <button
+                            key={tab.label}
+                            onClick={() => setActiveTab(tab.label)}
+                            style={{
+                                color:
+                                    tab.label === activeTab
+                                        ? 'var(--accent1)'
+                                        : 'var(--text2)',
+                                borderBottom:
+                                    tab.label === activeTab
+                                        ? '1px solid var(--accent1)'
+                                        : '1px solid transparent',
+                            }}
+                        >
+                            <span className={styles.tabLabel}>{tab.label}</span>
+                        </button>
+                    ))}
             </div>
-            <div className={styles.tabContent} style={{height: '100%'}}>
+            <div className={styles.tabContent} style={{ height: '100%' }}>
                 {renderTabContent()}
             </div>
         </div>
     );
 
-
-    if ( isSmallScreen) return mobileTabs;
+    if (isSmallScreen) return mobileTabs;
     return (
         <div className={styles.portfolio_tabs_container}>
             <TabComponent

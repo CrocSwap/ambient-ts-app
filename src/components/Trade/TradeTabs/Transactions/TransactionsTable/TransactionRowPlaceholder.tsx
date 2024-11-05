@@ -47,7 +47,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
     const { isDenomBase } = useContext(TradeDataContext);
 
     const {
-        chainData: { blockExplorer },
+        activeNetwork: { blockExplorer },
     } = useContext(AppStateContext);
 
     const baseTokenCharacter = transaction?.details?.baseSymbol

@@ -51,7 +51,7 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
     const { showAllData } = useContext(TradeTableContext);
     const { userAddress } = useContext(UserDataContext);
     const {
-        chainData: { blockExplorer },
+        activeNetwork: { blockExplorer },
     } = useContext(AppStateContext);
 
     const { isDenomBase } = useContext(TradeDataContext);

@@ -6,11 +6,20 @@ import moment from 'moment';
 import { FiCopy } from 'react-icons/fi';
 import { memo, useContext } from 'react';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { AppStateContext, AppStateContextIF } from '../../../../../contexts/AppStateContext';
-import { CrocEnvContext, CrocEnvContextIF } from '../../../../../contexts/CrocEnvContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../../contexts/AppStateContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../../contexts/CrocEnvContext';
 import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { useMediaQuery } from '@material-ui/core';
-import { UserDataContext, UserDataContextIF } from '../../../../../contexts/UserDataContext';
+import {
+    UserDataContext,
+    UserDataContextIF,
+} from '../../../../../contexts/UserDataContext';
 import InfoRow from '../../../InfoRow';
 import { LimitOrderIF } from '../../../../../ambient-utils/types';
 
@@ -54,7 +63,9 @@ function OrderDetailsSimplify(props: propsIF) {
     } = props;
 
     const {
-        chainData,
+        activeNetwork: {
+            chainSpec: { addrs },
+        },
         snackbar: { open: openSnackbar },
     } = useContext<AppStateContextIF>(AppStateContext);
     const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
@@ -105,7 +116,7 @@ function OrderDetailsSimplify(props: propsIF) {
         if (posHash && blockExplorer) {
             const adressUrl =
                 baseTokenAddressLowerCase === ZERO_ADDRESS
-                    ? `${blockExplorer}address/${chainData.addrs.dex}`
+                    ? `${blockExplorer}address/${addrs.dex}`
                     : `${blockExplorer}token/${baseTokenAddressLowerCase}`;
             window.open(adressUrl);
         }
@@ -356,22 +367,23 @@ function OrderDetailsSimplify(props: propsIF) {
         });
     }
 
-    if (showMobileVersion) return (
-        <div className={styles.tx_details_container}>
-        <div className={styles.main_container}>
-            <section>
-                {infoContent.map((info, idx) => (
-                    <InfoRow
-                        key={info.title + idx}
-                        title={info.title}
-                        content={info.content}
-                        explanation={info.explanation}
-                    />
-                ))}
-            </section>
-        </div>
-    </div>
-    )
+    if (showMobileVersion)
+        return (
+            <div className={styles.tx_details_container}>
+                <div className={styles.main_container}>
+                    <section>
+                        {infoContent.map((info, idx) => (
+                            <InfoRow
+                                key={info.title + idx}
+                                title={info.title}
+                                content={info.content}
+                                explanation={info.explanation}
+                            />
+                        ))}
+                    </section>
+                </div>
+            </div>
+        );
 
     return (
         <div className={styles.tx_details_container}>

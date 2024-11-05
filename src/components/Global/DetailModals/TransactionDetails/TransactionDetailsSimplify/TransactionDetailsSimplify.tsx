@@ -5,12 +5,21 @@ import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTran
 import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import moment from 'moment';
 import { memo, useContext } from 'react';
-import { CrocEnvContext, CrocEnvContextIF } from '../../../../../contexts/CrocEnvContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
-import { UserDataContext, UserDataContextIF } from '../../../../../contexts/UserDataContext';
+import {
+    UserDataContext,
+    UserDataContextIF,
+} from '../../../../../contexts/UserDataContext';
 import InfoRow from '../../../InfoRow';
 import { getElapsedTime } from '../../../../../ambient-utils/dataLayer';
-import { AppStateContext, AppStateContextIF } from '../../../../../contexts/AppStateContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../../contexts/AppStateContext';
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
@@ -21,7 +30,7 @@ interface TransactionDetailsSimplifyPropsIF {
 // TODO: refactor to using styled-components
 function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
     const { tx, isAccountView, timeFirstMintMemo } = props;
-    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
+    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
     const { userAddress } = useContext<UserDataContextIF>(UserDataContext);
     const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
@@ -79,7 +88,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         if (txHash && blockExplorer) {
             const adressUrl =
                 baseTokenAddress === ZERO_ADDRESS
-                    ? `${blockExplorer}address/${chainData.addrs.dex}`
+                    ? `${blockExplorer}address/${activeNetwork.chainSpec.addrs.dex}`
                     : `${blockExplorer}token/${baseTokenAddress}`;
             window.open(adressUrl);
         }

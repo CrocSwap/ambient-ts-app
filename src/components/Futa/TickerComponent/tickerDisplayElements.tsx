@@ -83,7 +83,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
     const { ticker: tickerFromParams } = useParams();
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { showComments, setShowComments, watchlists } =
         useContext(AuctionsContext);

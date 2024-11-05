@@ -58,7 +58,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
 
     const { provider } = useContext(CrocEnvContext);
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
         showTopPtsBanner,
         dismissTopBannerPopup,
     } = useContext(AppStateContext);

@@ -58,7 +58,7 @@ const useFetchPoolStats = (
     } = useContext(CrocEnvContext);
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const { lastBlockNumber, allPoolStats } = useContext(ChainDataContext);

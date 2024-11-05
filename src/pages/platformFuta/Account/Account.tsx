@@ -29,7 +29,7 @@ export default function Account() {
     const { updateUserAuctionsList } = useContext(AuctionsContext);
     const {
         walletModal: { open: openWalletModal },
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const { crocEnv } = useContext(CrocEnvContext);

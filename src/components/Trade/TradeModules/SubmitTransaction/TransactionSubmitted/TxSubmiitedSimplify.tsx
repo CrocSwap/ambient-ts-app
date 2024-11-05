@@ -14,7 +14,7 @@ interface PropsIF {
 export default function TxSubmittedSimplify(props: PropsIF) {
     const { hash, content, noAnimation } = props;
     const {
-        chainData: { blockExplorer },
+        activeNetwork: { blockExplorer },
     } = useContext(AppStateContext);
 
     const EthersanTx = `${blockExplorer}tx/${hash}`;

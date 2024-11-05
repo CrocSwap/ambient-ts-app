@@ -22,7 +22,7 @@ interface propsIF {
 export default function TxSearchResults(props: propsIF) {
     const { searchedTxs } = props;
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);

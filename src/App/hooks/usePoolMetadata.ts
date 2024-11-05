@@ -1,4 +1,4 @@
-import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
+import { CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import {
     Dispatch,
     SetStateAction,
@@ -45,7 +45,8 @@ interface PoolParamsHookIF {
     graphCacheUrl: string;
     provider?: Provider;
     pathname: string;
-    chainData: ChainSpec;
+    chainId: string;
+    poolIndex: number;
     userAddress: `0x${string}` | undefined;
     searchableTokens: TokenIF[];
     receiptCount: number;
@@ -62,6 +63,8 @@ interface PoolParamsHookIF {
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata(props: PoolParamsHookIF) {
+    const { chainId, poolIndex } = props;
+
     const {
         tokenA,
         tokenB,
@@ -169,8 +172,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     }, [
         contextMatchesParams,
         tokenA.address + tokenB.address,
-        props.chainData.chainId,
-        props.chainData.poolIndex,
+        chainId,
+        poolIndex,
         // props.searchableTokens,
         props.lastBlockNumber == 0,
         !!props.crocEnv,
@@ -327,8 +330,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             new URLSearchParams({
                                 base: baseTokenAddress.toLowerCase(),
                                 quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: props.chainData.poolIndex.toString(),
-                                chainId: props.chainData.chainId,
+                                poolIdx: poolIndex.toString(),
+                                chainId: chainId,
                                 n: '200',
                             }),
                     )
@@ -347,7 +350,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 props.searchableTokens,
                                                 crocEnv,
                                                 provider,
-                                                props.chainData.chainId,
+                                                chainId,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
@@ -399,8 +402,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             new URLSearchParams({
                                 base: baseTokenAddress.toLowerCase(),
                                 quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: props.chainData.poolIndex.toString(),
-                                chainId: props.chainData.chainId,
+                                poolIdx: poolIndex.toString(),
+                                chainId: chainId,
                                 n: '50',
                             }),
                     )
@@ -420,7 +423,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 props.searchableTokens,
                                                 crocEnv,
                                                 provider,
-                                                props.chainData.chainId,
+                                                chainId,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
@@ -470,8 +473,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         tokenList: props.searchableTokens,
                         base: baseTokenAddress,
                         quote: quoteTokenAddress,
-                        poolIdx: props.chainData.poolIndex,
-                        chainId: props.chainData.chainId,
+                        poolIdx: poolIndex,
+                        chainId: chainId,
                         n: 200,
                         crocEnv: props.crocEnv,
                         graphCacheUrl: props.graphCacheUrl,
@@ -511,8 +514,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             new URLSearchParams({
                                 base: baseTokenAddress.toLowerCase(),
                                 quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: props.chainData.poolIndex.toString(),
-                                chainId: props.chainData.chainId,
+                                poolIdx: poolIndex.toString(),
+                                chainId: chainId,
                                 n: '200',
                             }),
                     )
@@ -531,7 +534,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 props.searchableTokens,
                                                 crocEnv,
                                                 provider,
-                                                props.chainData.chainId,
+                                                chainId,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
@@ -583,9 +586,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     user: props.userAddress,
                                     base: baseTokenAddress.toLowerCase(),
                                     quote: quoteTokenAddress.toLowerCase(),
-                                    poolIdx:
-                                        props.chainData.poolIndex.toString(),
-                                    chainId: props.chainData.chainId,
+                                    poolIdx: poolIndex.toString(),
+                                    chainId: chainId,
                                 }),
                         )
                             .then((response) => response.json())
@@ -607,7 +609,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     props.searchableTokens,
                                                     crocEnv,
                                                     provider,
-                                                    props.chainData.chainId,
+                                                    chainId,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
@@ -654,9 +656,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     user: props.userAddress,
                                     base: baseTokenAddress.toLowerCase(),
                                     quote: quoteTokenAddress.toLowerCase(),
-                                    poolIdx:
-                                        props.chainData.poolIndex.toString(),
-                                    chainId: props.chainData.chainId,
+                                    poolIdx: poolIndex.toString(),
+                                    chainId: chainId,
                                 }),
                         )
                             .then((response) => response.json())
@@ -675,7 +676,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     props.searchableTokens,
                                                     crocEnv,
                                                     provider,
-                                                    props.chainData.chainId,
+                                                    chainId,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
@@ -724,9 +725,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     user: props.userAddress,
                                     base: baseTokenAddress.toLowerCase(),
                                     quote: quoteTokenAddress.toLowerCase(),
-                                    poolIdx:
-                                        props.chainData.poolIndex.toString(),
-                                    chainId: props.chainData.chainId,
+                                    poolIdx: poolIndex.toString(),
+                                    chainId: chainId,
                                 }),
                         )
                             .then((response) => response?.json())
@@ -750,7 +750,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     props.searchableTokens,
                                                     crocEnv,
                                                     provider,
-                                                    props.chainData.chainId,
+                                                    chainId,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
@@ -796,7 +796,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.receiptCount,
         contextMatchesParams,
         baseTokenAddress + quoteTokenAddress,
-        props.chainData.chainId,
+        chainId,
         props.searchableTokens,
         isUserIdle
             ? Math.floor(Date.now() / 60000) // cache for 60 seconds if idle
@@ -812,8 +812,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         const request = {
             baseAddress: baseTokenAddress,
             quoteAddress: quoteTokenAddress,
-            chainId: props.chainData.chainId,
-            poolIndex: props.chainData.poolIndex,
+            chainId: chainId,
+            poolIndex: poolIndex,
         };
 
         if (
@@ -821,14 +821,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             poolPriceNonDisplay !== 0 &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            props.chainData.poolIndex &&
+            poolIndex &&
             props.crocEnv
         ) {
             fetchPoolLiquidity(
-                props.chainData.chainId,
+                chainId,
                 baseTokenAddress.toLowerCase(),
                 quoteTokenAddress.toLowerCase(),
-                props.chainData.poolIndex,
+                poolIndex,
                 props.crocEnv,
                 props.graphCacheUrl,
                 props.cachedFetchTokenPrice,
@@ -847,10 +847,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     useEffect(() => {
         updateLiquidity();
     }, [
-        baseTokenAddress +
-            quoteTokenAddress +
-            props.chainData.chainId +
-            props.chainData.poolIndex,
+        baseTokenAddress + quoteTokenAddress + chainId + poolIndex,
         currentPoolPriceTick,
         props.isChartEnabled,
         props.crocEnv !== undefined,

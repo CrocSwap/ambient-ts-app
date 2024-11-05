@@ -10,12 +10,24 @@ import moment from 'moment';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { memo, useContext } from 'react';
 import { FiCopy } from 'react-icons/fi';
-import { AppStateContext, AppStateContextIF } from '../../../../../contexts/AppStateContext';
-import { CrocEnvContext, CrocEnvContextIF } from '../../../../../contexts/CrocEnvContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../../contexts/AppStateContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
-import { UserDataContext, UserDataContextIF } from '../../../../../contexts/UserDataContext';
+import {
+    UserDataContext,
+    UserDataContextIF,
+} from '../../../../../contexts/UserDataContext';
 import InfoRow from '../../../InfoRow';
-import { ChainDataContext, ChainDataContextIF } from '../../../../../contexts/ChainDataContext';
+import {
+    ChainDataContext,
+    ChainDataContextIF,
+} from '../../../../../contexts/ChainDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -39,10 +51,15 @@ function RangeDetailsSimplify(props: propsIF) {
         blastRewardsData,
         timeFirstMintMemo,
     } = props;
-    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
+    const {
+        activeNetwork: {
+            chainSpec: { addrs },
+        },
+    } = useContext<AppStateContextIF>(AppStateContext);
     const { userAddress } = useContext<UserDataContextIF>(UserDataContext);
     const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { isActiveNetworkBlast } = useContext<ChainDataContextIF>(ChainDataContext);
+    const { isActiveNetworkBlast } =
+        useContext<ChainDataContextIF>(ChainDataContext);
 
     const {
         ensName,
@@ -110,7 +127,7 @@ function RangeDetailsSimplify(props: propsIF) {
         if (tokenAAddressLowerCase && blockExplorer) {
             const adressUrl =
                 tokenAAddressLowerCase === ZERO_ADDRESS
-                    ? `${blockExplorer}address/${chainData.addrs.dex}`
+                    ? `${blockExplorer}address/${addrs.dex}`
                     : `${blockExplorer}token/${tokenAAddressLowerCase}`;
             window.open(adressUrl);
         }
@@ -365,22 +382,23 @@ function RangeDetailsSimplify(props: propsIF) {
             },
         );
     }
-    if (showMobileVersion) return (
-        <div className={styles.tx_details_container}>
-        <div className={styles.main_container}>
-            <section>
-                {infoContent.map((info, idx) => (
-                    <InfoRow
-                        key={info.title + idx}
-                        title={info.title}
-                        content={info.content}
-                        explanation={info.explanation}
-                    />
-                ))}
-            </section>
-        </div>
-    </div>
-    )
+    if (showMobileVersion)
+        return (
+            <div className={styles.tx_details_container}>
+                <div className={styles.main_container}>
+                    <section>
+                        {infoContent.map((info, idx) => (
+                            <InfoRow
+                                key={info.title + idx}
+                                title={info.title}
+                                content={info.content}
+                                explanation={info.explanation}
+                            />
+                        ))}
+                    </section>
+                </div>
+            </div>
+        );
     return (
         <div className={styles.tx_details_container}>
             <div className={styles.main_container}>

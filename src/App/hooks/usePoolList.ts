@@ -10,7 +10,9 @@ export const usePoolList = (
     graphCacheUrl: string,
     crocEnv?: CrocEnv,
 ): PoolIF[] => {
-    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
+    const {
+        activeNetwork: { poolIndex },
+    } = useContext<AppStateContextIF>(AppStateContext);
     const {
         tokens: { verify, getTokenByAddress, tokenUniv },
     } = useContext<TokenContextIF>(TokenContext);
@@ -35,7 +37,7 @@ export const usePoolList = (
                                 verify(result.base) && verify(result.quote),
                         )
                         // temporary filter until gcgo filters on poolIdx
-                        .filter((pool) => pool.poolIdx === chainData.poolIndex)
+                        .filter((pool) => pool.poolIdx === poolIndex)
                         .map((result: GCServerPoolIF) => {
                             const baseToken: TokenIF | undefined =
                                 getTokenByAddress(result.base);

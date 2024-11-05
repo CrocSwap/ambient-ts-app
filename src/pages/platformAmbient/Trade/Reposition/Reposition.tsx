@@ -96,7 +96,7 @@ function Reposition() {
         useContext<CrocEnvContextIF>(CrocEnvContext);
 
     const {
-        chainData: { blockExplorer },
+        activeNetwork: { blockExplorer },
     } = useContext(AppStateContext);
 
     const { tokens } = useContext<TokenContextIF>(TokenContext);

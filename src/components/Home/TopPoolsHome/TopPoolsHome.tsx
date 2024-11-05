@@ -23,7 +23,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const { topPools, crocEnv } = useContext(CrocEnvContext);
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const show4TopPools = useMediaQuery('(max-width: 1500px)');

@@ -23,7 +23,7 @@ export default function FavoritePools(props: propsIF) {
 
     const { crocEnv } = useContext(CrocEnvContext);
     const {
-        chainData: { chainId, poolIndex: poolId },
+        activeNetwork: { chainId, poolIndex: poolId },
     } = useContext(AppStateContext);
     const { favePools } = useContext(UserPreferenceContext);
 

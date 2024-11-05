@@ -27,7 +27,7 @@ export default function SidebarRangePositions(props: propsIF) {
     const { userPositions } = props;
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const {
         setCurrentPositionActive,

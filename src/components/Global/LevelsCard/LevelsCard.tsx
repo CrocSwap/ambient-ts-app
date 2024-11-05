@@ -49,7 +49,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     const { userAddress } = useContext(UserDataContext);
     const [_, copy] = useCopyToClipboard();
     const {
-        chainData: { blockExplorer },
+        activeNetwork: { blockExplorer },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 

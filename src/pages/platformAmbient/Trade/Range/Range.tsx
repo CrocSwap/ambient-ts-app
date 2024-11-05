@@ -59,7 +59,7 @@ function Range() {
     const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
 
     const {
-        chainData: { chainId, gridSize },
+        activeNetwork: { chainId, gridSize },
     } = useContext(AppStateContext);
 
     const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =

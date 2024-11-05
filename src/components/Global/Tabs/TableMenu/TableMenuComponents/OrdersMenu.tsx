@@ -22,7 +22,10 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
-import { AppStateContext, AppStateContextIF } from '../../../../../contexts/AppStateContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -55,7 +58,9 @@ export default function OrdersMenu(props: propsIF) {
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 
-    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext<AppStateContextIF>(AppStateContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
@@ -129,7 +134,7 @@ export default function OrdersMenu(props: propsIF) {
                     setIsTokenAPrimary(!isTokenAPrimary);
                 // URL params for link to limit page
                 const limitLinkParams: limitParamsIF = {
-                    chain: chainData.chainId,
+                    chain: chainId,
                     tokenA: newTokenA,
                     tokenB: newTokenB,
                     limitTick: isBid ? bidTick : askTick,

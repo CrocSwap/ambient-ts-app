@@ -25,7 +25,7 @@ export default function PoolCard(props: propsIF) {
     const { pool, spotPrice } = props;
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const { tokenA, tokenB } = useContext(TradeDataContext);

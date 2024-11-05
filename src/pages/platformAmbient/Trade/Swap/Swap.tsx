@@ -71,7 +71,7 @@ function Swap(props: propsIF) {
     const { crocEnv, ethMainnetUsdPrice, provider } =
         useContext(CrocEnvContext);
     const {
-        chainData: { chainId, poolIndex },
+        activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =

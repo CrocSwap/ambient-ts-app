@@ -26,7 +26,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const { provider } = useContext(CrocEnvContext);
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const { cachedFetchBlockTime } = useContext(CachedDataContext);

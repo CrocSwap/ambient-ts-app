@@ -34,7 +34,7 @@ export const SidebarContext = createContext<SidebarContextIF>(
 export const SidebarContextProvider = (props: { children: ReactNode }) => {
     // logic to open a snackbar notification
     const {
-        chainData,
+        activeNetwork: { chainId },
         snackbar: { open: openSnackbar },
     } = useContext<AppStateContextIF>(AppStateContext);
 
@@ -64,7 +64,7 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
     const sidebar = useSidebar(location.pathname, showSidebarByDefault);
 
     // hook to manage recent pool data in-session
-    const recentPools: recentPoolsMethodsIF = useRecentPools(chainData.chainId);
+    const recentPools: recentPoolsMethodsIF = useRecentPools(chainId);
 
     // value showing whether the screen size warrants hiding the sidebar
     const [hideOnMobile, setHideOnMobile] = useState<boolean>(true);

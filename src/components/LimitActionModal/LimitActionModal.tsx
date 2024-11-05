@@ -44,7 +44,7 @@ export default function LimitActionModal(props: propsIF) {
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
     const {
-        chainData: { poolIndex },
+        activeNetwork: { poolIndex },
     } = useContext(AppStateContext);
 
     const {

@@ -22,7 +22,7 @@ export default function TopPools(props: propsIF) {
     const { topPools, crocEnv } = useContext(CrocEnvContext);
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const location = useLocation();

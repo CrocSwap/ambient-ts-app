@@ -47,7 +47,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     const { cachedTokenDetails } = useContext(CachedDataContext);
     const { provider } = useContext(CrocEnvContext);
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const {

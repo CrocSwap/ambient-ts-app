@@ -44,7 +44,7 @@ function TradeModuleHeader(props: propsIF) {
         limitTick,
     } = useContext(TradeDataContext);
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const baseTokenSymbol = baseToken.symbol;

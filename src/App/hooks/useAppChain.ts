@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChainSpec } from '@crocswap-libs/sdk';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
 import {
     getDefaultChainId,
@@ -13,7 +11,6 @@ import { NetworkIF } from '../../ambient-utils/types';
 import { supportedNetworks } from '../../ambient-utils/constants';
 
 export const useAppChain = (): {
-    chainData: ChainSpec;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
 } => {
@@ -247,18 +244,7 @@ export const useAppChain = (): {
         // window.location.reload();
     }
 
-    // data from the SDK about the current chain in the connected wallet
-    // chain is validated upstream of this process
-    const chainData = useMemo<ChainSpec>(() => {
-        const output: ChainSpec =
-            lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
-        // return output varibale (chain data)
-        console.log(output);
-        return output;
-    }, [activeNetwork.chainId]);
-
     return {
-        chainData,
         activeNetwork,
         chooseNetwork,
     };

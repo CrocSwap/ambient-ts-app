@@ -19,7 +19,6 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import useHandleSwipeBack from '../../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
@@ -31,9 +30,18 @@ import {
     getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
 } from '../../../ambient-utils/dataLayer';
-import { AppStateContext, AppStateContextIF } from '../../../contexts/AppStateContext';
-import { CandleContext, CandleContextIF } from '../../../contexts/CandleContext';
-import { SidebarContext, SidebarContextIF } from '../../../contexts/SidebarContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../contexts/AppStateContext';
+import {
+    CandleContext,
+    CandleContextIF,
+} from '../../../contexts/CandleContext';
+import {
+    SidebarContext,
+    SidebarContextIF,
+} from '../../../contexts/SidebarContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import {
     CandleDataIF,
@@ -212,7 +220,9 @@ export default function Chart(props: propsIF) {
         openMobileSettingsModal,
     } = props;
 
-    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
+    const {
+        activeNetwork: { gridSize, chainId },
+    } = useContext<AppStateContextIF>(AppStateContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext<SidebarContextIF>(SidebarContext);
@@ -264,7 +274,7 @@ export default function Chart(props: propsIF) {
     const [liqMaxActiveLiq, setLiqMaxActiveLiq] = useState<
         number | undefined
     >();
-    
+
     const [isUpdatingShape, setIsUpdatingShape] = useState(false);
 
     const [isDragActive, setIsDragActive] = useState(false);
@@ -1673,7 +1683,7 @@ export default function Chart(props: propsIF) {
                 quoteTokenDecimals,
                 lowTick,
                 highTick,
-                lookupChain(chainData.chainId).gridSize,
+                gridSize,
             );
 
             const low = 0;
@@ -1822,10 +1832,10 @@ export default function Chart(props: propsIF) {
 
         limitNonDisplay?.then((limit) => {
             limit = limit !== 0 ? limit : 1;
-            const pinnedTick: number = pinTickLower(limit, chainData.gridSize);
+            const pinnedTick: number = pinTickLower(limit, gridSize);
 
             const tickPrice = tickToPrice(
-                pinnedTick + (denomInBase ? 1 : -1) * chainData.gridSize * 2,
+                pinnedTick + (denomInBase ? 1 : -1) * gridSize * 2,
             );
 
             const tickDispPrice = pool?.toDisplayPrice(tickPrice);
@@ -1845,10 +1855,10 @@ export default function Chart(props: propsIF) {
 
         limitNonDisplayMax?.then((limit) => {
             limit = limit !== 0 ? limit : 1;
-            const pinnedTick: number = pinTickUpper(limit, chainData.gridSize);
+            const pinnedTick: number = pinTickUpper(limit, gridSize);
 
             const tickPrice = tickToPrice(
-                pinnedTick + (denomInBase ? -1 : 1) * chainData.gridSize * 2,
+                pinnedTick + (denomInBase ? -1 : 1) * gridSize * 2,
             );
 
             const tickDispPrice = pool?.toDisplayPrice(tickPrice);
@@ -1907,21 +1917,21 @@ export default function Chart(props: propsIF) {
         limitNonDisplay?.then((limit) => {
             limit = limit !== 0 ? limit : 1;
             let pinnedTick: number = isTokenABase
-                ? pinTickLower(limit, chainData.gridSize)
-                : pinTickUpper(limit, chainData.gridSize);
+                ? pinTickLower(limit, gridSize)
+                : pinTickUpper(limit, gridSize);
 
             // If it is equal to the minimum value of no go zone, value is rounded lower tick
             if (isNoGoneZoneMin) {
                 pinnedTick = isDenomBase
-                    ? pinTickUpper(limit, chainData.gridSize)
-                    : pinTickLower(limit, chainData.gridSize);
+                    ? pinTickUpper(limit, gridSize)
+                    : pinTickLower(limit, gridSize);
             }
 
             // If it is equal to the max value of no go zone, value is rounded upper tick
             if (isNoGoneZoneMax) {
                 pinnedTick = isDenomBase
-                    ? pinTickLower(limit, chainData.gridSize)
-                    : pinTickUpper(limit, chainData.gridSize);
+                    ? pinTickLower(limit, gridSize)
+                    : pinTickUpper(limit, gridSize);
             }
 
             const tickPrice = tickToPrice(pinnedTick);
@@ -2101,7 +2111,7 @@ export default function Chart(props: propsIF) {
                                             quoteTokenDecimals,
                                             false, // isMinPrice
                                             draggedValue.toString(),
-                                            lookupChain(chainData.chainId).gridSize,
+                                            gridSize,
                                         );
 
                                     rangeWidthPercentage = roundToNearestPreset(
@@ -2124,7 +2134,7 @@ export default function Chart(props: propsIF) {
                                             quoteTokenDecimals,
                                             lowTick,
                                             highTick,
-                                            lookupChain(chainData.chainId).gridSize,
+                                            gridSize,
                                         );
                                 } else {
                                     const pinnedTick =
@@ -2134,7 +2144,7 @@ export default function Chart(props: propsIF) {
                                             quoteTokenDecimals,
                                             true, // isMinPrice
                                             draggedValue.toString(),
-                                            lookupChain(chainData.chainId).gridSize,
+                                            gridSize,
                                         );
 
                                     rangeWidthPercentage = roundToNearestPreset(
@@ -2157,7 +2167,7 @@ export default function Chart(props: propsIF) {
                                             quoteTokenDecimals,
                                             lowTick,
                                             highTick,
-                                            lookupChain(chainData.chainId).gridSize,
+                                            gridSize,
                                         );
                                 }
 
@@ -2202,7 +2212,7 @@ export default function Chart(props: propsIF) {
                                                 quoteTokenDecimals,
                                                 high.toString(),
                                                 advancedValue.toString(),
-                                                lookupChain(chainData.chainId).gridSize,
+                                                gridSize,
                                             );
                                     } else {
                                         pinnedDisplayPrices =
@@ -2212,7 +2222,7 @@ export default function Chart(props: propsIF) {
                                                 quoteTokenDecimals,
                                                 low.toString(),
                                                 advancedValue.toString(),
-                                                lookupChain(chainData.chainId).gridSize,
+                                                gridSize,
                                             );
                                     }
                                 } else {
@@ -2223,7 +2233,7 @@ export default function Chart(props: propsIF) {
                                             quoteTokenDecimals,
                                             advancedValue.toString(),
                                             high.toString(),
-                                            lookupChain(chainData.chainId).gridSize,
+                                            gridSize,
                                         );
                                 }
 
@@ -2373,7 +2383,7 @@ export default function Chart(props: propsIF) {
         currentPoolPriceTick,
         denomInBase,
         isTokenABase,
-        chainData.gridSize,
+        gridSize,
         rescale,
         liqMaxActiveLiq,
     ]);
@@ -2547,7 +2557,7 @@ export default function Chart(props: propsIF) {
         currentPoolPriceTick,
         denomInBase,
         isTokenABase,
-        chainData.gridSize,
+        gridSize,
         rescale,
         liqMaxActiveLiq,
     ]);
@@ -2874,7 +2884,7 @@ export default function Chart(props: propsIF) {
                             quoteTokenDecimals,
                             false, // isMinPrice
                             clickedValue.toString(),
-                            lookupChain(chainData.chainId).gridSize,
+                            gridSize,
                         );
 
                         rangeWidthPercentage = roundToNearestPreset(
@@ -2887,7 +2897,7 @@ export default function Chart(props: propsIF) {
                             quoteTokenDecimals,
                             true, // isMinPrice
                             clickedValue.toString(),
-                            lookupChain(chainData.chainId).gridSize,
+                            gridSize,
                         );
 
                         rangeWidthPercentage = roundToNearestPreset(
@@ -2908,7 +2918,7 @@ export default function Chart(props: propsIF) {
                         quoteTokenDecimals,
                         lowTick,
                         highTick,
-                        lookupChain(chainData.chainId).gridSize,
+                        gridSize,
                     );
 
                     setMaxPrice(
@@ -2948,7 +2958,7 @@ export default function Chart(props: propsIF) {
                         quoteTokenDecimals,
                         low.toString(),
                         value.toString(),
-                        lookupChain(chainData.chainId).gridSize,
+                        gridSize,
                     );
                 } else {
                     pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
@@ -2957,7 +2967,7 @@ export default function Chart(props: propsIF) {
                         quoteTokenDecimals,
                         value.toString(),
                         high.toString(),
-                        lookupChain(chainData.chainId).gridSize,
+                        gridSize,
                     );
                 }
 
@@ -4237,7 +4247,7 @@ export default function Chart(props: propsIF) {
             currentPoolPriceTick,
             baseTokenDecimals,
             quoteTokenDecimals,
-            lookupChain(chainData.chainId).gridSize,
+            gridSize,
         );
         setNoGoZoneBoundaries(() => {
             return noGoZoneBoundaries;
@@ -4246,7 +4256,7 @@ export default function Chart(props: propsIF) {
         currentPoolPriceTick,
         baseTokenDecimals,
         quoteTokenDecimals,
-        lookupChain(chainData.chainId).gridSize,
+        gridSize,
         isDenomBase,
     ]);
 
@@ -4449,7 +4459,7 @@ export default function Chart(props: propsIF) {
                         quoteTokenDecimals,
                         lowTick,
                         highTick,
-                        lookupChain(chainData.chainId).gridSize,
+                        gridSize,
                     );
 
                     const low = 0;
@@ -5763,8 +5773,8 @@ export default function Chart(props: propsIF) {
             limit = limit !== 0 ? limit : 1;
 
             const pinnedTick: number = isTokenABase
-                ? pinTickLower(limit, chainData.gridSize)
-                : pinTickUpper(limit, chainData.gridSize);
+                ? pinTickLower(limit, gridSize)
+                : pinTickUpper(limit, gridSize);
 
             setLimitTick(pinnedTick);
 
@@ -5775,7 +5785,7 @@ export default function Chart(props: propsIF) {
                 ? (() => {
                       setIsTokenAPrimary((isTokenAPrimary) => !isTokenAPrimary);
                       linkGenLimit.redirect({
-                          chain: chainData.chainId,
+                          chain: chainId,
                           tokenA: tokenB.address,
                           tokenB: tokenA.address,
                           limitTick: pinnedTick,
@@ -5838,7 +5848,7 @@ export default function Chart(props: propsIF) {
         poolPriceDisplay: poolPriceDisplay,
         changeScale: changeScale,
         isTokenABase: isTokenABase,
-        chainId: chainData.chainId,
+        chainId: chainId,
         topBoundary: liquidityData?.topBoundary,
         d3Container: d3Container,
         period: period,
