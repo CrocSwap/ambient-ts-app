@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import FutaLandingNav from '../FutaLandingNav';
 import FutaLanding from './FutaLanding1';
 import FutaLanding2 from './FutaLanding2';
@@ -7,44 +7,108 @@ import FutaLanding4 from './FutaLanding4';
 import FutaLanding5 from './FutaLanding5';
 import styles from './FutaNewLanding.module.css';
 import FadingTextGrid from '../../Animations/FadingTextGrid';
+import { useNavigate } from 'react-router-dom';
 
+const INITIAL_DELAY = 7000;
+const TOTAL_SECTIONS = 5;
 
 export default function FutaNewLanding() {
     const [activeSection, setActiveSection] = useState(0);
     const [showMainContent, setShowMainContent] = useState(false);
+    const navigate = useNavigate();
+    const sectionsRef = useRef<(HTMLDivElement | null)[]>(Array(TOTAL_SECTIONS).fill(null));
 
-    const sectionsRef = useRef<(HTMLDivElement | null)[]>(Array(5).fill(null));
+    // Memoized navigation functions
+    const navigateToNextSection = useCallback(() => {
+        const nextSection = (activeSection + 1) % TOTAL_SECTIONS;
+        setActiveSection(nextSection);
+        scrollToSection(nextSection);
+    }, [activeSection]);
 
-    const scrollToSection = (index: number) => {
-        sectionsRef.current[index]?.scrollIntoView({
-            behavior: 'smooth',
+    const navigateToPreviousSection = useCallback(() => {
+        const previousSection = activeSection === 0 ? TOTAL_SECTIONS - 1 : activeSection - 1;
+        setActiveSection(previousSection);
+        scrollToSection(previousSection);
+    }, [activeSection]);
+
+    // Memoized scroll handler
+    const handleScroll = useCallback(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const index = sectionsRef.current.findIndex(
+                            (section) => section === entry.target
+                        );
+                        if (index !== -1) {
+                            setActiveSection(index);
+                        }
+                    }
+                });
+            },
+            { threshold: 0.5 }
+        );
+
+        sectionsRef.current.forEach((section) => {
+            if (section) observer.observe(section);
         });
-    };
 
-    const handleScroll = () => {
-        sectionsRef.current.forEach((section, index) => {
-            if (section) {
-                const { top, bottom } = section.getBoundingClientRect();
-                const windowHeight = window.innerHeight;
-                if (top >= 0 && bottom <= windowHeight) {
-                    setActiveSection(index);
-                }
-            }
-        });
-    };
-
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll);
         return () => {
-            window.removeEventListener('scroll', handleScroll);
+            sectionsRef.current.forEach((section) => {
+                if (section) observer.disconnect();
+            });
         };
     }, []);
 
-    useEffect(() => {
-        const timer = setTimeout(() => setShowMainContent(true), 7000); // Show main content after 10 seconds
-        return () => clearTimeout(timer); // Clear the timer on component unmount
+    // Memoized keyboard handler
+    const handleKeyDown = useCallback((event: KeyboardEvent) => {
+        switch (event.key) {
+            case 'Enter':
+                if (!showMainContent) {
+                    setShowMainContent(true);
+                } else {
+                    navigate('/auctions/');
+                }
+                break;
+            case 'ArrowDown':
+            case 'ArrowRight':
+                event.preventDefault();
+                navigateToNextSection();
+                break;
+            case 'ArrowUp':
+            case 'ArrowLeft':
+                event.preventDefault();
+                navigateToPreviousSection();
+                break;
+        }
+    }, [showMainContent, navigate, navigateToNextSection, navigateToPreviousSection]);
+
+    // Scroll to section utility
+    const scrollToSection = useCallback((index: number) => {
+        sectionsRef.current[index]?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+        });
     }, []);
 
+    // Event listeners setup
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [handleKeyDown]);
+
+    useEffect(() => {
+        const cleanup = handleScroll();
+        return cleanup;
+    }, [handleScroll]);
+
+    // Initial delay for showing main content
+    useEffect(() => {
+        const timer = setTimeout(() => setShowMainContent(true), INITIAL_DELAY);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // Sections configuration
     const sections = [
         <FutaLanding key="section1" />,
         <FutaLanding2 key="section2" />,
@@ -67,7 +131,10 @@ export default function FutaNewLanding() {
                     ref={(el) => (sectionsRef.current[index] = el)}
                 >
                     {SectionComponent}
-                    <FutaLandingNav scrollToSection={scrollToSection} activeSection={activeSection} />
+                    <FutaLandingNav 
+                        scrollToSection={scrollToSection} 
+                        activeSection={activeSection}
+                    />
                 </div>
             ))}
         </div>

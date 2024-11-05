@@ -16,6 +16,8 @@
     margin: 0 auto;
 }
 
+
+
 .container h3{
     color: var(--base-text1, #AACFD1);
     font-family: "Fira Mono";
@@ -77,6 +79,29 @@ width: 100%;
 
 .content p{
     font-size: 20px;
+}
+
+
+}
+
+@media (min-width: 376px) and (max-width: 1028px) {
+    .container{
+        padding: 1rem ;
+    }
+    .content p{
+        font-size: 22px;
+    }
+
+    .imgContainer{
+        align-items: center;
+    }
+}
+
+@media only screen and (min-width: 1280px) {
+.container{
+    /* background-color: yellow; */
+    padding-left: 192px;
+    padding-right: 192px;
 }
 
 

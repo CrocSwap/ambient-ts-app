@@ -7,7 +7,7 @@
             }
             100% {
                 r: 227.815;
-                cx: 237.815;
+                cx: 240;
             }
         }
 
@@ -26,8 +26,7 @@
         .circle {
             fill: rgba(170, 207, 209, 0.1);
             animation: grow 8s infinite, opacity 8s infinite;
-            transform: scale(0.83) translate(37.5px, 37.5px); /* Scale down and translate */
-            transform-origin: 0 0; /* Set transform origin to the top-left */
+            transform: translate(25px, 0px); /* Adjusted translation to center */
         }
 
         .circle2 {
@@ -35,7 +34,7 @@
             stroke-width: 2;
             stroke: #AACFD1;
             animation: grow 8s infinite, opacity 8s infinite;
-            transform: scale(0.83) translate(37.5px, 37.5px);
+            transform: translate(25px, 0px); /* Adjusted translation to center */
         }
 
         .circle1 {
@@ -64,13 +63,13 @@
     </style>
 
     <!-- Animated Circles -->
-    <circle class="circle circle1" cx="40" cy="240" r="20" stroke="#AACFD1" opacity="0" />
-    <circle class="circle circle2" cx="40" cy="240" r="20" stroke="#AACFD1" opacity="0" />
-    <circle class="circle circle3" cx="40" cy="240" r="20" stroke="#AACFD1" opacity="0" />
-    <circle class="circle circle4" cx="40" cy="240" r="20" stroke="#AACFD1" opacity="0" />
-    <circle class="circle circle5" cx="40" cy="240" r="20" stroke="#AACFD1" opacity="0" />
-    <circle class="circle circle6" cx="40" cy="240" r="20" stroke="#AACFD1" opacity="0" />
+    <circle class="circle circle1" cx="200" cy="240" r="20" stroke="#AACFD1" opacity="0" />
+    <circle class="circle circle2" cx="200" cy="240" r="20" stroke="#AACFD1" opacity="0" />
+    <circle class="circle circle3" cx="200" cy="240" r="20" stroke="#AACFD1" opacity="0" />
+    <circle class="circle circle4" cx="200" cy="240" r="20" stroke="#AACFD1" opacity="0" />
+    <circle class="circle circle5" cx="200" cy="240" r="20" stroke="#AACFD1" opacity="0" />
+    <circle class="circle circle6" cx="200" cy="240" r="20" stroke="#AACFD1" opacity="0" />
 
     <!-- Static Circle -->
-    <circle class="circle2" cx="237.815" cy="240" r="227.815" stroke="#4D5255" opacity="0.5" />
+    <circle class="circle2" cx="240" cy="240" r="227.815" stroke="#4D5255" opacity="0.5" />
 </svg>

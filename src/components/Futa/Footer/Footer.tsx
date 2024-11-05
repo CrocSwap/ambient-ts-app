@@ -2,7 +2,7 @@ import { MdOutlineExplore, MdOutlineSwapVerticalCircle } from 'react-icons/md';
 import styles from './Footer.module.css';
 import { RiAccountCircleLine } from 'react-icons/ri';
 import { FiPlusCircle } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import DesktopFooter from './DesktopFooter';
@@ -29,6 +29,7 @@ const itemVariants = {
 
 export default function Footer() {
     const { tokenA, tokenB } = useContext(TradeDataContext);
+    const location = useLocation();
 
     
 
@@ -65,7 +66,7 @@ export default function Footer() {
 
     if (desktopScreen) return <DesktopFooter />;
 
-    return (
+    return location.pathname == '/' ? null :  (
         <motion.footer
             className={styles.container}
             initial='hidden'

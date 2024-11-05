@@ -67,3 +67,25 @@ cursor: pointer;
 
 
 }
+
+@media (min-width: 376px) and (max-width: 1028px) {
+    .container{
+        padding: 1rem ;
+    }
+    .content p{
+        font-size: 22px;
+    }
+
+    .videoContainer{
+        align-items: center;
+    }
+}
+@media only screen and (min-width: 1280px) {
+    .container{
+        /* background-color: yellow; */
+        padding-left: 192px;
+        padding-right: 192px;
+    }
+    
+    
+    }

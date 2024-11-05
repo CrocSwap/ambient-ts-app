@@ -9,6 +9,8 @@ interface propsIF {
 type ScrollToSectionFn = (index: number) => void;
 
 export default function FutaLandingNav(props: propsIF) {
+
+    
     const { scrollToSection, activeSection } = props;
     const sections = ['00', '01', '02', '03', '04'];
 
@@ -32,7 +34,7 @@ export default function FutaLandingNav(props: propsIF) {
     );
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} tabIndex={0} >
             <div className={styles.leftSection}>
                 <div className={styles.verticalText}>
                     FULLY UNIVERSAL TICKER AUCTION
