@@ -63,7 +63,7 @@ interface PoolParamsHookIF {
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata(props: PoolParamsHookIF) {
-    const { chainId, poolIndex } = props;
+    const { chainId, poolIndex, isChartEnabled, crocEnv } = props;
 
     const {
         tokenA,
@@ -142,7 +142,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     useEffect(() => {
         if (
             contextMatchesParams &&
-            props.crocEnv &&
+            crocEnv &&
             tokenA.address &&
             tokenB.address
         ) {
@@ -176,7 +176,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         poolIndex,
         // props.searchableTokens,
         props.lastBlockNumber == 0,
-        !!props.crocEnv,
+        !!crocEnv,
     ]);
 
     const [newTxByPoolData, setNewTxByPoolData] = useState<
@@ -314,7 +314,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     useEffect(() => {
         if (
             contextMatchesParams &&
-            props.crocEnv &&
+            crocEnv &&
             props.provider !== undefined &&
             isServerEnabled
         ) {
@@ -338,7 +338,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((response) => response.json())
                         .then((json) => {
                             const poolPositions = json.data;
-                            const crocEnv = props.crocEnv;
                             const provider = props.provider;
                             const skipENSFetch = true;
                             if (poolPositions && crocEnv && provider) {
@@ -410,7 +409,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((response) => response.json())
                         .then((json) => {
                             const leaderboardPositions = json.data;
-                            const crocEnv = props.crocEnv;
                             const provider = props.provider;
                             const skipENSFetch = true;
 
@@ -476,7 +474,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         poolIdx: poolIndex,
                         chainId: chainId,
                         n: 200,
-                        crocEnv: props.crocEnv,
+                        crocEnv: crocEnv,
                         graphCacheUrl: props.graphCacheUrl,
                         provider: props.provider,
                         cachedFetchTokenPrice: props.cachedFetchTokenPrice,
@@ -522,7 +520,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((response) => response?.json())
                         .then((json) => {
                             const poolLimitOrderStates = json?.data;
-                            const crocEnv = props.crocEnv;
                             const provider = props.provider;
                             const skipENSFetch = true;
                             if (poolLimitOrderStates && crocEnv && provider) {
@@ -593,7 +590,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             .then((response) => response.json())
                             .then((json) => {
                                 const userPoolTransactions = json.data;
-                                const crocEnv = props.crocEnv;
                                 const provider = props.provider;
                                 const skipENSFetch = true;
                                 if (
@@ -663,7 +659,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             .then((response) => response.json())
                             .then((json) => {
                                 const userPoolPositions = json.data;
-                                const crocEnv = props.crocEnv;
                                 const provider = props.provider;
                                 const skipENSFetch = true;
 
@@ -732,7 +727,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             .then((response) => response?.json())
                             .then((json) => {
                                 const userPoolLimitOrderStates = json?.data;
-                                const crocEnv = props.crocEnv;
                                 const provider = props.provider;
                                 const skipENSFetch = true;
                                 if (
@@ -801,7 +795,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         isUserIdle
             ? Math.floor(Date.now() / 60000) // cache for 60 seconds if idle
             : Math.floor(Date.now() / 10000), // cache for 10 seconds if not idle
-        !!props.crocEnv,
+        !!crocEnv,
         !!props.provider,
 
         isServerEnabled,
@@ -817,19 +811,19 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         };
 
         if (
-            props.isChartEnabled &&
+            isChartEnabled &&
             poolPriceNonDisplay !== 0 &&
             baseTokenAddress &&
             quoteTokenAddress &&
             poolIndex &&
-            props.crocEnv
+            crocEnv
         ) {
             fetchPoolLiquidity(
                 chainId,
                 baseTokenAddress.toLowerCase(),
                 quoteTokenAddress.toLowerCase(),
                 poolIndex,
-                props.crocEnv,
+                crocEnv,
                 props.graphCacheUrl,
                 props.cachedFetchTokenPrice,
                 props.cachedQuerySpotTick,
@@ -844,15 +838,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         }
     };
 
-    useEffect(() => {
-        updateLiquidity();
-    }, [
-        baseTokenAddress + quoteTokenAddress + chainId + poolIndex,
-        currentPoolPriceTick,
-        props.isChartEnabled,
-        props.crocEnv !== undefined,
-    ]);
-
     const totalPositionLiq = useMemo(
         () =>
             positionsByPool.positions.reduce((sum, position) => {
@@ -865,8 +850,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     );
 
     useEffect(() => {
-        updateLiquidity();
-    }, [totalPositionLiq]);
+        if (currentPoolPriceTick && Math.abs(currentPoolPriceTick) !== Infinity)
+            updateLiquidity();
+    }, [currentPoolPriceTick, totalPositionLiq]);
 
     return {
         contextMatchesParams,
