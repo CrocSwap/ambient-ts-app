@@ -29,7 +29,7 @@
     line-height: normal;
 }
 
-.container button {
+.container a {
     display: flex;
     padding: 8px 16px;
     justify-content: center;
@@ -45,8 +45,14 @@
     line-height: normal;
     outline: none;
     border: none;
+    cursor: pointer;
 }
 
+.content a:hover{
+    background: var(--text2);
+cursor: pointer !important;
+transition: all var(--animation-speed) ease-in-out;
+}
 @media only screen and (min-width: 768px) {
     .container p {
 font-size: 64px;

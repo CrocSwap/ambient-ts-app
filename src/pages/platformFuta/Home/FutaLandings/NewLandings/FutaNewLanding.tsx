@@ -8,11 +8,17 @@ import FutaLanding5 from './FutaLanding5';
 import styles from './FutaNewLanding.module.css';
 import FadingTextGrid from '../../Animations/FadingTextGrid';
 import { useNavigate } from 'react-router-dom';
+import { useFutaHomeContext } from '../../../../../contexts/Futa/FutaHomeContext';
 
 const INITIAL_DELAY = 7000;
 const TOTAL_SECTIONS = 5;
 
 export default function FutaNewLanding() {
+    const {
+          
+        hasVideoPlayedOnce,
+        setHasVideoPlayedOnce,
+    } = useFutaHomeContext();
     const [activeSection, setActiveSection] = useState(0);
     const [showMainContent, setShowMainContent] = useState(false);
     const navigate = useNavigate();
@@ -31,41 +37,92 @@ export default function FutaNewLanding() {
         scrollToSection(previousSection);
     }, [activeSection]);
 
-    // Memoized scroll handler
     const handleScroll = useCallback(() => {
+        // Function to determine which section is most in view
+        const getCurrentSection = () => {
+            const viewportHeight = window.innerHeight;
+            // const scrollTop = window.scrollY;
+            
+            let maxVisibility = 0;
+            let mostVisibleIndex = 0;
+            
+            sectionsRef.current.forEach((section, index) => {
+                if (section) {
+                    const rect = section.getBoundingClientRect();
+                    const visibleHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+                    const visibility = visibleHeight / viewportHeight;
+                    
+                    if (visibility > maxVisibility) {
+                        maxVisibility = visibility;
+                        mostVisibleIndex = index;
+                    }
+                }
+            });
+            
+            return mostVisibleIndex;
+        };
+    
+        // Direct scroll event handler
+        const onScroll = () => {
+            const currentSection = getCurrentSection();
+            setActiveSection(currentSection);
+        };
+    
+        // Add scroll event listener
+        window.addEventListener('scroll', onScroll, { passive: true });
+    
+        // Also keep the IntersectionObserver for backup
         const observer = new IntersectionObserver(
             (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        const index = sectionsRef.current.findIndex(
-                            (section) => section === entry.target
-                        );
-                        if (index !== -1) {
-                            setActiveSection(index);
-                        }
+                const visibleEntry = entries.reduce((max, entry) => {
+                    return (entry.intersectionRatio > (max?.intersectionRatio || 0))
+                        ? entry
+                        : max;
+                }, null as IntersectionObserverEntry | null);
+    
+                if (visibleEntry?.isIntersecting) {
+                    const index = sectionsRef.current.findIndex(
+                        (section) => section === visibleEntry.target
+                    );
+                    if (index !== -1) {
+                        setActiveSection(index);
                     }
-                });
+                }
             },
-            { threshold: 0.5 }
+            { 
+                threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+                rootMargin: '-50% 0px -50% 0px'
+            }
         );
-
+    
         sectionsRef.current.forEach((section) => {
             if (section) observer.observe(section);
         });
-
+    
+        // Cleanup function
         return () => {
-            sectionsRef.current.forEach((section) => {
-                if (section) observer.disconnect();
-            });
+            window.removeEventListener('scroll', onScroll);
+            observer.disconnect();
         };
     }, []);
 
+// Also modify the scrollToSection to update activeSection immediately
+const scrollToSection = useCallback((index: number) => {
+    setActiveSection(index); // Update active section immediately
+    sectionsRef.current[index]?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+    });
+}, []);
+    
+   
     // Memoized keyboard handler
     const handleKeyDown = useCallback((event: KeyboardEvent) => {
         switch (event.key) {
             case 'Enter':
                 if (!showMainContent) {
                     setShowMainContent(true);
+                    setHasVideoPlayedOnce(true)
                 } else {
                     navigate('/auctions/');
                 }
@@ -83,13 +140,6 @@ export default function FutaNewLanding() {
         }
     }, [showMainContent, navigate, navigateToNextSection, navigateToPreviousSection]);
 
-    // Scroll to section utility
-    const scrollToSection = useCallback((index: number) => {
-        sectionsRef.current[index]?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-        });
-    }, []);
 
     // Event listeners setup
     useEffect(() => {
@@ -104,9 +154,15 @@ export default function FutaNewLanding() {
 
     // Initial delay for showing main content
     useEffect(() => {
-        const timer = setTimeout(() => setShowMainContent(true), INITIAL_DELAY);
+        const timer = setTimeout(() => {
+            setShowMainContent(true);
+            setHasVideoPlayedOnce(true)
+        }, INITIAL_DELAY);
         return () => clearTimeout(timer);
     }, []);
+
+
+
 
     // Sections configuration
     const sections = [
@@ -117,26 +173,26 @@ export default function FutaNewLanding() {
         <FutaLanding5 key="section5" />,
     ];
 
-    if (!showMainContent) {
+    if (!showMainContent && !hasVideoPlayedOnce) {
         return <FadingTextGrid />;
     }
 
     return (
-        <div className={styles.container} style={{ position: 'relative' }}>
-            <div className={styles.crt} />
-            {sections.map((SectionComponent, index) => (
-                <div
-                    key={index}
-                    className={styles.content}
-                    ref={(el) => (sectionsRef.current[index] = el)}
-                >
-                    {SectionComponent}
-                    <FutaLandingNav 
-                        scrollToSection={scrollToSection} 
-                        activeSection={activeSection}
-                    />
-                </div>
-            ))}
-        </div>
+        <div className={`${styles.container}${styles.crt}`}>
+        {sections.map((SectionComponent, index) => (
+            <div
+            key={index}
+            className={styles.content}
+            ref={(el) => (sectionsRef.current[index] = el)}
+            >
+               
+                {SectionComponent}
+            </div>
+        ))}
+        <FutaLandingNav  
+            scrollToSection={scrollToSection}
+            activeSection={activeSection}
+        />
+    </div>
     );
 }

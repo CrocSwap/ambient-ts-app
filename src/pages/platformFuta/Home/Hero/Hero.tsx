@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import FlashingSvg from '../Animations/FlashingSvg';
-import TerminalAnimation from '../Animations/TerminalAnimation';
 import SynthwaveGrid from '../Animations/SynthwaveGrid';
 import styles from './Hero.module.css';
 import { motion } from 'framer-motion';
-import { BsSkipForward } from 'react-icons/bs';
 import { IoMdClose } from 'react-icons/io';
 import { useFutaHomeContext } from '../../../../contexts/Futa/FutaHomeContext';
 
@@ -14,11 +12,9 @@ interface PropsIF {
 
 export default function Hero(props: PropsIF) {
     const {
-        setIsActionButtonVisible,
-        showTerminal,
-        setShowTerminal,
+     
         hasVideoPlayedOnce,
-        setHasVideoPlayedOnce,
+       
         showHomeVideoLocalStorage,
         setShowHomeVideoLocalStorage,
     } = useFutaHomeContext();
@@ -27,10 +23,6 @@ export default function Hero(props: PropsIF) {
 
     const [showSkipText, setShowSkipText] = useState(false);
 
-    const handleSkipClick = () => {
-        setHasVideoPlayedOnce(true);
-        setShowSkipText(true);
-    };
 
     useEffect(() => {
         if (showSkipText) {
@@ -63,40 +55,19 @@ export default function Hero(props: PropsIF) {
         </motion.div>
     );
 
-    useEffect(() => {
-        if (!showHomeVideoLocalStorage) {
-            setIsActionButtonVisible(true);
-        } else if (!hasVideoPlayedOnce) {
-            const timer = setTimeout(() => {
-                setShowTerminal(false);
-                setHasVideoPlayedOnce(true);
-                setIsActionButtonVisible(true);
-            }, 12000); // 12 seconds
 
-            return () => clearTimeout(timer);
-        }
-    }, [hasVideoPlayedOnce, showHomeVideoLocalStorage, setHasVideoPlayedOnce]);
 
     const desktopDisplay = (
         <div>
             {hasVideoPlayedOnce || !showHomeVideoLocalStorage ? (
                 <FlashingSvg onLearnClick={onLearnClick} />
-            ) : showTerminal ? (
-                <TerminalAnimation />
+       
             ) : (
                 <FlashingSvg onLearnClick={onLearnClick} />
             )}
             <SynthwaveGrid hasVideoPlayedOnce={hasVideoPlayedOnce} />
 
-            {showTerminal &&
-                !hasVideoPlayedOnce &&
-                showHomeVideoLocalStorage && (
-                    <BsSkipForward
-                        size={30}
-                        className={styles.skipIcon}
-                        onClick={handleSkipClick}
-                    />
-                )}
+            
             {showSkipText && hideAnimationNextTimeButton}
         </div>
     );

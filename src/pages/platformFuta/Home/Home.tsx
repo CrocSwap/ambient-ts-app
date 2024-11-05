@@ -8,30 +8,24 @@ import FutaLanding3 from './FutaLandings/FutaLanding3';
 import FutaLanding4 from './FutaLandings/FutaLanding4';
 import Hero from './Hero/Hero';
 import DotAnimation from '../../../components/Home/CarouselControl/DotAnimation';
-import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
 import FutaNewLanding from './FutaLandings/NewLandings/FutaNewLanding';
 
 function Home() {
-    const {
-        setIsActionButtonVisible,
-        setShowTerminal,
-        hasVideoPlayedOnce,
-        setHasVideoPlayedOnce,
-    } = useFutaHomeContext();
 
-    useEffect(() => {
-        if (!hasVideoPlayedOnce) {
-            const timer = setTimeout(() => {
-                setShowTerminal(false);
-                setHasVideoPlayedOnce(true);
-                setIsActionButtonVisible(true);
-            }, 12000); // 11 seconds
 
-            return () => clearTimeout(timer);
-        } else {
-            setIsActionButtonVisible(true);
-        }
-    }, [hasVideoPlayedOnce, setHasVideoPlayedOnce]);
+    // useEffect(() => {
+    //     if (!hasVideoPlayedOnce) {
+    //         const timer = setTimeout(() => {
+    //             setShowTerminal(false);
+    //             setHasVideoPlayedOnce(true);
+    //             setIsActionButtonVisible(true);
+    //         }, 12000); // 11 seconds
+
+    //         return () => clearTimeout(timer);
+    //     } else {
+    //         setIsActionButtonVisible(true);
+    //     }
+    // }, [hasVideoPlayedOnce, setHasVideoPlayedOnce]);
 
     const section0 = useRef<HTMLDivElement>(null);
     const section1 = useRef<HTMLDivElement>(null);

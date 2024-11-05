@@ -1,6 +1,7 @@
 import styles from './FutaLandingNav.module.css';
 import { IoIosArrowDown } from 'react-icons/io';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useNavigate } from 'react-router-dom';
 
 interface propsIF {
     scrollToSection: ScrollToSectionFn;
@@ -10,7 +11,8 @@ type ScrollToSectionFn = (index: number) => void;
 
 export default function FutaLandingNav(props: propsIF) {
 
-    
+    const navigate = useNavigate();
+
     const { scrollToSection, activeSection } = props;
     const sections = ['00', '01', '02', '03', '04'];
 
@@ -28,10 +30,11 @@ export default function FutaLandingNav(props: propsIF) {
                 <span className={styles.taText}>TA</span>
             </div>
             <div className={styles.enterButton}>
-                <button>/ENTER</button>
+                <button onClick={() => navigate('/auctions')} >/ENTER</button>
             </div>
         </div>
     );
+
 
     return (
         <div className={styles.container} tabIndex={0} >
@@ -53,8 +56,9 @@ export default function FutaLandingNav(props: propsIF) {
                                 color:
                                     index === activeSection
                                         ? '#AACFD1'
-                                        : '#5C6F72',
+                                        : '',
                             }}
+                            className={styles.navButton}
                         >
                             {num}
                         </button>

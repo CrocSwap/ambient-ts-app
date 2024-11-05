@@ -64,6 +64,7 @@ export default function Footer() {
 
     const desktopScreen = useMediaQuery('(min-width: 780px)');
 
+
     if (desktopScreen) return <DesktopFooter />;
 
     return location.pathname == '/' ? null :  (

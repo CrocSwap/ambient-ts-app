@@ -10,6 +10,8 @@
     padding: 0 16px;
 
 }
+
+
 .desktopFuta{
     display: none;
     
@@ -103,6 +105,11 @@ margin-bottom: -8px;
  
     
 }
+.enterButton:hover > button{
+background: var(--text2);
+cursor: pointer !important;
+transition: all var(--animation-speed) ease-in-out;
+}
 
 .rightSection {
     flex: 1;
@@ -132,8 +139,15 @@ margin-bottom: -8px;
     font-weight: 400;
     line-height: normal;
     letter-spacing: -0.36px;
+    cursor: pointer !important;
+
+  
 }
 
+.navButton:hover{
+transition: all var(--animation-speed) ease-in-out;
+color: #AACFD1;
+}
 
 
 @media only screen and (min-width: 768px) {

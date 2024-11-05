@@ -12,7 +12,6 @@ interface Props {
 
 export default function FlashingSvg(props: Props) {
     const {
-        isActionButtonVisible,
         hasVideoPlayedOnce,
         showHomeVideoLocalStorage,
     } = useFutaHomeContext();
@@ -129,7 +128,7 @@ export default function FlashingSvg(props: Props) {
                 Memes as public goods.
             </div>
 
-            {isActionButtonVisible &&
+            {
                 (hideFlicker ? (
                     <div className={styles.actionButtonContent}>
                         <div>
