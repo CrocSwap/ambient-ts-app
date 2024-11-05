@@ -7,7 +7,11 @@
     flex-direction: column;
     padding: 96px 16px 128px 16px;
     
-
+    background: url('../../../../../assets/futa/home/background.png') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
 .content{
