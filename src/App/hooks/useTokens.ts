@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { tokenListURIs, defaultTokens } from '../../ambient-utils/constants';
+import {
+    tokenListURIs,
+    defaultTokens,
+    hiddenTokens,
+} from '../../ambient-utils/constants';
 import { TokenIF, TokenListIF } from '../../ambient-utils/types';
 import {
     chainNumToString,
@@ -72,15 +76,6 @@ export const useTokens = (
     // User acknowledge tokens
     const [ackTokens, setAckTokens] = useState<TokenIF[]>(INIT_ACK);
 
-    // Hardcoded list of excluded tokens
-    const excludedTokens = [
-        {
-            // mistake on coingecko's scroll lsit
-            address: '0x7122985656e38bdc0302db86685bb972b145bd3c',
-            chainId: 534352,
-        },
-    ];
-
     // Universe of tokens within the given chain. Combines both tokens from
     // lists and user-acknowledge tokens
     const tokenMap = useMemo<Map<string, TokenIF>>(() => {
@@ -93,7 +88,7 @@ export const useTokens = (
                 if (chainNumToString(t.chainId) !== chainId) return false;
 
                 // Then check if token is in exclusion list
-                return !excludedTokens.some(
+                return !hiddenTokens.some(
                     (excluded) =>
                         excluded.address.toLowerCase() ===
                             t.address.toLowerCase() &&
@@ -173,6 +168,15 @@ export const useTokens = (
             }
             return newArray
                 .filter((tkn: TokenIF) => tkn.chainId === parseInt(chainId))
+                .filter((t) => {
+                    // Then check if token is in exclusion list
+                    return !hiddenTokens.some(
+                        (excluded) =>
+                            excluded.address.toLowerCase() ===
+                                t.address.toLowerCase() &&
+                            excluded.chainId === t.chainId,
+                    );
+                })
                 .map((tkn: TokenIF) =>
                     deepCopyToken(tkn, tkn.fromList ?? tokenListURIs.ambient),
                 );
@@ -338,11 +342,21 @@ export const useTokens = (
             // fn to search for exact matches
             const searchExact = (): TokenIF[] => {
                 // return tokens where name OR symbol exactly matches search string
-                return tokenUniv.filter(
-                    (tkn: TokenIF) =>
-                        tkn.name.toLowerCase() === cleanedInput ||
-                        tkn.symbol.toLowerCase() === cleanedInput,
-                );
+                return tokenUniv
+                    .filter(
+                        (tkn: TokenIF) =>
+                            tkn.name.toLowerCase() === cleanedInput ||
+                            tkn.symbol.toLowerCase() === cleanedInput,
+                    )
+                    .filter((t) => {
+                        // Then check if token is in exclusion list
+                        return !hiddenTokens.some(
+                            (excluded) =>
+                                excluded.address.toLowerCase() ===
+                                    t.address.toLowerCase() &&
+                                excluded.chainId === t.chainId,
+                        );
+                    });
             };
             // fn to search for partial matches (includes exact matches too)
             const searchPartial = (): TokenIF[] => {
@@ -365,7 +379,15 @@ export const useTokens = (
                         partialMatches.push(tkn);
                     }
                 });
-                return exactMatches.concat(partialMatches);
+                return exactMatches.concat(partialMatches).filter((t) => {
+                    // Then check if token is in exclusion list
+                    return !hiddenTokens.some(
+                        (excluded) =>
+                            excluded.address.toLowerCase() ===
+                                t.address.toLowerCase() &&
+                            excluded.chainId === t.chainId,
+                    );
+                });
             };
             // return requested results
             return exact ? searchExact() : searchPartial();

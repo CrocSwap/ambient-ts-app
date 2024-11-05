@@ -170,6 +170,25 @@ export const excludedTokenAddressesLowercase = [
         .map((address: string) => address.toLowerCase()),
 ];
 
+// Hardcoded list of hidden tokens
+export const hiddenTokens = [
+    {
+        // mistake on coingecko's scroll list
+        address: '0x7122985656e38bdc0302db86685bb972b145bd3c',
+        chainId: 534352,
+    },
+    {
+        // different sepolia USDC on Scroll-Tech's scroll list
+        address: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
+        chainId: 11155111,
+    },
+    {
+        // SWELL token on mainnet (embargoed until nov. 6, '24)
+        address: '0x0a6E7Ba5042B38349e437ec6Db6214AEC7B35676',
+        chainId: 1,
+    },
+];
+
 // if blacklist is not already lowercase
 // export const checkBlacklist = (addr: string) => {
 //     const blacklistLowerCase = blacklist.map((addr: string) => addr.toLowerCase());
