@@ -239,7 +239,10 @@ export default function TransactionDetailsGraph(
                     Math.floor(localMaxTime / 1000) + offsetInSeconds;
 
                 try {
-                    if (!crocEnv) {
+                    if (
+                        !crocEnv ||
+                        (await crocEnv.context).chain.chainId !== chainId
+                    ) {
                         return;
                     }
 

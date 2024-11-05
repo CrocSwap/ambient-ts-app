@@ -38,6 +38,8 @@ export default function TopPools(props: propsIF) {
         if (!crocEnv) return;
 
         const fetchSpotPrices = async () => {
+            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+                return;
             const spotPricePromises = topPools.map((pool) =>
                 cachedQuerySpotPrice(
                     crocEnv,
@@ -59,7 +61,7 @@ export default function TopPools(props: propsIF) {
         };
 
         fetchSpotPrices();
-    }, [crocEnv === undefined, chainId, poolPriceCacheTime]);
+    }, [crocEnv, chainId, poolPriceCacheTime]);
 
     return (
         <FlexContainer

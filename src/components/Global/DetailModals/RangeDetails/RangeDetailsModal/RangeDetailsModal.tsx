@@ -149,6 +149,8 @@ function RangeDetailsModal(props: propsIF) {
     const updateLiq = async () => {
         try {
             if (!crocEnv || !position) return;
+            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+                return;
             const pos = crocEnv.positions(
                 position.base,
                 position.quote,

@@ -121,6 +121,11 @@ const useFetchPoolStats = (
     useEffect(() => {
         if (isServerEnabled && crocEnv) {
             (async () => {
+                if (
+                    !crocEnv ||
+                    (await crocEnv.context).chain.chainId !== chainId
+                )
+                    return;
                 const spotPrice =
                     spotPriceRetrieved !== undefined
                         ? spotPriceRetrieved
@@ -184,7 +189,7 @@ const useFetchPoolStats = (
         spotPriceRetrieved,
         isServerEnabled,
         chainId,
-        crocEnv !== undefined,
+        crocEnv,
         lastBlockNumber !== 0,
         poolPriceNonDisplay,
         poolPriceCacheTime,

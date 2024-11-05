@@ -30,6 +30,8 @@ function RecentPools(props: propsIF) {
         if (!crocEnv) return;
 
         const fetchSpotPrices = async () => {
+            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+                return;
             const spotPricePromises = recentPools.get(5).map((pool) =>
                 cachedQuerySpotPrice(
                     crocEnv,
