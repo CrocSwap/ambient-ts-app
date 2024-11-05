@@ -193,8 +193,6 @@ export const useAppChain = (): {
         ) || findNetworkData(defaultChain),
     );
 
-    useEffect(() => console.log(activeNetwork), [activeNetwork]);
-
     function findNetworkData(chn: keyof typeof supportedNetworks): NetworkIF {
         const output = supportedNetworks[chn];
         return output;

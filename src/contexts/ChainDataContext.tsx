@@ -199,7 +199,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     async function updateAllPoolStats(): Promise<void> {
         try {
-            console.log(chainId);
             const allPoolStats = await cachedAllPoolStatsFetch(
                 chainId,
                 graphCacheUrl,
