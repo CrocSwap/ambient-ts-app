@@ -62,6 +62,7 @@ export default function PoolsSearchResults(props: propsIF) {
         if (!crocEnv) return;
 
         const fetchSpotPrices = async () => {
+            if ((await crocEnv.context).chain.chainId !== chainId) return;
             const spotPricePromises = searchedPools
                 .filter((pool: PoolIF) => !checkPoolForWETH(pool))
                 // max five elements before content overflows container
@@ -87,7 +88,7 @@ export default function PoolsSearchResults(props: propsIF) {
         };
 
         fetchSpotPrices();
-    }, [searchedPools, crocEnv === undefined, chainId, poolPriceCacheTime]);
+    }, [searchedPools, crocEnv, chainId, poolPriceCacheTime]);
 
     return (
         <FlexContainer

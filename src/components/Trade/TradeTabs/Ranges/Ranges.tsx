@@ -441,7 +441,11 @@ function Ranges(props: propsIF) {
             );
             const newlyUpdatedPositions = await Promise.all(
                 pendingPositionUpdates.map(async (pendingPositionUpdate) => {
-                    if (!crocEnv || !pendingPositionUpdate.txDetails)
+                    if (
+                        !crocEnv ||
+                        !pendingPositionUpdate.txDetails ||
+                        (await crocEnv.context).chain.chainId !== chainId
+                    )
                         return {} as PositionIF;
                     const pos = crocEnv.positions(
                         pendingPositionUpdate.txDetails.baseAddress,
@@ -664,7 +668,7 @@ function Ranges(props: propsIF) {
             if (definedUpdatedPositions.length)
                 setUnindexedUpdatedPositions(definedUpdatedPositions);
         })();
-    }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
+    }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber, crocEnv]);
 
     const shouldDisplayNoTableData =
         !isLoading &&

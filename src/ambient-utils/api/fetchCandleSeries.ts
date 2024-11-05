@@ -172,6 +172,8 @@ async function expandPoolStats(
     const baseUsdPrice = (await basePricePromise)?.usdPrice;
     const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
 
+    if ((await crocEnv.context).chain.chainId !== chainId) return [];
+
     const spotPrice = await cachedQuerySpotPrice(
         crocEnv,
         base,
