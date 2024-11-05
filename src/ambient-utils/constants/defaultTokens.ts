@@ -735,7 +735,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetMATIC,
     mainnetSWETH,
     mainnetRSWETH,
-    // mainnetSWELL,
+    mainnetSWELL,
     mainnetSTONE,
     mainnetMKR,
     mainnetLIDO,
