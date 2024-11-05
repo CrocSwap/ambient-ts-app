@@ -40,8 +40,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
       
-       
-
     const {
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
@@ -57,6 +55,10 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const { platformName } = useContext(BrandContext);
     const isFuta = ['futa'].includes(platformName);
+
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     const { activeMobileComponent } = useContext(TradeTableContext);
 
@@ -174,11 +176,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 <HeaderButtons
                     mobileHide
                     onClick={() => {
-                        setIsChartFullScreen(!isChartFullScreen)
-                        
-
-                    }
-                    }
+                        setIsChartFullScreen(!isChartFullScreen);
+                    }}
                 >
                     <BsFullscreen
                         size={16}
@@ -193,7 +192,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 enterDelay={500}
             >
                 <HeaderButtons mobileHide onClick={copyChartToClipboard}>
-
                     <RiScreenshot2Fill
                         size={20}
                         id='trade_chart_save_image'
@@ -214,7 +212,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         setContextMenuPlacement(() => {
                             return {
                                 top: 200,
-                                left: 550,
+                                left: (window.innerWidth / 2) - 150,
                                 isReversed: false,
                             };
                         });
@@ -241,7 +239,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             style={{background: isFuta ? 'var(--dark1)' : 'var(--dark2)'}}
         >
             <TradeChartsTokenInfo />
-            {tradeTableState === 'Expanded' || showNoChartData
+            {tradeTableState === 'Expanded' || showNoChartData || tabletView
                 ? null
                 : graphSettingsContent}
         </FlexContainer>
