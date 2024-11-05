@@ -13,8 +13,8 @@ import {
 import { PoolIF } from '../../../ambient-utils/types';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useContext, useState } from 'react';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { AppStateContext } from '../../../contexts';
 
 interface propsIF {
     pool: PoolIF;
@@ -26,7 +26,7 @@ export default function PoolCard(props: propsIF) {
 
     const {
         chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
 

@@ -50,16 +50,18 @@ import {
     IS_LOCAL_ENV,
     NUM_GWEI_IN_ETH,
 } from '../../../../ambient-utils/constants';
+import { AppStateContext } from '../../../../contexts';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
 
 function Range() {
+    const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
+
     const {
         chainData: { chainId, gridSize },
-        ethMainnetUsdPrice,
-        crocEnv,
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
+
     const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
     const { poolPriceDisplay, dailyVol } = useContext(PoolContext);
@@ -213,7 +215,7 @@ function Range() {
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
-            : poolPriceDisplay ?? 0;
+            : (poolPriceDisplay ?? 0);
     const poolPriceCharacter = isDenomBase
         ? isTokenABase
             ? getUnicodeCharacter(tokenB.symbol)

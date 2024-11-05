@@ -26,10 +26,22 @@ import {
     NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants';
 import { FiExternalLink } from 'react-icons/fi';
-import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
-import { UserPreferenceContext, UserPreferenceContextIF } from '../../../../contexts/UserPreferenceContext';
-import { RangeContext, RangeContextIF } from '../../../../contexts/RangeContext';
-import { ChainDataContext, ChainDataContextIF } from '../../../../contexts/ChainDataContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
+import {
+    UserPreferenceContext,
+    UserPreferenceContextIF,
+} from '../../../../contexts/UserPreferenceContext';
+import {
+    RangeContext,
+    RangeContextIF,
+} from '../../../../contexts/RangeContext';
+import {
+    ChainDataContext,
+    ChainDataContextIF,
+} from '../../../../contexts/ChainDataContext';
 import {
     getPositionData,
     getFormattedNumber,
@@ -37,8 +49,14 @@ import {
     trimString,
     isStablePair,
 } from '../../../../ambient-utils/dataLayer';
-import { TokenContext, TokenContextIF } from '../../../../contexts/TokenContext';
-import { CachedDataContext, CachedDataContextIF } from '../../../../contexts/CachedDataContext';
+import {
+    TokenContext,
+    TokenContextIF,
+} from '../../../../contexts/TokenContext';
+import {
+    CachedDataContext,
+    CachedDataContextIF,
+} from '../../../../contexts/CachedDataContext';
 import {
     linkGenMethodsIF,
     useLinkGen,
@@ -48,11 +66,20 @@ import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitT
 import RangeWidth from '../../../../components/Form/RangeWidth/RangeWidth';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
-import { ReceiptContext, ReceiptContextIF } from '../../../../contexts/ReceiptContext';
+import {
+    ReceiptContext,
+    ReceiptContextIF,
+} from '../../../../contexts/ReceiptContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { UserDataContext, UserDataContextIF } from '../../../../contexts/UserDataContext';
+import {
+    UserDataContext,
+    UserDataContextIF,
+} from '../../../../contexts/UserDataContext';
 import SmolRefuelLink from '../../../../components/Global/SmolRefuelLink/SmolRefuelLink';
-import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
 
 function Reposition() {
     // current URL parameter string
@@ -65,12 +92,13 @@ function Reposition() {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext<CachedDataContextIF>(CachedDataContext);
+    const { crocEnv, provider, ethMainnetUsdPrice } =
+        useContext<CrocEnvContextIF>(CrocEnvContext);
+
     const {
-        crocEnv,
-        provider,
-        ethMainnetUsdPrice,
         chainData: { blockExplorer },
-    } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    } = useContext(AppStateContext);
+
     const { tokens } = useContext<TokenContextIF>(TokenContext);
     const {
         gasPriceInGwei,
@@ -78,9 +106,8 @@ function Reposition() {
         isActiveNetworkBlast,
         isActiveNetworkScroll,
     } = useContext<ChainDataContextIF>(ChainDataContext);
-    const { bypassConfirmRepo, repoSlippage } = useContext<UserPreferenceContextIF>(
-        UserPreferenceContext,
-    );
+    const { bypassConfirmRepo, repoSlippage } =
+        useContext<UserPreferenceContextIF>(UserPreferenceContext);
     const {
         addPendingTx,
         addReceipt,

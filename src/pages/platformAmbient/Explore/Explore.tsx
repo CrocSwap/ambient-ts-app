@@ -13,6 +13,7 @@ import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
 import DexTokens from '../../../components/Global/Explore/DexTokens/DexTokens';
 import { excludedTokenAddressesLowercase } from '../../../ambient-utils/constants';
+import { AppStateContext } from '../../../contexts';
 
 interface ExploreIF {
     view: 'pools' | 'tokens';
@@ -27,7 +28,9 @@ export default function Explore(props: ExploreIF) {
         isExploreDollarizationEnabled,
         setIsExploreDollarizationEnabled,
     } = useContext(ExploreContext);
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+
+    const { chainData } = useContext(AppStateContext);
     const { poolList } = useContext(PoolContext);
     const {
         isActiveNetworkBlast,

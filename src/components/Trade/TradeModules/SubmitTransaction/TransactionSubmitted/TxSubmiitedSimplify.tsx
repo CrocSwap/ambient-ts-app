@@ -3,7 +3,7 @@ import Animation from '../../../../Global/Animation/Animation';
 import completed from '../../../../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
 import { useContext } from 'react';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../../../contexts';
 
 interface PropsIF {
     hash: string;
@@ -15,7 +15,7 @@ export default function TxSubmittedSimplify(props: PropsIF) {
     const { hash, content, noAnimation } = props;
     const {
         chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
 
     const EthersanTx = `${blockExplorer}tx/${hash}`;
 

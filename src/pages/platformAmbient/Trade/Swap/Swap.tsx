@@ -60,6 +60,7 @@ import {
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { calcL1Gas } from '../../../../App/functions/calcL1Gas';
+import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -67,12 +68,11 @@ interface propsIF {
 
 function Swap(props: propsIF) {
     const { isOnTradeRoute } = props;
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
     const {
-        crocEnv,
         chainData: { chainId, poolIndex },
-        ethMainnetUsdPrice,
-        provider,
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);

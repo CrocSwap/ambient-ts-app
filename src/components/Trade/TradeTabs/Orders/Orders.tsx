@@ -10,7 +10,6 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 import Spinner from '../../../Global/Spinner/Spinner';
 import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { OrderRow as OrderRowStyled } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
@@ -19,6 +18,7 @@ import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
+import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
@@ -39,7 +39,7 @@ function Orders(props: propsIF) {
 
     const {
         chainData: { poolIndex },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;

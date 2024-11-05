@@ -1,4 +1,4 @@
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { CrocEnv } from '@crocswap-libs/sdk';
 import {
     ReactNode,
     createContext,
@@ -45,7 +45,6 @@ interface UrlRoutesTemplateIF {
 export interface CrocEnvContextIF {
     crocEnv: CrocEnv | undefined;
     setCrocEnv: (val: CrocEnv | undefined) => void;
-    chainData: ChainSpec;
     topPools: PoolIF[];
     ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplateIF;
@@ -233,7 +232,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const crocEnvContext: CrocEnvContextIF = {
         crocEnv,
         setCrocEnv,
-        chainData,
         topPools,
         ethMainnetUsdPrice,
         defaultUrlParams,

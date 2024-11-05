@@ -1,4 +1,3 @@
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useContext } from 'react';
 import { TransactionIF } from '../../../../../ambient-utils/types';
@@ -14,6 +13,7 @@ import {
 } from '../../../../../styled/Common';
 import { ResultsContainer } from '../../../../../styled/Components/Sidebar';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import { AppStateContext } from '../../../../../contexts';
 
 interface propsIF {
     searchedTxs: TransactionIF[];
@@ -23,7 +23,7 @@ export default function TxSearchResults(props: propsIF) {
     const { searchedTxs } = props;
     const {
         chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
 

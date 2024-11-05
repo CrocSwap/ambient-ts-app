@@ -10,6 +10,7 @@ import {
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../styled/Components/Sidebar';
+import { AppStateContext } from '../../../contexts';
 
 interface propsIF {
     cachedQuerySpotPrice: PoolQueryFn;
@@ -18,11 +19,12 @@ interface propsIF {
 export default function TopPools(props: propsIF) {
     const { cachedQuerySpotPrice } = props;
 
+    const { topPools, crocEnv } = useContext(CrocEnvContext);
+
     const {
-        topPools,
-        crocEnv,
         chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
+
     const location = useLocation();
     const onExploreRoute = location.pathname.includes('explore');
 

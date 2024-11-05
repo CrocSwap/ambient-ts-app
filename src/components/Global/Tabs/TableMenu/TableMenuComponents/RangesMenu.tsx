@@ -18,12 +18,12 @@ import {
     poolParamsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { AppStateContext } from '../../../../../contexts';
 
 // interface for React functional component props
 interface propsIF {
@@ -61,7 +61,7 @@ function RangesMenu(props: propsIF) {
 
     const {
         chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
     const {
         setRangeTicksCopied,
         setSimpleRangeWidth,

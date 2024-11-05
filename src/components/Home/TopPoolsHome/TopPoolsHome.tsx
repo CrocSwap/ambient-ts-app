@@ -10,6 +10,7 @@ import {
     TopPoolViewMore,
 } from '../../../styled/Components/Home';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { AppStateContext } from '../../../contexts';
 
 interface TopPoolsPropsIF {
     noTitle?: boolean;
@@ -19,11 +20,11 @@ interface TopPoolsPropsIF {
 // eslint-disable-next-line
 export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
+    const { topPools, crocEnv } = useContext(CrocEnvContext);
+
     const {
-        topPools,
-        crocEnv,
         chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const show4TopPools = useMediaQuery('(max-width: 1500px)');
     const show3TopPools = useMediaQuery('(min-height: 700px)');

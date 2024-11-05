@@ -15,6 +15,7 @@ import {
 import { ResultsContainer } from '../../../../../styled/Components/Sidebar';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
+import { AppStateContext } from '../../../../../contexts';
 
 interface propsIF {
     searchedPools: PoolIF[];
@@ -24,10 +25,10 @@ export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools } = props;
     const { tokenA, tokenB } = useContext(TradeDataContext);
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const {
-        crocEnv,
         chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
 
     const poolPriceCacheTime = Math.floor(Date.now() / 60000); // 60 second cache
 

@@ -9,7 +9,7 @@ import TickerComponent from '../../../components/Futa/TickerComponent/TickerComp
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import Separator from '../../../components/Futa/Separator/Separator';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../contexts';
 interface propsIF {
     hideTicker?: boolean;
     placeholderTicker?: boolean;
@@ -26,7 +26,7 @@ export default function Auctions(props: propsIF) {
     } = useContext(AuctionsContext);
     const {
         chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
 
     const sorted: sortedAuctionsIF = useSortedAuctions(

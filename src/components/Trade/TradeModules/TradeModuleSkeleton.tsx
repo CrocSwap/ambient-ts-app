@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { useContext, useState, useMemo, ReactNode } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { FlexContainer, GridContainer } from '../../../styled/Common';
 import {
@@ -60,12 +59,11 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     } = props;
 
     const {
+        chainData: { blockExplorer },
         tutorial: { isActive: isTutorialActive },
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
-    const {
-        chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
+
     const { tokens } = useContext(TokenContext);
 
     const { isUserConnected } = useContext(UserDataContext);

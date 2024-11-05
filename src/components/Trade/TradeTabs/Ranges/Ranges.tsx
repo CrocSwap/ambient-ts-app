@@ -39,6 +39,7 @@ import { TokenContext } from '../../../../contexts/TokenContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-utils/constants';
 import Toggle from '../../../Form/Toggle';
+import { AppStateContext } from '../../../../contexts';
 
 // interface for props
 interface propsIF {
@@ -64,11 +65,11 @@ function Ranges(props: propsIF) {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { setCurrentRangeInReposition } = useContext(RangeContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
+
     const {
-        crocEnv,
-        provider,
         chainData: { chainId, poolIndex },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
 
     const {
         cachedFetchTokenPrice,

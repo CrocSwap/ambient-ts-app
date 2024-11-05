@@ -7,10 +7,10 @@ import { favePoolsMethodsIF, useFavePools } from '../App/hooks/useFavePools';
 import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
-import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { TradeDataContext } from './TradeDataContext';
 import { getMoneynessRankByAddr } from '../ambient-utils/dataLayer';
+import { AppStateContext } from './AppStateContext';
 
 export interface UserPreferenceContextIF {
     favePools: favePoolsMethodsIF;
@@ -26,7 +26,7 @@ export interface UserPreferenceContextIF {
     bypassConfirmRepo: skipConfirmIF;
     cssDebug: {
         cache: (k: string, v: string) => void;
-        check: (k: string) => string|undefined;
+        check: (k: string) => string | undefined;
     };
 }
 
@@ -39,7 +39,7 @@ export const UserPreferenceContextProvider = (props: {
 }) => {
     const {
         chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -92,12 +92,11 @@ export const UserPreferenceContextProvider = (props: {
     ]);
     /* ------------------------------------------ END USER PREFERENCES CONTEXT ------------------------------------------ */
 
-
     const cssDebugMap = new Map();
     function cacheCSSProperty(k: string, v: string): void {
         cssDebugMap.set(k, v);
     }
-    function checkCSSPropertyCache(k: string): string|undefined {
+    function checkCSSPropertyCache(k: string): string | undefined {
         return cssDebugMap.get(k);
     }
 
@@ -116,7 +115,7 @@ export const UserPreferenceContextProvider = (props: {
         cssDebug: {
             cache: cacheCSSProperty,
             check: checkCSSPropertyCache,
-        }
+        },
     };
 
     // Memoize the object being passed to context. This assumes that all of the individual top-level values

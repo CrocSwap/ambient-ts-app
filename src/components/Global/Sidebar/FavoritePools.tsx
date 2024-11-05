@@ -10,6 +10,7 @@ import {
     ViewMoreFlex,
 } from '../../../styled/Components/Sidebar';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { AppStateContext } from '../../../contexts';
 
 interface propsIF {
     cachedQuerySpotPrice: PoolQueryFn;
@@ -20,10 +21,10 @@ export default function FavoritePools(props: propsIF) {
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
+    const { crocEnv } = useContext(CrocEnvContext);
     const {
         chainData: { chainId, poolIndex: poolId },
-        crocEnv,
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
     const { favePools } = useContext(UserPreferenceContext);
 
     const isAlreadyFavorited = favePools.check(

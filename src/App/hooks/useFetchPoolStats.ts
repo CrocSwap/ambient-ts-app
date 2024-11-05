@@ -54,9 +54,12 @@ const useFetchPoolStats = (
         crocEnv,
         // activeNetwork,
         provider,
-        chainData: { chainId },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
+
+    const {
+        chainData: { chainId },
+    } = useContext(AppStateContext);
 
     const { lastBlockNumber, allPoolStats } = useContext(ChainDataContext);
 

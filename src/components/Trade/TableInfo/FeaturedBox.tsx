@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { TokenIF } from '../../../ambient-utils/types';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
     BoxContainer,
     BoxInfoText,
@@ -36,7 +35,7 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
     const { token, balance, value, pooled, style, isInit } = props;
     const {
         chainData: { chainId, addrs },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
     const blockExplorer = getChainExplorer(chainId);
 
     const [_, copy] = useCopyToClipboard();

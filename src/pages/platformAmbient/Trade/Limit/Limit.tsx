@@ -55,13 +55,14 @@ import {
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../../contexts';
 
 export default function Limit() {
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+
     const {
-        crocEnv,
         chainData: { chainId, gridSize, poolIndex },
-        ethMainnetUsdPrice,
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
     const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
     const {

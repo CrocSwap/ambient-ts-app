@@ -33,6 +33,7 @@ import {
     TradeDataContext,
     TradeDataContextIF,
 } from '../../../contexts/TradeDataContext';
+import { AppStateContext } from '../../../contexts';
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
@@ -54,15 +55,16 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         tokenAorB,
         reverseTokens,
         platform = 'ambient',
-        isFuta = false,
     } = props;
 
-    const { cachedTokenDetails } = useContext<CachedDataContextIF>(CachedDataContext);
+    const { cachedTokenDetails } =
+        useContext<CachedDataContextIF>(CachedDataContext);
+    const { provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+
     const {
         chainData: { chainId },
-        provider,
-    } = useContext<CrocEnvContextIF>(CrocEnvContext);
-    isFuta;
+    } = useContext(AppStateContext);
+
     const {
         tokens,
         outputTokens,

@@ -2,7 +2,6 @@ import { PoolIF } from '../../../ambient-utils/types';
 import { getMoneynessRank, uriToHttp } from '../../../ambient-utils/dataLayer';
 import { Link, useLocation } from 'react-router-dom';
 import { useContext, useMemo } from 'react';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
@@ -21,6 +20,7 @@ import FavButton from './FavButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { BrandContextIF, BrandContext } from '../../../contexts/BrandContext';
+import { AppStateContext } from '../../../contexts';
 
 interface propsIF {
     pool: PoolIF;
@@ -34,7 +34,7 @@ export default function PoolsListItem(props: propsIF) {
 
     const {
         chainData: { chainId, poolIndex },
-    } = useContext(CrocEnvContext);
+    } = useContext(AppStateContext);
     const { favePools } = useContext(UserPreferenceContext);
     const { platformName } = useContext<BrandContextIF>(BrandContext);
     const isFuta = platformName.toLowerCase() === 'futa';
