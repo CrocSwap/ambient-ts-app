@@ -58,6 +58,15 @@ export const mainnetRSWETH: TokenIF = {
     symbol: 'rswETH',
 };
 
+export const mainnetSWELL: TokenIF = {
+    address: '0x0a6E7Ba5042B38349e437ec6Db6214AEC7B35676',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/24924.png',
+    name: 'Swell Governance Token',
+    symbol: 'SWELL',
+};
+
 export const mainnetSTONE: TokenIF = {
     name: 'StakeStone Ether',
     address: '0x7122985656e38bdc0302db86685bb972b145bd3c',
@@ -726,6 +735,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetMATIC,
     mainnetSWETH,
     mainnetRSWETH,
+    // mainnetSWELL,
     mainnetSTONE,
     mainnetMKR,
     mainnetLIDO,
