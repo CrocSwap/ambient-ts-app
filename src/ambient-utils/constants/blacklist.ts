@@ -182,12 +182,25 @@ export const hiddenTokens = [
         address: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
         chainId: 11155111,
     },
+];
+
+const embargoedTokens = [
     {
-        // SWELL token on mainnet (embargoed until nov. 6, '24)
+        // SWELL token on mainnet
         address: '0x0a6E7Ba5042B38349e437ec6Db6214AEC7B35676',
         chainId: 1,
+        embargoedUntil: 1730973600, // nov. 7, '24 at 10 am UTC
     },
 ];
+
+const currentTime = Date.now() / 1000;
+
+// if current time is less than embargoed time, add to hidden tokens
+embargoedTokens.forEach((token) => {
+    if (currentTime < token.embargoedUntil) {
+        hiddenTokens.push(token);
+    }
+});
 
 // if blacklist is not already lowercase
 // export const checkBlacklist = (addr: string) => {
