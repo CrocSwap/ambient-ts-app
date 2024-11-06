@@ -48,10 +48,7 @@ import {
     ReceiptContext,
     ReceiptContextIF,
 } from '../../../../contexts/ReceiptContext';
-import {
-    SidebarContext,
-    SidebarContextIF,
-} from '../../../../contexts/SidebarContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
 import {
     TokenContext,
     TokenContextIF,
@@ -121,7 +118,7 @@ function Transactions(props: propsIF) {
 
     const {
         sidebar: { isOpen: isSidebarOpen },
-    } = useContext<SidebarContextIF>(SidebarContext);
+    } = useContext(SidebarContext);
 
     const candleTime: candleTimeIF = chartSettings.candleTime.global;
 
