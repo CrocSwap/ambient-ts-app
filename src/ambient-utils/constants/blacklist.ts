@@ -189,7 +189,7 @@ const embargoedTokens = [
         // SWELL token on mainnet
         address: '0x0a6E7Ba5042B38349e437ec6Db6214AEC7B35676',
         chainId: 1,
-        embargoedUntil: 1730955600, // nov. 7, '24 at 05:00 UTC
+        embargoedUntil: 1730973600, // nov. 7, '24 at 10 am UTC
     },
 ];
 
