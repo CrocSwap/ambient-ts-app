@@ -178,12 +178,13 @@ function Ranges(props: propsIF) {
 
     const tableView =
         isSmallScreen ||
+        isTabletScreen ||
         (isAccountView &&
             connectedAccountActive &&
             !isLargeScreenAccount &&
             isSidebarOpen)
             ? 'small'
-            : (!isSmallScreen && !isLargeScreen) || isTabletScreen
+            : !isSmallScreen && !isLargeScreen
               ? 'medium'
               : 'large';
 
