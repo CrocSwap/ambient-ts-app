@@ -54,6 +54,7 @@ import SUSDE from './SUSDE.svg';
 import NURI from './NURI.svg';
 import SWELL from './SWELL.png';
 import RSWETH from './RSWETH.svg';
+import UNI from './UNI.webp';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -113,4 +114,5 @@ export {
     NURI,
     SWELL,
     RSWETH,
+    UNI,
 };
