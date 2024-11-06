@@ -29,7 +29,7 @@ import {
 import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
 import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
 
-interface Changes {
+export interface Changes {
     dataReceived: boolean;
     changes: Array<TransactionIF>;
 }
@@ -42,11 +42,11 @@ interface LimitOrdersByUser {
     dataReceived: boolean;
     limitOrders: LimitOrderIF[];
 }
-interface PositionsByPool {
+export interface PositionsByPool {
     dataReceived: boolean;
     positions: Array<PositionIF>;
 }
-interface LimitOrdersByPool {
+export interface LimitOrdersByPool {
     dataReceived: boolean;
     limitOrders: LimitOrderIF[];
 }
@@ -515,7 +515,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                     crocEnv: crocEnv,
                     graphCacheUrl: graphCacheUrl,
                     provider,
-                    n: 200, // fetch last 200 changes,
+                    n: 100, // fetch last 100 changes,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,

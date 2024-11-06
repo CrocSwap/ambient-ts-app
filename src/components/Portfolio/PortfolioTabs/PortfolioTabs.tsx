@@ -177,7 +177,6 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 // temporarily skip ENS fetch
-                const skipENSFetch = true;
                 const userLimitOrderStates = json?.data;
                 if (userLimitOrderStates && crocEnv && provider) {
                     Promise.all(
@@ -193,7 +192,6 @@ export default function PortfolioTabs(props: propsIF) {
                                     cachedQuerySpotPrice,
                                     cachedTokenDetails,
                                     cachedEnsResolve,
-                                    skipENSFetch,
                                 );
                             },
                         ),
@@ -218,7 +216,7 @@ export default function PortfolioTabs(props: propsIF) {
                 tokenList: tokens.tokenUniv,
                 user: accountToSearch,
                 chainId: chainId,
-                n: 200, // fetch last 200 changes,
+                n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
                 graphCacheUrl: graphCacheUrl,
                 provider,
@@ -338,6 +336,7 @@ export default function PortfolioTabs(props: propsIF) {
         changesInSelectedCandle: undefined,
         isAccountView: true,
         fullLayoutActive: fullLayoutActive,
+        accountAddress: resolvedAddress,
     };
 
     // Props for <Orders/> React Element

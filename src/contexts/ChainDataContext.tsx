@@ -16,6 +16,7 @@ import {
     SEPOLIA_RPC_URL,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
     ZERO_ADDRESS,
+    hiddenTokens,
     supportedNetworks,
 } from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
@@ -464,20 +465,31 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                         );
                     }
 
-                    const tokensWithLogos = combinedBalances.map((token) => {
-                        const oldToken: TokenIF | undefined =
-                            tokens.getTokenByAddress(token.address);
-                        const newToken = { ...token };
+                    const tokensWithLogos = combinedBalances
+                        .filter((t) => {
+                            // Then check if token is in exclusion list
+                            return !hiddenTokens.some(
+                                (excluded) =>
+                                    excluded.address.toLowerCase() ===
+                                        t.address.toLowerCase() &&
+                                    excluded.chainId === t.chainId,
+                            );
+                        })
+                        .map((token) => {
+                            const oldToken: TokenIF | undefined =
+                                tokens.getTokenByAddress(token.address);
+                            const newToken = { ...token };
 
-                        newToken.decimals =
-                            oldToken?.decimals || newToken?.decimals || 18;
-                        newToken.name = oldToken?.name || newToken.name || '';
-                        newToken.logoURI =
-                            oldToken?.logoURI || newToken.logoURI || '';
-                        newToken.symbol =
-                            oldToken?.symbol || newToken.symbol || '';
-                        return newToken;
-                    });
+                            newToken.decimals =
+                                oldToken?.decimals || newToken?.decimals || 18;
+                            newToken.name =
+                                oldToken?.name || newToken.name || '';
+                            newToken.logoURI =
+                                oldToken?.logoURI || newToken.logoURI || '';
+                            newToken.symbol =
+                                oldToken?.symbol || newToken.symbol || '';
+                            return newToken;
+                        });
                     setTokenBalances(tokensWithLogos);
                 } catch (error) {
                     // setTokenBalances(undefined);
