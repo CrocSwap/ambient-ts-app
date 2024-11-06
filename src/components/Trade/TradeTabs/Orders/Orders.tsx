@@ -10,6 +10,10 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 import Spinner from '../../../Global/Spinner/Spinner';
 import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
 import { OrderRow as OrderRowStyled } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
@@ -21,7 +25,6 @@ import {
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
-import { AppStateContext, CrocEnvContext } from '../../../../contexts';
 import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLimitOrders';
 import {
     TokenContextIF,
@@ -30,6 +33,7 @@ import {
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 import { PageDataCountIF } from '../../../Chat/ChatIFs';
+import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
@@ -48,14 +52,15 @@ function Orders(props: propsIF) {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
 
+    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+
     const {
-        activeNetwork: { poolIndex, chainId, graphCacheUrl },
+        activeNetwork: { chainId, poolIndex, graphCacheUrl },
     } = useContext(AppStateContext);
 
-    const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
-        cachedFetchTokenPrice,
         cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
