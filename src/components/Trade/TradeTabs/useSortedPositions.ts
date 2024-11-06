@@ -24,6 +24,7 @@ export const useSortedPositions = (
     boolean,
     Dispatch<SetStateAction<boolean>>,
     PositionIF[],
+    (data:PositionIF[]) => PositionIF[]
 ] => {
     // default sort function
     const sortByTime = (unsortedData: PositionIF[]): PositionIF[] =>
@@ -218,5 +219,5 @@ export const useSortedPositions = (
         return sortData(positions);
     }, [sortBy, reverseSort, positions[0]?.positionId, positions.length]); // fix failure to refresh rows when data changes
 
-    return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];
+    return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions, sortData];
 };
