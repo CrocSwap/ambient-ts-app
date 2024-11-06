@@ -13,6 +13,7 @@ interface argsIF {
     quote: string;
     poolIdx: number;
     chainId: string;
+    user:`0x${string}`;
     n?: number;
     page?: number;
     period?: number;
@@ -27,13 +28,14 @@ interface argsIF {
     cachedEnsResolve: FetchAddrFn;
 }
 
-export const fetchPoolRecentChanges = (args: argsIF) => {
+export const fetchPoolUserChanges = (args: argsIF) => {
     const {
         tokenList,
         base,
         quote,
         poolIdx,
         chainId,
+        user,
         n,
         period,
         time,
@@ -48,8 +50,8 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
     } = args;
 
     const poolRecentChangesCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/pool_txs?'
-        : graphCacheUrl + '/pool_txs?';
+        ? GCGO_OVERRIDE_URL + '/user_pool_txs?'
+        : graphCacheUrl + '/user_pool_txs?';
 
     const poolChanges = fetch(
         period && time
@@ -59,6 +61,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                       quote: quote.toLowerCase(),
                       poolIdx: poolIdx.toString(),
                       chainId: chainId,
+                      user: user,
                       n: n ? n.toString() : '',
                       period: period.toString(),
                       time: time.toString(),
@@ -70,6 +73,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                     quote: quote.toLowerCase(),
                     poolIdx: poolIdx.toString(),
                     chainId: chainId,
+                    user: user,
                     n: n ? n.toString() : '',
                     timeBefore: timeBefore.toString(),
                 })
@@ -79,6 +83,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                     quote: quote.toLowerCase(),
                     poolIdx: poolIdx.toString(),
                     chainId: chainId,
+                    user: user,
                     n: n ? n.toString() : '',
                     // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                     // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
