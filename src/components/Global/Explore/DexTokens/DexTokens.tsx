@@ -11,7 +11,7 @@ import {
 import { PoolContext, PoolContextIF } from '../../../../contexts/PoolContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { usePoolList2 } from '../../../../App/hooks/usePoolList2';
-import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { isWrappedNativeToken } from '../../../../ambient-utils/dataLayer';
 import AssignSort from '../AssignSort';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
@@ -19,7 +19,7 @@ import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useToken
 import ExploreToggle from '../ExploreToggle/ExploreToggle';
 import TokenRow from '../TokenRow/TokenRow';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
-import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 export type columnSlugs =
     | 'token'
@@ -60,11 +60,10 @@ function DexTokens(props: propsIF) {
         handleToggle,
     } = props;
 
-    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
+    const { activeNetwork } = useContext(AppStateContext);
 
     const { findPool } = useContext<PoolContextIF>(PoolContext);
     const isPWA = useIsPWA();
-
 
     const defaultTokensForChain: [TokenIF, TokenIF] =
         getDefaultPairForChain(chainId);
@@ -75,7 +74,7 @@ function DexTokens(props: propsIF) {
     // this logic is here to patch cases where existing logic to identify a token pool fails,
     // ... this is not an optimal location but works as a stopgap that minimizes needing to
     // ... alter existing logic or type annotation in the component tree
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const unfilteredPools: GCServerPoolIF[] = usePoolList2(
         activeNetwork.graphCacheUrl,
         crocEnv,
@@ -175,8 +174,9 @@ function DexTokens(props: propsIF) {
     );
 
     return (
-        <div className={styles.mainContainer}
-        style={{ marginBottom: isPWA ? '0' : '50px' }}
+        <div
+            className={styles.mainContainer}
+            style={{ marginBottom: isPWA ? '0' : '50px' }}
         >
             <ExploreToggle view={view} handleToggle={handleToggle} />
 

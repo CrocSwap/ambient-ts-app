@@ -205,7 +205,7 @@ export const useTokenStats = (
     // redecorate token data when token lists are pulled for the first time
     useEffect(() => {
         fetchData();
-    }, [tokenMethods.tokenUniv.length]);
+    }, [tokenMethods.tokenUniv.length, crocEnv]);
 
     return {
         data: dexTokens,
