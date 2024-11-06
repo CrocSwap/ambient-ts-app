@@ -75,7 +75,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const copyChartToClipboard = async () => {
         if (canvasRef.current && chartCanvasRef.current) {
-
             const filter = (el: Node) => {
                 if (el instanceof HTMLElement) {
                     return el.id !== 'tx-table';
@@ -92,8 +91,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                       (smallView ? 100 : 50) + chartHeights.current,
                       filter,
                   );
-
-            console.log('***** finito');
 
             if (blob) {
                 copy(blob);
