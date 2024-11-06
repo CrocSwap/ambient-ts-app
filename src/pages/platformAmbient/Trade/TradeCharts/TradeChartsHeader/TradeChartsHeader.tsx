@@ -75,6 +75,13 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const copyChartToClipboard = async () => {
         if (canvasRef.current && chartCanvasRef.current) {
+
+            const filter = (el: Node) => {
+                if (el instanceof HTMLElement) {
+                    return el.id !== 'tx-table';
+                }
+                return true;
+            };
             const blob = isChartFullScreen
                 ? await printDomToImage(chartCanvasRef.current, '')
                 : await printDomToImage(
@@ -83,7 +90,11 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                       undefined,
                       // height, trade charts header + chart height
                       (smallView ? 100 : 50) + chartHeights.current,
+                      filter,
                   );
+
+            console.log('***** finito');
+
             if (blob) {
                 copy(blob);
                 openSnackbar('Chart image copied to clipboard', 'info');
