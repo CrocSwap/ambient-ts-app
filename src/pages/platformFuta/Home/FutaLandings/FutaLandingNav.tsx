@@ -37,7 +37,7 @@ export default function FutaLandingNav(props: propsIF) {
 
 
     return (
-        <div className={styles.container} tabIndex={0} >
+        <div className={styles.container} tabIndex={0} style={{opacity: activeSection === 0 ? 0: 1}} >
             <div className={styles.leftSection}>
                 <div className={styles.verticalText}>
                     FULLY UNIVERSAL TICKER AUCTION
