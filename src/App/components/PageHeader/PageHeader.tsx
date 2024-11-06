@@ -1,10 +1,4 @@
-import {
-    useEffect,
-    useState,
-    memo,
-    useContext,
-    useCallback,
-} from 'react';
+import { useEffect, useState, memo, useContext, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimateSharedLayout, motion } from 'framer-motion';
 import UserMenu from './UserMenu/UserMenu';
@@ -54,8 +48,7 @@ const PageHeader = function () {
     } = useContext(AppStateContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
-    const {  isBottomSheetOpen } =
-    useBottomSheet();
+    const { isBottomSheetOpen } = useBottomSheet();
 
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
@@ -349,11 +342,7 @@ const PageHeader = function () {
 
     const routeDisplay = (
         <AnimateSharedLayout>
-            <nav
-                className={styles.primaryNavigation}
-                id='primary_navigation'
-               
-            >
+            <nav className={styles.primaryNavigation} id='primary_navigation'>
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
                         <Link
@@ -415,7 +404,11 @@ const PageHeader = function () {
             <header
                 className={styles.primaryHeader}
                 data-testid={'page-header'}
-                style={{ position: 'sticky', top: 0, zIndex: isBottomSheetOpen ? 0.1 : 10 }}
+                style={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: isBottomSheetOpen ? 0.1 : 10,
+                }}
             >
                 <div
                     onClick={(event: React.MouseEvent) => {
@@ -436,8 +429,8 @@ const PageHeader = function () {
                             <img
                                 className={styles.logoText}
                                 src={logo}
-                                    alt='ambient'
-                                    width='70px'
+                                alt='ambient'
+                                width='55px'
                             />
                         )}
                     </Link>

@@ -1,10 +1,10 @@
-.trade_links_container{
+.trade_links_container {
     width: 200px;
     height: 200px;
     position: relative;
 }
 
-.trade_links{
+.trade_links {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -66,8 +66,7 @@
     border: var(--grey-light-border);
 }
 
-
-.underlineMotion{
+.underlineMotion {
     position: absolute;
     bottom: -1px;
     left: 0;
@@ -77,7 +76,7 @@
     box-shadow: var(--glow-light-box-shadow);
 }
 
-.tradeNowDiv{
+.tradeNowDiv {
     width: 380px;
     padding: 0 1rem;
     display: flex;
@@ -94,12 +93,6 @@
 .logoContainer:focus-visible img {
     box-shadow: var(--glow-light-box-shadow);
 }
-.logoText{
-    max-width: 70%;
-    max-height: 70%;
-}
-
-
 
 
 @media (max-width: 800px) {
@@ -120,8 +113,6 @@
         font-size: calc(var(--header2-size) + 0.5rem);
         line-height: calc(var(--header2-lh) + 0.5rem);
     }
-
-    
 }
 
 @media only screen and (min-width: 800px) {
@@ -142,6 +133,18 @@
     }
 }
 
+@media only screen and (max-width: 1180px) and (min-width: 800px) {
+    .navigationLink {
+        font-size: var(--header-size);
+        line-height: var(--header-lh);
+    }
+    .primaryHeader {
+        display: grid;
+        grid-template-columns: repeat(3, auto);
+        padding: 0 16px;
+    }
+}
+
 @media only screen and (min-width: 1180px) {
     .logoContainer {
         vertical-align: middle;
@@ -157,6 +160,3 @@
         justify-content: center;
     }
 }
-
-
-
