@@ -104,7 +104,7 @@ export default function AddressPrint(props: propsIF) {
     }, [address]); // Only depend on address
 
     return (
-        <svg width={width} height={height} style={{ position: 'absolute'}}>
+        <svg width={'100%'} height={'100%'} style={{ position: 'absolute', cursor: 'default', pointerEvents: 'none',  overflow: 'hidden'}}>
             <defs>
                 {Array.from({ length: numLines }, (_, index) => (
                     <linearGradient
