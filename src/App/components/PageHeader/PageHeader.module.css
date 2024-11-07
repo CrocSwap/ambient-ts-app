@@ -13,6 +13,8 @@
     flex-direction: column;
     background: red;
 }
+
+.homepagePrimaryHeader,
 .primaryHeader {
     width: 100%;
     height: 56px;
@@ -23,6 +25,7 @@
     border-bottom: 1px solid var(--navbar-border);
     padding: 0 1rem;
 }
+
 .primaryNavigation {
     display: flex;
     flex-direction: row;
@@ -94,7 +97,6 @@
     box-shadow: var(--glow-light-box-shadow);
 }
 
-
 @media (max-width: 800px) {
     .primaryNavigation {
         display: none;
@@ -116,6 +118,7 @@
 }
 
 @media only screen and (min-width: 800px) {
+    .homepagePrimaryHeader,
     .primaryHeader {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -137,6 +140,11 @@
     .navigationLink {
         font-size: var(--header-size);
         line-height: var(--header-lh);
+    }
+    .homepagePrimaryHeader {
+        display: grid;
+        grid-template-columns: 0.8fr auto auto;
+        padding: 0 16px;
     }
     .primaryHeader {
         display: grid;
