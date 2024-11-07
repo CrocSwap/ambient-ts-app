@@ -35,6 +35,7 @@ import {
     AppStateContext,
     AppStateContextIF,
 } from '../../../../contexts/AppStateContext';
+import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
 
 interface NetworkIF {
     id: string;
@@ -55,6 +56,8 @@ export default function NetworkSelector(props: propsIF) {
     } = useContext<AppStateContextIF>(AppStateContext);
     const { networks, platformName, includeCanto } =
         useContext<BrandContextIF>(BrandContext);
+        const {  closeBottomSheet } =
+        useBottomSheet();
     const { switchNetwork } = useSwitchNetwork();
     const smallScreen: boolean = useMediaQuery('(max-width: 600px)');
 
@@ -208,11 +211,15 @@ export default function NetworkSelector(props: propsIF) {
             <motion.li
                 className={styles.networkItem}
                 id={network.id}
-                onClick={() =>
-                    network.isExternal
-                        ? window.open(network.link, '_blank')
-                        : handleClick(chainMap.get(network.chainId))
-                }
+                onClick={() => {
+                    if (network.isExternal) {
+                        window.open(network.link, '_blank');
+                    } else {
+                        handleClick(chainMap.get(network.chainId));
+                    }
+                    closeBottomSheet()
+                }}
+                
                 key={network.id}
                 custom={network.custom}
                 variants={ItemEnterAnimation}
