@@ -154,7 +154,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     const quoteTokenDecimals = useMemo(
         () =>
             tokenA.address ===
-            sortBaseQuoteTokens(tokenA.address, tokenB.address)[1]
+            sortBaseQuoteTokens(tokenA.address, tokenB.address)[0]
                 ? tokenB.decimals
                 : tokenA.decimals,
         [tokenA, tokenB],

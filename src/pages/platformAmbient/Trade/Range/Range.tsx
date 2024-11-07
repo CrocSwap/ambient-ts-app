@@ -112,6 +112,7 @@ function Range() {
         baseToken,
         quoteToken,
         poolPriceNonDisplay,
+        currentPoolPriceTick,
         isTokenAPrimary,
         primaryQuantity,
         setPrimaryQuantity,
@@ -223,22 +224,21 @@ function Range() {
         : !isTokenABase
           ? getUnicodeCharacter(tokenB.symbol)
           : getUnicodeCharacter(tokenA.symbol);
-    const currentPoolPriceTick =
-        poolPriceNonDisplay === undefined
-            ? 0
-            : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     const ticksInParams =
         location.pathname.includes('lowTick') &&
         location.pathname.includes('highTick');
+
     const shouldResetAdvancedLowTick =
         !ticksInParams &&
         (advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
+
     const shouldResetAdvancedHighTick =
         !ticksInParams &&
         (advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
+
     // default low tick to seed in the DOM (range lower value)
     const defaultLowTick = useMemo<number>(() => {
         const value: number = shouldResetAdvancedLowTick
