@@ -110,7 +110,6 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         crocEnv,
         graphCacheUrl: graphCacheUrl,
         provider,
-        pathname: location.pathname,
         chainId: chainId,
         poolIndex: poolIndex,
         userAddress,

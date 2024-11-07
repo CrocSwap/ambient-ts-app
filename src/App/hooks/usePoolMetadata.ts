@@ -45,7 +45,6 @@ interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
     graphCacheUrl: string;
     provider?: Provider;
-    pathname: string;
     chainId: string;
     poolIndex: number;
     userAddress: `0x${string}` | undefined;
@@ -64,7 +63,7 @@ interface PoolParamsHookIF {
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata(props: PoolParamsHookIF) {
-    const { chainId, poolIndex, crocEnv, provider, pathname } = props;
+    const { chainId, poolIndex, crocEnv, provider } = props;
     const {
         tokenA,
         tokenB,
@@ -86,6 +85,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         limitOrdersByPool,
     } = useContext(GraphDataContext);
 
+    const { pathname } = location;
+
     const { allPoolStats } = useContext(ChainDataContext);
 
     const {
@@ -95,13 +96,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
     const { setAdvancedLowTick, setAdvancedHighTick, setAdvancedMode } =
         useContext(RangeContext);
-    const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
-    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
-
-    const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
-    const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);
-
-    const [isTokenABase, setIsTokenABase] = useState<boolean>(false);
 
     const ticksInParams =
         pathname.includes('lowTick') && pathname.includes('highTick');
@@ -111,7 +105,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         let matching = false;
         const tokenAAddress = tokenA.address;
         const tokenBAddress = tokenB.address;
-        const { pathname } = location;
+
         if (pathname.includes('tokenA') && pathname.includes('tokenB')) {
             const getAddrFromParams = (token: string) => {
                 const idx = pathname.indexOf(token);
@@ -127,27 +121,44 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 matching = true;
             }
         }
+
         return matching;
     }, [pathname, tokenA, tokenB]);
 
-    useEffect(() => {
-        const sortedTokens = sortBaseQuoteTokens(
-            tokenA.address,
-            tokenB.address,
-        );
+    const baseTokenAddress = useMemo(
+        () => sortBaseQuoteTokens(tokenA.address, tokenB.address)[0],
+        [tokenA, tokenB],
+    );
 
-        setBaseTokenAddress(sortedTokens[0]);
-        setQuoteTokenAddress(sortedTokens[1]);
-        if (tokenA.address === sortedTokens[0]) {
-            setIsTokenABase(true);
-            setBaseTokenDecimals(tokenA.decimals);
-            setQuoteTokenDecimals(tokenB.decimals);
-        } else {
-            setIsTokenABase(false);
-            setBaseTokenDecimals(tokenB.decimals);
-            setQuoteTokenDecimals(tokenA.decimals);
-        }
-    }, [tokenA.address + tokenB.address]);
+    const quoteTokenAddress = useMemo(
+        () => sortBaseQuoteTokens(tokenA.address, tokenB.address)[1],
+        [tokenA, tokenB],
+    );
+
+    const isTokenABase = useMemo(
+        () =>
+            tokenA.address ===
+            sortBaseQuoteTokens(tokenA.address, tokenB.address)[0],
+        [tokenA, tokenB],
+    );
+
+    const baseTokenDecimals = useMemo(
+        () =>
+            tokenA.address ===
+            sortBaseQuoteTokens(tokenA.address, tokenB.address)[0]
+                ? tokenA.decimals
+                : tokenB.decimals,
+        [tokenA, tokenB],
+    );
+
+    const quoteTokenDecimals = useMemo(
+        () =>
+            tokenA.address ===
+            sortBaseQuoteTokens(tokenA.address, tokenB.address)[1]
+                ? tokenB.decimals
+                : tokenA.decimals,
+        [tokenA, tokenB],
+    );
 
     // Token and range housekeeping when switching pairs
     useEffect(() => {

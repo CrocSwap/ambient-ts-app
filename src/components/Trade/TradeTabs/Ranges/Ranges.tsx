@@ -361,7 +361,6 @@ function Ranges(props: propsIF) {
 
             if (uniqueChanges.length > 0) {
                 if (pagesVisible[0] === 0) {
-                    console.log('>>> setting fetched transactions');
                     setFetchedTransactions((prev) => {
                         return {
                             dataReceived: true,
@@ -545,10 +544,7 @@ function Ranges(props: propsIF) {
                 ? activeAccountPositionData || []
                 : !showAllData
                   ? activeUserPositionsByPool
-                  : //   : positionsByPool.positions.filter(
-                    //         (position) => position.positionLiq != 0,
-                    //     ),
-                    fetchedTransactions.positions,
+                  : fetchedTransactions.positions,
         [
             showAllData,
             isAccountView,

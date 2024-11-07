@@ -211,6 +211,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
         isPoolInitialized,
+        crocEnv !== undefined,
     ]);
 
     useEffect(() => {

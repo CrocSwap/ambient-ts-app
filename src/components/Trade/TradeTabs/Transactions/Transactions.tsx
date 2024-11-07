@@ -227,44 +227,13 @@ function Transactions(props: propsIF) {
         }
     }, [activeAccountTransactionData]);
 
-    useEffect(() => {
-        // clear fetched transactions when switching pools
-        if (transactionsByPool.changes.length === 0) {
-            setFetchedTransactions({
-                dataReceived: true,
-                changes: [],
-            });
-        }
-    }, [transactionsByPool.changes]);
-
-    // const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
-    // useEffect(() => {
-    //     setShowInfiniteScroll(!isAccountView && showAllData);
-    // }, [isAccountView, showAllData]);
-
-    // ----------------------------------------------------------------------------------------------
-
-    const transactionData = useMemo<TransactionIF[]>(
+    const txDataToDisplay: TransactionIF[] = useMemo(
         () =>
-            isAccountView
-                ? // ? activeAccountTransactionData || []
-                  fetchedTransactions.changes
-                : !showAllData
-                  ? fetchedTransactions.changes
-                  : fetchedTransactions.changes,
-        [
-            activeAccountTransactionData,
-            userTransactionsByPool,
-            transactionsByPool,
-            showAllData,
-            fetchedTransactions,
-            isAccountView,
-        ],
+            isCandleSelected
+                ? candleTransactionData
+                : fetchedTransactions.changes,
+        [isCandleSelected, candleTransactionData, fetchedTransactions.changes],
     );
-
-    const txDataToDisplay: TransactionIF[] = isCandleSelected
-        ? candleTransactionData
-        : transactionData;
 
     const [
         sortBy,
@@ -291,6 +260,13 @@ function Transactions(props: propsIF) {
                 (change) => change.txHash || change.txId,
             ),
         ); // Adjust if using a different unique identifier
+
+        if (transactionsByPool.changes.length === 0) {
+            setFetchedTransactions({
+                dataReceived: true,
+                changes: [],
+            });
+        }
 
         const uniqueChanges = transactionsByPool.changes.filter(
             (change) => !existingChanges.has(change.txHash || change.txId),
@@ -361,14 +337,14 @@ function Transactions(props: propsIF) {
     }, [pagesVisible[0]]);
 
     const oldestTxTime = useMemo(() => {
-        const dataToFilter = transactionData;
+        const dataToFilter = fetchedTransactions.changes;
         return dataToFilter.length > 0
             ? dataToFilter.reduce((min, transaction) => {
                   return transaction.txTime < min ? transaction.txTime : min;
               }, dataToFilter[0].txTime)
             : 0;
     }, [
-        transactionData,
+        fetchedTransactions.changes,
         fetchedTransactions.changes,
         showAllData,
         isAccountView,
@@ -798,6 +774,7 @@ function Transactions(props: propsIF) {
             setDebouncedIsLoading(isLoading);
         }
     }, [isLoading, txDataToDisplay.length]);
+
     const shouldDisplayNoTableData: boolean =
         !debouncedIsLoading &&
         !txDataToDisplay.length &&

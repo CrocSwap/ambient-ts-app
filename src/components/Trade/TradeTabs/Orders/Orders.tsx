@@ -442,11 +442,7 @@ function Orders(props: propsIF) {
                 ? activeAccountLimitOrderData || []
                 : !showAllData
                   ? activeUserLimitOrdersByPool
-                  : //   : limitOrdersByPool.limitOrders.filter(
-                    //         (order) =>
-                    //             order.positionLiq != 0 || order.claimableLiq !== 0,
-                    //     ),
-                    fetchedTransactions.limitOrders,
+                  : fetchedTransactions.limitOrders,
         [
             showAllData,
             isAccountView,
