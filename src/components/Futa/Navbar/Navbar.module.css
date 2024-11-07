@@ -147,3 +147,129 @@
 
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*  */
+
+/* Tabs.module.css */
+
+.tabs {
+    overflow: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+border: 3px solid #5C6F72;
+height: 36px;
+   
+  }
+  
+  /* .tabItem {
+    float: left;
+    margin: 0 0.5em 0 0;
+  } */
+  
+  .tabLink {
+    position: relative;
+    /* background: #ddd; */
+    /* background-image: linear-gradient(to bottom, #fff, #ddd); */
+    background: transparent;
+    /* padding: 0.7em 3.5em; */
+    /* padding: 10px 0; */
+    width: 200px;
+    float: left;
+    text-decoration: none;
+    color: var(--text1, #AACFD1);
+    
+
+    font-family: "Fira Mono";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-transform: uppercase;
+    transition: background 0.3s;
+height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    text-align: center;
+    height: 36px;
+  }
+  
+  .tabLink:hover,
+  .tabLink:hover::after,
+  .tabLink:focus,
+  .tabLink:focus::after {
+    background: #fff;
+  }
+  
+  .tabLink:focus {
+    outline: 0;
+  }
+  
+  .tabLink::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: -0.5em;
+    bottom: 0;
+    width: 3px;
+    background: #5C6F72;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
+    transform: skew(10deg);
+    border-radius: 0 5px 0 0;
+  }
+
+.currentLink::after{
+    content: '';
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: -0.5em;
+    bottom: 0;
+    width: 3px;
+    background: #5C6F72;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
+    transform: skew(10deg);
+    border-radius: 0 5px 0 0;
+}
+  
+  .currentTab a,
+  .currentTab a::after {
+    background: #fff;
+    z-index: 3;
+  }
+
+ 
