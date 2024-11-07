@@ -5,6 +5,7 @@ import {
     memo,
     Dispatch,
     SetStateAction,
+    MutableRefObject
 } from 'react';
 import {
     PositionIF,
@@ -30,6 +31,7 @@ interface propsIF {
     openDetailsModal: () => void;
     openActionModal: () => void;
     setRangeModalAction: Dispatch<SetStateAction<RangeModalAction>>;
+    observedRowRef: MutableRefObject<HTMLDivElement | null> | undefined;
 }
 
 function RangesRow(props: propsIF) {
@@ -42,6 +44,7 @@ function RangesRow(props: propsIF) {
         openDetailsModal,
         openActionModal,
         setRangeModalAction,
+        observedRowRef
     } = props;
     const {
         snackbar: { open: openSnackbar },
@@ -231,6 +234,7 @@ function RangesRow(props: propsIF) {
         tokenValues,
         apyDisplay,
         rangeDisplay,
+        hiddenIDColumn
     } = rangeRowConstants(rangeRowConstantsProps);
 
     return (
@@ -248,7 +252,9 @@ function RangesRow(props: propsIF) {
                 onClick={openDetailsModal}
                 id={positionDomId}
                 ref={currentPositionActive ? activePositionRef : null}
+                data-type='infinite-scroll-row'
             >
+                {hiddenIDColumn}
                 {tableView === 'large' && rankingOrNull}
                 {tableView === 'large' && rangeTimeWithTooltip}
                 {isAccountView && tokenPair}
@@ -266,7 +272,7 @@ function RangesRow(props: propsIF) {
                 {tableView === 'medium' && tokenValues}
                 {apyDisplay}
                 {rangeDisplay}
-                <div data-label='menu'>
+                <div data-label='menu' ref={observedRowRef}>
                     <RangesMenu
                         {...rangeMenuProps}
                         handleWalletLinkClick={handleWalletLinkClick}
