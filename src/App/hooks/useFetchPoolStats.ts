@@ -259,6 +259,7 @@ const useFetchPoolStats = (
     useEffect(() => {
         if (crocEnv && poolPriceDisplayNum) {
             const fetchTokenPrice = async () => {
+                if ((await crocEnv.context).chain.chainId !== chainId) return;
                 const baseTokenPrice =
                     (await cachedFetchTokenPrice(baseAddr, chainId, crocEnv))
                         ?.usdPrice || 0.0;
@@ -303,7 +304,7 @@ const useFetchPoolStats = (
         baseAddr,
         quoteAddr,
         chainId,
-        crocEnv === undefined,
+        crocEnv,
         poolPriceDisplayNum,
         ethMainnetUsdPrice === undefined,
     ]);
