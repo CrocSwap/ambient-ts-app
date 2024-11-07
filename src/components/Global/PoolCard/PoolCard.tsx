@@ -12,7 +12,7 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { AppStateContext } from '../../../contexts';
 
@@ -62,10 +62,6 @@ export default function PoolCard(props: propsIF) {
                 ? (1 / poolPriceDisplay) * quotePrice
                 : poolPriceDisplay * basePrice
             : undefined;
-
-    useEffect(() => {
-        console.log({ poolPrice, spotPrice });
-    }, [poolPrice, spotPrice]);
 
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
