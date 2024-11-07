@@ -59,40 +59,44 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         setSpotPrices(intermediarySpotPrices.prices);
     }, [intermediarySpotPrices]);
 
+    const fetchSpotPrices = async () => {
+        if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+            return;
+        const spotPricePromises = poolData.map((pool) =>
+            cachedQuerySpotPrice(
+                crocEnv,
+                pool.base.address,
+                pool.quote.address,
+                pool.chainId,
+                poolPriceCacheTime,
+            ).catch((error) => {
+                console.error(
+                    `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
+                    error,
+                );
+                return undefined; // Handle the case where fetching spot price fails
+            }),
+        );
+
+        const results = await Promise.all(spotPricePromises);
+        results &&
+            setIntermediarySpotPrices({
+                prices: results,
+                chainId: poolData[0].chainId,
+            });
+    };
+
+    useEffect(() => {
+        fetchSpotPrices();
+    }, [poolPriceCacheTime, poolData]);
+
     useEffect(() => {
         if (!crocEnv) return;
 
         setSpotPrices([]);
 
-        const fetchSpotPrices = async () => {
-            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
-                return;
-            const spotPricePromises = poolData.map((pool) =>
-                cachedQuerySpotPrice(
-                    crocEnv,
-                    pool.base.address,
-                    pool.quote.address,
-                    pool.chainId,
-                    poolPriceCacheTime,
-                ).catch((error) => {
-                    console.error(
-                        `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
-                        error,
-                    );
-                    return undefined; // Handle the case where fetching spot price fails
-                }),
-            );
-
-            const results = await Promise.all(spotPricePromises);
-            results &&
-                setIntermediarySpotPrices({
-                    prices: results,
-                    chainId: poolData[0].chainId,
-                });
-        };
-
         fetchSpotPrices();
-    }, [crocEnv, poolPriceCacheTime, JSON.stringify(poolData)]);
+    }, [crocEnv]);
 
     return (
         <TopPoolContainer flexDirection='column' gap={16}>
