@@ -9,7 +9,7 @@ import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 // import Tokens from '../Tokens/Tokens';
-import styles from './PortfolioTabs.module.css'
+import styles from './PortfolioTabs.module.css';
 // START: Import Local Files
 import {
     getPositionData,
@@ -179,7 +179,6 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 // temporarily skip ENS fetch
-                const skipENSFetch = true;
                 const userLimitOrderStates = json?.data;
                 if (userLimitOrderStates && crocEnv && provider) {
                     Promise.all(
@@ -195,7 +194,6 @@ export default function PortfolioTabs(props: propsIF) {
                                     cachedQuerySpotPrice,
                                     cachedTokenDetails,
                                     cachedEnsResolve,
-                                    skipENSFetch,
                                 );
                             },
                         ),
@@ -220,7 +218,7 @@ export default function PortfolioTabs(props: propsIF) {
                 tokenList: tokens.tokenUniv,
                 user: accountToSearch,
                 chainId: chainId,
-                n: 200, // fetch last 200 changes,
+                n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
                 graphCacheUrl: activeNetwork.graphCacheUrl,
                 provider,
@@ -340,6 +338,7 @@ export default function PortfolioTabs(props: propsIF) {
         changesInSelectedCandle: undefined,
         isAccountView: true,
         fullLayoutActive: fullLayoutActive,
+        accountAddress: resolvedAddress
     };
 
     // Props for <Orders/> React Element
@@ -450,15 +449,21 @@ export default function PortfolioTabs(props: propsIF) {
                         key={tab.label}
                         onClick={() => setActiveTab(tab.label)}
                         style={{
-                            color: tab.label === activeTab ? 'var(--accent1)' : 'var(--text2)',
-                            borderBottom: tab.label === activeTab ? '1px solid var(--accent1)' : '1px solid transparent'
+                            color:
+                                tab.label === activeTab
+                                    ? 'var(--accent1)'
+                                    : 'var(--text2)',
+                            borderBottom:
+                                tab.label === activeTab
+                                    ? '1px solid var(--accent1)'
+                                    : '1px solid transparent',
                         }}
                     >
                         <span className={styles.tabLabel}>{tab.label}</span>
                     </button>
                 ))}
             </div>
-            <div className={styles.tabContent} style={{height: '100%'}}>
+            <div className={styles.tabContent} style={{ height: '100%' }}>
                 {renderTabContent()}
             </div>
         </div>
