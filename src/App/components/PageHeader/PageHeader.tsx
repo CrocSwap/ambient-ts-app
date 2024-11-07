@@ -36,7 +36,7 @@ import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
+// import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 import styles from './PageHeader.module.css';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 
@@ -46,7 +46,7 @@ const PageHeader = function () {
         setCrocEnv,
         chainData: { chainId, poolIndex: poolId },
     } = useContext(CrocEnvContext);
-    const { headerImage } = useContext<BrandContextIF>(BrandContext);
+    // const { headerImage } = useContext<BrandContextIF>(BrandContext);
 
     const {
         walletModal: { open: openWalletModal },
@@ -424,13 +424,14 @@ const PageHeader = function () {
                             appHeaderDropdown.setIsActive(false);
                         }
                     }}
+                    className={styles.left_side}
                 >
                     <Link
                         to='/'
                         className={styles.logoContainer}
                         aria-label='Home'
                     >
-                        {desktopScreen ? (
+                        {/* {desktopScreen ? (
                             <img src={headerImage} alt='ambient' />
                         ) : (
                             <img
@@ -439,10 +440,16 @@ const PageHeader = function () {
                                     alt='ambient'
                                     width='70px'
                             />
-                        )}
+                        )} */}
+                         <img
+                                className={styles.logoText}
+                                src={logo}
+                                    alt='ambient'
+                                    width='60px'
+                            />
                     </Link>
-                </div>
                 {routeDisplay}
+                </div>
                 <div className={styles.rightSide}>
                     {show ? (
                         <div className={styles.tradeNowDiv}>

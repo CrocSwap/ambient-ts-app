@@ -257,6 +257,18 @@ export default function NetworkSelector(props: propsIF) {
             </motion.li>
         ) : null,
     );
+    function truncate(str: string, maxLength: number): string {
+        if (str.length <= maxLength) {
+          return str;
+        } else {
+          const suffix = '...';
+          return maxLength > suffix.length
+            ? str.slice(0, maxLength - suffix.length) + suffix
+            : str.slice(0, maxLength);
+        }
+      }
+      
+      
 
     return (
         <div
@@ -270,7 +282,7 @@ export default function NetworkSelector(props: propsIF) {
                     marginTop={'50px'}
                     marginRight={smallScreen ? '70px' : ''}
                     titleWidth={'80px'}
-                    title={lookupChain(chainId).displayName}
+                    title={truncate(lookupChain(chainId).displayName, 2)}
                     expandable={networks.length > 1}
                     logo={
                         lookupChain(chainId)
