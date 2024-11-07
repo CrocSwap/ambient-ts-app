@@ -150,6 +150,12 @@ export const orderRowConstants = (props: propsIF) => {
         </RowItem>
     );
 
+    const hiddenIDColumn = (
+        <RowItem hover data-label='hidden-id' role='button' style={{display: 'none'}} tabIndex={0}>
+             <span>{posHash}</span>
+        </RowItem>
+    );
+
     const ValueWithTooltip = (
         <RowItem
             justifyContent='flex-end'
@@ -517,5 +523,6 @@ export const orderRowConstants = (props: propsIF) => {
         sideTypeColumn,
         tokensColumn,
         statusDisplay,
+        hiddenIDColumn
     };
 };
