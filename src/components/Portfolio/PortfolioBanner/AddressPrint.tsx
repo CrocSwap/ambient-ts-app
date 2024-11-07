@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+
 interface propsIF {
     address?: string;
 }
 
 export default function AddressPrint(props: propsIF) {
-    const address =
-        props.address ?? '0x0000000000000000000000000000000000000000';
+    const address = props.address ?? '0x0000000000000000000000000000000000000000';
 
     const [paths, setPaths] = useState<
         { path: string | undefined; opacity: number; id: string }[]
     >([]);
+    const containerRef = useRef<SVGSVGElement | null>(null);
+    const [containerWidth, setContainerWidth] = useState(1825); // Default width
 
     const hexValues = address
         .slice(2)
@@ -22,19 +24,36 @@ export default function AddressPrint(props: propsIF) {
 
     const yMin = 0;
     const yMax = 255;
-    const width = 1825;
     const height = 136;
-    const xSpacing = width / (hexValues?.length || 1);
-
     const yRange = yMax - yMin; // Range of y values
     const yScale = (height - 20) / yRange; // Padding for edges
-
     const middleY = height / 2;
 
     const color = '#7371FC';
 
     useEffect(() => {
+        const resizeObserver = new ResizeObserver((entries) => {
+            if (entries[0]) {
+                const newWidth = entries[0].contentRect.width;
+                setContainerWidth(newWidth);
+            }
+        });
+
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        return () => {
+            if (containerRef.current) {
+                resizeObserver.unobserve(containerRef.current);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
         const generatePaths = () => {
+            const xSpacing = containerWidth / (hexValues?.length || 1);
+
             return Array.from({ length: numLines }, (_, lineIndex) => {
                 const points = hexValues?.map((value, index) => {
                     const x = index * xSpacing;
@@ -101,10 +120,15 @@ export default function AddressPrint(props: propsIF) {
 
         const generatedPaths = generatePaths();
         setPaths(generatedPaths);
-    }, [address]); // Only depend on address
+    }, [address, containerWidth]); // Depend on address and container width
 
     return (
-        <svg width={'100%'} height={'100%'} style={{ position: 'absolute', cursor: 'default', pointerEvents: 'none',  overflow: 'hidden'}}>
+        <svg
+            ref={containerRef}
+            width={'100%'}
+            height={'100%'}
+            style={{ position: 'absolute', cursor: 'default', pointerEvents: 'none', overflow: 'hidden' }}
+        >
             <defs>
                 {Array.from({ length: numLines }, (_, index) => (
                     <linearGradient
