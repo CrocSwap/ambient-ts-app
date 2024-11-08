@@ -300,11 +300,25 @@ function Orders(props: propsIF) {
 
     useEffect(() => {
         
+        console.log('>>> pageDataCountShouldReset', pageDataCountShouldReset)
+        console.log('>>> pageDataCountRef.current?.pair', pageDataCountRef.current?.pair)
+        console.log('>>> getCurrentDataPair()', getCurrentDataPair())
+        console.log('>>> fetchedTransactions.limitOrders.length', fetchedTransactions.limitOrders.length)
+        console.log('>>> iffcheck', pageDataCountShouldReset && pageDataCountRef.current?.pair !== getCurrentDataPair() && fetchedTransactions.limitOrders.length > 0)
+
+
+
         if(pageDataCountShouldReset && pageDataCountRef.current?.pair !== getCurrentDataPair() && fetchedTransactions.limitOrders.length > 0){
             setPagesVisible([0, 1]);
             setPageDataCount(getInitialDataPageCounts());
             setPageDataCountShouldReset(false);
         }
+        
+        if(pageDataCountRef.current?.counts[0] == 0 && fetchedTransactions.limitOrders.length > 0){
+            setPageDataCount(getInitialDataPageCounts());
+            console.log('for initial case')
+        }
+
     }, [fetchedTransactions])
 
 
@@ -522,6 +536,8 @@ function Orders(props: propsIF) {
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits, sortData] =
         useSortedLimits('time', limitOrderData);
+
+        console.log(sortedLimits)
 
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {

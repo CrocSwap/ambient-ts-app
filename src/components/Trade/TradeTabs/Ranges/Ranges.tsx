@@ -429,6 +429,10 @@ useEffect(() => {
         setInfiniteScrollLock(true);
     }
 
+    if(pageDataCountRef.current?.counts[0] == 0 && fetchedTransactions.positions.length > 0){
+        setPageDataCount(getInitialDataPageCounts());
+    }
+
     if(fetchedTransactionsRef.current && fetchedTransactionsRef.current.positions.length < 40){
         if(infiniteScrollLockRef.current){
             addMoreData(true);
