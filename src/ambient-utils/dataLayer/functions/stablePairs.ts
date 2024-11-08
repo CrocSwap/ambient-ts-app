@@ -47,13 +47,13 @@ import {
 
 //       any sort of specific guaranteed relation between the tokens.
 export function isStablePair(addr1: string, addr2: string): boolean {
-    return isStableToken(addr1) && isStableToken(addr2);
+    return isUsdStableToken(addr1) && isUsdStableToken(addr2);
 }
 
 // @return true if the token represents a USD-based stablecoin
 // NOTE: Decision of whether a token counts as stable or not is arbitrary and just at the
 //       discretion of the app authors
-export function isStableToken(addr: string): boolean {
+export function isUsdStableToken(addr: string): boolean {
     return STABLE_USD_TOKENS.includes(addr.toLowerCase());
 }
 

@@ -6,7 +6,7 @@ import {
     getFormattedNumber,
     isETHPair,
     isBtcPair,
-    isStableToken,
+    isUsdStableToken,
     isWbtcToken,
     uriToHttp,
 } from '../../../ambient-utils/dataLayer';
@@ -45,9 +45,9 @@ export default function PoolCard(props: propsIF) {
         quotePrice,
     } = poolData;
 
-    const denomTokenIsStableToken = shouldInvertDisplay
-        ? isStableToken(pool.quote.address)
-        : isStableToken(pool.base.address);
+    const denomTokenisUsdStableToken = shouldInvertDisplay
+        ? isUsdStableToken(pool.quote.address)
+        : isUsdStableToken(pool.base.address);
 
     const denomTokenIsWBTCToken = shouldInvertDisplay
         ? isWbtcToken(pool.quote.address)
@@ -65,7 +65,7 @@ export default function PoolCard(props: propsIF) {
 
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
-            {isHovered || denomTokenIsStableToken
+            {isHovered || denomTokenisUsdStableToken
                 ? denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
                     ? `${
                           usdPrice
