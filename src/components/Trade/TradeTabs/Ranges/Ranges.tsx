@@ -181,6 +181,25 @@ useEffect(() => {
     setShowInfiniteScroll(!isAccountView && showAllData);
 }, [isAccountView, showAllData]);
 
+const [elID, setElID] = useState<string>(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
+const elIDRef = useRef<string>(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
+elIDRef.current = elID;
+
+const controllerRef = useRef<AbortController>( new AbortController());
+
+const isAliveRef = useRef<boolean>(true);
+isAliveRef.current = true;
+
+useEffect(() => {
+    return () => {
+        console.log(setElID)
+        console.log('>>> kill', elIDRef.current)
+        isAliveRef.current = false;
+        controllerRef.current.abort();
+    }
+}, [])
+
+
 
 
 
@@ -243,6 +262,10 @@ const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
 const [pageDataCount, setPageDataCount] = useState<PageDataCountIF>(getInitialDataPageCounts());
 const pageDataCountRef = useRef<PageDataCountIF>();
 pageDataCountRef.current = pageDataCount;
+
+const [lastOldestTimeParam, setLastOldestTimeParam] = useState<number>(-1);
+const lastOldestTimeParamRef = useRef<number>(lastOldestTimeParam);
+lastOldestTimeParamRef.current = lastOldestTimeParam;
 
 const getIndexForPages = (start: boolean) => {
     const pageDataCountVal = (pageDataCountRef.current ? pageDataCountRef.current : pageDataCount).counts;
@@ -389,13 +412,26 @@ useEffect(() => {
         setInfiniteScrollLock(false);
     }
 
+    console.log('fetching data', tokenList, activeNetwork, fetchPoolPositions)
+
     
 }, [fetchedTransactions])
 
 
 
 
+
+// const fetchNewData = async(OLDEST_TIME:number, signal: AbortSignal):Promise<PositionIF[]> => {
 const fetchNewData = async(OLDEST_TIME:number):Promise<PositionIF[]> => {
+
+    console.log('>>>fetching data', OLDEST_TIME)
+
+    // return new Promise((resolve) => {
+    //     setTimeout(() => {
+    //         resolve([])
+    //     }, 1000)
+    // })
+
     return new Promise(resolve => {
         if(!crocEnv || !provider) resolve([]);
         else{
@@ -461,6 +497,7 @@ const getOldestTime = (data: PositionIF[]):number => {
 
 
 const addMoreData = async(byPassIncrementPage?: boolean) => {
+    console.log('>>> addMoreData')
         setMoreDataLoading(true);
             const targetCount = 30;
             let addedDataCount = 0;
@@ -468,8 +505,24 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
             const newTxData: PositionIF[] = [];
             let oldestTimeParam = oldestTxTime;
             while((addedDataCount < targetCount)){
+
+                if(!isAliveRef.current){
+                    console.log('>>> '  + elIDRef.current + ' not alive')
+                    setMoreDataLoading(false);
+                    return;
+                }
+
+                console.log('>>> '+ elIDRef.current + ' ', extraRequestCreditRef.current, isAliveRef.current)
+                console.log('lastOldestTimeParam', lastOldestTimeParamRef.current, 'oldestTimeParam', oldestTimeParam)
+                if(lastOldestTimeParamRef.current === oldestTimeParam){
+                    console.log('>>> already fetched with this ts')
+                    break;
+                }
                 // fetch data
+                console.log('fetching data', oldestTimeParam)
+                // let dirtyData = await fetchNewData(oldestTimeParam, controllerRef.current.signal);
                 let dirtyData = await fetchNewData(oldestTimeParam);
+                setLastOldestTimeParam(oldestTimeParam);
                 const oldestTimeTemp = getOldestTime(dirtyData);
                 oldestTimeParam = oldestTimeTemp < oldestTimeParam ? oldestTimeTemp : oldestTimeParam;
                 
@@ -477,9 +530,8 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
 
                 if (dirtyData.length == 0){
                     const creditVal = extraRequestCreditRef.current !== undefined ? extraRequestCreditRef.current : extraRequestCredit;
-                    console.log('extra req credit', creditVal, ' oldest time', oldestTimeParam)
                     if(creditVal > 0){
-                        console.log('setting into' , creditVal - 1)
+                        console.log('>>> ' + elIDRef.current +  ' setting into' , creditVal - 1)
                         setExtraRequestCredit(creditVal - 1);
                         continue;
                     }
@@ -528,9 +580,12 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                     };
                 })
             }else{
+                console.log('>>> no more data')
                 setMoreDataAvailable(false);
+                setMoreDataLoading(false);
             }
 
+            console.log('>>> setting more data loading to false')
             setMoreDataLoading(false);
 
 };
@@ -1301,6 +1356,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
             }}
             >
             <div>{headerColumnsDisplay}</div>
+            <div key={elIDRef.current} style={{position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div>
 
             <div
                 style={{ flex: 1, overflow: 'auto' }}
