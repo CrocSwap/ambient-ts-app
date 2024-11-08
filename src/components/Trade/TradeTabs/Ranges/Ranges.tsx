@@ -303,8 +303,6 @@ const getIndexForPages = (start: boolean) => {
         for(let i = 0 ; i <= pagesVisible[1]; i++){
             ret += pageDataCountVal[i];
         }
-        // ret -= 1;
-        ret;
     }
 
     return ret;
@@ -654,9 +652,11 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
             // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const sortedLimitDataToDisplay = useMemo<PositionIF[]>(() => {
 
+        const uniqueSortedPositions = getUniqueSortedPositions(sortedPositions);
+
         return isAccountView
-            ? getUniqueSortedPositions(sortedPositions)
-            : getUniqueSortedPositions(sortedPositions).slice(
+            ? uniqueSortedPositions
+            : uniqueSortedPositions.slice(
                     getIndexForPages(true),
                     getIndexForPages(false)
                 );
