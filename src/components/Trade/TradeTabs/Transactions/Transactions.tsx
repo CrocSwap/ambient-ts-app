@@ -31,10 +31,7 @@ import {
     ChartContext,
     ChartContextIF,
 } from '../../../../contexts/ChartContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
     DataLoadingContext,
     DataLoadingContextIF,
@@ -97,7 +94,6 @@ function Transactions(props: propsIF) {
     } = props;
 
     const {
-        activeNetwork: { graphCacheUrl, chainId, poolIndex },
         server: { isEnabled: isServerEnabled },
     } = useContext<AppStateContextIF>(AppStateContext);
     const { isCandleSelected } = useContext<CandleContextIF>(CandleContext);
@@ -108,7 +104,10 @@ function Transactions(props: propsIF) {
         cachedEnsResolve,
     } = useContext(CachedDataContext);
     const { chartSettings } = useContext<ChartContextIF>(ChartContext);
-    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const {
+        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+    } = useContext(AppStateContext);
 
     const { setOutsideControl, showAllData: showAllDataSelection } =
         useContext<TradeTableContextIF>(TradeTableContext);
@@ -227,13 +226,44 @@ function Transactions(props: propsIF) {
         }
     }, [activeAccountTransactionData]);
 
-    const txDataToDisplay: TransactionIF[] = useMemo(
+    useEffect(() => {
+        // clear fetched transactions when switching pools
+        if (transactionsByPool.changes.length === 0) {
+            setFetchedTransactions({
+                dataReceived: true,
+                changes: [],
+            });
+        }
+    }, [transactionsByPool.changes]);
+
+    // const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
+    // useEffect(() => {
+    //     setShowInfiniteScroll(!isAccountView && showAllData);
+    // }, [isAccountView, showAllData]);
+
+    // ----------------------------------------------------------------------------------------------
+
+    const transactionData = useMemo<TransactionIF[]>(
         () =>
-            isCandleSelected
-                ? candleTransactionData
-                : fetchedTransactions.changes,
-        [isCandleSelected, candleTransactionData, fetchedTransactions.changes],
+            isAccountView
+                ? // ? activeAccountTransactionData || []
+                  fetchedTransactions.changes
+                : !showAllData
+                  ? fetchedTransactions.changes
+                  : fetchedTransactions.changes,
+        [
+            activeAccountTransactionData,
+            userTransactionsByPool,
+            transactionsByPool,
+            showAllData,
+            fetchedTransactions,
+            isAccountView,
+        ],
     );
+
+    const txDataToDisplay: TransactionIF[] = isCandleSelected
+        ? candleTransactionData
+        : transactionData;
 
     const [
         sortBy,
@@ -260,13 +290,6 @@ function Transactions(props: propsIF) {
                 (change) => change.txHash || change.txId,
             ),
         ); // Adjust if using a different unique identifier
-
-        if (transactionsByPool.changes.length === 0) {
-            setFetchedTransactions({
-                dataReceived: true,
-                changes: [],
-            });
-        }
 
         const uniqueChanges = transactionsByPool.changes.filter(
             (change) => !existingChanges.has(change.txHash || change.txId),
@@ -337,14 +360,14 @@ function Transactions(props: propsIF) {
     }, [pagesVisible[0]]);
 
     const oldestTxTime = useMemo(() => {
-        const dataToFilter = fetchedTransactions.changes;
+        const dataToFilter = transactionData;
         return dataToFilter.length > 0
             ? dataToFilter.reduce((min, transaction) => {
                   return transaction.txTime < min ? transaction.txTime : min;
               }, dataToFilter[0].txTime)
             : 0;
     }, [
-        fetchedTransactions.changes,
+        transactionData,
         fetchedTransactions.changes,
         showAllData,
         isAccountView,
@@ -758,6 +781,7 @@ function Transactions(props: propsIF) {
             }
             setMoreDataLoading(false);
         }
+        setMoreDataLoading(false);
     };
 
     const [debouncedIsLoading, setDebouncedIsLoading] = useState<boolean>(true);
@@ -774,7 +798,6 @@ function Transactions(props: propsIF) {
             setDebouncedIsLoading(isLoading);
         }
     }, [isLoading, txDataToDisplay.length]);
-
     const shouldDisplayNoTableData: boolean =
         !debouncedIsLoading &&
         !txDataToDisplay.length &&
