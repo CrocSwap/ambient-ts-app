@@ -74,6 +74,7 @@ export const useAppChain = (): {
     // memoized and validated chain ID from the connected wallet
     const [chainInWalletValidated, setChainInWalletValidated] = useState<string|null>(getChainFromWallet());
     const [x, setX] = useState<boolean>(true);
+    false && setX;
     useEffect(() => {
         const incomingChainFromWallet: string | null = getChainFromWallet();
         if (incomingChainFromWallet) {
@@ -132,6 +133,7 @@ export const useAppChain = (): {
                             while (templateURL.includes('/')) {
                                 templateURL = templateURL.substring(1);
                             }
+                            console.log('reloading 4');
                             linkGenCurrent.navigate(templateURL);
                         } else {
                             if (
@@ -143,10 +145,12 @@ export const useAppChain = (): {
                                 );
                             } else if (pathname.includes('chain')) {
                                 if (!ignoreFirst) {
+                                    console.log('reloading 1');
                                     linkGenCurrent.navigate(
                                         `chain=${incomingChainFromWallet}`,
                                     );
                                 } else {
+                                    console.log('reloading 2');
                                     setIgnoreFirst(false);
                                     if (chainInURLValidated)
                                         switchNetwork(
@@ -166,19 +170,17 @@ export const useAppChain = (): {
                                     activeNetwork.chainId !=
                                     incomingChainFromWallet
                                 ) {
-                                    // !IMPORTANT:  not this one
-                                    // alert('wow!');
-                                    // console.log('wow');
                                     window.location.reload();
                                 }
                             } else {
+                                console.log('reloading 3');
                                 linkGenCurrent.navigate();
                             }
                         }
                         if (activeNetwork.chainId != incomingChainFromWallet) {
-                            // // !IMPORTANT:  not this one
-                            // window.location.reload();
-                            setX(!x);
+                            setActiveNetwork(
+                                findNetworkData(incomingChainFromWallet),
+                            );
                         } else {
                             setIgnoreFirst(false);
                         }
@@ -242,12 +244,14 @@ export const useAppChain = (): {
         } else if (linkGenCurrent.currentPage === 'swap') {
             linkGenSwap.navigate(`chain=${network.chainId}`);
         } else if (pathname.includes('chain')) {
+            console.log('navigating 6');
             linkGenCurrent.navigate(`chain=${network.chainId}`);
         } else if (isPathUserAddress || isPathUserXpOrLeaderboard) {
             // this one is specific to user account pages
             // !IMPORTANT:  not this one
             window.location.reload();
         } else {
+            console.log('navigating 5');
             linkGenCurrent.navigate();
         }
         // this one seems to be necessary for chain switching, when disabled
