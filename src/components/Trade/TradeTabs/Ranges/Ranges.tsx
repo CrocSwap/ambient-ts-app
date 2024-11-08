@@ -662,6 +662,8 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                 );
     }, [sortedPositions, pagesVisible,  isAccountView]);
 
+    console.log(sortedLimitDataToDisplay)
+
     // -----------------------------------------------------------------------------------------------------------------------------
 
 
@@ -1291,7 +1293,6 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                         />
                     )
                     :
-                    
                     (<TableRows
                         type='Range'
                         data={unindexedUpdatedPositions.concat(
@@ -1356,7 +1357,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
             }}
             >
             <div>{headerColumnsDisplay}</div>
-            <div key={elIDRef.current} style={{position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div>
+            {/* <div key={elIDRef.current} style={{position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div> */}
 
             <div
                 style={{ flex: 1, overflow: 'auto' }}
