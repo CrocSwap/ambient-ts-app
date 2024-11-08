@@ -181,10 +181,7 @@ useEffect(() => {
     setShowInfiniteScroll(!isAccountView && showAllData);
 }, [isAccountView, showAllData]);
 
-const [elID, setElID] = useState<string>(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
 const elIDRef = useRef<string>(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
-elIDRef.current = elID;
-
 const controllerRef = useRef<AbortController>( new AbortController());
 
 const isAliveRef = useRef<boolean>(true);
@@ -192,7 +189,6 @@ isAliveRef.current = true;
 
 useEffect(() => {
     return () => {
-        console.log(setElID)
         console.log('>>> kill', elIDRef.current)
         isAliveRef.current = false;
         controllerRef.current.abort();
@@ -215,6 +211,7 @@ useEffect(() => {
 }, [selectedBaseAddress + selectedQuoteAddress]);
 
 const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
+const PAGE_COUNT_DIVIDE_TRESHOLD = 20;
 
 const getInitialDataPageCounts = () => {
     
@@ -223,7 +220,7 @@ const getInitialDataPageCounts = () => {
     if(data.length == 0){
         counts = [0, 0];
     }
-    else if(data.length < 20){
+    else if(data.length < PAGE_COUNT_DIVIDE_TRESHOLD){
         counts = [data.length, 0];
     }
     else if(data.length / dataPerPage < 2){
@@ -245,7 +242,7 @@ const getInitialDataPageCounts = () => {
 const updateInitialDataPageCounts = (dataCount:number) => {
 
     
-    if(dataCount < 20){
+    if(dataCount < PAGE_COUNT_DIVIDE_TRESHOLD){
         return {
             pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
             counts: [dataCount, 0]
@@ -292,8 +289,6 @@ const getIndexForPages = (start: boolean) => {
         // ret -= 1;
         ret;
     }
-
-    console.log(' >>> getIndexForPages', start, ret)
 
     return ret;
 }
@@ -416,14 +411,14 @@ useEffect(() => {
         setInfiniteScrollLock(true);
     }
 
-    if(fetchedTransactionsRef.current && fetchedTransactionsRef.current.positions.length < 40){
-        if(infiniteScrollLockRef.current){
-            addMoreData(true);
-        }
-    }
-    else{
-        setInfiniteScrollLock(false);
-    }
+    // if(fetchedTransactionsRef.current && fetchedTransactionsRef.current.positions.length < 40){
+    //     if(infiniteScrollLockRef.current){
+    //         addMoreData(true);
+    //     }
+    // }
+    // else{
+    //     setInfiniteScrollLock(false);
+    // }
 
 }, [fetchedTransactions])
 
@@ -433,14 +428,6 @@ useEffect(() => {
 
 // const fetchNewData = async(OLDEST_TIME:number, signal: AbortSignal):Promise<PositionIF[]> => {
 const fetchNewData = async(OLDEST_TIME:number):Promise<PositionIF[]> => {
-
-    console.log('>>>fetching data', OLDEST_TIME)
-
-    // return new Promise((resolve) => {
-    //     setTimeout(() => {
-    //         resolve([])
-    //     }, 1000)
-    // })
 
     return new Promise(resolve => {
         if(!crocEnv || !provider) resolve([]);
@@ -475,7 +462,6 @@ const fetchNewData = async(OLDEST_TIME:number):Promise<PositionIF[]> => {
 
 const dataDiffCheck = (dirty: PositionIF[]):PositionIF[] => {
     const txs = fetchedTransactionsRef.current ? fetchedTransactionsRef.current.positions : fetchedTransactions.positions;
-
     const existingChanges = new Set(
         txs.map(
             (change) => change.positionId,
@@ -488,7 +474,6 @@ const dataDiffCheck = (dirty: PositionIF[]):PositionIF[] => {
                 change.positionId,
             ),
     );
-
     return ret;
     
 }
@@ -507,7 +492,6 @@ const getOldestTime = (data: PositionIF[]):number => {
 
 
 const addMoreData = async(byPassIncrementPage?: boolean) => {
-    console.log('>>> addMoreData')
         setMoreDataLoading(true);
             const targetCount = 30;
             let addedDataCount = 0;
@@ -517,19 +501,15 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
             while((addedDataCount < targetCount)){
 
                 if(!isAliveRef.current){
-                    console.log('>>> '  + elIDRef.current + ' not alive')
                     setMoreDataLoading(false);
                     return;
                 }
 
-                console.log('>>> '+ elIDRef.current + ' ', extraRequestCreditRef.current, isAliveRef.current)
-                console.log('lastOldestTimeParam', lastOldestTimeParamRef.current, 'oldestTimeParam', oldestTimeParam)
                 if(lastOldestTimeParamRef.current === oldestTimeParam){
                     console.log( elIDRef.current + ' >>> [ALREADY FETCHED] already fetched with this ts')
                     break;
                 }
                 // fetch data
-                console.log('fetching data', oldestTimeParam)
                 // let dirtyData = await fetchNewData(oldestTimeParam, controllerRef.current.signal);
                 let dirtyData = await fetchNewData(oldestTimeParam);
                 setLastOldestTimeParam(oldestTimeParam);
@@ -541,7 +521,6 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                 if (dirtyData.length == 0){
                     const creditVal = extraRequestCreditRef.current !== undefined ? extraRequestCreditRef.current : extraRequestCredit;
                     if(creditVal > 0){
-                        console.log('>>> ' + elIDRef.current +  ' setting into' , creditVal - 1)
                         setExtraRequestCredit(creditVal - 1);
                         continue;
                     }
@@ -578,6 +557,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                         prev[1] + 1,
                     ]);
                     setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
+                    setMoreDataAvailable(true);
                 }
                  // new data found
                  setFetchedTransactions((prev) => {
@@ -662,17 +642,37 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions, sortData] =
         useSortedPositions('time', rangeData);
 
+
+    const getUniqueSortedPositions = (positions: PositionIF[]): PositionIF[] => {
+        const addedPositions = new Set();
+
+        const ret: PositionIF[] = [];
+
+        positions.forEach(e=>{
+            if(!addedPositions.has(e.positionId)){
+                ret.push(e);
+                addedPositions.add(e.positionId);
+            }
+        })
+
+        return ret;
+    }
+
             // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const sortedLimitDataToDisplay = useMemo<PositionIF[]>(() => {
 
         return isAccountView
-            ? sortedPositions
-            : sortedPositions.slice(
+            ? getUniqueSortedPositions(sortedPositions)
+            : getUniqueSortedPositions(sortedPositions).slice(
                     getIndexForPages(true),
                     getIndexForPages(false)
                 );
     }, [sortedPositions, pagesVisible,  isAccountView]);
 
+
+    useEffect(() => {
+        console.log('>>> sortedLimitDataToDisplay', sortedLimitDataToDisplay)
+    }, [sortedLimitDataToDisplay])
     // -----------------------------------------------------------------------------------------------------------------------------
 
 
@@ -1366,7 +1366,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
             }}
             >
             <div>{headerColumnsDisplay}</div>
-            <div key={elIDRef.current} style={{position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div>
+            <div key={elIDRef.current} style={{ display: 'none', position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div>
 
             <div
                 style={{ flex: 1, overflow: 'auto' }}
