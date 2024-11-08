@@ -306,6 +306,8 @@ function Transactions(props: propsIF) {
               );
     }, [sortedTransactions, pagesVisible, isCandleSelected, isAccountView]);
 
+     console.log(sortedTransactions.length)
+
 
     useEffect(() => {
         if(!showAllData) return;
