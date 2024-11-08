@@ -210,7 +210,7 @@ useEffect(() => {
 }, [selectedBaseAddress + selectedQuoteAddress]);
 
 const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
-const PAGE_COUNT_DIVIDE_TRESHOLD = 20;
+const PAGE_COUNT_DIVIDE_THRESHOLD = 20;
 
 
 const getUniqueSortedPositions = (positions: PositionIF[]): PositionIF[] => {
@@ -237,7 +237,7 @@ const getInitialDataPageCounts = () => {
     if(data.length == 0){
         counts = [0, 0];
     }
-    else if(data.length < PAGE_COUNT_DIVIDE_TRESHOLD){
+    else if(data.length < PAGE_COUNT_DIVIDE_THRESHOLD){
         counts = [data.length, 0];
     }
     else if(data.length / dataPerPage < 2){
@@ -259,7 +259,7 @@ const getInitialDataPageCounts = () => {
 const updateInitialDataPageCounts = (dataCount:number) => {
 
     
-    if(dataCount < PAGE_COUNT_DIVIDE_TRESHOLD){
+    if(dataCount < PAGE_COUNT_DIVIDE_THRESHOLD){
         return {
             pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
             counts: [dataCount, 0]
