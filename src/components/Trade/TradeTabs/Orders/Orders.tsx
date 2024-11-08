@@ -534,6 +534,11 @@ function Orders(props: propsIF) {
                 );
     }, [sortedLimits, pagesVisible,  isAccountView]);
 
+    if(sortedLimits.length !== fetchedTransactions.limitOrders.length){
+        console.log('sorted limits diff with fetched txs')
+        console.log(sortedLimits.length, fetchedTransactions.limitOrders.length)
+    }
+
     // -----------------------------------------------------------------------------------------------------------------------------
 
     // TODO: Use these as media width constants
