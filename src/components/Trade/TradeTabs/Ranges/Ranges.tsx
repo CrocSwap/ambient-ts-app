@@ -189,7 +189,6 @@ isAliveRef.current = true;
 
 useEffect(() => {
     return () => {
-        console.log('>>> kill', elIDRef.current)
         isAliveRef.current = false;
         controllerRef.current.abort();
     }
@@ -213,9 +212,27 @@ useEffect(() => {
 const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
 const PAGE_COUNT_DIVIDE_TRESHOLD = 20;
 
+
+const getUniqueSortedPositions = (positions: PositionIF[]): PositionIF[] => {
+    const addedPositions = new Set();
+
+    const ret: PositionIF[] = [];
+
+    positions.forEach(e=>{
+        if(!addedPositions.has(e.positionId)){
+            ret.push(e);
+            addedPositions.add(e.positionId);
+        }
+    })
+
+    return ret;
+}
+
+
 const getInitialDataPageCounts = () => {
+
+    const data = getUniqueSortedPositions(positionsByPool.positions);
     
-    const data = positionsByPool.positions.filter(e=>e.positionLiq !== 0);
     let counts;
     if(data.length == 0){
         counts = [0, 0];
@@ -529,12 +546,6 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                 // check diff
                 const cleanData = dataDiffCheck(dirtyData);
                 if (cleanData.length == 0){
-                    // const creditVal = extraRequestCreditRef.current ? extraRequestCreditRef.current : extraRequestCredit;
-                    // console.log('clean data zero :((', creditVal)
-                    // if(creditVal > 0){
-                    //     setExtraRequestCredit(creditVal - 1);
-                    //     continue;
-                    // }
                     break;
                 }
                 else {
@@ -543,7 +554,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                 }
             }
             if(addedDataCount > 0){
-                console.log('>>> [NEW DATA] added data count', addedDataCount)
+                setMoreDataAvailable(true);
                 if(byPassIncrementPage){
                     const currTxsLen = fetchedTransactionsRef.current ? fetchedTransactionsRef.current.positions.length : fetchedTransactions.positions.length;
                     setPageDataCount(updateInitialDataPageCounts(currTxsLen + addedDataCount));
@@ -557,7 +568,6 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                         prev[1] + 1,
                     ]);
                     setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
-                    setMoreDataAvailable(true);
                 }
                  // new data found
                  setFetchedTransactions((prev) => {
@@ -571,12 +581,10 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                     };
                 })
             }else{
-                console.log('>>> no more data')
                 setMoreDataAvailable(false);
                 setMoreDataLoading(false);
             }
 
-            console.log('>>> setting more data loading to false')
             setMoreDataLoading(false);
 
 };
@@ -643,21 +651,6 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
         useSortedPositions('time', rangeData);
 
 
-    const getUniqueSortedPositions = (positions: PositionIF[]): PositionIF[] => {
-        const addedPositions = new Set();
-
-        const ret: PositionIF[] = [];
-
-        positions.forEach(e=>{
-            if(!addedPositions.has(e.positionId)){
-                ret.push(e);
-                addedPositions.add(e.positionId);
-            }
-        })
-
-        return ret;
-    }
-
             // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const sortedLimitDataToDisplay = useMemo<PositionIF[]>(() => {
 
@@ -669,10 +662,6 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                 );
     }, [sortedPositions, pagesVisible,  isAccountView]);
 
-
-    useEffect(() => {
-        console.log('>>> sortedLimitDataToDisplay', sortedLimitDataToDisplay)
-    }, [sortedLimitDataToDisplay])
     // -----------------------------------------------------------------------------------------------------------------------------
 
 
@@ -1366,7 +1355,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
             }}
             >
             <div>{headerColumnsDisplay}</div>
-            <div key={elIDRef.current} style={{  position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div>
+            {/* <div key={elIDRef.current} style={{  position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div> */}
 
             <div
                 style={{ flex: 1, overflow: 'auto' }}
