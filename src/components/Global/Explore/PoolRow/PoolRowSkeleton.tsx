@@ -2,7 +2,6 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './PoolRow.module.css';
 
 export default function PoolRowSkeleton() {
-    const tempItems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     const desktopView = useMediaQuery('(min-width: 768px)');
 
