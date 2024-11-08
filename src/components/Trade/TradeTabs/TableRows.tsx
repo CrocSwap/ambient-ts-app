@@ -153,8 +153,7 @@ function TableRows({
             <>
                 {(data as PositionIF[]).map((position, idx) => (
                     <RangesRow
-                        // key={idx}
-                        key={position.positionId}
+                        key={idx}
                         position={position}
                         observedRowRef={
                             idx === 0

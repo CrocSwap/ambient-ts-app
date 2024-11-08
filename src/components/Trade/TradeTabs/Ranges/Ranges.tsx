@@ -223,7 +223,10 @@ const getInitialDataPageCounts = () => {
     if(data.length == 0){
         counts = [0, 0];
     }
-    if(data.length / dataPerPage < 2){
+    else if(data.length < 20){
+        counts = [data.length, 0];
+    }
+    else if(data.length / dataPerPage < 2){
         counts = [Math.ceil(data.length / 2), 
             Math.floor(data.length / 2)];
     }
@@ -240,7 +243,15 @@ const getInitialDataPageCounts = () => {
 }
 
 const updateInitialDataPageCounts = (dataCount:number) => {
+
     
+    if(dataCount < 20){
+        return {
+            pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
+            counts: [dataCount, 0]
+        }
+    }
+
     return {
         pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
         counts: [Math.ceil(dataCount / 2), Math.floor(dataCount / 2)]
@@ -278,8 +289,11 @@ const getIndexForPages = (start: boolean) => {
         for(let i = 0 ; i <= pagesVisible[1]; i++){
             ret += pageDataCountVal[i];
         }
-        ret -= 1;
+        // ret -= 1;
+        ret;
     }
+
+    console.log(' >>> getIndexForPages', start, ret)
 
     return ret;
 }
@@ -374,7 +388,6 @@ useEffect(() => {
 
         if (uniqueChanges.length > 0) {
             if(pagesVisible[0] === 0){
-                console.log('>>> setting fetched transactions')
                 setFetchedTransactions((prev) => {
                     return {
                         dataReceived: true,
@@ -412,9 +425,6 @@ useEffect(() => {
         setInfiniteScrollLock(false);
     }
 
-    console.log('fetching data', tokenList, activeNetwork, fetchPoolPositions)
-
-    
 }, [fetchedTransactions])
 
 
@@ -1355,7 +1365,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
             }}
             >
             <div>{headerColumnsDisplay}</div>
-            {/* <div key={elIDRef.current} style={{position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div> */}
+            <div key={elIDRef.current} style={{position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div>
 
             <div
                 style={{ flex: 1, overflow: 'auto' }}
