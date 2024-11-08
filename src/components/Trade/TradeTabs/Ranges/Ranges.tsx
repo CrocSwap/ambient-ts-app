@@ -662,8 +662,6 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                 );
     }, [sortedPositions, pagesVisible,  isAccountView]);
 
-    console.log(sortedLimitDataToDisplay)
-
     // -----------------------------------------------------------------------------------------------------------------------------
 
 
