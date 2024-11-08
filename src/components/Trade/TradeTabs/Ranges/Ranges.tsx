@@ -556,7 +556,9 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                 }
             }
             if(addedDataCount > 0){
-                setMoreDataAvailable(true);
+                setTimeout(()=>{
+                    setMoreDataAvailable(true);
+                }, 2000)
                 if(byPassIncrementPage){
                     const currTxsLen = fetchedTransactionsRef.current ? fetchedTransactionsRef.current.positions.length : fetchedTransactions.positions.length;
                     setPageDataCount(updateInitialDataPageCounts(currTxsLen + addedDataCount));
@@ -583,6 +585,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                     };
                 })
             }else{
+                console.log('>>> no more data', quoteTokenSymbol, addedDataCount)
                 setMoreDataAvailable(false);
                 setMoreDataLoading(false);
             }
