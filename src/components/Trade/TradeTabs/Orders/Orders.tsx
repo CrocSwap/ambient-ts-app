@@ -184,7 +184,6 @@ function Orders(props: propsIF) {
             for(let i = 0 ; i <= pagesVisible[1]; i++){
                 ret += pageDataCountVal[i];
             }
-            ret -= 1;
         }
 
         return ret;
