@@ -34,7 +34,7 @@ export const plumeSepolia: NetworkIF = {
             lookupChain('0x18230').poolIndex,
         ),
         new TopPool(
-            plumeSepoliaETH,
+            plumeSepoliaUSD,
             plumeSepoliaNEV,
             lookupChain('0x18230').poolIndex,
         ),
@@ -46,6 +46,11 @@ export const plumeSepolia: NetworkIF = {
         new TopPool(
             plumeSepoliaUSD,
             plumeSepoliaUSDT,
+            lookupChain('0x18230').poolIndex,
+        ),
+        new TopPool(
+            plumeSepoliaETH,
+            plumeSepoliaNEV,
             lookupChain('0x18230').poolIndex,
         ),
     ],

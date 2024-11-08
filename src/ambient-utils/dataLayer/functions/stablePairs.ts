@@ -122,6 +122,7 @@ export const STABLE_USD_TOKENS = [
     scrollUSDE.address,
     scrollsUSDe.address,
     plumeSepoliaUSDT.address,
+    plumeSepoliaNEV.address,
 ]
     .concat(USDC_TOKENS)
     .map((x) => x.toLowerCase());
