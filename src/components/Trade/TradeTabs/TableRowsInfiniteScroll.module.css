@@ -1,0 +1,86 @@
+
+
+
+@keyframes opaAnim{
+
+    0%, 100%{
+        opacity: 1;
+    }
+
+    50%{
+        opacity: .2;
+    }
+}
+
+@keyframes barAnim{
+    0%, 100%{
+        width: 100%;
+        opacity: 1;
+    }
+    
+    50%{
+        width: 10%;
+        opacity: .2;
+    }
+}
+@keyframes barAnim2{
+    0%{
+        left: -10%;
+        width: 10%;
+        opacity: .3;
+        background-color: var(--accent2);
+    }
+    
+    50%{
+        width: 30%;
+        opacity: 1;
+        background-color: var(--accent1);
+    }
+    
+    100%{
+        width: 10%;
+        left: 120%;
+        opacity: .2;
+        background-color: var(--accent2);
+    }
+}
+
+
+.data_fetching_panel{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* padding: .5rem 1rem; */
+    text-align: center;
+    background-color: var(--dark1);
+    z-index: 4;
+}
+
+.data_fetching_text{
+    opacity: 1;
+    animation: opaAnim ease-in-out 1s infinite;
+    margin-bottom: .5rem;
+
+}
+
+.data_fetching_bar{
+    display: block;
+    height: 2px;
+    background: var(--accent1);
+    animation: barAnim ease-in-out 1s infinite;
+    margin: 0 auto;
+}
+
+.data_fetching_bar2{
+    display: block;
+    width: 10%;
+    height: .2rem;
+    position: absolute;
+    bottom: 0;
+    left: -20%;
+    background: var(--accent1);
+    z-index: 6;
+    animation: barAnim2 ease-in-out 1s infinite;
+}
+
+

@@ -52,6 +52,7 @@ import SINU from './SINU.webp';
 import USDE from './USDe-Black.svg';
 import SUSDE from './SUSDE.svg';
 import NURI from './NURI.svg';
+import SWELL from './SWELL.svg';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -109,4 +110,5 @@ export {
     USDE,
     SUSDE,
     NURI,
+    SWELL,
 };
