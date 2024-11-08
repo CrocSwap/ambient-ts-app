@@ -203,6 +203,9 @@ useEffect(() => {
     setPageDataCountShouldReset(true);
     setExtraPagesAvailable(0);
     setMoreDataAvailable(true);
+    setTimeout(() => {
+        setMoreDataAvailable(true);
+    }, 1000)
     setLastFetchedCount(0);
     setHotTransactions([]);
     setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
@@ -522,7 +525,8 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
 
                 if(lastOldestTimeParamRef.current === oldestTimeParam){
                     console.log( elIDRef.current + ' >>> [ALREADY FETCHED] already fetched with this ts')
-                    break;
+                    setMoreDataLoading(false);
+                    return;
                 }
                 // fetch data
                 // let dirtyData = await fetchNewData(oldestTimeParam, controllerRef.current.signal);
@@ -1355,7 +1359,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
             }}
             >
             <div>{headerColumnsDisplay}</div>
-            {/* <div key={elIDRef.current} style={{  position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div> */}
+            <div key={elIDRef.current} style={{  position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div>
 
             <div
                 style={{ flex: 1, overflow: 'auto' }}
