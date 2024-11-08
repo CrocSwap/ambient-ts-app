@@ -525,7 +525,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                 console.log('>>> '+ elIDRef.current + ' ', extraRequestCreditRef.current, isAliveRef.current)
                 console.log('lastOldestTimeParam', lastOldestTimeParamRef.current, 'oldestTimeParam', oldestTimeParam)
                 if(lastOldestTimeParamRef.current === oldestTimeParam){
-                    console.log('>>> already fetched with this ts')
+                    console.log('>>> [ALREADY FETCHED] already fetched with this ts')
                     break;
                 }
                 // fetch data
@@ -564,6 +564,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                 }
             }
             if(addedDataCount > 0){
+                console.log('>>> [NEW DATA] added data count', addedDataCount)
                 if(byPassIncrementPage){
                     const currTxsLen = fetchedTransactionsRef.current ? fetchedTransactionsRef.current.positions.length : fetchedTransactions.positions.length;
                     setPageDataCount(updateInitialDataPageCounts(currTxsLen + addedDataCount));
