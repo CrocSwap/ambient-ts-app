@@ -268,7 +268,7 @@ export const useProcessRange = (
         position.positionType === 'ambient' ||
         (highDisplayPriceInUsdNum !== undefined &&
             highDisplayPriceInUsdNum > 10 ** 9) // interpret prices > $1 billion as infinity
-            ? '∞'
+            ? '$∞'
             : highDisplayPriceInUsdNum
               ? getFormattedNumber({
                     value: highDisplayPriceInUsdNum,
