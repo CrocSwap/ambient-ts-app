@@ -528,8 +528,6 @@ function Orders(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits, sortData] =
         useSortedLimits('time', limitOrderData);
 
-        console.log(sortedLimits)
-
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
         return isAccountView

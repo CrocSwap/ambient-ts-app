@@ -234,8 +234,8 @@ const getUniqueSortedPositions = (positions: PositionIF[]): PositionIF[] => {
 
 const getInitialDataPageCounts = () => {
 
-    const data = getUniqueSortedPositions(positionsByPool.positions);
-    
+    const data = getUniqueSortedPositions(positionsByPool.positions.filter(e=>e.positionLiq !== 0));
+
     let counts;
     if(data.length == 0){
         counts = [0, 0];
@@ -259,9 +259,9 @@ const getInitialDataPageCounts = () => {
     
 }
 
+
 const updateInitialDataPageCounts = (dataCount:number) => {
 
-    
     if(dataCount < PAGE_COUNT_DIVIDE_THRESHOLD){
         return {
             pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
@@ -297,6 +297,7 @@ lastOldestTimeParamRef.current = lastOldestTimeParam;
 
 const getIndexForPages = (start: boolean) => {
     const pageDataCountVal = (pageDataCountRef.current ? pageDataCountRef.current : pageDataCount).counts;
+    
     let ret = 0;
     if(start){
         for(let i = 0 ; i < pagesVisible[0]; i++){
@@ -360,7 +361,7 @@ const mergePageDataCountValues = (hotTxsCount: number) => {
     setPageDataCount(prev => {
         return {
             pair: prev.pair,
-            counts: newCounts
+            counts: [...newCounts]
         }
     })
 }
@@ -413,6 +414,10 @@ useEffect(() => {
             }
         }
 
+        if(pageDataCount.counts[0] == 0 && positionsByPool.positions.length > 0){
+            setPageDataCount(getInitialDataPageCounts());
+        }
+
         
     }
 }, [positionsByPool]);
@@ -428,23 +433,21 @@ useEffect(() => {
         setPageDataCountShouldReset(false);
         setInfiniteScrollLock(true);
     }
-
-    if(pageDataCountRef.current?.counts[0] == 0 && fetchedTransactions.positions.length > 0){
-        setPageDataCount(getInitialDataPageCounts());
-    }
-
     if(fetchedTransactionsRef.current && fetchedTransactionsRef.current.positions.length < 40){
         if(infiniteScrollLockRef.current){
             addMoreData(true);
         }
     }
+      
+    if(pageDataCountRef.current?.counts[0] == 0 && fetchedTransactionsRef.current && fetchedTransactionsRef.current.positions.length > 0){
+        setPageDataCount(getInitialDataPageCounts());
+    }
+
     else{
         setInfiniteScrollLock(false);
     }
 
 }, [fetchedTransactions])
-
-
 
 
 
@@ -530,6 +533,9 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                 if(lastOldestTimeParamRef.current === oldestTimeParam){
                     console.log( elIDRef.current + ' >>> [ALREADY FETCHED] already fetched with this ts')
                     setMoreDataLoading(false);
+                    setTimeout(()=>{
+                        setMoreDataAvailable(false);
+                    }, 2000)
                     return;
                 }
                 // fetch data
@@ -589,7 +595,6 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                     };
                 })
             }else{
-                console.log('>>> no more data', quoteTokenSymbol, addedDataCount)
                 setMoreDataAvailable(false);
                 setMoreDataLoading(false);
             }
@@ -672,6 +677,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
                     getIndexForPages(false)
                 );
     }, [sortedPositions, pagesVisible,  isAccountView]);
+
 
     // -----------------------------------------------------------------------------------------------------------------------------
 
