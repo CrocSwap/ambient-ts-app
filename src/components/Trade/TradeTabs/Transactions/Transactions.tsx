@@ -818,7 +818,8 @@ function Transactions(props: propsIF) {
                         setMoreDataAvailable(false);
                     }
                     setMoreDataLoading(false);
-            }
+                }
+            setMoreDataLoading(false);
     };
 
 

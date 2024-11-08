@@ -184,7 +184,6 @@ function Orders(props: propsIF) {
             for(let i = 0 ; i <= pagesVisible[1]; i++){
                 ret += pageDataCountVal[i];
             }
-            ret -= 1;
         }
 
         return ret;
@@ -300,12 +299,17 @@ function Orders(props: propsIF) {
 
 
     useEffect(() => {
-        
+
         if(pageDataCountShouldReset && pageDataCountRef.current?.pair !== getCurrentDataPair() && fetchedTransactions.limitOrders.length > 0){
             setPagesVisible([0, 1]);
             setPageDataCount(getInitialDataPageCounts());
             setPageDataCountShouldReset(false);
         }
+        
+        if(pageDataCountRef.current?.counts[0] == 0 && fetchedTransactions.limitOrders.length > 0){
+            setPageDataCount(getInitialDataPageCounts());
+        }
+
     }, [fetchedTransactions])
 
 
