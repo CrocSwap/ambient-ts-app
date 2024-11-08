@@ -82,3 +82,8 @@ export interface TutorialStepIF {
     component? : JSX.Element;
     navigate?: { label: string; path: string };
 }
+
+export interface PageDataCountIF {
+    pair: string;
+    counts: number[];
+}

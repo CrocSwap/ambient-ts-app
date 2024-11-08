@@ -240,31 +240,28 @@ export default function PortfolioBannerAccount(props: propsIF) {
                 {
                     // differential view for small screens
                     // some items only appear when viewing your own page
-                    isSmallScreen && (
-                        <div className={styles.button_bank}>
-                            <div>
+                    useMediaQuery('(max-width: 567px)') && (
+                    <div className={styles.button_bank}>
+                        <div>
+                            <button className={styles.dark_button} onClick={() => {
+                                const linkToNavigateTo: string = (ensName || userAddress)
+                                    ? `/${ensName || userAddress}/xp`
+                                    : resolvedAddressFromContext
+                                    ? `/${resolvedAddressFromContext}/xp`
+                                    : `/${userAddress}/xp`;
+                                navigate(linkToNavigateTo);
+                            }}>
+                                Points
+                            </button>
+                            {
+                            isUserConnected &&
                                 <button
-                                    className={styles.dark_button}
-                                    onClick={() => {
-                                        const linkToNavigateTo: string =
-                                            ensName || userAddress
-                                                ? `/${ensName || userAddress}/xp`
-                                                : resolvedAddressFromContext
-                                                  ? `/${resolvedAddressFromContext}/xp`
-                                                  : `/${userAddress}/xp`;
-                                        navigate(linkToNavigateTo);
-                                    }}
+                                    className={styles.logout_button}
+                                    onClick={() => disconnectUser()}
                                 >
-                                    Points
+                                    Log Out
                                 </button>
-                                {isUserConnected && (
-                                    <button
-                                        className={styles.logout_button}
-                                        onClick={() => disconnectUser()}
-                                    >
-                                        Log Out
-                                    </button>
-                                )}
+                            }
                             </div>
                             {isUserConnected && (
                                 <button

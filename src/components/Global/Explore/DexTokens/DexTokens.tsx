@@ -1,5 +1,4 @@
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
-import Spinner from '../../Spinner/Spinner';
 import styles from './DexTokens.module.css';
 import { useSortedDexTokens, sortedDexTokensIF } from '../useSortedDexTokens';
 import { getDefaultPairForChain } from '../../../../ambient-utils/constants';
@@ -20,6 +19,7 @@ import ExploreToggle from '../ExploreToggle/ExploreToggle';
 import TokenRow from '../TokenRow/TokenRow';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
 import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
+import TokenRowSkeleton from '../TokenRow/TokenRowSkeleton';
 
 export type columnSlugs =
     | 'token'
@@ -174,6 +174,12 @@ function DexTokens(props: propsIF) {
         </div>
     );
 
+    const tempItems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    const skeletonDisplay = tempItems.map((item, idx) => (
+        <TokenRowSkeleton key={idx} />
+    ))
+
     return (
         <div className={styles.mainContainer}
         style={{ marginBottom: isPWA ? '0' : '50px' }}
@@ -225,9 +231,7 @@ function DexTokens(props: propsIF) {
                 ) : searchQuery ? (
                     noResults
                 ) : (
-                    <div className={styles.spinner_container}>
-                        <Spinner size={100} bg='var(--dark1)' centered />
-                    </div>
+                    skeletonDisplay
                 )}
             </div>
         </div>

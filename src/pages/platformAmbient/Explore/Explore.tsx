@@ -12,8 +12,11 @@ import { LuRefreshCcw, LuSearch } from 'react-icons/lu';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
 import DexTokens from '../../../components/Global/Explore/DexTokens/DexTokens';
-import { excludedTokenAddressesLowercase } from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts';
+import {
+    excludedTokenAddressesLowercase,
+    hiddenTokens,
+} from '../../../ambient-utils/constants';
 
 interface ExploreIF {
     view: 'pools' | 'tokens';
@@ -151,18 +154,36 @@ export default function Explore(props: ExploreIF) {
 
     const filteredTokens =
         searchQueryToken.length >= 2
-            ? topTokensOnchain.data.filter((token) => {
-                  const lowerCaseQuery = searchQueryToken.toLowerCase();
-                  return (
-                      token.tokenMeta?.name
-                          .toLowerCase()
-                          .includes(lowerCaseQuery) ||
-                      token.tokenMeta?.symbol
-                          .toLowerCase()
-                          .includes(lowerCaseQuery)
+            ? topTokensOnchain.data
+                  .filter((token) => {
+                      const lowerCaseQuery = searchQueryToken.toLowerCase();
+                      return (
+                          token.tokenMeta?.name
+                              .toLowerCase()
+                              .includes(lowerCaseQuery) ||
+                          token.tokenMeta?.symbol
+                              .toLowerCase()
+                              .includes(lowerCaseQuery)
+                      );
+                  })
+                  .filter((t) => {
+                      // check if token is in exclusion list
+                      return !hiddenTokens.some(
+                          (excluded) =>
+                              excluded.address.toLowerCase() ===
+                                  t.tokenAddr.toLowerCase() &&
+                              excluded.chainId === t.tokenMeta?.chainId,
+                      );
+                  })
+            : topTokensOnchain.data.filter((t) => {
+                  // check if token is in exclusion list
+                  return !hiddenTokens.some(
+                      (excluded) =>
+                          excluded.address.toLowerCase() ===
+                              t.tokenAddr.toLowerCase() &&
+                          excluded.chainId === t.tokenMeta?.chainId,
                   );
-              })
-            : topTokensOnchain.data;
+              });
 
     const searchInputRef = useRef<HTMLDivElement>(null);
 
