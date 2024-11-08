@@ -346,6 +346,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                                 ref={tradeTableRef}
                                 style={{ flex: 1 }}
                                 overflow='hidden'
+                                id='tx-table'
                             >
                                 <TradeTabs2 {...tradeTabsProps} />
                             </FlexContainer>

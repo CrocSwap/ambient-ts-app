@@ -170,6 +170,18 @@ export const txRowConstants = (props: propsIF) => {
         </RowItem>
     );
 
+    const hiddenIDColumn = (
+        <RowItem
+            hover
+            data-label='hidden-id'
+            role='button'
+            style={{ display: 'none' }}
+            tabIndex={0}
+        >
+            <span>{tx.txHash}</span>
+        </RowItem>
+    );
+
     const formattedUsdPrice = displayPriceNumInUsd
         ? getFormattedNumber({ value: displayPriceNumInUsd, prefix: '$' })
         : '...';
@@ -179,7 +191,9 @@ export const txRowConstants = (props: propsIF) => {
         : '...';
 
     const formattedHighUsdPrice = highDisplayPriceInUsd
-        ? getFormattedNumber({ value: highDisplayPriceInUsd, prefix: '$' })
+        ? highDisplayPriceInUsd > 10 ** 9
+            ? '$∞'
+            : getFormattedNumber({ value: highDisplayPriceInUsd, prefix: '$' })
         : '...';
 
     const usdValueWithTooltip = (
@@ -672,7 +686,7 @@ export const txRowConstants = (props: propsIF) => {
             data-label='price'
             tabIndex={0}
         >
-            {(
+            {
                 <p>
                     <span>
                         {(
@@ -697,7 +711,7 @@ export const txRowConstants = (props: propsIF) => {
                               : truncatedDisplayPrice}
                     </span>
                 </p>
-            ) || '…'}
+            }
         </RowItem>
     );
 
@@ -717,5 +731,6 @@ export const txRowConstants = (props: propsIF) => {
         ambientPriceDisplay,
         lowAndHighPriceDisplay,
         priceDisplay,
+        hiddenIDColumn,
     };
 };

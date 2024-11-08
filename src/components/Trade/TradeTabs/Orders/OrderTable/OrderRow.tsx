@@ -7,6 +7,7 @@ import {
     useContext,
     useEffect,
     useRef,
+    MutableRefObject,
 } from 'react';
 import {
     LimitModalAction,
@@ -26,6 +27,7 @@ interface propsIF {
     openDetailsModal: () => void;
     openActionModal: () => void;
     setLimitModalAction: Dispatch<SetStateAction<LimitModalAction>>;
+    observedRowRef: MutableRefObject<HTMLDivElement | null> | undefined;
 }
 
 function OrderRow(props: propsIF) {
@@ -36,6 +38,7 @@ function OrderRow(props: propsIF) {
         openDetailsModal,
         openActionModal,
         setLimitModalAction,
+        observedRowRef,
     } = props;
     const {
         snackbar: { open: openSnackbar },
@@ -217,6 +220,7 @@ function OrderRow(props: propsIF) {
         sideTypeColumn,
         tokensColumn,
         statusDisplay,
+        hiddenIDColumn
     } = orderRowConstants(orderRowConstantsProps);
 
     const handleKeyPress: React.KeyboardEventHandler<HTMLDivElement> = (
@@ -243,7 +247,9 @@ function OrderRow(props: propsIF) {
                 ref={currentLimitOrderActive ? activePositionRef : null}
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
+                data-type='infinite-scroll-row'
             >
+                {hiddenIDColumn}
                 {tableView === 'large' && OrderTimeWithTooltip}
                 {isAccountView && tokenPair}
                 {(tableView === 'large' ||
@@ -260,7 +266,7 @@ function OrderRow(props: propsIF) {
                 {tableView === 'medium' && tokensColumn}
                 {tableView !== 'small' && statusDisplay}
 
-                <div data-label='menu'>
+                <div data-label='menu' ref={observedRowRef}>
                     <OrdersMenu
                         limitOrder={limitOrder}
                         {...orderMenuProps}

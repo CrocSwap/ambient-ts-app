@@ -69,7 +69,7 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                 flexDirection='column'
                 outline='accent1'
                 boxShadow='gradient'
-                height='462px'
+                height='475px'
                 md={{ margin: '64px 0 0 0' }}
                 className='mobile_auto_height'
             >
