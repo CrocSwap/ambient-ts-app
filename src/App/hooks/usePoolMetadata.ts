@@ -345,6 +345,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 // retrieve pool liquidity provider fee
                 if (props.isServerEnabled) {
                     // retrieve pool_positions
+
+                    // TODO: triggered two times once change pair
                     const allPositionsCacheEndpoint = GCGO_OVERRIDE_URL
                         ? GCGO_OVERRIDE_URL + '/pool_positions?'
                         : props.graphCacheUrl + '/pool_positions?';

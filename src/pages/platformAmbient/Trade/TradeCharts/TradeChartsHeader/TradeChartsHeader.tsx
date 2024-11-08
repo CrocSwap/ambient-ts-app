@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import { AiOutlineDollarCircle, AiOutlineAreaChart } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
@@ -29,7 +29,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         setIsFullScreen: setIsChartFullScreen,
         canvasRef,
         chartCanvasRef,
-        chartHeights,
         tradeTableState,
         isCandleDataNull,
         contextmenu,
@@ -55,13 +54,10 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const { platformName } = useContext(BrandContext);
     const isFuta = ['futa'].includes(platformName);
-
+    const tradeChartHeaderRef = useRef<HTMLDivElement>(null);
     const tabletView = useMediaQuery(
         '(min-width: 768px) and (max-width: 1200px)',
     );
-
-    const smallView = useMediaQuery('(max-width: 1500px)');
-
     const { activeMobileComponent } = useContext(TradeTableContext);
 
     const [, copy] = useCopyToClipboard();
@@ -88,7 +84,9 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                       '',
                       undefined,
                       // height, trade charts header + chart height
-                      (smallView ? 100 : 50) + chartHeights.current,
+                      (chartCanvasRef.current as HTMLDivElement).clientHeight +
+                          (tradeChartHeaderRef.current as HTMLDivElement)
+                              .clientHeight,
                       filter,
                   );
 
@@ -247,6 +245,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             }
             padding={props.tradePage ? ' 8px' : '4px 4px 8px 4px'}
             style={{ background: isFuta ? 'var(--dark1)' : 'var(--dark2)' }}
+            ref={tradeChartHeaderRef}
         >
             <TradeChartsTokenInfo />
             {tradeTableState === 'Expanded' || showNoChartData || tabletView

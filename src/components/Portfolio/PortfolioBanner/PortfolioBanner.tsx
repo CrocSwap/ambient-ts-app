@@ -7,7 +7,7 @@ import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAcco
 // START: Import Other Local Files
 import { trimString } from '../../../ambient-utils/dataLayer';
 
-import NoisyLines from '../../NoisyLines/NoisyLines';
+import AddressPrint from './AddressPrint';
 import styles from './PortfolioBanner.module.css';
 import { UserXpDataIF } from '../../../contexts/UserDataContext';
 import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
@@ -74,7 +74,7 @@ export default function PortfolioBanner(props: propsIF) {
 
     const addressOfAccountDisplayed = resolvedAddress
         ? resolvedAddress.toLowerCase()
-        : userAddress?.toLowerCase() ?? '';
+        : (userAddress?.toLowerCase() ?? '');
 
     const myJazzicon = (
         <Jazzicon
@@ -101,36 +101,15 @@ export default function PortfolioBanner(props: propsIF) {
     // ... gets a new address for programmatic generation
     const noisyLines = useMemo<JSX.Element | null>(() => {
         // early return if address is not available (first render)
-        if (!addressOfAccountDisplayed || !desktopScreen) return null;
+        if (!addressOfAccountDisplayed ) return null;
         // locate rendered parent element in DOM by element ID
-        const parentElem: HTMLElement | null =
-            document.getElementById(BANNER_ID);
+        // const parentElem: HTMLElement | null =
+        //     document.getElementById(BANNER_ID);
         // dimensions of parent element with backups
-        const width: number = parentElem ? parentElem.offsetWidth : 1825;
-        const height: number = parentElem ? parentElem.offsetHeight : 200;
+        // const width: number = parentElem ? parentElem.offsetWidth : 1825;
+        // const height: number = parentElem ? parentElem.offsetHeight : 200;
         // render SVG image for DOM using derived dimensions
-        return (
-            <NoisyLines
-                numLines={10}
-                width={width}
-                height={height}
-                opacityStart={0.01}
-                opacityMid={1}
-                opacityEnd={0.0}
-                opacityMidPosition={0.8}
-                amplitudeStart={160}
-                amplitudeMid={150}
-                amplitudeEnd={0.01}
-                amplitudeMidPosition={0.95}
-                noiseScale={0.008}
-                noiseStart={0.01}
-                noiseMid={0.9}
-                noiseEnd={1}
-                noiseMidPosition={0.8}
-                seed={addressOfAccountDisplayed}
-                animationDuration={3000}
-            />
-        );
+        return <AddressPrint address={addressOfAccountDisplayed} />;
     }, [addressOfAccountDisplayed, document.getElementById(BANNER_ID)]);
 
     const [nftTestWalletInput, setNftTestWalletInput] = useState<string>('');
@@ -140,7 +119,7 @@ export default function PortfolioBanner(props: propsIF) {
 
     return (
         <div
-            className={styles.portfolio_banner_rectangle_container}
+            className={styles.portfolio_banner_rectangle_container} 
             id={BANNER_ID}
         >
             {noisyLines}
