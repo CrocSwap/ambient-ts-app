@@ -411,14 +411,14 @@ useEffect(() => {
         setInfiniteScrollLock(true);
     }
 
-    // if(fetchedTransactionsRef.current && fetchedTransactionsRef.current.positions.length < 40){
-    //     if(infiniteScrollLockRef.current){
-    //         addMoreData(true);
-    //     }
-    // }
-    // else{
-    //     setInfiniteScrollLock(false);
-    // }
+    if(fetchedTransactionsRef.current && fetchedTransactionsRef.current.positions.length < 40){
+        if(infiniteScrollLockRef.current){
+            addMoreData(true);
+        }
+    }
+    else{
+        setInfiniteScrollLock(false);
+    }
 
 }, [fetchedTransactions])
 
@@ -1366,7 +1366,7 @@ const addMoreData = async(byPassIncrementPage?: boolean) => {
             }}
             >
             <div>{headerColumnsDisplay}</div>
-            <div key={elIDRef.current} style={{ display: 'none', position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div>
+            <div key={elIDRef.current} style={{  position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div>
 
             <div
                 style={{ flex: 1, overflow: 'auto' }}
