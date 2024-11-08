@@ -33,6 +33,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         SUSDE: 90,
         DAI: 90,
         USDT: 80,
+        NEV: 75,
         FRAX: 70,
         WBTC: 60,
         SOLVBTC: 55,
