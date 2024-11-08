@@ -739,10 +739,10 @@ export const plumeSepoliaUSD: TokenIF = {
     logoURI: '',
 };
 
-export const plumeSepoliaAUSDC: TokenIF = {
-    name: 'Ambient Test USDC',
-    address: '0xEF380e725648CFE1488d98973151599a75186016',
-    symbol: 'aUSDC',
+export const plumeSepoliaNEV: TokenIF = {
+    name: 'Nest Egg Vault',
+    address: '0x659619AEdf381c3739B0375082C2d61eC1fD8835',
+    symbol: 'NEV',
     decimals: 6,
     chainId: 98864,
     logoURI: '',
@@ -835,6 +835,6 @@ export const defaultTokens: TokenIF[] = [
     scrollsUSDe,
     plumeSepoliaETH,
     plumeSepoliaUSD,
-    plumeSepoliaAUSDC,
+    plumeSepoliaNEV,
     plumeSepoliaUSDT,
 ];

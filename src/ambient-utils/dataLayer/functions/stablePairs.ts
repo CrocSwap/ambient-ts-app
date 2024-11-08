@@ -41,7 +41,7 @@ import {
     mainnetSTONE,
     plumeSepoliaETH,
     plumeSepoliaUSD,
-    plumeSepoliaAUSDC,
+    plumeSepoliaNEV,
     plumeSepoliaUSDT,
 } from '../../constants/defaultTokens';
 
@@ -107,7 +107,7 @@ export const USDC_TOKENS = [
     scrollSepoliaUSDC.address,
     scrollUSDC.address,
     plumeSepoliaUSD.address,
-    plumeSepoliaAUSDC.address,
+    plumeSepoliaNEV.address,
 ].map((x) => x.toLowerCase());
 
 // No need to specify chain ID because token address is unique even across chains

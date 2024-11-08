@@ -2,7 +2,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     plumeSepoliaETH,
     plumeSepoliaUSD,
-    plumeSepoliaAUSDC,
+    plumeSepoliaNEV,
     plumeSepoliaUSDT,
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
@@ -35,7 +35,7 @@ export const plumeSepolia: NetworkIF = {
         ),
         new TopPool(
             plumeSepoliaETH,
-            plumeSepoliaAUSDC,
+            plumeSepoliaNEV,
             lookupChain('0x18230').poolIndex,
         ),
         new TopPool(
