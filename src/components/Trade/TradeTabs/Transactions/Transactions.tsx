@@ -254,13 +254,19 @@ function Transactions(props: propsIF) {
                 changes: [],
             });
         }
-        else if(isAccountView && userTransactionsByPool.changes.length === 0){
+        else if(!isAccountView && userTransactionsByPool.changes.length === 0){
             setFetchedTransactions({
                 dataReceived: true,
                 changes: [],
             });
         }
-    }, [transactionsByPool.changes, userTransactionsByPool.changes]);
+        else if(isAccountView && activeAccountTransactionData?.length === 0){
+            setFetchedTransactions({
+                dataReceived: true,
+                changes: [],
+            });
+        }
+    }, [transactionsByPool.changes, userTransactionsByPool.changes, activeAccountTransactionData]);
 
     
     // const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
