@@ -34,31 +34,11 @@ export const plumeSepolia: NetworkIF = {
     blockExplorer: chainSpec.blockExplorer,
     displayName: chainSpec.displayName,
     topPools: [
-        new TopPool(
-            plumeSepoliaETH,
-            plumeSepoliaUSD,
-            lookupChain('0x18230').poolIndex,
-        ),
-        new TopPool(
-            plumeSepoliaUSD,
-            plumeSepoliaNEV,
-            lookupChain('0x18230').poolIndex,
-        ),
-        new TopPool(
-            plumeSepoliaETH,
-            plumeSepoliaUSDT,
-            lookupChain('0x18230').poolIndex,
-        ),
-        new TopPool(
-            plumeSepoliaUSD,
-            plumeSepoliaUSDT,
-            lookupChain('0x18230').poolIndex,
-        ),
-        new TopPool(
-            plumeSepoliaETH,
-            plumeSepoliaNEV,
-            lookupChain('0x18230').poolIndex,
-        ),
+        new TopPool(plumeSepoliaETH, plumeSepoliaUSD, chainSpec.poolIndex),
+        new TopPool(plumeSepoliaUSD, plumeSepoliaNEV, chainSpec.poolIndex),
+        new TopPool(plumeSepoliaETH, plumeSepoliaUSDT, chainSpec.poolIndex),
+        new TopPool(plumeSepoliaUSD, plumeSepoliaUSDT, chainSpec.poolIndex),
+        new TopPool(plumeSepoliaETH, plumeSepoliaNEV, chainSpec.poolIndex),
     ],
     chainSpec: chainSpec,
     getGasPriceInGwei: async (provider?: Provider) => {
