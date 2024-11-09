@@ -19,14 +19,20 @@ const chain = {
     explorerUrl: 'https://test-explorer.plumenetwork.xyz/',
 };
 
+const chainSpec = lookupChain('0x18230');
+
 export const plumeSepolia: NetworkIF = {
     chainId: '0x18230',
     graphCacheUrl: GCGO_TESTNET_URL,
     evmRpcUrl: 'https://testnet-rpc.plumenetwork.xyz/http/',
     chain: chain,
-    shouldPollBlock: true,
     marketData: '0x1',
     defaultPair: [plumeSepoliaETH, plumeSepoliaUSD],
+    defaultPairFuta: [plumeSepoliaETH, plumeSepoliaUSD],
+    poolIndex: chainSpec.poolIndex,
+    gridSize: chainSpec.gridSize,
+    blockExplorer: chainSpec.blockExplorer,
+    displayName: chainSpec.displayName,
     topPools: [
         new TopPool(
             plumeSepoliaETH,
@@ -54,6 +60,7 @@ export const plumeSepolia: NetworkIF = {
             lookupChain('0x18230').poolIndex,
         ),
     ],
+    chainSpec: chainSpec,
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (
