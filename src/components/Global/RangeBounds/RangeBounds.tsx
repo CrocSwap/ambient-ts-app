@@ -18,7 +18,6 @@ interface RangeBoundsProps {
 
     // Props for Range Price Info
     spotPriceDisplay: string;
-    // aprPercentage: number | undefined;
     poolPriceCharacter: string;
     isTokenABase: boolean;
     pinnedDisplayPrices:
@@ -62,14 +61,11 @@ export default function RangeBounds(props: RangeBoundsProps) {
         setRangeWidthPercentage,
         setRescaleRangeBoundariesWithSlider,
         inputId,
-        //
         poolPriceCharacter,
-        // aprPercentage,
         pinnedDisplayPrices,
         isTokenABase,
         isAmbient,
         spotPriceDisplay,
-        //
         minPricePercentage,
         maxPricePercentage,
         setMinPriceInputString,
@@ -100,10 +96,6 @@ export default function RangeBounds(props: RangeBoundsProps) {
     const rangePriceInfoProps = {
         pinnedDisplayPrices: pinnedDisplayPrices,
         spotPriceDisplay,
-        // maxPriceDisplay: maxPriceDisplay,
-        // minPriceDisplay: minPriceDisplay,
-        // aprPercentage,
-        // daysInRange: daysInRange,
         isTokenABase,
         poolPriceCharacter,
         isAmbient,
@@ -134,7 +126,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
         <div className={styles.info_container}>
             <motion.div
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}    
+                animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
             >
                 <RangeWidth {...rangeWidthProps} />

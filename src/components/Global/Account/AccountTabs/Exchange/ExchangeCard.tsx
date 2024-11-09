@@ -13,6 +13,7 @@ import {
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { AppStateContext } from '../../../../../contexts';
 
 interface propsIF {
     token: TokenIF;
@@ -25,10 +26,11 @@ export default function ExchangeCard(props: propsIF) {
         tokens: { getTokenByAddress },
     } = useContext(TokenContext);
 
+    const { crocEnv } = useContext(CrocEnvContext);
+
     const {
-        chainData: { chainId },
-        crocEnv,
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const isMobile = useMediaQuery('(max-width: 800px)');
 

@@ -20,7 +20,7 @@ import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     message: string;
@@ -34,9 +34,8 @@ interface propsIF {
 
 export default function PositionBox(props: propsIF) {
     const {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        chainData: { blockExplorer, chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { blockExplorer },
+    } = useContext(AppStateContext);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isPoolPriceChangePositive] = useState<boolean>(false);
@@ -266,7 +265,7 @@ that will merged manually
     }
 
     function handleOpenExplorer() {
-        // chainData may be changed!!
+        // active network may be changed!!
         if (sPositions === undefined && position !== undefined) {
             const hashMsg = message
                 .split(' ')

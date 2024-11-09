@@ -1,5 +1,6 @@
-import React, {
+import {
     createContext,
+    ReactNode,
     useContext,
     useEffect,
     useMemo,
@@ -8,20 +9,23 @@ import React, {
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../ambient-utils/constants';
-import { AppStateContext } from './AppStateContext';
-import { CachedDataContext } from './CachedDataContext';
-import { ChainDataContext } from './ChainDataContext';
-import { ChartContext } from './ChartContext';
-import { CrocEnvContext } from './CrocEnvContext';
-import { RangeContext } from './RangeContext';
-import { TokenContext } from './TokenContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { CachedDataContext, CachedDataContextIF } from './CachedDataContext';
+import { ChainDataContext, ChainDataContextIF } from './ChainDataContext';
+import { ChartContext, ChartContextIF } from './ChartContext';
+import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
+import { RangeContext, RangeContextIF } from './RangeContext';
+import { TokenContext, TokenContextIF } from './TokenContext';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { UserDataContext } from './UserDataContext';
-import { TokenBalanceContext } from './TokenBalanceContext';
-import { TradeDataContext } from './TradeDataContext';
-import { ReceiptContext } from './ReceiptContext';
+import { UserDataContext, UserDataContextIF } from './UserDataContext';
+import {
+    TokenBalanceContext,
+    TokenBalanceContextIF,
+} from './TokenBalanceContext';
+import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
+import { ReceiptContext, ReceiptContextIF } from './ReceiptContext';
 
-interface TradeTokenContextIF {
+export interface TradeTokenContextIF {
     baseToken: {
         address: string;
         balance: string;
@@ -56,33 +60,34 @@ export const TradeTokenContext = createContext<TradeTokenContextIF>(
     {} as TradeTokenContextIF,
 );
 
-export const TradeTokenContextProvider = (props: {
-    children: React.ReactNode;
-}) => {
+export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
     const {
+        activeNetwork: { graphCacheUrl, chainId, poolIndex },
         server: { isEnabled: isServerEnabled },
         isUserIdle,
-    } = useContext(AppStateContext);
-
+    } = useContext<AppStateContextIF>(AppStateContext);
     const {
         cachedQuerySpotPrice,
         cachedQuerySpotTick,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
-    } = useContext(CachedDataContext);
-    const { crocEnv, chainData, provider, activeNetwork } =
-        useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
-    const { setTokenBalance } = useContext(TokenBalanceContext);
-    const { isEnabled: isChartEnabled } = useContext(ChartContext);
-    const { setSimpleRangeWidth } = useContext(RangeContext);
-    const { tokens } = useContext(TokenContext);
-    const { sessionReceipts } = useContext(ReceiptContext);
-
+    } = useContext<CachedDataContextIF>(CachedDataContext);
+    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { lastBlockNumber } =
+        useContext<ChainDataContextIF>(ChainDataContext);
+    const { setTokenBalance } =
+        useContext<TokenBalanceContextIF>(TokenBalanceContext);
+    const { isEnabled: isChartEnabled } =
+        useContext<ChartContextIF>(ChartContext);
+    const { setSimpleRangeWidth } = useContext<RangeContextIF>(RangeContext);
+    const { tokens } = useContext<TokenContextIF>(TokenContext);
+    const { sessionReceipts } = useContext<ReceiptContextIF>(ReceiptContext);
     const { tokenA, tokenB, baseToken, quoteToken } =
-        useContext(TradeDataContext);
-    const { userAddress, isUserConnected } = useContext(UserDataContext);
+        useContext<TradeDataContextIF>(TradeDataContext);
+    const { userAddress, isUserConnected } =
+        useContext<UserDataContextIF>(UserDataContext);
+
     const {
         tokenAAllowance,
         tokenBAllowance,
@@ -103,10 +108,10 @@ export const TradeTokenContextProvider = (props: {
         contextMatchesParams,
     } = usePoolMetadata({
         crocEnv,
-        graphCacheUrl: activeNetwork.graphCacheUrl,
+        graphCacheUrl: graphCacheUrl,
         provider,
-        pathname: location.pathname,
-        chainData,
+        chainId: chainId,
+        poolIndex: poolIndex,
         userAddress,
         searchableTokens: tokens.tokenUniv,
         receiptCount: sessionReceipts.length,

@@ -3,7 +3,6 @@ import {
     getFormattedNumber,
     calculateSecondaryDepositQty,
 } from '../../../../ambient-utils/dataLayer';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import {
@@ -20,6 +19,7 @@ import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { FaPlus } from 'react-icons/fa6';
+import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     hidePlus?: boolean;
@@ -63,8 +63,8 @@ function RangeTokenInput(props: propsIF) {
     } = props;
 
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const {
         tokenABalance,
         tokenBBalance,
@@ -220,14 +220,10 @@ function RangeTokenInput(props: propsIF) {
                 isInitPage={isInitPage}
                 usdValue={usdValueTokenA}
             />
-            <FlexContainer
-                justifyContent='center'
-                alignItems='center'
-            >
-
-            {!hidePlus && <FaPlus size={26} color='var(--accent1)' />}
+            <FlexContainer justifyContent='center' alignItems='center'>
+                {!hidePlus && <FaPlus size={26} color='var(--accent1)' />}
             </FlexContainer>
-           
+
             <TokenInputWithWalletBalance
                 fieldId='range_B'
                 tokenAorB='B'

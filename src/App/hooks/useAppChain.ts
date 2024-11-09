@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChainSpec } from '@crocswap-libs/sdk';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
 import {
     getDefaultChainId,
@@ -13,7 +11,6 @@ import { NetworkIF } from '../../ambient-utils/types';
 import { supportedNetworks } from '../../ambient-utils/constants';
 
 export const useAppChain = (): {
-    chainData: ChainSpec;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
 } => {
@@ -158,6 +155,9 @@ export const useAppChain = (): {
                                     activeNetwork.chainId !=
                                     incomingChainFromWallet
                                 ) {
+                                    // !IMPORTANT:  not this one
+                                    // alert('wow!');
+                                    // console.log('wow');
                                     window.location.reload();
                                 }
                             } else {
@@ -165,6 +165,7 @@ export const useAppChain = (): {
                             }
                         }
                         if (activeNetwork.chainId != incomingChainFromWallet) {
+                            // !IMPORTANT:  not this one
                             window.location.reload();
                         } else {
                             setIgnoreFirst(false);
@@ -188,7 +189,7 @@ export const useAppChain = (): {
         findNetworkData(
             chainInURLValidated
                 ? chainInURLValidated
-                : localStorage.getItem(CHAIN_LS_KEY) ?? defaultChain,
+                : (localStorage.getItem(CHAIN_LS_KEY) ?? defaultChain),
         ) || findNetworkData(defaultChain),
     );
 
@@ -220,7 +221,6 @@ export const useAppChain = (): {
         const isPathHexEoaAddress = checkEoaHexAddress(pathname);
         const isPathUserAddress = isPathENS || isPathHexEoaAddress;
         const isPathUserXpOrLeaderboard = pathname.includes('/xp');
-        const isPathOnExplore = pathname.includes('/explore');
         if (
             linkGenCurrent.currentPage === 'initpool' ||
             linkGenCurrent.currentPage === 'reposition'
@@ -230,29 +230,19 @@ export const useAppChain = (): {
             linkGenSwap.navigate(`chain=${network.chainId}`);
         } else if (pathname.includes('chain')) {
             linkGenCurrent.navigate(`chain=${network.chainId}`);
-        } else if (
-            isPathUserAddress ||
-            isPathUserXpOrLeaderboard ||
-            isPathOnExplore
-        ) {
+        } else if (isPathUserAddress || isPathUserXpOrLeaderboard) {
+            // this one is specific to user account pages
+            // !IMPORTANT:  not this one
             window.location.reload();
         } else {
             linkGenCurrent.navigate();
         }
-        window.location.reload();
+        // this one seems to be necessary for chain switching, when disabled
+        // ... the app appears to switch chains but doesn't get any pool data
+        // window.location.reload();
     }
 
-    // data from the SDK about the current chain in the connected wallet
-    // chain is validated upstream of this process
-    const chainData = useMemo<ChainSpec>(() => {
-        const output: ChainSpec =
-            lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
-        // return output varibale (chain data)
-        return output;
-    }, [activeNetwork.chainId]);
-
     return {
-        chainData,
         activeNetwork,
         chooseNetwork,
     };

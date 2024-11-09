@@ -23,6 +23,7 @@ import {
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { IoIosArrowBack } from 'react-icons/io';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { AppStateContext } from '../../../contexts';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -44,10 +45,10 @@ export const SoloTokenSelect = (props: propsIF) => {
     } = props;
 
     const { cachedTokenDetails } = useContext(CachedDataContext);
+    const { provider } = useContext(CrocEnvContext);
     const {
-        chainData: { chainId },
-        provider,
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const {
         tokens,
@@ -228,15 +229,18 @@ export const SoloTokenSelect = (props: propsIF) => {
     // control whether the `<input>` has DOM focus by default
     const INPUT_HAS_AUTOFOCUS = false;
     // logic to add and remove placeholder text from the `<input>` field
-    const [hidePlaceholderText, setHidePlaceholderText] = useState<boolean>(INPUT_HAS_AUTOFOCUS);
+    const [hidePlaceholderText, setHidePlaceholderText] =
+        useState<boolean>(INPUT_HAS_AUTOFOCUS);
 
     return (
         <section className={styles.container}>
             <header className={styles.header}>
-                <IoIosArrowBack onClick={() => {
-                    setInput('');
-                    onClose();
-                }} />
+                <IoIosArrowBack
+                    onClick={() => {
+                        setInput('');
+                        onClose();
+                    }}
+                />
                 <p>Select Token</p>
                 <p />
             </header>

@@ -29,6 +29,7 @@ import {
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 import SmolRefuelLink from '../Global/SmolRefuelLink/SmolRefuelLink';
+import { AppStateContext } from '../../contexts';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -40,11 +41,11 @@ interface propsIF {
 export default function LimitActionModal(props: propsIF) {
     const { limitOrder, type, onClose, isAccountView } = props;
     const { userAddress } = useContext(UserDataContext);
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+
     const {
-        crocEnv,
-        ethMainnetUsdPrice,
-        chainData: { poolIndex },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { poolIndex },
+    } = useContext(AppStateContext);
 
     const {
         addPendingTx,

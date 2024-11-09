@@ -6,15 +6,24 @@ import moment from 'moment';
 import { FiCopy } from 'react-icons/fi';
 import { memo, useContext } from 'react';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../../contexts/AppStateContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../../contexts/CrocEnvContext';
 import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { useMediaQuery } from '@material-ui/core';
-import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import {
+    UserDataContext,
+    UserDataContextIF,
+} from '../../../../../contexts/UserDataContext';
 import InfoRow from '../../../InfoRow';
 import { LimitOrderIF } from '../../../../../ambient-utils/types';
 
-interface OrderDetailsSimplifyPropsIF {
+interface propsIF {
     limitOrder: LimitOrderIF;
     timeFirstMintMemo: number;
     baseCollateralDisplay: string | undefined;
@@ -38,9 +47,7 @@ interface OrderDetailsSimplifyPropsIF {
 }
 
 // TODO: refactor to using styled-components
-function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
-    const showMobileVersion = useMediaQuery('(max-width: 768px)');
-
+function OrderDetailsSimplify(props: propsIF) {
     const {
         isBid,
         isOrderFilled,
@@ -55,9 +62,14 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         timeFirstMintMemo,
     } = props;
 
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
-
-    const { userAddress } = useContext(UserDataContext);
+    const {
+        activeNetwork: {
+            chainSpec: { addrs },
+        },
+        snackbar: { open: openSnackbar },
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { userAddress } = useContext<UserDataContextIF>(UserDataContext);
 
     const {
         ensName,
@@ -85,18 +97,13 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         elapsedTimeSinceCrossString,
     } = useProcessOrder(limitOrder, crocEnv, userAddress, isAccountView);
 
-    const showFullAddresses = useMediaQuery('(min-width: 768px)');
-
-    const {
-        snackbar: { open: openSnackbar },
-    } = useContext(AppStateContext);
+    const showMobileVersion = useMediaQuery<boolean>('(max-width: 768px)');
+    const showFullAddresses = useMediaQuery<boolean>('(min-width: 768px)');
 
     const [_, copy] = useCopyToClipboard();
 
     function handleCopyPositionHash() {
         copy(posHash.toString());
-        // setCopiedData(posHash.toString());
-
         openSnackbar(`${posHash.toString()} copied`, 'info');
     }
 
@@ -109,7 +116,7 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         if (posHash && blockExplorer) {
             const adressUrl =
                 baseTokenAddressLowerCase === ZERO_ADDRESS
-                    ? `${blockExplorer}address/${chainData.addrs.dex}`
+                    ? `${blockExplorer}address/${addrs.dex}`
                     : `${blockExplorer}token/${baseTokenAddressLowerCase}`;
             window.open(adressUrl);
         }
@@ -360,22 +367,23 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         });
     }
 
-    if (showMobileVersion) return (
-        <div className={styles.tx_details_container}>
-        <div className={styles.main_container}>
-            <section>
-                {infoContent.map((info, idx) => (
-                    <InfoRow
-                        key={info.title + idx}
-                        title={info.title}
-                        content={info.content}
-                        explanation={info.explanation}
-                    />
-                ))}
-            </section>
-        </div>
-    </div>
-    )
+    if (showMobileVersion)
+        return (
+            <div className={styles.tx_details_container}>
+                <div className={styles.main_container}>
+                    <section>
+                        {infoContent.map((info, idx) => (
+                            <InfoRow
+                                key={info.title + idx}
+                                title={info.title}
+                                content={info.content}
+                                explanation={info.explanation}
+                            />
+                        ))}
+                    </section>
+                </div>
+            </div>
+        );
 
     return (
         <div className={styles.tx_details_container}>

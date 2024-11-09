@@ -7,7 +7,6 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import { CrocEnvContext } from './CrocEnvContext';
 import {
     tickerWatchlistIF,
     useTickerWatchlist,
@@ -16,6 +15,7 @@ import { UserDataContext } from './UserDataContext';
 import { AuctionDataIF } from '../ambient-utils/dataLayer/functions/getAuctionData';
 import { CachedDataContext } from './CachedDataContext';
 import { CURRENT_AUCTION_VERSION } from '../ambient-utils/constants';
+import { AppStateContext } from './AppStateContext';
 
 export interface AuctionsContextIF {
     globalAuctionList: AuctionsDataIF;
@@ -88,8 +88,8 @@ export const AuctionsContext = createContext<AuctionsContextIF>(
 
 export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const {
         cachedGetGlobalAuctionsList,
