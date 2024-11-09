@@ -116,7 +116,8 @@ export default function App() {
                 currentLocation !== '/privacy' &&
                 currentLocation !== '/faq' &&
                 !currentLocation.includes('/chat') &&
-                isChatEnabled && !isFullScreen && <ChatPanel isFullScreen={false} />}
+                isChatEnabled &&
+                !isFullScreen && <ChatPanel isFullScreen={false} />}
         </div>
     );
 
@@ -146,7 +147,6 @@ export default function App() {
         ) : (
             showMobileVersion && <FooterNav />
         );
-
 
     return (
         <>

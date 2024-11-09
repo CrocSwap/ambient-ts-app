@@ -33,7 +33,7 @@ import {
 import { UserDataContext } from './UserDataContext';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { TokenContext } from './TokenContext';
-import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { AppStateContext } from './AppStateContext';
 
 interface UrlRoutesTemplateIF {
     swap: string;
@@ -75,7 +75,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         activeNetwork: { chainId, evmRpcUrl },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
 
     const { userAddress } = useContext(UserDataContext);
     const { walletProvider } = useWeb3ModalProvider();

@@ -155,9 +155,6 @@ export const useAppChain = (): {
                                     activeNetwork.chainId !=
                                     incomingChainFromWallet
                                 ) {
-                                    // !IMPORTANT:  not this one
-                                    // alert('wow!');
-                                    // console.log('wow');
                                     window.location.reload();
                                 }
                             } else {
@@ -165,7 +162,6 @@ export const useAppChain = (): {
                             }
                         }
                         if (activeNetwork.chainId != incomingChainFromWallet) {
-                            // !IMPORTANT:  not this one
                             window.location.reload();
                         } else {
                             setIgnoreFirst(false);

@@ -21,20 +21,18 @@ import {
 } from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
 import { SinglePoolDataIF, TokenIF } from '../ambient-utils/types';
-import { CachedDataContext, CachedDataContextIF } from './CachedDataContext';
-import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
-import { TokenContext, TokenContextIF } from './TokenContext';
+import { CachedDataContext } from './CachedDataContext';
+import { CrocEnvContext } from './CrocEnvContext';
+import { TokenContext } from './TokenContext';
 import {
     BlastUserXpDataIF,
     UserDataContext,
-    UserDataContextIF,
     UserXpDataIF,
 } from './UserDataContext';
 import {
     NftDataIF,
     NftListByChain,
     TokenBalanceContext,
-    TokenBalanceContextIF,
 } from './TokenBalanceContext';
 import {
     expandTokenBalances,
@@ -45,10 +43,10 @@ import {
     IDexTokenBalances,
 } from '../ambient-utils/api';
 import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
-import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { AppStateContext } from './AppStateContext';
 import moment from 'moment';
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
-import { ReceiptContext, ReceiptContextIF } from './ReceiptContext';
+import { ReceiptContext } from './ReceiptContext';
 
 export interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -79,15 +77,15 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             graphCacheUrl,
         },
         isUserIdle,
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
     const {
         setTokenBalances,
         setNFTData,
         NFTFetchSettings,
         setNFTFetchSettings,
-    } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
-    const { sessionReceipts } = useContext<ReceiptContextIF>(ReceiptContext);
-    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    } = useContext(TokenBalanceContext);
+    const { sessionReceipts } = useContext(ReceiptContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
         cachedFetchAmbientListWalletBalances,
         cachedFetchDexBalances,
@@ -95,8 +93,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         cachedTokenDetails,
         cachedFetchNFT,
         cachedAllPoolStatsFetch,
-    } = useContext<CachedDataContextIF>(CachedDataContext);
-    const { tokens } = useContext<TokenContextIF>(TokenContext);
+    } = useContext(CachedDataContext);
+    const { tokens } = useContext(TokenContext);
     const {
         userAddress,
         isUserConnected,
@@ -104,7 +102,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isfetchNftTriggered,
         nftTestWalletAddress,
         setNftTestWalletAddress,
-    } = useContext<UserDataContextIF>(UserDataContext);
+    } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 

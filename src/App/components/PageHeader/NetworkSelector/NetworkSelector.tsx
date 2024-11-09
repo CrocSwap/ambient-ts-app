@@ -31,10 +31,7 @@ interface propsIF {
     customBR?: string;
 }
 import { motion } from 'framer-motion';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
 
 interface NetworkIF {
@@ -53,11 +50,10 @@ export default function NetworkSelector(props: propsIF) {
     const {
         chooseNetwork,
         activeNetwork: { chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
     const { networks, platformName, includeCanto } =
         useContext<BrandContextIF>(BrandContext);
-        const {  closeBottomSheet } =
-        useBottomSheet();
+    const { closeBottomSheet } = useBottomSheet();
     const { switchNetwork } = useSwitchNetwork();
     const smallScreen: boolean = useMediaQuery('(max-width: 600px)');
 
@@ -217,9 +213,8 @@ export default function NetworkSelector(props: propsIF) {
                     } else {
                         handleClick(chainMap.get(network.chainId));
                     }
-                    closeBottomSheet()
+                    closeBottomSheet();
                 }}
-                
                 key={network.id}
                 custom={network.custom}
                 variants={ItemEnterAnimation}

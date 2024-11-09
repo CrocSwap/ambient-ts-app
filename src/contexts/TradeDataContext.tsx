@@ -17,8 +17,8 @@ import {
     isStablePair,
     translateTokenSymbol,
 } from '../ambient-utils/dataLayer';
-import { TokenContext, TokenContextIF } from './TokenContext';
-import { AppStateContextIF, AppStateContext } from './AppStateContext';
+import { TokenContext } from './TokenContext';
+import { AppStateContext } from './AppStateContext';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -71,8 +71,8 @@ export const TradeDataContext = createContext<TradeDataContextIF>(
 export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     const {
         activeNetwork: { chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { tokens } = useContext<TokenContextIF>(TokenContext);
+    } = useContext(AppStateContext);
+    const { tokens } = useContext(TokenContext);
 
     const savedTokenASymbol = localStorage.getItem('tokenA');
     const savedTokenBSymbol = localStorage.getItem('tokenB');
