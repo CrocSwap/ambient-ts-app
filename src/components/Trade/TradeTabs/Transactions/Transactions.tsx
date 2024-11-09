@@ -141,6 +141,9 @@ function Transactions(props: propsIF) {
         transactionsByPool,
         unindexedNonFailedSessionTransactionHashes,
     } = useContext<GraphDataContextIF>(GraphDataContext);
+
+    console.log(' >> usertxs by pool', userTransactionsByPool.changes.length)
+
     const { transactionsByType } = useContext<ReceiptContextIF>(ReceiptContext);
     const { baseToken, quoteToken } =
         useContext<TradeDataContextIF>(TradeDataContext);
