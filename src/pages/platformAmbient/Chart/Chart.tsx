@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { PoolContext, PoolContextIF } from '../../../contexts/PoolContext';
+import { PoolContext } from '../../../contexts/PoolContext';
 import './Chart.css';
 import {
     pinTickLower,
@@ -30,18 +30,9 @@ import {
     getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
 } from '../../../ambient-utils/dataLayer';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
-import {
-    CandleContext,
-    CandleContextIF,
-} from '../../../contexts/CandleContext';
-import {
-    SidebarContext,
-    SidebarContextIF,
-} from '../../../contexts/SidebarContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CandleContext } from '../../../contexts/CandleContext';
+import { SidebarContext } from '../../../contexts/SidebarContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import {
     CandleDataIF,
@@ -111,7 +102,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
-import { ChartContext, ChartContextIF } from '../../../contexts/ChartContext';
+import { ChartContext } from '../../../contexts/ChartContext';
 import { useDrawSettings } from '../../../App/hooks/useDrawSettings';
 import {
     LS_KEY_CHART_ANNOTATIONS,
@@ -222,10 +213,10 @@ export default function Chart(props: propsIF) {
 
     const {
         activeNetwork: { gridSize, chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
-    } = useContext<SidebarContextIF>(SidebarContext);
+    } = useContext(SidebarContext);
     const {
         isMagnetActive,
         setIsChangeScaleChart,
@@ -257,7 +248,7 @@ export default function Chart(props: propsIF) {
         setShouldResetBuffer,
         colorChangeTrigger,
         setColorChangeTrigger,
-    } = useContext<ChartContextIF>(ChartContext);
+    } = useContext(ChartContext);
     const {
         setCandleDomains,
         setCandleScale,
@@ -266,9 +257,9 @@ export default function Chart(props: propsIF) {
         setIsCondensedModeEnabled,
         setCandleData,
         showFutaCandles,
-    } = useContext<CandleContextIF>(CandleContext);
+    } = useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
-        useContext<PoolContextIF>(PoolContext);
+        useContext(PoolContext);
     const { advancedMode, setIsLinesSwitched } = useContext(RangeContext);
 
     const [liqMaxActiveLiq, setLiqMaxActiveLiq] = useState<
