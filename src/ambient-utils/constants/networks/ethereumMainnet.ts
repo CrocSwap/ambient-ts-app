@@ -12,11 +12,6 @@ import { GCGO_ETHEREUM_URL } from '../gcgo';
 import { Provider } from 'ethers';
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 
-// const PROVIDER_KEY =
-//     import.meta.env.NODE_ENV === 'test'
-//         ? import.meta.env.PROVIDER_KEY
-//         : import.meta.env.VITE_INFURA_KEY;
-
 const MAINNET_RPC_URL =
     import.meta.env.VITE_MAINNET_RPC_URL !== undefined
         ? import.meta.env.VITE_MAINNET_RPC_URL
@@ -30,22 +25,27 @@ const chain = {
     explorerUrl: 'https://etherscan.io',
 };
 
+const chainSpec = lookupChain('0x1');
+
 export const ethereumMainnet: NetworkIF = {
     chainId: '0x1',
     graphCacheUrl: GCGO_ETHEREUM_URL,
     evmRpcUrl: MAINNET_RPC_URL,
-    // evmRpcUrl: 'https://mainnet.infura.io/v3/' + PROVIDER_KEY,
     chain: chain,
-    shouldPollBlock: false,
     marketData: '0x1',
     defaultPair: [mainnetETH, mainnetUSDC],
+    poolIndex: chainSpec.poolIndex,
+    gridSize: chainSpec.gridSize,
+    blockExplorer: chainSpec.blockExplorer,
+    displayName: chainSpec.displayName,
     topPools: [
-        new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetETH, mainnetWBTC, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetETH, mainnetUSDT, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetUSDT, mainnetUSDC, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetETH, mainnetDAI, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetETH, mainnetUSDC, chainSpec.poolIndex),
+        new TopPool(mainnetETH, mainnetWBTC, chainSpec.poolIndex),
+        new TopPool(mainnetETH, mainnetUSDT, chainSpec.poolIndex),
+        new TopPool(mainnetUSDT, mainnetUSDC, chainSpec.poolIndex),
+        new TopPool(mainnetETH, mainnetDAI, chainSpec.poolIndex),
     ],
+    chainSpec: chainSpec,
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (

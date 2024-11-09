@@ -26,10 +26,22 @@ import {
     NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants';
 import { FiExternalLink } from 'react-icons/fi';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import { RangeContext } from '../../../../contexts/RangeContext';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
+import {
+    UserPreferenceContext,
+    UserPreferenceContextIF,
+} from '../../../../contexts/UserPreferenceContext';
+import {
+    RangeContext,
+    RangeContextIF,
+} from '../../../../contexts/RangeContext';
+import {
+    ChainDataContext,
+    ChainDataContextIF,
+} from '../../../../contexts/ChainDataContext';
 import {
     getPositionData,
     getFormattedNumber,
@@ -37,8 +49,14 @@ import {
     trimString,
     isStablePair,
 } from '../../../../ambient-utils/dataLayer';
-import { TokenContext } from '../../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import {
+    TokenContext,
+    TokenContextIF,
+} from '../../../../contexts/TokenContext';
+import {
+    CachedDataContext,
+    CachedDataContextIF,
+} from '../../../../contexts/CachedDataContext';
 import {
     linkGenMethodsIF,
     useLinkGen,
@@ -48,38 +66,48 @@ import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitT
 import RangeWidth from '../../../../components/Form/RangeWidth/RangeWidth';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import {
+    ReceiptContext,
+    ReceiptContextIF,
+} from '../../../../contexts/ReceiptContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
+import {
+    UserDataContext,
+    UserDataContextIF,
+} from '../../../../contexts/UserDataContext';
 import SmolRefuelLink from '../../../../components/Global/SmolRefuelLink/SmolRefuelLink';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
 
 function Reposition() {
     // current URL parameter string
     const { params } = useParams();
 
+    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    } = useContext<CachedDataContextIF>(CachedDataContext);
+    const { crocEnv, provider, ethMainnetUsdPrice } =
+        useContext<CrocEnvContextIF>(CrocEnvContext);
+
     const {
-        crocEnv,
-        activeNetwork,
-        provider,
-        ethMainnetUsdPrice,
-        chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
-    const { tokens } = useContext(TokenContext);
+        activeNetwork: { blockExplorer },
+    } = useContext(AppStateContext);
+
+    const { tokens } = useContext<TokenContextIF>(TokenContext);
     const {
         gasPriceInGwei,
         lastBlockNumber,
         isActiveNetworkBlast,
         isActiveNetworkScroll,
-    } = useContext(ChainDataContext);
-    const { bypassConfirmRepo, repoSlippage } = useContext(
-        UserPreferenceContext,
-    );
+    } = useContext<ChainDataContextIF>(ChainDataContext);
+    const { bypassConfirmRepo, repoSlippage } =
+        useContext<UserPreferenceContextIF>(UserPreferenceContext);
     const {
         addPendingTx,
         addReceipt,
@@ -87,7 +115,7 @@ function Reposition() {
         addPositionUpdate,
         removePendingTx,
         updateTransactionHash,
-    } = useContext(ReceiptContext);
+    } = useContext<ReceiptContextIF>(ReceiptContext);
     const {
         simpleRangeWidth,
         setSimpleRangeWidth,
@@ -96,8 +124,8 @@ function Reposition() {
         setCurrentRangeInReposition,
         setRescaleRangeBoundariesWithSlider,
         setAdvancedMode,
-    } = useContext(RangeContext);
-    const { userAddress } = useContext(UserDataContext);
+    } = useContext<RangeContextIF>(RangeContext);
+    const { userAddress } = useContext<UserDataContextIF>(UserDataContext);
 
     const [isOpen, openModal, closeModal] = useModal();
 

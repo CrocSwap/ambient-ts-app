@@ -1,9 +1,9 @@
 import { drawDataHistory, drawnShapeEditAttributes } from './chartUtils';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { fibDefaultLevels } from './drawConstants';
 import { LS_KEY_CHART_ANNOTATIONS } from './chartConstants';
+import { AppStateContext } from '../../../../contexts';
 
 export interface actionKeyIF {
     poolIndex: number;
@@ -28,8 +28,8 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
     >([]);
 
     const {
-        chainData: { poolIndex },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { poolIndex },
+    } = useContext(AppStateContext);
 
     const [drawActionStack, setDrawActionStack] = useState(
         new Map<actionKeyIF, Array<actionStackIF>>(),

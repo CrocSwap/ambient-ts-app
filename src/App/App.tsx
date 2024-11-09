@@ -147,6 +147,7 @@ export default function App() {
             showMobileVersion && <FooterNav />
         );
 
+
     return (
         <>
             {location.pathname == '/' && platformName !== 'futa' && (

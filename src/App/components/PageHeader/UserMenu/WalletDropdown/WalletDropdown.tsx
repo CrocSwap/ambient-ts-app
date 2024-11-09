@@ -12,14 +12,24 @@ import {
     ZERO_ADDRESS,
     supportedNetworks,
 } from '../../../../../ambient-utils/constants';
-import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
+import {
+    TokenBalanceContext,
+    TokenBalanceContextIF,
+} from '../../../../../contexts/TokenBalanceContext';
 import UserProfileCard from '../UserProfileCard';
-import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import {
+    ChainDataContext,
+    ChainDataContextIF,
+} from '../../../../../contexts/ChainDataContext';
 import { Link } from 'react-router-dom';
 import processLogoSrc from '../../../../../components/Global/TokenIcon/processLogoSrc';
 import { TokenContext } from '../../../../../contexts';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../../contexts/AppStateContext';
 
-interface WalletDropdownPropsIF {
+interface propsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
@@ -36,7 +46,7 @@ interface TokenAmountDisplayPropsIF {
     value?: string;
 }
 
-export default function WalletDropdown(props: WalletDropdownPropsIF) {
+export default function WalletDropdown(props: propsIF) {
     const {
         ensName,
         accountAddress,
@@ -45,15 +55,18 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         clickLogout,
         hideProfileCard,
     } = props;
-    const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
-    const { isActiveNetworkBlast, nativeTokenUsdPrice, isActiveNetworkPlume } =
-        useContext(ChainDataContext);
 
-    const { tokenBalances } = useContext(TokenBalanceContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext<AppStateContextIF>(AppStateContext);
+
+    const { isActiveNetworkBlast, nativeTokenUsdPrice, isActiveNetworkPlume } =
+        useContext<ChainDataContextIF>(ChainDataContext);
+
     const { tokens } = useContext(TokenContext);
 
+    const { tokenBalances } =
+        useContext<TokenBalanceContextIF>(TokenBalanceContext);
     const defaultPair = supportedNetworks[chainId].defaultPair;
     const nativeData: TokenIF | undefined =
         tokenBalances &&

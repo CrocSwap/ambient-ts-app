@@ -1,7 +1,6 @@
 import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
 import { skins } from '../App/hooks/useSkin';
 import { brandIF, fontSets, heroItem } from '../assets/branding/types';
-import { TradeDataContext } from './TradeDataContext';
 import { chainIds } from '../ambient-utils/types';
 import {
     blastBrandAssets,
@@ -14,6 +13,7 @@ import {
     plumeSepoliaBrandAssets,
 } from '../assets/branding';
 import { UserDataContext } from './UserDataContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
 
 const PREMIUM_THEMES_IN_ENV = {
     theme1: 'VITE_THEME_1_ACCOUNTS',
@@ -44,7 +44,9 @@ export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
 
 export const BrandContextProvider = (props: { children: ReactNode }) => {
     const { userAddress } = useContext(UserDataContext);
-    const { chainData } = useContext(TradeDataContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext<AppStateContextIF>(AppStateContext);
 
     // brand asset set to consume as specified in environmental variable
     // can also provide a fallback if a custom brand is missing values
@@ -99,8 +101,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     const [skin, setSkin] = useState<skins>(getDefaultSkin());
 
     function getAvailableSkins(): skins[] {
-        const networkSettings =
-            brandAssets.networks[chainData.chainId as chainIds];
+        const networkSettings = brandAssets.networks[chainId as chainIds];
         const available: skins[] = networkSettings?.color ?? ['purple_dark'];
         const premium: skins[] = networkSettings?.premiumColor ?? [];
         const hasPremium = !!(
@@ -115,8 +116,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     }
 
     function getHero(): heroItem[] {
-        const networkPrefs =
-            brandAssets.networks[chainData.chainId as chainIds];
+        const networkPrefs = brandAssets.networks[chainId as chainIds];
         return networkPrefs
             ? networkPrefs.hero
             : [{ content: 'ambient', processAs: 'separator' }];
