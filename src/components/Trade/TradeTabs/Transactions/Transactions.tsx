@@ -236,14 +236,12 @@ function Transactions(props: propsIF) {
             });
         }
         else if(!isAccountView && !showAllData && userAddressRef.current && userTransactionsByPool.changes.length === 0){
-            console.log(' txs 2')
             setFetchedTransactions({
                 dataReceived: true,
                 changes: [],
             });
         }
         else if(isAccountView && (accountAddressRef.current || userAddressRef.current) && activeAccountTransactionData?.length === 0){
-                console.log(' txs 3')
             setFetchedTransactions({
                 dataReceived: true,
                 changes: [],
