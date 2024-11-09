@@ -129,6 +129,7 @@ function Transactions(props: propsIF) {
         transactionsByPool,
         unindexedNonFailedSessionTransactionHashes,
     } = useContext<GraphDataContextIF>(GraphDataContext);
+
     const { transactionsByType } = useContext<ReceiptContextIF>(ReceiptContext);
     const { baseToken, quoteToken } =
         useContext<TradeDataContextIF>(TradeDataContext);
@@ -228,13 +229,25 @@ function Transactions(props: propsIF) {
 
     useEffect(() => {
         // clear fetched transactions when switching pools
-        if (transactionsByPool.changes.length === 0) {
+        if (!isAccountView && showAllData && transactionsByPool.changes.length === 0) {
             setFetchedTransactions({
                 dataReceived: true,
                 changes: [],
             });
         }
-    }, [transactionsByPool.changes]);
+        else if(!isAccountView && !showAllData && userAddressRef.current && userTransactionsByPool.changes.length === 0){
+            setFetchedTransactions({
+                dataReceived: true,
+                changes: [],
+            });
+        }
+        else if(isAccountView && (accountAddressRef.current || userAddressRef.current) && activeAccountTransactionData?.length === 0){
+            setFetchedTransactions({
+                dataReceived: true,
+                changes: [],
+            });
+        }
+    }, [transactionsByPool.changes, userTransactionsByPool.changes, activeAccountTransactionData]);
 
     // const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
     // useEffect(() => {
