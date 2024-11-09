@@ -130,8 +130,6 @@ function Transactions(props: propsIF) {
         unindexedNonFailedSessionTransactionHashes,
     } = useContext<GraphDataContextIF>(GraphDataContext);
 
-    console.log(' >> usertxs by pool', userTransactionsByPool.changes.length)
-
     const { transactionsByType } = useContext<ReceiptContextIF>(ReceiptContext);
     const { baseToken, quoteToken } =
         useContext<TradeDataContextIF>(TradeDataContext);
@@ -231,19 +229,21 @@ function Transactions(props: propsIF) {
 
     useEffect(() => {
         // clear fetched transactions when switching pools
-        if (!isAccountView && transactionsByPool.changes.length === 0) {
+        if (!isAccountView && showAllData && transactionsByPool.changes.length === 0) {
             setFetchedTransactions({
                 dataReceived: true,
                 changes: [],
             });
         }
-        else if(!isAccountView && userTransactionsByPool.changes.length === 0){
+        else if(!isAccountView && !showAllData && userAddressRef.current && userTransactionsByPool.changes.length === 0){
+            console.log(' txs 2')
             setFetchedTransactions({
                 dataReceived: true,
                 changes: [],
             });
         }
-        else if(isAccountView && activeAccountTransactionData?.length === 0){
+        else if(isAccountView && (accountAddressRef.current || userAddressRef.current) && activeAccountTransactionData?.length === 0){
+                console.log(' txs 3')
             setFetchedTransactions({
                 dataReceived: true,
                 changes: [],
