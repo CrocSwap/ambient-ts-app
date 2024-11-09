@@ -24,7 +24,7 @@ const chainSpec = lookupChain('0x18230');
 export const plumeSepolia: NetworkIF = {
     chainId: '0x18230',
     graphCacheUrl: GCGO_TESTNET_URL,
-    evmRpcUrl: 'https://testnet-rpc.plumenetwork.xyz/http/',
+    evmRpcUrl: 'https://test-rpc.plumenetwork.xyz/',
     chain: chain,
     marketData: '0x1',
     defaultPair: [plumeSepoliaETH, plumeSepoliaUSD],
