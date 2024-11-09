@@ -13,13 +13,12 @@ import {
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
-import { AppStateContext } from './AppStateContext';
-import { CrocEnvContext } from './CrocEnvContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
 import { ReceiptContext } from './ReceiptContext';
 import { TransactionReceipt } from 'ethers';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 
-export interface SidebarStateIF {
+export interface SidebarContextIF {
     recentPools: recentPoolsMethodsIF;
     sidebar: sidebarMethodsIF;
     hideOnMobile: boolean;
@@ -28,18 +27,16 @@ export interface SidebarStateIF {
     isPoolDropdownOpen: boolean;
 }
 
-export const SidebarContext = createContext<SidebarStateIF>(
-    {} as SidebarStateIF,
+export const SidebarContext = createContext<SidebarContextIF>(
+    {} as SidebarContextIF,
 );
 
 export const SidebarContextProvider = (props: { children: ReactNode }) => {
     // logic to open a snackbar notification
     const {
+        activeNetwork: { chainId },
         snackbar: { open: openSnackbar },
-    } = useContext(AppStateContext);
-
-    // data on the active chain in the app
-    const { chainData } = useContext(CrocEnvContext);
+    } = useContext<AppStateContextIF>(AppStateContext);
 
     // all receipts stored in the current user session (array of stringified JSONs)
     const { allReceipts } = useContext(ReceiptContext);
@@ -67,7 +64,7 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
     const sidebar = useSidebar(location.pathname, showSidebarByDefault);
 
     // hook to manage recent pool data in-session
-    const recentPools: recentPoolsMethodsIF = useRecentPools(chainData.chainId);
+    const recentPools: recentPoolsMethodsIF = useRecentPools(chainId);
 
     // value showing whether the screen size warrants hiding the sidebar
     const [hideOnMobile, setHideOnMobile] = useState<boolean>(true);

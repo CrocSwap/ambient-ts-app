@@ -1,13 +1,18 @@
 import { useContext, useState, useEffect } from 'react';
-import { PoolContext } from '../../contexts/PoolContext';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { PoolContext, PoolContextIF } from '../../contexts/PoolContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../contexts/AppStateContext';
 
 // Custom hook to simulate isPoolInitialized for the first 2 seconds
 export const useSimulatedIsPoolInitialized = () => {
-    const poolContext = useContext(PoolContext);
-    const { chainData } = useContext(CrocEnvContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const poolContext = useContext<PoolContextIF>(PoolContext);
     const [simulatedIsPoolInitialized, setSimulatedIsPoolInitialized] =
-        useState(true);
+        useState<boolean>(true);
 
     useEffect(() => {
         setSimulatedIsPoolInitialized(true);
@@ -18,7 +23,7 @@ export const useSimulatedIsPoolInitialized = () => {
 
         // Clean up the timeout when the component unmounts
         return () => clearTimeout(timeoutId);
-    }, [poolContext.pool, chainData.chainId]);
+    }, [poolContext.pool, chainId]);
 
     return poolContext.isPoolInitialized === undefined
         ? simulatedIsPoolInitialized

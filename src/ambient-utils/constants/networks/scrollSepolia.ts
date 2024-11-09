@@ -18,31 +18,25 @@ const chain = {
     explorerUrl: 'https://sepolia.scrollscan.dev',
 };
 
+const chainSpec = lookupChain('0x8274f');
+
 export const scrollSepolia: NetworkIF = {
     chainId: '0x8274f',
     graphCacheUrl: GCGO_TESTNET_URL,
     evmRpcUrl: 'https://sepolia-rpc.scroll.io/',
     chain: chain,
-    shouldPollBlock: true,
     marketData: '0x1',
     defaultPair: [scrollSepoliaETH, scrollSepoliaUSDC],
+    poolIndex: chainSpec.poolIndex,
+    gridSize: chainSpec.gridSize,
+    blockExplorer: chainSpec.blockExplorer,
+    displayName: chainSpec.displayName,
     topPools: [
-        new TopPool(
-            scrollSepoliaETH,
-            scrollSepoliaUSDC,
-            lookupChain('0x8274f').poolIndex,
-        ),
-        new TopPool(
-            scrollSepoliaETH,
-            scrollSepoliaWBTC,
-            lookupChain('0xaa36a7').poolIndex,
-        ),
-        new TopPool(
-            scrollSepoliaUSDC,
-            scrollSepoliaWBTC,
-            lookupChain('0xaa36a7').poolIndex,
-        ),
+        new TopPool(scrollSepoliaETH, scrollSepoliaUSDC, chainSpec.poolIndex),
+        new TopPool(scrollSepoliaETH, scrollSepoliaWBTC, chainSpec.poolIndex),
+        new TopPool(scrollSepoliaUSDC, scrollSepoliaWBTC, chainSpec.poolIndex),
     ],
+    chainSpec: chainSpec,
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (

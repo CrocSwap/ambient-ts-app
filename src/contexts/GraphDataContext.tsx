@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useEffect, useMemo } from 'react';
+import {
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+    ReactNode,
+} from 'react';
 import { fetchUserRecentChanges, fetchRecords } from '../ambient-utils/api';
 import {
     TokenIF,
@@ -8,15 +15,19 @@ import {
     LiquidityDataIF,
     RecordType,
 } from '../ambient-utils/types';
-import { AppStateContext } from './AppStateContext';
-import { CachedDataContext } from './CachedDataContext';
-import { CrocEnvContext } from './CrocEnvContext';
-import { TokenContext } from './TokenContext';
-import { UserDataContext } from './UserDataContext';
-import { DataLoadingContext } from './DataLoadingContext';
-import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { CachedDataContext, CachedDataContextIF } from './CachedDataContext';
+import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
+import { TokenContext, TokenContextIF } from './TokenContext';
+import { UserDataContext, UserDataContextIF } from './UserDataContext';
+import { DataLoadingContext, DataLoadingContextIF } from './DataLoadingContext';
+import {
+    PositionUpdateIF,
+    ReceiptContext,
+    ReceiptContextIF,
+} from './ReceiptContext';
 import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
-import { TradeDataContext } from './TradeDataContext';
+import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
 
 export interface Changes {
     dataReceived: boolean;
@@ -95,92 +106,85 @@ export const GraphDataContext = createContext<GraphDataContextIF>(
     {} as GraphDataContextIF,
 );
 
-export const GraphDataContextProvider = (props: {
-    children: React.ReactNode;
-}) => {
-    const [positionsByUser, setPositionsByUser] =
-        React.useState<PositionsByUser>({
-            dataReceived: false,
-            positions: [],
-        });
-    const [limitOrdersByUser, setLimitOrdersByUser] =
-        React.useState<LimitOrdersByUser>({
-            dataReceived: false,
-            limitOrders: [],
-        });
-    const [transactionsByUser, setTransactionsByUser] = React.useState<Changes>(
-        {
-            dataReceived: false,
-            changes: [],
-        },
-    );
-    const [userPositionsByPool, setUserPositionsByPool] =
-        React.useState<PositionsByPool>({
-            dataReceived: false,
-            positions: [],
-        });
-    const [userTransactionsByPool, setUserTransactionsByPool] =
-        React.useState<Changes>({
-            dataReceived: false,
-            changes: [],
-        });
-
-    const [positionsByPool, setPositionsByPool] =
-        React.useState<PositionsByPool>({
-            dataReceived: false,
-            positions: [],
-        });
-    const [leaderboardByPool, setLeaderboardByPool] =
-        React.useState<PositionsByPool>({
-            dataReceived: false,
-            positions: [],
-        });
-    const [transactionsByPool, setTransactionsByPool] = React.useState<Changes>(
-        {
-            dataReceived: false,
-            changes: [],
-        },
-    );
-
-    const [userLimitOrdersByPool, setUserLimitOrdersByPool] =
-        React.useState<LimitOrdersByPool>({
-            dataReceived: false,
-            limitOrders: [],
-        });
-    const [limitOrdersByPool, setLimitOrdersByPool] =
-        React.useState<LimitOrdersByPool>({
-            dataReceived: false,
-            limitOrders: [],
-        });
-
-    const [liquidityData, setLiquidityData] = React.useState<
-        LiquidityDataIF | undefined
-    >(undefined);
-
-    const [liquidityFee, setLiquidityFee] = React.useState<number>(0);
+export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const {
+        activeNetwork: { graphCacheUrl, chainId },
         server: { isEnabled: isServerEnabled },
         isUserIdle,
-    } = useContext(AppStateContext);
-
-    const { baseToken, quoteToken } = useContext(TradeDataContext);
-
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { baseToken, quoteToken } =
+        useContext<TradeDataContextIF>(TradeDataContext);
     const { pendingTransactions, allReceipts, sessionPositionUpdates } =
-        useContext(ReceiptContext);
-
-    const { setDataLoadingStatus } = useContext(DataLoadingContext);
+        useContext<ReceiptContextIF>(ReceiptContext);
+    const { setDataLoadingStatus } =
+        useContext<DataLoadingContextIF>(DataLoadingContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
-    } = useContext(CachedDataContext);
-    const { crocEnv, provider, chainData, activeNetwork } =
-        useContext(CrocEnvContext);
-    const { tokens } = useContext(TokenContext);
-
+    } = useContext<CachedDataContextIF>(CachedDataContext);
+    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { tokens } = useContext<TokenContextIF>(TokenContext);
     const { userAddress: userDefaultAddress, isUserConnected } =
-        useContext(UserDataContext);
+        useContext<UserDataContextIF>(UserDataContext);
+
+    const [positionsByUser, setPositionsByUser] = useState<PositionsByUser>({
+        dataReceived: false,
+        positions: [],
+    });
+    const [limitOrdersByUser, setLimitOrdersByUser] =
+        useState<LimitOrdersByUser>({
+            dataReceived: false,
+            limitOrders: [],
+        });
+    const [transactionsByUser, setTransactionsByUser] = useState<Changes>({
+        dataReceived: false,
+        changes: [],
+    });
+    const [userPositionsByPool, setUserPositionsByPool] =
+        useState<PositionsByPool>({
+            dataReceived: false,
+            positions: [],
+        });
+    const [userTransactionsByPool, setUserTransactionsByPool] =
+        useState<Changes>({
+            dataReceived: false,
+            changes: [],
+        });
+
+    const [positionsByPool, setPositionsByPool] = useState<PositionsByPool>({
+        dataReceived: false,
+        positions: [],
+    });
+    const [leaderboardByPool, setLeaderboardByPool] = useState<PositionsByPool>(
+        {
+            dataReceived: false,
+            positions: [],
+        },
+    );
+    const [transactionsByPool, setTransactionsByPool] = useState<Changes>({
+        dataReceived: false,
+        changes: [],
+    });
+
+    const [userLimitOrdersByPool, setUserLimitOrdersByPool] =
+        useState<LimitOrdersByPool>({
+            dataReceived: false,
+            limitOrders: [],
+        });
+    const [limitOrdersByPool, setLimitOrdersByPool] =
+        useState<LimitOrdersByPool>({
+            dataReceived: false,
+            limitOrders: [],
+        });
+
+    const [liquidityData, setLiquidityData] = useState<
+        LiquidityDataIF | undefined
+    >(undefined);
+
+    const [liquidityFee, setLiquidityFee] = useState<number>(0);
+
     const userAddress = userDefaultAddress;
 
     const resetUserGraphData = () => {
@@ -262,8 +266,9 @@ export const GraphDataContextProvider = (props: {
         setLiquidityData(undefined);
     };
 
-    const [sessionTransactionHashes, setSessionTransactionHashes] =
-        React.useState<string[]>([]);
+    const [sessionTransactionHashes, setSessionTransactionHashes] = useState<
+        string[]
+    >([]);
 
     useEffect(() => {
         resetUserGraphData();
@@ -456,7 +461,7 @@ export const GraphDataContextProvider = (props: {
                 !crocEnv ||
                 !provider ||
                 !tokens.tokenUniv.length ||
-                !chainData.chainId
+                !chainId
             ) {
                 return;
             }
@@ -466,8 +471,8 @@ export const GraphDataContextProvider = (props: {
                     const updatedLedger = await fetchRecords({
                         recordType: recordTargets[i],
                         user: userAddress,
-                        chainId: chainData.chainId,
-                        gcUrl: activeNetwork.graphCacheUrl,
+                        chainId: chainId,
+                        gcUrl: graphCacheUrl,
                         provider,
                         tokenUniv: tokens.tokenUniv,
                         crocEnv,
@@ -506,9 +511,9 @@ export const GraphDataContextProvider = (props: {
                 fetchUserRecentChanges({
                     tokenList: tokens.tokenUniv,
                     user: userAddress,
-                    chainId: chainData.chainId,
+                    chainId: chainId,
                     crocEnv: crocEnv,
-                    graphCacheUrl: activeNetwork.graphCacheUrl,
+                    graphCacheUrl: graphCacheUrl,
                     provider,
                     n: 100, // fetch last 100 changes,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
@@ -592,7 +597,7 @@ export const GraphDataContextProvider = (props: {
         tokens.tokenUniv.length,
         isUserConnected,
         userAddress,
-        chainData.chainId,
+        chainId,
         isUserIdle
             ? Math.floor(Date.now() / (onAccountRoute ? 60000 : 120000))
             : Math.floor(Date.now() / (onAccountRoute ? 15000 : 60000)), // cache every 15 seconds while viewing portfolio, otherwise 1 minute

@@ -7,12 +7,12 @@ import { favePoolsMethodsIF, useFavePools } from '../App/hooks/useFavePools';
 import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
-import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { TradeDataContext } from './TradeDataContext';
 import { getMoneynessRankByAddr } from '../ambient-utils/dataLayer';
+import { AppStateContext } from './AppStateContext';
 
-interface UserPreferenceIF {
+export interface UserPreferenceContextIF {
     favePools: favePoolsMethodsIF;
     swapSlippage: SlippageMethodsIF;
     mintSlippage: SlippageMethodsIF;
@@ -26,20 +26,20 @@ interface UserPreferenceIF {
     bypassConfirmRepo: skipConfirmIF;
     cssDebug: {
         cache: (k: string, v: string) => void;
-        check: (k: string) => string|undefined;
+        check: (k: string) => string | undefined;
     };
 }
 
-export const UserPreferenceContext = createContext<UserPreferenceIF>(
-    {} as UserPreferenceIF,
+export const UserPreferenceContext = createContext<UserPreferenceContextIF>(
+    {} as UserPreferenceContextIF,
 );
 
 export const UserPreferenceContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -92,16 +92,15 @@ export const UserPreferenceContextProvider = (props: {
     ]);
     /* ------------------------------------------ END USER PREFERENCES CONTEXT ------------------------------------------ */
 
-
     const cssDebugMap = new Map();
     function cacheCSSProperty(k: string, v: string): void {
         cssDebugMap.set(k, v);
     }
-    function checkCSSPropertyCache(k: string): string|undefined {
+    function checkCSSPropertyCache(k: string): string | undefined {
         return cssDebugMap.get(k);
     }
 
-    const userPreferencesProps: UserPreferenceIF = {
+    const userPreferencesProps: UserPreferenceContextIF = {
         favePools: useFavePools(),
         swapSlippage: useSlippage('swap'),
         mintSlippage: useSlippage('mint'),
@@ -116,7 +115,7 @@ export const UserPreferenceContextProvider = (props: {
         cssDebug: {
             cache: cacheCSSProperty,
             check: checkCSSPropertyCache,
-        }
+        },
     };
 
     // Memoize the object being passed to context. This assumes that all of the individual top-level values

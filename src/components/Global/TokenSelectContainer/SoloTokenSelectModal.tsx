@@ -20,7 +20,7 @@ import { TokenContext, TokenContextIF } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import {
     CachedDataContext,
-    CachedDataIF,
+    CachedDataContextIF,
 } from '../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import Modal from '../Modal/Modal';
@@ -33,6 +33,7 @@ import {
     TradeDataContext,
     TradeDataContextIF,
 } from '../../../contexts/TradeDataContext';
+import { AppStateContext } from '../../../contexts';
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
@@ -54,15 +55,16 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         tokenAorB,
         reverseTokens,
         platform = 'ambient',
-        isFuta = false,
     } = props;
 
-    const { cachedTokenDetails } = useContext<CachedDataIF>(CachedDataContext);
+    const { cachedTokenDetails } =
+        useContext<CachedDataContextIF>(CachedDataContext);
+    const { provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+
     const {
-        chainData: { chainId },
-        provider,
-    } = useContext<CrocEnvContextIF>(CrocEnvContext);
-    isFuta;
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+
     const {
         tokens,
         outputTokens,

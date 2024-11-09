@@ -1,11 +1,11 @@
 import { useContext } from 'react';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import Row from '../../Global/Row/Row';
 import styles from './LimitActionInfo.module.css';
 import { TokenContext } from '../../../contexts/TokenContext';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
+import { AppStateContext } from '../../../contexts';
 
 interface ILimitActionInfoProps {
     type: 'Remove' | 'Claim';
@@ -37,8 +37,8 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
     } = props;
 
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
     const tokenQuantityToken: TokenIF | undefined =

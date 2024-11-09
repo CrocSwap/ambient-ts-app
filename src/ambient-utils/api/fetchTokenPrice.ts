@@ -45,7 +45,8 @@ export const fetchTokenPrice = async (
             // if token is ETH, return current value of ETH-USDC pool
             dispToken.toLowerCase() === defaultPair[0].address.toLowerCase()
         ) {
-            if (!crocEnv) return;
+            if (!crocEnv || (await crocEnv.context).chain.chainId !== chain)
+                return;
             const spotPrice = await querySpotPrice(
                 crocEnv,
                 defaultPair[0].address.toLowerCase(),

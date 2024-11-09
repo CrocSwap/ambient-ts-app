@@ -18,12 +18,12 @@ import TokenIcon from '../Global/TokenIcon/TokenIcon';
 import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSelectModal';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { Link, useLocation } from 'react-router-dom';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useModal } from '../Global/Modal/useModal';
 import styles from './TokenInputQuantity.module.css';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
 import { BrandContext, BrandContextIF } from '../../contexts/BrandContext';
+import { AppStateContext } from '../../contexts';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -78,8 +78,8 @@ function TokenInputQuantity(props: propsIF) {
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
@@ -339,7 +339,7 @@ function TokenInputQuantity(props: propsIF) {
             id={fieldId}
             style={{
                 borderRadius: customBorderRadius ? customBorderRadius : '1rem',
-                minHeight: '81px'
+                minHeight: '81px',
             }}
         >
             {label && <span className={styles.text}>{label}</span>}

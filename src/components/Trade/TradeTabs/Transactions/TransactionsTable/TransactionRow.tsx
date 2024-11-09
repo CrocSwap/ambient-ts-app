@@ -67,11 +67,10 @@ function TransactionRow(props: propsIF) {
     } = useProcessTransaction(tx, userAddress, crocEnv, isAccountView);
 
     const {
+        activeNetwork: { blockExplorer },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const {
-        chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
+
     const { showAllData: showAllDataSelection, currentTxActiveInTransactions } =
         useContext(TradeTableContext);
 
