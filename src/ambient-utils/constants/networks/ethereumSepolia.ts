@@ -19,25 +19,26 @@ const chain = {
     explorerUrl: 'https://sepolia.etherscan.io',
 };
 
+const chainSpec = lookupChain('0xaa36a7');
+
 export const ethereumSepolia: NetworkIF = {
     chainId: '0xaa36a7',
     graphCacheUrl: GCGO_TESTNET_URL,
     evmRpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
-    // evmRpcUrl: 'https://sepolia.infura.io/v3/' + PROVIDER_KEY,
     chain: chain,
-    shouldPollBlock: false,
     marketData: '0x1',
     defaultPair: [sepoliaETH, sepoliaUSDC],
     defaultPairFuta: [sepoliaETH, sepoliaWBTC],
+    poolIndex: chainSpec.poolIndex,
+    gridSize: chainSpec.gridSize,
+    blockExplorer: chainSpec.blockExplorer,
+    displayName: chainSpec.displayName,
     topPools: [
-        new TopPool(sepoliaETH, sepoliaUSDC, lookupChain('0xaa36a7').poolIndex),
-        new TopPool(sepoliaETH, sepoliaWBTC, lookupChain('0xaa36a7').poolIndex),
-        new TopPool(
-            sepoliaUSDC,
-            sepoliaWBTC,
-            lookupChain('0xaa36a7').poolIndex,
-        ),
+        new TopPool(sepoliaETH, sepoliaUSDC, chainSpec.poolIndex),
+        new TopPool(sepoliaETH, sepoliaWBTC, chainSpec.poolIndex),
+        new TopPool(sepoliaUSDC, sepoliaWBTC, chainSpec.poolIndex),
     ],
+    chainSpec: chainSpec,
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (

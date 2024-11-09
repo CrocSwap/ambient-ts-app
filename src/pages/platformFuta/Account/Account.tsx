@@ -29,12 +29,10 @@ export default function Account() {
     const { updateUserAuctionsList } = useContext(AuctionsContext);
     const {
         walletModal: { open: openWalletModal },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const {
-        chainData: { chainId },
-        crocEnv,
-    } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { address: addressFromParams } = useParams();
 
@@ -189,7 +187,7 @@ export default function Account() {
                 </div>
             </div>
             <button
-                id="futa_account_claim_all_button"
+                id='futa_account_claim_all_button'
                 className={
                     isButtonDisabled
                         ? `${styles.claimButton} ${styles.disabledButton}`

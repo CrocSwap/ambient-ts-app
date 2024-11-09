@@ -37,7 +37,7 @@ import {
 } from '../ambient-utils/dataLayer';
 import { NFTQueryFn, memoizeFetchNFT } from '../ambient-utils/api/fetchNft';
 
-export interface CachedDataIF {
+export interface CachedDataContextIF {
     cachedFetchAmbientListWalletBalances: AmbientListBalancesQueryFn;
     cachedFetchDexBalances: DexBalancesQueryFn;
     cachedFetchTokenPrice: TokenPriceFn;
@@ -57,15 +57,15 @@ export interface CachedDataIF {
     cachedFetchNFT: NFTQueryFn;
 }
 
-export const CachedDataContext = createContext<CachedDataIF>(
-    {} as CachedDataIF,
+export const CachedDataContext = createContext<CachedDataContextIF>(
+    {} as CachedDataContextIF,
 );
 
 // TODO: refactor to cache in context and use other contexts as dependencies
 export const CachedDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const cachedDataState: CachedDataIF = {
+    const cachedDataState: CachedDataContextIF = {
         cachedFetchAmbientListWalletBalances:
             memoizeFetchAmbientListWalletBalances(),
         cachedFetchDexBalances: memoizeFetchDexBalances(),

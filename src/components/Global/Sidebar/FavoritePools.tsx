@@ -10,6 +10,7 @@ import {
     ViewMoreFlex,
 } from '../../../styled/Components/Sidebar';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { AppStateContext } from '../../../contexts';
 
 interface propsIF {
     cachedQuerySpotPrice: PoolQueryFn;
@@ -20,10 +21,10 @@ export default function FavoritePools(props: propsIF) {
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
+    const { crocEnv } = useContext(CrocEnvContext);
     const {
-        chainData: { chainId, poolIndex: poolId },
-        crocEnv,
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId, poolIndex: poolId },
+    } = useContext(AppStateContext);
     const { favePools } = useContext(UserPreferenceContext);
 
     const isAlreadyFavorited = favePools.check(
@@ -41,6 +42,8 @@ export default function FavoritePools(props: propsIF) {
         if (!crocEnv) return;
 
         const fetchSpotPrices = async () => {
+            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+                return;
             const spotPricePromises = favePools.pools
                 .filter((pool) => pool.chainId === chainId)
                 .map((pool) =>

@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
 import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
@@ -21,6 +20,7 @@ import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
+import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -52,8 +52,8 @@ function LimitTokenInput(props: propsIF) {
     } = props;
 
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const { pool } = useContext(PoolContext);
     const {
         baseToken: {

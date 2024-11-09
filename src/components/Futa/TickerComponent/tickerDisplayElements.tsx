@@ -25,7 +25,7 @@ import {
     maxMarketCapWeiValues,
 } from '../../../pages/platformFuta/mockAuctionData';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../contexts';
 
 // Props interface
 export interface PropsIF {
@@ -83,8 +83,8 @@ export const tickerDisplayElements = (props: PropsIF) => {
     const { ticker: tickerFromParams } = useParams();
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const { showComments, setShowComments, watchlists } =
         useContext(AuctionsContext);
 
