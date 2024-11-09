@@ -248,13 +248,19 @@ function Transactions(props: propsIF) {
 
     useEffect(() => {
         // clear fetched transactions when switching pools
-        if (transactionsByPool.changes.length === 0) {
+        if (!isAccountView && transactionsByPool.changes.length === 0) {
             setFetchedTransactions({
                 dataReceived: true,
                 changes: [],
             });
         }
-    }, [transactionsByPool.changes]);
+        else if(isAccountView && userTransactionsByPool.changes.length === 0){
+            setFetchedTransactions({
+                dataReceived: true,
+                changes: [],
+            });
+        }
+    }, [transactionsByPool.changes, userTransactionsByPool.changes]);
 
     
     // const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
