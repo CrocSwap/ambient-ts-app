@@ -63,6 +63,33 @@
     padding: 4px;
 }
 
+/* SKELETON */
+@keyframes shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+    100% {
+        background-position: -100% 0;
+    }
+}
+.skeletonItem{
+    background: linear-gradient(
+        to right,
+        var(--dark2) 0%,
+        var(--dark1) 20%,
+        var(--dark2) 40%,
+        var(--dark2) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite ease-in-out;
+    border-radius: 4px;
+
+    color: transparent;
+    pointer-events: none !important;
+   
+}
+/* END OF SKELETON */
+
 @media only screen and (min-width: 768px) {
     .gridContainer {
         gap: 8px;

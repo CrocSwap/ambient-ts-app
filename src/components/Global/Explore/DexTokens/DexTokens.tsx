@@ -1,5 +1,4 @@
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
-import Spinner from '../../Spinner/Spinner';
 import styles from './DexTokens.module.css';
 import { useSortedDexTokens, sortedDexTokensIF } from '../useSortedDexTokens';
 import { getDefaultPairForChain } from '../../../../ambient-utils/constants';
@@ -19,6 +18,7 @@ import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useToken
 import ExploreToggle from '../ExploreToggle/ExploreToggle';
 import TokenRow from '../TokenRow/TokenRow';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
+import TokenRowSkeleton from '../TokenRow/TokenRowSkeleton';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 export type columnSlugs =
@@ -173,6 +173,12 @@ function DexTokens(props: propsIF) {
         </div>
     );
 
+    const tempItems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    const skeletonDisplay = tempItems.map((item, idx) => (
+        <TokenRowSkeleton key={idx} />
+    ));
+
     return (
         <div
             className={styles.mainContainer}
@@ -184,51 +190,47 @@ function DexTokens(props: propsIF) {
             <div className={`${styles.contentContainer} custom_scroll_ambient`}>
                 <div className={styles.borderRight} />
 
-                {sortedTokens.data.length ? (
-                    sortedTokens.data.map((token: dexTokenData) => {
-                        const samplePool: PoolIF | undefined =
-                            findPool(
-                                token.tokenAddr,
-                                defaultTokensForChain[0],
-                            ) ??
-                            findPool(
-                                token.tokenAddr,
-                                defaultTokensForChain[1],
-                            ) ??
-                            findPool(token.tokenAddr);
+                {sortedTokens.data.length
+                    ? sortedTokens.data.map((token: dexTokenData) => {
+                          const samplePool: PoolIF | undefined =
+                              findPool(
+                                  token.tokenAddr,
+                                  defaultTokensForChain[0],
+                              ) ??
+                              findPool(
+                                  token.tokenAddr,
+                                  defaultTokensForChain[1],
+                              ) ??
+                              findPool(token.tokenAddr);
 
-                        const backupPool: GCServerPoolIF | undefined =
-                            unfilteredPools.find(
-                                (p: GCServerPoolIF) =>
-                                    (p.base.toLowerCase() ===
-                                        token.tokenAddr.toLowerCase() &&
-                                        !isWrappedNativeToken(p.quote)) ||
-                                    (p.quote.toLowerCase() ===
-                                        token.tokenAddr.toLowerCase() &&
-                                        !isWrappedNativeToken(p.base)),
-                            );
+                          const backupPool: GCServerPoolIF | undefined =
+                              unfilteredPools.find(
+                                  (p: GCServerPoolIF) =>
+                                      (p.base.toLowerCase() ===
+                                          token.tokenAddr.toLowerCase() &&
+                                          !isWrappedNativeToken(p.quote)) ||
+                                      (p.quote.toLowerCase() ===
+                                          token.tokenAddr.toLowerCase() &&
+                                          !isWrappedNativeToken(p.base)),
+                              );
 
-                        if (!token.tokenMeta || (!samplePool && !backupPool))
-                            return null;
+                          if (!token.tokenMeta || (!samplePool && !backupPool))
+                              return null;
 
-                        return (
-                            <TokenRow
-                                key={token.tokenAddr}
-                                token={token}
-                                tokenMeta={token.tokenMeta}
-                                samplePool={samplePool}
-                                backupPool={backupPool}
-                                goToMarket={goToMarket}
-                            />
-                        );
-                    })
-                ) : searchQuery ? (
-                    noResults
-                ) : (
-                    <div className={styles.spinner_container}>
-                        <Spinner size={100} bg='var(--dark1)' centered />
-                    </div>
-                )}
+                          return (
+                              <TokenRow
+                                  key={token.tokenAddr}
+                                  token={token}
+                                  tokenMeta={token.tokenMeta}
+                                  samplePool={samplePool}
+                                  backupPool={backupPool}
+                                  goToMarket={goToMarket}
+                              />
+                          );
+                      })
+                    : searchQuery
+                      ? noResults
+                      : skeletonDisplay}
             </div>
         </div>
     );
