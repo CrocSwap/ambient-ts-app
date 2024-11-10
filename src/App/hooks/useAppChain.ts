@@ -228,8 +228,7 @@ export const useAppChain = (): {
             linkGenCurrent.navigate(`chain=${network.chainId}`);
         } else if (isPathUserAddress || isPathUserXpOrLeaderboard) {
             // this one is specific to user account pages
-            // !IMPORTANT:  not this one
-            window.location.reload();
+            // linkGenCurrent.reload();
         } else {
             linkGenCurrent.navigate();
         }

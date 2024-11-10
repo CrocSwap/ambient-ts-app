@@ -3,6 +3,7 @@ import {
     useEffect,
     useState,
     useContext,
+    useMemo,
 } from 'react';
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
@@ -131,6 +132,7 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userPositions = json?.data;
+                console.log({ userPositions, crocEnv, provider });
                 // temporarily skip ENS fetch
                 const skipENSFetch = true;
                 if (userPositions && crocEnv && provider) {
@@ -151,6 +153,7 @@ export default function PortfolioTabs(props: propsIF) {
                         }),
                     )
                         .then((updatedPositions) => {
+                            console.log({ updatedPositions });
                             setLookupAccountPositionData(
                                 updatedPositions.filter(
                                     (p) => p.positionLiq > 0,
@@ -176,7 +179,6 @@ export default function PortfolioTabs(props: propsIF) {
         )
             .then((response) => response?.json())
             .then((json) => {
-                // temporarily skip ENS fetch
                 const userLimitOrderStates = json?.data;
                 if (userLimitOrderStates && crocEnv && provider) {
                     Promise.all(
@@ -241,6 +243,8 @@ export default function PortfolioTabs(props: propsIF) {
 
     useEffect(() => {
         (async () => {
+            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+                return;
             if (
                 isServerEnabled &&
                 !connectedAccountActive &&
@@ -267,35 +271,53 @@ export default function PortfolioTabs(props: propsIF) {
             ? Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS))
             : Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         !!tokens.tokenUniv,
-        !!crocEnv,
-        !!provider,
+        crocEnv,
+        chainId,
+        provider,
 
         isServerEnabled,
     ]);
 
-    const activeAccountPositionData = connectedAccountActive
-        ? _positionsByUser
-        : lookupAccountPositionData;
-    // eslint-disable-next-line
-    const activeAccountLimitOrderData = connectedAccountActive
-        ? _limitsByUser
-        : lookupAccountLimitOrderData;
+    const activeAccountPositionData = useMemo(
+        () =>
+            connectedAccountActive
+                ? _positionsByUser
+                : lookupAccountPositionData,
+        [connectedAccountActive, _positionsByUser, lookupAccountPositionData],
+    );
+    const activeAccountLimitOrderData = useMemo(
+        () =>
+            connectedAccountActive
+                ? _limitsByUser
+                : lookupAccountLimitOrderData,
+        [connectedAccountActive, _limitsByUser, lookupAccountLimitOrderData],
+    );
 
-    const activeAccountTransactionData = connectedAccountActive
-        ? _txsByUser?.filter((tx) => {
-              if (tx.changeType !== 'fill' && tx.changeType !== 'cross') {
-                  return true;
-              } else {
-                  return false;
-              }
-          })
-        : lookupAccountTransactionData?.filter((tx) => {
-              if (tx.changeType !== 'fill' && tx.changeType !== 'cross') {
-                  return true;
-              } else {
-                  return false;
-              }
-          });
+    const activeAccountTransactionData = useMemo(
+        () =>
+            connectedAccountActive
+                ? _txsByUser?.filter((tx) => {
+                      if (
+                          tx.changeType !== 'fill' &&
+                          tx.changeType !== 'cross'
+                      ) {
+                          return true;
+                      } else {
+                          return false;
+                      }
+                  })
+                : lookupAccountTransactionData?.filter((tx) => {
+                      if (
+                          tx.changeType !== 'fill' &&
+                          tx.changeType !== 'cross'
+                      ) {
+                          return true;
+                      } else {
+                          return false;
+                      }
+                  }),
+        [connectedAccountActive, _txsByUser, lookupAccountTransactionData],
+    );
 
     // props for <Wallet/> React Element
     const walletProps = {

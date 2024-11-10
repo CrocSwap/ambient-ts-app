@@ -618,17 +618,13 @@ function Ranges(props: propsIF) {
                 ? activeAccountPositionData || []
                 : !showAllData
                   ? activeUserPositionsByPool
-                  : //   : positionsByPool.positions.filter(
-                    //         (position) => position.positionLiq != 0,
-                    //     ),
-                    fetchedTransactions.positions,
+                  : fetchedTransactions.positions,
         [
             showAllData,
             isAccountView,
             activeAccountPositionData,
-            positionsByPool,
             activeUserPositionsByPool,
-            fetchedTransactions, // infinite scroll
+            fetchedTransactions.positions, // infinite scroll
         ],
     );
 
