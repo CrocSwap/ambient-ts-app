@@ -18,7 +18,7 @@
     width: 100%;
     height: calc(100svh - 60px);
     display: grid;
-    grid-template-rows: 1fr 185px;
+    grid-template-rows: 1fr 135px;
 
     background: var(--dark1);
 

@@ -173,7 +173,7 @@ export default function App() {
                 )}
                 <AppOverlay />
                 {platformName === 'futa' ? (
-                    <Navbar />
+                   location.pathname !== '/' && <Navbar />
                 ) : (
                     location.pathname !== '/' && <PageHeader />
                 )}
