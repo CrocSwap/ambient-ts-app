@@ -293,6 +293,11 @@ function Portfolio(props: propsIF) {
                 chainId &&
                 !connectedAccountActive
             ) {
+                if (
+                    !crocEnv ||
+                    (await crocEnv.context).chain.chainId !== chainId
+                )
+                    return;
                 try {
                     setResolvedAddressTokens([]);
                     const combinedBalances: TokenIF[] = [];
