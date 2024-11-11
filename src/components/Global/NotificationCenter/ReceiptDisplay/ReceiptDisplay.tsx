@@ -12,6 +12,7 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import Spinner from '../../Spinner/Spinner';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { AppStateContext } from '../../../../contexts';
 
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
@@ -22,10 +23,11 @@ interface ReceiptDisplayPropsIF {
 
 export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const { status, hash, txBlockNumber, txType } = props;
+    const { provider } = useContext(CrocEnvContext);
+
     const {
-        chainData: { chainId },
-        provider,
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const { cachedFetchBlockTime } = useContext(CachedDataContext);
     const { removeReceipt } = useContext(ReceiptContext);
@@ -103,7 +105,6 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
 
     return (
         <div
-            
             className={styles.container}
             tabIndex={0}
             role='listitem'

@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
@@ -17,6 +16,7 @@ import { FlexContainer } from '../../../../../styled/Common';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import { getPositionHash } from '../../../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { AppStateContext } from '../../../../../contexts';
 
 interface PropsIF {
     transaction: {
@@ -46,8 +46,8 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
 
     const { showAllData } = useContext(TradeTableContext);
     const {
-        chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { blockExplorer },
+    } = useContext(AppStateContext);
 
     const { isDenomBase } = useContext(TradeDataContext);
 

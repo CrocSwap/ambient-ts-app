@@ -182,6 +182,11 @@ export const hiddenTokens = [
         address: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
         chainId: 11155111,
     },
+    {
+        // aUSDC on Plume Devnet
+        address: '0xef380e725648cfe1488d98973151599a75186016',
+        chainId: 98864,
+    },
 ];
 
 const embargoedTokens = [

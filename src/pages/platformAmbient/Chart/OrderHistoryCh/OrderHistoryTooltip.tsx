@@ -14,11 +14,11 @@ import {
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
 import { RiExternalLinkLine } from 'react-icons/ri';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useContext, useState } from 'react';
 import HoveredTooltip from '../Draw/Toolbar/HoveredTooltip';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
+import { AppStateContext } from '../../../../contexts';
 
 export default function OrderHistoryTooltip(props: {
     hoveredOrderHistory: TransactionIF;
@@ -50,8 +50,8 @@ export default function OrderHistoryTooltip(props: {
     } = props;
 
     const {
-        chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { blockExplorer },
+    } = useContext(AppStateContext);
 
     const { platformName } = useContext(BrandContext);
 

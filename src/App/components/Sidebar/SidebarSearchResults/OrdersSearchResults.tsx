@@ -1,6 +1,5 @@
 import { useContext } from 'react';
 import { LimitOrderIF } from '../../../../ambient-utils/types';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import {
     useLinkGen,
@@ -18,6 +17,7 @@ import {
 } from '../../../../styled/Components/Sidebar';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     searchedLimitOrders: LimitOrderIF[];
@@ -76,8 +76,8 @@ export default function OrdersSearchResults(props: propsIF) {
         useContext(SidebarContext);
 
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const {
         setCurrentLimitOrderActive,
         setShowAllData,

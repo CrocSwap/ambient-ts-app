@@ -107,7 +107,12 @@ export const useTokenStats = (
         const tokenStatsNormalized = await expandTokenStats(t);
 
         async function expandTokenStats(token: DexTokenAggServerIF) {
-            if (!crocEnv || !tokenMeta) return;
+            if (
+                !crocEnv ||
+                !tokenMeta ||
+                (await crocEnv.context).chain.chainId !== chainId
+            )
+                return;
             const tokenPricePromise: Promise<TokenPriceFnReturn> =
                 cachedFetchTokenPrice(token.tokenAddr, chainId, crocEnv);
             const ethPricePromise: Promise<TokenPriceFnReturn> =
@@ -200,7 +205,7 @@ export const useTokenStats = (
     // redecorate token data when token lists are pulled for the first time
     useEffect(() => {
         fetchData();
-    }, [tokenMethods.tokenUniv.length]);
+    }, [tokenMethods.tokenUniv.length, crocEnv]);
 
     return {
         data: dexTokens,
