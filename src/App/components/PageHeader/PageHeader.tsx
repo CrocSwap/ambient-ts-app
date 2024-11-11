@@ -230,6 +230,8 @@ const PageHeader = function () {
                 document.title = `${ensNameOrAddressTruncated} Wallet Balances ~ Ambient`;
             } else if (pathNoLeadingSlash.includes('exchange-balances')) {
                 document.title = `${ensNameOrAddressTruncated} Exchange Balances ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('xp')) {
+                document.title = `${ensNameOrAddressTruncated} XP ~ Ambient`;
             } else {
                 document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
             }
@@ -252,6 +254,8 @@ const PageHeader = function () {
             } else {
                 document.title = 'Explore ~ Ambient';
             }
+        } else if (pathNoLeadingSlash.includes('xp-leaderboard')) {
+            document.title = 'XP Leaderboard ~ Ambient';
         } else if (location.pathname.includes('404')) {
             document.title = '404 ~ Ambient';
         } else {
