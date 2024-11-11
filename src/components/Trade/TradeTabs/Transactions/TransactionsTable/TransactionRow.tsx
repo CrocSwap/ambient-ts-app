@@ -67,7 +67,7 @@ function TransactionRow(props: propsIF) {
     } = useProcessTransaction(tx, userAddress, crocEnv, isAccountView);
 
     const {
-        chainData: { blockExplorer },
+        activeNetwork: { blockExplorer },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 

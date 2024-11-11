@@ -25,7 +25,7 @@ export default function Auctions(props: propsIF) {
         updateUserAuctionsList,
     } = useContext(AuctionsContext);
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
 

@@ -41,9 +41,7 @@ function RangePriceInfo(props: propsIF) {
         isAmbient,
     } = props;
     const {
-        // eslint-disable-next-line
-        globalPopup: { open: openGlobalPopup },
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {

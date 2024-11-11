@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ChainSpec } from '@crocswap-libs/sdk';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
 import {
     getDefaultChainId,
@@ -13,7 +11,6 @@ import { chainIds, NetworkIF } from '../../ambient-utils/types';
 import { getNetworkData, supportedNetworks } from '../../ambient-utils/constants';
 
 export const useAppChain = (): {
-    chainData: ChainSpec;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
 } => {
@@ -178,9 +175,7 @@ export const useAppChain = (): {
                             }
                         }
                         if (activeNetwork.chainId != incomingChainFromWallet) {
-                            setActiveNetwork(
-                                findNetworkData(incomingChainFromWallet),
-                            );
+                            window.location.reload();
                         } else {
                             setIgnoreFirst(false);
                         }
@@ -205,8 +200,6 @@ export const useAppChain = (): {
                 : (localStorage.getItem(CHAIN_LS_KEY) ?? defaultChain),
         ) || findNetworkData(defaultChain),
     );
-
-    useEffect(() => console.log(activeNetwork), [activeNetwork]);
 
     function findNetworkData(chn: keyof typeof supportedNetworks): NetworkIF {
         const output = supportedNetworks[chn];
@@ -259,18 +252,7 @@ export const useAppChain = (): {
         // window.location.reload();
     }
 
-    // data from the SDK about the current chain in the connected wallet
-    // chain is validated upstream of this process
-    const chainData = useMemo<ChainSpec>(() => {
-        const output: ChainSpec =
-            lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
-        // return output varibale (chain data)
-        console.log(output);
-        return output;
-    }, [activeNetwork.chainId]);
-
     return {
-        chainData,
         activeNetwork,
         chooseNetwork,
     };

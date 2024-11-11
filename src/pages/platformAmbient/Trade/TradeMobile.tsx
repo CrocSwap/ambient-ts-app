@@ -115,7 +115,7 @@ export default function TradeMobile(props: propsIF) {
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const {
         layout,
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const { isPoolPriceChangePositive } = useContext(PoolContext);

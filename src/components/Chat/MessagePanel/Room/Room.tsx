@@ -98,7 +98,7 @@ export default function Room(props: propsIF) {
     const { topPools } = useContext(CrocEnvContext);
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);

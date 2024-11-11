@@ -46,7 +46,7 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
 
     const { showAllData } = useContext(TradeTableContext);
     const {
-        chainData: { blockExplorer },
+        activeNetwork: { blockExplorer },
     } = useContext(AppStateContext);
 
     const { isDenomBase } = useContext(TradeDataContext);

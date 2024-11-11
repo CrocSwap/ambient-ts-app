@@ -7,7 +7,7 @@ import {
     useEffect,
     useState,
 } from 'react';
-import { CachedDataContext, CachedDataContextIF } from './CachedDataContext';
+import { CachedDataContext } from './CachedDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { PoolIF, SinglePoolDataIF } from '../ambient-utils/types';
 import {
@@ -16,15 +16,15 @@ import {
     expandPoolStats,
 } from '../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
+import { CrocEnvContext } from './CrocEnvContext';
 import { PoolContext } from './PoolContext';
 import {
     useTokenStatsIF,
     useTokenStats,
 } from '../pages/platformAmbient/Explore/useTokenStats';
-import { TokenContext, TokenContextIF } from './TokenContext';
-import { ChainDataContext, ChainDataContextIF } from './ChainDataContext';
-import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { TokenContext } from './TokenContext';
+import { ChainDataContext } from './ChainDataContext';
+import { AppStateContext } from './AppStateContext';
 
 export interface ExploreContextIF {
     pools: {
@@ -61,14 +61,12 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { chainData, activeNetwork } =
-        useContext<AppStateContextIF>(AppStateContext);
+    const { activeNetwork } = useContext(AppStateContext);
     const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
-        useContext<CachedDataContextIF>(CachedDataContext);
-    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { tokens } = useContext<TokenContextIF>(TokenContext);
-    const { allPoolStats } = useContext<ChainDataContextIF>(ChainDataContext);
-    // metadata only
+        useContext(CachedDataContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
+    const { allPoolStats } = useContext(ChainDataContext);
     const { poolList } = useContext(PoolContext);
 
     const [allPools, setAllPools] = useState<Array<PoolDataIF>>([]);
@@ -83,13 +81,13 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     // used to prevent displaying data for a previous network after switching networks
     useEffect(() => {
         if (intermediaryPoolData.length) {
-            if (intermediaryPoolData[0].chainId === chainData.chainId) {
+            if (intermediaryPoolData[0].chainId === activeNetwork.chainId) {
                 setAllPools(intermediaryPoolData);
             }
         } else {
             setAllPools([]);
         }
-    }, [chainData.chainId, intermediaryPoolData]);
+    }, [activeNetwork.chainId, intermediaryPoolData]);
 
     useEffect(() => {
         const savedDollarizationPreference =
@@ -106,7 +104,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // use metadata to get expanded pool data
-            getAllPoolData(poolList, crocEnv, chainData.chainId);
+            getAllPoolData(poolList, crocEnv, activeNetwork.chainId);
         }
     };
 
@@ -355,7 +353,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     }
 
     const dexTokens: useTokenStatsIF = useTokenStats(
-        chainData.chainId,
+        activeNetwork.chainId,
         crocEnv,
         activeNetwork.graphCacheUrl,
         cachedFetchTokenPrice,

@@ -92,7 +92,7 @@ export default function InitPool() {
     const { crocEnv, provider, ethMainnetUsdPrice } =
         useContext(CrocEnvContext);
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const { dexBalRange } = useContext(UserPreferenceContext);

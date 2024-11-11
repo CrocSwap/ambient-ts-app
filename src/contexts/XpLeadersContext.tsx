@@ -27,7 +27,7 @@ export const XpLeadersContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const [xpLeadersGlobal, setXpLeadersGlobal] =

@@ -54,10 +54,7 @@ function RangeDetailsModal(props: propsIF) {
 
     const [showShareComponent, setShowShareComponent] = useState(true);
     const { isDenomBase } = useContext(TradeDataContext);
-    const {
-        provider,
-        crocEnv,
-    } = useContext(CrocEnvContext);
+    const { provider, crocEnv } = useContext(CrocEnvContext);
 
     const {
         base: baseTokenAddress,
@@ -92,8 +89,7 @@ function RangeDetailsModal(props: propsIF) {
     >();
 
     const {
-        activeNetwork,
-        chainData: { chainId, poolIndex },
+        activeNetwork: { graphCacheUrl, chainId, poolIndex },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
@@ -153,6 +149,8 @@ function RangeDetailsModal(props: propsIF) {
     const updateLiq = async () => {
         try {
             if (!crocEnv || !position) return;
+            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+                return;
             const pos = crocEnv.positions(
                 position.base,
                 position.quote,
@@ -371,7 +369,7 @@ function RangeDetailsModal(props: propsIF) {
     useEffect(() => {
         const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
             ? GCGO_OVERRIDE_URL + '/position_stats?'
-            : activeNetwork.graphCacheUrl + '/position_stats?';
+            : graphCacheUrl + '/position_stats?';
 
         updateLiq();
 
@@ -531,7 +529,10 @@ function RangeDetailsModal(props: propsIF) {
                 {!showShareComponent ? (
                     <RangeDetailsSimplify {...DetailProps} />
                 ) : (
-                    <div className={styles.mobile_price_graph_container} style={{marginTop: '12px'}}>
+                    <div
+                        className={styles.mobile_price_graph_container}
+                        style={{ marginTop: '12px' }}
+                    >
                         <PriceInfo {...PriceInfoProps} />
                         <div className={styles.graph_section_mobile}>
                             <TransactionDetailsGraph {...GraphProps} />

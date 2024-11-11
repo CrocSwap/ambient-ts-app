@@ -31,7 +31,7 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
     } = props;
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const [showExtraDetails] = useState<boolean>(true);

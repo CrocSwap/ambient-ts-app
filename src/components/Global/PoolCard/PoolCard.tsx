@@ -25,7 +25,7 @@ export default function PoolCard(props: propsIF) {
     const { pool, spotPrice } = props;
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
@@ -65,31 +65,29 @@ export default function PoolCard(props: propsIF) {
 
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
-            {isHovered || denomTokenIsStableToken
-                ? denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
-                    ? `${
+            {poolPrice === undefined || spotPrice === undefined
+                ? '…'
+                : isHovered || denomTokenIsStableToken
+                  ? denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
+                      ? `${
+                            usdPrice
+                                ? getFormattedNumber({
+                                      value: usdPrice,
+                                      prefix: '$',
+                                  })
+                                : '…'
+                        }`
+                      : poolPrice
+                  : denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
+                    ? poolPrice
+                    : `${
                           usdPrice
                               ? getFormattedNumber({
                                     value: usdPrice,
                                     prefix: '$',
                                 })
                               : '…'
-                      }`
-                    : poolPrice === undefined
-                      ? '…'
-                      : poolPrice
-                : denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
-                  ? poolPrice === undefined
-                      ? '…'
-                      : poolPrice
-                  : `${
-                        usdPrice
-                            ? getFormattedNumber({
-                                  value: usdPrice,
-                                  prefix: '$',
-                              })
-                            : '…'
-                    }`}
+                      }`}
         </div>
     );
 
@@ -120,7 +118,9 @@ export default function PoolCard(props: propsIF) {
                         : styles.change_negative
                 }
             >
-                {poolPrice === undefined || poolPriceChangePercent === undefined
+                {spotPrice === undefined ||
+                poolPrice === undefined ||
+                poolPriceChangePercent === undefined
                     ? '…'
                     : poolPriceChangePercent}
             </div>

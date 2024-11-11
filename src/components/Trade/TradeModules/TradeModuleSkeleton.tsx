@@ -59,7 +59,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     } = props;
 
     const {
-        chainData: { blockExplorer },
+        activeNetwork: { blockExplorer },
         tutorial: { isActive: isTutorialActive },
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);

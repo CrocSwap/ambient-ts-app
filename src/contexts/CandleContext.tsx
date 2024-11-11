@@ -69,7 +69,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         numCandlesFetched,
         setNumCandlesFetched,
     } = useContext(ChartContext);
-    const { chainData, activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
+    const {
+        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+    } = useContext<AppStateContextIF>(AppStateContext);
     const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const {
         baseToken: { address: baseTokenAddress },
@@ -209,6 +211,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
         isPoolInitialized,
+        crocEnv !== undefined,
     ]);
 
     useEffect(() => {
@@ -293,8 +296,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 chartSettings?.candleTimeGlobal || 3600;
             fetchCandleSeriesHybrid(
                 true,
-                chainData,
-                activeNetwork.graphCacheUrl,
+                chainId,
+                poolIndex,
+                graphCacheUrl,
                 candleTimeLocal || defaultCandleDuration,
                 baseTokenAddress,
                 quoteTokenAddress,
@@ -405,8 +409,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
         fetchCandleSeriesHybrid(
             true,
-            chainData,
-            activeNetwork.graphCacheUrl,
+            chainId,
+            poolIndex,
+            graphCacheUrl,
             candleTimeLocal,
             baseTokenAddress,
             quoteTokenAddress,

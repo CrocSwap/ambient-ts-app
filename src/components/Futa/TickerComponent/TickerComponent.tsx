@@ -66,7 +66,7 @@ const useAuctionContexts = () => {
 
     const { isUserConnected } = useContext(UserDataContext);
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
     const { tokenBalances } = useContext(TokenBalanceContext);

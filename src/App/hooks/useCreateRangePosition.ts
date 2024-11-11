@@ -24,7 +24,7 @@ export function useCreateRangePosition() {
     const { crocEnv } = useContext(CrocEnvContext);
 
     const {
-        chainData: { gridSize, poolIndex },
+        activeNetwork: { gridSize, poolIndex },
     } = useContext(AppStateContext);
 
     const { userAddress } = useContext(UserDataContext);

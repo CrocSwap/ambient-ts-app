@@ -73,14 +73,16 @@ const sepoliaProvider = new BatchedJsonRpcProvider(SEPOLIA_RPC_URL, 11155111, {
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
+    const {
+        activeNetwork: { chainId, evmRpcUrl },
+    } = useContext<AppStateContextIF>(AppStateContext);
 
     const { userAddress } = useContext(UserDataContext);
     const { walletProvider } = useWeb3ModalProvider();
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
     const { tokens } = useContext(TokenContext);
 
-    const topPools: PoolIF[] = useTopPools(chainData.chainId);
+    const topPools: PoolIF[] = useTopPools(chainId);
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
     >();
@@ -93,7 +95,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
 
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplateIF {
         const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] =
-            getDefaultPairForChain(chainData.chainId);
+            getDefaultPairForChain(chainId);
 
         const savedTokenASymbol: string | null = localStorage.getItem('tokenA');
         const savedTokenBSymbol: string | null = localStorage.getItem('tokenB');
@@ -158,38 +160,32 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         };
     }
 
-    const initUrl = createDefaultUrlParams(chainData.chainId);
+    const initUrl = createDefaultUrlParams(chainId);
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplateIF>(initUrl);
 
-    useEffect(() => {
-        console.log({ initUrl, defaultUrlParams });
-    }, [initUrl, defaultUrlParams]);
-
-    const nodeUrl = ['0x1'].includes(chainData.chainId)
+    const nodeUrl = ['0x1'].includes(chainId)
         ? MAINNET_RPC_URL
-        : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+        : ['0x13e31'].includes(chainId) // use blast env variable for blast network
           ? BLAST_RPC_URL
-          : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+          : ['0x82750'].includes(chainId) // use scroll env variable for scroll network
             ? SCROLL_RPC_URL
-            : chainData.nodeUrl;
+            : evmRpcUrl;
 
     const provider = useMemo(
         () =>
-            chainData.chainId === '0x1'
+            chainId === '0x1'
                 ? mainnetProvider
-                : chainData.chainId === '0x82750'
+                : chainId === '0x82750'
                   ? scrollProvider
-                  : chainData.chainId === '0x13e31'
+                  : chainId === '0x13e31'
                     ? blastProvider
-                    : chainData.chainId === '0xaa36a7'
+                    : chainId === '0xaa36a7'
                       ? sepoliaProvider
-                      : new BatchedJsonRpcProvider(
-                            nodeUrl,
-                            parseInt(chainData.chainId),
-                            { staticNetwork: true },
-                        ),
-        [chainData.chainId],
+                      : new BatchedJsonRpcProvider(nodeUrl, parseInt(chainId), {
+                            staticNetwork: true,
+                        }),
+        [chainId],
     );
 
     useBlacklist(userAddress);
@@ -229,8 +225,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         }
     }, [crocEnv, provider]);
     useEffect(() => {
-        setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
-    }, [chainData.chainId]);
+        setDefaultUrlParams(createDefaultUrlParams(chainId));
+    }, [chainId]);
 
     // data returned by this context
     const crocEnvContext: CrocEnvContextIF = {

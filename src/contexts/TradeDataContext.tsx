@@ -17,8 +17,8 @@ import {
     isStablePair,
     translateTokenSymbol,
 } from '../ambient-utils/dataLayer';
-import { TokenContext, TokenContextIF } from './TokenContext';
-import { AppStateContextIF, AppStateContext } from './AppStateContext';
+import { TokenContext } from './TokenContext';
+import { AppStateContext } from './AppStateContext';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -69,15 +69,16 @@ export const TradeDataContext = createContext<TradeDataContextIF>(
 // pair is necessary at load time
 
 export const TradeDataContextProvider = (props: { children: ReactNode }) => {
-    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
-    const { tokens } = useContext<TokenContextIF>(TokenContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+    const { tokens } = useContext(TokenContext);
 
     const savedTokenASymbol = localStorage.getItem('tokenA');
     const savedTokenBSymbol = localStorage.getItem('tokenB');
 
-    const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] = getDefaultPairForChain(
-        chainData.chainId,
-    );
+    const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] =
+        getDefaultPairForChain(chainId);
 
     useEffect(() => {
         console.log({ dfltTokenA, dfltTokenB });
@@ -143,7 +144,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
                   ? dfltTokenA
                   : dfltTokenB,
         );
-    }, [chainData.chainId]);
+    }, [chainId]);
 
     const [
         areDefaultTokensUpdatedForChain,
@@ -246,12 +247,12 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
 
     const defaultRangeWidthForActivePool = useMemo(() => {
         const defaultWidth = getDefaultRangeWidthForTokenPair(
-            chainData.chainId,
+            chainId,
             baseToken.address,
             quoteToken.address,
         );
         return defaultWidth;
-    }, [baseToken.address + quoteToken.address + chainData.chainId]);
+    }, [baseToken.address + quoteToken.address + chainId]);
 
     const tradeDataContext = {
         tokenA,
@@ -282,7 +283,6 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         setLimitTick,
         setPoolPriceNonDisplay,
         setSlippageTolerance,
-        chainData,
         defaultRangeWidthForActivePool,
         getDefaultRangeWidthForTokenPair,
         noGoZoneBoundaries,

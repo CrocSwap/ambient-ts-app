@@ -30,7 +30,9 @@ export default function TransactionException(props: propsIF) {
     }
     const rangeModuleActive = location.pathname.includes('/trade/pool');
     const { tokenA, tokenB, isTokenAPrimary } = useContext(TradeDataContext);
-    const { chainData } = useContext(AppStateContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     useEffect(() => {
         if (txError.reason === 'sending a transaction requires a signer') {
             location.reload();
@@ -39,7 +41,7 @@ export default function TransactionException(props: propsIF) {
             (txError.code === 'NETWORK_ERROR' && txError.event === 'changed')
         ) {
             console.log('caught network changed error, switching');
-            useSwitchNetwork().switchNetwork(Number(chainData.chainId));
+            useSwitchNetwork().switchNetwork(Number(chainId));
         }
     }, [txError]);
 

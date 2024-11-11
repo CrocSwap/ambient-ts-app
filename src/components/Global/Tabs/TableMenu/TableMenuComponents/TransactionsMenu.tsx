@@ -42,7 +42,7 @@ export default function TransactionsMenu(props: propsIF) {
         positionHash,
     } = props;
     const {
-        chainData: { blockExplorer, chainId },
+        activeNetwork: { blockExplorer, chainId },
     } = useContext(AppStateContext);
     const {
         setSimpleRangeWidth,

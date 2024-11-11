@@ -24,7 +24,6 @@ import {
 import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
 import { useWeb3Modal } from '@web3modal/ethers/react';
 import { useAppChain } from '../App/hooks/useAppChain';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { NetworkIF } from '../ambient-utils/types';
 
 export interface AppStateContextIF {
@@ -55,7 +54,6 @@ export interface AppStateContextIF {
     dismissTopBannerPopup: () => void;
     isUserIdle: boolean;
     isUserIdle20min: boolean;
-    chainData: ChainSpec;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
     layout: {
@@ -91,34 +89,34 @@ export const AppStateContextProvider = (props: {
         viewportHeight: window.innerHeight,
     });
     // Add this useEffect for handling resize
-useEffect(() => {
-    const calculateHeights = () => {
-        const viewportHeight = window.innerHeight;
-        setDimensions({
-            contentHeight: viewportHeight - TOTAL_FIXED_HEIGHT,
-            viewportHeight
-        });
-    };
+    useEffect(() => {
+        const calculateHeights = () => {
+            const viewportHeight = window.innerHeight;
+            setDimensions({
+                contentHeight: viewportHeight - TOTAL_FIXED_HEIGHT,
+                viewportHeight,
+            });
+        };
 
-    // Debounced resize handler for performance
-    let timeoutId: NodeJS.Timeout;
-    const handleResize = () => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(calculateHeights, 150);
-    };
+        // Debounced resize handler for performance
+        let timeoutId: NodeJS.Timeout;
+        const handleResize = () => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(calculateHeights, 150);
+        };
 
-    // Add event listener
-    window.addEventListener('resize', handleResize);
+        // Add event listener
+        window.addEventListener('resize', handleResize);
 
-    // Initial calculation
-    calculateHeights();
+        // Initial calculation
+        calculateHeights();
 
-    // Cleanup
-    return () => {
-        window.removeEventListener('resize', handleResize);
-        clearTimeout(timeoutId);
-    };
-}, []);
+        // Cleanup
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            clearTimeout(timeoutId);
+        };
+    }, []);
 
     //  end of layout------------
 
@@ -296,7 +294,7 @@ useEffect(() => {
         }
     }, [isChatEnabled, CHAT_ENABLED]);
 
-    const { chainData, activeNetwork, chooseNetwork } = useAppChain();
+    const { activeNetwork, chooseNetwork } = useAppChain();
 
     const appStateContext = useMemo(
         () => ({
@@ -306,7 +304,7 @@ useEffect(() => {
             },
             layout: {
                 contentHeight: dimensions.contentHeight,
-                viewportHeight: dimensions.viewportHeight
+                viewportHeight: dimensions.viewportHeight,
             },
             appHeaderDropdown: {
                 isActive: isAppHeaderDropdown,
@@ -340,7 +338,6 @@ useEffect(() => {
             dismissPointSystemPopup,
             showTopPtsBanner,
             dismissTopBannerPopup,
-            chainData,
             activeNetwork,
             chooseNetwork,
         }),
@@ -368,7 +365,6 @@ useEffect(() => {
             dismissTopBannerPopup,
             dimensions.contentHeight,
             dimensions.viewportHeight,
-            chainData,
             activeNetwork,
             chooseNetwork,
         ],

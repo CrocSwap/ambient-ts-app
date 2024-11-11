@@ -50,7 +50,7 @@ export default function OrderHistoryTooltip(props: {
     } = props;
 
     const {
-        chainData: { blockExplorer },
+        activeNetwork: { blockExplorer },
     } = useContext(AppStateContext);
 
     const { platformName } = useContext(BrandContext);

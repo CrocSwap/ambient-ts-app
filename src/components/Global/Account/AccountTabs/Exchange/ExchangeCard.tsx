@@ -29,7 +29,7 @@ export default function ExchangeCard(props: propsIF) {
     const { crocEnv } = useContext(CrocEnvContext);
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const isMobile = useMediaQuery('(max-width: 800px)');

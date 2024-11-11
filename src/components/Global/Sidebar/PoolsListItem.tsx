@@ -33,7 +33,7 @@ export default function PoolsListItem(props: propsIF) {
         useContext(SidebarContext);
 
     const {
-        chainData: { chainId, poolIndex },
+        activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
     const { favePools } = useContext(UserPreferenceContext);
     const { platformName } = useContext<BrandContextIF>(BrandContext);

@@ -55,8 +55,9 @@ export default function TransactionDetailsGraph(
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
     } = props;
-    const { activeNetwork, chainData } =
-        useContext<AppStateContextIF>(AppStateContext);
+    const {
+        activeNetwork: { graphCacheUrl, chainId, poolIndex },
+    } = useContext<AppStateContextIF>(AppStateContext);
     const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext<CachedDataContextIF>(CachedDataContext);
@@ -132,7 +133,8 @@ export default function TransactionDetailsGraph(
     };
 
     const fetchEnabled = !!(
-        chainData &&
+        chainId &&
+        poolIndex &&
         isServerEnabled &&
         baseTokenAddress &&
         quoteTokenAddress
@@ -145,7 +147,7 @@ export default function TransactionDetailsGraph(
     const mobileView = useMediaQuery('(min-width: 800px)');
     const [svgWidth, setSvgWidth] = useState(0);
 
-    const { chainId, base, quote, baseDecimals, quoteDecimals } = props.tx;
+    const { base, quote, baseDecimals, quoteDecimals } = props.tx;
 
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
@@ -237,7 +239,10 @@ export default function TransactionDetailsGraph(
                     Math.floor(localMaxTime / 1000) + offsetInSeconds;
 
                 try {
-                    if (!crocEnv) {
+                    if (
+                        !crocEnv ||
+                        (await crocEnv.context).chain.chainId !== chainId
+                    ) {
                         return;
                     }
 
@@ -267,8 +272,9 @@ export default function TransactionDetailsGraph(
 
                     const graphData = await fetchCandleSeriesCroc(
                         fetchEnabled,
-                        chainData,
-                        activeNetwork.graphCacheUrl,
+                        chainId,
+                        poolIndex,
+                        graphCacheUrl,
                         tempPeriod,
                         baseTokenAddress,
                         quoteTokenAddress,

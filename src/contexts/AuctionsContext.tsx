@@ -88,7 +88,7 @@ export const AuctionsContext = createContext<AuctionsContextIF>(
 
 export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const {

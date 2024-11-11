@@ -78,7 +78,7 @@ function TokenInputQuantity(props: propsIF) {
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');

@@ -37,7 +37,7 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
     } = props;
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);

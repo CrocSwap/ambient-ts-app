@@ -1,10 +1,4 @@
-import {
-    useEffect,
-    useState,
-    memo,
-    useContext,
-    useCallback,
-} from 'react';
+import { useEffect, useState, memo, useContext, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimateSharedLayout, motion } from 'framer-motion';
 import UserMenu from './UserMenu/UserMenu';
@@ -12,12 +6,27 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { AppStateContext, AppStateContextIF } from '../../../contexts/AppStateContext';
-import { CrocEnvContext, CrocEnvContextIF } from '../../../contexts/CrocEnvContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../contexts/AppStateContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../contexts/CrocEnvContext';
 import { PoolContext, PoolContextIF } from '../../../contexts/PoolContext';
-import { SidebarContext, SidebarContextIF } from '../../../contexts/SidebarContext';
-import { TradeTokenContext, TradeTokenContextIF } from '../../../contexts/TradeTokenContext';
-import { TradeTableContext, TradeTableContextIF } from '../../../contexts/TradeTableContext';
+import {
+    SidebarContext,
+    SidebarContextIF,
+} from '../../../contexts/SidebarContext';
+import {
+    TradeTokenContext,
+    TradeTokenContextIF,
+} from '../../../contexts/TradeTokenContext';
+import {
+    TradeTableContext,
+    TradeTableContextIF,
+} from '../../../contexts/TradeTableContext';
 import {
     getFormattedNumber,
     chainNumToString,
@@ -31,32 +40,45 @@ import {
 } from '../../../utils/hooks/useLinkGen';
 import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
-import { UserDataContext, UserDataContextIF } from '../../../contexts/UserDataContext';
-import { GraphDataContext, GraphDataContextIF } from '../../../contexts/GraphDataContext';
-import { TokenBalanceContext, TokenBalanceContextIF } from '../../../contexts/TokenBalanceContext';
+import {
+    UserDataContext,
+    UserDataContextIF,
+} from '../../../contexts/UserDataContext';
+import {
+    GraphDataContext,
+    GraphDataContextIF,
+} from '../../../contexts/GraphDataContext';
+import {
+    TokenBalanceContext,
+    TokenBalanceContextIF,
+} from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { ReceiptContext, ReceiptContextIF } from '../../../contexts/ReceiptContext';
+import {
+    ReceiptContext,
+    ReceiptContextIF,
+} from '../../../contexts/ReceiptContext';
 import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 import styles from './PageHeader.module.css';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 
 const PageHeader = function () {
     const {
-        chainData: { chainId, poolIndex: poolId },
+        activeNetwork: { chainId, poolIndex: poolId },
         walletModal: { open: openWalletModal },
-        appHeaderDropdown
+        appHeaderDropdown,
     } = useContext<AppStateContextIF>(AppStateContext);
-    const {
-        crocEnv,
-        setCrocEnv,
-    } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { crocEnv, setCrocEnv } =
+        useContext<CrocEnvContextIF>(CrocEnvContext);
     const { headerImage } = useContext<BrandContextIF>(BrandContext);
-    const { resetTokenBalances } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
-    const { resetUserGraphData } = useContext<GraphDataContextIF>(GraphDataContext);
+    const { resetTokenBalances } =
+        useContext<TokenBalanceContextIF>(TokenBalanceContext);
+    const { resetUserGraphData } =
+        useContext<GraphDataContextIF>(GraphDataContext);
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext<PoolContextIF>(PoolContext);
     const { recentPools } = useContext<SidebarContextIF>(SidebarContext);
-    const { setShowAllData, activeTradeTab } = useContext<TradeTableContextIF>(TradeTableContext);
+    const { setShowAllData, activeTradeTab } =
+        useContext<TradeTableContextIF>(TradeTableContext);
     const {
         baseToken: {
             setBalance: setBaseTokenBalance,
@@ -346,11 +368,7 @@ const PageHeader = function () {
 
     const routeDisplay = (
         <AnimateSharedLayout>
-            <nav
-                className={styles.primaryNavigation}
-                id='primary_navigation'
-               
-            >
+            <nav className={styles.primaryNavigation} id='primary_navigation'>
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
                         <Link
@@ -412,7 +430,11 @@ const PageHeader = function () {
             <header
                 className={styles.primaryHeader}
                 data-testid={'page-header'}
-                style={{ position: 'sticky', top: 0, zIndex: isBottomSheetOpen ? 0.1 : 10 }}
+                style={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: isBottomSheetOpen ? 0.1 : 10,
+                }}
             >
                 <div
                     onClick={(event: React.MouseEvent) => {

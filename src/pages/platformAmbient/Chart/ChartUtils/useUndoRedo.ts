@@ -28,7 +28,7 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
     >([]);
 
     const {
-        chainData: { poolIndex },
+        activeNetwork: { poolIndex },
     } = useContext(AppStateContext);
 
     const [drawActionStack, setDrawActionStack] = useState(

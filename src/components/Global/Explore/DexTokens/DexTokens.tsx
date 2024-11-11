@@ -10,7 +10,7 @@ import {
 import { PoolContext, PoolContextIF } from '../../../../contexts/PoolContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { usePoolList2 } from '../../../../App/hooks/usePoolList2';
-import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { isWrappedNativeToken } from '../../../../ambient-utils/dataLayer';
 import AssignSort from '../AssignSort';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
@@ -18,7 +18,7 @@ import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useToken
 import ExploreToggle from '../ExploreToggle/ExploreToggle';
 import TokenRow from '../TokenRow/TokenRow';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
-import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 import TokenRowSkeleton from '../TokenRow/TokenRowSkeleton';
 
 export type columnSlugs =
@@ -60,11 +60,10 @@ function DexTokens(props: propsIF) {
         handleToggle,
     } = props;
 
-    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
+    const { activeNetwork } = useContext(AppStateContext);
 
     const { findPool } = useContext<PoolContextIF>(PoolContext);
     const isPWA = useIsPWA();
-
 
     const defaultTokensForChain: [TokenIF, TokenIF] =
         getDefaultPairForChain(chainId);
@@ -75,7 +74,7 @@ function DexTokens(props: propsIF) {
     // this logic is here to patch cases where existing logic to identify a token pool fails,
     // ... this is not an optimal location but works as a stopgap that minimizes needing to
     // ... alter existing logic or type annotation in the component tree
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const unfilteredPools: GCServerPoolIF[] = usePoolList2(
         activeNetwork.graphCacheUrl,
         crocEnv,
@@ -178,11 +177,12 @@ function DexTokens(props: propsIF) {
 
     const skeletonDisplay = tempItems.map((item, idx) => (
         <TokenRowSkeleton key={idx} />
-    ))
+    ));
 
     return (
-        <div className={styles.mainContainer}
-        style={{ marginBottom: isPWA ? '0' : '50px' }}
+        <div
+            className={styles.mainContainer}
+            style={{ marginBottom: isPWA ? '0' : '50px' }}
         >
             <ExploreToggle view={view} handleToggle={handleToggle} />
 
@@ -190,49 +190,47 @@ function DexTokens(props: propsIF) {
             <div className={`${styles.contentContainer} custom_scroll_ambient`}>
                 <div className={styles.borderRight} />
 
-                {sortedTokens.data.length ? (
-                    sortedTokens.data.map((token: dexTokenData) => {
-                        const samplePool: PoolIF | undefined =
-                            findPool(
-                                token.tokenAddr,
-                                defaultTokensForChain[0],
-                            ) ??
-                            findPool(
-                                token.tokenAddr,
-                                defaultTokensForChain[1],
-                            ) ??
-                            findPool(token.tokenAddr);
+                {sortedTokens.data.length
+                    ? sortedTokens.data.map((token: dexTokenData) => {
+                          const samplePool: PoolIF | undefined =
+                              findPool(
+                                  token.tokenAddr,
+                                  defaultTokensForChain[0],
+                              ) ??
+                              findPool(
+                                  token.tokenAddr,
+                                  defaultTokensForChain[1],
+                              ) ??
+                              findPool(token.tokenAddr);
 
-                        const backupPool: GCServerPoolIF | undefined =
-                            unfilteredPools.find(
-                                (p: GCServerPoolIF) =>
-                                    (p.base.toLowerCase() ===
-                                        token.tokenAddr.toLowerCase() &&
-                                        !isWrappedNativeToken(p.quote)) ||
-                                    (p.quote.toLowerCase() ===
-                                        token.tokenAddr.toLowerCase() &&
-                                        !isWrappedNativeToken(p.base)),
-                            );
+                          const backupPool: GCServerPoolIF | undefined =
+                              unfilteredPools.find(
+                                  (p: GCServerPoolIF) =>
+                                      (p.base.toLowerCase() ===
+                                          token.tokenAddr.toLowerCase() &&
+                                          !isWrappedNativeToken(p.quote)) ||
+                                      (p.quote.toLowerCase() ===
+                                          token.tokenAddr.toLowerCase() &&
+                                          !isWrappedNativeToken(p.base)),
+                              );
 
-                        if (!token.tokenMeta || (!samplePool && !backupPool))
-                            return null;
+                          if (!token.tokenMeta || (!samplePool && !backupPool))
+                              return null;
 
-                        return (
-                            <TokenRow
-                                key={token.tokenAddr}
-                                token={token}
-                                tokenMeta={token.tokenMeta}
-                                samplePool={samplePool}
-                                backupPool={backupPool}
-                                goToMarket={goToMarket}
-                            />
-                        );
-                    })
-                ) : searchQuery ? (
-                    noResults
-                ) : (
-                    skeletonDisplay
-                )}
+                          return (
+                              <TokenRow
+                                  key={token.tokenAddr}
+                                  token={token}
+                                  tokenMeta={token.tokenMeta}
+                                  samplePool={samplePool}
+                                  backupPool={backupPool}
+                                  goToMarket={goToMarket}
+                              />
+                          );
+                      })
+                    : searchQuery
+                      ? noResults
+                      : skeletonDisplay}
             </div>
         </div>
     );

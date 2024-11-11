@@ -58,7 +58,7 @@ const useFetchPoolStats = (
     } = useContext(CrocEnvContext);
 
     const {
-        chainData: { chainId },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     const { lastBlockNumber, allPoolStats } = useContext(ChainDataContext);
@@ -121,6 +121,11 @@ const useFetchPoolStats = (
     useEffect(() => {
         if (isServerEnabled && crocEnv) {
             (async () => {
+                if (
+                    !crocEnv ||
+                    (await crocEnv.context).chain.chainId !== chainId
+                )
+                    return;
                 const spotPrice =
                     spotPriceRetrieved !== undefined
                         ? spotPriceRetrieved
@@ -184,7 +189,7 @@ const useFetchPoolStats = (
         spotPriceRetrieved,
         isServerEnabled,
         chainId,
-        crocEnv !== undefined,
+        crocEnv,
         lastBlockNumber !== 0,
         poolPriceNonDisplay,
         poolPriceCacheTime,
@@ -254,6 +259,7 @@ const useFetchPoolStats = (
     useEffect(() => {
         if (crocEnv && poolPriceDisplayNum) {
             const fetchTokenPrice = async () => {
+                if ((await crocEnv.context).chain.chainId !== chainId) return;
                 const baseTokenPrice =
                     (await cachedFetchTokenPrice(baseAddr, chainId, crocEnv))
                         ?.usdPrice || 0.0;
@@ -298,7 +304,7 @@ const useFetchPoolStats = (
         baseAddr,
         quoteAddr,
         chainId,
-        crocEnv === undefined,
+        crocEnv,
         poolPriceDisplayNum,
         ethMainnetUsdPrice === undefined,
     ]);

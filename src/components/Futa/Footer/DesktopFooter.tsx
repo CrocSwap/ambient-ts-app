@@ -1,11 +1,19 @@
 import { useContext } from 'react';
 import styles from './Footer.module.css';
-import { ChainDataContext, ChainDataContextIF } from '../../../contexts/ChainDataContext';
+import {
+    ChainDataContext,
+    ChainDataContextIF,
+} from '../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
-import { AppStateContext, AppStateContextIF } from '../../../contexts/AppStateContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../contexts/AppStateContext';
 
 export default function DesktopFooter() {
-    const { chainData } = useContext<AppStateContextIF>(AppStateContext);
+    const {
+        activeNetwork: { displayName },
+    } = useContext<AppStateContextIF>(AppStateContext);
     const { nativeTokenUsdPrice, lastBlockNumber, rpcNodeStatus } =
         useContext<ChainDataContextIF>(ChainDataContext);
 
@@ -27,7 +35,7 @@ export default function DesktopFooter() {
     return (
         <footer data-theme='futa_dark' className={styles.desktopContainer}>
             <p className={styles.network}>
-                NETWORK: {chainData.displayName.toUpperCase()}
+                NETWORK: {displayName.toUpperCase()}
             </p>
             <div className={styles.leftContainer}>
                 <p className={styles.price}>

@@ -23,7 +23,7 @@ export default function FavoritePools(props: propsIF) {
 
     const { crocEnv } = useContext(CrocEnvContext);
     const {
-        chainData: { chainId, poolIndex: poolId },
+        activeNetwork: { chainId, poolIndex: poolId },
     } = useContext(AppStateContext);
     const { favePools } = useContext(UserPreferenceContext);
 
@@ -42,6 +42,8 @@ export default function FavoritePools(props: propsIF) {
         if (!crocEnv) return;
 
         const fetchSpotPrices = async () => {
+            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+                return;
             const spotPricePromises = favePools.pools
                 .filter((pool) => pool.chainId === chainId)
                 .map((pool) =>

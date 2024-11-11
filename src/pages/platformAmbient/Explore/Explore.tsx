@@ -33,7 +33,9 @@ export default function Explore(props: ExploreIF) {
     } = useContext(ExploreContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
-    const { chainData } = useContext(AppStateContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const { poolList } = useContext(PoolContext);
     const {
         isActiveNetworkBlast,
@@ -43,7 +45,7 @@ export default function Explore(props: ExploreIF) {
 
     const getAllPoolData = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
-            pools.getAll(poolList, crocEnv, chainData.chainId);
+            pools.getAll(poolList, crocEnv, chainId);
         }
     };
 
@@ -78,7 +80,7 @@ export default function Explore(props: ExploreIF) {
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     function goToMarket(tknA: string, tknB: string): void {
         linkGenMarket.navigate({
-            chain: chainData.chainId,
+            chain: chainId,
             tokenA: tknA,
             tokenB: tknB,
         });
@@ -317,7 +319,7 @@ export default function Explore(props: ExploreIF) {
             {view === 'tokens' && (
                 <DexTokens
                     dexTokens={filteredTokens}
-                    chainId={chainData.chainId}
+                    chainId={chainId}
                     goToMarket={goToMarket}
                     searchQuery={searchQueryToken}
                     setSearchQuery={setSearchQueryToken}

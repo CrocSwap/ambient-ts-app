@@ -75,7 +75,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
     const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
 
     const {
-        chainData: { blockExplorer },
+        activeNetwork: { blockExplorer },
         snackbar: { open: openSnackbar },
     } = useContext<AppStateContextIF>(AppStateContext);
 
@@ -241,27 +241,30 @@ export default function PortfolioBannerAccount(props: propsIF) {
                     // differential view for small screens
                     // some items only appear when viewing your own page
                     useMediaQuery('(max-width: 567px)') && (
-                    <div className={styles.button_bank}>
-                        <div>
-                            <button className={styles.dark_button} onClick={() => {
-                                const linkToNavigateTo: string = (ensName || userAddress)
-                                    ? `/${ensName || userAddress}/xp`
-                                    : resolvedAddressFromContext
-                                    ? `/${resolvedAddressFromContext}/xp`
-                                    : `/${userAddress}/xp`;
-                                navigate(linkToNavigateTo);
-                            }}>
-                                Points
-                            </button>
-                            {
-                            isUserConnected &&
+                        <div className={styles.button_bank}>
+                            <div>
                                 <button
-                                    className={styles.logout_button}
-                                    onClick={() => disconnectUser()}
+                                    className={styles.dark_button}
+                                    onClick={() => {
+                                        const linkToNavigateTo: string =
+                                            ensName || userAddress
+                                                ? `/${ensName || userAddress}/xp`
+                                                : resolvedAddressFromContext
+                                                  ? `/${resolvedAddressFromContext}/xp`
+                                                  : `/${userAddress}/xp`;
+                                        navigate(linkToNavigateTo);
+                                    }}
                                 >
-                                    Log Out
+                                    Points
                                 </button>
-                            }
+                                {isUserConnected && (
+                                    <button
+                                        className={styles.logout_button}
+                                        onClick={() => disconnectUser()}
+                                    >
+                                        Log Out
+                                    </button>
+                                )}
                             </div>
                             {isUserConnected && (
                                 <button

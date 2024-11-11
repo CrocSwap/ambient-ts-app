@@ -24,7 +24,10 @@ import {
 import { PoolContext } from '../../contexts/PoolContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { fetchEnsAddress } from '../../ambient-utils/api';
-import { AppStateContext, AppStateContextIF } from '../../contexts/AppStateContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../contexts/AppStateContext';
 
 // types specifying which results set should render in the dom
 // `standard` ⮕ standard sidebar content
@@ -57,7 +60,7 @@ export const useSidebarSearch = (
     limitOrderList: LimitOrderIF[],
     tokens: tokenMethodsIF,
 ): sidebarSearchIF => {
-    const { activeNetwork, chainData } = useContext<AppStateContextIF>(AppStateContext);
+    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
     const { poolList } = useContext(PoolContext);
 
     // needed to resolve ENS addresses entered by user
@@ -375,7 +378,7 @@ export const useSidebarSearch = (
             walletEndpoint += '/user_txs?';
             walletEndpoint += new URLSearchParams({
                 user: searchStr,
-                chainId: chainData.chainId,
+                chainId: activeNetwork.chainId,
                 n: '1',
             });
             // determine if user-created search input is a wallet (implied by tx data present)
