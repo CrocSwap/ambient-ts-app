@@ -5,8 +5,11 @@ import React, {
     useEffect,
     useMemo,
     useState,
+    ReactNode,
+    Dispatch,
+    SetStateAction,
 } from 'react';
-import { CrocEnvContext } from './CrocEnvContext';
+import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
 import { usePoolList } from '../App/hooks/usePoolList';
 import { PoolIF, PoolStatIF, TokenIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
@@ -20,8 +23,9 @@ import {
     isWrappedNativeToken,
 } from '../ambient-utils/dataLayer';
 import { ZERO_ADDRESS } from '../ambient-utils/constants';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
 
-interface PoolContextIF {
+export interface PoolContextIF {
     poolList: PoolIF[];
     findPool: (
         tkn1: TokenIF | string,
@@ -37,9 +41,7 @@ interface PoolContextIF {
     usdPrice: number | undefined;
     usdPriceInverse: number | undefined;
     isTradeDollarizationEnabled: boolean;
-    setIsTradeDollarizationEnabled: React.Dispatch<
-        React.SetStateAction<boolean>
-    >;
+    setIsTradeDollarizationEnabled: Dispatch<SetStateAction<boolean>>;
     fdvOfDenomTokenDisplay: string | undefined;
     baseTokenFdvDisplay: string | undefined;
     quoteTokenFdvDisplay: string | undefined;
@@ -47,16 +49,16 @@ interface PoolContextIF {
 
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
 
-export const PoolContextProvider = (props: { children: React.ReactNode }) => {
-    const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
+export const PoolContextProvider = (props: { children: ReactNode }) => {
+    const {
+        activeNetwork: { graphCacheUrl, chainId, poolIndex },
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
     const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
 
-    const poolList: PoolIF[] = usePoolList(
-        activeNetwork.graphCacheUrl,
-        crocEnv,
-    );
+    const poolList: PoolIF[] = usePoolList(graphCacheUrl, crocEnv);
 
     // fn to determine if a given token pair exists in `poolList`
     function findPool(
@@ -109,8 +111,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const poolArg: PoolIF = {
         base: baseToken,
         quote: quoteToken,
-        chainId: chainData.chainId,
-        poolIdx: chainData.poolIndex,
+        chainId: chainId,
+        poolIdx: poolIndex,
     };
 
     const poolData = useFetchPoolStats(
@@ -196,38 +198,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         }
     }, [baseToken.address, quoteToken.address, usdPrice !== undefined]);
 
-    // Asynchronously query the APY and volatility estimates from the backend
-    // useEffect(() => {
-    //     (async () => {
-    //         if (
-    //             crocEnv &&
-    //             provider &&
-    //             baseToken.address &&
-    //             quoteToken.address &&
-    //             lastBlockNumber > 0
-    //         ) {
-    //             const annualizedGrowth = estimateFrom24HrAmbientApr(
-    //                 baseToken.address,
-    //                 quoteToken.address,
-    //                 crocEnv,
-    //                 provider,
-    //                 lastBlockNumber,
-    //             );
-
-    //             setAmbientApy(await annualizedGrowth);
-    //         }
-    //     })();
-    // }, [
-    //     lastBlockNumber == 0,
-    //     baseToken.address,
-    //     quoteToken.address,
-    //     chainData.chainId,
-    //     chainData.poolIndex,
-    //     !!crocEnv,
-    //     !!provider,
-    // ]);
-
-    const poolContext = {
+    const poolContext: PoolContextIF = {
         poolList,
         findPool,
         pool,

@@ -86,14 +86,14 @@ import {
     ZERO_ADDRESS,
 } from '../../../ambient-utils/constants';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { AppStateContext } from '../../../contexts';
 // react functional component
 export default function InitPool() {
+    const { crocEnv, provider, ethMainnetUsdPrice } =
+        useContext(CrocEnvContext);
     const {
-        crocEnv,
-        provider,
-        ethMainnetUsdPrice,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const { dexBalRange } = useContext(UserPreferenceContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -1148,7 +1148,7 @@ export default function InitPool() {
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
-            : poolPriceDisplay ?? 0;
+            : (poolPriceDisplay ?? 0);
     const poolPriceCharacter = isDenomBase
         ? isTokenABase
             ? getUnicodeCharacter(tokenB.symbol)

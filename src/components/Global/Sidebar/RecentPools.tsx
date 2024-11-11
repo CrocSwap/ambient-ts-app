@@ -8,6 +8,7 @@ import {
 } from '../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../styled/Common';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../contexts';
 
 interface propsIF {
     cachedQuerySpotPrice: PoolQueryFn;
@@ -17,10 +18,10 @@ function RecentPools(props: propsIF) {
     const { cachedQuerySpotPrice } = props;
 
     const { recentPools } = useContext(SidebarContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const {
-        crocEnv,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
 
@@ -29,6 +30,8 @@ function RecentPools(props: propsIF) {
         if (!crocEnv) return;
 
         const fetchSpotPrices = async () => {
+            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+                return;
             const spotPricePromises = recentPools.get(5).map((pool) =>
                 cachedQuerySpotPrice(
                     crocEnv,

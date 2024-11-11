@@ -7,20 +7,32 @@ import {
 } from '../../../../ambient-utils/types';
 import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
 import modalBackground from '../../../../assets/images/backgrounds/background.png';
 
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
 } from '../../../../ambient-utils/constants';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
 import {
     getPositionData,
     printDomToImage,
 } from '../../../../ambient-utils/dataLayer';
-import { TokenContext } from '../../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import {
+    TokenContext,
+    TokenContextIF,
+} from '../../../../contexts/TokenContext';
+import {
+    CachedDataContext,
+    CachedDataContextIF,
+} from '../../../../contexts/CachedDataContext';
 import Modal from '../../Modal/Modal';
 import DetailsHeader from '../DetailsHeader/DetailsHeader';
 import ModalHeader from '../../ModalHeader/ModalHeader';
@@ -41,24 +53,20 @@ function TransactionDetailsModal(props: propsIF) {
     const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView, onClose } =
         props;
     const {
+        activeNetwork: { chainId, graphCacheUrl },
         snackbar: { open: openSnackbar },
-    } = useContext(AppStateContext);
+    } = useContext<AppStateContextIF>(AppStateContext);
 
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    } = useContext<CachedDataContextIF>(CachedDataContext);
 
-    const {
-        crocEnv,
-        activeNetwork,
-        provider,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
-    const { tokens } = useContext(TokenContext);
+    const { tokens } = useContext<TokenContextIF>(TokenContext);
 
     const [updatedPositionApy, setUpdatedPositionApy] = useState<
         number | undefined
@@ -69,7 +77,7 @@ function TransactionDetailsModal(props: propsIF) {
 
         const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
             ? GCGO_OVERRIDE_URL + '/position_stats?'
-            : activeNetwork.graphCacheUrl + '/position_stats?';
+            : graphCacheUrl + '/position_stats?';
 
         fetch(
             positionStatsCacheEndpoint +
@@ -122,7 +130,7 @@ function TransactionDetailsModal(props: propsIF) {
         chainId,
     ]);
 
-    const [showShareComponent, setShowShareComponent] = useState(true);
+    const [showShareComponent, setShowShareComponent] = useState<boolean>(true);
 
     const detailsRef = useRef(null);
 
@@ -187,17 +195,17 @@ function TransactionDetailsModal(props: propsIF) {
                     />
                 </div>
             </div>
-           
         </div>
     );
-
-
 
     const shareComponentMobile = (
         <Modal usingCustomHeader onClose={onClose}>
             <div className={styles.transaction_details_mobile}>
                 <ModalHeader title={'Transaction Details'} onClose={onClose} />
-                <MobileDetailTabs showShareComponent={showShareComponent} setShowShareComponent={setShowShareComponent} />
+                <MobileDetailTabs
+                    showShareComponent={showShareComponent}
+                    setShowShareComponent={setShowShareComponent}
+                />
                 {!showShareComponent ? (
                     <TransactionDetailsSimplify
                         tx={tx}

@@ -1,5 +1,5 @@
 import PoolCard from '../../Global/PoolCard/PoolCard';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { Link } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -10,6 +10,7 @@ import {
     TopPoolViewMore,
 } from '../../../styled/Components/Home';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { AppStateContext } from '../../../contexts';
 
 interface TopPoolsPropsIF {
     noTitle?: boolean;
@@ -19,52 +20,83 @@ interface TopPoolsPropsIF {
 // eslint-disable-next-line
 export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
+    const { topPools, crocEnv } = useContext(CrocEnvContext);
+
     const {
-        topPools,
-        crocEnv,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const show4TopPools = useMediaQuery('(max-width: 1500px)');
     const show3TopPools = useMediaQuery('(min-height: 700px)');
-    const poolData = showMobileVersion
-        ? show3TopPools
-            ? topPools.slice(0, 3)
-            : topPools.slice(0, 2)
-        : show4TopPools
-          ? topPools.slice(0, 4)
-          : topPools;
+
+    const poolData = useMemo(
+        () =>
+            showMobileVersion
+                ? show3TopPools
+                    ? topPools.slice(0, 3)
+                    : topPools.slice(0, 2)
+                : show4TopPools
+                  ? topPools.slice(0, 4)
+                  : topPools,
+        [showMobileVersion, show3TopPools, show4TopPools, topPools],
+    );
 
     const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
 
     const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
+    const [intermediarySpotPrices, setIntermediarySpotPrices] = useState<{
+        prices: (number | undefined)[];
+        chainId: string;
+    }>({
+        prices: [],
+        chainId: '',
+    });
+
+    useEffect(() => {
+        // prevent setting spot prices if the chainId of the intermediary spot prices is different
+        if (intermediarySpotPrices.chainId !== chainId) return;
+
+        setSpotPrices(intermediarySpotPrices.prices);
+    }, [intermediarySpotPrices]);
+
+    const fetchSpotPrices = async () => {
+        if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+            return;
+        const spotPricePromises = poolData.map((pool) =>
+            cachedQuerySpotPrice(
+                crocEnv,
+                pool.base.address,
+                pool.quote.address,
+                pool.chainId,
+                poolPriceCacheTime,
+            ).catch((error) => {
+                console.error(
+                    `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
+                    error,
+                );
+                return undefined; // Handle the case where fetching spot price fails
+            }),
+        );
+
+        const results = await Promise.all(spotPricePromises);
+        results &&
+            setIntermediarySpotPrices({
+                prices: results,
+                chainId: poolData[0].chainId,
+            });
+    };
+
+    useEffect(() => {
+        fetchSpotPrices();
+    }, [poolPriceCacheTime, poolData]);
 
     useEffect(() => {
         if (!crocEnv) return;
 
-        const fetchSpotPrices = async () => {
-            const spotPricePromises = poolData.map((pool) =>
-                cachedQuerySpotPrice(
-                    crocEnv,
-                    pool.base.address,
-                    pool.quote.address,
-                    chainId,
-                    poolPriceCacheTime,
-                ).catch((error) => {
-                    console.error(
-                        `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
-                        error,
-                    );
-                    return undefined; // Handle the case where fetching spot price fails
-                }),
-            );
-
-            const results = await Promise.all(spotPricePromises);
-            results && setSpotPrices(results);
-        };
+        setSpotPrices([]);
 
         fetchSpotPrices();
-    }, [crocEnv === undefined, chainId, poolPriceCacheTime]);
+    }, [crocEnv]);
 
     return (
         <TopPoolContainer flexDirection='column' gap={16}>

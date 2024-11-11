@@ -117,7 +117,8 @@ export default function App() {
                 currentLocation !== '/faq' &&
                 !currentLocation.includes('/chat') &&
                 platformName !== 'futa' &&
-                isChatEnabled && !isFullScreen && <ChatPanel isFullScreen={false} />}
+                isChatEnabled &&
+                !isFullScreen && <ChatPanel isFullScreen={false} />}
         </div>
     );
 
@@ -172,11 +173,9 @@ export default function App() {
                     />
                 )}
                 <AppOverlay />
-                {platformName === 'futa' ? (
-                   location.pathname !== '/' && <Navbar />
-                ) : (
-                    location.pathname !== '/' && <PageHeader />
-                )}
+                {platformName === 'futa'
+                    ? location.pathname !== '/' && <Navbar />
+                    : location.pathname !== '/' && <PageHeader />}
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
 

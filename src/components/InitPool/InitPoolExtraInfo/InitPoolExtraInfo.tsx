@@ -8,7 +8,7 @@ import styles from './InitPoolExtraInfo.module.css';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import { TokenIF } from '../../../ambient-utils/types';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../contexts';
 
 interface InitPriceExtraInfoProps {
     initGasPriceinDollars: string | undefined;
@@ -31,8 +31,8 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
     } = props;
 
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const [showExtraDetails] = useState<boolean>(true);
     // const [showExtraDetails, setShowExtraDetails] = useState<boolean>(true);

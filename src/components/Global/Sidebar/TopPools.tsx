@@ -10,6 +10,7 @@ import {
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../styled/Components/Sidebar';
+import { AppStateContext } from '../../../contexts';
 
 interface propsIF {
     cachedQuerySpotPrice: PoolQueryFn;
@@ -18,11 +19,12 @@ interface propsIF {
 export default function TopPools(props: propsIF) {
     const { cachedQuerySpotPrice } = props;
 
+    const { topPools, crocEnv } = useContext(CrocEnvContext);
+
     const {
-        topPools,
-        crocEnv,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+
     const location = useLocation();
     const onExploreRoute = location.pathname.includes('explore');
 
@@ -36,6 +38,8 @@ export default function TopPools(props: propsIF) {
         if (!crocEnv) return;
 
         const fetchSpotPrices = async () => {
+            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+                return;
             const spotPricePromises = topPools.map((pool) =>
                 cachedQuerySpotPrice(
                     crocEnv,
@@ -57,7 +61,7 @@ export default function TopPools(props: propsIF) {
         };
 
         fetchSpotPrices();
-    }, [crocEnv === undefined, chainId, poolPriceCacheTime]);
+    }, [crocEnv, chainId, poolPriceCacheTime]);
 
     return (
         <FlexContainer

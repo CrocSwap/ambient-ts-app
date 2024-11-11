@@ -33,11 +33,6 @@ export function lookupChainId(
         case '0x1':
             chainIdHex = '0x1';
             break;
-        case 'sepolia':
-        case '11155111':
-        case '0xaa36a7':
-            chainIdHex = '0xaa36a7';
-            break;
         case 'scroll':
         case '534352':
         case '0x82750':
@@ -47,6 +42,16 @@ export function lookupChainId(
         case '81457':
         case '0x13e31':
             chainIdHex = '0x13e31';
+            break;
+        case 'sepolia':
+        case '11155111':
+        case '0xaa36a7':
+            chainIdHex = '0xaa36a7';
+            break;
+        case 'plumesepolia':
+        case '98864':
+        case '0x18230':
+            chainIdHex = '0x18230';
             break;
     }
     // output variable

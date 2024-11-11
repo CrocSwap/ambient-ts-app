@@ -1,8 +1,6 @@
-import React, { createContext, useContext, useEffect } from 'react';
-import { NetworkIF, TokenIF } from '../ambient-utils/types';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { TokenIF } from '../ambient-utils/types';
 import { UserDataContext } from './UserDataContext';
-import { useAppChain } from '../App/hooks/useAppChain';
-import { ChainSpec } from '@crocswap-libs/sdk';
 
 export interface NftListByChain {
     chainId: string;
@@ -43,9 +41,6 @@ export interface TokenBalanceContextIF {
     setNFTFetchSettings: React.Dispatch<
         React.SetStateAction<NftFetchSettingsIF>
     >;
-    chainData: ChainSpec;
-    activeNetwork: NetworkIF;
-    chooseNetwork: (network: NetworkIF) => void;
 }
 
 export const TokenBalanceContext = createContext<TokenBalanceContextIF>(
@@ -55,18 +50,16 @@ export const TokenBalanceContext = createContext<TokenBalanceContextIF>(
 export const TokenBalanceContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const [tokenBalances, setTokenBalances] = React.useState<
+    const [tokenBalances, setTokenBalances] = useState<
         TokenIF[] | undefined
     >(undefined);
 
-    const { chainData, activeNetwork, chooseNetwork } = useAppChain();
-
-    const [NFTData, setNFTData] = React.useState<NftListByChain[] | undefined>(
+    const [NFTData, setNFTData] = useState<NftListByChain[] | undefined>(
         undefined,
     );
 
     const [NFTFetchSettings, setNFTFetchSettings] =
-        React.useState<NftFetchSettingsIF>({ pageKey: '', pageSize: 100 });
+        useState<NftFetchSettingsIF>({ pageKey: '', pageSize: 100 });
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
 
@@ -115,9 +108,6 @@ export const TokenBalanceContextProvider = (props: {
         setNFTData,
         NFTFetchSettings,
         setNFTFetchSettings,
-        chainData,
-        activeNetwork,
-        chooseNetwork,
     };
 
     return (

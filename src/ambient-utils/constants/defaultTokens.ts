@@ -720,6 +720,43 @@ export const scrollSepoliaUSDC: TokenIF = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
 };
 
+export const plumeSepoliaETH: TokenIF = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 98864,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const plumeSepoliaUSD: TokenIF = {
+    name: 'Plume USD',
+    address: '0xe644F07B1316f28a7F134998e021eA9f7135F351',
+    symbol: 'pUSD',
+    decimals: 6,
+    chainId: 98864,
+    logoURI: '',
+};
+
+export const plumeSepoliaNEV: TokenIF = {
+    name: 'Nest Egg Vault',
+    address: '0x659619AEdf381c3739B0375082C2d61eC1fD8835',
+    symbol: 'NEV',
+    decimals: 6,
+    chainId: 98864,
+    logoURI: '',
+};
+
+export const plumeSepoliaUSDT: TokenIF = {
+    name: 'Tether USD',
+    address: '0x2413b8C79Ce60045882559f63d308aE3DFE0903d',
+    symbol: 'USDT',
+    decimals: 6,
+    chainId: 98864,
+    logoURI: '',
+};
+
 export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,
@@ -796,4 +833,8 @@ export const defaultTokens: TokenIF[] = [
     scrollSepoliaUSDC,
     scrollSepoliaWBTC,
     scrollsUSDe,
+    plumeSepoliaETH,
+    plumeSepoliaUSD,
+    plumeSepoliaNEV,
+    plumeSepoliaUSDT,
 ];
