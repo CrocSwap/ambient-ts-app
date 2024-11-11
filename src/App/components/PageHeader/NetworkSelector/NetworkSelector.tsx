@@ -271,7 +271,10 @@ export default function NetworkSelector(props: propsIF) {
                     {network.isExternal && (
                         <RiExternalLinkLine
                             size={14}
-                            style={{ marginLeft: '55px' }}
+                            style={{
+                                position: 'absolute', // Position external link absolutely
+                                right: '0', // Pin it to the right
+                            }}
                         />
                     )}
                 </div>
