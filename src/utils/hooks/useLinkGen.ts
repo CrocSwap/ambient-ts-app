@@ -84,7 +84,6 @@ export interface linkGenMethodsIF {
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
     navigate: (paramsObj?: anyParamsIF | string) => void;
     redirect: (paramsObj?: anyParamsIF | string) => void;
-    reload: () => void;
 }
 
 // TODO:    @Emily: it probably makes sense to expand this hook to
@@ -179,6 +178,5 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
         getFullURL,
         navigate: navigateUser,
         redirect: redirectUser,
-        reload: () => navigate(pathname),
     };
 };
