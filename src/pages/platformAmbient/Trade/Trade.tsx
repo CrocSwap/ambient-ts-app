@@ -56,10 +56,12 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const { futaActiveTab } = props;
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
+    const { provider } = useContext(CrocEnvContext);
     const {
-        chainData: { chainId },
-        provider,
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+        showTopPtsBanner,
+        dismissTopBannerPopup,
+    } = useContext(AppStateContext);
     const { setIsCandleSelected } = useContext(CandleContext);
     const { showPoints } = useContext(BrandContext);
 
@@ -82,8 +84,6 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { showTopPtsBanner, dismissTopBannerPopup } =
-        useContext(AppStateContext);
     const { setOutsideControl, setSelectedOutsideTab } =
         useContext(TradeTableContext);
 
@@ -199,7 +199,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         filter: transactionFilter,
         setTransactionFilter: setTransactionFilter,
         transactionFilter,
-       
+
         hasInitialized: hasInitialized,
         setHasInitialized: setHasInitialized,
         unselectCandle: unselectCandle,
@@ -207,12 +207,10 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         tokens,
         poolPrice,
         futaActiveTab,
-        poolPriceChangeString
-    }
+        poolPriceChangeString,
+    };
 
-    if (showMobileVersion) return (
-        <TradeMobile {...tradeMobileProps} />
-    )
+    if (showMobileVersion) return <TradeMobile {...tradeMobileProps} />;
 
     return (
         <>

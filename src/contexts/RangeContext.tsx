@@ -1,14 +1,14 @@
-import React, {
+import {
     createContext,
     SetStateAction,
     Dispatch,
     useState,
+    ReactNode,
 } from 'react';
 
-interface RangeContextIF {
+export interface RangeContextIF {
     rangeTicksCopied: boolean;
     setRangeTicksCopied: Dispatch<SetStateAction<boolean>>;
-
     maxRangePrice: number;
     setMaxRangePrice: Dispatch<SetStateAction<number>>;
     minRangePrice: number;
@@ -23,7 +23,6 @@ interface RangeContextIF {
     setCurrentRangeInReposition: Dispatch<SetStateAction<string>>;
     currentRangeInAdd: string;
     setCurrentRangeInAdd: Dispatch<SetStateAction<string>>;
-
     advancedMode: boolean;
     advancedLowTick: number;
     advancedHighTick: number;
@@ -36,7 +35,7 @@ interface RangeContextIF {
 
 export const RangeContext = createContext<RangeContextIF>({} as RangeContextIF);
 
-export const RangeContextProvider = (props: { children: React.ReactNode }) => {
+export const RangeContextProvider = (props: { children: ReactNode }) => {
     // low and high bounds of range to display in DOM for advanced mode
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
@@ -75,7 +74,6 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
         setCurrentRangeInAdd,
         rangeTicksCopied,
         setRangeTicksCopied,
-
         advancedMode,
         setAdvancedMode,
         advancedLowTick,

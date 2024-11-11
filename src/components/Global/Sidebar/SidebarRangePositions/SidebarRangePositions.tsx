@@ -1,7 +1,6 @@
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../ambient-utils/types';
 import { useLocation } from 'react-router-dom';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { useContext } from 'react';
@@ -18,6 +17,7 @@ import {
 } from '../../../../styled/Components/Sidebar';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     userPositions?: PositionIF[];
@@ -27,8 +27,8 @@ export default function SidebarRangePositions(props: propsIF) {
     const { userPositions } = props;
 
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const {
         setCurrentPositionActive,
         setShowAllData,

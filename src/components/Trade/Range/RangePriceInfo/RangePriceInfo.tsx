@@ -41,8 +41,7 @@ function RangePriceInfo(props: propsIF) {
         isAmbient,
     } = props;
     const {
-        // eslint-disable-next-line
-        globalPopup: { open: openGlobalPopup },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
@@ -50,10 +49,7 @@ function RangePriceInfo(props: propsIF) {
         setIsTradeDollarizationEnabled,
         poolPriceDisplay,
     } = useContext(PoolContext);
-    const {
-        chainData: { chainId },
-        crocEnv,
-    } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { isDenomBase, baseToken, quoteToken } = useContext(TradeDataContext);
 

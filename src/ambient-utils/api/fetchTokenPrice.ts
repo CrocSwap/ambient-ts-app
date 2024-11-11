@@ -4,6 +4,7 @@ import {
     translateToken,
     querySpotPrice,
     truncateDecimals,
+    isUsdStableToken,
 } from '../dataLayer/functions';
 import { supportedNetworks } from '../constants/networks';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
@@ -27,13 +28,18 @@ export const fetchTokenPrice = async (
                     ? 'scroll'
                     : chain === '0x13e31'
                       ? 'blast'
-                      : 'ethereum',
+                      : chain === '0x18230'
+                        ? 'plume'
+                        : 'ethereum',
             token_address: address,
         };
 
         const response = await fetchBatch<'price'>(body);
 
         if ('error' in response) throw new Error(response.error);
+        if (response.value.source === '') {
+            throw new Error('no source available');
+        }
         if (response.value.usdPrice === Infinity) {
             throw new Error('USD value returned as Infinity');
         }
@@ -45,7 +51,8 @@ export const fetchTokenPrice = async (
             // if token is ETH, return current value of ETH-USDC pool
             dispToken.toLowerCase() === defaultPair[0].address.toLowerCase()
         ) {
-            if (!crocEnv) return;
+            if (!crocEnv || (await crocEnv.context).chain.chainId !== chain)
+                return;
             const spotPrice = await querySpotPrice(
                 crocEnv,
                 defaultPair[0].address.toLowerCase(),
@@ -68,8 +75,8 @@ export const fetchTokenPrice = async (
                 usdPriceFormatted: usdPriceFormatted,
             };
         } else if (
-            // if token is USDC/USDB, return $1
-            dispToken.toLowerCase() === defaultPair[1].address.toLowerCase()
+            // if token is USD stablecoin, return $1
+            isUsdStableToken(dispToken)
         ) {
             return {
                 usdPrice: 1,

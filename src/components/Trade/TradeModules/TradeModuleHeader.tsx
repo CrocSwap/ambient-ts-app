@@ -12,7 +12,6 @@ import { useModal } from '../../Global/Modal/useModal';
 import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import TradeLinks from './TradeLinks';
 import styles from './TradeModuleHeader.module.css';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -24,6 +23,7 @@ interface propsIF {
     isSwapPage?: boolean;
 }
 import { LuSettings, LuSettings2 } from 'react-icons/lu';
+import { AppStateContext } from '../../../contexts';
 
 function TradeModuleHeader(props: propsIF) {
     const { slippage, dexBalSwap, bypassConfirm, settingsTitle, isSwapPage } =
@@ -44,8 +44,8 @@ function TradeModuleHeader(props: propsIF) {
         limitTick,
     } = useContext(TradeDataContext);
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
@@ -74,7 +74,11 @@ function TradeModuleHeader(props: propsIF) {
                         aria-label='Settings button'
                         className={styles.icon_container}
                     >
-                       {smallScreen ? <LuSettings size={20} /> : <LuSettings2 size={22} />}
+                        {smallScreen ? (
+                            <LuSettings size={20} />
+                        ) : (
+                            <LuSettings2 size={22} />
+                        )}
                     </button>
                 </div>
                 {isSettingsModalOpen && (

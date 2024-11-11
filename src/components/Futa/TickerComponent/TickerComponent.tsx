@@ -62,13 +62,11 @@ const useAuctionContexts = () => {
         freshAuctionStatusData,
         setSelectedTicker,
     } = useContext<AuctionsContextIF>(AuctionsContext);
-    const {
-        chainData: { chainId },
-        crocEnv,
-    } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { isUserConnected } = useContext(UserDataContext);
     const {
+        activeNetwork: { chainId },
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
     const { tokenBalances } = useContext(TokenBalanceContext);

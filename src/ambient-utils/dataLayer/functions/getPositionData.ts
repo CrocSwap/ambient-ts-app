@@ -29,6 +29,9 @@ export const getPositionData = async (
     skipENSFetch?: boolean,
     forceOnchainLiqUpdate?: boolean,
 ): Promise<PositionIF> => {
+    if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+        throw Error('chainId mismatch with crocEnv');
+
     const newPosition = {
         serverPositionId: position.positionId,
         ...position,
@@ -40,7 +43,7 @@ export const getPositionData = async (
         position.quote.length === 40 ? '0x' + position.quote : position.quote;
 
     // Fire off network queries async simultaneous up-front
-    const poolPriceNonDisplay = cachedQuerySpotPrice(
+    const poolPriceNonDisplay = await cachedQuerySpotPrice(
         crocEnv,
         baseTokenAddress,
         quoteTokenAddress,
@@ -98,19 +101,18 @@ export const getPositionData = async (
     const DEFAULT_DECIMALS = 18;
     const baseTokenDecimals = baseTokenListedDecimals
         ? baseTokenListedDecimals
-        : (await cachedTokenDetails(provider, position.base, chainId))
-              ?.decimals ?? DEFAULT_DECIMALS;
+        : ((await cachedTokenDetails(provider, position.base, chainId))
+              ?.decimals ?? DEFAULT_DECIMALS);
     const quoteTokenDecimals = quoteTokenListedDecimals
         ? quoteTokenListedDecimals
-        : (await cachedTokenDetails(provider, position.quote, chainId))
-              ?.decimals ?? DEFAULT_DECIMALS;
+        : ((await cachedTokenDetails(provider, position.quote, chainId))
+              ?.decimals ?? DEFAULT_DECIMALS);
 
     newPosition.ensResolution = skipENSFetch
         ? ''
-        : (await cachedEnsResolve(newPosition.user)) ?? '';
+        : ((await cachedEnsResolve(newPosition.user)) ?? '');
 
-    const poolPriceInTicks =
-        Math.log(await poolPriceNonDisplay) / Math.log(1.0001);
+    const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
     newPosition.poolPriceInTicks = poolPriceInTicks;
 
     const isPositionInRange =
@@ -125,21 +127,21 @@ export const getPositionData = async (
 
     newPosition.baseSymbol = baseTokenListedSymbol
         ? baseTokenListedSymbol
-        : (await cachedTokenDetails(provider, position.base, chainId))
-              ?.symbol ?? '';
+        : ((await cachedTokenDetails(provider, position.base, chainId))
+              ?.symbol ?? '');
     newPosition.quoteSymbol = quoteTokenListedSymbol
         ? quoteTokenListedSymbol
-        : (await cachedTokenDetails(provider, position.quote, chainId))
-              ?.symbol ?? '';
+        : ((await cachedTokenDetails(provider, position.quote, chainId))
+              ?.symbol ?? '');
 
     newPosition.baseName = baseTokenName
         ? baseTokenName
-        : (await cachedTokenDetails(provider, position.base, chainId))?.name ??
-          '';
+        : ((await cachedTokenDetails(provider, position.base, chainId))?.name ??
+          '');
     newPosition.quoteName = quoteTokenName
         ? quoteTokenName
-        : (await cachedTokenDetails(provider, position.quote, chainId))?.name ??
-          '';
+        : ((await cachedTokenDetails(provider, position.quote, chainId))
+              ?.name ?? '');
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
@@ -254,9 +256,9 @@ export const getPositionData = async (
             newPosition.positionLiq = position.ambientLiq;
         }
         newPosition.positionLiqBase =
-            newPosition.positionLiq * Math.sqrt(await poolPriceNonDisplay);
+            newPosition.positionLiq * Math.sqrt(poolPriceNonDisplay);
         newPosition.positionLiqQuote =
-            newPosition.positionLiq / Math.sqrt(await poolPriceNonDisplay);
+            newPosition.positionLiq / Math.sqrt(poolPriceNonDisplay);
     } else if (position.positionType == 'concentrated') {
         if (
             newPosition.liqRefreshTime === 0 ||
@@ -291,13 +293,13 @@ export const getPositionData = async (
             newPosition.positionLiq = position.concLiq;
 
             newPosition.feesLiqBase =
-                position.rewardLiq * Math.sqrt(await poolPriceNonDisplay);
+                position.rewardLiq * Math.sqrt(poolPriceNonDisplay);
             newPosition.feesLiqQuote =
-                position.rewardLiq / Math.sqrt(await poolPriceNonDisplay);
+                position.rewardLiq / Math.sqrt(poolPriceNonDisplay);
         }
         newPosition.positionLiqBase = bigIntToFloat(
             baseTokenForConcLiq(
-                await poolPriceNonDisplay,
+                poolPriceNonDisplay,
                 floatToBigInt(newPosition.positionLiq),
                 tickToPrice(position.bidTick),
                 tickToPrice(position.askTick),
@@ -305,12 +307,13 @@ export const getPositionData = async (
         );
         newPosition.positionLiqQuote = bigIntToFloat(
             quoteTokenForConcLiq(
-                await poolPriceNonDisplay,
+                poolPriceNonDisplay,
                 floatToBigInt(newPosition.positionLiq),
                 tickToPrice(position.bidTick),
                 tickToPrice(position.askTick),
             ),
         );
+
         newPosition.feesLiqBaseDecimalCorrected =
             newPosition.feesLiqBase / Math.pow(10, baseTokenDecimals);
         newPosition.feesLiqQuoteDecimalCorrected =

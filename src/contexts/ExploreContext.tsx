@@ -24,6 +24,7 @@ import {
 } from '../pages/platformAmbient/Explore/useTokenStats';
 import { TokenContext } from './TokenContext';
 import { ChainDataContext } from './ChainDataContext';
+import { AppStateContext } from './AppStateContext';
 
 export interface ExploreContextIF {
     pools: {
@@ -60,23 +61,33 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const {
-        // cachedPoolStatsFetch,
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-    } = useContext(CachedDataContext);
-
-    const { crocEnv, chainData, activeNetwork, provider } =
-        useContext(CrocEnvContext);
+    const { activeNetwork } = useContext(AppStateContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { allPoolStats } = useContext(ChainDataContext);
+    const { poolList } = useContext(PoolContext);
 
     const [allPools, setAllPools] = useState<Array<PoolDataIF>>([]);
+    const [intermediaryPoolData, setIntermediaryPoolData] = useState<
+        Array<PoolDataIF>
+    >([]);
     const [isExploreDollarizationEnabled, setIsExploreDollarizationEnabled] =
         useState(
             localStorage.getItem('isExploreDollarizationEnabled') === 'true',
         );
+
+    // used to prevent displaying data for a previous network after switching networks
+    useEffect(() => {
+        if (intermediaryPoolData.length) {
+            if (intermediaryPoolData[0].chainId === activeNetwork.chainId) {
+                setAllPools(intermediaryPoolData);
+            }
+        } else {
+            setAllPools([]);
+        }
+    }, [activeNetwork.chainId, intermediaryPoolData]);
 
     useEffect(() => {
         const savedDollarizationPreference =
@@ -89,23 +100,21 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         }
     }, [isExploreDollarizationEnabled]);
 
-    // metadata only
-    const { poolList } = useContext(PoolContext);
-
     const getAllPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // use metadata to get expanded pool data
-            getAllPoolData(poolList, crocEnv, chainData.chainId);
+            getAllPoolData(poolList, crocEnv, activeNetwork.chainId);
         }
     };
 
     // get expanded pool metadata
     useEffect(() => {
         if (crocEnv !== undefined && poolList.length > 0) {
+            setIntermediaryPoolData([]);
             getAllPools();
         }
-    }, [crocEnv, poolList.length]);
+    }, [JSON.stringify(poolList)]);
 
     // fn to get data on a single pool
     async function getPoolData(
@@ -336,7 +345,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 const filteredPoolData = results.filter(
                     (pool) => pool.spotPrice > 0,
                 );
-                setAllPools(filteredPoolData);
+                setIntermediaryPoolData(filteredPoolData);
             })
             .catch((err) => {
                 console.warn(err);
@@ -344,7 +353,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     }
 
     const dexTokens: useTokenStatsIF = useTokenStats(
-        chainData.chainId,
+        activeNetwork.chainId,
         crocEnv,
         activeNetwork.graphCacheUrl,
         cachedFetchTokenPrice,
@@ -358,7 +367,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             all: allPools,
             getAll: getAllPools,
             reset: () => {
-                setAllPools([]);
+                setIntermediaryPoolData([]);
             },
         },
         topTokensOnchain: dexTokens,
