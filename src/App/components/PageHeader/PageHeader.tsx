@@ -57,7 +57,6 @@ import {
     ReceiptContext,
     ReceiptContextIF,
 } from '../../../contexts/ReceiptContext';
-import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 import styles from './PageHeader.module.css';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 
@@ -69,7 +68,6 @@ const PageHeader = function () {
     } = useContext<AppStateContextIF>(AppStateContext);
     const { crocEnv, setCrocEnv } =
         useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { headerImage } = useContext<BrandContextIF>(BrandContext);
     const { resetTokenBalances } =
         useContext<TokenBalanceContextIF>(TokenBalanceContext);
     const { resetUserGraphData } =
@@ -451,25 +449,22 @@ const PageHeader = function () {
                             appHeaderDropdown.setIsActive(false);
                         }
                     }}
+                    className={styles.left_side}
                 >
                     <Link
                         to='/'
                         className={styles.logoContainer}
                         aria-label='Home'
                     >
-                        {desktopScreen ? (
-                            <img src={headerImage} alt='ambient' />
-                        ) : (
-                            <img
-                                className={styles.logoText}
-                                src={logo}
-                                alt='ambient'
-                                width='70px'
-                            />
-                        )}
+                        <img
+                            className={styles.logoText}
+                            src={logo}
+                            alt='ambient'
+                            width='60px'
+                        />
                     </Link>
+                    {routeDisplay}
                 </div>
-                {routeDisplay}
                 <div className={styles.rightSide}>
                     {show ? (
                         <div className={styles.tradeNowDiv}>
