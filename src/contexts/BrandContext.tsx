@@ -10,6 +10,7 @@ import {
     ambientTestnetBrandAssets,
     futaBrandAssets,
     sampleBrandAssets,
+    plumeSepoliaBrandAssets,
 } from '../assets/branding';
 import { UserDataContext } from './UserDataContext';
 import { AppStateContext, AppStateContextIF } from './AppStateContext';
@@ -82,6 +83,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return ambientProductionBrandAssets;
             case 'ambientTestnet':
                 return ambientTestnetBrandAssets;
+            case 'plumeSepolia':
+                return plumeSepoliaBrandAssets;
             default:
                 return defaultBrandAssets;
         }

@@ -12,7 +12,7 @@ import { GCGO_ETHEREUM_URL } from '../gcgo';
 import { Provider } from 'ethers';
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 
-const MAINNET_RPC_URL =
+export const MAINNET_RPC_URL =
     import.meta.env.VITE_MAINNET_RPC_URL !== undefined
         ? import.meta.env.VITE_MAINNET_RPC_URL
         : 'https://eth.llamarpc.com';

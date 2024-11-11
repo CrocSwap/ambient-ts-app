@@ -14,6 +14,9 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
+// import plumeMainnetLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
+import plumeSepoliaLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
+// import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_network_logo.webp';
 import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
 import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
@@ -161,7 +164,7 @@ export default function NetworkSelector(props: propsIF) {
             chainId: '',
             name: 'Canto',
             logo: cantoLogo,
-            custom: chains.length + 1,
+            custom: 1,
             isExternal: true,
             testnet: false,
             link: 'https://app.canto.io/lp',
@@ -172,18 +175,29 @@ export default function NetworkSelector(props: propsIF) {
             chainId: '0xaa36a7',
             name: 'Sepolia',
             logo: sepoliaLogo,
-            custom: 0,
+            custom: 2,
             isExternal: false,
             testnet: true,
             link: '',
             condition: chainMap.has('0xaa36a7'),
         },
         {
+            id: 'plume_sepolia_network_selector',
+            chainId: '0x18230',
+            name: 'Plume',
+            logo: plumeSepoliaLogo,
+            custom: 2,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x18230'),
+        },
+        {
             id: 'scroll_sepolia_network_selector',
             chainId: '0x8274f',
             name: 'Scroll',
             logo: scrollSepoliaLogo,
-            custom: 0,
+            custom: 2,
             isExternal: false,
             testnet: true,
             link: '',
@@ -194,7 +208,7 @@ export default function NetworkSelector(props: propsIF) {
             chainId: '0xa0c71fd',
             name: 'Blast',
             logo: blastSepoliaLogo,
-            custom: 0,
+            custom: 2,
             isExternal: false,
             testnet: true,
             link: '',
@@ -246,7 +260,10 @@ export default function NetworkSelector(props: propsIF) {
                         <Text
                             color={'accent1'}
                             fontSize={'mini'}
-                            marginLeft='30px'
+                            style={{
+                                position: 'absolute', // Position Testnet absolutely
+                                right: '0', // Pin it to the right
+                            }}
                         >
                             Testnet
                         </Text>
@@ -254,7 +271,10 @@ export default function NetworkSelector(props: propsIF) {
                     {network.isExternal && (
                         <RiExternalLinkLine
                             size={14}
-                            style={{ marginLeft: '55px' }}
+                            style={{
+                                position: 'absolute', // Position external link absolutely
+                                right: '0', // Pin it to the right
+                            }}
                         />
                     )}
                 </div>
@@ -274,7 +294,17 @@ export default function NetworkSelector(props: propsIF) {
                     marginTop={'50px'}
                     marginRight={smallScreen ? '70px' : ''}
                     titleWidth={'80px'}
-                    title={lookupChain(chainId).displayName}
+                    title={
+                        chainId === '0xaa36a7'
+                            ? 'Sepolia'
+                            : chainId === '0x18230'
+                              ? 'Plume Devnet'
+                              : chainId === '0xa0c71fd'
+                                ? 'Blast Testnet'
+                                : chainId === '0x8274f'
+                                  ? 'Scroll Testnet'
+                                  : lookupChain(chainId).displayName
+                    }
                     expandable={networks.length > 1}
                     logo={
                         lookupChain(chainId)
@@ -295,9 +325,13 @@ export default function NetworkSelector(props: propsIF) {
                                   ? blastLogo
                                   : lookupChain(chainId)
                                           .displayName.toLowerCase()
-                                          .includes('sepolia')
-                                    ? sepoliaLogo
-                                    : ETH
+                                          .includes('plume')
+                                    ? plumeSepoliaLogo
+                                    : lookupChain(chainId)
+                                            .displayName.toLowerCase()
+                                            .includes('sepolia')
+                                      ? sepoliaLogo
+                                      : ETH
                     }
                 >
                     <ul

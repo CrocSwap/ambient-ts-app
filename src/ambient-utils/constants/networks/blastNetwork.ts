@@ -15,7 +15,7 @@ const chain = {
     chainId: 81457,
     name: 'Blast',
     currency: 'ETH',
-    rpcUrl: 'https://rpc.blast.io/',
+    rpcUrl: BLAST_RPC_URL,
     explorerUrl: 'https://blastscan.io',
 };
 
