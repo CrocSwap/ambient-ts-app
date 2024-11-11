@@ -14,10 +14,6 @@ import {
     AppStateContextIF,
 } from '../../../../contexts/AppStateContext';
 import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
-import {
     TokenBalanceContext,
     TokenBalanceContextIF,
 } from '../../../../contexts/TokenBalanceContext';
@@ -73,18 +69,15 @@ export default function PortfolioBannerAccount(props: propsIF) {
         setUserThumbnailNFT,
         isUserConnected,
         disconnectUser,
-        resolvedAddressFromContext
+        resolvedAddressFromContext,
     } = useContext<UserDataContextIF>(UserDataContext);
 
     const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
 
     const {
+        activeNetwork: { blockExplorer },
         snackbar: { open: openSnackbar },
     } = useContext<AppStateContextIF>(AppStateContext);
-
-    const {
-        chainData: { blockExplorer },
-    } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
     const navigate = useNavigate();
 
@@ -134,7 +127,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
                 ? ensName
                 : resolvedAddress
                   ? resolvedAddress
-                  : userAddress ?? '',
+                  : (userAddress ?? ''),
         );
         const copiedData = ensNameAvailable
             ? ensName
@@ -146,7 +139,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
     }
 
     function handleCopyAddress(): void {
-        copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
+        copy(resolvedAddress ? resolvedAddress : (userAddress ?? ''));
         const copiedData = resolvedAddress ? resolvedAddress : userAddress;
         openSnackbar(`${copiedData} copied`, 'info');
     }
@@ -247,39 +240,47 @@ export default function PortfolioBannerAccount(props: propsIF) {
                 {
                     // differential view for small screens
                     // some items only appear when viewing your own page
-                    isSmallScreen && (
-                    <div className={styles.button_bank}>
-                        <div>
-                            <button className={styles.dark_button} onClick={() => {
-                                const linkToNavigateTo: string = (ensName || userAddress)
-                                    ? `/${ensName || userAddress}/xp`
-                                    : resolvedAddressFromContext
-                                    ? `/${resolvedAddressFromContext}/xp`
-                                    : `/${userAddress}/xp`;
-                                navigate(linkToNavigateTo);
-                            }}>
-                                Points
-                            </button>
-                            {
-                                isUserConnected &&
+                    useMediaQuery('(max-width: 567px)') && (
+                        <div className={styles.button_bank}>
+                            <div>
+                                <button
+                                    className={styles.dark_button}
+                                    onClick={() => {
+                                        const linkToNavigateTo: string =
+                                            ensName || userAddress
+                                                ? `/${ensName || userAddress}/xp`
+                                                : resolvedAddressFromContext
+                                                  ? `/${resolvedAddressFromContext}/xp`
+                                                  : `/${userAddress}/xp`;
+                                        navigate(linkToNavigateTo);
+                                    }}
+                                >
+                                    Points
+                                </button>
+                                {isUserConnected && (
                                     <button
                                         className={styles.logout_button}
                                         onClick={() => disconnectUser()}
                                     >
                                         Log Out
                                     </button>
-                            }
+                                )}
+                            </div>
+                            {isUserConnected && (
+                                <button
+                                    className={styles.dark_button}
+                                    onClick={() =>
+                                        setShowTabsAndNotExchange(
+                                            !showTabsAndNotExchange,
+                                        )
+                                    }
+                                >
+                                    Deposit / Withdraw
+                                </button>
+                            )}
                         </div>
-                        {isUserConnected && <button
-                            className={styles.dark_button}
-                            onClick={() =>
-                                setShowTabsAndNotExchange(!showTabsAndNotExchange)
-                            }
-                        >
-                            Deposit / Withdraw
-                        </button>}
-                    </div>
-                )}
+                    )
+                }
             </div>
 
             {isWalletPanelActive && (

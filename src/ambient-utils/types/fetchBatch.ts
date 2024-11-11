@@ -26,6 +26,7 @@ export type PriceSuccessfulResponse = {
     value: {
         usdPrice: number;
         usdPriceFormatted: number;
+        source: string;
     };
 };
 export type PriceResponse = PriceSuccessfulResponse | AnalyticsServerError;

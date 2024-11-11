@@ -29,7 +29,6 @@ interface propsIF {
 }
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
-
     const { tx, controlItems, positionApy, isAccountView } = props;
     const { userAddress } = useContext(UserDataContext);
     const { crocEnv } = useContext(CrocEnvContext);
@@ -313,17 +312,16 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         ? baseTokenCharacter +
                           truncatedDisplayPriceDenomByMoneyness
                         : null}
-
-                    {truncatedHighDisplayPriceDenomByMoneyness
+                    {truncatedLowDisplayPriceDenomByMoneyness
                         ? baseTokenCharacter +
-                          truncatedHighDisplayPriceDenomByMoneyness
+                          truncatedLowDisplayPriceDenomByMoneyness
                         : null}
                     {!truncatedDisplayPrice ? (
                         <AiOutlineLine style={{ paddingTop: '6px' }} />
                     ) : null}
-                    {truncatedLowDisplayPriceDenomByMoneyness
+                    {truncatedHighDisplayPriceDenomByMoneyness
                         ? baseTokenCharacter +
-                          truncatedLowDisplayPriceDenomByMoneyness
+                          truncatedHighDisplayPriceDenomByMoneyness
                         : null}
                 </span>
             ) : (

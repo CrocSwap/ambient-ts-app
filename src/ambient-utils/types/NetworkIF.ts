@@ -2,18 +2,22 @@
 import { Provider, Signer } from 'ethers';
 import { TopPool } from '../constants/networks/TopPool';
 import { TokenIF } from './token/TokenIF';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 export interface NetworkIF {
     chainId: string;
     graphCacheUrl: string;
     chain: any;
     evmRpcUrl: string;
-    shouldPollBlock: boolean;
     marketData: string;
+    poolIndex: number;
+    gridSize: number;
     defaultPair: TokenIF[];
     defaultPairFuta?: [TokenIF, TokenIF];
     topPools: TopPool[];
+    blockExplorer: string | undefined;
+    displayName: string;
+    chainSpec: ChainSpec;
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
 }
 

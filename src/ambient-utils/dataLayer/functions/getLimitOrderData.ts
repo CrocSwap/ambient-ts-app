@@ -27,6 +27,8 @@ export const getLimitOrderData = async (
     cachedEnsResolve: FetchAddrFn,
 ): Promise<LimitOrderIF> => {
     if (!provider) throw Error('Can not proceed without an assigned provider');
+    if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+        throw Error('chainId mismatch with crocEnv');
     const newOrder = { ...order } as LimitOrderIF;
 
     const baseTokenAddress = order.base;
@@ -105,32 +107,33 @@ export const getLimitOrderData = async (
     const DEFAULT_DECIMALS = 18;
     const baseTokenDecimals = baseTokenListedDecimals
         ? baseTokenListedDecimals
-        : (await cachedTokenDetails(provider, order.base, chainId))?.decimals ??
-          DEFAULT_DECIMALS;
+        : ((await cachedTokenDetails(provider, order.base, chainId))
+              ?.decimals ?? DEFAULT_DECIMALS);
     const quoteTokenDecimals = quoteTokenListedDecimals
         ? quoteTokenListedDecimals
-        : (await cachedTokenDetails(provider, order.quote, chainId))
-              ?.decimals ?? DEFAULT_DECIMALS;
+        : ((await cachedTokenDetails(provider, order.quote, chainId))
+              ?.decimals ?? DEFAULT_DECIMALS);
 
     newOrder.baseDecimals = baseTokenDecimals;
     newOrder.quoteDecimals = quoteTokenDecimals;
 
     newOrder.baseSymbol = baseTokenListedSymbol
         ? baseTokenListedSymbol
-        : (await cachedTokenDetails(provider, order.base, chainId))?.symbol ??
-          '';
+        : ((await cachedTokenDetails(provider, order.base, chainId))?.symbol ??
+          '');
     newOrder.quoteSymbol = quoteTokenListedSymbol
         ? quoteTokenListedSymbol
-        : (await cachedTokenDetails(provider, order.quote, chainId))?.symbol ??
-          '';
+        : ((await cachedTokenDetails(provider, order.quote, chainId))?.symbol ??
+          '');
 
     newOrder.baseName = baseTokenName
         ? baseTokenName
-        : (await cachedTokenDetails(provider, order.base, chainId))?.name ?? '';
+        : ((await cachedTokenDetails(provider, order.base, chainId))?.name ??
+          '');
     newOrder.quoteName = quoteTokenName
         ? quoteTokenName
-        : (await cachedTokenDetails(provider, order.quote, chainId))?.name ??
-          '';
+        : ((await cachedTokenDetails(provider, order.quote, chainId))?.name ??
+          '');
 
     newOrder.baseTokenLogoURI = baseTokenLogoURI ?? '';
     newOrder.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
