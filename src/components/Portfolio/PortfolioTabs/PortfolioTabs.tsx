@@ -3,6 +3,7 @@ import {
     useEffect,
     useState,
     useContext,
+    useMemo,
 } from 'react';
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
@@ -36,7 +37,6 @@ import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
-    IS_LOCAL_ENV,
 } from '../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -120,7 +120,7 @@ export default function PortfolioTabs(props: propsIF) {
         ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
         : graphCacheUrl + '/user_limit_orders?';
 
-    const getLookupUserPositions = async (accountToSearch: string) =>
+    const getLookupUserPositions = async (accountToSearch: string) => {
         fetch(
             userPositionsCacheEndpoint +
                 new URLSearchParams({
@@ -165,8 +165,9 @@ export default function PortfolioTabs(props: propsIF) {
                         });
                 }
             });
+    };
 
-    const getLookupUserLimitOrders = async (accountToSearch: string) =>
+    const getLookupUserLimitOrders = async (accountToSearch: string) => {
         fetch(
             userLimitOrdersCacheEndpoint +
                 new URLSearchParams({
@@ -176,7 +177,6 @@ export default function PortfolioTabs(props: propsIF) {
         )
             .then((response) => response?.json())
             .then((json) => {
-                // temporarily skip ENS fetch
                 const userLimitOrderStates = json?.data;
                 if (userLimitOrderStates && crocEnv && provider) {
                     Promise.all(
@@ -210,6 +210,8 @@ export default function PortfolioTabs(props: propsIF) {
                         });
                 }
             });
+    };
+
     const getLookupUserTransactions = async (accountToSearch: string) => {
         if (crocEnv && provider) {
             fetchUserRecentChanges({
@@ -242,17 +244,25 @@ export default function PortfolioTabs(props: propsIF) {
     useEffect(() => {
         (async () => {
             if (
-                isServerEnabled &&
                 !connectedAccountActive &&
-                !!tokens.tokenUniv &&
                 resolvedAddress &&
-                !!crocEnv
+                isServerEnabled &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId &&
+                !!tokens.tokenUniv
             ) {
-                IS_LOCAL_ENV &&
-                    console.debug(
-                        'querying user tx/order/positions because address changed',
-                    );
-
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserRangeDataLoading',
+                    loadingStatus: true,
+                });
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserOrderDataLoading',
+                    loadingStatus: true,
+                });
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserTxDataLoading',
+                    loadingStatus: true,
+                });
                 await Promise.all([
                     getLookupUserTransactions(resolvedAddress),
                     getLookupUserLimitOrders(resolvedAddress),
@@ -263,39 +273,77 @@ export default function PortfolioTabs(props: propsIF) {
     }, [
         resolvedAddress,
         connectedAccountActive,
-        isUserIdle
-            ? Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS))
-            : Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         !!tokens.tokenUniv,
-        !!crocEnv,
-        !!provider,
-
+        crocEnv,
+        chainId,
+        provider,
         isServerEnabled,
     ]);
 
-    const activeAccountPositionData = connectedAccountActive
-        ? _positionsByUser
-        : lookupAccountPositionData;
-    // eslint-disable-next-line
-    const activeAccountLimitOrderData = connectedAccountActive
-        ? _limitsByUser
-        : lookupAccountLimitOrderData;
+    // update without loading indicator on an interval
+    useEffect(() => {
+        (async () => {
+            if (
+                !connectedAccountActive &&
+                resolvedAddress &&
+                isServerEnabled &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId &&
+                !!tokens.tokenUniv
+            ) {
+                await Promise.all([
+                    getLookupUserTransactions(resolvedAddress),
+                    getLookupUserLimitOrders(resolvedAddress),
+                    getLookupUserPositions(resolvedAddress),
+                ]);
+            }
+        })();
+    }, [
+        isUserIdle
+            ? Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS))
+            : Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+    ]);
 
-    const activeAccountTransactionData = connectedAccountActive
-        ? _txsByUser?.filter((tx) => {
-              if (tx.changeType !== 'fill' && tx.changeType !== 'cross') {
-                  return true;
-              } else {
-                  return false;
-              }
-          })
-        : lookupAccountTransactionData?.filter((tx) => {
-              if (tx.changeType !== 'fill' && tx.changeType !== 'cross') {
-                  return true;
-              } else {
-                  return false;
-              }
-          });
+    const activeAccountPositionData = useMemo(
+        () =>
+            connectedAccountActive
+                ? _positionsByUser
+                : lookupAccountPositionData,
+        [connectedAccountActive, _positionsByUser, lookupAccountPositionData],
+    );
+    const activeAccountLimitOrderData = useMemo(
+        () =>
+            connectedAccountActive
+                ? _limitsByUser
+                : lookupAccountLimitOrderData,
+        [connectedAccountActive, _limitsByUser, lookupAccountLimitOrderData],
+    );
+
+    const activeAccountTransactionData = useMemo(
+        () =>
+            connectedAccountActive
+                ? _txsByUser?.filter((tx) => {
+                      if (
+                          tx.changeType !== 'fill' &&
+                          tx.changeType !== 'cross'
+                      ) {
+                          return true;
+                      } else {
+                          return false;
+                      }
+                  })
+                : lookupAccountTransactionData?.filter((tx) => {
+                      if (
+                          tx.changeType !== 'fill' &&
+                          tx.changeType !== 'cross'
+                      ) {
+                          return true;
+                      } else {
+                          return false;
+                      }
+                  }),
+        [connectedAccountActive, _txsByUser, lookupAccountTransactionData],
+    );
 
     // props for <Wallet/> React Element
     const walletProps = {
