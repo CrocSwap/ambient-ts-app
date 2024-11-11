@@ -452,16 +452,6 @@ const PageHeader = function () {
                         className={styles.logoContainer}
                         aria-label='Home'
                     >
-                        {/* {desktopScreen ? (
-                            <img src={headerImage} alt='ambient' />
-                        ) : (
-                            <img
-                                className={styles.logoText}
-                                src={logo}
-                                alt='ambient'
-                                width='70px'
-                            />
-                        )} */}
                         <img
                             className={styles.logoText}
                             src={logo}
