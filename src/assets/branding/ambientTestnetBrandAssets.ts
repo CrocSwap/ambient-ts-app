@@ -24,17 +24,6 @@ export const ambientTestnetBrandAssets: brandIF = {
                 { content: plumeLogo, processAs: 'image' },
             ],
         },
-        // scroll sepolia
-        '0x8274f': {
-            // first value in array is default color scheme
-            color: ['purple_dark', 'purple_light', 'futa_dark'],
-            premiumColor: [],
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: scrollLogo, processAs: 'image' },
-            ],
-        },
         // blast sepolia
         '0xa0c71fd': {
             // first value in array is default color scheme
@@ -44,6 +33,17 @@ export const ambientTestnetBrandAssets: brandIF = {
                 { content: 'ambient', processAs: 'text' },
                 { content: '×', processAs: 'separator' },
                 { content: blastLogo, processAs: 'image' },
+            ],
+        },
+        // scroll sepolia
+        '0x8274f': {
+            // first value in array is default color scheme
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
+            premiumColor: [],
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: scrollLogo, processAs: 'image' },
             ],
         },
     },

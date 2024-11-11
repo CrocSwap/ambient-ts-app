@@ -14,11 +14,13 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
+// import plumeMainnetLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
+import plumeSepoliaLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
+// import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_network_logo.webp';
 import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
 import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
 import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
-import plumeSepoliaLogo from '../../../../assets/images/networks/plume.svg';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     BrandContext,
@@ -258,7 +260,10 @@ export default function NetworkSelector(props: propsIF) {
                         <Text
                             color={'accent1'}
                             fontSize={'mini'}
-                            marginLeft='30px'
+                            style={{
+                                position: 'absolute', // Position Testnet absolutely
+                                right: '0', // Pin it to the right
+                            }}
                         >
                             Testnet
                         </Text>
@@ -287,9 +292,15 @@ export default function NetworkSelector(props: propsIF) {
                     marginRight={smallScreen ? '70px' : ''}
                     titleWidth={'80px'}
                     title={
-                        chainId === '0x18230'
-                            ? 'Plume Devnet'
-                            : lookupChain(chainId).displayName
+                        chainId === '0xaa36a7'
+                            ? 'Sepolia'
+                            : chainId === '0x18230'
+                              ? 'Plume Devnet'
+                              : chainId === '0xa0c71fd'
+                                ? 'Blast Testnet'
+                                : chainId === '0x8274f'
+                                  ? 'Scroll Testnet'
+                                  : lookupChain(chainId).displayName
                     }
                     expandable={networks.length > 1}
                     logo={
