@@ -25,7 +25,6 @@ Note: Node v18+ is required
 
 Configure your build environment by adding a dotfile (e.g. `.env.local`) with variable definitions to the top level directory before starting the server. Please reference `.gitignore` in the root directory for dotfile naming conventions.
 
-
 #### Infura
 
 This is a key for the Infura API which is used to pull metadata from on-chain.
@@ -68,7 +67,7 @@ Code changes are viewable on GitHub [Link](https://github.com/CrocSwap/ambient-t
 Summary:
 
 -   Added the ability to switch to the Scroll network and a test network (Görli) using the network selector in the page header
--   Added an external link to [Canto](https://beta.canto.io/lp) in the network selector
+-   Added an external link to [Canto](https://www.canto.io/lp) in the network selector
 -   Updated the pool initialization form to enable additionally minting of an initial liquidity position
 -   Fixed a bug preventing approvals of certain tokens (thanks [busimus](https://github.com/busimus)!)
 -   Added the ability to annotate the price charts with trend lines and horizontal rays
