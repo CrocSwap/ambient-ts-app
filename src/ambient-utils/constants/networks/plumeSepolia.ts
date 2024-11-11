@@ -11,11 +11,16 @@ import { Provider } from 'ethers';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 
+export const PLUME_SEPOLIA_RPC_URL =
+    import.meta.env.VITE_PLUME_SEPOLIA_RPC_URL !== undefined
+        ? import.meta.env.VITE_PLUME_SEPOLIA_RPC_URL
+        : 'https://test-rpc.plumenetwork.xyz';
+
 const chain = {
     chainId: 98864,
     name: 'Plume Devnet',
     currency: 'ETH',
-    rpcUrl: 'https://test-rpc.plumenetwork.xyz',
+    rpcUrl: PLUME_SEPOLIA_RPC_URL,
     explorerUrl: 'https://test-explorer.plumenetwork.xyz/',
 };
 
@@ -24,7 +29,7 @@ const chainSpec = lookupChain('0x18230');
 export const plumeSepolia: NetworkIF = {
     chainId: '0x18230',
     graphCacheUrl: GCGO_TESTNET_URL,
-    evmRpcUrl: 'https://test-rpc.plumenetwork.xyz/',
+    evmRpcUrl: PLUME_SEPOLIA_RPC_URL,
     chain: chain,
     marketData: '0x1',
     defaultPair: [plumeSepoliaETH, plumeSepoliaUSD],
