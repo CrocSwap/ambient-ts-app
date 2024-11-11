@@ -11,9 +11,6 @@ import useWebSocket from 'react-use-websocket';
 import {
     BLOCK_POLLING_RPC_URL,
     IS_LOCAL_ENV,
-    MAINNET_RPC_URL,
-    SCROLL_RPC_URL,
-    SEPOLIA_RPC_URL,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
     ZERO_ADDRESS,
     hiddenTokens,
@@ -42,7 +39,6 @@ import {
     RpcNodeStatus,
     IDexTokenBalances,
 } from '../ambient-utils/api';
-import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
 import { AppStateContext } from './AppStateContext';
 import moment from 'moment';
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
@@ -57,6 +53,7 @@ export interface ChainDataContextIF {
     connectedUserXp: UserXpDataIF;
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
+    isActiveNetworkPlume: boolean;
     isActiveNetworkScroll: boolean;
     isActiveNetworkMainnet: boolean;
     isActiveNetworkL2: boolean;
@@ -114,6 +111,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);
+    const isActiveNetworkPlume = ['0x18230'].includes(chainId);
 
     const blockPollingUrl = BLOCK_POLLING_RPC_URL
         ? BLOCK_POLLING_RPC_URL
@@ -153,17 +151,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     }, [gasPricePollingCacheTime]);
 
     async function pollBlockNum(): Promise<void> {
-        const nodeUrl = ['0x1'].includes(chainId)
-            ? MAINNET_RPC_URL
-            : ['0xaa36a7'].includes(chainId)
-              ? SEPOLIA_RPC_URL
-              : ['0x13e31'].includes(chainId) // use blast env variable for blast network
-                ? BLAST_RPC_URL
-                : ['0x82750'].includes(chainId) // use scroll env variable for scroll network
-                  ? SCROLL_RPC_URL
-                  : blockPollingUrl;
         try {
-            const lastBlockNumber = await fetchBlockNumber(nodeUrl);
+            const lastBlockNumber = await fetchBlockNumber(blockPollingUrl);
             if (lastBlockNumber > 0) {
                 setLastBlockNumber(lastBlockNumber);
                 setRpcNodeStatus('active');
@@ -593,6 +582,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         connectedUserBlastXp,
         setGasPriceinGwei,
         isActiveNetworkBlast,
+        isActiveNetworkPlume,
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
         isActiveNetworkL2,

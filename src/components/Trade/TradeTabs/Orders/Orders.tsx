@@ -453,9 +453,8 @@ function Orders(props: propsIF) {
             showAllData,
             isAccountView,
             activeAccountLimitOrderData,
-            limitOrdersByPool,
             activeUserLimitOrdersByPool,
-            fetchedTransactions, // infinite scroll
+            fetchedTransactions.limitOrders, // infinite scroll
         ],
     );
 

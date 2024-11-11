@@ -25,15 +25,14 @@ import {
     ethereumMainnet,
     mainnetETH,
     getDefaultPairForChain,
-    BLAST_RPC_URL,
-    MAINNET_RPC_URL,
-    SEPOLIA_RPC_URL,
-    SCROLL_RPC_URL,
 } from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { TokenContext } from './TokenContext';
 import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
+import { MAINNET_RPC_URL } from '../ambient-utils/constants/networks/ethereumMainnet';
+import { SCROLL_RPC_URL } from '../ambient-utils/constants/networks/scrollMainnet';
 
 interface UrlRoutesTemplateIF {
     swap: string;
@@ -65,9 +64,6 @@ const scrollProvider = new BatchedJsonRpcProvider(SCROLL_RPC_URL, 534352, {
     staticNetwork: true,
 });
 const blastProvider = new BatchedJsonRpcProvider(BLAST_RPC_URL, 81457, {
-    staticNetwork: true,
-});
-const sepoliaProvider = new BatchedJsonRpcProvider(SEPOLIA_RPC_URL, 11155111, {
     staticNetwork: true,
 });
 
@@ -164,27 +160,11 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplateIF>(initUrl);
 
-    const nodeUrl = ['0x1'].includes(chainId)
-        ? MAINNET_RPC_URL
-        : ['0x13e31'].includes(chainId) // use blast env variable for blast network
-          ? BLAST_RPC_URL
-          : ['0x82750'].includes(chainId) // use scroll env variable for scroll network
-            ? SCROLL_RPC_URL
-            : evmRpcUrl;
-
     const provider = useMemo(
         () =>
-            chainId === '0x1'
-                ? mainnetProvider
-                : chainId === '0x82750'
-                  ? scrollProvider
-                  : chainId === '0x13e31'
-                    ? blastProvider
-                    : chainId === '0xaa36a7'
-                      ? sepoliaProvider
-                      : new BatchedJsonRpcProvider(nodeUrl, parseInt(chainId), {
-                            staticNetwork: true,
-                        }),
+            new BatchedJsonRpcProvider(evmRpcUrl, parseInt(chainId), {
+                staticNetwork: true,
+            }),
         [chainId],
     );
 
