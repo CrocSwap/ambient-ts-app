@@ -37,7 +37,6 @@ import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
-    IS_LOCAL_ENV,
 } from '../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -121,7 +120,7 @@ export default function PortfolioTabs(props: propsIF) {
         ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
         : graphCacheUrl + '/user_limit_orders?';
 
-    const getLookupUserPositions = async (accountToSearch: string) =>
+    const getLookupUserPositions = async (accountToSearch: string) => {
         fetch(
             userPositionsCacheEndpoint +
                 new URLSearchParams({
@@ -132,7 +131,6 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userPositions = json?.data;
-                console.log({ userPositions, crocEnv, provider });
                 // temporarily skip ENS fetch
                 const skipENSFetch = true;
                 if (userPositions && crocEnv && provider) {
@@ -153,7 +151,6 @@ export default function PortfolioTabs(props: propsIF) {
                         }),
                     )
                         .then((updatedPositions) => {
-                            console.log({ updatedPositions });
                             setLookupAccountPositionData(
                                 updatedPositions.filter(
                                     (p) => p.positionLiq > 0,
@@ -168,8 +165,9 @@ export default function PortfolioTabs(props: propsIF) {
                         });
                 }
             });
+    };
 
-    const getLookupUserLimitOrders = async (accountToSearch: string) =>
+    const getLookupUserLimitOrders = async (accountToSearch: string) => {
         fetch(
             userLimitOrdersCacheEndpoint +
                 new URLSearchParams({
@@ -212,6 +210,8 @@ export default function PortfolioTabs(props: propsIF) {
                         });
                 }
             });
+    };
+
     const getLookupUserTransactions = async (accountToSearch: string) => {
         if (crocEnv && provider) {
             fetchUserRecentChanges({
@@ -243,20 +243,26 @@ export default function PortfolioTabs(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
-                return;
             if (
-                isServerEnabled &&
                 !connectedAccountActive &&
-                !!tokens.tokenUniv &&
                 resolvedAddress &&
-                !!crocEnv
+                isServerEnabled &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId &&
+                !!tokens.tokenUniv
             ) {
-                IS_LOCAL_ENV &&
-                    console.debug(
-                        'querying user tx/order/positions because address changed',
-                    );
-
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserRangeDataLoading',
+                    loadingStatus: true,
+                });
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserOrderDataLoading',
+                    loadingStatus: true,
+                });
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserTxDataLoading',
+                    loadingStatus: true,
+                });
                 await Promise.all([
                     getLookupUserTransactions(resolvedAddress),
                     getLookupUserLimitOrders(resolvedAddress),
@@ -267,15 +273,35 @@ export default function PortfolioTabs(props: propsIF) {
     }, [
         resolvedAddress,
         connectedAccountActive,
-        isUserIdle
-            ? Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS))
-            : Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         !!tokens.tokenUniv,
         crocEnv,
         chainId,
         provider,
-
         isServerEnabled,
+    ]);
+
+    // update without loading indicator on an interval
+    useEffect(() => {
+        (async () => {
+            if (
+                !connectedAccountActive &&
+                resolvedAddress &&
+                isServerEnabled &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId &&
+                !!tokens.tokenUniv
+            ) {
+                await Promise.all([
+                    getLookupUserTransactions(resolvedAddress),
+                    getLookupUserLimitOrders(resolvedAddress),
+                    getLookupUserPositions(resolvedAddress),
+                ]);
+            }
+        })();
+    }, [
+        isUserIdle
+            ? Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS))
+            : Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
     ]);
 
     const activeAccountPositionData = useMemo(
