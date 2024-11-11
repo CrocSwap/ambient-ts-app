@@ -164,7 +164,7 @@ export default function NetworkSelector(props: propsIF) {
             chainId: '',
             name: 'Canto',
             logo: cantoLogo,
-            custom: chains.length + 1,
+            custom: 0,
             isExternal: true,
             testnet: false,
             link: 'https://app.canto.io/lp',
