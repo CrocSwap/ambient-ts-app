@@ -8,6 +8,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { VaultIF } from '../../../../ambient-utils/types';
 import { AppStateContext, TokenContext } from '../../../../contexts';
 import { useContext } from 'react';
+import { formatDollarAmount } from '../../../../utils/numbers';
 
 interface propsIF {
     idForDOM: string;
@@ -107,7 +108,9 @@ export default function VaultRow(props: propsIF) {
                     <p className={styles.poolName}>
                         {firstToken.symbol} / {secondToken.symbol}
                     </p>
-                    <p className={styles.tvlDisplay}>$100,000</p>
+                    <p className={styles.tvlDisplay}>
+                        {formatDollarAmount(parseFloat(vault.tvlUsd))}
+                    </p>
                     {depositsDisplay}
                     <p
                         className={styles.apyDisplay}
