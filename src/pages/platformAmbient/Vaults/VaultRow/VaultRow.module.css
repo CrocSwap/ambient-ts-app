@@ -6,6 +6,7 @@
     padding: 8px;
     display: grid;
     grid-template-columns: auto repeat(4, 1fr) 100px;
+    align-items: center;
 }
 
 .tempestDisplay {
@@ -61,8 +62,16 @@
     letter-spacing: -0.36px;
 }
 
+.actionButtonContainer{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+   
+}
 .actionButton {
     display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 5px 8px;
     align-items: flex-start;
     gap: 10px;
@@ -79,4 +88,32 @@ font-size: 12px;
 font-style: normal;
 font-weight: 300;
 line-height: normal;
+height: 25px;
+}
+
+
+@media only screen and (max-width: 768px) {
+
+.mainContent{
+    grid-template-columns: auto repeat(2, 1fr)  50px 100px;
+}
+.poolName{
+    display: none;
+}
+
+.tvlDisplay, .apyDisplay, .depositContainer{
+    font-size: 14px;
+}
+}
+
+@media only screen and (max-width: 428px) {
+.mainContent{
+    grid-template-columns: auto repeat(2, 1fr)  50px 70px;
+}
+
+.tempestDisplay{
+    display: none;
+}
+
+
 }

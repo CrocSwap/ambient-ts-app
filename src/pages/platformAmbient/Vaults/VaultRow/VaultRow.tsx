@@ -4,6 +4,7 @@ import tempestLogo from './tempestLogo.svg';
 import { FlexContainer } from '../../../../styled/Common';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 export default function VaultRow() {
     const firstToken = {
@@ -28,6 +29,8 @@ export default function VaultRow() {
         name: 'Native Ether',
         symbol: 'ETH',
     };
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
 
     const tokenIconsDisplay = (
         <FlexContainer alignItems='center' gap={5} style={{ flexShrink: 0 }}>
@@ -38,13 +41,13 @@ export default function VaultRow() {
                 token={firstToken}
                 src={uriToHttp(firstToken.logoURI)}
                 alt={firstToken.symbol}
-                size={'2xl'}
+                size={showMobileVersion ? 'm' : '2xl'}
             />
             <TokenIcon
                 token={secondToken}
                 src={uriToHttp(secondToken.logoURI)}
                 alt={secondToken.symbol}
-                size={'2xl'}
+                size={showMobileVersion ? 'm' : '2xl'}
             />
         </FlexContainer>
     );
@@ -56,6 +59,7 @@ export default function VaultRow() {
             justifyContent='flex-end'
             gap={5}
             style={{ flexShrink: 0 }}
+            className={styles.depositContainer}
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                 1,000
@@ -84,11 +88,14 @@ export default function VaultRow() {
         <div className={styles.mainContainer}>
             <div className={styles.mainContent}>
                 {tokenIconsDisplay}
-                <h3 className={styles.poolName}>ETH / USDC</h3>
-                <h3 className={styles.tvlDisplay}>$1,000,000.00</h3>
+                <p className={styles.poolName}>ETH / USDC</p>
+                <p className={styles.tvlDisplay}>$1,000,000.00</p>
                 {depositsDisplay}
-                <h3 className={styles.apyDisplay} style={{ color: 'var(--other-green' }}>16.75%</h3>
+                <p className={styles.apyDisplay} style={{ color: 'var(--other-green' }}>16.75%</p>
+                <div className={styles.actionButtonContainer}>
                 <button className={styles.actionButton}>Deposit</button>
+
+                </div>
             </div>
         </div>
     );
