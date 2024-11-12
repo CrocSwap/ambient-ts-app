@@ -6,7 +6,7 @@ import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { VaultIF } from '../../../../ambient-utils/types';
-import { TokenContext } from '../../../../contexts';
+import { AppStateContext, TokenContext } from '../../../../contexts';
 import { useContext } from 'react';
 
 interface propsIF {
@@ -19,10 +19,14 @@ export default function VaultRow(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+
     const firstToken = tokens.getTokenByAddress(vault.token0Address);
     const secondToken = tokens.getTokenByAddress(vault.token1Address);
 
-    if (!firstToken || !secondToken) {
+    if (Number(chainId) !== vault.chainId || !firstToken || !secondToken) {
         return null;
     }
 
