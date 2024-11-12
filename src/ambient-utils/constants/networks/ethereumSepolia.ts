@@ -11,34 +11,34 @@ export const SEPOLIA_RPC_URL =
         ? import.meta.env.VITE_SEPOLIA_RPC_URL
         : 'https://ethereum-sepolia-rpc.publicnode.com';
 
-const chain = {
-    chainId: 11155111,
+const chainIdHex = '0xaa36a7';
+const chainSpecFromSDK = lookupChain(chainIdHex);
+
+const chainSpecForWalletConnector = {
+    chainId: Number(chainIdHex),
     name: 'Sepolia',
     currency: 'ETH',
     rpcUrl: SEPOLIA_RPC_URL,
     explorerUrl: 'https://sepolia.etherscan.io',
 };
 
-const chainSpec = lookupChain('0xaa36a7');
-
 export const ethereumSepolia: NetworkIF = {
-    chainId: '0xaa36a7',
+    chainId: chainIdHex,
+    chainSpec: chainSpecFromSDK,
     graphCacheUrl: GCGO_TESTNET_URL,
     evmRpcUrl: SEPOLIA_RPC_URL,
-    chain: chain,
-    marketData: '0x1',
+    chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [sepoliaETH, sepoliaUSDC],
     defaultPairFuta: [sepoliaETH, sepoliaWBTC],
-    poolIndex: chainSpec.poolIndex,
-    gridSize: chainSpec.gridSize,
-    blockExplorer: chainSpec.blockExplorer,
-    displayName: chainSpec.displayName,
+    poolIndex: chainSpecFromSDK.poolIndex,
+    gridSize: chainSpecFromSDK.gridSize,
+    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    displayName: chainSpecForWalletConnector.name,
     topPools: [
-        new TopPool(sepoliaETH, sepoliaUSDC, chainSpec.poolIndex),
-        new TopPool(sepoliaETH, sepoliaWBTC, chainSpec.poolIndex),
-        new TopPool(sepoliaUSDC, sepoliaWBTC, chainSpec.poolIndex),
+        new TopPool(sepoliaETH, sepoliaUSDC, chainSpecFromSDK.poolIndex),
+        new TopPool(sepoliaETH, sepoliaWBTC, chainSpecFromSDK.poolIndex),
+        new TopPool(sepoliaUSDC, sepoliaWBTC, chainSpecFromSDK.poolIndex),
     ],
-    chainSpec: chainSpec,
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (

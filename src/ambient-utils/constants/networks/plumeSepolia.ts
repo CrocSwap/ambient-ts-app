@@ -16,36 +16,56 @@ export const PLUME_SEPOLIA_RPC_URL =
         ? import.meta.env.VITE_PLUME_SEPOLIA_RPC_URL
         : 'https://test-rpc.plumenetwork.xyz';
 
-const chain = {
-    chainId: 98864,
+const chainIdHex = '0x18230';
+const chainSpecFromSDK = lookupChain(chainIdHex);
+
+const chainSpecForWalletConnector = {
+    chainId: Number(chainIdHex),
     name: 'Plume Devnet',
     currency: 'ETH',
     rpcUrl: PLUME_SEPOLIA_RPC_URL,
     explorerUrl: 'https://test-explorer.plumenetwork.xyz/',
 };
 
-const chainSpec = lookupChain('0x18230');
-
 export const plumeSepolia: NetworkIF = {
-    chainId: '0x18230',
+    chainId: chainIdHex,
+    chainSpec: chainSpecFromSDK,
     graphCacheUrl: GCGO_TESTNET_URL,
     evmRpcUrl: PLUME_SEPOLIA_RPC_URL,
-    chain: chain,
-    marketData: '0x1',
+    chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [plumeSepoliaETH, plumeSepoliaUSD],
     defaultPairFuta: [plumeSepoliaETH, plumeSepoliaUSD],
-    poolIndex: chainSpec.poolIndex,
-    gridSize: chainSpec.gridSize,
-    blockExplorer: chainSpec.blockExplorer,
-    displayName: chainSpec.displayName,
+    poolIndex: chainSpecFromSDK.poolIndex,
+    gridSize: chainSpecFromSDK.gridSize,
+    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    displayName: chainSpecForWalletConnector.name,
     topPools: [
-        new TopPool(plumeSepoliaETH, plumeSepoliaUSD, chainSpec.poolIndex),
-        new TopPool(plumeSepoliaUSD, plumeSepoliaNEV, chainSpec.poolIndex),
-        new TopPool(plumeSepoliaETH, plumeSepoliaUSDT, chainSpec.poolIndex),
-        new TopPool(plumeSepoliaUSD, plumeSepoliaUSDT, chainSpec.poolIndex),
-        new TopPool(plumeSepoliaETH, plumeSepoliaNEV, chainSpec.poolIndex),
+        new TopPool(
+            plumeSepoliaETH,
+            plumeSepoliaUSD,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            plumeSepoliaUSD,
+            plumeSepoliaNEV,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            plumeSepoliaETH,
+            plumeSepoliaUSDT,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            plumeSepoliaUSD,
+            plumeSepoliaUSDT,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            plumeSepoliaETH,
+            plumeSepoliaNEV,
+            chainSpecFromSDK.poolIndex,
+        ),
     ],
-    chainSpec: chainSpec,
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (

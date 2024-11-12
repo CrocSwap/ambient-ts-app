@@ -30,7 +30,7 @@ import { UserDataContext } from './UserDataContext';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { TokenContext } from './TokenContext';
 import { AppStateContext } from './AppStateContext';
-import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
+import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastMainnet';
 import { MAINNET_RPC_URL } from '../ambient-utils/constants/networks/ethereumMainnet';
 import { SCROLL_RPC_URL } from '../ambient-utils/constants/networks/scrollMainnet';
 
