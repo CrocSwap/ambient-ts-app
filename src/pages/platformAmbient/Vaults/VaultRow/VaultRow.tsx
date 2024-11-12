@@ -5,8 +5,12 @@ import { FlexContainer } from '../../../../styled/Common';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useModal } from '../../../../components/Global/Modal/useModal';
+import VaultActionModal from '../VaultActionModal/VaultActionModal';
 
 export default function VaultRow() {
+    const [isOpen, openModal, closeModal] = useModal();
+
     const firstToken = {
         address: '0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3',
         chainId: 11155111,
@@ -95,6 +99,7 @@ export default function VaultRow() {
     );
 
     return (
+        <>
         <div className={styles.mainContainer}>
             <div className={styles.contentColumn}>
                 {vaultHeader}
@@ -107,14 +112,16 @@ export default function VaultRow() {
                     <p
                         className={styles.apyDisplay}
                         style={{ color: 'var(--other-green' }}
-                    >
+                        >
                         16.75%
                     </p>
                     <div className={styles.actionButtonContainer}>
-                        <button className={styles.actionButton}>Deposit</button>
+                        <button className={styles.actionButton} onClick={openModal}>Deposit</button>
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
+            {isOpen && <VaultActionModal type='Deposit' onClose={closeModal} firstToken={firstToken} secondToken={secondToken} />}
+                        </>
     );
 }
