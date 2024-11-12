@@ -11,20 +11,10 @@ export default function NoVaults() {
     const { isConnected } = useWeb3ModalAccount();
     const { switchNetwork } = useSwitchNetwork();
 
-    async function handleClick(): Promise<void> {
-        if (isConnected) {
-            await switchNetwork(parseInt(scrollMainnet.chainId));
-            // if (chainParam || networkParam) {
-            //     // navigate to index page only if chain/network search param present
-            //     linkGenIndex.navigate();
-            // }
-        } else {
-            // if (chainParam || networkParam) {
-            //     // navigate to index page only if chain/network search param present
-            //     linkGenIndex.navigate();
-            // }
-            chooseNetwork(scrollMainnet);
-        }
+    async function goToScroll(): Promise<void> {
+        isConnected
+            ? await switchNetwork(parseInt(scrollMainnet.chainId))
+            : chooseNetwork(scrollMainnet);
     }
 
     const BUTTON_DOM_ID = 'change_network_to_scroll';
@@ -35,7 +25,7 @@ export default function NoVaults() {
             <Button
                 idForDOM={BUTTON_DOM_ID}
                 title='Change to Scroll'
-                action={() => handleClick()}
+                action={() => goToScroll()}
             />
         </div>
     );
