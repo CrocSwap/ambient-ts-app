@@ -1,8 +1,11 @@
 import styles from './NoVaults.module.css';
 import Button from '../../../components/Form/Button';
 import { AppStateContext } from '../../../contexts';
-import { useContext } from 'react';
-import { scrollMainnet } from '../../../ambient-utils/constants';
+import { useContext, useEffect } from 'react';
+import {
+    scrollMainnet,
+    vaultSupportedNetworks,
+} from '../../../ambient-utils/constants';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 export default function NoVaults() {
@@ -16,6 +19,10 @@ export default function NoVaults() {
             ? await switchNetwork(parseInt(scrollMainnet.chainId))
             : chooseNetwork(scrollMainnet);
     }
+
+    useEffect(() => {
+        console.log({ vaultSupportedNetworks });
+    }, [vaultSupportedNetworks]);
 
     const BUTTON_DOM_ID = 'change_network_to_scroll';
 
