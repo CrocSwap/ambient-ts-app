@@ -334,6 +334,11 @@ const PageHeader = function () {
             shouldDisplay: !!isUserConnected,
         },
         {
+            title: 'Vaults',
+            destination: '/vaults',
+            shouldDisplay: true,
+        },
+        {
             title: 'Points',
             destination: '/account/points',
             shouldDisplay: !!isUserConnected && desktopScreen,

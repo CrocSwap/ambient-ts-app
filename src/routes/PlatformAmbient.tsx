@@ -7,6 +7,7 @@ import Trade from '../pages/platformAmbient/Trade/Trade';
 import ChatPanel from '../components/Chat/ChatPanel';
 import InitPool from '../pages/platformAmbient/InitPool/InitPool';
 import Portfolio from '../pages/platformAmbient/Portfolio/Portfolio';
+import Vaults from '../pages/platformAmbient/Vaults/Vaults';
 import Vanity from '../pages/platformAmbient/Vanity/Vanity';
 import Explore from '../pages/platformAmbient/Explore/Explore';
 import Swap from '../pages/platformAmbient/Swap/Swap';
@@ -74,6 +75,7 @@ const PlatformAmbientRoutes: React.FC = () => {
             />
             <Route path='initpool/:params' element={<InitPool />} />
             <Route path='account' element={<Portfolio />} />
+            <Route path='vaults' element={<Vaults />} />
             <Route
                 path='xp-leaderboard'
                 element={<Portfolio isLevelsPage isRanksPage />}
