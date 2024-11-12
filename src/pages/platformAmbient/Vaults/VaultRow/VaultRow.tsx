@@ -9,7 +9,11 @@ import { useModal } from '../../../../components/Global/Modal/useModal';
 import VaultActionModal from '../VaultActionModal/VaultActionModal';
 import { VaultIF } from '../../../../ambient-utils/types';
 import { useContext } from 'react';
-import { AppStateContext, TokenContext } from '../../../../contexts';
+import {
+    AppStateContext,
+    UserDataContext,
+    TokenContext,
+} from '../../../../contexts';
 import { formatDollarAmount } from '../../../../utils/numbers';
 
 interface propsIF {
@@ -20,8 +24,8 @@ export default function VaultRow(props: propsIF) {
     const { idForDOM, vault } = props;
     const [isOpen, openModal, closeModal] = useModal();
 
-
     const { tokens } = useContext(TokenContext);
+    const { isUserConnected } = useContext(UserDataContext);
 
     const {
         activeNetwork: { chainId },
@@ -35,7 +39,6 @@ export default function VaultRow(props: propsIF) {
     }
 
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
-
 
     const tokenIconsDisplay = (
         <FlexContainer alignItems='center' gap={5} style={{ flexShrink: 0 }}>
@@ -100,41 +103,53 @@ export default function VaultRow(props: propsIF) {
         </div>
     );
 
-    const randomNum = Math.floor(Math.random() * 100);
-    const isEven = randomNum % 2 === 0;
-
     return (
         <>
-        <div id={idForDOM} className={styles.mainContainer}>
-        <div className={styles.contentColumn}>
-                {vaultHeader}
-                <div className={styles.mainContent}>
-                    {tokenIconsDisplay}
-                    <p className={styles.poolName}>
-                        {firstToken.symbol} / {secondToken.symbol}
-                    </p>
-                    <p className={styles.tvlDisplay}>
-                        {formatDollarAmount(parseFloat(vault.tvlUsd))}
-                    </p>
-                    {depositsDisplay}
-                    <p
-                        className={styles.apyDisplay}
-                        style={{ color: 'var(--other-green' }}
+            <div id={idForDOM} className={styles.mainContainer}>
+                <div className={styles.contentColumn}>
+                    {vaultHeader}
+                    <div className={styles.mainContent}>
+                        {tokenIconsDisplay}
+                        <p className={styles.poolName}>
+                            {firstToken.symbol} / {secondToken.symbol}
+                        </p>
+                        <p className={styles.tvlDisplay}>
+                            {formatDollarAmount(parseFloat(vault.tvlUsd))}
+                        </p>
+                        {depositsDisplay}
+                        <p
+                            className={styles.apyDisplay}
+                            style={{ color: 'var(--other-green' }}
                         >
-                         {`${vault.apr}%`}
-                    </p>
-                    <div className={styles.actionButtonContainer}>
-                        <button className={styles.actionButton} onClick={openModal}>Deposit</button>
-                        {isEven && (
-                            <button className={styles.actionButton} onClick={openModal}>
-                                Withdraw
+                            {`${vault.apr}%`}
+                        </p>
+                        <div className={styles.actionButtonContainer}>
+                            <button
+                                className={styles.actionButton}
+                                onClick={openModal}
+                            >
+                                Deposit
                             </button>
-                        )}
+                            {isUserConnected && (
+                                <button
+                                    className={styles.actionButton}
+                                    onClick={openModal}
+                                >
+                                    Withdraw
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-            </div>
-            {isOpen && <VaultActionModal type='Deposit' onClose={closeModal} firstToken={firstToken} secondToken={secondToken} />}
-                        </>
+            {isOpen && (
+                <VaultActionModal
+                    type='Deposit'
+                    onClose={closeModal}
+                    firstToken={firstToken}
+                    secondToken={secondToken}
+                />
+            )}
+        </>
     );
 }
