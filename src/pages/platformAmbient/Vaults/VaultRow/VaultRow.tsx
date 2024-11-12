@@ -134,7 +134,7 @@ export default function VaultRow(props: propsIF) {
                 </div>
             </div>
             </div>
-            {isOpen && <VaultActionModal type='Deposit' onClose={closeModal} firstToken={firstToken} secondToken={secondToken} />}
+            {isOpen && <VaultActionModal type={isEven ? 'Withdraw' : 'Deposit'} onClose={closeModal} firstToken={firstToken} secondToken={secondToken} />}
                         </>
     );
 }
