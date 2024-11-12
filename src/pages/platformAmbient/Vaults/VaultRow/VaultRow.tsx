@@ -1,5 +1,5 @@
 import styles from './VaultRow.module.css';
-import tempestLogoColor from './tempestLogoColor.svg';
+// import tempestLogoColor from './tempestLogoColor.svg';
 import tempestLogo from './tempestLogo.svg';
 import { FlexContainer } from '../../../../styled/Common';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
@@ -30,7 +30,6 @@ export default function VaultRow() {
         symbol: 'ETH',
     };
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
-
 
     const tokenIconsDisplay = (
         <FlexContainer alignItems='center' gap={5} style={{ flexShrink: 0 }}>
@@ -82,8 +81,6 @@ export default function VaultRow() {
         </FlexContainer>
     );
 
-
-
     return (
         <div className={styles.mainContainer}>
             <div className={styles.mainContent}>
@@ -91,10 +88,14 @@ export default function VaultRow() {
                 <p className={styles.poolName}>ETH / USDC</p>
                 <p className={styles.tvlDisplay}>$1,000,000.00</p>
                 {depositsDisplay}
-                <p className={styles.apyDisplay} style={{ color: 'var(--other-green' }}>16.75%</p>
+                <p
+                    className={styles.apyDisplay}
+                    style={{ color: 'var(--other-green' }}
+                >
+                    16.75%
+                </p>
                 <div className={styles.actionButtonContainer}>
-                <button className={styles.actionButton}>Deposit</button>
-
+                    <button className={styles.actionButton}>Deposit</button>
                 </div>
             </div>
         </div>
