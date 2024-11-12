@@ -167,7 +167,7 @@ export default function NetworkSelector(props: propsIF) {
             custom: 1,
             isExternal: true,
             testnet: false,
-            link: 'https://app.canto.io/lp',
+            link: 'https://www.canto.io/lp',
             condition: includeCanto && platformName === 'ambient',
         },
         {

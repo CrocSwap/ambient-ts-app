@@ -57,9 +57,9 @@ import {
     ReceiptContext,
     ReceiptContextIF,
 } from '../../../contexts/ReceiptContext';
-import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 import styles from './PageHeader.module.css';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
+import { BrandContext } from '../../../contexts';
 
 const PageHeader = function () {
     const {
@@ -67,9 +67,9 @@ const PageHeader = function () {
         walletModal: { open: openWalletModal },
         appHeaderDropdown,
     } = useContext<AppStateContextIF>(AppStateContext);
+    const { headerImage } = useContext(BrandContext);
     const { crocEnv, setCrocEnv } =
         useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { headerImage } = useContext<BrandContextIF>(BrandContext);
     const { resetTokenBalances } =
         useContext<TokenBalanceContextIF>(TokenBalanceContext);
     const { resetUserGraphData } =
@@ -447,6 +447,7 @@ const PageHeader = function () {
                             appHeaderDropdown.setIsActive(false);
                         }
                     }}
+                    className={styles.left_side}
                 >
                     <Link
                         to='/'
@@ -454,18 +455,22 @@ const PageHeader = function () {
                         aria-label='Home'
                     >
                         {desktopScreen ? (
-                            <img src={headerImage} alt='ambient' />
+                            <img
+                                src={headerImage}
+                                alt='ambient'
+                                style={{ marginRight: '20px' }}
+                            />
                         ) : (
                             <img
                                 className={styles.logoText}
                                 src={logo}
                                 alt='ambient'
-                                width='70px'
+                                width='60px'
                             />
                         )}
                     </Link>
+                    {routeDisplay}
                 </div>
-                {routeDisplay}
                 <div className={styles.rightSide}>
                     {show ? (
                         <div className={styles.tradeNowDiv}>
