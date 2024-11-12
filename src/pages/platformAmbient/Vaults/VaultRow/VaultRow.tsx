@@ -1,6 +1,6 @@
 import styles from './VaultRow.module.css';
-// import tempestLogoColor from './tempestLogoColor.svg';
-import tempestLogo from './tempestLogo.svg';
+import tempestLogoColor from './tempestLogoColor.svg';
+// import tempestLogo from './tempestLogo.svg';
 import { FlexContainer } from '../../../../styled/Common';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
@@ -42,7 +42,7 @@ export default function VaultRow(props: propsIF) {
     const tokenIconsDisplay = (
         <FlexContainer alignItems='center' gap={5} style={{ flexShrink: 0 }}>
             <div className={styles.tempestDisplay}>
-                <img src={tempestLogo} alt='tempest' />
+                <img src={tempestLogoColor} alt='tempest' />
             </div>
             <TokenIcon
                 token={firstToken}
@@ -91,7 +91,7 @@ export default function VaultRow(props: propsIF) {
 
     const vaultHeader = (
         <div className={styles.vaultHeader}>
-            <span/>
+            <span />
             <span className={styles.poolName}></span>
             <span>TVL</span>
             <span className={styles.depositContainer}>
@@ -101,6 +101,9 @@ export default function VaultRow(props: propsIF) {
             <span className={styles.actionButtonContainer} />
         </div>
     );
+
+    const randomNum = Math.floor(Math.random() * 100);
+    const isEven = randomNum % 2 === 0;
 
     return (
         <div id={idForDOM} className={styles.mainContainer}>
@@ -119,6 +122,11 @@ export default function VaultRow(props: propsIF) {
                     </p>
                     <div className={styles.actionButtonContainer}>
                         <button className={styles.actionButton}>Deposit</button>
+                        {isEven && (
+                            <button className={styles.actionButton}>
+                                Withdraw
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
