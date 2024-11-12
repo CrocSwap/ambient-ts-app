@@ -5,7 +5,6 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import NetworkSelector from '../../../App/components/PageHeader/NetworkSelector/NetworkSelector';
 import styles from './Navbar.module.css';
-import Logo from '../../../assets/futa/images/futaLogo.svg';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
@@ -228,31 +227,7 @@ export default function Navbar() {
         },
     ];
 
-    // Components
-    const linksDisplay = (
-        <motion.div
-            className={styles.desktopLinksContainer}
-            initial='hidden'
-            animate='visible'
-            variants={linksContainerVariants}
-        >
-            {navbarLinks.map((item, idx) => (
-                <motion.div
-                    id={item.id}
-                    key={idx}
-                    className={styles.desktopLink}
-                    variants={linkItemVariants}
-                    style={{
-                        color: location.pathname.includes(item.link)
-                            ? 'var(--text1)'
-                            : '',
-                    }}
-                >
-                    <Link to={item.link}>{item.label}</Link>
-                </motion.div>
-            ))}
-        </motion.div>
-    );
+   
     const connectWagmiButton = (
         <button
             id='connect_wallet_button_page_header'
@@ -298,13 +273,7 @@ export default function Navbar() {
             />
         </motion.div>
     );
-    const [activeTab, setActiveTab] = useState('content7');
-
-    const tabs: TabProps[] = [
-        { label: 'Tab1', content: 'content7' },
-        { label: 'Tab2', content: 'content8' },
-        { label: 'Tab3', content: 'content9' },
-    ];
+  
 
     const yes = false;
     if (yes)
@@ -321,18 +290,20 @@ export default function Navbar() {
         );
 
     const tabLinks = (
-        <ul className={styles.tabs}>
-            {navbarLinks.map((item, idx) => (
-                <li
-                    className={`${styles.tabItem} ${location.pathname.includes(item.link) ? styles.currentTab : ''}`}
-                    key={idx}
+        <ul className={styles.navTabs} role="tablist">
+        {navbarLinks.map((navLink) => (
+            <li key={navLink.id} className={styles.navItem}>
+                <Link to={navLink.link}
+                   
+                    className={`${styles.navLink} ${location.pathname.includes(navLink.link) ? styles.active : styles.not_active}`}
+                    
                 >
-                    <Link to={item.link} className={`${styles.tabLink} ${location.pathname.includes(item.link) ? styles.currentLink : ''}`}>
-                        {item.label}
-                    </Link>
-                </li>
-            ))}
-        </ul>
+                    <span className={styles.slantedText}>{navLink.label}</span>
+                </Link>
+            </li>
+        ))}
+    </ul>
+        
     );
 
     return (
@@ -340,7 +311,8 @@ export default function Navbar() {
             <div className={styles.container}>
                 <div className={styles.logoContainer}>
                     <Link to='/'>
-                        <img src={Logo} alt='futa logo' />
+            
+                        <h3>FU/TA</h3>
                     </Link>
                     {desktopScreen && tabLinks}
                 </div>
