@@ -1,4 +1,5 @@
 
+import { TokenIF } from '../../../../ambient-utils/types';
 import Modal from '../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../components/Global/ModalHeader/ModalHeader';
 
@@ -8,8 +9,8 @@ import VaultWithdraw from './VaultWithdraw/VaultWithdraw';
 interface Props {
     onClose: () => void;
     type: 'Withdraw' | 'Deposit';
-    firstToken: any;
-    secondToken: any;
+    firstToken: TokenIF;
+    secondToken: TokenIF;
 }
 export default function VaultActionModal(props: Props) {
     const { onClose, type, firstToken, secondToken } = props;

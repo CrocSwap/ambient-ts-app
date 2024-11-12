@@ -1,5 +1,5 @@
-.mainContainer{
-    background: var(--dark1)
+.mainContainer {
+    background: var(--dark1);
 }
 .mainContent {
     width: 100%;
@@ -9,8 +9,7 @@
     align-items: center;
 }
 
-
-.vaultHeader{
+.vaultHeader {
     width: 100%;
     padding: 0 8px;
     padding-top: 4px;
@@ -19,18 +18,17 @@
     align-items: center;
 }
 
-.vaultHeader span{
+.vaultHeader span {
     text-align: end;
 
-    color: var(--text2, #8B98A5);
-text-align: right;
+    color: var(--text2, #8b98a5);
+    text-align: right;
 
-font-size: 12px;
-font-style: normal;
-font-weight: 300;
-line-height: normal;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
 }
-
 
 .tempestDisplay {
     width: 30px;
@@ -85,12 +83,14 @@ line-height: normal;
     letter-spacing: -0.36px;
 }
 
-.actionButtonContainer{
+.actionButtonContainer {
     width: 100%;
     display: flex;
-    justify-content: flex-end;
-   
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 10px; /* Space between Deposit and Withdraw buttons */
+    align-items: flex-end;
 }
+
 .actionButton {
     display: flex;
     justify-content: center;
@@ -102,47 +102,45 @@ line-height: normal;
     border-radius: 50px;
     border: 1px solid var(--accent1, #7371fc);
     background: var(--dark1, #06060c);
-    color: var(--accent-accent1, #7371FC);
-text-align: center;
+    color: var(--accent-accent1, #7371fc);
+    text-align: center;
 
-/* small */
-font-family: "Lexend Deca";
-font-size: 12px;
-font-style: normal;
-font-weight: 300;
-line-height: normal;
-height: 25px;
+    /* small */
+    font-family: 'Lexend Deca';
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    height: 25px;
 }
-
 
 @media only screen and (max-width: 768px) {
+    .mainContent,
+    .vaultHeader {
+        grid-template-columns: 50px repeat(2, 1fr) 50px 100px;
+    }
+    .poolName {
+        display: none;
+    }
 
-.mainContent, .vaultHeader{
-    grid-template-columns: 50px repeat(2, 1fr)  50px 100px;
-}
-.poolName{
-    display: none;
-}
-
-.tvlDisplay, .apyDisplay, .depositContainer{
-    font-size: 14px;
-   
-}
+    .tvlDisplay,
+    .apyDisplay,
+    .depositContainer {
+        font-size: 14px;
+    }
 }
 
 @media only screen and (max-width: 428px) {
-.mainContent, .vaultHeader{
-    grid-template-columns: 50px repeat(2, 1fr)  50px 70px;
-}
+    .mainContent,
+    .vaultHeader {
+        grid-template-columns: 50px repeat(2, 1fr) 50px 70px;
+    }
 
-.tempestDisplay{
-    display: none;
-}
+    .tempestDisplay {
+        display: none;
+    }
 
-.depositContainer{
-    word-wrap: break-word;
-    
-}
-
-
+    .depositContainer {
+        word-wrap: break-word;
+    }
 }

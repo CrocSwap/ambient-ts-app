@@ -29,10 +29,7 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import {
-    ReceiptContext,
-    ReceiptContextIF,
-} from '../../../contexts/ReceiptContext';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import styles from './PageHeader.module.css';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 import { BrandContext, ChainDataContext } from '../../../contexts';
@@ -64,7 +61,7 @@ const PageHeader = function () {
     } = useContext(TradeTokenContext);
     const { userAddress, isUserConnected, disconnectUser, ensName } =
         useContext(UserDataContext);
-    const { resetReceiptData } = useContext<ReceiptContextIF>(ReceiptContext);
+    const { resetReceiptData } = useContext(ReceiptContext);
     const { isBottomSheetOpen } = useBottomSheet();
 
     // eslint-disable-next-line
@@ -155,13 +152,11 @@ const PageHeader = function () {
 
     useEffect(() => {
         const path = location.pathname;
-
         const pathNoLeadingSlash = path.slice(1);
-
         const isAddressEns = pathNoLeadingSlash?.includes('.eth');
         const isAddressHex = checkEoaHexAddress(path);
-
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
+
         if (pathNoLeadingSlash.startsWith('account') && !isPathValidAddress) {
             if (pathNoLeadingSlash.includes('points')) {
                 document.title = 'My Points ~ Ambient';
@@ -229,6 +224,8 @@ const PageHeader = function () {
             }
         } else if (pathNoLeadingSlash.includes('xp-leaderboard')) {
             document.title = 'XP Leaderboard ~ Ambient';
+        } else if (pathNoLeadingSlash.includes('vaults')) {
+            document.title = 'Vaults ~ Ambient';
         } else if (location.pathname.includes('404')) {
             document.title = '404 ~ Ambient';
         } else {
@@ -302,14 +299,14 @@ const PageHeader = function () {
             shouldDisplay: true,
         },
         {
-            title: 'Account',
-            destination: `/account${activeTradeTab && '/' + activeTradeTabSlug}`,
-            shouldDisplay: !!isUserConnected,
-        },
-        {
             title: 'Vaults',
             destination: '/vaults',
             shouldDisplay: isVaultSupportedOnNetwork,
+        },
+        {
+            title: 'Account',
+            destination: `/account${activeTradeTab && '/' + activeTradeTabSlug}`,
+            shouldDisplay: !!isUserConnected,
         },
         {
             title: 'Points',

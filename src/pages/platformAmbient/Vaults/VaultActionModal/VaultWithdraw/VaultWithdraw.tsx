@@ -8,11 +8,12 @@ import TooltipComponent from '../../../../../components/Global/TooltipComponent/
 import Button from '../../../../../components/Form/Button';
 import { useRef, useState } from 'react';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
+import { TokenIF } from '../../../../../ambient-utils/types';
 
 interface Props {
 
-    firstToken: any;
-    secondToken: any;
+    firstToken: TokenIF;
+    secondToken: TokenIF;
 }
 export default function VaultWithdraw(props: Props) {
     const { firstToken, secondToken } = props;
