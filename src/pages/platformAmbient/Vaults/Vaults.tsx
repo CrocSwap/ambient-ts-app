@@ -24,7 +24,7 @@ function Vaults() {
     );
 
     return (
-        <div data-testid={'portfolio'} className={styles.container}>
+        <div data-testid={'vaults'} className={styles.container}>
             <div className={styles.content}>
                 <h3 className={styles.mainTitle}>Vaults</h3>
                 {vaultHeader}
