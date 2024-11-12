@@ -59,6 +59,7 @@ import {
 } from '../../../contexts/ReceiptContext';
 import styles from './PageHeader.module.css';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
+import { BrandContext } from '../../../contexts';
 
 const PageHeader = function () {
     const {
@@ -66,6 +67,7 @@ const PageHeader = function () {
         walletModal: { open: openWalletModal },
         appHeaderDropdown,
     } = useContext<AppStateContextIF>(AppStateContext);
+    const { headerImage } = useContext(BrandContext);
     const { crocEnv, setCrocEnv } =
         useContext<CrocEnvContextIF>(CrocEnvContext);
     const { resetTokenBalances } =
@@ -456,12 +458,20 @@ const PageHeader = function () {
                         className={styles.logoContainer}
                         aria-label='Home'
                     >
-                        <img
-                            className={styles.logoText}
-                            src={logo}
-                            alt='ambient'
-                            width='60px'
-                        />
+                        {desktopScreen ? (
+                            <img
+                                src={headerImage}
+                                alt='ambient'
+                                style={{ marginRight: '20px' }}
+                            />
+                        ) : (
+                            <img
+                                className={styles.logoText}
+                                src={logo}
+                                alt='ambient'
+                                width='60px'
+                            />
+                        )}
                     </Link>
                     {routeDisplay}
                 </div>
