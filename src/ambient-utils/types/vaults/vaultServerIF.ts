@@ -1,12 +1,12 @@
-import { vaultIF } from './vaultIF';
+import { VaultIF } from './vaultIF';
 
 export interface vaultServerIF {
     code: number;
     message: 'Successfully';
     data: {
-        vaults: vaultIF[];
+        vaults: VaultIF[];
     };
     pagination: {
         totalItems: number;
     };
-};
+}
