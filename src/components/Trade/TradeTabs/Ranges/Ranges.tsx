@@ -214,7 +214,6 @@ function Ranges(props: propsIF) {
 
     useEffect(() => {
         if(prevBaseQuoteAddressRef.current !== selectedBaseAddress + selectedQuoteAddress){
-            console.log(elIDRef.current + ' >>> [RESET] resetting infinite scroll');
             setPagesVisible([0, 1]);
             setPageDataCountShouldReset(true);
             setExtraPagesAvailable(0);
@@ -446,10 +445,6 @@ function Ranges(props: propsIF) {
         }
     }, [positionsByPool]);
 
-    // useEffect(() => {
-    //     console.log(elIDRef.current + ' >>> [REQUESTED TIME PARAMS] ', requestedOldestTimes);
-    // }, [requestedOldestTimes]);
-
 
     // const fetchNewData = async(OLDEST_TIME:number, signal: AbortSignal):Promise<PositionIF[]> => {
     const fetchNewData = async (OLDEST_TIME: number): Promise<PositionIF[]> => {
@@ -523,10 +518,6 @@ function Ranges(props: propsIF) {
 
             
             if (lastOldestTimeParamRef.current === oldestTimeParam) {
-                console.log(
-                    elIDRef.current +
-                    ' >>> [ALREADY FETCHED] already fetched with this ts', oldestTimeParam
-                );
                 setMoreDataLoading(false);
                 setTimeout( () => {
                     setMoreDataLoading(false);
@@ -538,7 +529,6 @@ function Ranges(props: propsIF) {
             }
 
             if(requestedOldestTimesRef.current.includes(oldestTimeParam)){
-                console.log(elIDRef.current + ' >>> [DUPLICATE REQUEST] duplicate request for ts', oldestTimeParam);
                 setMoreDataLoading(false);
                 setTimeout( () => {
                     setMoreDataLoading(false);
@@ -553,7 +543,6 @@ function Ranges(props: propsIF) {
 
             // fetch data
             // let dirtyData = await fetchNewData(oldestTimeParam, controllerRef.current.signal);
-            console.log(elIDRef.current + ' >>> [FETCHING DATA] fetching data with ts', oldestTimeParam, 'byPassIncrementPage', byPassIncrementPage);
             let dirtyData = await fetchNewData(oldestTimeParam);
             setLastOldestTimeParam(oldestTimeParam);
             const oldestTimeTemp = getOldestTime(dirtyData);
