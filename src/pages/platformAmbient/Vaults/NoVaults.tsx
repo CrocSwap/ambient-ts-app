@@ -20,21 +20,18 @@ export default function NoVaults() {
 
     return (
         <div className={styles.no_vaults}>
-            <h3>To use Vaults please change network to Scroll.</h3>
-            {
-                Object.values(vaultSupportedNetworks).map(
-                    (vsn: NetworkIF) => {
-                        const KEY_SLUG = 'button_for_vaults_on_'
-                        return (<Button
-                            key={KEY_SLUG + JSON.stringify(vsn)}
-                            idForDOM={KEY_SLUG + vsn.displayName}
-                            title={`Change to ${vsn.displayName}`}
-                            action={() => changeNetwork(vsn)}
-                        />
-                        )
-                    }
-                )
-            }
+            <h3>To use vaults, please switch to a supported network:</h3>
+            {Object.values(vaultSupportedNetworks).map((vsn: NetworkIF) => {
+                const KEY_SLUG = 'button_for_vaults_on_';
+                return (
+                    <Button
+                        key={KEY_SLUG + JSON.stringify(vsn)}
+                        idForDOM={KEY_SLUG + vsn.displayName}
+                        title={`Change to ${vsn.displayName}`}
+                        action={() => changeNetwork(vsn)}
+                    />
+                );
+            })}
         </div>
     );
 }
