@@ -10,33 +10,45 @@ import { Provider } from 'ethers';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 
-const chain = {
-    chainId: 534351,
+const chainIdHex = '0x8274f';
+const chainSpecFromSDK = lookupChain(chainIdHex);
+
+const chainSpecForWalletConnector = {
+    chainId: Number(chainIdHex),
     name: 'Scroll Sepolia',
     currency: 'ETH',
     rpcUrl: 'https://sepolia-rpc.scroll.io/',
     explorerUrl: 'https://sepolia.scrollscan.dev',
 };
 
-const chainSpec = lookupChain('0x8274f');
-
 export const scrollSepolia: NetworkIF = {
-    chainId: '0x8274f',
+    chainId: chainIdHex,
+    chainSpec: chainSpecFromSDK,
     graphCacheUrl: GCGO_TESTNET_URL,
-    evmRpcUrl: 'https://sepolia-rpc.scroll.io/',
-    chain: chain,
-    marketData: '0x1',
+    evmRpcUrl: chainSpecForWalletConnector.rpcUrl,
+    chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [scrollSepoliaETH, scrollSepoliaUSDC],
-    poolIndex: chainSpec.poolIndex,
-    gridSize: chainSpec.gridSize,
-    blockExplorer: chainSpec.blockExplorer,
-    displayName: chainSpec.displayName,
+    poolIndex: chainSpecFromSDK.poolIndex,
+    gridSize: chainSpecFromSDK.gridSize,
+    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    displayName: chainSpecForWalletConnector.name,
     topPools: [
-        new TopPool(scrollSepoliaETH, scrollSepoliaUSDC, chainSpec.poolIndex),
-        new TopPool(scrollSepoliaETH, scrollSepoliaWBTC, chainSpec.poolIndex),
-        new TopPool(scrollSepoliaUSDC, scrollSepoliaWBTC, chainSpec.poolIndex),
+        new TopPool(
+            scrollSepoliaETH,
+            scrollSepoliaUSDC,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            scrollSepoliaETH,
+            scrollSepoliaWBTC,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            scrollSepoliaUSDC,
+            scrollSepoliaWBTC,
+            chainSpecFromSDK.poolIndex,
+        ),
     ],
-    chainSpec: chainSpec,
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (
