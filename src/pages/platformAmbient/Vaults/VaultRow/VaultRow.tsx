@@ -53,7 +53,7 @@ export default function VaultRow() {
 
     const depositsDisplay = (
         <FlexContainer
-            alignItems='center'
+            alignItems='flex-end'
             flexDirection='column'
             justifyContent='flex-end'
             gap={5}
@@ -81,21 +81,38 @@ export default function VaultRow() {
         </FlexContainer>
     );
 
+    const vaultHeader = (
+        <div className={styles.vaultHeader}>
+            <span/>
+            <span className={styles.poolName}></span>
+            <span>TVL</span>
+            <span className={styles.depositContainer}>
+                {showMobileVersion ? 'deposit' : 'My Deposit'}
+            </span>
+            <span className={styles.apyDisplay}>APY</span>
+            <span className={styles.actionButtonContainer} />
+        </div>
+    );
+
     return (
         <div className={styles.mainContainer}>
-            <div className={styles.mainContent}>
-                {tokenIconsDisplay}
-                <p className={styles.poolName}>ETH / USDC</p>
-                <p className={styles.tvlDisplay}>$1,000,000.00</p>
-                {depositsDisplay}
-                <p
-                    className={styles.apyDisplay}
-                    style={{ color: 'var(--other-green' }}
-                >
-                    16.75%
-                </p>
-                <div className={styles.actionButtonContainer}>
-                    <button className={styles.actionButton}>Deposit</button>
+            <div className={styles.contentColumn}>
+                {vaultHeader}
+
+                <div className={styles.mainContent}>
+                    {tokenIconsDisplay}
+                    <p className={styles.poolName}>ETH / USDC</p>
+                    <p className={styles.tvlDisplay}>$100,000</p>
+                    {depositsDisplay}
+                    <p
+                        className={styles.apyDisplay}
+                        style={{ color: 'var(--other-green' }}
+                    >
+                        16.75%
+                    </p>
+                    <div className={styles.actionButtonContainer}>
+                        <button className={styles.actionButton}>Deposit</button>
+                    </div>
                 </div>
             </div>
         </div>
