@@ -6,7 +6,15 @@ import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
-export default function VaultRow() {
+interface propsIF {
+    idForDOM: string;
+    vault: number;
+}
+
+export default function VaultRow(props: propsIF) {
+    const { idForDOM, vault } = props;
+    false && vault;
+
     const firstToken = {
         address: '0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3',
         chainId: 11155111,
@@ -95,10 +103,9 @@ export default function VaultRow() {
     );
 
     return (
-        <div className={styles.mainContainer}>
+        <div id={idForDOM} className={styles.mainContainer}>
             <div className={styles.contentColumn}>
                 {vaultHeader}
-
                 <div className={styles.mainContent}>
                     {tokenIconsDisplay}
                     <p className={styles.poolName}>ETH / USDC</p>
