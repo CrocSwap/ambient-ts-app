@@ -49,15 +49,15 @@ export default function VaultRow(props: propsIF) {
                 <img src={tempestLogoColor} alt='tempest' />
             </div>
             <TokenIcon
-                token={firstToken}
-                src={uriToHttp(firstToken.logoURI)}
-                alt={firstToken.symbol}
-                size={showMobileVersion ? 'm' : '2xl'}
-            />
-            <TokenIcon
                 token={secondToken}
                 src={uriToHttp(secondToken.logoURI)}
                 alt={secondToken.symbol}
+                size={showMobileVersion ? 'm' : '2xl'}
+            />
+            <TokenIcon
+                token={firstToken}
+                src={uriToHttp(firstToken.logoURI)}
+                alt={firstToken.symbol}
                 size={showMobileVersion ? 'm' : '2xl'}
             />
         </FlexContainer>
@@ -72,15 +72,6 @@ export default function VaultRow(props: propsIF) {
             style={{ flexShrink: 0 }}
             className={styles.depositContainer}
         >
-            <FlexContainer flexDirection='row' alignItems='center' gap={4}>
-                1,000
-                <TokenIcon
-                    token={firstToken}
-                    src={uriToHttp(firstToken.logoURI)}
-                    alt={firstToken.symbol}
-                    size={'m'}
-                />
-            </FlexContainer>
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                 1,000
                 <TokenIcon
@@ -122,7 +113,7 @@ export default function VaultRow(props: propsIF) {
                     <div className={styles.mainContent}>
                         {tokenIconsDisplay}
                         <p className={styles.poolName}>
-                            {firstToken.symbol} / {secondToken.symbol}
+                            {secondToken.symbol} / {firstToken.symbol}
                         </p>
                         <p className={styles.tvlDisplay}>
                             {formatDollarAmount(parseFloat(vault.tvlUsd))}
