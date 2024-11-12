@@ -2,7 +2,10 @@ import styles from './VaultRow.module.css';
 import tempestLogoColor from './tempestLogoColor.svg';
 // import tempestLogo from './tempestLogo.svg';
 import { FlexContainer } from '../../../../styled/Common';
-import { uriToHttp } from '../../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    uriToHttp,
+} from '../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { useModal } from '../../../../components/Global/Modal/useModal';
@@ -103,6 +106,14 @@ export default function VaultRow(props: propsIF) {
         </div>
     );
 
+    const formattedAPR = getFormattedNumber({
+        value: parseFloat(vault.apr),
+        prefix: '',
+        suffix: '%',
+        minFracDigits: 2,
+        maxFracDigits: 2,
+    });
+
     return (
         <>
             <div id={idForDOM} className={styles.mainContainer}>
@@ -121,7 +132,7 @@ export default function VaultRow(props: propsIF) {
                             className={styles.apyDisplay}
                             style={{ color: 'var(--other-green' }}
                         >
-                            {`${vault.apr}%`}
+                            {formattedAPR}
                         </p>
                         <div className={styles.actionButtonContainer}>
                             <button
