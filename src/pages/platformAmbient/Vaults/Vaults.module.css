@@ -1,83 +1,26 @@
-.portfolio_container {
-    transition: var(--transition);
-    height: calc(100vh - 56px);
-    background: var(--dark2);
-    padding: 32px;
-    display: flex;
-    flex-direction: column-reverse;
-    gap: 16px;
-
-    position: relative;
+.container{
+  width: 100%;
+  height: 100%;
+  background: var(--dark2);
+  
 }
 
-.portfolio_tabs_container {
-    width: 100%;
-    display: grid;
-    transition: var(--transition);
-    overflow: hidden;
-    flex: 1;
-  }
 
-    .portfolio_tabs_container.fullLayoutContainer {
-      grid-template-columns: auto 36px;
-      column-gap: 16px;
-    }
-  
-    .portfolio_tabs_container:not(.fullLayoutContainer) {
-      grid-template-columns: auto 380px;
-      gap: 1rem;
-    }
-  
-    .portfolio_tabs_container:not(.active) {
-      grid-template-columns: auto;
-      column-gap: 16px;
-    }
-  
-    .portfolio_tabs_container.active.fullLayoutContainer {
-      grid-template-columns: auto 36px;
-      column-gap: 16px;
-    }
-  
-    .portfolio_tabs_container.active:not(.fullLayoutContainer) {
-      grid-template-columns: auto 380px;
-      gap: 1rem;
-    }
-  
-  
+.content{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+.mainTitle{
+  padding: 8px 0;
+  color: var(--text1, #EBEBFF);
 
-
-
-  @media (min-width: 1200px) {
-    .portfolio_tabs_container.fullLayoutContainer {
-      grid-template-columns: auto 36px;
-      column-gap: 16px;
-    }
-  
-    .portfolio_tabs_container:not(.fullLayoutContainer) {
-      grid-template-columns: auto 380px;
-      gap: 1rem;
-    }
-  
-    .portfolio_tabs_container:not(.active) {
-      grid-template-columns: auto;
-      column-gap: 16px;
-    }
-  
-    .portfolio_tabs_container.active.fullLayoutContainer {
-      grid-template-columns: auto 36px;
-      column-gap: 16px;
-    }
-  
-    .portfolio_tabs_container.active:not(.fullLayoutContainer) {
-      grid-template-columns: auto 380px;
-      gap: 1rem;
-    }
-  }
-  
-@media only screen and (max-width: 600px) {
-    .portfolio_container {
-        overflow-y: hidden;
-        max-height: calc(100svh - 7.5rem);
-      
-    }
+/* large */
+font-family: "Lexend Deca";
+font-size: 24px;
+font-style: normal;
+font-weight: 300;
+line-height: normal;
+letter-spacing: -0.48px;
 }

@@ -11,9 +11,13 @@ function Vaults() {
 
     return (
         <div data-testid={'portfolio'} className={styles.container}>
+            <div className={styles.content}>
+            <h3 className={styles.mainTitle}>Vaults</h3>
+
             {vaultData.map((data, idx) => (
                 <VaultRow key={idx} />
             ))}
+            </div>
             
         </div>
     );
