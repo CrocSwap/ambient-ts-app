@@ -1,0 +1,82 @@
+.mainContainer{
+    background: var(--dark1)
+}
+.mainContent {
+    width: 100%;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: auto repeat(4, 1fr) 100px;
+}
+
+.tempestDisplay {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--dark2);
+}
+
+.tempestDisplay img {
+    max-width: 100%;
+    max-height: 100%;
+}
+.poolName {
+    color: var(--text1, #f0f0f8);
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+    /* large */
+    -webkit-text-stroke-width: 1;
+    -webkit-text-stroke-color: #000;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    letter-spacing: -0.48px;
+    text-align: end;
+}
+.tvlDisplay {
+    color: var(--text1, #f0f0f8);
+    text-align: end;
+
+    /* medium */
+    font-family: 'Lexend Deca';
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    letter-spacing: -0.36px;
+}
+
+.apyDisplay {
+    text-align: right;
+
+    /* medium */
+    font-family: 'Lexend Deca';
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    letter-spacing: -0.36px;
+}
+
+.actionButton {
+    display: flex;
+    padding: 5px 8px;
+    align-items: flex-start;
+    gap: 10px;
+
+    border-radius: 50px;
+    border: 1px solid var(--accent1, #7371fc);
+    background: var(--dark1, #06060c);
+    color: var(--accent-accent1, #7371FC);
+text-align: center;
+
+/* small */
+font-family: "Lexend Deca";
+font-size: 12px;
+font-style: normal;
+font-weight: 300;
+line-height: normal;
+}
