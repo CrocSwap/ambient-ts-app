@@ -27,8 +27,9 @@ export default function NoVaults() {
                     <Button
                         key={KEY_SLUG + JSON.stringify(vsn)}
                         idForDOM={KEY_SLUG + vsn.displayName}
-                        title={`Change to ${vsn.displayName}`}
+                        title={`Switch to ${vsn.displayName}`}
                         action={() => changeNetwork(vsn)}
+                        style={{ color: 'var(--dark2)' }}
                     />
                 );
             })}
