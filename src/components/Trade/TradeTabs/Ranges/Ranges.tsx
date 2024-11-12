@@ -152,6 +152,10 @@ function Ranges(props: propsIF) {
     const infiniteScrollLockRef = useRef<boolean>();
     infiniteScrollLockRef.current = infiniteScrollLock;
 
+    const [requestedOldestTimes, setRequestedOldestTimes] = useState<number[]>([]);
+    const requestedOldestTimesRef = useRef<number[]>(requestedOldestTimes);
+    requestedOldestTimesRef.current = requestedOldestTimes;
+
     const fetchedTransactionsRef = useRef<PositionsByPool>();
     fetchedTransactionsRef.current = fetchedTransactions;
 
@@ -182,6 +186,8 @@ function Ranges(props: propsIF) {
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
 
+    const prevBaseQuoteAddressRef = useRef<string>(selectedBaseAddress + selectedQuoteAddress);
+
     const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(
         !isAccountView && showAllData,
     );
@@ -207,22 +213,29 @@ function Ranges(props: propsIF) {
     }, []);
 
     useEffect(() => {
-        setPagesVisible([0, 1]);
-        setPageDataCountShouldReset(true);
-        setExtraPagesAvailable(0);
-        setMoreDataAvailable(true);
-        setTimeout(() => {
+        if(prevBaseQuoteAddressRef.current !== selectedBaseAddress + selectedQuoteAddress){
+            console.log(elIDRef.current + ' >>> [RESET] resetting infinite scroll');
+            setPagesVisible([0, 1]);
+            setPageDataCountShouldReset(true);
+            setExtraPagesAvailable(0);
             setMoreDataAvailable(true);
-        }, 1000);
-        setLastFetchedCount(0);
-        setHotTransactions([]);
-        setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
-        setInfiniteScrollLock(true);
+            setTimeout(() => {
+                setMoreDataAvailable(true);
+            }, 1000);
+            setLastFetchedCount(0);
+            setHotTransactions([]);
+            setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
+            setInfiniteScrollLock(true);
+            setLastOldestTimeParam(-1);
+            setRequestedOldestTimes([]);
+        }
+        prevBaseQuoteAddressRef.current = selectedBaseAddress + selectedQuoteAddress;
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     const [pageDataCountShouldReset, setPageDataCountShouldReset] =
         useState(false);
     const PAGE_COUNT_DIVIDE_THRESHOLD = 20;
+    const INITIAL_EXTRA_REQUEST_THRESHOLD = 20;
 
     const getUniqueSortedPositions = (
         positions: PositionIF[],
@@ -433,39 +446,14 @@ function Ranges(props: propsIF) {
         }
     }, [positionsByPool]);
 
-    useEffect(() => {
-        if (
-            pageDataCountShouldReset &&
-            pageDataCountRef.current?.pair !== getCurrentDataPair() &&
-            fetchedTransactions.positions.length > 0
-        ) {
-            setPagesVisible([0, 1]);
-            setPageDataCount(getInitialDataPageCounts());
-            setPageDataCountShouldReset(false);
-            setInfiniteScrollLock(true);
-        }
-        if (
-            fetchedTransactionsRef.current &&
-            fetchedTransactionsRef.current.positions.length < 40
-        ) {
-            if (infiniteScrollLockRef.current) {
-                addMoreData(true);
-            }
-        }
+    // useEffect(() => {
+    //     console.log(elIDRef.current + ' >>> [REQUESTED TIME PARAMS] ', requestedOldestTimes);
+    // }, [requestedOldestTimes]);
 
-        if (
-            pageDataCountRef.current?.counts[0] == 0 &&
-            fetchedTransactionsRef.current &&
-            fetchedTransactionsRef.current.positions.length > 0
-        ) {
-            setPageDataCount(getInitialDataPageCounts());
-        } else {
-            setInfiniteScrollLock(false);
-        }
-    }, [fetchedTransactions]);
 
     // const fetchNewData = async(OLDEST_TIME:number, signal: AbortSignal):Promise<PositionIF[]> => {
     const fetchNewData = async (OLDEST_TIME: number): Promise<PositionIF[]> => {
+
         return new Promise((resolve) => {
             if (!crocEnv || !provider) resolve([]);
             else {
@@ -533,19 +521,39 @@ function Ranges(props: propsIF) {
                 return;
             }
 
+            
             if (lastOldestTimeParamRef.current === oldestTimeParam) {
                 console.log(
                     elIDRef.current +
-                        ' >>> [ALREADY FETCHED] already fetched with this ts',
+                    ' >>> [ALREADY FETCHED] already fetched with this ts', oldestTimeParam
                 );
                 setMoreDataLoading(false);
-                setTimeout(() => {
-                    setMoreDataAvailable(false);
-                }, 2000);
-                return;
+                setTimeout( () => {
+                    setMoreDataLoading(false);
+                }, 1000)
+                // setTimeout(() => {
+                //     setMoreDataAvailable(false);
+                // }, 2000);
+                break;
             }
+
+            if(requestedOldestTimesRef.current.includes(oldestTimeParam)){
+                console.log(elIDRef.current + ' >>> [DUPLICATE REQUEST] duplicate request for ts', oldestTimeParam);
+                setMoreDataLoading(false);
+                setTimeout( () => {
+                    setMoreDataLoading(false);
+                }, 1000)
+                // setTimeout(() => {
+                //     setMoreDataAvailable(false);
+                // }, 2000);
+                break;
+            }
+
+            setRequestedOldestTimes((prev) => [...prev, oldestTimeParam]);
+
             // fetch data
             // let dirtyData = await fetchNewData(oldestTimeParam, controllerRef.current.signal);
+            console.log(elIDRef.current + ' >>> [FETCHING DATA] fetching data with ts', oldestTimeParam, 'byPassIncrementPage', byPassIncrementPage);
             let dirtyData = await fetchNewData(oldestTimeParam);
             setLastOldestTimeParam(oldestTimeParam);
             const oldestTimeTemp = getOldestTime(dirtyData);
@@ -608,6 +616,7 @@ function Ranges(props: propsIF) {
         }
 
         setMoreDataLoading(false);
+        
     };
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -640,6 +649,39 @@ function Ranges(props: propsIF) {
                 : 0,
         [rangeData],
     );
+
+    useEffect(() => {
+        if (
+            pageDataCountShouldReset &&
+            pageDataCountRef.current?.pair !== getCurrentDataPair() &&
+            fetchedTransactions.positions.length > 0
+        ) {
+            setPagesVisible([0, 1]);
+            setPageDataCount(getInitialDataPageCounts());
+            setPageDataCountShouldReset(false);
+            setInfiniteScrollLock(true);
+        }
+        if (
+            fetchedTransactionsRef.current &&
+            fetchedTransactionsRef.current.positions.length < INITIAL_EXTRA_REQUEST_THRESHOLD && oldestTxTime > 0
+        ) {
+            if (infiniteScrollLockRef.current) {
+                addMoreData(true);
+            }
+        }
+
+        if (
+            pageDataCountRef.current?.counts[0] == 0 &&
+            fetchedTransactionsRef.current &&
+            fetchedTransactionsRef.current.positions.length > 0
+        ) {
+            setPageDataCount(getInitialDataPageCounts());
+        } else {
+            setInfiniteScrollLock(false);
+        }
+    }, [oldestTxTime]);
+
+
     // ------------------------------------------------------------------------------------------------------------------------------
 
     const isLoading = useMemo(
