@@ -4,7 +4,7 @@ import { memo } from 'react';
 import styles from './Vaults.module.css';
 import VaultRow from './VaultRow/VaultRow';
 import { VaultIF } from '../../../ambient-utils/types';
-import { vaultData } from './mockVaultData';
+import { allVaultsData } from './mockVaultData';
 
 function Vaults() {
     // !important:  once we have mock data, change the type on this
@@ -30,7 +30,7 @@ function Vaults() {
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
-                    {vaultData.map((vault: VaultIF) => {
+                    {allVaultsData.map((vault: VaultIF) => {
                         const KEY_SLUG = 'vault_row_';
                         return (
                             <VaultRow
