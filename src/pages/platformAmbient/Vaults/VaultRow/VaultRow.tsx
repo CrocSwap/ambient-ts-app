@@ -34,11 +34,11 @@ export default function VaultRow(props: propsIF) {
     const firstToken = tokens.getTokenByAddress(vault.token0Address);
     const secondToken = tokens.getTokenByAddress(vault.token1Address);
 
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
     if (Number(chainId) !== vault.chainId || !firstToken || !secondToken) {
         return null;
     }
-
-    const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     const tokenIconsDisplay = (
         <FlexContainer alignItems='center' gap={5} style={{ flexShrink: 0 }}>
