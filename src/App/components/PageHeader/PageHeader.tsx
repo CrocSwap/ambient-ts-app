@@ -6,27 +6,12 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../contexts/CrocEnvContext';
-import { PoolContext, PoolContextIF } from '../../../contexts/PoolContext';
-import {
-    SidebarContext,
-    SidebarContextIF,
-} from '../../../contexts/SidebarContext';
-import {
-    TradeTokenContext,
-    TradeTokenContextIF,
-} from '../../../contexts/TradeTokenContext';
-import {
-    TradeTableContext,
-    TradeTableContextIF,
-} from '../../../contexts/TradeTableContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
     getFormattedNumber,
     chainNumToString,
@@ -40,18 +25,9 @@ import {
 } from '../../../utils/hooks/useLinkGen';
 import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
-import {
-    UserDataContext,
-    UserDataContextIF,
-} from '../../../contexts/UserDataContext';
-import {
-    GraphDataContext,
-    GraphDataContextIF,
-} from '../../../contexts/GraphDataContext';
-import {
-    TokenBalanceContext,
-    TokenBalanceContextIF,
-} from '../../../contexts/TokenBalanceContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import {
     ReceiptContext,
@@ -59,26 +35,23 @@ import {
 } from '../../../contexts/ReceiptContext';
 import styles from './PageHeader.module.css';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
-import { BrandContext } from '../../../contexts';
+import { BrandContext, ChainDataContext } from '../../../contexts';
 
 const PageHeader = function () {
     const {
         activeNetwork: { chainId, poolIndex: poolId },
         walletModal: { open: openWalletModal },
         appHeaderDropdown,
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
     const { headerImage } = useContext(BrandContext);
-    const { crocEnv, setCrocEnv } =
-        useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { resetTokenBalances } =
-        useContext<TokenBalanceContextIF>(TokenBalanceContext);
-    const { resetUserGraphData } =
-        useContext<GraphDataContextIF>(GraphDataContext);
+    const { crocEnv, setCrocEnv } = useContext(CrocEnvContext);
+    const { resetTokenBalances } = useContext(TokenBalanceContext);
+    const { resetUserGraphData } = useContext(GraphDataContext);
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
-        useContext<PoolContextIF>(PoolContext);
-    const { recentPools } = useContext<SidebarContextIF>(SidebarContext);
-    const { setShowAllData, activeTradeTab } =
-        useContext<TradeTableContextIF>(TradeTableContext);
+        useContext(PoolContext);
+    const { recentPools } = useContext(SidebarContext);
+    const { setShowAllData, activeTradeTab } = useContext(TradeTableContext);
+    const { isVaultSupportedOnNetwork } = useContext(ChainDataContext);
     const {
         baseToken: {
             setBalance: setBaseTokenBalance,
@@ -88,9 +61,9 @@ const PageHeader = function () {
             setBalance: setQuoteTokenBalance,
             setDexBalance: setQuoteTokenDexBalance,
         },
-    } = useContext<TradeTokenContextIF>(TradeTokenContext);
+    } = useContext(TradeTokenContext);
     const { userAddress, isUserConnected, disconnectUser, ensName } =
-        useContext<UserDataContextIF>(UserDataContext);
+        useContext(UserDataContext);
     const { resetReceiptData } = useContext<ReceiptContextIF>(ReceiptContext);
     const { isBottomSheetOpen } = useBottomSheet();
 
@@ -336,7 +309,7 @@ const PageHeader = function () {
         {
             title: 'Vaults',
             destination: '/vaults',
-            shouldDisplay: true,
+            shouldDisplay: isVaultSupportedOnNetwork,
         },
         {
             title: 'Points',

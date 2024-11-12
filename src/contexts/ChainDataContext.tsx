@@ -56,6 +56,7 @@ export interface ChainDataContextIF {
     isActiveNetworkPlume: boolean;
     isActiveNetworkScroll: boolean;
     isActiveNetworkMainnet: boolean;
+    isVaultSupportedOnNetwork: boolean;
     isActiveNetworkL2: boolean;
     nativeTokenUsdPrice: number | undefined;
     allPoolStats: SinglePoolDataIF[] | undefined;
@@ -112,6 +113,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);
     const isActiveNetworkPlume = ['0x18230'].includes(chainId);
+    const isVaultSupportedOnNetwork = ['0x1', '0x82750'].includes(chainId);
 
     const blockPollingUrl = BLOCK_POLLING_RPC_URL
         ? BLOCK_POLLING_RPC_URL
@@ -585,6 +587,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isActiveNetworkPlume,
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
+        isVaultSupportedOnNetwork,
         isActiveNetworkL2,
         allPoolStats,
         nativeTokenUsdPrice,
