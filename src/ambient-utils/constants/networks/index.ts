@@ -4,7 +4,7 @@ import { ethereumMainnet } from './ethereumMainnet';
 import { scrollMainnet } from './scrollMainnet';
 import { scrollSepolia } from './scrollSepolia';
 import { blastSepolia } from './blastSepolia';
-import { blast } from './blastNetwork';
+import { blast } from './blastMainnet';
 import {
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,

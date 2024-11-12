@@ -17,35 +17,35 @@ export const MAINNET_RPC_URL =
         ? import.meta.env.VITE_MAINNET_RPC_URL
         : 'https://eth.llamarpc.com';
 
-const chain = {
-    chainId: 1,
+const chainIdHex = '0x1';
+const chainSpecFromSDK = lookupChain(chainIdHex);
+
+const chainSpecForWalletConnector = {
+    chainId: Number(chainIdHex),
     name: 'Ethereum',
     currency: 'ETH',
     rpcUrl: MAINNET_RPC_URL,
     explorerUrl: 'https://etherscan.io',
 };
 
-const chainSpec = lookupChain('0x1');
-
 export const ethereumMainnet: NetworkIF = {
-    chainId: '0x1',
+    chainId: chainIdHex,
+    chainSpec: chainSpecFromSDK,
     graphCacheUrl: GCGO_ETHEREUM_URL,
     evmRpcUrl: MAINNET_RPC_URL,
-    chain: chain,
-    marketData: '0x1',
+    chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [mainnetETH, mainnetUSDC],
-    poolIndex: chainSpec.poolIndex,
-    gridSize: chainSpec.gridSize,
-    blockExplorer: chainSpec.blockExplorer,
-    displayName: chainSpec.displayName,
+    poolIndex: chainSpecFromSDK.poolIndex,
+    gridSize: chainSpecFromSDK.gridSize,
+    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    displayName: chainSpecForWalletConnector.name,
     topPools: [
-        new TopPool(mainnetETH, mainnetUSDC, chainSpec.poolIndex),
-        new TopPool(mainnetETH, mainnetWBTC, chainSpec.poolIndex),
-        new TopPool(mainnetETH, mainnetUSDT, chainSpec.poolIndex),
-        new TopPool(mainnetUSDT, mainnetUSDC, chainSpec.poolIndex),
-        new TopPool(mainnetETH, mainnetDAI, chainSpec.poolIndex),
+        new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetETH, mainnetWBTC, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetETH, mainnetUSDT, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetUSDT, mainnetUSDC, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetETH, mainnetDAI, chainSpecFromSDK.poolIndex),
     ],
-    chainSpec: chainSpec,
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (

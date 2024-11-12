@@ -30,9 +30,9 @@ import { UserDataContext } from './UserDataContext';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { TokenContext } from './TokenContext';
 import { AppStateContext, AppStateContextIF } from './AppStateContext';
-import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
 import { MAINNET_RPC_URL } from '../ambient-utils/constants/networks/ethereumMainnet';
 import { SCROLL_RPC_URL } from '../ambient-utils/constants/networks/scrollMainnet';
+import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastMainnet';
 
 interface UrlRoutesTemplateIF {
     swap: string;
