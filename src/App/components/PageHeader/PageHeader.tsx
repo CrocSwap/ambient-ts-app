@@ -229,6 +229,8 @@ const PageHeader = function () {
             }
         } else if (pathNoLeadingSlash.includes('xp-leaderboard')) {
             document.title = 'XP Leaderboard ~ Ambient';
+        } else if (pathNoLeadingSlash.includes('vaults')) {
+            document.title = 'Vaults ~ Ambient';
         } else if (location.pathname.includes('404')) {
             document.title = '404 ~ Ambient';
         } else {
