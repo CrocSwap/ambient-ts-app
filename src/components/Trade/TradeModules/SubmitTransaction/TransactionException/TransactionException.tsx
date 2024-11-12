@@ -56,7 +56,7 @@ export default function TransactionException(props: propsIF) {
     const isBadRpcError = txErrorMessage === 'not support this call';
 
     const updatedErrorMessage = isBadRpcError
-        ? `Please try a different RPC URL in your wallet. E.g. open Rabby -> press More -> Modify RPC URL and enter any server address found on https://chainlist.org/chain/${Number(chainData.chainId)}`
+        ? `Please try a different RPC URL in your wallet. E.g. open Rabby -> press More -> Modify RPC URL and enter any server address found on https://chainlist.org/chain/${Number(chainId)}`
         : txErrorMessage;
 
     const formattedErrorMessage =
