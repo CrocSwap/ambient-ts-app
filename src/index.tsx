@@ -63,7 +63,9 @@ const ethersConfig = defaultConfig({
 
 const modal = createWeb3Modal({
     ethersConfig,
-    chains: Object.values(supportedNetworks).map((network) => network.chain),
+    chains: Object.values(supportedNetworks).map(
+        (network) => network.chainSpecForWalletConnector,
+    ),
     projectId: WALLETCONNECT_PROJECT_ID as string,
     chainImages: {
         1: ethLogo,
@@ -93,13 +95,13 @@ const modal = createWeb3Modal({
 
 modal.subscribeEvents((event) => {
     const networkIds = Object.values(supportedNetworks).map(
-        (network) => network.chain.chainId,
+        (network) => network.chainSpecForWalletConnector.chainId,
     );
     if (
         event.data.event === 'MODAL_CLOSE' &&
         event.data.properties.connected === true
     ) {
-        if (networkIds.includes(modal.getState().selectedNetworkId)) {
+        if (networkIds.includes(modal.getState().selectedNetworkId as number)) {
             // prevents the 'unknown account #0' bug
             window.location.reload();
         } else {
