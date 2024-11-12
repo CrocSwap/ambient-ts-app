@@ -34,12 +34,12 @@ export default function VaultRow(props: propsIF) {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const firstToken = tokens.getTokenByAddress(vault.token0Address);
-    const secondToken = tokens.getTokenByAddress(vault.token1Address);
+    const token0 = tokens.getTokenByAddress(vault.token0Address);
+    const token1 = tokens.getTokenByAddress(vault.token1Address);
 
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
-    if (Number(chainId) !== vault.chainId || !firstToken || !secondToken) {
+    if (Number(chainId) !== vault.chainId || !token0 || !token1) {
         return null;
     }
 
@@ -49,15 +49,15 @@ export default function VaultRow(props: propsIF) {
                 <img src={tempestLogoColor} alt='tempest' />
             </div>
             <TokenIcon
-                token={secondToken}
-                src={uriToHttp(secondToken.logoURI)}
-                alt={secondToken.symbol}
+                token={token1}
+                src={uriToHttp(token1.logoURI)}
+                alt={token1.symbol}
                 size={showMobileVersion ? 'm' : '2xl'}
             />
             <TokenIcon
-                token={firstToken}
-                src={uriToHttp(firstToken.logoURI)}
-                alt={firstToken.symbol}
+                token={token0}
+                src={uriToHttp(token0.logoURI)}
+                alt={token0.symbol}
                 size={showMobileVersion ? 'm' : '2xl'}
             />
         </FlexContainer>
@@ -75,9 +75,9 @@ export default function VaultRow(props: propsIF) {
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                 1,000
                 <TokenIcon
-                    token={secondToken}
-                    src={uriToHttp(secondToken.logoURI)}
-                    alt={secondToken.symbol}
+                    token={token1}
+                    src={uriToHttp(token1.logoURI)}
+                    alt={token1.symbol}
                     size={'m'}
                 />
             </FlexContainer>
@@ -113,7 +113,7 @@ export default function VaultRow(props: propsIF) {
                     <div className={styles.mainContent}>
                         {tokenIconsDisplay}
                         <p className={styles.poolName}>
-                            {secondToken.symbol} / {firstToken.symbol}
+                            {token1.symbol} / {token0.symbol}
                         </p>
                         <p className={styles.tvlDisplay}>
                             {formatDollarAmount(parseFloat(vault.tvlUsd))}
@@ -148,8 +148,8 @@ export default function VaultRow(props: propsIF) {
                 <VaultActionModal
                     type='Deposit'
                     onClose={closeModal}
-                    firstToken={firstToken}
-                    secondToken={secondToken}
+                    token0={token0}
+                    token1={token1}
                 />
             )}
         </>
