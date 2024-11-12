@@ -37,6 +37,9 @@ export * from './TradeTableDataRow';
 // directions for table sorting (ascending/descending/null)
 export * from './sortDirections';
 
+// server and client-side vault data interfaces and types
+export * from './vaults';
+
 export enum RecordType {
     Position = 'PositionIF',
     LimitOrder = 'LimitOrderIF',
