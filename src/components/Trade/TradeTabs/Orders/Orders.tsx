@@ -136,7 +136,6 @@ function Orders(props: propsIF) {
     useEffect(() => {
 
         if(prevBaseQuoteAddressRef.current !== selectedBaseAddress + selectedQuoteAddress){
-            console.log('>>> [RESET] resetting infinite scroll');
             setPagesVisible([0, 1]);
             setPageDataCountShouldReset(true);
             setExtraPagesAvailable(0);
