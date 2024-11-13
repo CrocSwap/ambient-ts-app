@@ -19,6 +19,7 @@ import {
 import { formatDollarAmount } from '../../../../utils/numbers';
 import VaultDeposit from '../VaultActionModal/VaultDeposit/VaultDeposit';
 import VaultWithdraw from '../VaultActionModal/VaultWithdraw/VaultWithdraw';
+import { RiExternalLinkLine } from 'react-icons/ri';
 
 interface propsIF {
     idForDOM: string;
@@ -26,6 +27,7 @@ interface propsIF {
 }
 export default function VaultRow(props: propsIF) {
     const { idForDOM, vault } = props;
+    console.log(vault);
     const [isOpen, openModal, closeModal] = useModal();
     const [type, setType] = useState<'Deposit' | 'Withdraw'>('Deposit');
 
@@ -86,19 +88,6 @@ export default function VaultRow(props: propsIF) {
         </FlexContainer>
     );
 
-    const vaultHeader = (
-        <div className={styles.vaultHeader}>
-            <span />
-            <span className={styles.poolName}></span>
-            <span>TVL</span>
-            <span className={styles.depositContainer}>
-                {showMobileVersion ? 'deposit' : 'My Deposit'}
-            </span>
-            <span className={styles.apyDisplay}>APY</span>
-            <span className={styles.actionButtonContainer} />
-        </div>
-    );
-
     const formattedAPR = getFormattedNumber({
         value: parseFloat(vault.apr),
         prefix: '',
@@ -118,16 +107,29 @@ export default function VaultRow(props: propsIF) {
 
     const modalToOpen = type === 'Deposit' ? <VaultDeposit token0={token0} token1={token1} onClose={closeModal} /> :
         <VaultWithdraw token0={token0} token1={token1} onClose={closeModal}/>
+    function navigateExternal(): void {
+        const goToExternal = (url: string) => window.open(url, '_blank');
+        if (vault.chainId === 534352) {
+            const destination: string = 'https://scrollscan.com/address/' + vault.address;
+            goToExternal(destination);
+        } else if (vault.chainId === 1) {
+            const destination: string = 'https://etherscan.io/address/' + vault.address;
+            goToExternal(destination);
+        }
+    }
 
     return (
         <>
             <div id={idForDOM} className={styles.mainContainer}>
                 <div className={styles.contentColumn}>
-                    {vaultHeader}
                     <div className={styles.mainContent}>
                         {tokenIconsDisplay}
-                        <p className={styles.poolName}>
-                            {token1.symbol} / {token0.symbol}
+                        <p
+                            className={styles.poolName}
+                            onClick={() => navigateExternal()}
+                        >
+                            <span>{token1.symbol} / {token0.symbol}</span>
+                            <RiExternalLinkLine size={20} />
                         </p>
                         <p className={styles.tvlDisplay}>
                             {formatDollarAmount(parseFloat(vault.tvlUsd))}
