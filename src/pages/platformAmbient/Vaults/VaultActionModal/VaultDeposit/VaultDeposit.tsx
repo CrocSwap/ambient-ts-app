@@ -12,6 +12,7 @@ import {
     CachedDataContext,
     ChainDataContext,
     CrocEnvContext,
+    ReceiptContext,
     UserDataContext,
 } from '../../../../../contexts';
 import styles from './VaultDeposit.module.css';
@@ -32,6 +33,11 @@ import {
     GAS_DROPS_ESTIMATE_VAULT_DEPOSIT,
 } from '../../../../../ambient-utils/constants';
 import { toDisplayQty } from '@crocswap-libs/sdk';
+import {
+    TransactionError,
+    isTransactionReplacedError,
+    isTransactionFailedError,
+} from '../../../../../utils/TransactionError';
 
 interface Props {
     token0: TokenIF;
@@ -57,6 +63,13 @@ export default function VaultDeposit(props: Props) {
         bigint | undefined
     >();
 
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
     const { isUserConnected } = useContext(UserDataContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
@@ -68,10 +81,18 @@ export default function VaultDeposit(props: Props) {
 
     const depositGreaterOrEqualToMinimum = useMemo(
         () =>
-            depositBigint &&
-            minDepositBigint &&
+            depositBigint !== undefined &&
+            minDepositBigint !== undefined &&
             depositBigint >= minDepositBigint,
         [minDepositBigint, depositBigint],
+    );
+
+    const depositGreaterThanWalletBalance = useMemo(
+        () =>
+            depositBigint !== undefined &&
+            token1BalanceBigint !== undefined &&
+            depositBigint > token1BalanceBigint,
+        [token1BalanceBigint, depositBigint],
     );
 
     // calculate price of gas for vault deposit
@@ -141,6 +162,57 @@ export default function VaultDeposit(props: Props) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
+    const submitDeposit = async () => {
+        if (!crocEnv || !userAddress || !vault || !depositBigint) return;
+        console.log('deposit submitted');
+        setShowSubmitted(true);
+        console.log({ depositBigint });
+
+        const tx = await crocEnv
+            .tempestVault(vault.address, vault.token1Address)
+            .depositZap(depositBigint)
+            .catch(console.error);
+
+        if (tx?.hash) {
+            addPendingTx(tx?.hash);
+            addTransactionByType({
+                userAddress: userAddress || '',
+                txHash: tx.hash,
+                txType: 'Deposit',
+                txDescription: `Deposit of ${token1.symbol}`,
+            });
+        } else {
+            setShowSubmitted(false);
+        }
+        let receipt;
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+            setShowSubmitted(false);
+            console.error({ error });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                removePendingTx(error.hash);
+
+                const newTransactionHash = error.replacement.hash;
+                addPendingTx(newTransactionHash);
+
+                updateTransactionHash(error.hash, error.replacement.hash);
+                receipt = error.receipt;
+            } else if (isTransactionFailedError(error)) {
+                console.error({ error });
+                receipt = error.receipt;
+            }
+        }
+
+        if (receipt) {
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.hash);
+        }
+    };
+
     const usdValueForDom =
         token1Price && parseFloat(displayValue) > 0
             ? getFormattedNumber({
@@ -172,7 +244,9 @@ export default function VaultDeposit(props: Props) {
                 }
                 isDexSelected={false}
                 onToggleDex={() => console.log('handleToggleDex')}
-                onMaxButtonClick={() => setDisplayValue(walletBalanceDisplay)}
+                onMaxButtonClick={() =>
+                    handleTokenInputEvent(walletBalanceDisplay)
+                }
             />
         </>
     );
@@ -368,16 +442,18 @@ export default function VaultDeposit(props: Props) {
                                 ? 'Enter a Deposit Quantity'
                                 : !depositGreaterOrEqualToMinimum
                                   ? `Minimum Deposit is ${displayMinDeposit} ${token1.symbol}`
-                                  : showSubmitted
-                                    ? submittedButtonTitle
-                                    : 'Submit'
+                                  : depositGreaterThanWalletBalance
+                                    ? 'Reduce Deposit Quantity'
+                                    : showSubmitted
+                                      ? submittedButtonTitle
+                                      : 'Submit'
                         }
                         disabled={
-                            showSubmitted || !depositGreaterOrEqualToMinimum
+                            showSubmitted ||
+                            !depositGreaterOrEqualToMinimum ||
+                            depositGreaterThanWalletBalance
                         }
-                        action={() => {
-                            setShowSubmitted(true);
-                        }}
+                        action={() => submitDeposit()}
                         flat
                     />
                 </div>
