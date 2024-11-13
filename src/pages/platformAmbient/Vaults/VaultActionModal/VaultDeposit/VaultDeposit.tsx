@@ -58,10 +58,19 @@ export default function VaultDeposit(props: Props) {
         useState<string>('');
     const [depositBigint, setDepositBigint] = useState<bigint | undefined>();
     const [mainAssetPrice, setMainAssetPrice] = useState<number | undefined>();
+    const [secondaryAssetPrice, setSecondaryAssetPrice] = useState<
+        number | undefined
+    >();
     const [mainAssetBalanceBigint, setMainAssetBalanceBigint] = useState<
         bigint | undefined
     >();
+    const [secondaryAssetBalanceBigint, setSecondaryAssetBalanceBigint] =
+        useState<bigint | undefined>();
     const [mainAssetBalance, setMainAssetBalance] = useState<
+        string | undefined
+    >();
+    const [isZapOn, setIsZapOn] = useState(true);
+    const [secondaryAssetBalance, setSecondaryAssetBalance] = useState<
         string | undefined
     >();
     const [minDepositBigint, setMinDepositBigint] = useState<
@@ -96,12 +105,20 @@ export default function VaultDeposit(props: Props) {
         [minDepositBigint, depositBigint],
     );
 
-    const depositGreaterThanWalletBalance = useMemo(
+    const mainAssetDepositGreaterThanWalletBalance = useMemo(
         () =>
             depositBigint !== undefined &&
             mainAssetBalanceBigint !== undefined &&
             depositBigint > mainAssetBalanceBigint,
         [mainAssetBalanceBigint, depositBigint],
+    );
+
+    const secondaryAssetDepositGreaterThanWalletBalance = useMemo(
+        () =>
+            depositBigint !== undefined &&
+            secondaryAssetBalanceBigint !== undefined &&
+            depositBigint > secondaryAssetBalanceBigint,
+        [secondaryAssetBalanceBigint, depositBigint],
     );
 
     const depositGreaterThanWalletAllowance = useMemo(
@@ -126,6 +143,16 @@ export default function VaultDeposit(props: Props) {
                     )?.usdPrice || 0.0;
 
                 setMainAssetPrice(mainAssetPrice);
+                const secondaryAssetPrice =
+                    (
+                        await cachedFetchTokenPrice(
+                            secondaryAsset.address,
+                            chainId,
+                            crocEnv,
+                        )
+                    )?.usdPrice || 0.0;
+
+                setSecondaryAssetPrice(secondaryAssetPrice);
             })();
         }
     }, [crocEnv]);
@@ -135,6 +162,7 @@ export default function VaultDeposit(props: Props) {
         if (crocEnv) {
             if (!userAddress) {
                 setMainAssetBalance(undefined);
+                setSecondaryAssetBalance(undefined);
             } else {
                 (async () => {
                     crocEnv
@@ -149,6 +177,20 @@ export default function VaultDeposit(props: Props) {
                             setMainAssetBalance(displayBalance);
                         })
                         .catch(console.error);
+                    if (!isZapOn) {
+                        crocEnv
+                            .token(secondaryAsset.address)
+                            .wallet(userAddress)
+                            .then((bal: bigint) => {
+                                setSecondaryAssetBalanceBigint(bal);
+                                const displayBalance = toDisplayQty(
+                                    bal,
+                                    secondaryAsset.decimals,
+                                );
+                                setSecondaryAssetBalance(displayBalance);
+                            })
+                            .catch(console.error);
+                    }
                     crocEnv
                         .tempestVault(vault.address, vault.mainAsset)
                         .minDeposit()
@@ -166,7 +208,7 @@ export default function VaultDeposit(props: Props) {
                 })();
             }
         }
-    }, [crocEnv, userAddress, vault, sessionReceipts.length]);
+    }, [crocEnv, userAddress, vault, sessionReceipts.length, isZapOn]);
 
     // calculate price of gas for vault deposit
     useEffect(() => {
@@ -287,7 +329,7 @@ export default function VaultDeposit(props: Props) {
         }
     };
 
-    const usdValueForDom =
+    const mainAssetUsdValueForDom =
         mainAssetPrice && parseFloat(displayValue) > 0
             ? getFormattedNumber({
                   value: mainAssetPrice * parseFloat(displayValue),
@@ -295,31 +337,66 @@ export default function VaultDeposit(props: Props) {
               })
             : '';
 
-    const walletBalanceDisplay = mainAssetBalance ? mainAssetBalance : '...';
+    const secondaryAssetUsdValueForDom =
+        secondaryAssetPrice && parseFloat(displayValue) > 0
+            ? getFormattedNumber({
+                  value:
+                      secondaryAssetPrice * parseFloat(displayValueSecondary),
+                  prefix: '$',
+              })
+            : '';
 
-    const balanceToDisplay = getFormattedNumber({
-        value: parseFloat(walletBalanceDisplay) ?? undefined,
+    const mainAssetWalletBalanceDisplay = mainAssetBalance
+        ? mainAssetBalance
+        : '...';
+    const secondaryAssetWalletBalanceDisplay = secondaryAssetBalance
+        ? secondaryAssetBalance
+        : '...';
+
+    const mainAssetBalanceToDisplay = getFormattedNumber({
+        value: parseFloat(mainAssetWalletBalanceDisplay) ?? undefined,
     });
 
-    const walletContent = (
+    const secondaryAssetBalanceToDisplay = getFormattedNumber({
+        value: parseFloat(secondaryAssetWalletBalanceDisplay) ?? undefined,
+    });
+
+    const mainAssetWalletContent = (
         <>
             <WalletBalanceSubinfo
-                usdValueForDom={usdValueForDom ?? '…'}
+                usdValueForDom={mainAssetUsdValueForDom ?? '…'}
                 percentDiffUsdValue={123}
                 showWallet={isUserConnected}
                 isWithdraw={false}
-                balance={balanceToDisplay}
+                balance={mainAssetBalanceToDisplay}
                 availableBalance={mainAssetBalanceBigint}
-                useExchangeBalance={
-                    // isDexSelected &&
-                    // !!tokenDexBalance &&
-                    // parseFloat(tokenDexBalance) > 0
-                    false
-                }
+                useExchangeBalance={false}
                 isDexSelected={false}
                 onToggleDex={() => console.log('handleToggleDex')}
                 onMaxButtonClick={() =>
-                    handleTokenInputEvent(walletBalanceDisplay, 'main')
+                    handleTokenInputEvent(mainAssetWalletBalanceDisplay, 'main')
+                }
+            />
+        </>
+    );
+
+    const secondaryAssetWalletContent = (
+        <>
+            <WalletBalanceSubinfo
+                usdValueForDom={secondaryAssetUsdValueForDom ?? '…'}
+                percentDiffUsdValue={123}
+                showWallet={isUserConnected}
+                isWithdraw={false}
+                balance={secondaryAssetBalanceToDisplay}
+                availableBalance={secondaryAssetBalanceBigint}
+                useExchangeBalance={false}
+                isDexSelected={false}
+                onToggleDex={() => console.log('handleToggleDex')}
+                onMaxButtonClick={() =>
+                    handleTokenInputEvent(
+                        secondaryAssetWalletBalanceDisplay,
+                        'secondary',
+                    )
                 }
             />
         </>
@@ -358,10 +435,10 @@ export default function VaultDeposit(props: Props) {
         if (inputStringNoCommas === '.') inputStringNoCommas = '0.';
 
         // Handle different logic based on 'main' or 'secondary'
-        const adjustedString =
-            type === 'secondary'
-                ? inputStringNoCommas.replace(/\./g, ',') // Example modification
-                : inputStringNoCommas;
+        const adjustedString = inputStringNoCommas;
+        // type === 'secondary'
+        //     ? inputStringNoCommas.replace(/\./g, ',') // Example modification
+        //     : inputStringNoCommas;
 
         const inputStringNoUnfinishedExponent = isNaN(+adjustedString)
             ? adjustedString.replace(
@@ -407,74 +484,68 @@ export default function VaultDeposit(props: Props) {
         />
     );
     // ---------------------------------------------------
-    
-    const renderTokenSymbol = (symbol?: string) => (
+
+    const renderTokenSymbol = (symbol?: string) =>
         symbol && symbol.length > 4 ? (
             <DefaultTooltip
-            title={symbol}
-            placement={'top'}
-            arrow
-            enterDelay={700}
-            leaveDelay={200}
+                title={symbol}
+                placement={'top'}
+                arrow
+                enterDelay={700}
+                leaveDelay={200}
             >
                 <>{symbol}</>
             </DefaultTooltip>
         ) : (
             <>{symbol}</>
-        )
-    );
-    
+        );
+
     // ---------------------------------------------------
     const tokenSelectRef = useRef(null);
     const renderTokenSelectButton = (
         id: string,
-        token: TokenIF,  
-        tokenSymbol: React.ReactNode
+        token: TokenIF,
+        tokenSymbol: React.ReactNode,
     ) => (
         <button
-        className={`${styles.tokenSelectButton} ${styles.justDisplay}`}
-        id={id}
-        onClick={undefined}
-        tabIndex={0}
-        aria-label='Open swap sell token modal.'
-        ref={tokenSelectRef}
-        style={{
-            borderRadius: '50px',
-        }}
+            className={`${styles.tokenSelectButton} ${styles.justDisplay}`}
+            id={id}
+            onClick={undefined}
+            tabIndex={0}
+            aria-label='Open swap sell token modal.'
+            ref={tokenSelectRef}
+            style={{
+                borderRadius: '50px',
+            }}
         >
             <TokenIcon
                 token={token}
                 src={uriToHttp(token.logoURI)}
                 alt={token.symbol}
                 size='2xl'
-                />
+            />
             {tokenSymbol}
         </button>
     );
     // ---------------------------------------------------
-    
+
     const inputMain = renderInput('main');
     const inputSecondary = renderInput('secondary');
 
-    
     const tokenSymbolMain = renderTokenSymbol(mainAsset?.symbol);
     const tokenSymbolSecondary = renderTokenSymbol(secondaryAsset?.symbol);
-    
 
- 
     const tokenSelectButtonMain = renderTokenSelectButton(
         'main_vault_deposit_token_selector',
         mainAsset,
-        tokenSymbolMain
+        tokenSymbolMain,
     );
-    
+
     const tokenSelectButtonSecondary = renderTokenSelectButton(
         'secondary_vault_deposit_token_selector',
         secondaryAsset,
-        tokenSymbolSecondary
+        tokenSymbolSecondary,
     );
-    
-
 
     const submittedButtonTitle = (
         <div className={styles.loading}>
@@ -486,7 +557,6 @@ export default function VaultDeposit(props: Props) {
     const displayMinDeposit = minDepositBigint
         ? toDisplayQty(minDepositBigint, mainAsset.decimals)
         : '…';
-    const [isZapOn, setIsZapOn] = useState(true);
 
     const includeWallet = true;
     return (
@@ -521,7 +591,9 @@ export default function VaultDeposit(props: Props) {
                         {inputMain}
                         {tokenSelectButtonMain}
                     </div>
-                    {includeWallet && !showConfirmation && walletContent}
+                    {includeWallet &&
+                        !showConfirmation &&
+                        mainAssetWalletContent}
                 </div>
                 {!isZapOn && (
                     <div className={styles.content}>
@@ -534,7 +606,9 @@ export default function VaultDeposit(props: Props) {
                             {inputSecondary}
                             {tokenSelectButtonSecondary}
                         </div>
-                        {includeWallet && !showConfirmation && walletContent}
+                        {includeWallet &&
+                            !showConfirmation &&
+                            secondaryAssetWalletContent}
                     </div>
                 )}
 
@@ -553,16 +627,19 @@ export default function VaultDeposit(props: Props) {
                                   ? 'Enter a Deposit Quantity'
                                   : !depositGreaterOrEqualToMinimum
                                     ? `Minimum Deposit is ${displayMinDeposit} ${mainAsset.symbol}`
-                                    : depositGreaterThanWalletBalance
-                                      ? 'Quantity Exceeds Wallet Balance'
-                                      : depositGreaterThanWalletAllowance
-                                        ? `Approve ${mainAsset.symbol} / ${secondaryAsset.symbol}`
-                                        : 'Submit'
+                                    : mainAssetDepositGreaterThanWalletBalance
+                                      ? `${mainAsset.symbol} Quantity Exceeds Wallet Balance`
+                                      : secondaryAssetDepositGreaterThanWalletBalance
+                                        ? `${secondaryAsset.symbol} Quantity Exceeds Wallet Balance`
+                                        : depositGreaterThanWalletAllowance
+                                          ? `Approve ${mainAsset.symbol} / ${secondaryAsset.symbol}`
+                                          : 'Submit'
                         }
                         disabled={
                             showSubmitted ||
                             !depositGreaterOrEqualToMinimum ||
-                            depositGreaterThanWalletBalance
+                            mainAssetDepositGreaterThanWalletBalance ||
+                            secondaryAssetDepositGreaterThanWalletBalance
                         }
                         action={() =>
                             depositGreaterThanWalletAllowance
