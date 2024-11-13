@@ -263,10 +263,16 @@ export const useProcessTransaction = (
                 isBaseTokenMoneynessGreaterOrEqual
                     ? `${nonInvertedBidPriceTruncated}`
                     : `${invertedBidPriceTruncated}`;
+
             truncatedHighDisplayPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
                     ? `${nonInvertedAskPriceTruncated}`
                     : `${invertedAskPriceTruncated}`;
+
+            if (/[bt]/.test(truncatedHighDisplayPrice)) {
+                truncatedHighDisplayPrice = '∞';
+                truncatedHighDisplayPriceDenomByMoneyness = '∞';
+            }
 
             lowDisplayPriceInUsd = isAccountView
                 ? isBaseTokenMoneynessGreaterOrEqual

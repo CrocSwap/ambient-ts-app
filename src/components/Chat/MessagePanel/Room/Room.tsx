@@ -32,6 +32,7 @@ import {
     ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
 import { TokenContext } from '../../../../contexts/TokenContext';
+import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     selectedRoom: string;
@@ -94,10 +95,11 @@ export default function Room(props: propsIF) {
         }
     };
 
+    const { topPools } = useContext(CrocEnvContext);
+
     const {
-        chainData: { chainId },
-        topPools,
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
 

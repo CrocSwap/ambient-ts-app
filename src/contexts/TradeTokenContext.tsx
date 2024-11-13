@@ -1,5 +1,6 @@
-import React, {
+import {
     createContext,
+    ReactNode,
     useContext,
     useEffect,
     useMemo,
@@ -21,7 +22,7 @@ import { TokenBalanceContext } from './TokenBalanceContext';
 import { TradeDataContext } from './TradeDataContext';
 import { ReceiptContext } from './ReceiptContext';
 
-interface TradeTokenContextIF {
+export interface TradeTokenContextIF {
     baseToken: {
         address: string;
         balance: string;
@@ -56,14 +57,12 @@ export const TradeTokenContext = createContext<TradeTokenContextIF>(
     {} as TradeTokenContextIF,
 );
 
-export const TradeTokenContextProvider = (props: {
-    children: React.ReactNode;
-}) => {
+export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
     const {
+        activeNetwork: { graphCacheUrl, chainId, poolIndex },
         server: { isEnabled: isServerEnabled },
         isUserIdle,
     } = useContext(AppStateContext);
-
     const {
         cachedQuerySpotPrice,
         cachedQuerySpotTick,
@@ -71,18 +70,17 @@ export const TradeTokenContextProvider = (props: {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, chainData, provider, activeNetwork } =
-        useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { setTokenBalance } = useContext(TokenBalanceContext);
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
     const { sessionReceipts } = useContext(ReceiptContext);
-
     const { tokenA, tokenB, baseToken, quoteToken } =
         useContext(TradeDataContext);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
+
     const {
         tokenAAllowance,
         tokenBAllowance,
@@ -103,10 +101,10 @@ export const TradeTokenContextProvider = (props: {
         contextMatchesParams,
     } = usePoolMetadata({
         crocEnv,
-        graphCacheUrl: activeNetwork.graphCacheUrl,
+        graphCacheUrl: graphCacheUrl,
         provider,
-        pathname: location.pathname,
-        chainData,
+        chainId: chainId,
+        poolIndex: poolIndex,
         userAddress,
         searchableTokens: tokens.tokenUniv,
         receiptCount: sessionReceipts.length,

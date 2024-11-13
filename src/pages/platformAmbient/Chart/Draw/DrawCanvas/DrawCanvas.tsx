@@ -35,12 +35,12 @@ import {
     createPointsOfDPRangeLine,
 } from './BandArea';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { fibDefaultLevels } from '../../ChartUtils/drawConstants';
 import { CandleDataIF } from '../../../../../ambient-utils/types';
 import { formatDollarAmountAxis } from '../../../../../utils/numbers';
 import useDollarPrice from '../../ChartUtils/getDollarPrice';
 import { CandleContext } from '../../../../../contexts/CandleContext';
+import { AppStateContext } from '../../../../../contexts';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -112,8 +112,8 @@ function DrawCanvas(props: DrawCanvasProps) {
     } = props;
 
     const {
-        chainData: { poolIndex },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { poolIndex },
+    } = useContext(AppStateContext);
 
     const { isCondensedModeEnabled } = useContext(CandleContext);
 

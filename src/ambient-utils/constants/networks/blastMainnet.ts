@@ -1,5 +1,11 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { blastETH, blastUSDB, blastBLAST, blastEzETH } from '../defaultTokens';
+import {
+    blastETH,
+    blastUSDB,
+    blastBLAST,
+    blastEzETH,
+    blastUSDPLUS,
+} from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from 'ethers';
@@ -11,26 +17,33 @@ export const BLAST_RPC_URL =
         ? import.meta.env.VITE_BLAST_RPC_URL
         : 'https://rpc.blast.io';
 
-const chain = {
-    chainId: 81457,
+const chainIdHex = '0x13e31';
+const chainSpecFromSDK = lookupChain(chainIdHex);
+
+const chainSpecForWalletConnector = {
+    chainId: Number(chainIdHex),
     name: 'Blast',
     currency: 'ETH',
-    rpcUrl: 'https://rpc.blast.io/',
+    rpcUrl: BLAST_RPC_URL,
     explorerUrl: 'https://blastscan.io',
 };
 
 export const blast: NetworkIF = {
-    chainId: '0x13e31',
+    chainId: chainIdHex,
+    chainSpec: chainSpecFromSDK,
+    poolIndex: chainSpecFromSDK.poolIndex,
+    gridSize: chainSpecFromSDK.gridSize,
     graphCacheUrl: GCGO_BLAST_URL,
     evmRpcUrl: BLAST_RPC_URL,
-    chain: chain,
-    shouldPollBlock: true,
-    marketData: '0x13e31',
+    chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [blastETH, blastUSDB],
+    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    displayName: chainSpecForWalletConnector.name,
     topPools: [
-        new TopPool(blastETH, blastUSDB, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastBLAST, blastETH, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastEzETH, blastUSDB, lookupChain('0x13e31').poolIndex),
+        new TopPool(blastETH, blastUSDB, chainSpecFromSDK.poolIndex),
+        new TopPool(blastEzETH, blastETH, chainSpecFromSDK.poolIndex),
+        new TopPool(blastBLAST, blastETH, chainSpecFromSDK.poolIndex),
+        new TopPool(blastUSDPLUS, blastUSDB, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

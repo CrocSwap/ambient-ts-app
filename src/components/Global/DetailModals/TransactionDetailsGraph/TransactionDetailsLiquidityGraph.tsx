@@ -1,5 +1,6 @@
-import React, {
+import {
     Dispatch,
+    SetStateAction,
     useCallback,
     useContext,
     useEffect,
@@ -9,8 +10,8 @@ import React, {
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { fetchPoolLiquidity } from '../../../../ambient-utils/api';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { CachedDataContext, CachedDataContextIF } from '../../../../contexts/CachedDataContext';
+import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
 import {
     CandleDataIF,
     LiquidityRangeIF,
@@ -28,17 +29,19 @@ import {
 } from '../../../../pages/platformAmbient/Chart/Liquidity/LiquiditySeries/AreaSeries';
 import { createLiquidityLineSeries } from '../../../../pages/platformAmbient/Chart/Liquidity/LiquiditySeries/LineSeries';
 import { ChartThemeIF } from '../../../../contexts/ChartContext';
-interface TransactionDetailsLiquidityGraphIF {
+import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
+
+interface propsIF {
     tx: TransactionIF;
     isDenomBase: boolean;
     yScale: d3.ScaleLinear<number, number> | undefined;
     transactionType: string;
     poolPriceDisplay: number;
     poolPricePixel: number;
-    setPoolPricePixel: Dispatch<React.SetStateAction<number>>;
+    setPoolPricePixel: Dispatch<SetStateAction<number>>;
     svgWidth: number;
     lastCandleData: CandleDataIF | undefined;
-    setIsDataLoading: Dispatch<React.SetStateAction<boolean>>;
+    setIsDataLoading: Dispatch<SetStateAction<boolean>>;
     chartThemeColors: ChartThemeIF | undefined;
     currentPoolPriceTick?: number | undefined;
 }
@@ -49,12 +52,12 @@ type liquidityChartData = {
 };
 
 export default function TransactionDetailsLiquidityGraph(
-    props: TransactionDetailsLiquidityGraphIF,
+    props: propsIF,
 ) {
+    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
     const { cachedFetchTokenPrice, cachedQuerySpotTick } =
-        useContext(CachedDataContext);
-
-    const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
+        useContext<CachedDataContextIF>(CachedDataContext);
+    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
     const {
         chainId,

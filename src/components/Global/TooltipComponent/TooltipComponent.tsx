@@ -12,7 +12,6 @@ interface TooltipComponentProps {
     title: string | JSX.Element;
     noBg?: boolean;
     usePopups?: boolean;
-
     icon?: JSX.Element;
     placement?:
         | 'right'

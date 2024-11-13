@@ -60,6 +60,7 @@ import {
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { calcL1Gas } from '../../../../App/functions/calcL1Gas';
+import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -67,15 +68,18 @@ interface propsIF {
 
 function Swap(props: propsIF) {
     const { isOnTradeRoute } = props;
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
     const {
-        crocEnv,
-        chainData: { chainId, poolIndex },
-        ethMainnetUsdPrice,
-        provider,
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId, poolIndex },
+    } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
-    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
-        useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+        isActiveNetworkPlume,
+    } = useContext(ChainDataContext);
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
@@ -254,7 +258,11 @@ function Swap(props: propsIF) {
             console.log({ error });
             return 0n;
         }
-    }, [sellQtyNoExponentString, tokenASurplusMinusTokenARemainderNum]);
+    }, [
+        sellQtyNoExponentString,
+        tokenASurplusMinusTokenARemainderNum,
+        isWithdrawFromDexChecked,
+    ]);
 
     const isTokenAWalletBalanceSufficient =
         fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=
@@ -948,7 +956,14 @@ function Swap(props: propsIF) {
                         }
                         disabled={isApprovalPending}
                         action={async () => {
-                            await approve(tokenA.address, tokenA.symbol);
+                            await approve(
+                                tokenA.address,
+                                tokenA.symbol,
+                                undefined,
+                                isActiveNetworkPlume
+                                    ? tokenAQtyCoveredByWalletBalance
+                                    : undefined,
+                            );
                         }}
                         flat
                     />

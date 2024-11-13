@@ -50,18 +50,24 @@ import {
     IS_LOCAL_ENV,
     NUM_GWEI_IN_ETH,
 } from '../../../../ambient-utils/constants';
+import { AppStateContext } from '../../../../contexts';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
 
 function Range() {
+    const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
+
     const {
-        chainData: { chainId, gridSize },
-        ethMainnetUsdPrice,
-        crocEnv,
-    } = useContext(CrocEnvContext);
-    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
-        useContext(ChainDataContext);
+        activeNetwork: { chainId, gridSize },
+    } = useContext(AppStateContext);
+
+    const {
+        gasPriceInGwei,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+        isActiveNetworkPlume,
+    } = useContext(ChainDataContext);
     const { poolPriceDisplay, dailyVol } = useContext(PoolContext);
     const {
         advancedHighTick,
@@ -110,6 +116,7 @@ function Range() {
         baseToken,
         quoteToken,
         poolPriceNonDisplay,
+        currentPoolPriceTick,
         isTokenAPrimary,
         primaryQuantity,
         setPrimaryQuantity,
@@ -213,7 +220,7 @@ function Range() {
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
-            : poolPriceDisplay ?? 0;
+            : (poolPriceDisplay ?? 0);
     const poolPriceCharacter = isDenomBase
         ? isTokenABase
             ? getUnicodeCharacter(tokenB.symbol)
@@ -221,22 +228,21 @@ function Range() {
         : !isTokenABase
           ? getUnicodeCharacter(tokenB.symbol)
           : getUnicodeCharacter(tokenA.symbol);
-    const currentPoolPriceTick =
-        poolPriceNonDisplay === undefined
-            ? 0
-            : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     const ticksInParams =
         location.pathname.includes('lowTick') &&
         location.pathname.includes('highTick');
+
     const shouldResetAdvancedLowTick =
         !ticksInParams &&
         (advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
+
     const shouldResetAdvancedHighTick =
         !ticksInParams &&
         (advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
+
     // default low tick to seed in the DOM (range lower value)
     const defaultLowTick = useMemo<number>(() => {
         const value: number = shouldResetAdvancedLowTick
@@ -1250,7 +1256,14 @@ function Range() {
                         }
                         disabled={isApprovalPending}
                         action={async () => {
-                            await approve(tokenA.address, tokenA.symbol);
+                            await approve(
+                                tokenA.address,
+                                tokenA.symbol,
+                                undefined,
+                                isActiveNetworkPlume
+                                    ? tokenAQtyCoveredByWalletBalance
+                                    : undefined,
+                            );
                         }}
                         flat={true}
                     />
@@ -1268,7 +1281,14 @@ function Range() {
                         }
                         disabled={isApprovalPending}
                         action={async () => {
-                            await approve(tokenB.address, tokenB.symbol);
+                            await approve(
+                                tokenB.address,
+                                tokenB.symbol,
+                                undefined,
+                                isActiveNetworkPlume
+                                    ? tokenBQtyCoveredByWalletBalance
+                                    : undefined,
+                            );
                         }}
                         flat={true}
                     />

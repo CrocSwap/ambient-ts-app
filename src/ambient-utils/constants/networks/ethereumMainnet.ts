@@ -4,7 +4,6 @@ import {
     mainnetUSDC,
     mainnetWBTC,
     mainnetUSDT,
-    mainnetDAI,
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
@@ -12,18 +11,16 @@ import { GCGO_ETHEREUM_URL } from '../gcgo';
 import { Provider } from 'ethers';
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 
-// const PROVIDER_KEY =
-//     import.meta.env.NODE_ENV === 'test'
-//         ? import.meta.env.PROVIDER_KEY
-//         : import.meta.env.VITE_INFURA_KEY;
-
-const MAINNET_RPC_URL =
+export const MAINNET_RPC_URL =
     import.meta.env.VITE_MAINNET_RPC_URL !== undefined
         ? import.meta.env.VITE_MAINNET_RPC_URL
         : 'https://eth.llamarpc.com';
 
-const chain = {
-    chainId: 1,
+const chainIdHex = '0x1';
+const chainSpecFromSDK = lookupChain(chainIdHex);
+
+const chainSpecForWalletConnector = {
+    chainId: Number(chainIdHex),
     name: 'Ethereum',
     currency: 'ETH',
     rpcUrl: MAINNET_RPC_URL,
@@ -31,20 +28,20 @@ const chain = {
 };
 
 export const ethereumMainnet: NetworkIF = {
-    chainId: '0x1',
+    chainId: chainIdHex,
+    chainSpec: chainSpecFromSDK,
     graphCacheUrl: GCGO_ETHEREUM_URL,
     evmRpcUrl: MAINNET_RPC_URL,
-    // evmRpcUrl: 'https://mainnet.infura.io/v3/' + PROVIDER_KEY,
-    chain: chain,
-    shouldPollBlock: false,
-    marketData: '0x1',
+    chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [mainnetETH, mainnetUSDC],
+    poolIndex: chainSpecFromSDK.poolIndex,
+    gridSize: chainSpecFromSDK.gridSize,
+    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    displayName: chainSpecForWalletConnector.name,
     topPools: [
-        new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetETH, mainnetWBTC, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetETH, mainnetUSDT, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetUSDT, mainnetUSDC, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetETH, mainnetDAI, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetUSDT, mainnetUSDC, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetETH, mainnetWBTC, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

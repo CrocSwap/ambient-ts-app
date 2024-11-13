@@ -1,10 +1,4 @@
-import {
-    useEffect,
-    useState,
-    memo,
-    useContext,
-    useCallback,
-} from 'react';
+import { useEffect, useState, memo, useContext, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimateSharedLayout, motion } from 'framer-motion';
 import UserMenu from './UserMenu/UserMenu';
@@ -36,31 +30,25 @@ import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 import styles from './PageHeader.module.css';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
+import { BrandContext, ChainDataContext } from '../../../contexts';
 
 const PageHeader = function () {
     const {
-        crocEnv,
-        setCrocEnv,
-        chainData: { chainId, poolIndex: poolId },
-    } = useContext(CrocEnvContext);
-    const { headerImage } = useContext<BrandContextIF>(BrandContext);
-
-    const {
+        activeNetwork: { chainId, poolIndex: poolId },
         walletModal: { open: openWalletModal },
         appHeaderDropdown,
     } = useContext(AppStateContext);
+    const { headerImage } = useContext(BrandContext);
+    const { crocEnv, setCrocEnv } = useContext(CrocEnvContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
-    const {  isBottomSheetOpen } =
-    useBottomSheet();
-
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData, activeTradeTab } = useContext(TradeTableContext);
+    const { isVaultSupportedOnNetwork } = useContext(ChainDataContext);
     const {
         baseToken: {
             setBalance: setBaseTokenBalance,
@@ -74,6 +62,7 @@ const PageHeader = function () {
     const { userAddress, isUserConnected, disconnectUser, ensName } =
         useContext(UserDataContext);
     const { resetReceiptData } = useContext(ReceiptContext);
+    const { isBottomSheetOpen } = useBottomSheet();
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -163,13 +152,11 @@ const PageHeader = function () {
 
     useEffect(() => {
         const path = location.pathname;
-
         const pathNoLeadingSlash = path.slice(1);
-
         const isAddressEns = pathNoLeadingSlash?.includes('.eth');
         const isAddressHex = checkEoaHexAddress(path);
-
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
+
         if (pathNoLeadingSlash.startsWith('account') && !isPathValidAddress) {
             if (pathNoLeadingSlash.includes('points')) {
                 document.title = 'My Points ~ Ambient';
@@ -211,6 +198,8 @@ const PageHeader = function () {
                 document.title = `${ensNameOrAddressTruncated} Wallet Balances ~ Ambient`;
             } else if (pathNoLeadingSlash.includes('exchange-balances')) {
                 document.title = `${ensNameOrAddressTruncated} Exchange Balances ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('xp')) {
+                document.title = `${ensNameOrAddressTruncated} XP ~ Ambient`;
             } else {
                 document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
             }
@@ -233,6 +222,10 @@ const PageHeader = function () {
             } else {
                 document.title = 'Explore ~ Ambient';
             }
+        } else if (pathNoLeadingSlash.includes('xp-leaderboard')) {
+            document.title = 'XP Leaderboard ~ Ambient';
+        } else if (pathNoLeadingSlash.includes('vaults')) {
+            document.title = 'Vaults ~ Ambient';
         } else if (location.pathname.includes('404')) {
             document.title = '404 ~ Ambient';
         } else {
@@ -306,6 +299,11 @@ const PageHeader = function () {
             shouldDisplay: true,
         },
         {
+            title: 'Vaults',
+            destination: '/vaults',
+            shouldDisplay: isVaultSupportedOnNetwork,
+        },
+        {
             title: 'Account',
             destination: `/account${activeTradeTab && '/' + activeTradeTabSlug}`,
             shouldDisplay: !!isUserConnected,
@@ -349,11 +347,7 @@ const PageHeader = function () {
 
     const routeDisplay = (
         <AnimateSharedLayout>
-            <nav
-                className={styles.primaryNavigation}
-                id='primary_navigation'
-               
-            >
+            <nav className={styles.primaryNavigation} id='primary_navigation'>
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
                         <Link
@@ -415,7 +409,11 @@ const PageHeader = function () {
             <header
                 className={styles.primaryHeader}
                 data-testid={'page-header'}
-                style={{ position: 'sticky', top: 0, zIndex: isBottomSheetOpen ? 0.1 : 10 }}
+                style={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: isBottomSheetOpen ? 0.1 : 10,
+                }}
             >
                 <div
                     onClick={(event: React.MouseEvent) => {
@@ -424,6 +422,7 @@ const PageHeader = function () {
                             appHeaderDropdown.setIsActive(false);
                         }
                     }}
+                    className={styles.left_side}
                 >
                     <Link
                         to='/'
@@ -431,18 +430,22 @@ const PageHeader = function () {
                         aria-label='Home'
                     >
                         {desktopScreen ? (
-                            <img src={headerImage} alt='ambient' />
+                            <img
+                                src={headerImage}
+                                alt='ambient'
+                                style={{ marginRight: '20px' }}
+                            />
                         ) : (
                             <img
                                 className={styles.logoText}
                                 src={logo}
-                                    alt='ambient'
-                                    width='70px'
+                                alt='ambient'
+                                width='60px'
                             />
                         )}
                     </Link>
+                    {routeDisplay}
                 </div>
-                {routeDisplay}
                 <div className={styles.rightSide}>
                     {show ? (
                         <div className={styles.tradeNowDiv}>
@@ -466,7 +469,6 @@ const PageHeader = function () {
                     )}
                 </div>
             </header>
-            {/* {isDevMenuEnabled && showDevMenu && <MobileDropdown />} */}
         </>
     );
 };

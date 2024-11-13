@@ -86,14 +86,14 @@ import {
     ZERO_ADDRESS,
 } from '../../../ambient-utils/constants';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { AppStateContext } from '../../../contexts';
 // react functional component
 export default function InitPool() {
+    const { crocEnv, provider, ethMainnetUsdPrice } =
+        useContext(CrocEnvContext);
     const {
-        crocEnv,
-        provider,
-        ethMainnetUsdPrice,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const { dexBalRange } = useContext(UserPreferenceContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -889,13 +889,13 @@ export default function InitPool() {
             ? true
             : isMintLiqEnabled
               ? tokenAAllowance > tokenAQtyCoveredByWalletBalance
-              : tokenAAllowance > 0;
+              : tokenAAllowance >= fromDisplayQty('0.1', tokenA.decimals);
     const isTokenBAllowanceSufficient =
         tokenBAllowance === undefined
             ? true
             : isMintLiqEnabled
               ? tokenBAllowance > tokenBQtyCoveredByWalletBalance
-              : tokenBAllowance > 0;
+              : tokenBAllowance >= fromDisplayQty('0.1', tokenB.decimals);
 
     const focusInput = () => {
         const inputField = document.getElementById(
@@ -1138,6 +1138,8 @@ export default function InitPool() {
         defaultLowTick,
         defaultHighTick,
         selectedPoolPriceTick,
+        tokenAQtyCoveredByWalletBalance,
+        tokenBQtyCoveredByWalletBalance,
     };
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
@@ -1148,7 +1150,7 @@ export default function InitPool() {
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
-            : poolPriceDisplay ?? 0;
+            : (poolPriceDisplay ?? 0);
     const poolPriceCharacter = isDenomBase
         ? isTokenABase
             ? getUnicodeCharacter(tokenB.symbol)

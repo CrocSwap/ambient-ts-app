@@ -6,8 +6,11 @@ import { Provider } from 'ethers';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 
-const chain = {
-    chainId: 168587773,
+const chainIdHex = '0xa0c71fd';
+const chainSpecFromSDK = lookupChain(chainIdHex);
+
+const chainSpecForWalletConnector = {
+    chainId: Number(chainIdHex),
     name: 'Blast Sepolia',
     currency: 'ETH',
     rpcUrl: 'https://sepolia.blast.io/',
@@ -15,20 +18,23 @@ const chain = {
 };
 
 export const blastSepolia: NetworkIF = {
-    chainId: '0xa0c71fd',
+    chainId: chainIdHex,
+    chainSpec: chainSpecFromSDK,
     graphCacheUrl: GCGO_TESTNET_URL,
-    evmRpcUrl: 'https://sepolia.blast.io/',
-    chain: chain,
-    shouldPollBlock: true,
-    marketData: '0x1',
+    evmRpcUrl: chainSpecForWalletConnector.rpcUrl,
+    chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [blastSepoliaETH, blastSepoliaUSDB],
+    poolIndex: chainSpecFromSDK.poolIndex,
+    gridSize: chainSpecFromSDK.gridSize,
+    displayName: chainSpecForWalletConnector.name,
     topPools: [
         new TopPool(
             blastSepoliaETH,
             blastSepoliaUSDB,
-            lookupChain('0xa0c71fd').poolIndex,
+            chainSpecFromSDK.poolIndex,
         ),
     ],
+    blockExplorer: chainSpecForWalletConnector.explorerUrl,
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (

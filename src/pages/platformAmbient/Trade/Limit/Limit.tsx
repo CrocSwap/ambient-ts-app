@@ -55,15 +55,20 @@ import {
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../../contexts';
 
 export default function Limit() {
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+
     const {
-        crocEnv,
-        chainData: { chainId, gridSize, poolIndex },
-        ethMainnetUsdPrice,
-    } = useContext(CrocEnvContext);
-    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
-        useContext(ChainDataContext);
+        activeNetwork: { chainId, gridSize, poolIndex },
+    } = useContext(AppStateContext);
+    const {
+        gasPriceInGwei,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+        isActiveNetworkPlume,
+    } = useContext(ChainDataContext);
     const {
         pool,
         isPoolInitialized,
@@ -1073,7 +1078,14 @@ export default function Limit() {
                         }
                         disabled={isApprovalPending}
                         action={async () => {
-                            await approve(tokenA.address, tokenA.symbol);
+                            await approve(
+                                tokenA.address,
+                                tokenA.symbol,
+                                undefined,
+                                isActiveNetworkPlume
+                                    ? tokenAQtyCoveredByWalletBalance
+                                    : undefined,
+                            );
                         }}
                         flat={true}
                     />
