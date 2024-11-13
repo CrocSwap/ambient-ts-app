@@ -70,7 +70,13 @@ function Vaults() {
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
-                    {(allVaultsData || mockAllVaultsData)
+                    {(
+                        allVaultsData ||
+                        mockAllVaultsData.sort(
+                            (a: VaultIF, b: VaultIF) =>
+                                parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
+                        )
+                    )
                         .filter(
                             (vault) =>
                                 Number(vault.chainId) === Number(chainId),
