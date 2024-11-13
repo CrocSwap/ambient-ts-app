@@ -43,34 +43,40 @@ export default function VaultRow(props: propsIF) {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const token0 = tokens.getTokenByAddress(vault.token0Address);
-    const token1 = tokens.getTokenByAddress(vault.token1Address);
+    const mainAsset = tokens.getTokenByAddress(vault.mainAsset);
+    const secondaryAssetAddress =
+        vault.token0Address.toLowerCase() === vault.mainAsset.toLowerCase()
+            ? vault.token1Address
+            : vault.token0Address;
+    const secondaryAsset = tokens.getTokenByAddress(secondaryAssetAddress);
 
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
-    const [balanceToken1, setBalanceToken1] = useState<bigint | undefined>();
+    const [balanceMainAsset, setBalanceMainAsset] = useState<
+        bigint | undefined
+    >();
 
     // useEffect to check if user has approved Tempest to sell token 1
     useEffect(() => {
         if (crocEnv && vault) {
-            setBalanceToken1(undefined);
+            setBalanceMainAsset(undefined);
             if (userAddress) {
                 (async () => {
                     try {
                         const tempestVault = crocEnv.tempestVault(
                             vault.address,
-                            vault.token1Address,
+                            vault.mainAsset,
                         );
 
-                        // const balanceToken1Response =
+                        // const balanceMainAssetResponse =
                         //     await tempestVault.balanceToken1(
                         //         '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
                         //     );
 
-                        const balanceToken1Response =
+                        const balanceMainAssetResponse =
                             await tempestVault.balanceToken1(userAddress);
 
-                        setBalanceToken1(balanceToken1Response);
+                        setBalanceMainAsset(balanceMainAssetResponse);
                     } catch (err) {
                         console.warn(err);
                     }
@@ -79,7 +85,11 @@ export default function VaultRow(props: propsIF) {
         }
     }, [crocEnv, vault, userAddress, sessionReceipts.length]);
 
-    if (Number(chainId) !== Number(vault.chainId) || !token0 || !token1) {
+    if (
+        Number(chainId) !== Number(vault.chainId) ||
+        !mainAsset ||
+        !secondaryAsset
+    ) {
         return null;
     }
 
@@ -89,23 +99,25 @@ export default function VaultRow(props: propsIF) {
                 <img src={tempestLogoColor} alt='tempest' />
             </div>
             <TokenIcon
-                token={token1}
-                src={uriToHttp(token1.logoURI)}
-                alt={token1.symbol}
+                token={mainAsset}
+                src={uriToHttp(mainAsset.logoURI)}
+                alt={mainAsset.symbol}
                 size={showMobileVersion ? 'm' : '2xl'}
             />
             <TokenIcon
-                token={token0}
-                src={uriToHttp(token0.logoURI)}
-                alt={token0.symbol}
+                token={secondaryAsset}
+                src={uriToHttp(secondaryAsset.logoURI)}
+                alt={secondaryAsset.symbol}
                 size={showMobileVersion ? 'm' : '2xl'}
             />
         </FlexContainer>
     );
 
-    const token1BalanceDisplayQty = balanceToken1
+    const mainAssetBalanceDisplayQty = balanceMainAsset
         ? getFormattedNumber({
-              value: parseFloat(toDisplayQty(balanceToken1, token1.decimals)),
+              value: parseFloat(
+                  toDisplayQty(balanceMainAsset, mainAsset.decimals),
+              ),
           })
         : '...';
 
@@ -119,13 +131,13 @@ export default function VaultRow(props: propsIF) {
             className={styles.depositContainer}
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
-                {token1BalanceDisplayQty}
-                {!!balanceToken1 && (
+                {mainAssetBalanceDisplayQty}
+                {!!balanceMainAsset && (
                     <>
                         <TokenIcon
-                            token={token1}
-                            src={uriToHttp(token1.logoURI)}
-                            alt={token1.symbol}
+                            token={mainAsset}
+                            src={uriToHttp(mainAsset.logoURI)}
+                            alt={mainAsset.symbol}
                             size={'m'}
                         />
                         <TooltipComponent
@@ -158,18 +170,17 @@ export default function VaultRow(props: propsIF) {
     const modalToOpen =
         type === 'Deposit' ? (
             <VaultDeposit
-                token0={token0}
-                token1={token1}
+                mainAsset={mainAsset}
+                secondaryAsset={secondaryAsset}
                 vault={vault}
                 onClose={closeModal}
             />
         ) : (
             <VaultWithdraw
-                token0={token0}
-                token1={token1}
+                mainAsset={mainAsset}
                 vault={vault}
-                balanceToken1={balanceToken1}
-                token1BalanceDisplayQty={token1BalanceDisplayQty}
+                balanceMainAsset={balanceMainAsset}
+                mainAssetBalanceDisplayQty={mainAssetBalanceDisplayQty}
                 onClose={closeModal}
             />
         );
@@ -198,7 +209,7 @@ export default function VaultRow(props: propsIF) {
                             onClick={() => navigateExternal()}
                         >
                             <span>
-                                {token1.symbol} / {token0.symbol}
+                                {mainAsset.symbol} / {secondaryAsset.symbol}
                             </span>
                             <RiExternalLinkLine size={20} />
                         </p>
@@ -220,7 +231,7 @@ export default function VaultRow(props: propsIF) {
                                 Deposit
                             </button>
 
-                            {isUserConnected && !!balanceToken1 && (
+                            {isUserConnected && !!balanceMainAsset && (
                                 <button
                                     className={styles.actionButton}
                                     onClick={handleOpenWithdrawModal}

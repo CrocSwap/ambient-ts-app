@@ -32,16 +32,20 @@ import {
 } from '../../../../../utils/TransactionError';
 
 interface Props {
-    token0: TokenIF;
-    token1: TokenIF;
+    mainAsset: TokenIF;
     vault: VaultIF;
-    balanceToken1: bigint | undefined;
-    token1BalanceDisplayQty: string;
+    balanceMainAsset: bigint | undefined;
+    mainAssetBalanceDisplayQty: string;
     onClose: () => void;
 }
 export default function VaultWithdraw(props: Props) {
-    const { token1, onClose, token1BalanceDisplayQty, vault, balanceToken1 } =
-        props;
+    const {
+        mainAsset,
+        onClose,
+        mainAssetBalanceDisplayQty,
+        vault,
+        balanceMainAsset,
+    } = props;
     const [showSubmitted, setShowSubmitted] = useState(false);
     const [removalPercentage, setRemovalPercentage] = useState(100);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -61,21 +65,21 @@ export default function VaultWithdraw(props: Props) {
     >();
 
     const submitWithdraw = async () => {
-        if (!crocEnv || !balanceToken1 || !userAddress || !vault) return;
+        if (!crocEnv || !balanceMainAsset || !userAddress || !vault) return;
         setShowSubmitted(true);
-        const withdrawalQtyToken1Bigint =
-            (balanceToken1 * BigInt(removalPercentage)) / BigInt(101);
+        const withdrawalQtyMainAssetBigint =
+            (balanceMainAsset * BigInt(removalPercentage)) / BigInt(101);
 
         const balanceVault = await crocEnv
-            .tempestVault(vault.address, vault.token1Address)
+            .tempestVault(vault.address, vault.mainAsset)
             .balanceVault(userAddress);
 
         const withdrawalQtyVaultBalance =
             (balanceVault * BigInt(removalPercentage)) / BigInt(100);
 
         const tx = await crocEnv
-            .tempestVault(vault.address, vault.token1Address)
-            .redeemZap(withdrawalQtyVaultBalance, withdrawalQtyToken1Bigint)
+            .tempestVault(vault.address, vault.mainAsset)
+            .redeemZap(withdrawalQtyVaultBalance, withdrawalQtyMainAssetBigint)
             .catch(console.error);
 
         if (tx?.hash) {
@@ -84,7 +88,7 @@ export default function VaultWithdraw(props: Props) {
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txType: 'Withdraw',
-                txDescription: `Withdrawal of ${token1.symbol}`,
+                txDescription: `Withdrawal of ${mainAsset.symbol}`,
             });
         } else {
             setShowSubmitted(false);
@@ -144,12 +148,12 @@ export default function VaultWithdraw(props: Props) {
                 size={'xl'}
             /> */}
             <TokenIcon
-                token={token1}
-                src={uriToHttp(token1.logoURI)}
-                alt={token1.symbol}
+                token={mainAsset}
+                src={uriToHttp(mainAsset.logoURI)}
+                alt={mainAsset.symbol}
                 size={'xl'}
             />
-            <p className={styles.poolName}>{token1.symbol}</p>
+            <p className={styles.poolName}>{mainAsset.symbol}</p>
         </FlexContainer>
     );
 
@@ -176,87 +180,38 @@ export default function VaultWithdraw(props: Props) {
 
     const pooledDisplay = (
         <section className={styles.pooledContent}>
-            {/* <div className={styles.pooledContentContainer}>
-                Pooled ETH
-                <div className={styles.alignCenter}>
-                    1.69
-                    <TokenIcon
-                        token={token0}
-                        src={uriToHttp(token0.logoURI)}
-                        alt={token0.symbol}
-                        size={'s'}
-                    />
-                </div>
-            </div> */}
-            {/* <div className={styles.pooledContentRight}>
-                Pooled USDC
-                <div className={styles.alignCenter}>
-                    1,690.00
-                    <TokenIcon
-                        token={token1}
-                        src={uriToHttp(token1.logoURI)}
-                        alt={token1.symbol}
-                        size={'s'}
-                    />
-                </div>
-            </div> */}
-
             <div className={styles.seperator}>
                 <span />
             </div>
             <div className={styles.pooledContentContainer}>
-                Deposited {token1.symbol}
+                Deposited {mainAsset.symbol}
                 <div className={styles.alignCenter}>
-                    {token1BalanceDisplayQty}
+                    {mainAssetBalanceDisplayQty}
                     <TokenIcon
-                        token={token1}
-                        src={uriToHttp(token1.logoURI)}
-                        alt={token1.symbol}
+                        token={mainAsset}
+                        src={uriToHttp(mainAsset.logoURI)}
+                        alt={mainAsset.symbol}
                         size={'s'}
                     />
                 </div>
             </div>
             <div className={styles.pooledContentRight}>
-                {token1.symbol} Removal Amount
+                {mainAsset.symbol} Removal Amount
                 <div className={styles.alignCenter}>
                     {getFormattedNumber({
                         value:
                             removalPercentage *
                             0.01 *
-                            parseFloat(token1BalanceDisplayQty),
+                            parseFloat(mainAssetBalanceDisplayQty),
                     })}
                     <TokenIcon
-                        token={token1}
-                        src={uriToHttp(token1.logoURI)}
-                        alt={token1.symbol}
+                        token={mainAsset}
+                        src={uriToHttp(mainAsset.logoURI)}
+                        alt={mainAsset.symbol}
                         size={'s'}
                     />
                 </div>
             </div>
-            {/* <div className={styles.pooledContentContainer}>
-                Earned ETH
-                <div className={styles.alignCenter}>
-                    1.69
-                    <TokenIcon
-                        token={token0}
-                        src={uriToHttp(token0.logoURI)}
-                        alt={token0.symbol}
-                        size={'s'}
-                    />
-                </div>
-            </div>
-            <div className={styles.pooledContentRight}>
-                Earned USDC
-                <div className={styles.alignCenter}>
-                    1,690.00
-                    <TokenIcon
-                        token={token1}
-                        src={uriToHttp(token1.logoURI)}
-                        alt={token1.symbol}
-                        size={'s'}
-                    />
-                </div>
-            </div> */}
         </section>
     );
     const extraDetailsDisplay = (
