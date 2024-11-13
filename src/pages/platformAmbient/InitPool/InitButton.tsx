@@ -5,6 +5,7 @@ import { TokenIF } from '../../../ambient-utils/types';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts';
+import { fromDisplayQty } from '@crocswap-libs/sdk';
 
 interface PropsIF {
     tokenA: TokenIF;
@@ -74,10 +75,14 @@ export default function InitButton(props: PropsIF) {
 
     const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
-    const tokenAQtyForApproval =
-        (tokenAQtyCoveredByWalletBalance * BigInt(101)) / BigInt(100);
-    const tokenBQtyForApproval =
-        (tokenBQtyCoveredByWalletBalance * BigInt(101)) / BigInt(100);
+    const tokenAQtyForApproval = isMintLiqEnabled
+        ? tokenAQtyCoveredByWalletBalance +
+          fromDisplayQty('0.1', tokenA.decimals)
+        : fromDisplayQty('0.1', tokenA.decimals);
+    const tokenBQtyForApproval = isMintLiqEnabled
+        ? tokenBQtyCoveredByWalletBalance +
+          fromDisplayQty('0.1', tokenB.decimals)
+        : fromDisplayQty('0.1', tokenB.decimals);
 
     const tokenAApprovalButton = (
         <Button
