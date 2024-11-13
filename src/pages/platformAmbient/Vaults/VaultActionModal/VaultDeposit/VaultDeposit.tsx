@@ -198,6 +198,8 @@ export default function VaultDeposit(props: Props) {
                 txType: 'Approve',
                 txDescription: `Approve ${token1.symbol}`,
             });
+        } else {
+            setShowSubmitted(false);
         }
 
         let receipt;
@@ -505,16 +507,16 @@ export default function VaultDeposit(props: Props) {
                         idForDOM='vault_deposit_submit'
                         style={{ textTransform: 'none' }}
                         title={
-                            !depositBigint
-                                ? 'Enter a Deposit Quantity'
-                                : depositGreaterThanWalletAllowance
-                                  ? `Approve ${token1.symbol}`
+                            showSubmitted
+                                ? submittedButtonTitle
+                                : !depositBigint
+                                  ? 'Enter a Deposit Quantity'
                                   : !depositGreaterOrEqualToMinimum
                                     ? `Minimum Deposit is ${displayMinDeposit} ${token1.symbol}`
                                     : depositGreaterThanWalletBalance
-                                      ? 'Reduce Deposit Quantity'
-                                      : showSubmitted
-                                        ? submittedButtonTitle
+                                      ? 'Quantity Exceeds Wallet Balance'
+                                      : depositGreaterThanWalletAllowance
+                                        ? `Approve ${token1.symbol}`
                                         : 'Submit'
                         }
                         disabled={
