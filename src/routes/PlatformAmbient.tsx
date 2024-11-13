@@ -7,6 +7,7 @@ import Trade from '../pages/platformAmbient/Trade/Trade';
 import ChatPanel from '../components/Chat/ChatPanel';
 import InitPool from '../pages/platformAmbient/InitPool/InitPool';
 import Portfolio from '../pages/platformAmbient/Portfolio/Portfolio';
+import Vaults from '../pages/platformAmbient/Vaults/Vaults';
 import Vanity from '../pages/platformAmbient/Vanity/Vanity';
 import Explore from '../pages/platformAmbient/Explore/Explore';
 import Swap from '../pages/platformAmbient/Swap/Swap';
@@ -21,9 +22,12 @@ import FAQPoints from '../pages/common/FAQ/FAQPoints';
 import PrivacyPolicy from '../pages/common/PrivacyPolicy/PrivacyPolicy';
 import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
 import TestPage from '../pages/common/TestPage/TestPage';
+import { ChainDataContext } from '../contexts';
+import NoVaults from '../pages/platformAmbient/Vaults/NoVaults';
 
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
+    const { isVaultSupportedOnNetwork } = useContext(ChainDataContext);
 
     return (
         <Routes>
@@ -74,6 +78,10 @@ const PlatformAmbientRoutes: React.FC = () => {
             />
             <Route path='initpool/:params' element={<InitPool />} />
             <Route path='account' element={<Portfolio />} />
+            <Route
+                path='vaults'
+                element={isVaultSupportedOnNetwork ? <Vaults /> : <NoVaults />}
+            />
             <Route
                 path='xp-leaderboard'
                 element={<Portfolio isLevelsPage isRanksPage />}
