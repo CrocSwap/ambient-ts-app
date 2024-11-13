@@ -103,7 +103,8 @@ function Ranges(props: propsIF) {
 
     const { transactionsByType } = useContext(ReceiptContext);
 
-    const { baseToken, quoteToken, blackListedTimeParams, addToBlackList } = useContext(TradeDataContext);
+    const { baseToken, quoteToken, blackListedTimeParams, addToBlackList } =
+        useContext(TradeDataContext);
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
@@ -152,7 +153,9 @@ function Ranges(props: propsIF) {
     const infiniteScrollLockRef = useRef<boolean>();
     infiniteScrollLockRef.current = infiniteScrollLock;
 
-    const [requestedOldestTimes, setRequestedOldestTimes] = useState<number[]>([]);
+    const [requestedOldestTimes, setRequestedOldestTimes] = useState<number[]>(
+        [],
+    );
     const requestedOldestTimesRef = useRef<number[]>(requestedOldestTimes);
     requestedOldestTimesRef.current = requestedOldestTimes;
 
@@ -186,7 +189,9 @@ function Ranges(props: propsIF) {
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
 
-    const prevBaseQuoteAddressRef = useRef<string>(selectedBaseAddress + selectedQuoteAddress);
+    const prevBaseQuoteAddressRef = useRef<string>(
+        selectedBaseAddress + selectedQuoteAddress,
+    );
 
     const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(
         !isAccountView && showAllData,
@@ -209,7 +214,10 @@ function Ranges(props: propsIF) {
     }, []);
 
     useEffect(() => {
-        if(prevBaseQuoteAddressRef.current !== selectedBaseAddress + selectedQuoteAddress){
+        if (
+            prevBaseQuoteAddressRef.current !==
+            selectedBaseAddress + selectedQuoteAddress
+        ) {
             setPagesVisible([0, 1]);
             setPageDataCountShouldReset(true);
             setExtraPagesAvailable(0);
@@ -224,7 +232,8 @@ function Ranges(props: propsIF) {
             setLastOldestTimeParam(-1);
             setRequestedOldestTimes([]);
         }
-        prevBaseQuoteAddressRef.current = selectedBaseAddress + selectedQuoteAddress;
+        prevBaseQuoteAddressRef.current =
+            selectedBaseAddress + selectedQuoteAddress;
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     const [pageDataCountShouldReset, setPageDataCountShouldReset] =
@@ -441,10 +450,8 @@ function Ranges(props: propsIF) {
         }
     }, [positionsByPool]);
 
-
     // const fetchNewData = async(OLDEST_TIME:number, signal: AbortSignal):Promise<PositionIF[]> => {
     const fetchNewData = async (OLDEST_TIME: number): Promise<PositionIF[]> => {
-
         return new Promise((resolve) => {
             if (!crocEnv || !provider) resolve([]);
             else {
@@ -512,35 +519,34 @@ function Ranges(props: propsIF) {
                 return;
             }
 
-            
             if (lastOldestTimeParamRef.current === oldestTimeParam) {
                 setMoreDataLoading(false);
-                setTimeout( () => {
+                setTimeout(() => {
                     setMoreDataLoading(false);
-                }, 1000)
-                // setTimeout(() => {
-                //     setMoreDataAvailable(false);
-                // }, 2000);
+                }, 1000);
                 break;
             }
 
-            if(requestedOldestTimesRef.current.includes(oldestTimeParam)){
+            if (requestedOldestTimesRef.current.includes(oldestTimeParam)) {
                 setMoreDataLoading(false);
-                setTimeout( () => {
+                setTimeout(() => {
                     setMoreDataLoading(false);
-                }, 1000)
-                // setTimeout(() => {
-                //     setMoreDataAvailable(false);
-                // }, 2000);
+                }, 1000);
                 break;
             }
 
-            if(blackListedTimeParams.has(selectedBaseAddress+selectedQuoteAddress) 
-                && blackListedTimeParams.get(selectedBaseAddress+selectedQuoteAddress)?.has(oldestTimeParam)){
+            if (
+                blackListedTimeParams.has(
+                    selectedBaseAddress + selectedQuoteAddress,
+                ) &&
+                blackListedTimeParams
+                    .get(selectedBaseAddress + selectedQuoteAddress)
+                    ?.has(oldestTimeParam)
+            ) {
                 setMoreDataLoading(false);
-                setTimeout( () => {
+                setTimeout(() => {
                     setMoreDataLoading(false);
-                }, 1000)
+                }, 1000);
                 break;
             }
 
@@ -559,7 +565,10 @@ function Ranges(props: propsIF) {
             dirtyData = dirtyData.filter((e) => e.positionLiq !== 0);
 
             if (dirtyData.length == 0) {
-                addToBlackList(selectedBaseAddress+selectedQuoteAddress, oldestTimeParam);
+                addToBlackList(
+                    selectedBaseAddress + selectedQuoteAddress,
+                    oldestTimeParam,
+                );
                 const creditVal =
                     extraRequestCreditRef.current !== undefined
                         ? extraRequestCreditRef.current
@@ -611,7 +620,6 @@ function Ranges(props: propsIF) {
         }
 
         setMoreDataLoading(false);
-        
     };
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -658,7 +666,9 @@ function Ranges(props: propsIF) {
         }
         if (
             fetchedTransactionsRef.current &&
-            fetchedTransactionsRef.current.positions.length < INITIAL_EXTRA_REQUEST_THRESHOLD && oldestTxTime > 0
+            fetchedTransactionsRef.current.positions.length <
+                INITIAL_EXTRA_REQUEST_THRESHOLD &&
+            oldestTxTime > 0
         ) {
             if (infiniteScrollLockRef.current) {
                 addMoreData(true);
@@ -675,7 +685,6 @@ function Ranges(props: propsIF) {
             setInfiniteScrollLock(false);
         }
     }, [oldestTxTime]);
-
 
     // ------------------------------------------------------------------------------------------------------------------------------
 
@@ -1427,9 +1436,8 @@ function Ranges(props: propsIF) {
                         rangeDataOrNull
                     )}
                 </div>
-                {/* {footerDisplay} */}
+                {isAccountView && footerDisplay}
             </FlexContainer>
-            {footerDisplay}
         </>
     );
 }
