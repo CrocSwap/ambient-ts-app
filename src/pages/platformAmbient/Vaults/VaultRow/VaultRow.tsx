@@ -10,16 +10,18 @@ import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import { VaultIF } from '../../../../ambient-utils/types';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
     AppStateContext,
     UserDataContext,
     TokenContext,
+    CrocEnvContext,
 } from '../../../../contexts';
 import { formatDollarAmount } from '../../../../utils/numbers';
 import VaultDeposit from '../VaultActionModal/VaultDeposit/VaultDeposit';
 import VaultWithdraw from '../VaultActionModal/VaultWithdraw/VaultWithdraw';
 import { RiExternalLinkLine } from 'react-icons/ri';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
     idForDOM: string;
@@ -31,7 +33,8 @@ export default function VaultRow(props: propsIF) {
     const [type, setType] = useState<'Deposit' | 'Withdraw'>('Deposit');
 
     const { tokens } = useContext(TokenContext);
-    const { isUserConnected } = useContext(UserDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { isUserConnected, userAddress } = useContext(UserDataContext);
 
     const {
         activeNetwork: { chainId },
@@ -41,6 +44,29 @@ export default function VaultRow(props: propsIF) {
     const token1 = tokens.getTokenByAddress(vault.token1Address);
 
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
+    const [balanceToken1, setBalanceToken1] = useState<bigint | undefined>();
+
+    // useEffect to check if user has approved Tempest to sell token 1
+    useEffect(() => {
+        (async () => {
+            if (crocEnv && vault && userAddress) {
+                try {
+                    const tempestVault = crocEnv.tempestVault(
+                        vault.address,
+                        vault.token1Address,
+                    );
+
+                    const balanceToken1Response =
+                        await tempestVault.balanceToken1(userAddress);
+
+                    setBalanceToken1(balanceToken1Response);
+                } catch (err) {
+                    console.warn(err);
+                }
+            }
+        })();
+    }, [crocEnv, vault, userAddress]);
 
     if (Number(chainId) !== vault.chainId || !token0 || !token1) {
         return null;
@@ -66,6 +92,10 @@ export default function VaultRow(props: propsIF) {
         </FlexContainer>
     );
 
+    const token1BalanceDisplay = balanceToken1
+        ? toDisplayQty(balanceToken1, token1.decimals)
+        : '...';
+
     const depositsDisplay = (
         <FlexContainer
             alignItems='flex-end'
@@ -76,7 +106,7 @@ export default function VaultRow(props: propsIF) {
             className={styles.depositContainer}
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
-                1,000
+                {token1BalanceDisplay}
                 <TokenIcon
                     token={token1}
                     src={uriToHttp(token1.logoURI)}
@@ -96,23 +126,37 @@ export default function VaultRow(props: propsIF) {
     });
 
     function handleOpenWithdrawModal() {
-        setType('Withdraw')
-        openModal()
+        setType('Withdraw');
+        openModal();
     }
     function handleOpenDepositModal() {
-        setType('Deposit')
-        openModal()
+        setType('Deposit');
+        openModal();
     }
 
-    const modalToOpen = type === 'Deposit' ? <VaultDeposit token0={token0} token1={token1} onClose={closeModal} /> :
-        <VaultWithdraw token0={token0} token1={token1} onClose={closeModal}/>
+    const modalToOpen =
+        type === 'Deposit' ? (
+            <VaultDeposit
+                token0={token0}
+                token1={token1}
+                onClose={closeModal}
+            />
+        ) : (
+            <VaultWithdraw
+                token0={token0}
+                token1={token1}
+                onClose={closeModal}
+            />
+        );
     function navigateExternal(): void {
         const goToExternal = (url: string) => window.open(url, '_blank');
         if (vault.chainId === 534352) {
-            const destination: string = 'https://app.tempestdev.xyz/vaults/scroll/' + vault.address;
+            const destination: string =
+                'https://app.tempestdev.xyz/vaults/scroll/' + vault.address;
             goToExternal(destination);
         } else if (vault.chainId === 1) {
-            const destination: string = 'https://app.tempestdev.xyz/vaults/ethereum/' + vault.address;
+            const destination: string =
+                'https://app.tempestdev.xyz/vaults/ethereum/' + vault.address;
             goToExternal(destination);
         }
     }
@@ -127,7 +171,9 @@ export default function VaultRow(props: propsIF) {
                             className={styles.poolName}
                             onClick={() => navigateExternal()}
                         >
-                            <span>{token1.symbol} / {token0.symbol}</span>
+                            <span>
+                                {token1.symbol} / {token0.symbol}
+                            </span>
                             <RiExternalLinkLine size={20} />
                         </p>
                         <p className={styles.tvlDisplay}>
@@ -144,10 +190,12 @@ export default function VaultRow(props: propsIF) {
                             <button
                                 className={styles.actionButton}
                                 onClick={handleOpenDepositModal}
+                                disabled={!isUserConnected}
                             >
                                 Deposit
                             </button>
                             {isUserConnected && (
+                                // {isUserConnected && !!balanceToken1 && (
                                 <button
                                     className={styles.actionButton}
                                     onClick={handleOpenWithdrawModal}
