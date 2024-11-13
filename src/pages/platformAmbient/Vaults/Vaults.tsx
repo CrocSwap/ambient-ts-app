@@ -4,7 +4,7 @@ import styles from './Vaults.module.css';
 import VaultRow from './VaultRow/VaultRow';
 import { VaultIF } from '../../../ambient-utils/types';
 import { allVaultsData } from './mockVaultData';
-import { AppStateContext } from '../../../contexts';
+import { AppStateContext, ReceiptContext } from '../../../contexts';
 
 function Vaults() {
     // !important:  once we have mock data, change the type on this
@@ -15,6 +15,7 @@ function Vaults() {
         activeNetwork: { chainId },
         isUserIdle
     } = useContext(AppStateContext);
+    const { sessionReceipts } = useContext(ReceiptContext);
 
     const vaultHeader = (
         <div className={styles.vaultHeader}>
@@ -48,7 +49,7 @@ function Vaults() {
         const interval = setInterval(getData, period);
         // clear the interval when this component dismounts
         return () => clearInterval(interval);
-    }, []);
+    }, [sessionReceipts.length]);
 
     return (
         <div data-testid={'vaults'} className={styles.container}>
