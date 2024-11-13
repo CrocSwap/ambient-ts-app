@@ -1,4 +1,3 @@
-import { RiArrowDropDownLine } from 'react-icons/ri';
 import { uriToHttp } from '../../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../../../../components/Global/TokenIcon/TokenIcon';
 import RemoveRangeWidth from '../../../../../components/RangeActionModal/RemoveRangeWidth/RemoveRangeWidth';
@@ -6,8 +5,7 @@ import { FlexContainer } from '../../../../../styled/Common';
 import styles from './VaultWithdraw.module.css';
 import TooltipComponent from '../../../../../components/Global/TooltipComponent/TooltipComponent';
 import Button from '../../../../../components/Form/Button';
-import { useRef, useState } from 'react';
-import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
+
 import { TokenIF } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
@@ -18,16 +16,17 @@ interface Props {
     onClose: () => void;
 }
 export default function VaultWithdraw(props: Props) {
+            // eslint-disable-next-line
     const { token0, token1, onClose } = props;
-    const [showWithdrawDropdown, setShowWithdrawDropdown] = useState(false);
+    // const [showWithdrawDropdown, setShowWithdrawDropdown] = useState(false);
 
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    // const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const clickOutsideHandler = () => {
-        setShowWithdrawDropdown(false);
-    };
+    // const clickOutsideHandler = () => {
+    //     setShowWithdrawDropdown(false);
+    // };
 
-    useOnClickOutside(dropdownRef, clickOutsideHandler);
+    // useOnClickOutside(dropdownRef, clickOutsideHandler);
 
     const tokensDisplay = (
         <FlexContainer
@@ -36,46 +35,46 @@ export default function VaultWithdraw(props: Props) {
             gap={5}
             style={{ flexShrink: 0 }}
         >
-            <TokenIcon
+            {/* <TokenIcon
                 token={token0}
                 src={uriToHttp(token0.logoURI)}
                 alt={token0.symbol}
                 size={'xl'}
-            />
+            /> */}
             <TokenIcon
                 token={token1}
                 src={uriToHttp(token1.logoURI)}
                 alt={token1.symbol}
                 size={'xl'}
             />
-            <p className={styles.poolName}>ETH / USDC</p>
+            <p className={styles.poolName}>{token1.symbol}</p>
         </FlexContainer>
     );
 
-    const withdrawDropdown = (
-        <div className={styles.withdrawDropdownContainer}>
-            <h3>Withdraw as</h3>
+    // const withdrawDropdown = (
+    //     <div className={styles.withdrawDropdownContainer}>
+    //         <h3>Withdraw as</h3>
 
-            <div className={styles.dropdownContainer} ref={dropdownRef}>
-                <button
-                    onClick={() =>
-                        setShowWithdrawDropdown(!showWithdrawDropdown)
-                    }
-                >
-                    ETH / USDC <RiArrowDropDownLine />
-                </button>
-                {showWithdrawDropdown && (
-                    <section className={styles.dropdownContent}>
-                        i sm dropdown content
-                    </section>
-                )}
-            </div>
-        </div>
-    );
+    //         <div className={styles.dropdownContainer} ref={dropdownRef}>
+    //             <button
+    //                 onClick={() =>
+    //                     setShowWithdrawDropdown(!showWithdrawDropdown)
+    //                 }
+    //             >
+    //                 ETH / USDC <RiArrowDropDownLine />
+    //             </button>
+    //             {showWithdrawDropdown && (
+    //                 <section className={styles.dropdownContent}>
+    //                     i sm dropdown content
+    //                 </section>
+    //             )}
+    //         </div>
+    //     </div>
+    // );
 
     const pooledDisplay = (
         <section className={styles.pooledContent}>
-            <div className={styles.pooledContentContainer}>
+            {/* <div className={styles.pooledContentContainer}>
                 Pooled ETH
                 <div className={styles.alignCenter}>
                     1.69
@@ -86,8 +85,8 @@ export default function VaultWithdraw(props: Props) {
                         size={'s'}
                     />
                 </div>
-            </div>
-            <div className={styles.pooledContentRight}>
+            </div> */}
+            {/* <div className={styles.pooledContentRight}>
                 Pooled USDC
                 <div className={styles.alignCenter}>
                     1,690.00
@@ -98,12 +97,36 @@ export default function VaultWithdraw(props: Props) {
                         size={'s'}
                     />
                 </div>
-            </div>
+            </div> */}
 
             <div className={styles.seperator}>
                 <span />
             </div>
-            <div className={styles.pooledContentContainer}>
+                <div className={styles.pooledContentContainer}>
+                Deposited { token1.symbol}
+                <div className={styles.alignCenter}>
+                    1.69
+                    <TokenIcon
+                        token={token1}
+                        src={uriToHttp(token1.logoURI)}
+                        alt={token1.symbol}
+                        size={'s'}
+                    />
+                </div>
+            </div>
+            <div className={styles.pooledContentRight}>
+                { token1.symbol} Removal Summary
+                <div className={styles.alignCenter}>
+                    1,690.00
+                    <TokenIcon
+                        token={token1}
+                        src={uriToHttp(token1.logoURI)}
+                        alt={token1.symbol}
+                        size={'s'}
+                    />
+                </div>
+            </div>
+            {/* <div className={styles.pooledContentContainer}>
                 Earned ETH
                 <div className={styles.alignCenter}>
                     1.69
@@ -126,7 +149,7 @@ export default function VaultWithdraw(props: Props) {
                         size={'s'}
                     />
                 </div>
-            </div>
+            </div> */}
         </section>
     );
     const extraDetailsDisplay = (
@@ -163,7 +186,7 @@ export default function VaultWithdraw(props: Props) {
                 setRemovalPercentage={() => console.log('yes')}
             />
             {pooledDisplay}
-            {withdrawDropdown}
+           
             {extraDetailsDisplay}
             <Button
                 idForDOM='approve_token_a_for_swap_module'
