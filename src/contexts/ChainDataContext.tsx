@@ -207,8 +207,10 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     }
 
     useEffect(() => {
-        updateAllPoolStats();
-    }, [chainId, poolStatsPollingCacheTime]);
+        if (chainId && graphCacheUrl) {
+            updateAllPoolStats();
+        }
+    }, [chainId, graphCacheUrl, poolStatsPollingCacheTime]);
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
