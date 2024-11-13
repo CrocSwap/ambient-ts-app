@@ -3,6 +3,7 @@ import Modal from '../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../components/Global/ModalHeader/ModalHeader';
 
 import styles from './VaultActionModal.module.css';
+import VaultDeposit from './VaultDeposit/VaultDeposit';
 import VaultWithdraw from './VaultWithdraw/VaultWithdraw';
 
 interface Props {
@@ -12,8 +13,8 @@ interface Props {
     token1: TokenIF;
 }
 export default function VaultActionModal(props: Props) {
-    const { onClose, type, token0, token1 } = props;
-
+    const { onClose, type,token0, token1 } = props;
+console.log({type})
     return (
         <Modal usingCustomHeader onClose={onClose}>
             <ModalHeader
@@ -26,7 +27,18 @@ export default function VaultActionModal(props: Props) {
                 // showBackButton={showSettings}
             />
             <div className={styles.main_content}>
-                <VaultWithdraw token0={token0} token1={token1} />
+                {type === 'Deposit' && (
+                    <VaultDeposit
+                        token0={token0}
+                        token1={token1}
+                    />
+                )}
+                {type === 'Withdraw' && (
+                    <VaultWithdraw
+                        token0={token0}
+                        token1={token1}
+                    />
+                )}
 
                 {/* {buttonToDisplay} */}
             </div>

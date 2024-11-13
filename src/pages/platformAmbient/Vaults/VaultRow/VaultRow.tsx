@@ -11,7 +11,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import VaultActionModal from '../VaultActionModal/VaultActionModal';
 import { VaultIF } from '../../../../ambient-utils/types';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import {
     AppStateContext,
     UserDataContext,
@@ -26,6 +26,7 @@ interface propsIF {
 export default function VaultRow(props: propsIF) {
     const { idForDOM, vault } = props;
     const [isOpen, openModal, closeModal] = useModal();
+    const [type, setType] = useState<'Deposit' | 'Withdraw'>('Deposit');
 
     const { tokens } = useContext(TokenContext);
     const { isUserConnected } = useContext(UserDataContext);
@@ -92,6 +93,15 @@ export default function VaultRow(props: propsIF) {
         maxFracDigits: 2,
     });
 
+    function handleOpenWithdrawModal() {
+        setType('Withdraw')
+        openModal()
+    }
+    function handleOpenDepositModal() {
+        setType('Deposit')
+        openModal()
+    }
+
     return (
         <>
             <div id={idForDOM} className={styles.mainContainer}>
@@ -114,14 +124,14 @@ export default function VaultRow(props: propsIF) {
                         <div className={styles.actionButtonContainer}>
                             <button
                                 className={styles.actionButton}
-                                onClick={openModal}
+                                onClick={handleOpenDepositModal}
                             >
                                 Deposit
                             </button>
                             {isUserConnected && (
                                 <button
                                     className={styles.actionButton}
-                                    onClick={openModal}
+                                    onClick={handleOpenWithdrawModal}
                                 >
                                     Withdraw
                                 </button>
@@ -132,7 +142,7 @@ export default function VaultRow(props: propsIF) {
             </div>
             {isOpen && (
                 <VaultActionModal
-                    type='Deposit'
+                    type={type}
                     onClose={closeModal}
                     token0={token0}
                     token1={token1}
