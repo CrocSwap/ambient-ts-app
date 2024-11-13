@@ -5,6 +5,7 @@
     flex-direction: column;
     gap: 8px;
     padding:  16px;
+    min-height: 450px;
 }
 .main_content {
     width: 100%;
@@ -178,6 +179,14 @@ padding: 0 8px;
     padding: 8px;
     border-radius: 4px;
     color: var(--text2)
+}
+.buttonContainer{
+    width: 90%;
+   position: absolute;
+   bottom: 16px;
+   right: 0;
+   left: 0;
+   margin: 0 auto;
 }
 
 .loading {

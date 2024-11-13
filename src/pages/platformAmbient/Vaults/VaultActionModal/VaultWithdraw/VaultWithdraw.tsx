@@ -279,7 +279,7 @@ export default function VaultWithdraw(props: Props) {
                     isOn={isZapOn}
                     handleToggle={() => setIsZapOn(!isZapOn)}
                     Width={36}
-                    id='zap_toggle_vault_deposit'
+                    id='zap_toggle_vault_withdraw'
                     disabled={false}
                 />
             </div>
@@ -289,10 +289,11 @@ export default function VaultWithdraw(props: Props) {
                 />
                 {pooledDisplay}
 
-                {extraDetailsDisplay}
+                {isZapOn && extraDetailsDisplay}
                 <div className={styles.gas_row}>
                     <FaGasPump size={15} /> {withdrawGasPriceinDollars ?? '…'}
                 </div>
+                <div className={styles.buttonContainer}>
 
                 <Button
                     idForDOM='approve_token_a_for_swap_module'
@@ -305,7 +306,8 @@ export default function VaultWithdraw(props: Props) {
                     disabled={showSubmitted}
                     action={() => submitWithdraw()}
                     flat
-                />
+                    />
+                    </div>
             </div>
         </Modal>
     );
