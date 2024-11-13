@@ -13,6 +13,7 @@ function Vaults() {
 
     const {
         activeNetwork: { chainId },
+        isUserIdle
     } = useContext(AppStateContext);
 
     const vaultHeader = (
@@ -43,7 +44,7 @@ function Vaults() {
         // run the first fetch immediately
         getData();
         // run subsequent fetches on an interval
-        const period = 30000;
+        const period = isUserIdle ? 120000 : 30000;
         const interval = setInterval(getData, period);
         // clear the interval when this component dismounts
         return () => clearInterval(interval);
