@@ -6091,7 +6091,7 @@ export default function Chart(props: propsIF) {
                     chartThemeColors={chartThemeColors}
                 />
 
-                {liquidityData && platformName !== 'futa' && (
+                {liquidityScale && liquidityData && platformName !== 'futa' && (
                     <LiquidityChart
                         liqMode={liqMode}
                         liquidityData={liquidityData}
