@@ -62,19 +62,20 @@ export default function VaultWithdraw(props: Props) {
 
     const submitWithdraw = async () => {
         if (!crocEnv || !balanceToken1 || !userAddress || !vault) return;
-        console.log('withdraw submitted');
         setShowSubmitted(true);
-        const withdrawalQty =
-            (balanceToken1 * BigInt(removalPercentage)) / BigInt(100);
-        console.log({ withdrawalQty, balanceToken1 });
+        const withdrawalQtyToken1Bigint =
+            (balanceToken1 * BigInt(removalPercentage)) / BigInt(101);
 
         const balanceVault = await crocEnv
             .tempestVault(vault.address, vault.token1Address)
             .balanceVault(userAddress);
 
+        const withdrawalQtyVaultBalance =
+            (balanceVault * BigInt(removalPercentage)) / BigInt(100);
+
         const tx = await crocEnv
             .tempestVault(vault.address, vault.token1Address)
-            .redeemZap(balanceVault, withdrawalQty)
+            .redeemZap(withdrawalQtyVaultBalance, withdrawalQtyToken1Bigint)
             .catch(console.error);
 
         if (tx?.hash) {
@@ -115,6 +116,7 @@ export default function VaultWithdraw(props: Props) {
         if (receipt) {
             addReceipt(JSON.stringify(receipt));
             removePendingTx(receipt.hash);
+            setShowSubmitted(false);
         }
     };
 

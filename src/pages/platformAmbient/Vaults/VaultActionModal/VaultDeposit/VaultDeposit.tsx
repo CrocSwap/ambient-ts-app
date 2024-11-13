@@ -164,9 +164,7 @@ export default function VaultDeposit(props: Props) {
 
     const submitDeposit = async () => {
         if (!crocEnv || !userAddress || !vault || !depositBigint) return;
-        console.log('deposit submitted');
         setShowSubmitted(true);
-        console.log({ depositBigint });
 
         const tx = await crocEnv
             .tempestVault(vault.address, vault.token1Address)
@@ -210,6 +208,7 @@ export default function VaultDeposit(props: Props) {
         if (receipt) {
             addReceipt(JSON.stringify(receipt));
             removePendingTx(receipt.hash);
+            setShowSubmitted(false);
         }
     };
 

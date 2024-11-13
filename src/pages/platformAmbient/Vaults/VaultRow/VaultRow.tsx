@@ -16,6 +16,7 @@ import {
     UserDataContext,
     TokenContext,
     CrocEnvContext,
+    ReceiptContext,
 } from '../../../../contexts';
 import { formatDollarAmount } from '../../../../utils/numbers';
 import VaultDeposit from '../VaultActionModal/VaultDeposit/VaultDeposit';
@@ -36,6 +37,7 @@ export default function VaultRow(props: propsIF) {
     const { tokens } = useContext(TokenContext);
     const { crocEnv } = useContext(CrocEnvContext);
     const { isUserConnected, userAddress } = useContext(UserDataContext);
+    const { sessionReceipts } = useContext(ReceiptContext);
 
     const {
         activeNetwork: { chainId },
@@ -75,7 +77,7 @@ export default function VaultRow(props: propsIF) {
                 })();
             }
         }
-    }, [crocEnv, vault, userAddress]);
+    }, [crocEnv, vault, userAddress, sessionReceipts.length]);
 
     if (Number(chainId) !== Number(vault.chainId) || !token0 || !token1) {
         return null;
