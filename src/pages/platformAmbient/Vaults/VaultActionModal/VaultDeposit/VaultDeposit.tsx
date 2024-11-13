@@ -21,6 +21,7 @@ interface Props {
 }
 export default function VaultDeposit(props: Props) {
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [ showSubmitted, setShowSubmitted] = useState(false)
     // eslint-disable-next-line
     const { token0, token1, onClose } = props;
     // const {
@@ -238,9 +239,16 @@ export default function VaultDeposit(props: Props) {
                     <Button
                         idForDOM='vault_deposit_submit'
                         style={{ textTransform: 'none' }}
-                        title={'Submit'}
-                        disabled={false}
-                        action={() => setShowConfirmation(true)}
+                        title={showSubmitted ? 'Submitting...' : 'Submit'}
+                        disabled={showSubmitted}
+                        action={() => {
+                            if (!showConfirmation) {
+                                setShowConfirmation(true);
+                            } else {
+                                setShowSubmitted(true);
+                            }
+                        }}
+                        
                         flat
                     />
                 </div>
