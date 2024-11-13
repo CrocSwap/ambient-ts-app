@@ -64,6 +64,7 @@ const BASE_URL_PATHS = {
     tos: '/terms',
     testpage: '/testpage',
     account: '/account',
+    vaults: '/vaults',
     accountPoints: '/account/points',
     privacy: '/privacy',
     faq: '/faq',
@@ -129,6 +130,8 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'testpage';
         } else if (pathname.startsWith(BASE_URL_PATHS.account)) {
             pageName = 'account';
+        } else if (pathname.startsWith(BASE_URL_PATHS.vaults)) {
+            pageName = 'vaults';
         } else if (pathname.startsWith(BASE_URL_PATHS.privacy)) {
             pageName = 'privacy';
         } else if (pathname.startsWith(BASE_URL_PATHS.faqPoints)) {
