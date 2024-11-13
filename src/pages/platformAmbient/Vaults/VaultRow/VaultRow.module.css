@@ -20,10 +20,8 @@
 
 .vaultHeader span {
     text-align: end;
-
     color: var(--text2, #8b98a5);
     text-align: right;
-
     font-size: 12px;
     font-style: normal;
     font-weight: 300;
