@@ -77,8 +77,8 @@ export default function VaultWithdraw(props: Props) {
             .redeemZap(balanceVault, withdrawalQty)
             .catch(console.error);
 
-        addPendingTx(tx?.hash || '');
         if (tx?.hash) {
+            addPendingTx(tx?.hash);
             addTransactionByType({
                 userAddress: userAddress || '',
                 txHash: tx.hash,
