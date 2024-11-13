@@ -30,6 +30,7 @@ import {
     isTransactionReplacedError,
     isTransactionFailedError,
 } from '../../../../../utils/TransactionError';
+import Toggle from '../../../../../components/Form/Toggle';
 
 interface Props {
     mainAsset: TokenIF;
@@ -46,7 +47,9 @@ export default function VaultWithdraw(props: Props) {
         vault,
         balanceMainAsset,
     } = props;
-    const [showSubmitted, setShowSubmitted] = useState(false);
+    const [showSubmitted, setShowSubmitted] = useState(true);
+    const [isZapOn, setIsZapOn] = useState(true);
+
     const [removalPercentage, setRemovalPercentage] = useState(100);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
@@ -266,8 +269,20 @@ export default function VaultWithdraw(props: Props) {
                 // onBackButton={handleGoBack}
                 // showBackButton={handleGoBack ? true: false}
             />
+
             <div className={styles.withdrawContainer}>
                 {tokensDisplay}
+            <div className={styles.zapContainer}>
+                <p>Zap In</p>
+
+                <Toggle
+                    isOn={isZapOn}
+                    handleToggle={() => setIsZapOn(!isZapOn)}
+                    Width={36}
+                    id='zap_toggle_vault_deposit'
+                    disabled={false}
+                />
+            </div>
                 <RemoveRangeWidth
                     removalPercentage={removalPercentage}
                     setRemovalPercentage={setRemovalPercentage}
