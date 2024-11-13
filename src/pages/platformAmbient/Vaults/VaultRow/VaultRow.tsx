@@ -22,6 +22,7 @@ import VaultDeposit from '../VaultActionModal/VaultDeposit/VaultDeposit';
 import VaultWithdraw from '../VaultActionModal/VaultWithdraw/VaultWithdraw';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { toDisplayQty } from '@crocswap-libs/sdk';
+import TooltipComponent from '../../../../components/Global/TooltipComponent/TooltipComponent';
 
 interface propsIF {
     idForDOM: string;
@@ -112,6 +113,10 @@ export default function VaultRow(props: propsIF) {
                     src={uriToHttp(token1.logoURI)}
                     alt={token1.symbol}
                     size={'m'}
+                />
+                <TooltipComponent
+                    placement='top'
+                    title='Vault positions can hold both tokens in a pair. Displayed position values represent estimated redeemable token positions for the primary token on withdrawal.'
                 />
             </FlexContainer>
         </FlexContainer>
