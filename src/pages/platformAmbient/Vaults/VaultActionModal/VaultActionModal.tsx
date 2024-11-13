@@ -1,9 +1,9 @@
-
 import { TokenIF } from '../../../../ambient-utils/types';
 import Modal from '../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../components/Global/ModalHeader/ModalHeader';
 
 import styles from './VaultActionModal.module.css';
+import VaultDeposit from './VaultDeposit/VaultDeposit';
 import VaultWithdraw from './VaultWithdraw/VaultWithdraw';
 
 interface Props {
@@ -14,9 +14,7 @@ interface Props {
 }
 export default function VaultActionModal(props: Props) {
     const { onClose, type, firstToken, secondToken } = props;
-
-   
-
+console.log({type})
     return (
         <Modal usingCustomHeader onClose={onClose}>
             <ModalHeader
@@ -29,7 +27,18 @@ export default function VaultActionModal(props: Props) {
                 // showBackButton={showSettings}
             />
             <div className={styles.main_content}>
-                <VaultWithdraw firstToken={firstToken} secondToken={secondToken}/>
+                {type === 'Deposit' && (
+                    <VaultDeposit
+                        firstToken={firstToken}
+                        secondToken={secondToken}
+                    />
+                )}
+                {type === 'Withdraw' && (
+                    <VaultWithdraw
+                        firstToken={firstToken}
+                        secondToken={secondToken}
+                    />
+                )}
 
                 {/* {buttonToDisplay} */}
             </div>
