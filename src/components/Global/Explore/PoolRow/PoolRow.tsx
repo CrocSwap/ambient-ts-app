@@ -54,6 +54,7 @@ export default function PoolRow(props: propsIF) {
               }) + '%'
             : '...';
 
+   
     const tokenIconsDisplay = (
         <FlexContainer alignItems='center' gap={4} style={{ flexShrink: 0 }}>
             <TokenIcon

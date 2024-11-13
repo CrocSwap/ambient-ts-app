@@ -37,7 +37,7 @@ import { motion } from 'framer-motion';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
 
-interface NetworkIF {
+interface NetworkSelectorListItemIF {
     id: string;
     chainId: string;
     name: string;
@@ -125,7 +125,7 @@ export default function NetworkSelector(props: propsIF) {
         }
     }, [isConnected, initialLoadComplete]);
 
-    const networksData: NetworkIF[] = [
+    const networksData: NetworkSelectorListItemIF[] = [
         {
             id: 'ethereum_network_selector',
             chainId: '0x1',
@@ -282,6 +282,8 @@ export default function NetworkSelector(props: propsIF) {
         ) : null,
     );
 
+    const networkSpec = supportedNetworks[chainId];
+
     return (
         <div
             style={{
@@ -294,44 +296,12 @@ export default function NetworkSelector(props: propsIF) {
                     marginTop={'50px'}
                     marginRight={smallScreen ? '70px' : ''}
                     titleWidth={'80px'}
-                    title={
-                        chainId === '0xaa36a7'
-                            ? 'Sepolia'
-                            : chainId === '0x18230'
-                              ? 'Plume Devnet'
-                              : chainId === '0xa0c71fd'
-                                ? 'Blast Testnet'
-                                : chainId === '0x8274f'
-                                  ? 'Scroll Testnet'
-                                  : lookupChain(chainId).displayName
-                    }
+                    title={networkSpec.displayName}
                     expandable={networks.length > 1}
                     logo={
-                        lookupChain(chainId)
-                            .displayName.toLowerCase()
-                            .includes('blast sepolia')
-                            ? blastSepoliaLogo
-                            : lookupChain(chainId)
-                                    .displayName.toLowerCase()
-                                    .includes('scroll sepolia')
-                              ? scrollSepoliaLogo
-                              : lookupChain(chainId)
-                                      .displayName.toLowerCase()
-                                      .includes('scroll')
-                                ? scrollLogo
-                                : lookupChain(chainId)
-                                        .displayName.toLowerCase()
-                                        .includes('blast')
-                                  ? blastLogo
-                                  : lookupChain(chainId)
-                                          .displayName.toLowerCase()
-                                          .includes('plume')
-                                    ? plumeSepoliaLogo
-                                    : lookupChain(chainId)
-                                            .displayName.toLowerCase()
-                                            .includes('sepolia')
-                                      ? sepoliaLogo
-                                      : ETH
+                        networksData.find(
+                            (network) => network.chainId === chainId,
+                        )?.logo
                     }
                 >
                     <ul
