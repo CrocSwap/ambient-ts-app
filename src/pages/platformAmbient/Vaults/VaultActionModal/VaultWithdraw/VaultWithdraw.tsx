@@ -9,7 +9,7 @@ import styles from './VaultWithdraw.module.css';
 import TooltipComponent from '../../../../../components/Global/TooltipComponent/TooltipComponent';
 import Button from '../../../../../components/Form/Button';
 
-import { TokenIF } from '../../../../../ambient-utils/types';
+import { TokenIF, VaultIF } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
 import { useContext, useEffect, useState } from 'react';
@@ -17,26 +17,106 @@ import { FaGasPump } from 'react-icons/fa';
 import {
     NUM_GWEI_IN_WEI,
     GAS_DROPS_ESTIMATE_VAULT_WITHDRAWAL,
+    IS_LOCAL_ENV,
 } from '../../../../../ambient-utils/constants';
-import { ChainDataContext, CrocEnvContext } from '../../../../../contexts';
+import {
+    ChainDataContext,
+    CrocEnvContext,
+    ReceiptContext,
+    UserDataContext,
+} from '../../../../../contexts';
+import {
+    TransactionError,
+    isTransactionReplacedError,
+    isTransactionFailedError,
+} from '../../../../../utils/TransactionError';
 
 interface Props {
     token0: TokenIF;
     token1: TokenIF;
+    vault: VaultIF;
     balanceToken1: bigint | undefined;
     token1BalanceDisplayQty: string;
     onClose: () => void;
 }
 export default function VaultWithdraw(props: Props) {
-    const { token1, onClose, token1BalanceDisplayQty } = props;
+    const { token1, onClose, token1BalanceDisplayQty, vault, balanceToken1 } =
+        props;
     const [showSubmitted, setShowSubmitted] = useState(false);
     const [removalPercentage, setRemovalPercentage] = useState(100);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
+
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
     const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
         string | undefined
     >();
+
+    const submitWithdraw = async () => {
+        if (!crocEnv || !balanceToken1 || !userAddress || !vault) return;
+        console.log('withdraw submitted');
+        setShowSubmitted(true);
+        const withdrawalQty =
+            (balanceToken1 * BigInt(removalPercentage)) / BigInt(100);
+        console.log({ withdrawalQty, balanceToken1 });
+
+        const balanceVault = await crocEnv
+            .tempestVault(vault.address, vault.token1Address)
+            .balanceVault(userAddress);
+
+        const tx = await crocEnv
+            .tempestVault(vault.address, vault.token1Address)
+            .redeemZap(balanceVault, withdrawalQty)
+            .catch(console.error);
+
+        addPendingTx(tx?.hash || '');
+        if (tx?.hash) {
+            addTransactionByType({
+                userAddress: userAddress || '',
+                txHash: tx.hash,
+                txType: 'Withdraw',
+                txDescription: `Withdrawal of ${token1.symbol}`,
+            });
+        } else {
+            setShowSubmitted(false);
+        }
+        let receipt;
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+            setShowSubmitted(false);
+            console.error({ error });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                IS_LOCAL_ENV && console.debug('repriced');
+                removePendingTx(error.hash);
+
+                const newTransactionHash = error.replacement.hash;
+                addPendingTx(newTransactionHash);
+
+                updateTransactionHash(error.hash, error.replacement.hash);
+                receipt = error.receipt;
+            } else if (isTransactionFailedError(error)) {
+                console.error({ error });
+                receipt = error.receipt;
+            }
+        }
+
+        if (receipt) {
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.hash);
+        }
+    };
 
     // const [showWithdrawDropdown, setShowWithdrawDropdown] = useState(false);
 
@@ -251,7 +331,7 @@ export default function VaultWithdraw(props: Props) {
                             : 'Remove Liquidity'
                     }
                     disabled={showSubmitted}
-                    action={() => setShowSubmitted(true)}
+                    action={() => submitWithdraw()}
                     flat
                 />
             </div>

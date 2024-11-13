@@ -165,6 +165,7 @@ export default function VaultRow(props: propsIF) {
             <VaultWithdraw
                 token0={token0}
                 token1={token1}
+                vault={vault}
                 balanceToken1={balanceToken1}
                 token1BalanceDisplayQty={token1BalanceDisplayQty}
                 onClose={closeModal}
