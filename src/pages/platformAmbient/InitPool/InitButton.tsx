@@ -4,6 +4,7 @@ import Button from '../../../components/Form/Button';
 import { TokenIF } from '../../../ambient-utils/types';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { ChainDataContext } from '../../../contexts';
 
 interface PropsIF {
     tokenA: TokenIF;
@@ -35,6 +36,8 @@ interface PropsIF {
     defaultLowTick: number;
     defaultHighTick: number;
     selectedPoolPriceTick: number;
+    tokenAQtyCoveredByWalletBalance: bigint;
+    tokenBQtyCoveredByWalletBalance: bigint;
 }
 export default function InitButton(props: PropsIF) {
     const {
@@ -65,7 +68,16 @@ export default function InitButton(props: PropsIF) {
         defaultLowTick,
         defaultHighTick,
         selectedPoolPriceTick,
+        tokenAQtyCoveredByWalletBalance,
+        tokenBQtyCoveredByWalletBalance,
     } = props;
+
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
+
+    const tokenAQtyForApproval =
+        (tokenAQtyCoveredByWalletBalance * BigInt(101)) / BigInt(100);
+    const tokenBQtyForApproval =
+        (tokenBQtyCoveredByWalletBalance * BigInt(101)) / BigInt(100);
 
     const tokenAApprovalButton = (
         <Button
@@ -78,7 +90,12 @@ export default function InitButton(props: PropsIF) {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenA.address, tokenA.symbol);
+                await approve(
+                    tokenA.address,
+                    tokenA.symbol,
+                    undefined,
+                    isActiveNetworkPlume ? tokenAQtyForApproval : undefined,
+                );
             }}
             flat={true}
         />
@@ -95,7 +112,12 @@ export default function InitButton(props: PropsIF) {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenB.address, tokenB.symbol);
+                await approve(
+                    tokenB.address,
+                    tokenB.symbol,
+                    undefined,
+                    isActiveNetworkPlume ? tokenBQtyForApproval : undefined,
+                );
             }}
             flat={true}
         />

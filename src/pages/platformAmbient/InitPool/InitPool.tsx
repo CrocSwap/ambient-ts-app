@@ -1138,6 +1138,8 @@ export default function InitPool() {
         defaultLowTick,
         defaultHighTick,
         selectedPoolPriceTick,
+        tokenAQtyCoveredByWalletBalance,
+        tokenBQtyCoveredByWalletBalance,
     };
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
