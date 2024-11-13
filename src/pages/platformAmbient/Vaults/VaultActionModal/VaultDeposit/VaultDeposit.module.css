@@ -139,3 +139,37 @@ justify-content: space-between;
 
 
 }
+
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .dots::after {
+    content: "";
+    animation: dots 1.5s steps(5, end) infinite;
+  }
+  
+  @keyframes dots {
+    0% {
+      content: "";
+    }
+    20% {
+      content: ".";
+    }
+    40% {
+      content: "..";
+    }
+    60% {
+      content: "...";
+    }
+    80% {
+      content: "....";
+    }
+    100% {
+      content: "";
+    }
+  }
+  

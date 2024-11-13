@@ -9,6 +9,7 @@ import Button from '../../../../../components/Form/Button';
 import { TokenIF } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
+import { useState } from 'react';
 
 interface Props {
     token0: TokenIF;
@@ -18,6 +19,7 @@ interface Props {
 export default function VaultWithdraw(props: Props) {
             // eslint-disable-next-line
     const { token0, token1, onClose } = props;
+    const [showSubmitted, setShowSubmitted] = useState(false)
     // const [showWithdrawDropdown, setShowWithdrawDropdown] = useState(false);
 
     // const dropdownRef = useRef<HTMLDivElement>(null);
@@ -171,6 +173,14 @@ export default function VaultWithdraw(props: Props) {
         </div>
     );
 
+    const submittedButtonTitle = (
+        <div className={styles.loading}>
+            Submitting
+            <span className={styles.dots}></span>
+
+        </div>
+    )
+
     return (
         <Modal usingCustomHeader onClose={onClose}>
         <ModalHeader
@@ -187,13 +197,14 @@ export default function VaultWithdraw(props: Props) {
             />
             {pooledDisplay}
            
-            {extraDetailsDisplay}
+                {extraDetailsDisplay}
+              
             <Button
                 idForDOM='approve_token_a_for_swap_module'
                 style={{ textTransform: 'none' }}
-                title={'Remove Liquidity'}
-                disabled={false}
-                action={() => console.log('withdraw')}
+                title={showSubmitted ? submittedButtonTitle : 'Remove Liquidity'}
+                disabled={showSubmitted}
+                action={() => setShowSubmitted(true)}
                 flat
             />
             </div>

@@ -31,7 +31,11 @@ function Vaults() {
             <div className={styles.content}>
                 <header className={styles.vault_page_header}>
                     <h3>Vaults</h3>
-                    <p>Vaults built on top of Ambient liquidity pools for simplified strategic liquidity management. Deployed and managed by partner protocols like Tempest</p>
+                    <p>
+                        Vaults built on top of Ambient liquidity pools for
+                        simplified strategic liquidity management. Deployed and
+                        managed by partner protocols like Tempest.
+                    </p>
                 </header>
                 {vaultHeader}
                 <div

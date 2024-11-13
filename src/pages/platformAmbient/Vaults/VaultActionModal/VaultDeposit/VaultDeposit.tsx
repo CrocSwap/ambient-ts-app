@@ -21,6 +21,7 @@ interface Props {
 }
 export default function VaultDeposit(props: Props) {
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [ showSubmitted, setShowSubmitted] = useState(false)
     // eslint-disable-next-line
     const { token0, token1, onClose } = props;
     // const {
@@ -204,6 +205,13 @@ export default function VaultDeposit(props: Props) {
             <p>Output is estimated. You will swap up to 1.00ETH for USDC. You may swap less than 1.00ETH if the price moves beyond the limit shown above. You can increase the likelihood of swapping the full amound by increasing your slippage tolerance in the settings.</p>
         </div>
     );
+    const submittedButtonTitle = (
+        <div className={styles.loading}>
+            Submitting
+            <span className={styles.dots}></span>
+
+        </div>
+    )
 
     const includeWallet = true;
     return (
@@ -239,9 +247,16 @@ export default function VaultDeposit(props: Props) {
                     <Button
                         idForDOM='vault_deposit_submit'
                         style={{ textTransform: 'none' }}
-                        title={'Submit'}
-                        disabled={false}
-                        action={() => setShowConfirmation(true)}
+                        title={showSubmitted ? submittedButtonTitle : 'Submit'}
+                        disabled={showSubmitted}
+                        action={() => {
+                            if (!showConfirmation) {
+                                setShowConfirmation(true);
+                            } else {
+                                setShowSubmitted(true);
+                            }
+                        }}
+                        
                         flat
                     />
                 </div>
