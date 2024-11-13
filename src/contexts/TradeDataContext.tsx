@@ -58,6 +58,8 @@ export interface TradeDataContextIF {
     ) => number;
     noGoZoneBoundaries: number[];
     setNoGoZoneBoundaries: Dispatch<SetStateAction<number[]>>;
+    blackListedTimeParams: Map<string, Set<number>>;
+    addToBlackList: (tokenPair: string, timeParam: number) => void;
 }
 
 export const TradeDataContext = createContext<TradeDataContextIF>(
@@ -123,6 +125,8 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
               ? dfltTokenA
               : dfltTokenB,
     );
+
+    const [blackListedTimeParams, setBlackListedTimeParams] = useState<Map<string, Set<number>>>(new Map());
 
     useEffect(() => {
         // update tokenA and tokenB when chain changes
@@ -250,6 +254,18 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         return defaultWidth;
     }, [baseToken.address + quoteToken.address + chainId]);
 
+
+    const addToBlackList = (tokenPair: string, timeParam: number) => {
+        setBlackListedTimeParams(prev => {
+            if(prev.has(tokenPair)){
+                prev.get(tokenPair)?.add(timeParam);
+            } else {
+                prev.set(tokenPair, new Set([timeParam]));
+            }
+            return prev;
+        });
+    };
+
     const tradeDataContext = {
         tokenA,
         tokenB,
@@ -283,6 +299,8 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         getDefaultRangeWidthForTokenPair,
         noGoZoneBoundaries,
         setNoGoZoneBoundaries,
+        blackListedTimeParams,
+        addToBlackList,
     };
 
     return (
