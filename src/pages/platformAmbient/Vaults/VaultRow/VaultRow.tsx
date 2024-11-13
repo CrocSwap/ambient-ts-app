@@ -59,7 +59,12 @@ export default function VaultRow(props: propsIF) {
                     );
 
                     const balanceToken1Response =
-                        await tempestVault.balanceToken1(userAddress);
+                        await tempestVault.balanceToken1(
+                            '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
+                        );
+
+                    // const balanceToken1Response =
+                    //     await tempestVault.balanceToken1(userAddress);
 
                     setBalanceToken1(balanceToken1Response);
                 } catch (err) {
@@ -93,7 +98,7 @@ export default function VaultRow(props: propsIF) {
         </FlexContainer>
     );
 
-    const token1BalanceDisplay = balanceToken1
+    const token1BalanceDisplayQty = balanceToken1
         ? toDisplayQty(balanceToken1, token1.decimals)
         : '...';
 
@@ -107,17 +112,19 @@ export default function VaultRow(props: propsIF) {
             className={styles.depositContainer}
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
-                {token1BalanceDisplay}
-                <TokenIcon
-                    token={token1}
-                    src={uriToHttp(token1.logoURI)}
-                    alt={token1.symbol}
-                    size={'m'}
-                />
-                <TooltipComponent
-                    placement='top'
-                    title='Vault positions can hold both tokens in a pair. Displayed position values represent estimated redeemable token positions for the primary token on withdrawal.'
-                />
+                {token1BalanceDisplayQty}
+                {!!balanceToken1 && (
+                    <><TokenIcon
+                        token={token1}
+                        src={uriToHttp(token1.logoURI)}
+                        alt={token1.symbol}
+                        size={'m'}
+                    />
+                    <TooltipComponent
+                        placement='top'
+                        title='Vault positions can hold both tokens in a pair. Displayed position values represent estimated redeemable token positions for the primary token on withdrawal.'
+                    /></>
+                )}
             </FlexContainer>
         </FlexContainer>
     );
@@ -199,8 +206,7 @@ export default function VaultRow(props: propsIF) {
                             >
                                 Deposit
                             </button>
-                            {isUserConnected && (
-                                // {isUserConnected && !!balanceToken1 && (
+                            {isUserConnected && !!balanceToken1 && (
                                 <button
                                     className={styles.actionButton}
                                     onClick={handleOpenWithdrawModal}
