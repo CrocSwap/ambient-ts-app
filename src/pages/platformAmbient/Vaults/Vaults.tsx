@@ -3,8 +3,9 @@ import { memo, useContext, useEffect, useState } from 'react';
 import styles from './Vaults.module.css';
 import VaultRow from './VaultRow/VaultRow';
 import { VaultIF } from '../../../ambient-utils/types';
-import { allVaultsData } from './mockVaultData';
 import { AppStateContext, ReceiptContext } from '../../../contexts';
+import { VAULTS_API_URL } from '../../../ambient-utils/constants';
+import { mockAllVaultsData } from './mockVaultData';
 
 function Vaults() {
     // !important:  once we have mock data, change the type on this
@@ -13,8 +14,9 @@ function Vaults() {
 
     const {
         activeNetwork: { chainId },
-        isUserIdle
+        isUserIdle,
     } = useContext(AppStateContext);
+
     const { sessionReceipts } = useContext(ReceiptContext);
 
     const vaultHeader = (
@@ -29,30 +31,29 @@ function Vaults() {
     );
 
     // vault data from tempest API
-    const [vaultData, setVaultData] = useState<VaultIF[]|null>(null);
-    // console.log(vaultData);
-    false && vaultData;
+    const [allVaultsData, setAllVaultsData] = useState<VaultIF[] | undefined>();
+
+    async function getAllVaultsData(): Promise<void> {
+        const endpoint = `${VAULTS_API_URL}/vaults`;
+        const response = await fetch(endpoint);
+        const { data } = await response.json();
+        const sorted: VaultIF[] = data.vaults.sort(
+            (a: VaultIF, b: VaultIF) =>
+                parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
+        );
+        setAllVaultsData(sorted);
+    }
 
     // logic to fetch vault data from API
     useEffect(() => {
-        // logic to fetch and sort vault data
-        async function getData(): Promise<void> {
-            const endpoint = 'https://protocol-service-api.tempestfinance.xyz/api/v1/vaults';
-            const response = await fetch(endpoint);
-            const { data } = await response.json();
-            const sorted: VaultIF[] = data.vaults.sort(
-                (a: VaultIF, b: VaultIF) => parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd)
-            );
-            setVaultData(sorted);
-        }
         // run the first fetch immediately
-        getData();
+        getAllVaultsData();
         // run subsequent fetches on an interval
-        const period: number = isUserIdle ? 120000 : 60000;
-        const interval = setInterval(getData, period);
+        const period = isUserIdle ? 600000 : 60000; // 10 minutes while idle, 1 minute while active
+        const interval = setInterval(getAllVaultsData, period);
         // clear the interval when this component dismounts
         return () => clearInterval(interval);
-    }, [sessionReceipts.length]);
+    }, [sessionReceipts.length, isUserIdle]);
 
     return (
         <div data-testid={'vaults'} className={styles.container}>
@@ -69,7 +70,13 @@ function Vaults() {
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
-                    {allVaultsData
+                    {(
+                        allVaultsData ||
+                        mockAllVaultsData.sort(
+                            (a: VaultIF, b: VaultIF) =>
+                                parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
+                        )
+                    )
                         .filter(
                             (vault) =>
                                 Number(vault.chainId) === Number(chainId),
