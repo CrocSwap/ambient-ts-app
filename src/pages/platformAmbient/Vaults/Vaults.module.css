@@ -6,7 +6,6 @@
   
 }
 
-
 .content{
   display: flex;
   flex-direction: column;
@@ -14,6 +13,7 @@
   padding: 16px;
   height: 100%;
 }
+
 .scrollableContainer{
   display: flex;
   flex-direction: column;
@@ -21,22 +21,27 @@
   overflow-y: scroll;
   height: calc(100% - 74px);
 }
-.mainTitle{
+
+.vault_page_header > h3 {
   padding: 8px 0;
   color: var(--text1, #EBEBFF);
+  /* large */
+  font-family: 'Lexend Deca';
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+  letter-spacing: -0.48px;
+}
 
-/* large */
-font-family: "Lexend Deca";
-font-size: 24px;
-font-style: normal;
-font-weight: 300;
-line-height: normal;
-letter-spacing: -0.48px;
+.vault_page_header > p {
+  font-size: 12px;
+  font-weight: 200;
+  letter-spacing: 1px;
 }
 
 @media only screen and (max-width: 428px) {
   .scrollableContainer{
-   
     height: calc(100% - 134px);
   }
 }

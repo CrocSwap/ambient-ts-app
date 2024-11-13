@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import { memo, useContext } from 'react';
-
 import styles from './Vaults.module.css';
 import VaultRow from './VaultRow/VaultRow';
 import { VaultIF } from '../../../ambient-utils/types';
@@ -30,7 +29,10 @@ function Vaults() {
     return (
         <div data-testid={'vaults'} className={styles.container}>
             <div className={styles.content}>
-                <h3 className={styles.mainTitle}>Vaults</h3>
+                <header className={styles.vault_page_header}>
+                    <h3>Vaults</h3>
+                    <p>Vaults built on top of Ambient liquidity pools for simplified strategic liquidity management. Deployed and managed by partner protocols like Tempest</p>
+                </header>
                 {vaultHeader}
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
