@@ -101,7 +101,6 @@ const PageHeader = function () {
         isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
     const clickLogout = useCallback(async () => {
-        setCrocEnv(undefined);
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -111,6 +110,7 @@ const PageHeader = function () {
         resetTokenBalances();
         setShowAllData(true);
         disconnectUser();
+        setCrocEnv(undefined);
     }, []);
 
     const userMenuProps = {
