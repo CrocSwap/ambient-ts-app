@@ -30,9 +30,11 @@ import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconW
 interface propsIF {
     idForDOM: string;
     vault: VaultIF;
+    queryFailed: boolean;
 }
+
 export default function VaultRow(props: propsIF) {
-    const { idForDOM, vault } = props;
+    const { idForDOM, vault, queryFailed } = props;
     const [isOpen, openModal, closeModal] = useModal();
     const [type, setType] = useState<'Deposit' | 'Withdraw'>('Deposit');
 

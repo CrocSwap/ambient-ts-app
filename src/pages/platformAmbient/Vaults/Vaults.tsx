@@ -3,7 +3,7 @@ import { memo, useContext, useEffect, useState } from 'react';
 import styles from './Vaults.module.css';
 import VaultRow from './VaultRow/VaultRow';
 import { VaultIF } from '../../../ambient-utils/types';
-import { AppStateContext, ReceiptContext } from '../../../contexts';
+import { AppStateContext, ReceiptContext, UserDataContext } from '../../../contexts';
 import { VAULTS_API_URL } from '../../../ambient-utils/constants';
 import { mockAllVaultsData } from './mockVaultData';
 
@@ -16,7 +16,7 @@ function Vaults() {
         activeNetwork: { chainId },
         isUserIdle,
     } = useContext(AppStateContext);
-
+    const { userAddress } = useContext(UserDataContext);
     const { sessionReceipts } = useContext(ReceiptContext);
 
     const vaultHeader = (
@@ -31,7 +31,7 @@ function Vaults() {
     );
 
     // vault data from tempest API
-    const [allVaultsData, setAllVaultsData] = useState<VaultIF[] | undefined>();
+    const [allVaultsData, setAllVaultsData] = useState<VaultIF[] | null | undefined>(null);
 
     async function getAllVaultsData(): Promise<void> {
         const endpoint = `${VAULTS_API_URL}/vaults`;
@@ -43,6 +43,19 @@ function Vaults() {
         );
         setAllVaultsData(sorted);
     }
+
+    async function getUserVaultData(): Promise<void> {
+        // const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=${userAddress}`;
+        const endpoint =
+            `${VAULTS_API_URL}/users/positions?walletAddress=0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc`;
+        const response = await fetch(endpoint);
+        const { data } = await response.json();
+        console.log(data);
+    }
+
+    useEffect(() => {
+        getUserVaultData();
+    }, []);
 
     // logic to fetch vault data from API
     useEffect(() => {
@@ -88,6 +101,7 @@ function Vaults() {
                                     key={KEY_SLUG + JSON.stringify(vault)}
                                     idForDOM={KEY_SLUG + vault.toString()}
                                     vault={vault}
+                                    queryFailed={allVaultsData === undefined}
                                 />
                             );
                         })}
