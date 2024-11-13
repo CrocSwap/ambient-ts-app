@@ -196,10 +196,6 @@ function Ranges(props: propsIF) {
         setShowInfiniteScroll(!isAccountView && showAllData);
     }, [isAccountView, showAllData]);
 
-    const elIDRef = useRef<string>(
-        Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15),
-    );
     const controllerRef = useRef<AbortController>(new AbortController());
 
     const isAliveRef = useRef<boolean>(true);
