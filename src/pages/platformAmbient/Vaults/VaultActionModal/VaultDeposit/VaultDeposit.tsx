@@ -12,16 +12,16 @@ import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/S
 import Button from '../../../../../components/Form/Button';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
+import { ExtraInfo } from '../../../../../components/Trade/TradeModules/ExtraInfo/ExtraInfo';
 
 interface Props {
     token0: TokenIF;
     token1: TokenIF;
     onClose: () => void;
-
 }
 export default function VaultDeposit(props: Props) {
-    const [showConfirmation, setShowConfirmation] = useState(false)
-            // eslint-disable-next-line 
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    // eslint-disable-next-line
     const { token0, token1, onClose } = props;
     // const {
     //     tokenABalance,
@@ -66,7 +66,7 @@ export default function VaultDeposit(props: Props) {
         </>
     );
     const [displayValue, setDisplayValue] = useState<string>('');
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleTokenInputEvent = (evt: any) => console.log(evt);
     const token = token0;
 
@@ -101,7 +101,7 @@ export default function VaultDeposit(props: Props) {
         <input
             className={styles.tokenQuantityInput}
             id={fieldId ? `${fieldId}_qty` : undefined}
-            placeholder={showConfirmation ? displayValue :  '0.0'}
+            placeholder={showConfirmation ? displayValue : '0.0'}
             onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(event)}
             value={displayValue}
             type='string'
@@ -155,7 +155,55 @@ export default function VaultDeposit(props: Props) {
         </button>
     );
 
+    const extraInfo = [
+        {
+            title: 'Expected Output',
+            tooltipTitle:
+                'Expected Conversion Rate After Price Impact and Provider Fee',
+            data: '...',
+            placement: 'bottom',
+        },
+        {
+            title: 'Price Impact',
+            tooltipTitle: 'Expected Pool Price After Swap',
+            data: '...',
+            placement: 'bottom',
+        },
+        {
+            title: 'Slippage Tolerance',
+            tooltipTitle: 'Expected Pool Price After Swap',
+            data: '...',
+            placement: 'bottom',
+        },
+        {
+            title: 'Liquidity Provider Fee',
+            tooltipTitle: 'Expected Pool Price After Swap',
+            data: '...',
+            placement: 'bottom',
+        },
+    ];
 
+    const confirmationDetails = (
+        <div className={styles.confContainer}>
+
+        <div className={styles.confDetails}>
+            <div className={styles.confRow}>
+                <p>Current Price</p>
+                <p>1,690</p>
+            </div>
+            <div className={styles.confRow}>
+                <p>Price Limit</p>
+                <p>1,690</p>
+            </div>
+            <div className={styles.confRow}>
+                <p>Slippage</p>
+                <p>0.3%</p>
+            </div>
+            </div>
+            
+            <p>Output is estimated. You will swap up to 1.00ETH for USDC. You may swap less than 1.00ETH if the price moves beyond the limit shown above. You can increase the likelihood of swapping the full amound by increasing your slippage tolerance in the settings.</p>
+        </div>
+    );
 
     const includeWallet = true;
     return (
@@ -166,31 +214,37 @@ export default function VaultDeposit(props: Props) {
                 onBackButton={() => setShowConfirmation(false)}
                 showBackButton={showConfirmation}
             />
-        <div className={styles.container}>
-            <div className={styles.content}>
-                <div
-                    className={styles.tokenQuantityContainer}
-                    style={{ marginBottom: !includeWallet ? '8px' : '0' }}
-                >
-                    {input}
-                    {tokenSelectButton}
+            <div className={styles.container}>
+                <div className={styles.content}>
+                    <div
+                        className={styles.tokenQuantityContainer}
+                        style={{ marginBottom: !includeWallet ? '8px' : '0' }}
+                    >
+                        {input}
+                        {tokenSelectButton}
+                    </div>
+                    {includeWallet && !showConfirmation && walletContent}
                 </div>
-                {includeWallet && !showConfirmation && walletContent}
-            </div>
 
-            <div className={styles.buttonContainer}>
-
-
-            <Button
-                idForDOM='vault_deposit_submit'
-                style={{ textTransform: 'none' }}
-                title={'Submit'}
-                disabled={false}
-                action={() => setShowConfirmation(true)}
-                flat
-                />
+            { showConfirmation ? confirmationDetails :   <ExtraInfo
+                    extraInfo={extraInfo}
+                    conversionRate={'conversionRate'}
+                    gasPrice={'1234'}
+                    showDropdown={true}
+                    showWarning={false}
+                    priceImpactExceedsThreshold={false}
+                />}
+                <div className={styles.buttonContainer}>
+                    <Button
+                        idForDOM='vault_deposit_submit'
+                        style={{ textTransform: 'none' }}
+                        title={'Submit'}
+                        disabled={false}
+                        action={() => setShowConfirmation(true)}
+                        flat
+                    />
                 </div>
             </div>
-            </Modal>
+        </Modal>
     );
 }
