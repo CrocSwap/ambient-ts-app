@@ -231,9 +231,17 @@ export default function VaultWithdraw(props: Props) {
             <div className={styles.extraDetailsRow}>
                 <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                     <p>Slippage Tolerance</p>
-                    <TooltipComponent title={'item.tooltipTitle'} />
+                    <TooltipComponent
+                        title={'This can be changed in settings.'}
+                    />
                 </FlexContainer>
-                <p>0.5%</p>
+                <p>
+                    {getFormattedNumber({
+                        value: slippageTolerance,
+                        isPercentage: true,
+                        suffix: '%',
+                    })}
+                </p>
             </div>
             {/* <div className={styles.extraDetailsRow}>
                 <FlexContainer flexDirection='row' alignItems='center' gap={4}>
