@@ -1,5 +1,12 @@
-import { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
-import { TokenIF } from '../../../../../ambient-utils/types';
+import {
+    ChangeEvent,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
+import { TokenIF, VaultIF } from '../../../../../ambient-utils/types';
 import {
     AppStateContext,
     CachedDataContext,
@@ -29,18 +36,26 @@ import { toDisplayQty } from '@crocswap-libs/sdk';
 interface Props {
     token0: TokenIF;
     token1: TokenIF;
+    vault: VaultIF;
     onClose: () => void;
 }
 export default function VaultDeposit(props: Props) {
-    const { token1, onClose } = props;
+    const { token1, onClose, vault } = props;
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showSubmitted, setShowSubmitted] = useState(false);
     const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
         string | undefined
     >();
     const [displayValue, setDisplayValue] = useState<string>('');
+    const [depositBigint, setDepositBigint] = useState<bigint | undefined>();
     const [token1Price, setToken1Price] = useState<number | undefined>();
+    const [token1BalanceBigint, setToken1BalanceBigint] = useState<
+        bigint | undefined
+    >();
     const [token1Balance, setToken1Balance] = useState<string | undefined>();
+    const [minDepositBigint, setMinDepositBigint] = useState<
+        bigint | undefined
+    >();
 
     const { isUserConnected } = useContext(UserDataContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -50,6 +65,14 @@ export default function VaultDeposit(props: Props) {
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+
+    const depositGreaterOrEqualToMinimum = useMemo(
+        () =>
+            depositBigint &&
+            minDepositBigint &&
+            depositBigint >= minDepositBigint,
+        [minDepositBigint, depositBigint],
+    );
 
     // calculate price of gas for vault deposit
     useEffect(() => {
@@ -80,6 +103,7 @@ export default function VaultDeposit(props: Props) {
                         .token(token1.address)
                         .wallet(userAddress)
                         .then((bal: bigint) => {
+                            setToken1BalanceBigint(bal);
                             const displayBalance = toDisplayQty(
                                 bal,
                                 token1.decimals,
@@ -87,10 +111,17 @@ export default function VaultDeposit(props: Props) {
                             setToken1Balance(displayBalance);
                         })
                         .catch(console.error);
+                    crocEnv
+                        .tempestVault(vault.address, vault.token1Address)
+                        .minDeposit()
+                        .then((min: bigint) => {
+                            setMinDepositBigint(min);
+                        })
+                        .catch(console.error);
                 })();
             }
         }
-    }, [crocEnv, userAddress]);
+    }, [crocEnv, userAddress, vault]);
 
     // calculate price of gas for vault deposit
     useEffect(() => {
@@ -132,7 +163,7 @@ export default function VaultDeposit(props: Props) {
                 showWallet={isUserConnected}
                 isWithdraw={false}
                 balance={balanceToDisplay}
-                availableBalance={0n}
+                availableBalance={token1BalanceBigint}
                 useExchangeBalance={
                     // isDexSelected &&
                     // !!tokenDexBalance &&
@@ -145,8 +176,15 @@ export default function VaultDeposit(props: Props) {
             />
         </>
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleTokenInputEvent = (evt: any) => console.log(evt);
+    const handleTokenInputEvent = (input: string) => {
+        setDisplayValue(input);
+        if (input === '') {
+            setDepositBigint(undefined);
+            return;
+        }
+        const inputBigint = BigInt(parseFloat(input) * 10 ** token1.decimals);
+        setDepositBigint(inputBigint);
+    };
     const token = token1;
 
     const fieldId = 'vault_deposit_input';
@@ -172,7 +210,6 @@ export default function VaultDeposit(props: Props) {
             !isNaN(+inputStringNoUnfinishedExponent)
         ) {
             handleTokenInputEvent(inputStringNoCommas);
-            setDisplayValue(inputStringNoCommas);
         }
     };
 
@@ -290,6 +327,10 @@ export default function VaultDeposit(props: Props) {
         </div>
     );
 
+    const displayMinDeposit = minDepositBigint
+        ? toDisplayQty(minDepositBigint, token1.decimals)
+        : '…';
+
     const includeWallet = true;
     return (
         <Modal usingCustomHeader onClose={onClose}>
@@ -322,8 +363,18 @@ export default function VaultDeposit(props: Props) {
                     <Button
                         idForDOM='vault_deposit_submit'
                         style={{ textTransform: 'none' }}
-                        title={showSubmitted ? submittedButtonTitle : 'Submit'}
-                        disabled={showSubmitted}
+                        title={
+                            !depositBigint
+                                ? 'Enter a Deposit Quantity'
+                                : !depositGreaterOrEqualToMinimum
+                                  ? `Minimum Deposit is ${displayMinDeposit} ${token1.symbol}`
+                                  : showSubmitted
+                                    ? submittedButtonTitle
+                                    : 'Submit'
+                        }
+                        disabled={
+                            showSubmitted || !depositGreaterOrEqualToMinimum
+                        }
                         action={() => {
                             setShowSubmitted(true);
                         }}

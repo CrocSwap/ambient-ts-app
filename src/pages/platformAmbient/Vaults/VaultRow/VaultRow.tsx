@@ -158,6 +158,7 @@ export default function VaultRow(props: propsIF) {
             <VaultDeposit
                 token0={token0}
                 token1={token1}
+                vault={vault}
                 onClose={closeModal}
             />
         ) : (
