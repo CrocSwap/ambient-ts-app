@@ -72,6 +72,7 @@ export default function Deposit(props: propsIF) {
         isActiveNetworkL2,
         isActiveNetworkBlast,
         isActiveNetworkScroll,
+        isActiveNetworkPlume,
     } = useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
@@ -331,10 +332,12 @@ export default function Deposit(props: propsIF) {
     };
 
     const approvalFn = async () => {
+        if (depositQtyNonDisplay === undefined) return;
         await approve(
             selectedToken.address,
             selectedToken.symbol,
             setRecheckTokenAllowance,
+            isActiveNetworkPlume ? BigInt(depositQtyNonDisplay) : undefined,
         );
     };
 
