@@ -25,7 +25,7 @@ function Vaults() {
             <span className={styles.poolName}></span>
             <span className={styles.tvl}>TVL</span>
             <span className={styles.depositContainer}>My Deposit</span>
-            <span className={styles.apyDisplay}>APY</span>
+            <span className={styles.apyDisplay}>APR</span>
             <span className={styles.actionButtonContainer} />
         </div>
     );
