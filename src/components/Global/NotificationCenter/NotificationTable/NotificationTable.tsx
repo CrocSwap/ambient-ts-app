@@ -1,15 +1,13 @@
 import { Dispatch, RefObject, SetStateAction, useContext } from 'react';
 import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
 
-import {
-    Container,
-    Content,
-    FooterButton,
-    Header,
-    MainContainer,
-} from './NotificationTable.styles';
+import styles from './NotificationTable.module.css';
 import { FlexContainer } from '../../../../styled/Common';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
+import Modal from '../../Modal/Modal';
+import ModalHeader from '../../ModalHeader/ModalHeader';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;
@@ -19,8 +17,15 @@ interface NotificationTableProps {
 }
 
 const NotificationTable = (props: NotificationTableProps) => {
-    const { showNotificationTable, pendingTransactions, notificationItemRef } =
-        props;
+    const {
+        showNotificationTable,
+        pendingTransactions,
+        notificationItemRef,
+        setShowNotificationTable,
+    } = props;
+
+    const { platformName } = useContext(BrandContext);
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     const { resetReceiptData, transactionsByType, sessionReceipts } =
         useContext(ReceiptContext);
@@ -53,36 +58,57 @@ const NotificationTable = (props: NotificationTableProps) => {
         />
     ));
 
-    if (!showNotificationTable) return null;
-    return (
-        <MainContainer>
-            <Container
-                flexDirection='column'
-                justifyContent='space-between'
-                fullWidth
-                background='dark1'
+    const isFuta = ['futa'].includes(platformName);
+
+    const mainContent = (
+        <div className={styles.mainContainer}>
+            <div
+                className={`${styles.container} ${isFuta ? styles.container_futa : ''}`}
                 ref={notificationItemRef}
             >
-                <Header>Recent Transactions</Header>
+                {<h3 className={styles.header}>Recent Transactions</h3>}
 
-                <Content flexDirection='column' gap={8}>
+                <div className={styles.content}>
                     {pendingTransactionsDisplay}
                     {parsedReceiptsDisplay}
-                </Content>
+                </div>
 
                 <FlexContainer justifyContent='center' margin='auto'>
-                    <FooterButton
+                    <button
+                        className={styles.footerButton}
+                        style={{
+                            color: isFuta ? 'var(--dark1)' : 'var(--accent5)',
+                        }}
                         onClick={() => {
                             resetReceiptData();
                         }}
                         aria-label='Clear all'
                     >
                         Clear all
-                    </FooterButton>
+                    </button>
                 </FlexContainer>
-            </Container>
-        </MainContainer>
+            </div>
+        </div>
     );
+    const modalVersion = (
+        <div className={styles.container}>
+
+            <Modal
+                usingCustomHeader
+                onClose={() => setShowNotificationTable(false)}
+            >
+                <ModalHeader
+                    title={'Recent Transactions'}
+                    onClose={() => setShowNotificationTable(false)}
+                />
+                {mainContent}
+            </Modal>
+        </div>
+    );
+
+    if (!showNotificationTable) return null;
+   
+    return  showMobileVersion ? modalVersion : mainContent
 };
 
 export default NotificationTable;

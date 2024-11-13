@@ -3,7 +3,7 @@ import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 import {
     ambiLogo,
     blastLogo,
-} from '../../../../RangeDetails/PriceInfo/PriceInfo';
+} from '../../../DetailModals/RangeDetails/PriceInfo/PriceInfo';
 import PointsRow from './PointsRow';
 import {
     BlastUserXpDataIF,
@@ -38,86 +38,116 @@ export default function Points(props: propsIF) {
         connectedAccountActive && ensName
             ? `/${ensName}/xp`
             : resolvedAddressFromContext
-            ? `/${resolvedAddressFromContext}/xp`
-            : `/${userAddress}/xp`;
+              ? `/${resolvedAddressFromContext}/xp`
+              : `/${userAddress}/xp`;
 
     return (
-        <div>
+        <FlexContainer
+            fullHeight
+            flexDirection='column'
+            justifyContent='space-between'
+        >
             <div>
-                <PointsRow
-                    shortName={'AMBI'}
-                    longName={'Ambient Points'}
-                    pointsAccrued={
-                        connectedAccountActive
-                            ? connectedUserXp.dataReceived === true
-                                ? (
-                                      connectedUserXp.data?.globalPoints ?? 0
-                                  ).toLocaleString()
-                                : '...'
-                            : resolvedUserXp.dataReceived === true
-                            ? (
-                                  resolvedUserXp.data?.globalPoints ?? 0
-                              ).toLocaleString()
-                            : '...'
-                    }
-                    logo={ambiLogo}
-                />
-            </div>
-            {isActiveNetworkBlast ? (
                 <div>
-                    <div>
-                        <PointsRow
-                            shortName={'BLAST'}
-                            longName={'Blast Points'}
-                            pointsAccrued={
-                                connectedAccountActive
-                                    ? connectedUserBlastXp.dataReceived === true
-                                        ? connectedUserBlastXp.data?.points ??
-                                          '0'
-                                        : '...'
-                                    : resolvedUserBlastXp.dataReceived === true
-                                    ? resolvedUserBlastXp.data?.points ?? '0'
+                    <PointsRow
+                        shortName={'AMBI'}
+                        longName={'Ambient Points'}
+                        pointsAccrued={
+                            connectedAccountActive
+                                ? connectedUserXp.dataReceived === true
+                                    ? (
+                                          connectedUserXp.data?.globalPoints ??
+                                          0
+                                      ).toLocaleString()
                                     : '...'
-                            }
-                            logo={blastLogo}
-                        />
-                    </div>
-                    <div>
-                        <PointsRow
-                            shortName={'BLAST'}
-                            longName={'Blast Gold'}
-                            pointsAccrued={
-                                connectedAccountActive
-                                    ? connectedUserBlastXp.dataReceived === true
-                                        ? connectedUserBlastXp.data?.gold ?? '0'
-                                        : '...'
-                                    : resolvedUserBlastXp.dataReceived === true
-                                    ? resolvedUserBlastXp.data?.gold ?? '0'
-                                    : '...'
-                            }
-                            logo={blastLogo}
-                        />
-                    </div>
+                                : resolvedUserXp.dataReceived === true
+                                  ? (
+                                        resolvedUserXp.data?.globalPoints ?? 0
+                                    ).toLocaleString()
+                                  : '...'
+                        }
+                        logo={ambiLogo}
+                    />
                 </div>
-            ) : undefined}
-            <Link to={linkToNavigateTo}>
-                <FlexContainer
-                    justifyContent='center'
-                    alignItems='center'
-                    padding='8px'
-                >
-                    <ViewMoreButton>View Details</ViewMoreButton>
-                </FlexContainer>
-            </Link>
-            <Link to={'/faq'}>
-                <FlexContainer
-                    justifyContent='center'
-                    alignItems='center'
-                    padding='8px'
-                >
-                    <ViewMoreButton>View FAQ</ViewMoreButton>
-                </FlexContainer>
-            </Link>
-        </div>
+                {isActiveNetworkBlast ? (
+                    <div>
+                        <div>
+                            <PointsRow
+                                shortName={'BLAST'}
+                                longName={'Blast Points'}
+                                pointsAccrued={
+                                    connectedAccountActive
+                                        ? connectedUserBlastXp.dataReceived ===
+                                          true
+                                            ? connectedUserBlastXp.data
+                                                  ?.points ?? '0'
+                                            : '...'
+                                        : resolvedUserBlastXp.dataReceived ===
+                                            true
+                                          ? resolvedUserBlastXp.data?.points ??
+                                            '0'
+                                          : '...'
+                                }
+                                logo={blastLogo}
+                            />
+                        </div>
+                        <div>
+                            <PointsRow
+                                shortName={'BLAST'}
+                                longName={'Blast Gold'}
+                                pointsAccrued={
+                                    connectedAccountActive
+                                        ? connectedUserBlastXp.dataReceived ===
+                                          true
+                                            ? connectedUserBlastXp.data?.gold ??
+                                              '0'
+                                            : '...'
+                                        : resolvedUserBlastXp.dataReceived ===
+                                            true
+                                          ? resolvedUserBlastXp.data?.gold ??
+                                            '0'
+                                          : '...'
+                                }
+                                logo={blastLogo}
+                            />
+                        </div>
+                    </div>
+                ) : undefined}
+            </div>
+            <FlexContainer
+                fullWidth
+                justifyContent='center'
+                gap={16}
+                style={{ marginBottom: '3rem' }}
+            >
+                <Link to={linkToNavigateTo}>
+                    <FlexContainer
+                        justifyContent='center'
+                        alignItems='center'
+                        padding='8px'
+                    >
+                        <ViewMoreButton>View Details</ViewMoreButton>
+                    </FlexContainer>
+                </Link>
+                <Link to={'/xp-leaderboard'}>
+                    <FlexContainer
+                        justifyContent='center'
+                        alignItems='center'
+                        padding='8px'
+                    >
+                        <ViewMoreButton>View Leaderboard</ViewMoreButton>
+                    </FlexContainer>
+                </Link>
+                <Link to={'/faq'}>
+                    <FlexContainer
+                        justifyContent='center'
+                        alignItems='center'
+                        padding='8px'
+                    >
+                        <ViewMoreButton>View FAQ</ViewMoreButton>
+                    </FlexContainer>
+                </Link>
+            </FlexContainer>
+        </FlexContainer>
     );
 }

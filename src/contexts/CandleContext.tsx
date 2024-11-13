@@ -6,6 +6,7 @@ import {
     useMemo,
     useState,
     useContext,
+    useRef,
 } from 'react';
 import { fetchCandleSeriesHybrid } from '../ambient-utils/api';
 import {
@@ -14,10 +15,10 @@ import {
     CandleScaleIF,
     CandlesByPoolAndDurationIF,
 } from '../ambient-utils/types';
-import { AppStateContext } from './AppStateContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
-import { CrocEnvContext } from './CrocEnvContext';
+import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
@@ -25,8 +26,9 @@ import {
 } from '../ambient-utils/constants';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
 import { chartSettingsIF } from '../App/hooks/useChartSettings';
+import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 
-interface CandleContextIF {
+export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
     setCandleData: Dispatch<
         SetStateAction<CandlesByPoolAndDurationIF | undefined>
@@ -46,6 +48,8 @@ interface CandleContextIF {
     timeOfEndCandle: number | undefined;
     isCondensedModeEnabled: boolean;
     setIsCondensedModeEnabled: Dispatch<SetStateAction<boolean>>;
+    showFutaCandles: boolean;
+    setShowFutaCandles: Dispatch<SetStateAction<boolean>>;
 }
 
 export const CandleContext = createContext<CandleContextIF>(
@@ -62,15 +66,21 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isEnabled: isChartEnabled,
         isCandleDataNull,
         setIsCandleDataNull,
+        numCandlesFetched,
         setNumCandlesFetched,
     } = useContext(ChartContext);
-    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
+    const {
+        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext(CachedDataContext);
+
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const [abortController] = useState<{
         abortController: AbortController | null;
@@ -92,8 +102,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     >();
 
     const [isCondensedModeEnabled, setIsCondensedModeEnabled] = useState(true);
+    const [showFutaCandles, setShowFutaCandles] = useState(false);
 
     const [isFetchingCandle, setIsFetchingCandle] = useState(false);
+    const [isFinishRequest, setIsFinishRequest] = useState(false);
     const [candleDomains, setCandleDomains] = useState<CandleDomainIF>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
@@ -101,28 +113,38 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isResetRequest: false,
     });
 
+    const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timeout>();
+    const offlineFetcherRef = useRef<NodeJS.Timeout>();
+    offlineFetcherRef.current = offlineFetcher;
+
     useEffect(() => {
-        // If there is no data in the range in which the data is received, it will send a pull request for the first 200 candles
-        if (
-            candleData?.candles.length === 0 &&
-            candleScale?.isFetchFirst200Candle !== true
-        ) {
-            setCandleData(undefined);
-            setCandleScale((prev) => {
-                return {
-                    lastCandleDate: undefined,
-                    nCandles: 200,
-                    isFetchForTimeframe: !prev.isFetchForTimeframe,
-                    isShowLatestCandle: true,
-                    isFetchFirst200Candle: true,
-                };
-            });
-        } else {
-            // If there are no candles in the first 200 candles, it changes timeframe
-            if (candleData?.candles)
-                setNumCandlesFetched(candleData?.candles.length || 0);
+        if (isFinishRequest) {
+            // If there is no data in the range in which the data is received, it will send a pull request for the first 200 candles
+            if (
+                candleData?.candles.length === 0 &&
+                candleScale?.isFetchFirst200Candle !== true
+            ) {
+                setCandleData(undefined);
+                setCandleScale((prev) => {
+                    return {
+                        lastCandleDate: undefined,
+                        nCandles: 200,
+                        isFetchForTimeframe: !prev.isFetchForTimeframe,
+                        isShowLatestCandle: true,
+                        isFetchFirst200Candle: true,
+                    };
+                });
+            } else {
+                // If there are no candles in the first 200 candles, it changes timeframe
+                if (candleData?.candles) {
+                    setNumCandlesFetched({
+                        candleCount: candleData?.candles.length || 0,
+                        switchPeriodFlag: !numCandlesFetched?.switchPeriodFlag,
+                    });
+                }
+            }
         }
-    }, [candleData?.candles.length]);
+    }, [isFinishRequest]);
 
     const [candleScale, setCandleScale] = useState<CandleScaleIF>({
         lastCandleDate: undefined,
@@ -159,6 +181,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         timeOfEndCandle,
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
+        showFutaCandles,
+        setShowFutaCandles,
     };
 
     useEffect(() => {
@@ -186,6 +210,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
+        isPoolInitialized,
+        crocEnv !== undefined,
     ]);
 
     useEffect(() => {
@@ -214,6 +240,31 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleScale.isShowLatestCandle,
     ]);
 
+    useEffect(() => {
+        if (isCandleDataNull) {
+            const newInt = setInterval(() => {
+                setCandleScale((prev) => ({
+                    lastCandleDate: undefined,
+                    nCandles: 200,
+                    isFetchForTimeframe: !prev.isFetchForTimeframe,
+                    isShowLatestCandle: true,
+                    isFetchFirst200Candle: true,
+                }));
+            }, 10000);
+
+            offlineFetcherRef.current = newInt;
+            setOfflineFetcher(newInt);
+        } else {
+            clearInterval(offlineFetcherRef.current);
+            offlineFetcherRef.current = undefined;
+        }
+
+        return () => {
+            clearInterval(offlineFetcherRef.current);
+            offlineFetcherRef.current = undefined;
+        };
+    }, [isCandleDataNull]);
+
     const fetchCandles = (bypassSpinner = false) => {
         if (
             isServerEnabled &&
@@ -225,7 +276,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             setIsZoomRequestCanceled({ value: true });
 
             const candleTime = candleScale.isShowLatestCandle
-                ? Date.now() / 1000
+                ? Math.floor(Date.now() / 1000)
                 : candleScale.lastCandleDate || 0;
 
             const nCandles = Math.min(
@@ -233,6 +284,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 2999,
             );
 
+            setIsFinishRequest(false);
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);
 
@@ -244,8 +296,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 chartSettings?.candleTimeGlobal || 3600;
             fetchCandleSeriesHybrid(
                 true,
-                chainData,
-                activeNetwork.graphCacheUrl,
+                chainId,
+                poolIndex,
+                graphCacheUrl,
                 candleTimeLocal || defaultCandleDuration,
                 baseTokenAddress,
                 quoteTokenAddress,
@@ -254,30 +307,44 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
-            ).then((candles) => {
-                setCandleData(candles);
+            )
+                .then((candles) => {
+                    setCandleData(candles);
+                    const candleSeries = candles?.candles;
+                    if (candleSeries && candleSeries.length > 0) {
+                        if (candles?.candles.length < nCandles) {
+                            const localCandles = candles?.candles;
 
-                const candleSeries = candles?.candles;
-                if (candleSeries && candleSeries.length > 0) {
-                    if (candles?.candles.length < nCandles) {
-                        const localCandles = candles?.candles;
-
-                        setTimeOfEndCandle(
-                            localCandles[localCandles.length - 1].time * 1000,
-                        );
+                            setTimeOfEndCandle(
+                                localCandles[localCandles.length - 1].time *
+                                    1000,
+                            );
+                        }
+                        setIsCandleDataNull(false);
+                    } else {
+                        if (
+                            candleScale?.isFetchFirst200Candle &&
+                            candleTimeLocal === 60
+                        ) {
+                            setIsCandleDataNull(true);
+                        }
                     }
-                    setIsCandleDataNull(false);
-                } else {
-                    if (candleScale?.isFetchFirst200Candle) {
-                        setIsCandleDataNull(true);
-                    }
-                }
 
-                if (candleSeries && candles?.candles.length >= 7) {
-                    setIsFetchingCandle(false);
-                }
-                setIsFirstFetch(false);
-            });
+                    if (
+                        (candleSeries && candles?.candles.length >= 7) ||
+                        (candleSeries &&
+                            candleSeries.length > 0 &&
+                            candleTimeLocal === 60)
+                    ) {
+                        setIsFetchingCandle(false);
+                    }
+                    setIsFirstFetch(false);
+
+                    return candles;
+                })
+                .then(() => {
+                    setIsFinishRequest(true);
+                });
         } else {
             setIsFetchingCandle(true);
         }
@@ -342,8 +409,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
         fetchCandleSeriesHybrid(
             true,
-            chainData,
-            activeNetwork.graphCacheUrl,
+            chainId,
+            poolIndex,
+            graphCacheUrl,
             candleTimeLocal,
             baseTokenAddress,
             quoteTokenAddress,

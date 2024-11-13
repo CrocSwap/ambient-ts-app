@@ -12,7 +12,7 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 // interface for component props
 interface propsIF {
     spotPriceDisplay: string;
-    aprPercentage: number | undefined;
+    // aprPercentage: number | undefined;
     poolPriceCharacter: string;
     isTokenABase: boolean;
     pinnedDisplayPrices:
@@ -41,8 +41,7 @@ function RangePriceInfo(props: propsIF) {
         isAmbient,
     } = props;
     const {
-        // eslint-disable-next-line
-        globalPopup: { open: openGlobalPopup },
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
@@ -50,10 +49,7 @@ function RangePriceInfo(props: propsIF) {
         setIsTradeDollarizationEnabled,
         poolPriceDisplay,
     } = useContext(PoolContext);
-    const {
-        chainData: { chainId },
-        crocEnv,
-    } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { isDenomBase, baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -74,22 +70,22 @@ function RangePriceInfo(props: propsIF) {
             ? '$0'
             : minPriceUsdEquivalent
         : isAmbient
-        ? '0'
-        : pinnedDisplayPrices
-        ? poolPriceCharacter +
-          pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
-        : '...';
+          ? '0'
+          : pinnedDisplayPrices
+            ? poolPriceCharacter +
+              pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
+            : '...';
 
     const maxPrice = userFlippedMaxMinDisplay
         ? isAmbient
             ? '$∞'
             : maxPriceUsdEquivalent
         : isAmbient
-        ? '∞'
-        : pinnedDisplayPrices
-        ? poolPriceCharacter +
-          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
-        : '...';
+          ? '∞'
+          : pinnedDisplayPrices
+            ? poolPriceCharacter +
+              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
+            : '...';
 
     const pinnedMinPrice = pinnedDisplayPrices?.pinnedMinPriceDisplayTruncated;
     const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncated;

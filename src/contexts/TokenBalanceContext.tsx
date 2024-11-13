@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { TokenIF } from '../ambient-utils/types';
 import { UserDataContext } from './UserDataContext';
 
@@ -22,7 +22,7 @@ export interface NftFetchSettingsIF {
     pageSize: number;
 }
 
-interface TokenBalanceContextIF {
+export interface TokenBalanceContextIF {
     tokenBalances: TokenIF[] | undefined;
     resetTokenBalances: () => void;
     setTokenBalance: (params: {
@@ -50,16 +50,16 @@ export const TokenBalanceContext = createContext<TokenBalanceContextIF>(
 export const TokenBalanceContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const [tokenBalances, setTokenBalances] = React.useState<
+    const [tokenBalances, setTokenBalances] = useState<
         TokenIF[] | undefined
     >(undefined);
 
-    const [NFTData, setNFTData] = React.useState<NftListByChain[] | undefined>(
+    const [NFTData, setNFTData] = useState<NftListByChain[] | undefined>(
         undefined,
     );
 
     const [NFTFetchSettings, setNFTFetchSettings] =
-        React.useState<NftFetchSettingsIF>({ pageKey: '', pageSize: 100 });
+        useState<NftFetchSettingsIF>({ pageKey: '', pageSize: 100 });
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
 
@@ -82,7 +82,7 @@ export const TokenBalanceContextProvider = (props: {
                     token.address.toLowerCase() ===
                     params.tokenAddress.toLowerCase(),
             );
-            if (newTokenBalances && tokenIndex && tokenIndex !== -1) {
+            if (newTokenBalances && tokenIndex !== -1) {
                 const newTokenBalance = newTokenBalances[tokenIndex];
                 if (params.walletBalance) {
                     newTokenBalance.walletBalance = params.walletBalance;

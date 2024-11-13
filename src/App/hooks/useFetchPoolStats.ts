@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useMemo } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
@@ -12,35 +12,70 @@ import {
     isETHorStakedEthToken,
 } from '../../ambient-utils/dataLayer';
 // import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
-import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
+import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
-import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
+import {
+    PoolIF,
+    PoolStatIF,
+    SinglePoolDataIF,
+} from '../../ambient-utils/types';
+// import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
-const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
+const useFetchPoolStats = (
+    pool: PoolIF,
+    spotPriceRetrieved: number | undefined,
+    isTradePair = false,
+    enableTotalSupply = false,
+    didUserFlipDenom = false,
+): PoolStatIF => {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
     } = useContext(AppStateContext);
+
     const {
-        cachedPoolStatsFetch,
+        // cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
     } = useContext(CachedDataContext);
+
     const { poolPriceNonDisplay, setPoolPriceNonDisplay, setLimitTick } =
         useContext(TradeDataContext);
+
+    const [localPoolPriceNonDisplay, setLocalPoolPriceNonDisplay] = useState<
+        [string, number] | undefined
+    >();
+
     const {
         crocEnv,
-        activeNetwork,
+        // activeNetwork,
         provider,
-        chainData: { chainId },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+
+    const { lastBlockNumber, allPoolStats } = useContext(ChainDataContext);
+
+    // useMemo to filter allPoolStats for the current pool
+    const currentPoolStats = useMemo(
+        () =>
+            allPoolStats?.find(
+                (poolStat: SinglePoolDataIF) =>
+                    poolStat.base.toLowerCase() ===
+                        pool.base.address.toLowerCase() &&
+                    poolStat.quote.toLowerCase() ===
+                        pool.quote.address.toLowerCase(),
+            ),
+        [allPoolStats, pool.base.address, pool.quote.address],
+    );
+
     const { tokens } = useContext(TokenContext);
 
     const [poolPriceDisplayNum, setPoolPriceDisplayNum] = useState<
@@ -50,6 +85,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined
     >();
+
     const [shouldInvertDisplay, setShouldInvertDisplay] = useState<
         boolean | undefined
     >(!pool.isBaseTokenMoneynessGreaterOrEqual);
@@ -74,25 +110,38 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         : pool?.base.logoURI;
 
     const poolPriceCacheTime = isTradePair
-        ? Math.floor(Date.now() / 5000) // 5 second cache for trade pair
+        ? isUserIdle
+            ? Math.floor(Date.now() / 30000) // 30 second interval if  idle
+            : Math.floor(Date.now() / 5000) // 5 second cache for trade pair
         : isUserIdle
-          ? Math.floor(Date.now() / 30000) // 30 second interval if  idle
+          ? Math.floor(Date.now() / 60000) // 30 second interval if  idle
           : Math.floor(Date.now() / 10000); // 10 second interval if not idle
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (isServerEnabled && crocEnv) {
             (async () => {
-                const spotPrice = await cachedQuerySpotPrice(
-                    crocEnv,
-                    pool.base.address,
-                    pool.quote.address,
-                    chainId,
-                    poolPriceCacheTime,
-                );
-
+                if (
+                    !crocEnv ||
+                    (await crocEnv.context).chain.chainId !== chainId
+                )
+                    return;
+                const spotPrice =
+                    spotPriceRetrieved !== undefined
+                        ? spotPriceRetrieved
+                        : await cachedQuerySpotPrice(
+                              crocEnv,
+                              pool.base.address,
+                              pool.quote.address,
+                              chainId,
+                              poolPriceCacheTime,
+                          );
                 if (spotPrice) {
                     setIsPoolInitialized(true);
+                    setLocalPoolPriceNonDisplay([
+                        pool.base.address + pool.quote.address,
+                        spotPrice,
+                    ]);
 
                     if (
                         isTradePair &&
@@ -137,9 +186,10 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
             })();
         }
     }, [
+        spotPriceRetrieved,
         isServerEnabled,
         chainId,
-        crocEnv !== undefined,
+        crocEnv,
         lastBlockNumber !== 0,
         poolPriceNonDisplay,
         poolPriceCacheTime,
@@ -174,10 +224,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
-    const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
-        pool?.base.address,
-        pool?.quote.address,
-    );
+    const [baseAddr, quoteAddr] = [pool?.base.address, pool?.quote.address];
 
     // Reset pool metric states that require asynchronous updates when pool changes
     const resetPoolStats = () => {
@@ -212,6 +259,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     useEffect(() => {
         if (crocEnv && poolPriceDisplayNum) {
             const fetchTokenPrice = async () => {
+                if ((await crocEnv.context).chain.chainId !== chainId) return;
                 const baseTokenPrice =
                     (await cachedFetchTokenPrice(baseAddr, chainId, crocEnv))
                         ?.usdPrice || 0.0;
@@ -256,7 +304,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         baseAddr,
         quoteAddr,
         chainId,
-        crocEnv === undefined,
+        crocEnv,
         poolPriceDisplayNum,
         ethMainnetUsdPrice === undefined,
     ]);
@@ -268,16 +316,26 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
             lastBlockNumber &&
             shouldInvertDisplay !== undefined &&
             crocEnv &&
-            provider
+            provider &&
+            localPoolPriceNonDisplay !== undefined &&
+            // check if the local pool price for the current pool
+            localPoolPriceNonDisplay[0] ===
+                pool.base.address + pool.quote.address
         ) {
-            const poolStatsNow = await cachedPoolStatsFetch(
-                chainId,
-                pool.base.address,
-                pool.quote.address,
-                poolIndex,
-                Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-                activeNetwork.graphCacheUrl,
-            );
+            const poolStatsNow = {
+                baseFees: currentPoolStats?.baseFees || 0,
+                baseTvl: currentPoolStats?.baseTvl || 0,
+                baseVolume: currentPoolStats?.baseVolume || 0,
+                quoteFees: currentPoolStats?.quoteFees || 0,
+                quoteTvl: currentPoolStats?.quoteTvl || 0,
+                quoteVolume: currentPoolStats?.quoteVolume || 0,
+                feeRate: currentPoolStats?.feeRate || 0,
+                lastPriceIndic: currentPoolStats?.lastPriceIndic || 0,
+                lastPriceLiq: currentPoolStats?.lastPriceLiq || 0,
+                lastPriceSwap: currentPoolStats?.lastPriceSwap || 0,
+                latestTime: currentPoolStats?.latestTime || 0,
+                isHistorical: false,
+            };
 
             const expandedPoolStatsNow = await expandPoolStats(
                 poolStatsNow,
@@ -288,20 +346,24 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
                 cachedQuerySpotPrice,
-                tokens.tokenUniv,
+                tokens.allDefaultTokens,
+                enableTotalSupply,
             );
 
-            const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
-
-            const poolStats24hAgo = await cachedPoolStatsFetch(
-                chainId,
-                pool.base.address,
-                pool.quote.address,
-                poolIndex,
-                Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-                activeNetwork.graphCacheUrl,
-                ydayTime,
-            );
+            const poolStats24hAgo = {
+                baseFees: currentPoolStats?.baseFees24hAgo || 0,
+                baseTvl: currentPoolStats?.baseTvl || 0,
+                baseVolume: currentPoolStats?.baseVolume24hAgo || 0,
+                quoteFees: currentPoolStats?.quoteFees24hAgo || 0,
+                quoteTvl: currentPoolStats?.quoteTvl || 0,
+                quoteVolume: currentPoolStats?.quoteVolume24hAgo || 0,
+                feeRate: currentPoolStats?.feeRate || 0,
+                lastPriceIndic: currentPoolStats?.priceIndic24hAgo || 0,
+                lastPriceLiq: currentPoolStats?.priceLiq24hAgo || 0,
+                lastPriceSwap: currentPoolStats?.priceSwap24hAgo || 0,
+                latestTime: currentPoolStats?.latestTime || 0,
+                isHistorical: true,
+            };
 
             const expandedPoolStats24hAgo = await expandPoolStats(
                 poolStats24hAgo,
@@ -312,15 +374,15 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
                 cachedQuerySpotPrice,
-                tokens.tokenUniv,
+                tokens.allDefaultTokens,
             );
 
             const volumeTotalNow = expandedPoolStatsNow?.volumeTotalUsd;
             const volumeTotal24hAgo = expandedPoolStats24hAgo?.volumeTotalUsd;
             const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
-            const nowPrice = expandedPoolStatsNow?.lastPriceIndic;
-            const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
+            const nowPrice = localPoolPriceNonDisplay[1];
+            const ydayPrice = expandedPoolStats24hAgo?.lastPriceSwap;
 
             const priceChangeResult =
                 ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
@@ -414,29 +476,40 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                     setIsPoolPriceChangePositive(true);
                     return;
                 }
+                const priceChangePercent = priceChangeResult * 100;
 
                 if (priceChangeResult > -0.0001 && priceChangeResult < 0.0001) {
                     setPoolPriceChangePercent('No Change');
                     setIsPoolPriceChangePositive(true);
                 } else {
-                    priceChangeResult > 0
+                    (priceChangeResult > 0 && !didUserFlipDenom) ||
+                    (priceChangeResult < 0 && didUserFlipDenom)
                         ? setIsPoolPriceChangePositive(true)
                         : setIsPoolPriceChangePositive(false);
 
-                    const priceChangePercent = priceChangeResult * 100;
-
                     const priceChangeString =
-                        priceChangePercent > 0
+                        (priceChangeResult > 0 && !didUserFlipDenom) ||
+                        (priceChangeResult < 0 && didUserFlipDenom)
                             ? '+' +
-                              priceChangePercent.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              }) +
+                              Math.abs(priceChangePercent).toLocaleString(
+                                  undefined,
+                                  {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  },
+                              ) +
                               '%'
-                            : priceChangePercent.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              }) + '%';
+                            : priceChangeResult > 0 && didUserFlipDenom
+                              ? '-' +
+                                priceChangePercent.toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }) +
+                                '%'
+                              : priceChangePercent.toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }) + '%';
                     setPoolPriceChangePercent(priceChangeString);
                 }
             } catch (error) {
@@ -461,7 +534,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     });
 
     useEffect(() => {
-        if (isServerEnabled) fetchPoolStats();
+        if (isServerEnabled && lastBlockNumber !== 0) fetchPoolStats();
     }, [
         isUserIdle
             ? Math.floor(Date.now() / 120000)
@@ -469,11 +542,13 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         poolVolume === undefined,
         isServerEnabled,
         shouldInvertDisplay,
-        lastBlockNumber === 0,
+        lastBlockNumber !== 0,
         !!crocEnv,
         !!provider,
         poolIndex,
         pool.base.address + pool.quote.address,
+        localPoolPriceNonDisplay,
+        didUserFlipDenom,
     ]);
 
     return {

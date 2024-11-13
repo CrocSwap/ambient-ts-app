@@ -1,7 +1,6 @@
-import { ReactNode, createContext, useContext, useMemo } from 'react';
+import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
 import { skins } from '../App/hooks/useSkin';
 import { brandIF, fontSets, heroItem } from '../assets/branding/types';
-import { TradeDataContext } from './TradeDataContext';
 import { chainIds } from '../ambient-utils/types';
 import {
     blastBrandAssets,
@@ -10,8 +9,11 @@ import {
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
     futaBrandAssets,
+    sampleBrandAssets,
+    plumeSepoliaBrandAssets,
 } from '../assets/branding';
 import { UserDataContext } from './UserDataContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
 
 const PREMIUM_THEMES_IN_ENV = {
     theme1: 'VITE_THEME_1_ACCOUNTS',
@@ -20,8 +22,12 @@ const PREMIUM_THEMES_IN_ENV = {
 
 type premiumThemes = keyof typeof PREMIUM_THEMES_IN_ENV;
 
-interface BrandContextIF {
-    skin: skins;
+export interface BrandContextIF {
+    skin: {
+        active: skins;
+        available: skins[];
+        set: (s: skins) => void;
+    };
     fontSet: fontSets;
     colorAndFont: string;
     platformName: string;
@@ -38,7 +44,9 @@ export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
 
 export const BrandContextProvider = (props: { children: ReactNode }) => {
     const { userAddress } = useContext(UserDataContext);
-    const { chainData } = useContext(TradeDataContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext<AppStateContextIF>(AppStateContext);
 
     // brand asset set to consume as specified in environmental variable
     // can also provide a fallback if a custom brand is missing values
@@ -62,6 +70,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     // TODO: add error handling if dev puts a value in `.env` not matching defined cases
     const brand: string = import.meta.env.VITE_BRAND_ASSET_SET ?? '';
     const brandAssets = useMemo<brandIF>(() => {
+        // make the linter happy for sample file
+        false && sampleBrandAssets;
         switch (brand) {
             case 'blast':
                 return blastBrandAssets;
@@ -73,27 +83,40 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return ambientProductionBrandAssets;
             case 'ambientTestnet':
                 return ambientTestnetBrandAssets;
+            case 'plumeSepolia':
+                return plumeSepoliaBrandAssets;
             default:
                 return defaultBrandAssets;
         }
     }, [brand]);
 
-    // hook to manage the active color theme in the app
-    // const skin: skinMethodsIF = useSkin(
-    //     brandAssets.color,
-    //     chainData.chainId as chainIds,
-    // );
+    // this is for testing premium-access features
+    const emilyAddr = '0x8a8b00B332c5eD50466e31FCCdd4dc2170b4F78f';
+    const benAddr = '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc';
+    const premiumTheme1: string[] = [
+        emilyAddr.toLowerCase(),
+        benAddr.toLowerCase(),
+    ];
 
-    function getSkin(): skins {
-        const networkPrefs =
-            brandAssets.networks[chainData.chainId as chainIds];
-        return networkPrefs ? networkPrefs.color : 'purple_dark';
-        // return premiumAccess.get('theme1') ? 'orange_dark' : 'purple_dark';
+    const [skin, setSkin] = useState<skins>(getDefaultSkin());
+
+    function getAvailableSkins(): skins[] {
+        const networkSettings = brandAssets.networks[chainId as chainIds];
+        const available: skins[] = networkSettings?.color ?? ['purple_dark'];
+        const premium: skins[] = networkSettings?.premiumColor ?? [];
+        const hasPremium = !!(
+            userAddress && premiumTheme1.includes(userAddress.toLowerCase())
+        );
+        return hasPremium ? available : available.concat(premium);
+    }
+
+    function getDefaultSkin(): skins {
+        const defaultSkin: skins[] = getAvailableSkins();
+        return defaultSkin[0];
     }
 
     function getHero(): heroItem[] {
-        const networkPrefs =
-            brandAssets.networks[chainData.chainId as chainIds];
+        const networkPrefs = brandAssets.networks[chainId as chainIds];
         return networkPrefs
             ? networkPrefs.hero
             : [{ content: 'ambient', processAs: 'separator' }];
@@ -101,9 +124,13 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
 
     // data to be returned to the app
     const brandData: BrandContextIF = {
-        skin: getSkin(),
+        skin: {
+            active: skin,
+            available: getAvailableSkins(),
+            set: (s: skins) => setSkin(s),
+        },
         fontSet: brandAssets.fontSet,
-        colorAndFont: getSkin() + '+' + brandAssets.fontSet,
+        colorAndFont: getDefaultSkin() + '+' + brandAssets.fontSet,
         platformName: brandAssets.platformName,
         networks: Object.keys(brandAssets.networks) as chainIds[],
         headerImage: brandAssets.headerImage,

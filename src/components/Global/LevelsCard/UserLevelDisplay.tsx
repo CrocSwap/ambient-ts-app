@@ -8,16 +8,16 @@ import { useContext } from 'react';
 import { progressToNextLevel } from '../../../ambient-utils/api';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 
-interface Props {
-    // xpData: UserXpDataIF
+interface propsIF {
     currentLevel: number | undefined;
     globalPoints: number | undefined;
     user: string;
+    isMobileDropdown?: boolean;
 }
-export default function UserLevelDisplay(props: Props) {
+export default function UserLevelDisplay(props: propsIF) {
     const { userAddress, resolvedAddressFromContext } =
         useContext(UserDataContext);
-    const { currentLevel, globalPoints, user } = props;
+    const { currentLevel, globalPoints, user, isMobileDropdown } = props;
 
     const isglobalPointsLong =
         globalPoints && globalPoints.toString().length > 6;
@@ -30,7 +30,7 @@ export default function UserLevelDisplay(props: Props) {
               })
             : '...';
 
-    const linkToNavigateTo = user
+    const linkToNavigateTo: string = user
         ? `/${user}/xp`
         : resolvedAddressFromContext
         ? `/${resolvedAddressFromContext}/xp`
@@ -51,7 +51,7 @@ export default function UserLevelDisplay(props: Props) {
     });
 
     return (
-        <Link to={linkToNavigateTo} className={styles.level_only_container}>
+        <Link to={linkToNavigateTo} className={`${styles.level_only_container} ${isMobileDropdown && styles.mobile_dropdown}`}>
             <div
                 className={`${styles.level_border} ${
                     formattedXpLevel.length > 2 ? styles.auto_width : ''

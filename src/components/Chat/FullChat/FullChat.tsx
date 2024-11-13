@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMediaQuery } from '@material-ui/core';
-import Picker, { IEmojiData } from 'emoji-picker-react';
+import { EmojiClickData } from 'emoji-picker-react';
 import {
     Dispatch,
     SetStateAction,
@@ -74,10 +74,7 @@ interface FullChatPropsIF {
     verifyOldMessagesStartDate: Date;
     setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
     showPicker: boolean;
-    addReactionEmojiPickListener: (
-        event: React.MouseEvent,
-        data: IEmojiData,
-    ) => void;
+    addReactionEmojiPickListener: (data: EmojiClickData) => void;
     setShowPicker: Dispatch<SetStateAction<boolean>>;
     showDeleteConfirmation: boolean;
     handleConfirmDelete: () => void;
@@ -103,6 +100,7 @@ interface FullChatPropsIF {
     setMessageForNotificationBubble: Dispatch<
         SetStateAction<Message | undefined>
     >;
+    reactionPicker: JSX.Element;
     showPopUp: boolean;
     setShowPopUp: React.Dispatch<React.SetStateAction<boolean>>;
     popUpText: string;
@@ -122,7 +120,7 @@ function FullChat(props: FullChatPropsIF) {
     const { favePools } = useContext(UserPreferenceContext);
     const reconstructedReadableRoom =
         params && !params.includes('global')
-            ? params.replace('&', ' / ').toUpperCase()
+            ? params.replace(/&/g, ' / ').toUpperCase()
             : params && params.includes('global')
               ? 'Global'
               : 'Global';
@@ -936,6 +934,7 @@ function FullChat(props: FullChatPropsIF) {
                 }}
             />
             {props.rndShowPreviousMessages()}
+            {props.isChatOpen && props.showPicker && props.reactionPicker}
             {props.isChatOpen && props.showPicker && (
                 <div
                     id='chatReactionWrapper'

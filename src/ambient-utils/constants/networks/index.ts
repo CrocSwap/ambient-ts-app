@@ -4,7 +4,7 @@ import { ethereumMainnet } from './ethereumMainnet';
 import { scrollMainnet } from './scrollMainnet';
 import { scrollSepolia } from './scrollSepolia';
 import { blastSepolia } from './blastSepolia';
-import { blast } from './blastNetwork';
+import { blast } from './blastMainnet';
 import {
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
@@ -12,7 +12,9 @@ import {
     blastBrandAssets,
     scrollBrandAssets,
     futaBrandAssets,
+    plumeSepoliaBrandAssets,
 } from '../../../assets/branding';
+import { plumeSepolia } from './plumeSepolia';
 
 export const brand: string | undefined =
     import.meta.env.VITE_BRAND_ASSET_SET ?? '';
@@ -24,6 +26,7 @@ const networks: NetworkIF[] = [
     scrollSepolia,
     blastSepolia,
     blast,
+    plumeSepolia,
 ];
 
 function getNetworks(chns: (string | chainIds)[]): {
@@ -46,20 +49,31 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
     brand === 'blast'
         ? getNetworks(Object.keys(blastBrandAssets.networks))
         : brand === 'scroll'
-        ? getNetworks(Object.keys(scrollBrandAssets.networks))
-        : brand === 'futa'
-        ? getNetworks(Object.keys(futaBrandAssets.networks))
-        : brand === 'ambientProduction'
-        ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
-        : brand === 'ambientTestnet'
-        ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
-        : getNetworks(Object.keys(defaultBrandAssets.networks));
+          ? getNetworks(Object.keys(scrollBrandAssets.networks))
+          : brand === 'futa'
+            ? getNetworks(Object.keys(futaBrandAssets.networks))
+            : brand === 'ambientProduction'
+              ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
+              : brand === 'ambientTestnet'
+                ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
+                : brand === 'plumeSepolia'
+                  ? getNetworks(Object.keys(plumeSepoliaBrandAssets.networks))
+                  : getNetworks(Object.keys(defaultBrandAssets.networks));
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
-    return [
-        supportedNetworks[chainId].defaultPair[0],
-        supportedNetworks[chainId].defaultPair[1],
-    ];
+    if (brand === 'futa') {
+        return (
+            supportedNetworks[chainId].defaultPairFuta ?? [
+                supportedNetworks[chainId].defaultPair[0],
+                supportedNetworks[chainId].defaultPair[1],
+            ]
+        );
+    } else {
+        return [
+            supportedNetworks[chainId].defaultPair[0],
+            supportedNetworks[chainId].defaultPair[1],
+        ];
+    }
 }
 
 export { ethereumSepolia };

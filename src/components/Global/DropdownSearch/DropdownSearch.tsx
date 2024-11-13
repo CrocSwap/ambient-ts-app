@@ -22,7 +22,6 @@ import {
     useSidebarSearch,
 } from '../../../App/hooks/useSidebarSearch';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { MdClose } from 'react-icons/md';
 import SidebarSearchResults from '../../../App/components/Sidebar/SidebarSearchResults/SidebarSearchResults';
@@ -37,6 +36,10 @@ import { HeaderButtons, HeaderText } from '../../../styled/Components/Chart';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import useKeyPress from '../../../App/hooks/useKeyPress';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../contexts/AppStateContext';
 
 interface optionItem {
     id: number;
@@ -45,9 +48,10 @@ interface optionItem {
 }
 
 const DropdownSearch = () => {
-    const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
-        useContext(CachedDataContext);
-    const { chainData: chainData } = useContext(CrocEnvContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
@@ -75,18 +79,18 @@ const DropdownSearch = () => {
 
     const isEscapePressed = useKeyPress('Escape');
     useEffect(() => {
-        if (isEscapePressed) {
+        if (isEscapePressed && isPoolDropdownOpen) {
             setIsPoolDropdownOpen(false);
             searchData.clearInput();
         }
-    }, [isEscapePressed]);
+    }, [isEscapePressed, isPoolDropdownOpen]);
 
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
 
     // TODO: can pull into GraphDataContext
     const filterFn = <T extends { chainId: string }>(x: T) =>
-        x.chainId === chainData.chainId;
+        x.chainId === chainId;
 
     const _positionsByUser = positionsByUser.positions.filter(filterFn);
     const _txsByUser = transactionsByUser.changes.filter(filterFn);
@@ -163,32 +167,17 @@ const DropdownSearch = () => {
         {
             id: 1,
             name: 'Top Pools',
-            data: (
-                <TopPools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
+            data: <TopPools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
         },
         {
             id: 2,
             name: 'Favorites',
-            data: (
-                <FavoritePools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
+            data: <FavoritePools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
         },
         {
             id: 3,
             name: 'Recent Pairs',
-            data: (
-                <RecentPools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
+            data: <RecentPools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
         },
     ];
 
@@ -226,85 +215,85 @@ const DropdownSearch = () => {
     );
 
     const toggleDropdown = () => {
-        setIsPoolDropdownOpen(!isPoolDropdownOpen);
+        setIsPoolDropdownOpen((prevState) => !prevState);
     };
 
-    const dropdownSearchContent = (
-        <AnimatePresence>
-            <div className={styles.dropdown_container}>
-                {searchContainer}
-                {searchData.isInputValid || optionButtonsDisplay}
+    const dropdownSearchContent = !isPoolDropdownOpen ? null : (
+        <div className={styles.dropdown_container}>
+            {searchContainer}
+            {searchData.isInputValid || optionButtonsDisplay}
 
-                <motion.div
-                    className={styles.dropdown_content}
-                    initial={{ height: 0 }}
-                    animate={{ height: '184px' }}
-                    exit={{ height: 0 }}
-                    transition={{ type: 'spring', stiffness: 200 }}
-                >
-                    {searchData.isInputValid ? (
-                        <SidebarSearchResults
-                            searchData={searchData}
-                            cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            cachedFetchTokenPrice={cachedFetchTokenPrice}
-                        />
-                    ) : (
-                        activeOption?.data
-                    )}
-                </motion.div>
-            </div>
-        </AnimatePresence>
+            <motion.div
+                className={styles.dropdown_content}
+                initial={{ height: 0 }}
+                animate={{ height: 'auto' }}
+                exit={{ height: 0 }}
+                transition={{ type: 'spring', stiffness: 200 }}
+            >
+                {searchData.isInputValid ? (
+                    <SidebarSearchResults searchData={searchData} />
+                ) : (
+                    activeOption?.data
+                )}
+            </motion.div>
+        </div>
     );
 
     return (
-        <FlexContainer
-            gap={8}
-            className={styles.main_container}
-            ref={searchDropdownItemRef}
-        >
-            <HeaderButtons
-                id='token_pair_in_chart_header'
-                aria-label='toggle dropdown.'
-                onClick={toggleDropdown}
-                style={{ justifyContent: 'flex-start' }}
+        <AnimatePresence>
+            <FlexContainer
+                gap={8}
+                className={styles.main_container}
+                ref={searchDropdownItemRef}
             >
-                <FlexContainer
-                    id='trade_chart_header_token_pair_logos'
-                    role='button'
-                    gap={8}
+                <HeaderButtons
+                    id='token_pair_in_chart_header'
+                    aria-label='toggle dropdown.'
+                    onClick={toggleDropdown}
+                    style={{ justifyContent: 'flex-start' }}
                 >
-                    <TokenIcon
-                        token={topToken}
-                        src={topToken.logoURI}
-                        alt={topToken.symbol}
-                        size={smallScrenView ? 's' : 'l'}
-                    />
-                    <TokenIcon
-                        token={bottomToken}
-                        src={bottomToken.logoURI}
-                        alt={bottomToken.symbol}
-                        size={smallScrenView ? 's' : 'l'}
-                    />
-                </FlexContainer>
-                <HeaderText
-                    id='trade_chart_header_token_pair_symbols'
-                    fontSize='header1'
-                    fontWeight='300'
-                    color='text1'
-                    role='button'
-                    aria-live='polite'
-                    aria-atomic='true'
-                    aria-relevant='all'
-                    style={{ minWidth: '160px' }}
-                >
-                    {topToken.symbol} / {bottomToken.symbol}
-                </HeaderText>
-                <span className={styles.arrow_icon}>
-                    {isPoolDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
-                </span>
-            </HeaderButtons>
-            {isPoolDropdownOpen && dropdownSearchContent}
-        </FlexContainer>
+                    <FlexContainer
+                        id='trade_chart_header_token_pair_logos'
+                        role='button'
+                        gap={8}
+                    >
+                        <TokenIcon
+                            token={topToken}
+                            src={topToken.logoURI}
+                            alt={topToken.symbol}
+                            size={smallScrenView ? 's' : 'l'}
+                        />
+                        <TokenIcon
+                            token={bottomToken}
+                            src={bottomToken.logoURI}
+                            alt={bottomToken.symbol}
+                            size={smallScrenView ? 's' : 'l'}
+                        />
+                    </FlexContainer>
+                    <HeaderText
+                        id='trade_chart_header_token_pair_symbols'
+                        fontSize='header1'
+                        fontWeight='300'
+                        color='text1'
+                        role='button'
+                        aria-live='polite'
+                        aria-atomic='true'
+                        aria-relevant='all'
+                        style={{ minWidth: '160px' }}
+                    >
+                        {topToken.symbol} / {bottomToken.symbol}
+                    </HeaderText>
+                    <span className={styles.arrow_icon}>
+                        {isPoolDropdownOpen ? (
+                            <FaChevronUp />
+                        ) : (
+                            <FaChevronDown />
+                        )}
+                    </span>
+                </HeaderButtons>
+                {dropdownSearchContent}
+            </FlexContainer>
+        </AnimatePresence>
     );
 };
 export default DropdownSearch;

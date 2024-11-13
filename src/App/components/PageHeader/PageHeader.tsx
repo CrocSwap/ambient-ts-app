@@ -1,77 +1,84 @@
-import React, {
-    useEffect,
-    useState,
-    memo,
-    useContext,
-    useCallback,
-} from 'react';
-import { useLocation } from 'react-router-dom';
-import { AnimateSharedLayout } from 'framer-motion';
-import Account from './Account/Account';
+import { useEffect, useState, memo, useContext, useCallback } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { AnimateSharedLayout, motion } from 'framer-motion';
+import UserMenu from './UserMenu/UserMenu';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
-import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
-// import { BiGitBranch } from 'react-icons/bi';
-// import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { SidebarContext } from '../../../contexts/SidebarContext';
-import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../contexts/AppStateContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../contexts/CrocEnvContext';
+import { PoolContext, PoolContextIF } from '../../../contexts/PoolContext';
+import {
+    SidebarContext,
+    SidebarContextIF,
+} from '../../../contexts/SidebarContext';
+import {
+    TradeTokenContext,
+    TradeTokenContextIF,
+} from '../../../contexts/TradeTokenContext';
+import {
+    TradeTableContext,
+    TradeTableContextIF,
+} from '../../../contexts/TradeTableContext';
 import {
     getFormattedNumber,
     chainNumToString,
     trimString,
+    checkEoaHexAddress,
 } from '../../../ambient-utils/dataLayer';
 import {
     linkGenMethodsIF,
     swapParamsIF,
     useLinkGen,
 } from '../../../utils/hooks/useLinkGen';
-import {
-    HeaderClasses,
-    LogoContainer,
-    LogoText,
-    NavigationLink,
-    PrimaryHeader,
-    PrimaryNavigation,
-    RightSide,
-    TradeNowDiv,
-    UnderlinedMotionDiv,
-} from '../../../styled/Components/Header';
 import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
-// import { version as appVersion } from '../../../../package.json';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import {
+    UserDataContext,
+    UserDataContextIF,
+} from '../../../contexts/UserDataContext';
+import {
+    GraphDataContext,
+    GraphDataContextIF,
+} from '../../../contexts/GraphDataContext';
+import {
+    TokenBalanceContext,
+    TokenBalanceContextIF,
+} from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import { BrandContext } from '../../../contexts/BrandContext';
+import {
+    ReceiptContext,
+    ReceiptContextIF,
+} from '../../../contexts/ReceiptContext';
+import styles from './PageHeader.module.css';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
+import { BrandContext } from '../../../contexts';
 
 const PageHeader = function () {
     const {
-        crocEnv,
-        setCrocEnv,
-        chainData: { chainId, poolIndex: poolId },
-    } = useContext(CrocEnvContext);
-    const { headerImage } = useContext(BrandContext);
-
-    const {
+        activeNetwork: { chainId, poolIndex: poolId },
         walletModal: { open: openWalletModal },
         appHeaderDropdown,
-    } = useContext(AppStateContext);
-    const { resetTokenBalances } = useContext(TokenBalanceContext);
-    const { resetUserGraphData } = useContext(GraphDataContext);
-
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { headerImage } = useContext(BrandContext);
+    const { crocEnv, setCrocEnv } =
+        useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { resetTokenBalances } =
+        useContext<TokenBalanceContextIF>(TokenBalanceContext);
+    const { resetUserGraphData } =
+        useContext<GraphDataContextIF>(GraphDataContext);
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
-        useContext(PoolContext);
-    const { recentPools } = useContext(SidebarContext);
-    const { setShowAllData, activeTradeTab } = useContext(TradeTableContext);
+        useContext<PoolContextIF>(PoolContext);
+    const { recentPools } = useContext<SidebarContextIF>(SidebarContext);
+    const { setShowAllData, activeTradeTab } =
+        useContext<TradeTableContextIF>(TradeTableContext);
     const {
         baseToken: {
             setBalance: setBaseTokenBalance,
@@ -81,10 +88,11 @@ const PageHeader = function () {
             setBalance: setQuoteTokenBalance,
             setDexBalance: setQuoteTokenDexBalance,
         },
-    } = useContext(TradeTokenContext);
+    } = useContext<TradeTokenContextIF>(TradeTokenContext);
     const { userAddress, isUserConnected, disconnectUser, ensName } =
-        useContext(UserDataContext);
-    const { resetReceiptData } = useContext(ReceiptContext);
+        useContext<UserDataContextIF>(UserDataContext);
+    const { resetReceiptData } = useContext<ReceiptContextIF>(ReceiptContext);
+    const { isBottomSheetOpen } = useBottomSheet();
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -105,7 +113,7 @@ const PageHeader = function () {
         disconnectUser();
     }, []);
 
-    const accountProps = {
+    const userMenuProps = {
         accountAddress: accountAddress,
         accountAddressFull: isUserConnected && userAddress ? userAddress : '',
         ensName: ensName || '',
@@ -159,32 +167,74 @@ const PageHeader = function () {
                   value: poolPriceDisplayWithDenom,
               });
 
+    function removeAfterEth(inputString: string) {
+        // Find the position of ".eth"
+        const ethIndex = inputString.indexOf('.eth');
+
+        // If ".eth" is found in the string, return the substring up to and including ".eth"
+        if (ethIndex !== -1) {
+            return inputString.substring(0, ethIndex + 4);
+        }
+
+        // If ".eth" is not found, return the original string
+        return inputString;
+    }
+
     useEffect(() => {
         const path = location.pathname;
 
         const pathNoLeadingSlash = path.slice(1);
 
-        const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
-        const isAddressHex =
-            (pathNoLeadingSlash?.startsWith('0x') &&
-                pathNoLeadingSlash?.length == 42) ||
-            (pathNoLeadingSlash?.startsWith('account/0x') &&
-                pathNoLeadingSlash?.length == 50);
+        const isAddressEns = pathNoLeadingSlash?.includes('.eth');
+        const isAddressHex = checkEoaHexAddress(path);
 
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
-        if (pathNoLeadingSlash === 'account') {
-            document.title = 'My Account ~ Ambient';
-        } else if (pathNoLeadingSlash === 'account/points') {
-            document.title = 'My Points ~ Ambient';
+        if (pathNoLeadingSlash.startsWith('account') && !isPathValidAddress) {
+            if (pathNoLeadingSlash.includes('points')) {
+                document.title = 'My Points ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('liquidity')) {
+                document.title = 'My Liquidity ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('limits')) {
+                document.title = 'My Limits ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('transactions')) {
+                document.title = 'My Transactions ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('wallet-balances')) {
+                document.title = 'My Wallet Balances ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('exchange-balances')) {
+                document.title = 'My Exchange Balances ~ Ambient';
+            } else {
+                document.title = 'My Account ~ Ambient';
+            }
         } else if (isPathValidAddress) {
             const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
             const pathNoPrefixDecoded = decodeURIComponent(pathNoPrefix);
             const ensNameOrAddressTruncated = isAddressEns
-                ? pathNoPrefixDecoded.length > 15
-                    ? trimString(pathNoPrefixDecoded, 10, 3, '…')
-                    : pathNoPrefixDecoded
+                ? removeAfterEth(pathNoPrefixDecoded).length > 15
+                    ? trimString(
+                          removeAfterEth(pathNoPrefixDecoded),
+                          10,
+                          3,
+                          '…',
+                      )
+                    : removeAfterEth(pathNoPrefixDecoded)
                 : trimString(pathNoPrefixDecoded, 6, 0, '…');
-            document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
+            if (pathNoLeadingSlash.includes('points')) {
+                document.title = `${ensNameOrAddressTruncated} Points ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('liquidity')) {
+                document.title = `${ensNameOrAddressTruncated} Liquidity ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('limits')) {
+                document.title = `${ensNameOrAddressTruncated} Limits ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('transactions')) {
+                document.title = `${ensNameOrAddressTruncated} Transactions ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('wallet-balances')) {
+                document.title = `${ensNameOrAddressTruncated} Wallet Balances ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('exchange-balances')) {
+                document.title = `${ensNameOrAddressTruncated} Exchange Balances ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('xp')) {
+                document.title = `${ensNameOrAddressTruncated} XP ~ Ambient`;
+            } else {
+                document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
+            }
         } else if (
             location.pathname.includes('swap') ||
             location.pathname.includes('trade')
@@ -197,7 +247,15 @@ const PageHeader = function () {
         } else if (location.pathname.includes('initpool')) {
             document.title = 'Pool Initialization ~ Ambient';
         } else if (location.pathname.includes('explore')) {
-            document.title = 'Explore ~ Ambient';
+            if (location.pathname.includes('pool')) {
+                document.title = 'Explore Pools ~ Ambient';
+            } else if (location.pathname.includes('tokens')) {
+                document.title = 'Explore Tokens ~ Ambient';
+            } else {
+                document.title = 'Explore ~ Ambient';
+            }
+        } else if (pathNoLeadingSlash.includes('xp-leaderboard')) {
+            document.title = 'XP Leaderboard ~ Ambient';
         } else if (location.pathname.includes('404')) {
             document.title = '404 ~ Ambient';
         } else {
@@ -237,6 +295,13 @@ const PageHeader = function () {
         activeTradeTab === 'limits' ? linkGenLimit : linkGenMarket
     ).getFullURL(swapParams);
 
+    const activeTradeTabSlug =
+        activeTradeTab.toLowerCase() === 'exchange balances'
+            ? 'exchange-balances'
+            : activeTradeTab.toLowerCase() === 'wallet balances'
+              ? 'wallet-balances'
+              : activeTradeTab.toLowerCase();
+
     const linkData: linkDataIF[] = [
         {
             title: 'Home',
@@ -265,7 +330,7 @@ const PageHeader = function () {
         },
         {
             title: 'Account',
-            destination: `/account${activeTradeTab && '/' + activeTradeTab}`,
+            destination: `/account${activeTradeTab && '/' + activeTradeTabSlug}`,
             shouldDisplay: !!isUserConnected,
         },
         {
@@ -278,7 +343,11 @@ const PageHeader = function () {
     // Most of this functionality can be achieved by using the NavLink instead of Link and accessing the isActive prop on the
     // Navlink. Access to this is needed outside of the link itself for animation purposes, which is why it is being done in this way.
 
-    function isActive(linkDestination: string, locationPathname: string) {
+    function isActive(
+        title: string,
+        linkDestination: string,
+        locationPathname: string,
+    ) {
         const trailingSlashRegex = /\/$/;
         const locationPathnameNoTrailingSlash = locationPathname.replace(
             trailingSlashRegex,
@@ -296,37 +365,49 @@ const PageHeader = function () {
             (locationPathnameNoTrailingSlash.endsWith('/account') &&
                 linkDestination.includes('/account') &&
                 !linkDestination.includes('/points')) ||
-            locationPathname === linkDestination
+            (locationPathname === linkDestination &&
+                !(title === 'Account' && locationPathname.includes('/points')))
         );
     }
 
     const routeDisplay = (
         <AnimateSharedLayout>
-            <PrimaryNavigation
-                id='primary_navigation'
-                dataVisible={mobileNavToggle}
-            >
+            <nav className={styles.primaryNavigation} id='primary_navigation'>
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
-                        <NavigationLink
+                        <Link
+                            className={`${styles.navigationLink}
+                        ${
+                            isActive(
+                                link.title,
+                                link.destination,
+                                location.pathname,
+                            )
+                                ? styles.activeNavigationLink
+                                : ''
+                        }
+                        
+                        `}
                             tabIndex={0}
-                            className={
-                                isActive(link.destination, location.pathname)
-                                    ? HeaderClasses.active
-                                    : HeaderClasses.inactive
-                            }
                             to={link.destination}
                             key={idx}
                         >
                             {link.title}
 
-                            {isActive(link.destination, location.pathname) && (
-                                <UnderlinedMotionDiv layoutId='underline' />
+                            {isActive(
+                                link.title,
+                                link.destination,
+                                location.pathname,
+                            ) && (
+                                <motion.span
+                                    className={styles.underlineMotion}
+                                    layoutId='underline'
+                                />
                             )}
-                        </NavigationLink>
+                        </Link>
                     ) : null,
                 )}
-            </PrimaryNavigation>
+            </nav>
         </AnimateSharedLayout>
     );
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
@@ -349,66 +430,71 @@ const PageHeader = function () {
     }, []);
 
     return (
-        <PrimaryHeader
-            data-testid={'page-header'}
-            fixed={location.pathname === '/'}
-        >
-            <div
-                onClick={(event: React.MouseEvent) => {
-                    event?.stopPropagation();
-                    if (appHeaderDropdown.isActive) {
-                        appHeaderDropdown.setIsActive(false);
-                    }
+        <>
+            <header
+                className={styles.primaryHeader}
+                data-testid={'page-header'}
+                style={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: isBottomSheetOpen ? 0.1 : 10,
                 }}
             >
-                <LogoContainer to='/' aria-label='Home'>
-                    {desktopScreen ? (
-                        <img src={headerImage} alt='ambient' />
+                <div
+                    onClick={(event: React.MouseEvent) => {
+                        event?.stopPropagation();
+                        if (appHeaderDropdown.isActive) {
+                            appHeaderDropdown.setIsActive(false);
+                        }
+                    }}
+                    className={styles.left_side}
+                >
+                    <Link
+                        to='/'
+                        className={styles.logoContainer}
+                        aria-label='Home'
+                    >
+                        {desktopScreen ? (
+                            <img
+                                src={headerImage}
+                                alt='ambient'
+                                style={{ marginRight: '20px' }}
+                            />
+                        ) : (
+                            <img
+                                className={styles.logoText}
+                                src={logo}
+                                alt='ambient'
+                                width='60px'
+                            />
+                        )}
+                    </Link>
+                    {routeDisplay}
+                </div>
+                <div className={styles.rightSide}>
+                    {show ? (
+                        <div className={styles.tradeNowDiv}>
+                            <TradeNowButton
+                                inNav
+                                fieldId='trade_now_btn_in_page_header'
+                            />
+                        </div>
                     ) : (
-                        <LogoText src={logo} alt='ambient' />
+                        <div>
+                            <FlexContainer
+                                alignItems='center'
+                                gap={8}
+                                overflow='visible'
+                            >
+                                <NetworkSelector />
+                                {!isUserConnected && connectWagmiButton}
+                                <UserMenu {...userMenuProps} />
+                            </FlexContainer>
+                        </div>
                     )}
-                </LogoContainer>
-            </div>
-            {routeDisplay}
-            <RightSide>
-                {show ? (
-                    <TradeNowDiv justifyContent='flex-end' alignItems='center'>
-                        <TradeNowButton
-                            inNav
-                            fieldId='trade_now_btn_in_page_header'
-                        />
-                    </TradeNowDiv>
-                ) : (
-                    <div>
-                        <FlexContainer
-                            alignItems='center'
-                            gap={8}
-                            overflow='visible'
-                        >
-                            {/* {desktopScreen && (
-                                <FlexContainer fontSize='body' color={'orange'}>
-                                    {APP_ENVIRONMENT !== 'production' ? (
-                                        <FlexContainer
-                                            alignItems='center'
-                                            gap={4}
-                                        >
-                                            {`${BRANCH_NAME} - v${appVersion}`}
-                                            {APP_ENVIRONMENT !== 'testnet' && (
-                                                <BiGitBranch color='yellow' />
-                                            )}
-                                        </FlexContainer>
-                                    ) : null}
-                                </FlexContainer>
-                            )} */}
-                            <NetworkSelector />
-                            {!isUserConnected && connectWagmiButton}
-                            <Account {...accountProps} />
-                            <NotificationCenter />
-                        </FlexContainer>
-                    </div>
-                )}
-            </RightSide>
-        </PrimaryHeader>
+                </div>
+            </header>
+        </>
     );
 };
 

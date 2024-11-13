@@ -115,7 +115,7 @@ export const TransactionRow = styled(Row)`
         account
             ? size === 'small'
                 ? `grid-template-columns: minmax(55px, 1.5fr)
-                    minmax(85px, 1.5fr) minmax(45px, 1.3fr)
+                     minmax(45px, 1.3fr)
                     minmax(60px, 1fr) minmax(30px, 1fr)`
                 : size === 'medium'
                   ? `grid-template-columns: minmax(70px, 1fr) minmax(110px, 1.5fr)
@@ -144,10 +144,10 @@ export const OrderRow = styled(Row)`
         account
             ? size === 'small'
                 ? `grid-template-columns: minmax(55px, 1.5fr)
-                    minmax(85px, 1.5fr) minmax(45px, 1.3fr)
+                    minmax(45px, 1.3fr)
                     minmax(60px, 1fr) minmax(30px, 1fr)`
                 : size === 'medium'
-                  ? 'grid-template-columns: minmax(100px, 1fr) minmax(80px, 1.5fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr minmax(170px, 2fr)'
+                  ? 'grid-template-columns: minmax(100px, 1.5fr) minmax(80px, 1fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr minmax(170px, 2fr)'
                   : `grid-template-columns:
                     minmax(80px, 1fr) minmax(110px, 1fr) minmax(125px, 1fr)
                     minmax(80px, 1fr) minmax(64px, 1fr) minmax(64px, 1fr) minmax(100px,1fr) 2fr 2fr 1.2fr minmax(170px, 2fr)`
@@ -168,27 +168,27 @@ export const RangeRow = styled(Row)<{
             account
                 ? size === 'small'
                     ? `grid-template-columns: minmax(100px, 1fr)
-                        minmax(80px, 1fr) minmax(50px, 1fr) minmax(40px, 1fr)
-                        minmax(30px, 1.5fr) minmax(15px, 1fr)`
+                        minmax(80px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr)
+                        minmax(30px, 30px)`
                     : size === 'medium'
                       ? `grid-template-columns: minmax(100px, 1fr)
                         minmax(80px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
                         minmax(86px, 1fr) minmax(44px, 1fr) minmax(25px, 1fr) minmax(100px, 1fr)`
                       : ` grid-template-columns:
-                        minmax(80px, 1fr) minmax(110px, 1fr) minmax(125px, 1fr)
+                         minmax(80px, 1fr) minmax(80px, 1fr) minmax(110px, 1fr) minmax(125px, 1fr)
                         minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
                         minmax(100px, 1fr) minmax(60px, 1fr) minmax(60px, 1fr) minmax(107px, 2fr)`
                 : !leaderboard
                   ? size === 'small'
                       ? `grid-template-columns:
-                            minmax(100px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr)
+                            minmax(120px, 1fr) minmax(70px, 1fr) minmax(70px, 1fr)
                             minmax(25px, 1fr) minmax(30px, 20%)`
                       : size === 'medium'
                         ? `grid-template-columns:
                                 minmax(100px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
                                 minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(100px, 1fr)`
                         : ` grid-template-columns:
-                                minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr)
+                               minmax(80px, 1fr)   minmax(80px, 1fr) minmax(100px, 1fr) 
                                 minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
                                 minmax(100px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr) minmax(107px, 2fr)`
                   : size === 'small'
@@ -325,4 +325,39 @@ export const HideEmptyPositionContainer = styled.button`
         color: var(--text2);
         font-size: 12px;
     }
+`;
+
+export const ScrollToTopButton = styled.button`
+    position: absolute;
+    right: 1rem;
+    top: 0rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent1);
+    border-bottom-left-radius: 4px;
+    color: var(--text1);
+    padding: 8px;
+    outline: none;
+    border: none;
+    z-index: 2;
+    cursor: pointer;
+`;
+
+export const ScrollToTopButtonMobile = styled.button`
+    position: absolute;
+    background: var(--accent1);
+    color: var(--text1);
+    padding: 8px;
+    outline: none;
+    z-index: 2;
+    cursor: pointer;
+    width: 2.5rem;
+    height: 2.5rem;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    border-radius: 100vw;
+    display: block;
+    border: none;
 `;

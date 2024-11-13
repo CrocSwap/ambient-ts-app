@@ -1,12 +1,16 @@
 import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
-import { memo } from 'react';
+import {
+    memo,
+    // useContext
+} from 'react';
 import { formatTokenInput, stringToBigInt } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
+import { fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -23,6 +27,7 @@ interface propsIF {
     parseTokenInput?: (val: string, isMax?: boolean) => void | string;
     fieldId?: string;
     isLoading?: boolean;
+    impactCalculationPending?: boolean;
     showWallet?: boolean;
     hideWalletMaxButton?: boolean;
     tokenBalance?: string;
@@ -48,6 +53,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isWithdraw,
         showPulseAnimation,
         isLoading,
+        impactCalculationPending,
         showWallet,
         hideWalletMaxButton,
         disabledContent,
@@ -70,68 +76,64 @@ function TokenInputWithWalletBalance(props: propsIF) {
               })
             : '';
 
-    const toDecimal = (val: string) =>
-        isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
-
     const walletBalanceBigInt = tokenBalance
         ? stringToBigInt(tokenBalance, token.decimals)
         : BigInt(0);
-
     const dexBalanceBigInt = tokenDexBalance
         ? stringToBigInt(tokenDexBalance, token.decimals)
         : BigInt(0);
 
-    const walletBalance = tokenBalance ? toDecimal(tokenBalance) : '...';
-    const walletAndExchangeBalance =
+    const walletBalanceDisplay = tokenBalance ? tokenBalance : '...';
+    const walletAndExchangeBalanceDisplay =
         tokenBalance && tokenDexBalance
-            ? toDecimal(
-                  (
-                      parseFloat(tokenBalance) + parseFloat(tokenDexBalance)
-                  ).toString(),
-              )
+            ? (
+                  parseFloat(tokenBalance) + parseFloat(tokenDexBalance)
+              ).toString()
             : '...';
     const walletAndExchangeBalanceBigInt =
         walletBalanceBigInt + dexBalanceBigInt;
-    const balance = !isDexSelected ? walletBalance : walletAndExchangeBalance;
-    const balanceBigInt = !isDexSelected
+
+    const balanceDisplay = !isDexSelected
+        ? walletBalanceDisplay
+        : walletAndExchangeBalanceDisplay;
+
+    const selectedBalanceBigInt = !isDexSelected
         ? walletBalanceBigInt
         : walletAndExchangeBalanceBigInt;
 
-    const balanceBigIntString = balanceBigInt.toString();
-
-    // function to insert character at index from end of string
-    const insertCharAt = (str: string, index: number, char: string) =>
-        str.slice(0, -index) + char + str.slice(-index);
-
-    const balBigIntStringScaled = insertCharAt(
-        balanceBigIntString.padStart(token.decimals, '0'),
-        token.decimals,
-        '.',
-    );
-
     const balanceToDisplay = getFormattedNumber({
-        value: parseFloat(balance) ?? undefined,
+        value: parseFloat(balanceDisplay) ?? undefined,
     });
 
-    const subtractBuffer = (balance: string) =>
+    const subtractBuffer = (balance: bigint) =>
         isTokenEth
-            ? (parseFloat(balance) - amountToReduceNativeTokenQty).toFixed(18)
+            ? balance -
+              fromDisplayQty(
+                  (amountToReduceNativeTokenQty * 1.1).toString(), // 10% buffer between amount to reduce and amount used to block user from submitting tx
+                  token.decimals,
+              )
             : isInitPage
-              ? (parseFloat(balance) - 1e-12).toFixed(token.decimals)
+              ? balance - BigInt(1e6)
               : balance;
 
-    const balanceWithBuffer = balance
-        ? subtractBuffer(balBigIntStringScaled)
-        : '...';
+    const selectedBalanceWithBufferBigInt = selectedBalanceBigInt
+        ? subtractBuffer(selectedBalanceBigInt)
+        : 0n;
+
+    const scaledSelectedBalanceWithBuffer = toDisplayQty(
+        selectedBalanceWithBufferBigInt,
+        token.decimals,
+    );
 
     const handleMaxButtonClick = () => {
         if (
-            formatTokenInput(balanceWithBuffer, token, true) !== tokenInput &&
-            parseFloat(balanceWithBuffer) > 0
+            scaledSelectedBalanceWithBuffer !== tokenInput &&
+            selectedBalanceWithBufferBigInt > 0n
         ) {
-            parseTokenInput && parseTokenInput(balanceWithBuffer, true);
+            parseTokenInput &&
+                parseTokenInput(scaledSelectedBalanceWithBuffer, true);
             handleTokenInputEvent(
-                formatTokenInput(balanceWithBuffer, token, true),
+                formatTokenInput(scaledSelectedBalanceWithBuffer, token, true),
             );
         }
     };
@@ -141,15 +143,31 @@ function TokenInputWithWalletBalance(props: propsIF) {
         // then the quantity should be updated to the exchange balance maximum
         if (
             tokenAorB === 'A' &&
-            parseFloat(formatTokenInput(balanceWithBuffer, token)) ===
-                parseFloat(tokenInput)
+            (scaledSelectedBalanceWithBuffer === tokenInput ||
+                Math.abs(
+                    (parseFloat(tokenInput) -
+                        parseFloat(scaledSelectedBalanceWithBuffer)) /
+                        parseFloat(scaledSelectedBalanceWithBuffer),
+                ) < 0.01) // consider the values equal if the difference is less than 1%
         ) {
-            const balance = subtractBuffer(
-                isDexSelected ? walletBalance : walletAndExchangeBalance,
-            );
-            if (walletBalance !== walletAndExchangeBalance) {
-                parseTokenInput && parseTokenInput(balance);
-                handleTokenInputEvent(balance);
+            if (
+                walletBalanceBigInt !==
+                walletBalanceBigInt + dexBalanceBigInt
+            ) {
+                const newBalanceWithBuffer = walletAndExchangeBalanceBigInt
+                    ? subtractBuffer(
+                          isDexSelected
+                              ? walletBalanceBigInt
+                              : walletAndExchangeBalanceBigInt,
+                      )
+                    : 0n;
+
+                const newScaledBalance = toDisplayQty(
+                    newBalanceWithBuffer,
+                    token.decimals,
+                );
+                parseTokenInput && parseTokenInput(newScaledBalance);
+                handleTokenInputEvent(newScaledBalance);
             }
         }
         handleToggleDexSelection();
@@ -162,6 +180,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
             <WalletBalanceSubinfo
                 usdValueForDom={
                     isLoading ||
+                    impactCalculationPending ||
                     !usdValueForDom ||
                     disabledContent ||
                     !isPoolInitialized
@@ -172,7 +191,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 showWallet={showWallet}
                 isWithdraw={isWithdraw ?? tokenAorB === 'A'}
                 balance={balanceToDisplay}
-                availableBalance={parseFloat(balanceWithBuffer)}
+                availableBalance={selectedBalanceWithBufferBigInt}
                 useExchangeBalance={
                     isDexSelected &&
                     !!tokenDexBalance &&
@@ -201,6 +220,9 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 showPulseAnimation={showPulseAnimation}
                 disabledContent={disabledContent}
                 isPoolInitialized={isPoolInitialized}
+                walletBalance={walletBalanceDisplay}
+                usdValue={usdValueForDom}
+                percentDiffUsdValue={percentDiffUsdValue}
             />
             {handleRefresh && (
                 <RefreshButton

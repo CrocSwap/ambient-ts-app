@@ -19,7 +19,7 @@ interface PropsIF {
     useExchangeBalance: boolean;
     isDexSelected: boolean;
     onToggleDex: () => void;
-    availableBalance?: number;
+    availableBalance?: bigint;
     onMaxButtonClick?: () => void;
     percentDiffUsdValue: number | undefined;
 }
@@ -159,12 +159,12 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                         {!isWithdraw
                             ? 'Wallet Balance'
                             : (
-                                  availableBalance
-                                      ? availableBalance > 0
-                                      : parseFloat(balance) > 0
-                              )
-                            ? 'Use Maximum Wallet Balance'
-                            : 'Wallet Balance'}
+                                    availableBalance
+                                        ? availableBalance > 0
+                                        : parseFloat(balance) > 0
+                                )
+                              ? 'Use Maximum Wallet Balance'
+                              : 'Wallet Balance'}
                         <AiOutlineQuestionCircle size={14} />
                     </p>
                 )
@@ -269,6 +269,8 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                     alignItems='center'
                     gap={8}
                     fontSize='body'
+                    style={{marginRight: isWithdraw || isDexSelected ? '0' : '4px'}}
+                   
                 >
                     {walletPriceWithTooltip}
                     {onMaxButtonClick &&

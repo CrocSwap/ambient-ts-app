@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { TransactionIF } from '../../../ambient-utils/types';
-import { diffHashSig } from '../../../ambient-utils/dataLayer';
 
 export type TxSortType =
     | 'time'
@@ -20,6 +19,7 @@ export const useSortedTxs = (
     boolean,
     Dispatch<SetStateAction<boolean>>,
     TransactionIF[],
+    (data:TransactionIF[]) => TransactionIF[]
 ] => {
     // default sort function
     const sortByUpdateTime = (unsortedData: TransactionIF[]): TransactionIF[] =>
@@ -102,16 +102,10 @@ export const useSortedTxs = (
         return reverseSort ? [...sortedData].reverse() : sortedData;
     };
 
-    // Generates a fingerprint from the positions objects. Used for comparison
-    // in below React hook
-    const ordersHashSum = useMemo<string>(() => {
-        return diffHashSig(transactions);
-    }, [transactions]);
-
     // array of positions sorted by the relevant column
     const sortedTransactions = useMemo<TransactionIF[]>(() => {
         return sortData(transactions);
-    }, [sortBy, reverseSort, ordersHashSum]);
+    }, [sortBy, reverseSort, transactions[0]?.txHash, transactions.length]);
 
-    return [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions];
+    return [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions, sortData];
 };

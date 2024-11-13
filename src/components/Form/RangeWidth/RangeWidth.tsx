@@ -13,6 +13,7 @@ import { ExplanationButton } from '../Icons/Icons.styles';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
     isETHPair,
+    isBtcPair,
     isStablePair,
     truncateDecimals,
 } from '../../../ambient-utils/dataLayer';
@@ -41,7 +42,8 @@ function RangeWidth(props: propsIF) {
 
     const shouldDisplaySub5PercentWidths =
         isStablePair(tokenA.address, tokenB.address) ||
-        isETHPair(tokenA.address, tokenB.address);
+        isETHPair(tokenA.address, tokenB.address) ||
+        isBtcPair(tokenA.address, tokenB.address);
 
     // values to generate balanced mode preset buttons
     // const balancedPresets: number[] = [5, 10, 25, 50, 100];
@@ -49,7 +51,7 @@ function RangeWidth(props: propsIF) {
         ? [0.1, 0.25, 0.5, 1, 5, 10, 100]
         : [5, 10, 25, 50, 100];
     // type annotation as union of number-literals in `balancedPresets`
-    type presetValues = typeof balancedPresets[number];
+    type presetValues = (typeof balancedPresets)[number];
 
     // fn to update the width of range (balanced mode) from buttons
     function updateRangeWithButton(value: presetValues): void {
@@ -125,7 +127,7 @@ function RangeWidth(props: propsIF) {
             </FlexContainer>
             <FlexContainer
                 justifyContent='center'
-                fontWeight='100'
+                fontWeight='300'
                 fontSize='header1'
                 color='text1'
                 animation={showRangePulseAnimation ? 'flicker' : ''}
@@ -134,7 +136,7 @@ function RangeWidth(props: propsIF) {
                 aria-atomic='true'
                 aria-relevant='all'
             >
-                <Text color='text2' fontWeight='100' id='bal_range_width'>
+                <Text color='text2' fontWeight='300' id='bal_range_width'>
                     {rangeWidthPercentage === 100
                         ? 'Ambient'
                         : `± ${rangeWidthPercentage}%`}

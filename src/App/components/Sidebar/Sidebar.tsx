@@ -29,10 +29,15 @@ import {
     useSidebarSearch,
     sidebarSearchIF,
 } from '../../hooks/useSidebarSearch';
-import { SidebarContext } from '../../../contexts/SidebarContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import {
+    SidebarContext,
+    SidebarContextIF,
+} from '../../../contexts/SidebarContext';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import {
+    CachedDataContext,
+    CachedDataContextIF,
+} from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import { FlexContainer } from '../../../styled/Common';
 import {
@@ -49,21 +54,26 @@ import {
     TransactionsIcon,
 } from '../../../styled/Components/Sidebar';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../contexts/AppStateContext';
 
 function Sidebar() {
-    const { sidebar, hideOnMobile } = useContext(SidebarContext);
-
-    const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
-        useContext(CachedDataContext);
-    const { chainData: chainData } = useContext(CrocEnvContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { sidebar, hideOnMobile } =
+        useContext<SidebarContextIF>(SidebarContext);
+    const { cachedQuerySpotPrice } =
+        useContext<CachedDataContextIF>(CachedDataContext);
     const { tokens } = useContext(TokenContext);
-
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
 
     // TODO: can pull into GraphDataContext
     const filterFn = <T extends { chainId: string }>(x: T) =>
-        x.chainId === chainData.chainId;
+        x.chainId === chainId;
 
     const _positionsByUser = positionsByUser.positions.filter(filterFn);
     const _txsByUser = transactionsByUser.changes.filter(filterFn);
@@ -230,8 +240,8 @@ function Sidebar() {
                                 isLocked
                                     ? 'Sidebar locked'
                                     : sidebar.isOpen
-                                    ? 'Close Sidebar'
-                                    : 'Open Sidebar'
+                                      ? 'Close Sidebar'
+                                      : 'Open Sidebar'
                             }
                         >
                             <svg
@@ -281,12 +291,7 @@ function Sidebar() {
             <SidebarAccordion
                 name='Top Pools'
                 icon={<TopPoolsIcon open={sidebar.isOpen} size={20} />}
-                data={
-                    <TopPools
-                        cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
-                    />
-                }
+                data={<TopPools cachedQuerySpotPrice={cachedQuerySpotPrice} />}
                 sidebar={sidebar}
                 shouldDisplayContentWhenUserNotLoggedIn={true}
                 openAllDefault={openAllDefault}
@@ -297,8 +302,7 @@ function Sidebar() {
                 icon={<FavoritePoolsIcon open={sidebar.isOpen} size={20} />}
                 data={
                     <FavoritePools
-                        cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                        cachedQuerySpotPrice={cachedQuerySpotPrice}
                     />
                 }
                 sidebar={sidebar}
@@ -310,10 +314,7 @@ function Sidebar() {
                 name='Recent Pools'
                 icon={<RecentPoolsIcon open={sidebar.isOpen} size={20} />}
                 data={
-                    <RecentPools
-                        cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
-                    />
+                    <RecentPools cachedQuerySpotPrice={cachedQuerySpotPrice} />
                 }
                 sidebar={sidebar}
                 shouldDisplayContentWhenUserNotLoggedIn={true}
@@ -385,11 +386,7 @@ function Sidebar() {
                 >
                     {searchContainerDisplay}
                     {searchData.isInputValid && sidebar.isOpen ? (
-                        <SidebarSearchResults
-                            searchData={searchData}
-                            cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            cachedFetchTokenPrice={cachedFetchTokenPrice}
-                        />
+                        <SidebarSearchResults searchData={searchData} />
                     ) : (
                         regularSidebarDisplay
                     )}

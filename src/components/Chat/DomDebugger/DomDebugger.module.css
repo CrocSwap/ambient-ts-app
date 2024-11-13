@@ -15,23 +15,23 @@
     display: block;
     font-size: .82rem;
 
-    left: 30vw;
     border: 0;
-    bottom: 0;
-    top: auto;
+    top: 0;
     
     backdrop-filter: blur(10px);
     background-color: rgba(0,0,0, .2);
-    border: 1px solid #7371fc4f;
+    background-color: rgba(0,0,0, .85);
     padding: 1rem;
-    border-radius: 0.4rem 0.4rem 0 0;
-    padding-top: 1.5rem;
+    /* border-radius: 0.4rem 0.4rem 0 0; */
+    padding-top: 2rem;
     max-height: 0vh;
     
 }
 
 .dom_debug_clear{
+
     transition: all .2s ease-in-out;
+    z-index: 3;
     position: absolute;
     top: 0;
     right: 0;
@@ -54,11 +54,10 @@
 
 
 .dom_debug_node{
-    display: inline-block;
-    margin: .5rem;
-    width: 10rem;
-    border-right: 1px solid rgba(255,255,255,.2);
-    padding: .4rem;
+    display: block;
+    padding: .1rem;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+
 }
 
 .dom_debug_node:nth-child(4n){
@@ -68,6 +67,12 @@
 .dom_debug_key{
     color: white;
     opacity: .5;
+    font-family: 'Consolas';
+    width: 8rem;
+    display: inline-block;
+    margin-right: .5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
@@ -81,11 +86,14 @@
 }
 
 .dom_debug_value{
-    color: #9b9aff;
+    color: rgba(0,255,2);
     opacity: 1;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    font-family: 'Consolas';
+    display: inline-block;
+    max-width: calc(100% - 9rem);
 }
 
 .dom_debug_signal{
@@ -93,5 +101,18 @@
 }
 
 .dom_debug_nodes_wrapper{
+
+}
+
+.dom_debug_toolbar{
+    display: block;
+    width: 100%;
+    background-color: rgba(255,255,255, .1);
+    height: 1.2rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    cursor: move;
 
 }

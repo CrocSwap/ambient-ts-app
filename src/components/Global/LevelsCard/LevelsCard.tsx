@@ -7,7 +7,6 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import { printDomToImage, trimString } from '../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { Link } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { RiScreenshot2Fill } from 'react-icons/ri';
@@ -50,11 +49,9 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     const { userAddress } = useContext(UserDataContext);
     const [_, copy] = useCopyToClipboard();
     const {
+        activeNetwork: { blockExplorer },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const {
-        chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
 
     function handleOpenExplorer(address: string) {
         if (address && blockExplorer) {
@@ -63,7 +60,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         }
     }
     function handleCopyAddress() {
-        copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
+        copy(resolvedAddress ? resolvedAddress : (userAddress ?? ''));
         const copiedData = resolvedAddress ? resolvedAddress : userAddress;
 
         openSnackbar(`${copiedData} copied`, 'info');

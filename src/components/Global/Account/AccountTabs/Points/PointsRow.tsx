@@ -17,7 +17,7 @@ export default function PointsRow(props: propsIF) {
                 <p>{shortName}</p>
             </div>
             <p>{longName}</p>
-            <p>{pointsAccrued}</p>
+            <p className={styles.point_value}>{pointsAccrued}</p>
         </div>
     );
 }

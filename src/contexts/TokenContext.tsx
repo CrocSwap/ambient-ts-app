@@ -6,10 +6,10 @@ import {
 import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 import { useTokenSearch } from '../App/hooks/useTokenSearch';
 import { TokenIF } from '../ambient-utils/types';
-import { CrocEnvContext } from './CrocEnvContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
+import { AppStateContext } from './AppStateContext';
 
-interface TokenContextIF {
+export interface TokenContextIF {
     tokens: tokenMethodsIF;
     outputTokens: TokenIF[];
     rawInput: string;
@@ -24,21 +24,15 @@ interface TokenContextIF {
 export const TokenContext = createContext<TokenContextIF>({} as TokenContextIF);
 
 export const TokenContextProvider = (props: { children: React.ReactNode }) => {
-    const { chainData } = useContext(CrocEnvContext);
-    // TODO: possible option to merge TokenBalanceContext with TokenContext
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const { tokenBalances } = useContext(TokenBalanceContext);
-    const tokens: tokenMethodsIF = useTokens(chainData.chainId, tokenBalances);
-    const { addRecentToken, getRecentTokens } = useRecentTokens(
-        chainData.chainId,
-    );
+    const tokens: tokenMethodsIF = useTokens(chainId, tokenBalances);
+    const { addRecentToken, getRecentTokens } = useRecentTokens(chainId);
 
     const [outputTokens, validatedInput, setInput, searchType, rawInput] =
-        useTokenSearch(
-            chainData.chainId,
-            tokens,
-            tokenBalances ?? [],
-            getRecentTokens,
-        );
+        useTokenSearch(chainId, tokens, tokenBalances ?? [], getRecentTokens);
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const oldToken: TokenIF | undefined = tokens.getTokenByAddress(

@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { LimitOrderIF } from '../../../ambient-utils/types';
-import { diffHashSig } from '../../../ambient-utils/dataLayer';
 
 export type LimitSortType =
     | 'wallet'
@@ -22,6 +21,7 @@ export const useSortedLimits = (
     boolean,
     Dispatch<SetStateAction<boolean>>,
     LimitOrderIF[],
+    (data:LimitOrderIF[]) => LimitOrderIF[]
 ] => {
     // default sort function
     const sortByTime = (unsortedData: LimitOrderIF[]): LimitOrderIF[] =>
@@ -107,18 +107,11 @@ export const useSortedLimits = (
         return reverseSort ? [...sortedData].reverse() : sortedData;
     };
 
-    // Generates a fingerprint from the positions objects. Used for comparison
-    // in below React hook
-    const ordersHashSum = useMemo<string>(
-        () => diffHashSig(limitOrders),
-        [limitOrders],
-    );
-
     // array of positions sorted by the relevant column
     const sortedLimitOrders = useMemo<LimitOrderIF[]>(
         () => sortData(limitOrders),
-        [sortBy, reverseSort, ordersHashSum],
+        [sortBy, reverseSort, limitOrders[0]?.limitOrderId, limitOrders.length],
     );
 
-    return [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimitOrders];
+    return [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimitOrders, sortData];
 };

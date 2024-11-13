@@ -1,4 +1,4 @@
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { CrocEnv } from '@crocswap-libs/sdk';
 import {
     ReactNode,
     createContext,
@@ -20,40 +20,34 @@ import {
     swapParamsIF,
     useLinkGen,
 } from '../utils/hooks/useLinkGen';
-import { NetworkIF, PoolIF, TokenIF } from '../ambient-utils/types';
+import { PoolIF, TokenIF } from '../ambient-utils/types';
 import {
-    APP_ENVIRONMENT,
     ethereumMainnet,
     mainnetETH,
     getDefaultPairForChain,
-    BLAST_RPC_URL,
-    MAINNET_RPC_URL,
-    SEPOLIA_RPC_URL,
-    SCROLL_RPC_URL,
 } from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
-import { TradeDataContext } from './TradeDataContext';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
-import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
+import { TokenContext } from './TokenContext';
+import { AppStateContext } from './AppStateContext';
+import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastMainnet';
+import { MAINNET_RPC_URL } from '../ambient-utils/constants/networks/ethereumMainnet';
+import { SCROLL_RPC_URL } from '../ambient-utils/constants/networks/scrollMainnet';
 
-interface UrlRoutesTemplate {
+interface UrlRoutesTemplateIF {
     swap: string;
     market: string;
     limit: string;
     pool: string;
 }
 
-interface CrocEnvContextIF {
+export interface CrocEnvContextIF {
     crocEnv: CrocEnv | undefined;
     setCrocEnv: (val: CrocEnv | undefined) => void;
-    selectedNetwork: NetworkIF;
-    chainData: ChainSpec;
     topPools: PoolIF[];
     ethMainnetUsdPrice: number | undefined;
-    defaultUrlParams: UrlRoutesTemplate;
+    defaultUrlParams: UrlRoutesTemplateIF;
     provider: Provider;
-    activeNetwork: NetworkIF;
-    chooseNetwork: (network: NetworkIF) => void;
     mainnetProvider: Provider | undefined;
     scrollProvider: Provider | undefined;
     blastProvider: Provider | undefined;
@@ -65,33 +59,26 @@ export const CrocEnvContext = createContext<CrocEnvContextIF>(
 const mainnetProvider = new BatchedJsonRpcProvider(MAINNET_RPC_URL, 1, {
     staticNetwork: true,
 });
-// const mainnetProvider = new BatchedJsonRpcProvider(
-//     `https://mainnet.infura.io/v3/${
-//         import.meta.env.VITE_INFURA_KEY || '4741d1713bff4013bc3075ed6e7ce091'
-//     }`,
-//     1,
-//     { staticNetwork: true },
-// );
+
 const scrollProvider = new BatchedJsonRpcProvider(SCROLL_RPC_URL, 534352, {
     staticNetwork: true,
 });
 const blastProvider = new BatchedJsonRpcProvider(BLAST_RPC_URL, 81457, {
     staticNetwork: true,
 });
-const sepoliaProvider = new BatchedJsonRpcProvider(SEPOLIA_RPC_URL, 11155111, {
-    staticNetwork: true,
-});
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const { chainData, activeNetwork, chooseNetwork } =
-        useContext(TradeDataContext);
+    const {
+        activeNetwork: { chainId, evmRpcUrl },
+    } = useContext(AppStateContext);
 
-    const { userAddress, walletChain } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
     const { walletProvider } = useWeb3ModalProvider();
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
+    const { tokens } = useContext(TokenContext);
 
-    const topPools: PoolIF[] = useTopPools(chainData.chainId);
+    const topPools: PoolIF[] = useTopPools(chainId);
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
     >();
@@ -102,20 +89,18 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
-    const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
-
-    function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
+    function createDefaultUrlParams(chainId: string): UrlRoutesTemplateIF {
         const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] =
-            getDefaultPairForChain(chainData.chainId);
+            getDefaultPairForChain(chainId);
 
-        const savedTokenASymbol = localStorage.getItem('tokenA');
-        const savedTokenBSymbol = localStorage.getItem('tokenB');
+        const savedTokenASymbol: string | null = localStorage.getItem('tokenA');
+        const savedTokenBSymbol: string | null = localStorage.getItem('tokenB');
 
-        const tokensMatchingA =
+        const tokensMatchingA: TokenIF[] =
             savedTokenASymbol === 'ETH'
                 ? [dfltTokenA]
                 : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', true);
-        const tokensMatchingB =
+        const tokensMatchingB: TokenIF[] =
             savedTokenBSymbol === 'ETH'
                 ? [dfltTokenA]
                 : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', true);
@@ -137,6 +122,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             isSavedTokenADefaultB || isSavedTokenBDefaultA;
 
         // default URL params for swap and market modules
+        // decision tree exists to preferentially consume most recent
+        // ... token pair rather than the hardcoded default
         const swapParams: swapParamsIF = {
             chain: chainId,
             tokenA: firstTokenMatchingA
@@ -169,44 +156,16 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         };
     }
 
-    const initUrl = createDefaultUrlParams(chainData.chainId);
-    // why is this a `useState`? why not a `useRef` or a const?
+    const initUrl = createDefaultUrlParams(chainId);
     const [defaultUrlParams, setDefaultUrlParams] =
-        useState<UrlRoutesTemplate>(initUrl);
-
-    const nodeUrl = ['0x1'].includes(chainData.chainId)
-        ? MAINNET_RPC_URL
-        : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-          ? BLAST_RPC_URL
-          : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-            ? SCROLL_RPC_URL
-            : chainData.nodeUrl;
-    // const nodeUrl =
-    //     chainData.nodeUrl.toLowerCase().includes('infura') &&
-    //     import.meta.env.VITE_INFURA_KEY
-    //         ? chainData.nodeUrl.slice(0, -32) + import.meta.env.VITE_INFURA_KEY
-    //         : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-    //           ? BLAST_RPC_URL
-    //           : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-    //             ? SCROLL_RPC_URL
-    //             : chainData.nodeUrl;
+        useState<UrlRoutesTemplateIF>(initUrl);
 
     const provider = useMemo(
         () =>
-            chainData.chainId === '0x1'
-                ? mainnetProvider
-                : chainData.chainId === '0x82750'
-                  ? scrollProvider
-                  : chainData.chainId === '0x13e31'
-                    ? blastProvider
-                    : chainData.chainId === '0xaa36a7'
-                      ? sepoliaProvider
-                      : new BatchedJsonRpcProvider(
-                            nodeUrl,
-                            parseInt(chainData.chainId),
-                            { staticNetwork: true },
-                        ),
-        [chainData.chainId],
+            new BatchedJsonRpcProvider(evmRpcUrl, parseInt(chainId), {
+                staticNetwork: true,
+            }),
+        [chainId],
     );
 
     useBlacklist(userAddress);
@@ -217,56 +176,20 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             const w3provider = new ethers.BrowserProvider(walletProvider);
             signer = await w3provider.getSigner();
         }
-        if (APP_ENVIRONMENT === 'local') {
-            console.debug({ provider });
-            console.debug({ signer });
-            console.debug({ crocEnv });
-        }
         if (!provider && !signer) {
-            APP_ENVIRONMENT === 'local' &&
-                console.debug('setting crocEnv to undefined');
             setCrocEnv(undefined);
             return;
-        } else if (!signer && !!crocEnv) {
-            APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
-            return;
-        } else if (provider && !crocEnv) {
+        } else if (provider) {
             const newCrocEnv = new CrocEnv(
                 provider,
                 signer ? signer : undefined,
             );
             setCrocEnv(newCrocEnv);
-        } else {
-            // If signer and provider are set to different chains (as can happen)
-            // after a network switch, it causes a lot of performance killing timeouts
-            // and errors
-            if (
-                (await signer?.provider?.getNetwork())?.chainId ==
-                (await provider.getNetwork()).chainId
-            ) {
-                const newCrocEnv = new CrocEnv(provider, signer);
-                APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
-                setCrocEnv(newCrocEnv);
-            } else if (signer) {
-                // Since this is a weird case, it's best not to rush things - maybe this happens
-                // during the short moment while the network is switching already, idk.
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                // await useSwitchNetwork().switchNetwork(
-                //     Number(chainData.chainId),
-                // );
-            }
         }
     };
     useEffect(() => {
         setNewCrocEnv();
-    }, [
-        crocEnv === undefined,
-        chainData.chainId,
-        walletProvider,
-        userAddress,
-        activeNetwork.chainId,
-        walletChain,
-    ]);
+    }, [provider, walletProvider]);
 
     useEffect(() => {
         if (provider && crocEnv) {
@@ -282,15 +205,13 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         }
     }, [crocEnv, provider]);
     useEffect(() => {
-        setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
-    }, [chainData.chainId]);
+        setDefaultUrlParams(createDefaultUrlParams(chainId));
+    }, [chainId]);
 
     // data returned by this context
-    const crocEnvContext = {
+    const crocEnvContext: CrocEnvContextIF = {
         crocEnv,
         setCrocEnv,
-        selectedNetwork: activeNetwork,
-        chainData,
         topPools,
         ethMainnetUsdPrice,
         defaultUrlParams,
@@ -298,8 +219,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         mainnetProvider,
         scrollProvider,
         blastProvider,
-        activeNetwork,
-        chooseNetwork,
     };
 
     return (

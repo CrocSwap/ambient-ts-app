@@ -13,6 +13,7 @@ import { SpotPriceFn } from './querySpotPrice';
 import { Provider } from 'ethers';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
+import { getPositionHash } from './getPositionHash';
 
 export const getLimitOrderData = async (
     order: LimitOrderServerIF,
@@ -24,9 +25,10 @@ export const getLimitOrderData = async (
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     cachedEnsResolve: FetchAddrFn,
-    skipENSFetch?: boolean,
 ): Promise<LimitOrderIF> => {
     if (!provider) throw Error('Can not proceed without an assigned provider');
+    if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+        throw Error('chainId mismatch with crocEnv');
     const newOrder = { ...order } as LimitOrderIF;
 
     const baseTokenAddress = order.base;
@@ -41,9 +43,7 @@ export const getLimitOrderData = async (
         Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
     );
 
-    newOrder.ensResolution = skipENSFetch
-        ? ''
-        : (await cachedEnsResolve(order.user)) ?? '';
+    newOrder.ensResolution = (await cachedEnsResolve(order.user)) ?? '';
 
     const basePricePromise = cachedFetchTokenPrice(
         baseTokenAddress,
@@ -55,6 +55,18 @@ export const getLimitOrderData = async (
         chainId,
         crocEnv,
     );
+
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: false,
+        user: order.user ?? '',
+        baseAddress: order.base ?? '',
+        quoteAddress: order.quote ?? '',
+        poolIdx: order.poolIdx ?? 0,
+        bidTick: order.bidTick ?? 0,
+        askTick: order.askTick ?? 0,
+    });
+
+    newOrder.positionHash = posHash;
 
     const baseTokenLogoURI = tokensOnChain.find(
         (token) =>
@@ -95,32 +107,33 @@ export const getLimitOrderData = async (
     const DEFAULT_DECIMALS = 18;
     const baseTokenDecimals = baseTokenListedDecimals
         ? baseTokenListedDecimals
-        : (await cachedTokenDetails(provider, order.base, chainId))?.decimals ??
-          DEFAULT_DECIMALS;
+        : ((await cachedTokenDetails(provider, order.base, chainId))
+              ?.decimals ?? DEFAULT_DECIMALS);
     const quoteTokenDecimals = quoteTokenListedDecimals
         ? quoteTokenListedDecimals
-        : (await cachedTokenDetails(provider, order.quote, chainId))
-              ?.decimals ?? DEFAULT_DECIMALS;
+        : ((await cachedTokenDetails(provider, order.quote, chainId))
+              ?.decimals ?? DEFAULT_DECIMALS);
 
     newOrder.baseDecimals = baseTokenDecimals;
     newOrder.quoteDecimals = quoteTokenDecimals;
 
     newOrder.baseSymbol = baseTokenListedSymbol
         ? baseTokenListedSymbol
-        : (await cachedTokenDetails(provider, order.base, chainId))?.symbol ??
-          '';
+        : ((await cachedTokenDetails(provider, order.base, chainId))?.symbol ??
+          '');
     newOrder.quoteSymbol = quoteTokenListedSymbol
         ? quoteTokenListedSymbol
-        : (await cachedTokenDetails(provider, order.quote, chainId))?.symbol ??
-          '';
+        : ((await cachedTokenDetails(provider, order.quote, chainId))?.symbol ??
+          '');
 
     newOrder.baseName = baseTokenName
         ? baseTokenName
-        : (await cachedTokenDetails(provider, order.base, chainId))?.name ?? '';
+        : ((await cachedTokenDetails(provider, order.base, chainId))?.name ??
+          '');
     newOrder.quoteName = quoteTokenName
         ? quoteTokenName
-        : (await cachedTokenDetails(provider, order.quote, chainId))?.name ??
-          '';
+        : ((await cachedTokenDetails(provider, order.quote, chainId))?.name ??
+          '');
 
     newOrder.baseTokenLogoURI = baseTokenLogoURI ?? '';
     newOrder.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
@@ -322,3 +335,31 @@ export const getLimitOrderData = async (
 
     return newOrder;
 };
+
+export function filterLimitArray(arr: LimitOrderIF[]) {
+    // Step 1: Create a set of positionHash values where claimableLiq is 0
+    const positionHashes = new Set();
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i].claimableLiq !== 0) {
+            positionHashes.add(arr[i].positionHash);
+        }
+    }
+
+    // Step 2: Filter the array based on the conditions
+    const filteredArray = arr.filter((item: LimitOrderIF) => {
+        // Include items where claimableLiq is not 0
+        if (item.claimableLiq !== 0) {
+            return true;
+        }
+
+        // Include items where positionHash does not match a non-zero claimableLiq item
+        if (!positionHashes.has(item.positionHash)) {
+            return true;
+        }
+
+        // Exclude items that do not meet the above conditions
+        return false;
+    });
+
+    return filteredArray;
+}

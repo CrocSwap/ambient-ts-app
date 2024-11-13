@@ -67,18 +67,12 @@ function Leaderboard() {
     const tableView = isSmallScreen
         ? 'small'
         : !isSmallScreen && !isLargeScreen
-        ? 'medium'
-        : 'large';
+          ? 'medium'
+          : 'large';
 
     const quoteTokenSymbol = quoteToken?.symbol;
     const baseTokenSymbol = baseToken?.symbol;
 
-    const walID = (
-        <>
-            <p>Position ID</p>
-            Wallet
-        </>
-    );
     const minMax = (
         <>
             <p>Min</p>
@@ -115,7 +109,7 @@ function Leaderboard() {
             sortable: false,
         },
         {
-            name: walID,
+            name: 'Wallet',
             className: 'wallet_id',
             show: tableView !== 'large',
             slug: 'walletid',
@@ -217,7 +211,10 @@ function Leaderboard() {
                     />
                 ))}
             </RangeRowStyled>
-            <div style={{ flex: 1, overflow: 'auto' }}>
+            <div
+                style={{ flex: 1, overflow: 'auto' }}
+                className='custom_scroll_ambient'
+            >
                 {positionsByApy.length > 0 && (
                     <TableRows
                         type='Range'

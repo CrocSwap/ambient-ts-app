@@ -1,0 +1,34 @@
+
+
+
+.container button{
+    background: transparent;
+    outline: none;
+    border: none;
+    color: var(--text3);
+    font-size: 13px;
+font-style: normal;
+font-weight: 500;
+border-bottom: 1px solid transparent;
+width: 150px;
+cursor: pointer;
+padding: 4px;
+}
+
+.activeButton{
+   color: var(--accent1) !important ;
+   border-bottom: 1px solid var(--accent1) !important;
+}
+
+@media only screen and (max-width: 768px) {
+.container{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.container button{
+    width: 100%;
+}
+
+}

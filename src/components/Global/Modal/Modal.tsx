@@ -1,16 +1,14 @@
-// START: Import React and Dongles
-import { ReactNode, useCallback, useEffect } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BiArrowBack } from 'react-icons/bi';
 import { RiCloseFill } from 'react-icons/ri';
-
-// START: Import Local Files
 import styles from './Modal.module.css';
 import GlobalModalPortal from '../../GlobalModalPortal';
 import { GLOBAL_MODAL_COMPONENT_ID } from '../../../ambient-utils/constants';
 import { Container } from '../../../styled/Common';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 
-// interface for React functional component
 interface ModalPropsIF {
     onClose: () => void;
     handleBack?: () => void;
@@ -24,7 +22,6 @@ interface ModalPropsIF {
     usingCustomHeader?: boolean;
 }
 
-// React functional component
 export default function Modal(props: ModalPropsIF) {
     const {
         handleBack,
@@ -39,9 +36,16 @@ export default function Modal(props: ModalPropsIF) {
         onClose = () => null,
     } = props;
 
+    const { openBottomSheet, closeBottomSheet, isBottomSheetOpen } =
+        useBottomSheet();
+    const isMobile = useMediaQuery('(max-width: 500px)');
+
+    // Track initialization to avoid rendering until states are fully resolved
+    const [isInitialized, setIsInitialized] = useState(false);
+
     const escFunction = useCallback((event: KeyboardEvent) => {
         if (event.key === 'Escape') {
-            onClose();
+            handleClose();
         }
     }, []);
 
@@ -50,49 +54,110 @@ export default function Modal(props: ModalPropsIF) {
         return () => {
             document.removeEventListener('keydown', escFunction, false);
         };
-    }, []);
+    }, [escFunction]);
 
-    // jsx for the back element
-    const backElement = (
-        <div style={{ cursor: 'pointer' }}>
-            <BiArrowBack size={27} onClick={handleBack} />
-        </div>
-    );
-    // JSX for the header element
+    // Open bottom sheet on mobile, close on desktop transition
+    useEffect(() => {
+        if (isMobile && !isBottomSheetOpen) {
+            openBottomSheet();
+        } else if (!isMobile && isBottomSheetOpen) {
+            closeBottomSheet();
+        }
+        setIsInitialized(true); // Mark as initialized after states resolve
+    }, [isMobile, isBottomSheetOpen, openBottomSheet, closeBottomSheet]);
+
+    // Handle closing both modal and bottom sheet
+    const handleClose = () => {
+        onClose();
+        closeBottomSheet();
+    };
+
+
     const headerJSX = !usingCustomHeader ? (
         <header className={styles.modal_header}>
-            {showBackButton && backElement}
+            {showBackButton && (
+                <div style={{ cursor: 'pointer' }}>
+                    <BiArrowBack size={27} onClick={handleBack} />
+                </div>
+            )}
             {centeredTitle && <div />}
             <h2 className={styles.modal_title}>{title}</h2>
             <div className={styles.header_right}>
-                {headerRightItems && headerRightItems}
+                {headerRightItems}
                 <span />
-                <RiCloseFill
-                    id='close_modal_button'
-                    size={27}
-                    className={styles.close_button}
-                    onClick={onClose}
-                    role='button'
-                    tabIndex={-1}
-                    aria-label='Close modal button'
-                    style={{ cursor: 'pointer' }}
-                />
+                {!isMobile && (
+                    <RiCloseFill
+                        id='close_modal_button'
+                        size={27}
+                        className={styles.close_button}
+                        onClick={handleClose}
+                        role='button'
+                        tabIndex={-1}
+                        aria-label='Close modal button'
+                        style={{ cursor: 'pointer' }}
+                    />
+                )}
             </div>
         </header>
-    ) : (
-        <></>
-    );
+    ) : null;
 
-    const footerJSX = <footer className={styles.modal_footer}>{footer}</footer>;
+    const footerJSX = footer ? (
+        <footer className={styles.modal_footer}>{footer}</footer>
+    ) : null;
 
-    const footerOrNull = !footer ? null : footerJSX;
+    // Avoid rendering anything until initialization is complete
+    if (!isInitialized) {
+        return null; // Prevent rendering modal or bottom sheet until initialization
+    }
 
+    if (isMobile && isBottomSheetOpen) {
+        // Render Bottom Sheet style for mobile
+        return (
+            <>
+                <motion.div
+                    className={styles.modal_overlay}
+                    initial='hidden'
+                    animate={{ opacity: 1 }}
+                    exit='hidden'
+                    onClick={handleClose}
+                />
+                <motion.div
+                    className={styles.bottom_sheet}
+                    initial={{ y: window.innerHeight, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{
+                        duration: 0.5,
+                        type: 'spring',
+                        damping: 25,
+                        stiffness: 200,
+                    }}
+                    drag='y'
+                    dragConstraints={{ top: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={(e, info) => {
+                        if (info.offset.y > 100) handleClose();
+                    }}
+                >
+                    <div className={styles.sheet_handle}>
+                        <div className={styles.drag_handle} />
+                    </div>
+                    {headerJSX}
+                    <section className={styles.modal_content}>
+                        {children}
+                    </section>
+                    {footerJSX}
+                </motion.div>
+            </>
+        );
+    }
+
+    // Render traditional modal for non-mobile views
     return (
         <GlobalModalPortal>
             <aside
                 id={GLOBAL_MODAL_COMPONENT_ID}
                 className={styles.outside_modal}
-                onMouseDown={onClose}
+                onMouseDown={handleClose}
                 role='dialog'
                 aria-modal='true'
             >
@@ -101,24 +166,19 @@ export default function Modal(props: ModalPropsIF) {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.4 }}
                     className={`
-                ${styles.modal_body}
-                ${noBackground ? styles.no_background_modal : null}
-                `}
+                        ${styles.modal_body}
+                        ${noBackground ? styles.no_background_modal : null}
+                    `}
                     onMouseDown={(e) => e.stopPropagation()}
                     tabIndex={0}
                     aria-label={`${title} modal`}
                 >
                     <Container boxShadow='gradient'>
                         {headerJSX}
-                        <section
-                            className={styles.modal_content}
-                            aria-live='polite'
-                            aria-atomic='true'
-                            aria-relevant='additions text'
-                        >
+                        <section className={styles.modal_content}>
                             {children}
                         </section>
-                        {footerOrNull}
+                        {footerJSX}
                     </Container>
                 </motion.div>
             </aside>

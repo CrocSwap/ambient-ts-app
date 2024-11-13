@@ -5,13 +5,11 @@ import {
     createContext,
     useContext,
     useEffect,
-    useMemo,
     useState,
 } from 'react';
 import { CachedDataContext } from './CachedDataContext';
-import { ChainDataContext } from './ChainDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { PoolIF } from '../ambient-utils/types';
+import { PoolIF, SinglePoolDataIF } from '../ambient-utils/types';
 import {
     getMoneynessRank,
     getFormattedNumber,
@@ -19,24 +17,23 @@ import {
 } from '../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from './CrocEnvContext';
-import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
-import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
 import { PoolContext } from './PoolContext';
-import { useTokenStatsIF, useTokenStats } from '../pages/Explore/useTokenStats';
+import {
+    useTokenStatsIF,
+    useTokenStats,
+} from '../pages/platformAmbient/Explore/useTokenStats';
 import { TokenContext } from './TokenContext';
+import { ChainDataContext } from './ChainDataContext';
+import { AppStateContext } from './AppStateContext';
 
 export interface ExploreContextIF {
     pools: {
         all: Array<PoolDataIF>;
-        getLimited(poolList: PoolIF[], crocEnv: CrocEnv, chainId: string): void;
-        getExtra: (
-            poolList: PoolIF[],
-            crocEnv: CrocEnv,
-            chainId: string,
-        ) => void;
+        getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
+
         reset: () => void;
     };
-    tokens: useTokenStatsIF;
+    topTokensOnchain: useTokenStatsIF;
     isExploreDollarizationEnabled: boolean;
     setIsExploreDollarizationEnabled: Dispatch<SetStateAction<boolean>>;
 }
@@ -64,25 +61,33 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
-
-    const {
-        cachedPoolStatsFetch,
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-    } = useContext(CachedDataContext);
-
-    const { crocEnv, chainData, activeNetwork, provider } =
-        useContext(CrocEnvContext);
+    const { activeNetwork } = useContext(AppStateContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
+    const { allPoolStats } = useContext(ChainDataContext);
+    const { poolList } = useContext(PoolContext);
 
-    const [limitedPools, setLimitedPools] = useState<Array<PoolDataIF>>([]);
-    const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
+    const [allPools, setAllPools] = useState<Array<PoolDataIF>>([]);
+    const [intermediaryPoolData, setIntermediaryPoolData] = useState<
+        Array<PoolDataIF>
+    >([]);
     const [isExploreDollarizationEnabled, setIsExploreDollarizationEnabled] =
         useState(
             localStorage.getItem('isExploreDollarizationEnabled') === 'true',
         );
+
+    // used to prevent displaying data for a previous network after switching networks
+    useEffect(() => {
+        if (intermediaryPoolData.length) {
+            if (intermediaryPoolData[0].chainId === activeNetwork.chainId) {
+                setAllPools(intermediaryPoolData);
+            }
+        } else {
+            setAllPools([]);
+        }
+    }, [activeNetwork.chainId, intermediaryPoolData]);
 
     useEffect(() => {
         const savedDollarizationPreference =
@@ -95,41 +100,21 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         }
     }, [isExploreDollarizationEnabled]);
 
-    const allPools = useMemo(
-        () => limitedPools.concat(extraPools),
-        [limitedPools, extraPools],
-    );
-    // metadata only
-    const { poolList } = useContext(PoolContext);
-
-    const getLimitedPools = async (): Promise<void> => {
-        if (crocEnv && poolList.length) {
-            getLimitedPoolData(poolList, crocEnv, chainData.chainId);
-        }
-    };
-
     const getAllPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
-            // clear text in DOM for time since last update
-            setLimitedPools([]);
-            setExtraPools([]);
             // use metadata to get expanded pool data
-            getLimitedPools().then(() => {
-                getExtraPoolData(poolList, crocEnv, chainData.chainId);
-            });
+            getAllPoolData(poolList, crocEnv, activeNetwork.chainId);
         }
     };
 
     // get expanded pool metadata
     useEffect(() => {
-        // wait 5 seconds to get data
-        setTimeout(() => {
-            if (crocEnv !== undefined && poolList.length > 0) {
-                getAllPools();
-            }
-        }, 5000);
-    }, [crocEnv, poolList.length]);
+        if (crocEnv !== undefined && poolList.length > 0) {
+            setIntermediaryPoolData([]);
+            getAllPools();
+        }
+    }, [JSON.stringify(poolList)]);
 
     // fn to get data on a single pool
     async function getPoolData(
@@ -147,14 +132,28 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // pool index
         const poolIdx: number = lookupChain(chainId).poolIndex;
 
-        const poolStatsNow = await cachedPoolStatsFetch(
-            chainId,
-            pool.base.address,
-            pool.quote.address,
-            poolIdx,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-            activeNetwork.graphCacheUrl,
+        const poolStats = allPoolStats?.find(
+            (poolStat: SinglePoolDataIF) =>
+                poolStat.base.toLowerCase() ===
+                    pool.base.address.toLowerCase() &&
+                poolStat.quote.toLowerCase() ===
+                    pool.quote.address.toLowerCase(),
         );
+
+        const poolStatsNow = {
+            baseFees: poolStats?.baseFees || 0,
+            baseTvl: poolStats?.baseTvl || 0,
+            baseVolume: poolStats?.baseVolume || 0,
+            quoteFees: poolStats?.quoteFees || 0,
+            quoteTvl: poolStats?.quoteTvl || 0,
+            quoteVolume: poolStats?.quoteVolume || 0,
+            feeRate: poolStats?.feeRate || 0,
+            lastPriceIndic: poolStats?.lastPriceIndic || 0,
+            lastPriceLiq: poolStats?.lastPriceLiq || 0,
+            lastPriceSwap: poolStats?.lastPriceSwap || 0,
+            latestTime: poolStats?.latestTime || 0,
+            isHistorical: false,
+        };
 
         const expandedPoolStatsNow = await expandPoolStats(
             poolStatsNow,
@@ -167,17 +166,21 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             cachedQuerySpotPrice,
             tokens.tokenUniv,
         );
-        const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
 
-        const poolStats24hAgo = await cachedPoolStatsFetch(
-            chainId,
-            pool.base.address,
-            pool.quote.address,
-            poolIdx,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-            activeNetwork.graphCacheUrl,
-            ydayTime,
-        );
+        const poolStats24hAgo = {
+            baseFees: poolStats?.baseFees24hAgo || 0,
+            baseTvl: poolStats?.baseTvl || 0,
+            baseVolume: poolStats?.baseVolume24hAgo || 0,
+            quoteFees: poolStats?.quoteFees24hAgo || 0,
+            quoteTvl: poolStats?.quoteTvl || 0,
+            quoteVolume: poolStats?.quoteVolume24hAgo || 0,
+            feeRate: poolStats?.feeRate || 0,
+            lastPriceIndic: poolStats?.priceIndic24hAgo || 0,
+            lastPriceLiq: poolStats?.priceLiq24hAgo || 0,
+            lastPriceSwap: poolStats?.priceSwap24hAgo || 0,
+            latestTime: poolStats?.latestTime || 0,
+            isHistorical: false,
+        };
 
         const expandedPoolStats24hAgo = await expandPoolStats(
             poolStats24hAgo,
@@ -196,8 +199,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
         const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
-        const nowPrice = expandedPoolStatsNow?.lastPriceIndic;
-        const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
+        const nowPrice = expandedPoolStatsNow?.lastPriceSwap;
+        const ydayPrice = expandedPoolStats24hAgo?.lastPriceSwap;
 
         const feesTotalNow = expandedPoolStatsNow?.feesTotalUsd;
         const feesTotal24hAgo = expandedPoolStats24hAgo?.feesTotalUsd;
@@ -209,10 +212,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                     ? ydayPrice / nowPrice - 1.0
                     : nowPrice / ydayPrice - 1.0
                 : 0.0;
-        if (
-            !expandedPoolStatsNow ||
-            (!isActiveNetworkBlast && expandedPoolStatsNow.tvlTotalUsd < 100)
-        ) {
+        if (!expandedPoolStatsNow || expandedPoolStatsNow.tvlTotalUsd < 100) {
             // return early
             const poolData: PoolDataIF = {
                 ...pool,
@@ -262,7 +262,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             priceChangePercent = '';
         } else if (priceChangeRaw * 100 >= 0.01) {
             priceChangePercent =
-                '+ ' +
+                '+' +
                 (priceChangeRaw * 100).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
@@ -278,23 +278,11 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             priceChangePercent = 'No Change';
         }
 
-        // spot price for pool
-        const spotPrice: number = await cachedQuerySpotPrice(
-            crocEnv,
-            pool.base.address,
-            pool.quote.address,
-            chainId,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-        );
         // display price, inverted if necessary
         const displayPrice: number = shouldInvert
             ? 1 /
-              toDisplayPrice(spotPrice, pool.base.decimals, pool.quote.decimals)
-            : toDisplayPrice(
-                  spotPrice,
-                  pool.base.decimals,
-                  pool.quote.decimals,
-              );
+              toDisplayPrice(nowPrice, pool.base.decimals, pool.quote.decimals)
+            : toDisplayPrice(nowPrice, pool.base.decimals, pool.quote.decimals);
 
         const tokenPriceForUsd = shouldInvert
             ? (
@@ -317,7 +305,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // return variable
         const poolData: PoolDataIF = {
             ...pool,
-            spotPrice,
+            spotPrice: nowPrice,
             displayPrice: getFormattedNumber({
                 value: displayPrice,
                 abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
@@ -344,73 +332,20 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         return poolData;
     }
 
-    // meta function to apply pool data get fn to an array of pools
-    function getLimitedPoolData(
+    function getAllPoolData(
         poolList: PoolIF[],
         crocEnv: CrocEnv,
         chainId: string,
     ): void {
-        const ambientTokens = ambientTokenList.tokens;
-        const limitedPoolList = poolList.filter((pool) => {
-            const baseToken = ambientTokens.find(
-                (token) =>
-                    token.address.toLowerCase() ===
-                    pool.base.address.toLowerCase(),
-            );
-            const quoteToken = ambientTokens.find(
-                (token) =>
-                    token.address.toLowerCase() ===
-                    pool.quote.address.toLowerCase(),
-            );
-            return baseToken && quoteToken;
-        });
-        const limitedPoolData = limitedPoolList.map((pool: PoolIF) =>
+        const allPoolData = poolList.map((pool: PoolIF) =>
             getPoolData(pool, crocEnv, chainId),
         );
-
-        Promise.all(limitedPoolData)
+        Promise.all(allPoolData)
             .then((results: Array<PoolDataIF>) => {
                 const filteredPoolData = results.filter(
                     (pool) => pool.spotPrice > 0,
                 );
-                setLimitedPools(filteredPoolData);
-            })
-            .catch((err) => {
-                console.warn(err);
-                // re-enable autopolling to attempt more data fetches
-            });
-    }
-
-    // meta function to apply pool data get fn to an array of pools
-    function getExtraPoolData(
-        poolList: PoolIF[],
-        crocEnv: CrocEnv,
-        chainId: string,
-    ): void {
-        const ambientTokens = ambientTokenList.tokens;
-        const extraPoolList = poolList.filter((pool) => {
-            const baseToken = ambientTokens.find(
-                (token) =>
-                    token.address.toLowerCase() ===
-                    pool.base.address.toLowerCase(),
-            );
-            const quoteToken = ambientTokens.find(
-                (token) =>
-                    token.address.toLowerCase() ===
-                    pool.quote.address.toLowerCase(),
-            );
-            return !(baseToken && quoteToken);
-        });
-
-        const extraPoolData = extraPoolList.map((pool: PoolIF) =>
-            getPoolData(pool, crocEnv, chainId),
-        );
-        Promise.all(extraPoolData)
-            .then((results: Array<PoolDataIF>) => {
-                const filteredPoolData = results.filter(
-                    (pool) => pool.spotPrice > 0,
-                );
-                setExtraPools(filteredPoolData);
+                setIntermediaryPoolData(filteredPoolData);
             })
             .catch((err) => {
                 console.warn(err);
@@ -418,7 +353,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     }
 
     const dexTokens: useTokenStatsIF = useTokenStats(
-        chainData.chainId,
+        activeNetwork.chainId,
         crocEnv,
         activeNetwork.graphCacheUrl,
         cachedFetchTokenPrice,
@@ -430,14 +365,12 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const exploreContext: ExploreContextIF = {
         pools: {
             all: allPools,
-            getLimited: getLimitedPoolData,
-            getExtra: getExtraPoolData,
+            getAll: getAllPools,
             reset: () => {
-                setLimitedPools([]);
-                setExtraPools([]);
+                setIntermediaryPoolData([]);
             },
         },
-        tokens: dexTokens,
+        topTokensOnchain: dexTokens,
         isExploreDollarizationEnabled,
         setIsExploreDollarizationEnabled,
     };

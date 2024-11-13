@@ -63,6 +63,8 @@ export default function TabComponent(props: TabPropsIF) {
 
     const navigate = useNavigate();
 
+    const isMobile = useMediaQuery('(max-width: 600px)');
+
     const { tradeTableState } = useContext(ChartContext);
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
@@ -79,7 +81,8 @@ export default function TabComponent(props: TabPropsIF) {
 
     function removeTxTypesFromEnd(inputString: string) {
         // Regular expression to match "transactions", "limits", or "liquidity" at the end of the string
-        const typeRegex = /(transactions|limits|liquidity|points)$/;
+        const typeRegex =
+            /(transactions|limits|liquidity|points|exchange-balances|wallet-balances)$/;
         const trailingSlashRegex = /\/$/;
 
         // Replace the matched keyword with an empty string
@@ -104,9 +107,14 @@ export default function TabComponent(props: TabPropsIF) {
 
         const pathNoType = ensureEndsWithSlash(removeTxTypesFromEnd(path));
         if (
-            ['transactions', 'limits', 'liquidity'].includes(
-                item.label.toLowerCase(),
-            )
+            [
+                'transactions',
+                'limits',
+                'liquidity',
+                'exchange balances',
+                'wallet balances',
+                'points',
+            ].includes(item.label.toLowerCase())
         ) {
             setActiveTradeTab(item.label.toLowerCase());
             if (isPortfolio) {
@@ -116,11 +124,14 @@ export default function TabComponent(props: TabPropsIF) {
                       ? navigate(`${pathNoType}limits`)
                       : item.label.toLowerCase() === 'liquidity'
                         ? navigate(`${pathNoType}liquidity`)
-                        : null;
+                        : item.label.toLowerCase() === 'points'
+                          ? navigate(`${pathNoType}points`)
+                          : item.label.toLowerCase() === 'exchange balances'
+                            ? navigate(`${pathNoType}exchange-balances`)
+                            : item.label.toLowerCase() === 'wallet balances'
+                              ? navigate(`${pathNoType}wallet-balances`)
+                              : null;
             }
-        }
-        if (isPortfolio && item.label.toLowerCase() === 'points') {
-            navigate(`${pathNoType}points`);
         }
         if (tradeTableState === 'Collapsed') toggleTradeTable();
     }
@@ -179,7 +190,6 @@ export default function TabComponent(props: TabPropsIF) {
             <div className={styles.tab_icon_container}>
                 <DefaultTooltip
                     title={label}
-                    placeholder={'bottom'}
                     arrow
                     enterDelay={400}
                     leaveDelay={200}
@@ -200,7 +210,6 @@ export default function TabComponent(props: TabPropsIF) {
         cloneElement(rightTabOptions as ReactElement<any>, {
             currentTab: selectedTab.label,
         });
-    const mobileView = useMediaQuery('(min-width: 800px)');
 
     const tabsWithRightOption = (
         <FlexContainer alignItems='center' justifyContent='space-between'>
@@ -222,7 +231,6 @@ export default function TabComponent(props: TabPropsIF) {
                         }
                         onClick={() => {
                             handleSelectedTab(item);
-                            item.onClick?.();
                         }}
                         aria-describedby={
                             item.label === selectedTab.label
@@ -235,18 +243,16 @@ export default function TabComponent(props: TabPropsIF) {
                             ? handleMobileMenuIcon(item.icon, item.label)
                             : null}
 
-                        {mobileView && (
-                            <button
-                                onClick={() => handleSelectedTab(item)}
-                                className={styles.label_button}
-                                role='tab'
-                                aria-selected={item.label === selectedTab.label}
-                                tabIndex={0}
-                            >
-                                {' '}
-                                {item.label}
-                            </button>
-                        )}
+                        {/* {desktopView && ( */}
+                        <button
+                            className={styles.label_button}
+                            role='tab'
+                            aria-selected={item.label === selectedTab.label}
+                            tabIndex={0}
+                        >
+                            {item.label}
+                        </button>
+                        {/* )} */}
                         {item.label === selectedTab.label && (
                             <div className={styles.underline} />
                         )}
@@ -266,7 +272,6 @@ export default function TabComponent(props: TabPropsIF) {
     );
 
     // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
-
     const fullTabs = (
         <ul
             className={`${styles.tab_ul} ${styles.desktop_tabs}`}
@@ -295,21 +300,20 @@ export default function TabComponent(props: TabPropsIF) {
                     {item.icon
                         ? handleMobileMenuIcon(item.icon, item.label)
                         : null}
-                    {mobileView && (
-                        <button
-                            className={`${styles.item_label} ${
-                                item.label === selectedTab.label
-                                    ? styles.selected
-                                    : ''
-                            }`}
-                            onClick={() => handleSelectedTab(item)}
-                            role='tab'
-                            aria-selected={item.label === selectedTab.label}
-                        >
-                            {' '}
-                            {item.label}
-                        </button>
-                    )}
+                    {/* {desktopView && ( */}
+                    <button
+                        className={`${styles.item_label} ${
+                            item.label === selectedTab.label
+                                ? styles.selected
+                                : ''
+                        }`}
+                        role='tab'
+                        aria-selected={item.label === selectedTab.label}
+                    >
+                        {' '}
+                        {item.label}
+                    </button>
+                    {/* // )} */}
 
                     {item.label === selectedTab.label && (
                         <motion.div
@@ -343,21 +347,33 @@ export default function TabComponent(props: TabPropsIF) {
                 {/* </AnimateSharedLayout> */}
             </nav>
             <div className={styles.main_tab_content}>
-                <AnimateSharedLayout>
-                    <motion.div
+                {isMobile ? (
+                    <div
                         key={selectedTab ? selectedTab.label : 'empty'}
-                        initial={{ y: 10, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: -10, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
                         role='tabpanel'
                         tabIndex={0}
                         style={{ height: '100%' }}
                         hidden={!selectedTab}
                     >
                         {selectedTab ? selectedTab.content : null}
-                    </motion.div>
-                </AnimateSharedLayout>
+                    </div>
+                ) : (
+                    <AnimateSharedLayout>
+                        <motion.div
+                            key={selectedTab ? selectedTab.label : 'empty'}
+                            initial={{ y: 10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: -10, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            role='tabpanel'
+                            tabIndex={0}
+                            style={{ height: '100%' }}
+                            hidden={!selectedTab}
+                        >
+                            {selectedTab ? selectedTab.content : null}
+                        </motion.div>
+                    </AnimateSharedLayout>
+                )}
             </div>
         </div>
     );

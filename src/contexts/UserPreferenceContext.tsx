@@ -7,12 +7,12 @@ import { favePoolsMethodsIF, useFavePools } from '../App/hooks/useFavePools';
 import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
-import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { TradeDataContext } from './TradeDataContext';
 import { getMoneynessRankByAddr } from '../ambient-utils/dataLayer';
+import { AppStateContext } from './AppStateContext';
 
-interface UserPreferenceIF {
+export interface UserPreferenceContextIF {
     favePools: favePoolsMethodsIF;
     swapSlippage: SlippageMethodsIF;
     mintSlippage: SlippageMethodsIF;
@@ -24,18 +24,22 @@ interface UserPreferenceIF {
     bypassConfirmLimit: skipConfirmIF;
     bypassConfirmRange: skipConfirmIF;
     bypassConfirmRepo: skipConfirmIF;
+    cssDebug: {
+        cache: (k: string, v: string) => void;
+        check: (k: string) => string | undefined;
+    };
 }
 
-export const UserPreferenceContext = createContext<UserPreferenceIF>(
-    {} as UserPreferenceIF,
+export const UserPreferenceContext = createContext<UserPreferenceContextIF>(
+    {} as UserPreferenceContextIF,
 );
 
 export const UserPreferenceContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -43,29 +47,6 @@ export const UserPreferenceContextProvider = (props: {
 
     const { tokenA, tokenB, setDenomInBase, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
-
-    const userPreferencesProps = {
-        favePools: useFavePools(),
-        swapSlippage: useSlippage('swap'),
-        mintSlippage: useSlippage('mint'),
-        repoSlippage: useSlippage('repo'),
-        dexBalSwap: useExchangePrefs('swap'),
-        dexBalLimit: useExchangePrefs('limit'),
-        dexBalRange: useExchangePrefs('range'),
-        bypassConfirmSwap: useSkipConfirm('swap'),
-        bypassConfirmLimit: useSkipConfirm('limit'),
-        bypassConfirmRange: useSkipConfirm('range'),
-        bypassConfirmRepo: useSkipConfirm('repo'),
-    };
-
-    // Memoize the object being passed to context. This assumes that all of the individual top-level values
-    // in the userPreferencesProps object are themselves correctly memo-ized at the object level. E.g. the
-    // value from `useSlippage()` or `useSkipConfirm()` should be a new object reference if and only if their
-    // content needs to be updated
-    const userPreferences = useMemo(
-        () => userPreferencesProps,
-        [...Object.values(userPreferencesProps)],
-    );
 
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(() => {
         if (baseTokenAddress && quoteTokenAddress) {
@@ -110,6 +91,41 @@ export const UserPreferenceContextProvider = (props: {
         isBaseTokenMoneynessGreaterOrEqual,
     ]);
     /* ------------------------------------------ END USER PREFERENCES CONTEXT ------------------------------------------ */
+
+    const cssDebugMap = new Map();
+    function cacheCSSProperty(k: string, v: string): void {
+        cssDebugMap.set(k, v);
+    }
+    function checkCSSPropertyCache(k: string): string | undefined {
+        return cssDebugMap.get(k);
+    }
+
+    const userPreferencesProps: UserPreferenceContextIF = {
+        favePools: useFavePools(),
+        swapSlippage: useSlippage('swap'),
+        mintSlippage: useSlippage('mint'),
+        repoSlippage: useSlippage('repo'),
+        dexBalSwap: useExchangePrefs('swap'),
+        dexBalLimit: useExchangePrefs('limit'),
+        dexBalRange: useExchangePrefs('range'),
+        bypassConfirmSwap: useSkipConfirm('swap'),
+        bypassConfirmLimit: useSkipConfirm('limit'),
+        bypassConfirmRange: useSkipConfirm('range'),
+        bypassConfirmRepo: useSkipConfirm('repo'),
+        cssDebug: {
+            cache: cacheCSSProperty,
+            check: checkCSSPropertyCache,
+        },
+    };
+
+    // Memoize the object being passed to context. This assumes that all of the individual top-level values
+    // in the userPreferencesProps object are themselves correctly memo-ized at the object level. E.g. the
+    // value from `useSlippage()` or `useSkipConfirm()` should be a new object reference if and only if their
+    // content needs to be updated
+    const userPreferences = useMemo(
+        () => userPreferencesProps,
+        [...Object.values(userPreferencesProps)],
+    );
 
     return (
         <UserPreferenceContext.Provider value={userPreferences}>

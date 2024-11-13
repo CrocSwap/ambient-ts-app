@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { GridContainer, ScrollContainer } from '../../../styled/Common';
+import { FlexContainer, GridContainer } from '../../../styled/Common';
 
 import { MainSection } from './TableInfo.styles';
 
@@ -58,11 +58,17 @@ export default function TableInfo() {
 
     return (
         <MainSection>
-            <ScrollContainer>
+            <FlexContainer
+                className='custom_scroll_ambient'
+                fullWidth
+                fullHeight
+                style={{overflow: 'hidden'}}
+            >
                 <GridContainer
                     numCols={smallScreen ? 1 : 2}
                     gap={8}
                     height={'200px'}
+                    fullWidth
                 >
                     <GridContainer numCols={2} gap={8}>
                         {featuredData.map((data, idx) => (
@@ -76,7 +82,7 @@ export default function TableInfo() {
                     </GridContainer>
 
                     <GridContainer gap={28} customRows='46px 46px auto'>
-                        <GridContainer numCols={4} gap={8}>
+                        <GridContainer numCols={smallScreen ? 2 : 4} gap={8}>
                             {/* first 4 row items go here */}
                             <DetailedBox
                                 label='Total Vol.'
@@ -149,7 +155,7 @@ export default function TableInfo() {
                         <GridContainer numCols={4} gap={8}></GridContainer>
                     </GridContainer>
                 </GridContainer>
-            </ScrollContainer>
+            </FlexContainer>
         </MainSection>
     );
 }

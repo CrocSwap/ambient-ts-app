@@ -6,13 +6,13 @@ import {
     getChainExplorer,
 } from '../../../../ambient-utils/dataLayer';
 import { RiExternalLinkLine } from 'react-icons/ri';
-import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
 import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import Spinner from '../../Spinner/Spinner';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { AppStateContext } from '../../../../contexts';
 
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
@@ -23,17 +23,31 @@ interface ReceiptDisplayPropsIF {
 
 export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const { status, hash, txBlockNumber, txType } = props;
+    const { provider } = useContext(CrocEnvContext);
+
     const {
-        chainData: { chainId },
-        provider,
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const { cachedFetchBlockTime } = useContext(CachedDataContext);
     const { removeReceipt } = useContext(ReceiptContext);
 
+    const blockExplorer = getChainExplorer(chainId);
+    const EtherscanTx = `${blockExplorer}tx/${hash}`;
+
+    const handleNavigateEtherscan = () => {
+        window.open(EtherscanTx, '_blank');
+    };
+
     const pending = <Spinner size={30} bg={'var(--dark2)'} weight={2} />;
-    const failed = <MdErrorOutline size={30} color='#7371fc ' />;
-    const success = <IoMdCheckmarkCircleOutline size={30} color='#7371fc ' />;
+    const failed = <MdErrorOutline size={30} color='var(--accent1)' />;
+    const success = (
+        <IoMdCheckmarkCircleOutline
+            size={30}
+            color='var(--accent1)'
+            onClick={handleNavigateEtherscan}
+        />
+    );
 
     function handleStatusDisplay(status: string) {
         if (status === 'successful') {
@@ -53,9 +67,6 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
             return 'Failed';
         } else return '';
     }
-
-    const blockExplorer = getChainExplorer(chainId);
-    const EtherscanTx = `${blockExplorer}tx/${hash}`;
 
     const [blockTime, setBlockTime] = useState<number | undefined>();
 
@@ -78,30 +89,22 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
             ? elapsedTimeInSecondsNum < 60
                 ? '< 1 minute ago'
                 : elapsedTimeInSecondsNum < 120
-                ? '1 minute ago'
-                : elapsedTimeInSecondsNum < 3600
-                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} minutes ago `
-                : elapsedTimeInSecondsNum < 7200
-                ? '1 hour ago'
-                : elapsedTimeInSecondsNum < 86400
-                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hours ago `
-                : elapsedTimeInSecondsNum < 172800
-                ? '1 day ago'
-                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago `
+                  ? '1 minute ago'
+                  : elapsedTimeInSecondsNum < 3600
+                    ? `${Math.floor(elapsedTimeInSecondsNum / 60)} minutes ago `
+                    : elapsedTimeInSecondsNum < 7200
+                      ? '1 hour ago'
+                      : elapsedTimeInSecondsNum < 86400
+                        ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hours ago `
+                        : elapsedTimeInSecondsNum < 172800
+                          ? '1 day ago'
+                          : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago `
             : 'Pending...';
 
     const ariaLabel = `${status} transaction of ${txType}`;
 
     return (
-        <motion.div
-            layout
-            initial={{ scale: 0.4, opacity: 0, y: 50 }}
-            exit={{
-                scale: 0,
-                opacity: 0,
-                transition: { duration: 0.2 },
-            }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
+        <div
             className={styles.container}
             tabIndex={0}
             role='listitem'
@@ -145,10 +148,10 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                         tabIndex={0}
                         aria-label='View on Block Explorer'
                     >
-                        <RiExternalLinkLine size={20} color='#7371fc ' />
+                        <RiExternalLinkLine size={20} color='var(--accent1)' />
                     </a>
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 }

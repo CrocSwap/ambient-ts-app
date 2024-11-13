@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { PositionIF } from '../../../ambient-utils/types';
-import { diffHashSig } from '../../../ambient-utils/dataLayer';
 
 export type RangeSortType =
     | 'id'
@@ -25,6 +24,7 @@ export const useSortedPositions = (
     boolean,
     Dispatch<SetStateAction<boolean>>,
     PositionIF[],
+    (data:PositionIF[]) => PositionIF[]
 ] => {
     // default sort function
     const sortByTime = (unsortedData: PositionIF[]): PositionIF[] =>
@@ -214,17 +214,10 @@ export const useSortedPositions = (
         return reverseSort ? [...sortedData].reverse() : sortedData;
     };
 
-    // Generates a fingerprint from the positions objects. Used for comparison
-    // in below React hook
-    const posHashSum = useMemo<string>(
-        () => diffHashSig(positions),
-        [positions],
-    );
-
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo<PositionIF[]>(() => {
         return sortData(positions);
-    }, [sortBy, reverseSort, posHashSum]); // fix failure to refresh rows when data changes
+    }, [sortBy, reverseSort, positions[0]?.positionId, positions.length]); // fix failure to refresh rows when data changes
 
-    return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];
+    return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions, sortData];
 };

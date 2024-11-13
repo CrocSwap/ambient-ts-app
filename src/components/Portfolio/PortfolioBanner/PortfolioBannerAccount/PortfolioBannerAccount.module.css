@@ -1,0 +1,146 @@
+.portfolio_banner_account {
+    display: flex;
+    flex-direction: column;
+    align-items:flex-start;
+    width: 100%;
+    gap: 8px;
+    background: rgba(18, 18, 26, 0.3);
+    padding: 4px;
+    backdrop-filter: blur(2px);
+}
+
+.user_facing_content {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    z-index: 1;
+    gap: 12px;
+
+
+}
+
+.jazzicon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 65px;
+    width: 65px;
+}
+
+.wallet_info {
+    display: flex;
+    flex-direction: column;
+    min-width: 130px;
+    gap: 4px;
+}
+
+.address_or_ens {
+    font-size: var(--header1-size);
+    line-height: var(--header1-lh);
+    font-weight: 300;
+    cursor: pointer;
+    color: var(--text1);
+    letter-spacing: -0.02em;
+}
+
+.address_detail {
+    display: flex;
+    flex-direction: row;
+    font-weight: 300;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    gap: 8px;
+    cursor: pointer;
+    color: var(--text1);
+}
+
+.button_bank {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.button_bank > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.button_bank button {
+    font-size: 12px;
+    outline: none;
+    padding: 4px;
+    border-radius: 20px;
+}
+
+.dark_button {
+    background: transparent;
+    border: 1px solid var(--accent1);
+    color: var(--accent1);
+}
+
+.logout_button {
+    background-color: var(--accent1);
+    border: 1px solid var(--accent1);
+    color: var(--text1);
+}
+@media only screen and (max-width: 568px) {
+.user_facing_content{
+   width: 100%;
+   max-width: 100%;
+   display: flex;
+   display: grid;
+   grid-template-columns: 65px 100px auto;
+}
+
+.button_bank{
+
+    width: 100%;
+   /* max-width: 200px; */
+   display: flex;
+   justify-content: flex-end;
+   align-items: flex-end;
+   
+}
+
+.button_bank button{
+    margin: 0 5px;
+}
+}
+
+@media only screen and (max-width: 768px) {
+
+    
+    .address_or_ens {
+        font-size: var(--body-size);
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .user_facing_content {
+        justify-content: space-between;
+        width: 100%;
+
+       
+        max-width: 250px;
+    }
+    .portfolio_banner_account {
+        width: auto;
+        border-radius: 50px 4px 4px 50px;
+    }
+
+    .jazzicon {
+        height: 65px;
+        width: 65px;
+    }
+}
+
+@media only screen and (min-width: 1280px) {
+    .portfolio_banner_account {
+        width: 380.16px;
+        
+    }
+
+   
+}

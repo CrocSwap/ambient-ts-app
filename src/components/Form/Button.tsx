@@ -1,4 +1,6 @@
-import { ButtonBase } from './Form.styles';
+import React from 'react';
+import styles from './Button.module.css';
+import { brand } from '../../ambient-utils/constants';
 
 interface propsIF {
     idForDOM: string;
@@ -23,18 +25,31 @@ export default function Button(props: propsIF) {
         title,
         flat,
         customAriaLabel,
-        width,
+        // width,
         style,
         thin,
     } = props;
+    const isFuta = brand === 'futa';
 
     const ariaLabelToDisplay = disabled
         ? `Button is disabled. ${title}`
         : customAriaLabel
-        ? customAriaLabel
-        : '';
+          ? customAriaLabel
+          : '';
+
+    const buttonClasses = [
+        styles.button,
+        flat ? styles.flat : styles.gradient,
+        disabled && styles.disabled,
+        warning && styles.warning,
+        isFuta && styles.isFuta,
+        isFuta && disabled && styles.isFutaDisabled,
+    ]
+        .filter(Boolean)
+        .join(' ');
+
     return (
-        <ButtonBase
+        <button
             id={idForDOM}
             style={{
                 ...(thin ? { height: '28px', width: '156px', padding: 0 } : {}),
@@ -44,12 +59,9 @@ export default function Button(props: propsIF) {
             disabled={disabled}
             aria-label={ariaLabelToDisplay}
             tabIndex={0}
-            flat={!!flat}
-            width={width ? width : thin ? '156px' : '100%'}
-            height={thin ? '28px' : 'auto'}
-            warning={warning}
+            className={buttonClasses}
         >
             {title}
-        </ButtonBase>
+        </button>
     );
 }

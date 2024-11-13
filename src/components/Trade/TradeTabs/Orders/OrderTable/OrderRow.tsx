@@ -7,6 +7,7 @@ import {
     useContext,
     useEffect,
     useRef,
+    MutableRefObject,
 } from 'react';
 import {
     LimitModalAction,
@@ -26,6 +27,7 @@ interface propsIF {
     openDetailsModal: () => void;
     openActionModal: () => void;
     setLimitModalAction: Dispatch<SetStateAction<LimitModalAction>>;
+    observedRowRef: MutableRefObject<HTMLDivElement | null> | undefined;
 }
 
 function OrderRow(props: propsIF) {
@@ -36,6 +38,7 @@ function OrderRow(props: propsIF) {
         openDetailsModal,
         openActionModal,
         setLimitModalAction,
+        observedRowRef,
     } = props;
     const {
         snackbar: { open: openSnackbar },
@@ -211,13 +214,13 @@ function OrderRow(props: propsIF) {
         baseQtyDisplayWithTooltip,
         quoteQtyDisplayWithTooltip,
         OrderTimeWithTooltip,
-        txIdColumnComponent,
         priceDisplay,
         typeDisplay,
         sideDisplay,
         sideTypeColumn,
         tokensColumn,
         statusDisplay,
+        hiddenIDColumn
     } = orderRowConstants(orderRowConstantsProps);
 
     const handleKeyPress: React.KeyboardEventHandler<HTMLDivElement> = (
@@ -229,7 +232,6 @@ function OrderRow(props: propsIF) {
             // These will be shortcuts for the row menu. I will implement these at another time. -JR
         }
     };
-
     return (
         <>
             <OrderRowStyled
@@ -245,14 +247,15 @@ function OrderRow(props: propsIF) {
                 ref={currentLimitOrderActive ? activePositionRef : null}
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
+                data-type='infinite-scroll-row'
             >
+                {hiddenIDColumn}
                 {tableView === 'large' && OrderTimeWithTooltip}
                 {isAccountView && tokenPair}
-                {tableView === 'large' && <div>{IDWithTooltip}</div>}
-                {tableView === 'large' && !isAccountView && (
-                    <div>{walletWithTooltip}</div>
-                )}
-                {tableView !== 'large' && txIdColumnComponent}
+                {(tableView === 'large' ||
+                    (tableView === 'medium' && isAccountView)) &&
+                    IDWithTooltip}
+                {!isAccountView && walletWithTooltip}
                 {tableView !== 'small' && priceDisplay}
                 {tableView === 'large' && sideDisplay}
                 {tableView === 'large' && typeDisplay}
@@ -263,7 +266,7 @@ function OrderRow(props: propsIF) {
                 {tableView === 'medium' && tokensColumn}
                 {tableView !== 'small' && statusDisplay}
 
-                <div data-label='menu'>
+                <div data-label='menu' ref={observedRowRef}>
                     <OrdersMenu
                         limitOrder={limitOrder}
                         {...orderMenuProps}

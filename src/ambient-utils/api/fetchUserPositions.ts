@@ -5,6 +5,7 @@ import {
     getLimitOrderData,
     getPositionData,
     querySpotPrice,
+    filterLimitArray,
 } from '../dataLayer';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
@@ -91,6 +92,7 @@ const decorateUserPositions = async ({
     cachedEnsResolve: FetchAddrFn;
 }) => {
     const skipENSFetch = true;
+    const forceOnchainLiqUpdate = true;
     if (recordType == RecordType.LimitOrder) {
         return await Promise.all(
             (userPositions as LimitOrderServerIF[]).map(
@@ -105,11 +107,17 @@ const decorateUserPositions = async ({
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
-                        skipENSFetch,
                     );
                 },
             ),
-        );
+        ).then((updatedLimitOrderStates) => {
+            if (updatedLimitOrderStates.length > 0) {
+                const filteredData = filterLimitArray(updatedLimitOrderStates);
+                return filteredData;
+            } else {
+                return [];
+            }
+        });
     } else {
         // default to 'PositionIF'
         return await Promise.all(
@@ -126,6 +134,7 @@ const decorateUserPositions = async ({
                         cachedTokenDetails,
                         cachedEnsResolve,
                         skipENSFetch,
+                        forceOnchainLiqUpdate,
                     );
                 },
             ),
