@@ -84,19 +84,6 @@ export default function VaultRow(props: propsIF) {
         </FlexContainer>
     );
 
-    const vaultHeader = (
-        <div className={styles.vaultHeader}>
-            <span />
-            <span className={styles.poolName}></span>
-            <span>TVL</span>
-            <span className={styles.depositContainer}>
-                {showMobileVersion ? 'deposit' : 'My Deposit'}
-            </span>
-            <span className={styles.apyDisplay}>APY</span>
-            <span className={styles.actionButtonContainer} />
-        </div>
-    );
-
     const formattedAPR = getFormattedNumber({
         value: parseFloat(vault.apr),
         prefix: '',
@@ -109,7 +96,6 @@ export default function VaultRow(props: propsIF) {
         <>
             <div id={idForDOM} className={styles.mainContainer}>
                 <div className={styles.contentColumn}>
-                    {vaultHeader}
                     <div className={styles.mainContent}>
                         {tokenIconsDisplay}
                         <p className={styles.poolName}>
