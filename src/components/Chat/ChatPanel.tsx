@@ -1388,10 +1388,6 @@ function ChatPanel(props: propsIF) {
                     setSelectedMessageForReply={setSelectedMessageForReply}
                     setIsReplyButtonPressed={setIsReplyButtonPressed}
                     reactionPicker={reactionPicker}
-                    showPopUp={showPopUp}
-                    setShowPopUp={setShowPopUp}
-                    popUpText={popUpText}
-                    setPopUpText={setPopUpText}
                 />
             </>
         );

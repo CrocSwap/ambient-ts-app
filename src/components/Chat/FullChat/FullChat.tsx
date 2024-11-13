@@ -37,7 +37,6 @@ import Room from '../MessagePanel/Room/Room';
 import styles from './FullChat.module.css';
 import ChatNotificationBubble from '../ChatNotification/ChatNotificationBubble';
 import { Message } from '../Model/MessageModel';
-import { IoIosClose } from 'react-icons/io';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -101,10 +100,6 @@ interface FullChatPropsIF {
         SetStateAction<Message | undefined>
     >;
     reactionPicker: JSX.Element;
-    showPopUp: boolean;
-    setShowPopUp: React.Dispatch<React.SetStateAction<boolean>>;
-    popUpText: string;
-    setPopUpText: React.Dispatch<React.SetStateAction<string>>;
 }
 
 interface ChannelDisplayPropsIF {
@@ -250,24 +245,6 @@ function FullChat(props: FullChatPropsIF) {
         rooms.length === 0,
     ]);
 
-    function closePopUp() {
-        props.setShowPopUp(false);
-    }
-
-    const sendingLink = (
-        <div className={styles.pop_up}>
-            <p>{props.popUpText}</p>
-            <div className={styles.close_button}>
-                <IoIosClose
-                    onClick={() => closePopUp()}
-                    size={20}
-                    role='button'
-                    tabIndex={0}
-                    aria-label='Close information box.'
-                />
-            </div>
-        </div>
-    );
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
@@ -772,7 +749,6 @@ function FullChat(props: FullChatPropsIF) {
 
             {messageInput}
             {props.rndMentSkipper && props.rndMentSkipper()}
-            {props.showPopUp ? sendingLink : ''}
             <div id='thelastmessage' />
         </div>
     );
@@ -935,28 +911,6 @@ function FullChat(props: FullChatPropsIF) {
             />
             {props.rndShowPreviousMessages()}
             {props.isChatOpen && props.showPicker && props.reactionPicker}
-            {props.isChatOpen && props.showPicker && (
-                <div
-                    id='chatReactionWrapper'
-                    className={styles.reaction_picker_wrapper}
-                >
-                    <div
-                        className={styles.reaction_picker_close}
-                        onClick={() => {
-                            props.setShowPicker(false);
-                        }}
-                    >
-                        {' '}
-                        X{' '}
-                    </div>
-
-                    <Picker
-                        onEmojiClick={props.addReactionEmojiPickListener}
-                        pickerStyle={{ width: '100%' }}
-                        disableSkinTonePicker={true}
-                    />
-                </div>
-            )}
         </div>
     );
 }
