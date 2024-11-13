@@ -1,4 +1,7 @@
-import { uriToHttp } from '../../../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    uriToHttp,
+} from '../../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../../../../components/Global/TokenIcon/TokenIcon';
 import RemoveRangeWidth from '../../../../../components/RangeActionModal/RemoveRangeWidth/RemoveRangeWidth';
 import { FlexContainer } from '../../../../../styled/Common';
@@ -15,12 +18,15 @@ import { FaGasPump } from 'react-icons/fa';
 interface Props {
     token0: TokenIF;
     token1: TokenIF;
+    balanceToken1: bigint | undefined;
+    token1BalanceDisplayQty: string;
     onClose: () => void;
 }
 export default function VaultWithdraw(props: Props) {
-            // eslint-disable-next-line
-    const { token0, token1, onClose } = props;
-    const [showSubmitted, setShowSubmitted] = useState(false)
+    const { token1, onClose, token1BalanceDisplayQty } = props;
+    const [showSubmitted, setShowSubmitted] = useState(false);
+    const [removalPercentage, setRemovalPercentage] = useState(100);
+
     // const [showWithdrawDropdown, setShowWithdrawDropdown] = useState(false);
 
     // const dropdownRef = useRef<HTMLDivElement>(null);
@@ -105,10 +111,10 @@ export default function VaultWithdraw(props: Props) {
             <div className={styles.seperator}>
                 <span />
             </div>
-                <div className={styles.pooledContentContainer}>
-                Deposited { token1.symbol}
+            <div className={styles.pooledContentContainer}>
+                Deposited {token1.symbol}
                 <div className={styles.alignCenter}>
-                    1.69
+                    {token1BalanceDisplayQty}
                     <TokenIcon
                         token={token1}
                         src={uriToHttp(token1.logoURI)}
@@ -118,9 +124,14 @@ export default function VaultWithdraw(props: Props) {
                 </div>
             </div>
             <div className={styles.pooledContentRight}>
-                { token1.symbol} Removal Summary
+                {token1.symbol} Removal Summary
                 <div className={styles.alignCenter}>
-                    1,690.00
+                    {getFormattedNumber({
+                        value:
+                            removalPercentage *
+                            0.01 *
+                            parseFloat(token1BalanceDisplayQty),
+                    })}
                     <TokenIcon
                         token={token1}
                         src={uriToHttp(token1.logoURI)}
@@ -173,48 +184,49 @@ export default function VaultWithdraw(props: Props) {
             </div>
         </div>
     );
-    const gasPrice = '550k'
-        
- 
+    const gasPrice = '550k';
 
     const submittedButtonTitle = (
         <div className={styles.loading}>
             Submitting
             <span className={styles.dots}></span>
-
         </div>
-    )
+    );
 
     return (
         <Modal usingCustomHeader onClose={onClose}>
-        <ModalHeader
-            onClose={onClose}
-            title={'Withdraw'}
-            // onBackButton={handleGoBack}
-            // showBackButton={handleGoBack ? true: false}
-        />
-        <div className={styles.withdrawContainer}>
-            {tokensDisplay}
-            <RemoveRangeWidth
-                removalPercentage={10}
-                setRemovalPercentage={() => console.log('yes')}
+            <ModalHeader
+                onClose={onClose}
+                title={'Withdraw'}
+                // onBackButton={handleGoBack}
+                // showBackButton={handleGoBack ? true: false}
             />
-            {pooledDisplay}
-           
+            <div className={styles.withdrawContainer}>
+                {tokensDisplay}
+                <RemoveRangeWidth
+                    removalPercentage={removalPercentage}
+                    setRemovalPercentage={setRemovalPercentage}
+                />
+                {pooledDisplay}
+
                 {extraDetailsDisplay}
                 <div className={styles.gas_row}>
-    <FaGasPump size={15} /> {gasPrice ?? '…'}
-  </div>
-              
-            <Button
-                idForDOM='approve_token_a_for_swap_module'
-                style={{ textTransform: 'none' }}
-                title={showSubmitted ? submittedButtonTitle : 'Remove Liquidity'}
-                disabled={showSubmitted}
-                action={() => setShowSubmitted(true)}
-                flat
-            />
+                    <FaGasPump size={15} /> {gasPrice ?? '…'}
+                </div>
+
+                <Button
+                    idForDOM='approve_token_a_for_swap_module'
+                    style={{ textTransform: 'none' }}
+                    title={
+                        showSubmitted
+                            ? submittedButtonTitle
+                            : 'Remove Liquidity'
+                    }
+                    disabled={showSubmitted}
+                    action={() => setShowSubmitted(true)}
+                    flat
+                />
             </div>
-            </Modal>
+        </Modal>
     );
 }

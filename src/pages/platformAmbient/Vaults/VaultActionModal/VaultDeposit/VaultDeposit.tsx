@@ -21,7 +21,7 @@ interface Props {
 }
 export default function VaultDeposit(props: Props) {
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [ showSubmitted, setShowSubmitted] = useState(false)
+    const [showSubmitted, setShowSubmitted] = useState(false);
     // eslint-disable-next-line
     const { token0, token1, onClose } = props;
     // const {
@@ -201,7 +201,7 @@ export default function VaultDeposit(props: Props) {
     //             <p>0.3%</p>
     //         </div>
     //         </div>
-            
+
     //         <p>Output is estimated. You will swap up to 1.00ETH for USDC. You may swap less than 1.00ETH if the price moves beyond the limit shown above. You can increase the likelihood of swapping the full amound by increasing your slippage tolerance in the settings.</p>
     //     </div>
     // );
@@ -209,11 +209,10 @@ export default function VaultDeposit(props: Props) {
         <div className={styles.loading}>
             Submitting
             <span className={styles.dots}></span>
-
         </div>
-    )
+    );
 
-    const gasPrice = '550k'
+    const gasPrice = '550k';
     const includeWallet = true;
     return (
         <Modal usingCustomHeader onClose={onClose}>
@@ -224,7 +223,9 @@ export default function VaultDeposit(props: Props) {
                 showBackButton={showConfirmation}
             />
             <div className={styles.container}>
-            <p className={styles.disclaimer}>{`This deposit function uses "Zap Mode" to convert ${props.token1.symbol} deposit into vault position which holds both ${props.token1.symbol} and ${props.token0.symbol}. The value of a vault deposit will fluctuate with the value of both these tokens and their exchange rate.`}</p>
+                <p
+                    className={styles.disclaimer}
+                >{`This deposit function uses "Zap Mode" to convert ${props.token1.symbol} deposit into vault position which holds both ${props.token1.symbol} and ${props.token0.symbol}. The value of a vault deposit will fluctuate with the value of both these tokens and their exchange rate.`}</p>
                 <div className={styles.content}>
                     <div
                         className={styles.tokenQuantityContainer}
@@ -236,14 +237,10 @@ export default function VaultDeposit(props: Props) {
                     {includeWallet && !showConfirmation && walletContent}
                 </div>
 
-             
-                    <div className={styles.gas_row}>
-                      <FaGasPump size={15} /> {gasPrice ?? '…'}
-                    </div>
-                
-            
-                   
-                
+                <div className={styles.gas_row}>
+                    <FaGasPump size={15} /> {gasPrice ?? '…'}
+                </div>
+
                 <div className={styles.buttonContainer}>
                     <Button
                         idForDOM='vault_deposit_submit'
@@ -251,11 +248,8 @@ export default function VaultDeposit(props: Props) {
                         title={showSubmitted ? submittedButtonTitle : 'Submit'}
                         disabled={showSubmitted}
                         action={() => {
-                          
-                                setShowSubmitted(true);
-                            
+                            setShowSubmitted(true);
                         }}
-                        
                         flat
                     />
                 </div>

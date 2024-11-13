@@ -102,7 +102,9 @@ export default function VaultRow(props: propsIF) {
     );
 
     const token1BalanceDisplayQty = balanceToken1
-        ? toDisplayQty(balanceToken1, token1.decimals)
+        ? getFormattedNumber({
+              value: parseFloat(toDisplayQty(balanceToken1, token1.decimals)),
+          })
         : '...';
 
     const depositsDisplay = (
@@ -162,6 +164,8 @@ export default function VaultRow(props: propsIF) {
             <VaultWithdraw
                 token0={token0}
                 token1={token1}
+                balanceToken1={balanceToken1}
+                token1BalanceDisplayQty={token1BalanceDisplayQty}
                 onClose={closeModal}
             />
         );
