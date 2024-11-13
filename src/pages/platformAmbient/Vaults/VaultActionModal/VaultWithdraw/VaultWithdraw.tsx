@@ -47,7 +47,7 @@ export default function VaultWithdraw(props: Props) {
         vault,
         balanceMainAsset,
     } = props;
-    const [showSubmitted, setShowSubmitted] = useState(true);
+    const [showSubmitted, setShowSubmitted] = useState(false);
     const [isZapOn, setIsZapOn] = useState(true);
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
@@ -272,17 +272,17 @@ export default function VaultWithdraw(props: Props) {
 
             <div className={styles.withdrawContainer}>
                 {tokensDisplay}
-            <div className={styles.zapContainer}>
-                <p>Zap In</p>
+                <div className={styles.zapContainer}>
+                    <p>Zap In</p>
 
-                <Toggle
-                    isOn={isZapOn}
-                    handleToggle={() => setIsZapOn(!isZapOn)}
-                    Width={36}
-                    id='zap_toggle_vault_withdraw'
-                    disabled={false}
-                />
-            </div>
+                    <Toggle
+                        isOn={isZapOn}
+                        handleToggle={() => setIsZapOn(!isZapOn)}
+                        Width={36}
+                        id='zap_toggle_vault_withdraw'
+                        disabled={false}
+                    />
+                </div>
                 <RemoveRangeWidth
                     removalPercentage={removalPercentage}
                     setRemovalPercentage={setRemovalPercentage}
@@ -294,20 +294,19 @@ export default function VaultWithdraw(props: Props) {
                     <FaGasPump size={15} /> {withdrawGasPriceinDollars ?? '…'}
                 </div>
                 <div className={styles.buttonContainer}>
-
-                <Button
-                    idForDOM='approve_token_a_for_swap_module'
-                    style={{ textTransform: 'none' }}
-                    title={
-                        showSubmitted
-                            ? submittedButtonTitle
-                            : 'Remove Liquidity'
-                    }
-                    disabled={showSubmitted}
-                    action={() => submitWithdraw()}
-                    flat
+                    <Button
+                        idForDOM='approve_token_a_for_swap_module'
+                        style={{ textTransform: 'none' }}
+                        title={
+                            showSubmitted
+                                ? submittedButtonTitle
+                                : 'Remove Liquidity'
+                        }
+                        disabled={showSubmitted}
+                        action={() => submitWithdraw()}
+                        flat
                     />
-                    </div>
+                </div>
             </div>
         </Modal>
     );
