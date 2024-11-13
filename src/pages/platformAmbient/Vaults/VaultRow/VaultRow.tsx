@@ -2,14 +2,21 @@ import styles from './VaultRow.module.css';
 import tempestLogoColor from './tempestLogoColor.svg';
 // import tempestLogo from './tempestLogo.svg';
 import { FlexContainer } from '../../../../styled/Common';
-import { uriToHttp } from '../../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    uriToHttp,
+} from '../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import VaultActionModal from '../VaultActionModal/VaultActionModal';
 import { VaultIF } from '../../../../ambient-utils/types';
-import { useContext } from 'react';
-import { AppStateContext, TokenContext } from '../../../../contexts';
+import { useContext, useState } from 'react';
+import {
+    AppStateContext,
+    UserDataContext,
+    TokenContext,
+} from '../../../../contexts';
 import { formatDollarAmount } from '../../../../utils/numbers';
 
 interface propsIF {
@@ -19,23 +26,23 @@ interface propsIF {
 export default function VaultRow(props: propsIF) {
     const { idForDOM, vault } = props;
     const [isOpen, openModal, closeModal] = useModal();
-
+    const [type, setType] = useState<'Deposit' | 'Withdraw'>('Deposit');
 
     const { tokens } = useContext(TokenContext);
+    const { isUserConnected } = useContext(UserDataContext);
 
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const firstToken = tokens.getTokenByAddress(vault.token0Address);
-    const secondToken = tokens.getTokenByAddress(vault.token1Address);
-
-    if (Number(chainId) !== vault.chainId || !firstToken || !secondToken) {
-        return null;
-    }
+    const token0 = tokens.getTokenByAddress(vault.token0Address);
+    const token1 = tokens.getTokenByAddress(vault.token1Address);
 
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
+    if (Number(chainId) !== vault.chainId || !token0 || !token1) {
+        return null;
+    }
 
     const tokenIconsDisplay = (
         <FlexContainer alignItems='center' gap={5} style={{ flexShrink: 0 }}>
@@ -43,15 +50,15 @@ export default function VaultRow(props: propsIF) {
                 <img src={tempestLogoColor} alt='tempest' />
             </div>
             <TokenIcon
-                token={firstToken}
-                src={uriToHttp(firstToken.logoURI)}
-                alt={firstToken.symbol}
+                token={token1}
+                src={uriToHttp(token1.logoURI)}
+                alt={token1.symbol}
                 size={showMobileVersion ? 'm' : '2xl'}
             />
             <TokenIcon
-                token={secondToken}
-                src={uriToHttp(secondToken.logoURI)}
-                alt={secondToken.symbol}
+                token={token0}
+                src={uriToHttp(token0.logoURI)}
+                alt={token0.symbol}
                 size={showMobileVersion ? 'm' : '2xl'}
             />
         </FlexContainer>
@@ -69,18 +76,9 @@ export default function VaultRow(props: propsIF) {
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                 1,000
                 <TokenIcon
-                    token={firstToken}
-                    src={uriToHttp(firstToken.logoURI)}
-                    alt={firstToken.symbol}
-                    size={'m'}
-                />
-            </FlexContainer>
-            <FlexContainer flexDirection='row' alignItems='center' gap={4}>
-                1,000
-                <TokenIcon
-                    token={secondToken}
-                    src={uriToHttp(secondToken.logoURI)}
-                    alt={secondToken.symbol}
+                    token={token1}
+                    src={uriToHttp(token1.logoURI)}
+                    alt={token1.symbol}
                     size={'m'}
                 />
             </FlexContainer>
@@ -100,41 +98,70 @@ export default function VaultRow(props: propsIF) {
         </div>
     );
 
-    const randomNum = Math.floor(Math.random() * 100);
-    const isEven = randomNum % 2 === 0;
+    const formattedAPR = getFormattedNumber({
+        value: parseFloat(vault.apr),
+        prefix: '',
+        suffix: '%',
+        minFracDigits: 2,
+        maxFracDigits: 2,
+    });
+
+    function handleOpenWithdrawModal() {
+        setType('Withdraw')
+        openModal()
+    }
+    function handleOpenDepositModal() {
+        setType('Deposit')
+        openModal()
+    }
 
     return (
         <>
-        <div id={idForDOM} className={styles.mainContainer}>
-        <div className={styles.contentColumn}>
-                {vaultHeader}
-                <div className={styles.mainContent}>
-                    {tokenIconsDisplay}
-                    <p className={styles.poolName}>
-                        {firstToken.symbol} / {secondToken.symbol}
-                    </p>
-                    <p className={styles.tvlDisplay}>
-                        {formatDollarAmount(parseFloat(vault.tvlUsd))}
-                    </p>
-                    {depositsDisplay}
-                    <p
-                        className={styles.apyDisplay}
-                        style={{ color: 'var(--other-green' }}
+            <div id={idForDOM} className={styles.mainContainer}>
+                <div className={styles.contentColumn}>
+                    {vaultHeader}
+                    <div className={styles.mainContent}>
+                        {tokenIconsDisplay}
+                        <p className={styles.poolName}>
+                            {token1.symbol} / {token0.symbol}
+                        </p>
+                        <p className={styles.tvlDisplay}>
+                            {formatDollarAmount(parseFloat(vault.tvlUsd))}
+                        </p>
+                        {depositsDisplay}
+                        <p
+                            className={styles.apyDisplay}
+                            style={{ color: 'var(--other-green' }}
                         >
-                         {`${vault.apr}%`}
-                    </p>
-                    <div className={styles.actionButtonContainer}>
-                        <button className={styles.actionButton} onClick={openModal}>Deposit</button>
-                        {isEven && (
-                            <button className={styles.actionButton} onClick={openModal}>
-                                Withdraw
+                            {formattedAPR}
+                        </p>
+                        <div className={styles.actionButtonContainer}>
+                            <button
+                                className={styles.actionButton}
+                                onClick={handleOpenDepositModal}
+                            >
+                                Deposit
                             </button>
-                        )}
+                            {isUserConnected && (
+                                <button
+                                    className={styles.actionButton}
+                                    onClick={handleOpenWithdrawModal}
+                                >
+                                    Withdraw
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-            </div>
-            {isOpen && <VaultActionModal type={isEven ? 'Withdraw' : 'Deposit'} onClose={closeModal} firstToken={firstToken} secondToken={secondToken} />}
-                        </>
+            {isOpen && (
+                <VaultActionModal
+                    type={type}
+                    onClose={closeModal}
+                    token0={token0}
+                    token1={token1}
+                />
+            )}
+        </>
     );
 }

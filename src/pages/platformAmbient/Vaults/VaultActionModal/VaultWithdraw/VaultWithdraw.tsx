@@ -11,23 +11,20 @@ import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TokenIF } from '../../../../../ambient-utils/types';
 
 interface Props {
-
-    firstToken: TokenIF;
-    secondToken: TokenIF;
+    token0: TokenIF;
+    token1: TokenIF;
 }
 export default function VaultWithdraw(props: Props) {
-    const { firstToken, secondToken } = props;
-    const [showWithdrawDropdown, setShowWithdrawDropdown] = useState(false)
-    
+    const { token0, token1 } = props;
+    const [showWithdrawDropdown, setShowWithdrawDropdown] = useState(false);
+
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const clickOutsideHandler = () => {
-        setShowWithdrawDropdown(false)
-        
+        setShowWithdrawDropdown(false);
     };
 
     useOnClickOutside(dropdownRef, clickOutsideHandler);
-
 
     const tokensDisplay = (
         <FlexContainer
@@ -37,15 +34,15 @@ export default function VaultWithdraw(props: Props) {
             style={{ flexShrink: 0 }}
         >
             <TokenIcon
-                token={firstToken}
-                src={uriToHttp(firstToken.logoURI)}
-                alt={firstToken.symbol}
+                token={token0}
+                src={uriToHttp(token0.logoURI)}
+                alt={token0.symbol}
                 size={'xl'}
             />
             <TokenIcon
-                token={secondToken}
-                src={uriToHttp(secondToken.logoURI)}
-                alt={secondToken.symbol}
+                token={token1}
+                src={uriToHttp(token1.logoURI)}
+                alt={token1.symbol}
                 size={'xl'}
             />
             <p className={styles.poolName}>ETH / USDC</p>
@@ -55,15 +52,20 @@ export default function VaultWithdraw(props: Props) {
     const withdrawDropdown = (
         <div className={styles.withdrawDropdownContainer}>
             <h3>Withdraw as</h3>
-           
 
             <div className={styles.dropdownContainer} ref={dropdownRef}>
-                <button onClick={() => setShowWithdrawDropdown(!showWithdrawDropdown)}>
+                <button
+                    onClick={() =>
+                        setShowWithdrawDropdown(!showWithdrawDropdown)
+                    }
+                >
                     ETH / USDC <RiArrowDropDownLine />
                 </button>
-                {showWithdrawDropdown && <section className={styles.dropdownContent}>
-                  i sm dropdown content
-                </section>}
+                {showWithdrawDropdown && (
+                    <section className={styles.dropdownContent}>
+                        i sm dropdown content
+                    </section>
+                )}
             </div>
         </div>
     );
@@ -75,9 +77,9 @@ export default function VaultWithdraw(props: Props) {
                 <div className={styles.alignCenter}>
                     1.69
                     <TokenIcon
-                        token={firstToken}
-                        src={uriToHttp(firstToken.logoURI)}
-                        alt={firstToken.symbol}
+                        token={token0}
+                        src={uriToHttp(token0.logoURI)}
+                        alt={token0.symbol}
                         size={'s'}
                     />
                 </div>
@@ -87,9 +89,9 @@ export default function VaultWithdraw(props: Props) {
                 <div className={styles.alignCenter}>
                     1,690.00
                     <TokenIcon
-                        token={secondToken}
-                        src={uriToHttp(secondToken.logoURI)}
-                        alt={secondToken.symbol}
+                        token={token1}
+                        src={uriToHttp(token1.logoURI)}
+                        alt={token1.symbol}
                         size={'s'}
                     />
                 </div>
@@ -103,9 +105,9 @@ export default function VaultWithdraw(props: Props) {
                 <div className={styles.alignCenter}>
                     1.69
                     <TokenIcon
-                        token={firstToken}
-                        src={uriToHttp(firstToken.logoURI)}
-                        alt={firstToken.symbol}
+                        token={token0}
+                        src={uriToHttp(token0.logoURI)}
+                        alt={token0.symbol}
                         size={'s'}
                     />
                 </div>
@@ -115,9 +117,9 @@ export default function VaultWithdraw(props: Props) {
                 <div className={styles.alignCenter}>
                     1,690.00
                     <TokenIcon
-                        token={secondToken}
-                        src={uriToHttp(secondToken.logoURI)}
-                        alt={secondToken.symbol}
+                        token={token1}
+                        src={uriToHttp(token1.logoURI)}
+                        alt={token1.symbol}
                         size={'s'}
                     />
                 </div>
@@ -154,16 +156,13 @@ export default function VaultWithdraw(props: Props) {
             {withdrawDropdown}
             {extraDetailsDisplay}
             <Button
-                        idForDOM='approve_token_a_for_swap_module'
-                        style={{ textTransform: 'none' }}
-                        title={
-                            'Remove Liquidity'
-                        }
-                        disabled={false}
-                        action={() => console.log('withdraw')}
-                        flat
-                    />
-              
+                idForDOM='approve_token_a_for_swap_module'
+                style={{ textTransform: 'none' }}
+                title={'Remove Liquidity'}
+                disabled={false}
+                action={() => console.log('withdraw')}
+                flat
+            />
         </div>
     );
 }

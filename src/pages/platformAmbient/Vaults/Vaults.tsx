@@ -1,15 +1,20 @@
 // START: Import React and Dongles
-import { memo } from 'react';
+import { memo, useContext } from 'react';
 
 import styles from './Vaults.module.css';
 import VaultRow from './VaultRow/VaultRow';
 import { VaultIF } from '../../../ambient-utils/types';
-import { vaultData } from './mockVaultData';
+import { allVaultsData } from './mockVaultData';
+import { AppStateContext } from '../../../contexts';
 
 function Vaults() {
     // !important:  once we have mock data, change the type on this
     // !important:  ... value to `VaultIF[]` and then fix linter
     // !important:  ... warnings which manifest in response
+
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const vaultHeader = (
         <div className={styles.vaultHeader}>
@@ -30,16 +35,18 @@ function Vaults() {
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
-                    {vaultData.map((vault: VaultIF) => {
-                        const KEY_SLUG = 'vault_row_';
-                        return (
-                            <VaultRow
-                                key={KEY_SLUG + JSON.stringify(vault)}
-                                idForDOM={KEY_SLUG + vault.toString()}
-                                vault={vault}
-                            />
-                        );
-                    })}
+                    {allVaultsData
+                        .filter((vault) => vault.chainId === Number(chainId))
+                        .map((vault: VaultIF) => {
+                            const KEY_SLUG = 'vault_row_';
+                            return (
+                                <VaultRow
+                                    key={KEY_SLUG + JSON.stringify(vault)}
+                                    idForDOM={KEY_SLUG + vault.toString()}
+                                    vault={vault}
+                                />
+                            );
+                        })}
                 </div>
             </div>
         </div>

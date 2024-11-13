@@ -9,11 +9,11 @@ import VaultWithdraw from './VaultWithdraw/VaultWithdraw';
 interface Props {
     onClose: () => void;
     type: 'Withdraw' | 'Deposit';
-    firstToken: TokenIF;
-    secondToken: TokenIF;
+    token0: TokenIF;
+    token1: TokenIF;
 }
 export default function VaultActionModal(props: Props) {
-    const { onClose, type, firstToken, secondToken } = props;
+    const { onClose, type,token0, token1 } = props;
 console.log({type})
     return (
         <Modal usingCustomHeader onClose={onClose}>
@@ -29,14 +29,14 @@ console.log({type})
             <div className={styles.main_content}>
                 {type === 'Deposit' && (
                     <VaultDeposit
-                        firstToken={firstToken}
-                        secondToken={secondToken}
+                        token0={token0}
+                        token1={token1}
                     />
                 )}
                 {type === 'Withdraw' && (
                     <VaultWithdraw
-                        firstToken={firstToken}
-                        secondToken={secondToken}
+                        token0={token0}
+                        token1={token1}
                     />
                 )}
 
