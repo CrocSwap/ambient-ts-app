@@ -24,6 +24,8 @@ import VaultWithdraw from '../VaultActionModal/VaultWithdraw/VaultWithdraw';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import TooltipComponent from '../../../../components/Global/TooltipComponent/TooltipComponent';
+import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
+import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 
 interface propsIF {
     idForDOM: string;
@@ -96,20 +98,26 @@ export default function VaultRow(props: propsIF) {
     const tokenIconsDisplay = (
         <FlexContainer alignItems='center' gap={5} style={{ flexShrink: 0 }}>
             <div className={styles.tempestDisplay}>
-                <img src={tempestLogoColor} alt='tempest' />
+                <DefaultTooltip title={'Tempest Finance'}>
+                    <img src={tempestLogoColor} alt='tempest' />
+                </DefaultTooltip>
             </div>
-            <TokenIcon
-                token={mainAsset}
-                src={uriToHttp(mainAsset.logoURI)}
-                alt={mainAsset.symbol}
-                size={showMobileVersion ? 'm' : '2xl'}
-            />
-            <TokenIcon
-                token={secondaryAsset}
-                src={uriToHttp(secondaryAsset.logoURI)}
-                alt={secondaryAsset.symbol}
-                size={showMobileVersion ? 'm' : '2xl'}
-            />
+            <IconWithTooltip title={mainAsset.symbol} placement='bottom'>
+                <TokenIcon
+                    token={mainAsset}
+                    src={uriToHttp(mainAsset.logoURI)}
+                    alt={mainAsset.symbol}
+                    size={showMobileVersion ? 'm' : '2xl'}
+                />
+            </IconWithTooltip>
+            <IconWithTooltip title={secondaryAsset.symbol} placement='bottom'>
+                <TokenIcon
+                    token={secondaryAsset}
+                    src={uriToHttp(secondaryAsset.logoURI)}
+                    alt={secondaryAsset.symbol}
+                    size={showMobileVersion ? 'm' : '2xl'}
+                />{' '}
+            </IconWithTooltip>
         </FlexContainer>
     );
 
@@ -222,6 +230,10 @@ export default function VaultRow(props: propsIF) {
                             style={{ color: 'var(--other-green' }}
                         >
                             {formattedAPR}
+                            <TooltipComponent
+                                placement='top-end'
+                                title='APR estimates provided by vault provider.'
+                            />
                         </p>
                         <div className={styles.actionButtonContainer}>
                             <button

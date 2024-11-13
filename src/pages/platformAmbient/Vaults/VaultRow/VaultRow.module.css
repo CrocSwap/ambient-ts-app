@@ -81,8 +81,12 @@
 }
 
 .apyDisplay {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
     text-align: right;
-
     /* medium */
     font-family: 'Lexend Deca';
     font-size: 18px;
