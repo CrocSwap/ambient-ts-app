@@ -62,13 +62,13 @@ export default function VaultRow(props: propsIF) {
                             vault.token1Address,
                         );
 
-                        const balanceToken1Response =
-                            await tempestVault.balanceToken1(
-                                '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc', // !! remove before deploy to prod
-                            );
-
                         // const balanceToken1Response =
-                        //     await tempestVault.balanceToken1(userAddress);
+                        //     await tempestVault.balanceToken1(
+                        //         '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
+                        //     );
+
+                        const balanceToken1Response =
+                            await tempestVault.balanceToken1(userAddress);
 
                         setBalanceToken1(balanceToken1Response);
                     } catch (err) {
