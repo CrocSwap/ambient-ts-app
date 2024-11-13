@@ -121,6 +121,19 @@
     font-weight: 300;
     line-height: normal;
     height: 25px;
+    transition: all var(--animation) ease-in-out;
+    cursor: pointer;
+}
+
+.actionButton:hover{
+    color: var(--text1);
+}
+
+.disabledButton {
+    pointer-events: none;
+    color: var(--text2);
+    background-color: var(--dark2);
+    border: 1px solid transparent;
 }
 
 @media only screen and (max-width: 768px) {
@@ -142,7 +155,7 @@
 @media only screen and (max-width: 428px) {
     .mainContent,
     .vaultHeader {
-        grid-template-columns: 50px repeat(2, 1fr) 80px ;
+        grid-template-columns: 50px repeat(2, 1fr) 80px;
     }
 
     .tempestDisplay {
@@ -153,7 +166,7 @@
         word-wrap: break-word;
     }
 
-    .apyDisplay{
+    .apyDisplay {
         display: none;
     }
 }
