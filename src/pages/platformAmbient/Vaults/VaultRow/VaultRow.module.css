@@ -5,6 +5,7 @@
     width: 100%;
     padding: 8px;
     display: grid;
+    height: 80px;
     grid-template-columns: 120px repeat(4, 1fr) 100px;
     align-items: center;
 }
