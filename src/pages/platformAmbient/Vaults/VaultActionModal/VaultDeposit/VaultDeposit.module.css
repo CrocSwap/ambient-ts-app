@@ -1,0 +1,96 @@
+.container{
+    width: 100%;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 348px;
+    position: relative;
+}
+.content{
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    background: var(--dark2);
+    border-radius: 1rem;
+    gap: 8px;
+    padding: 8px 8px 8px 16px;
+    /* height: 81px; */
+}
+
+.tokenQuantityContainer {
+    display: grid;
+    grid-template-columns: 1fr 145px;
+    min-height: 40px;
+    margin-bottom: 8px;
+}
+
+.tokenQuantityInput {
+    font-weight: 300;
+    font-size: var(--header1-size);
+    line-height: var(--header1-lh);
+    color: var(--text1);
+    text-align: start;
+    width: 95%;
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0;
+    max-height: 23px;
+    margin: 8px 0;
+    border: none;
+    outline: 0;
+    background-color: transparent;
+    background-clip: padding-box;
+    transition:
+        border-color var(--animation-speed) ease-in-out,
+        box-shadow var(--animation-speed) ease-in-out;
+    font-family: var(--mono);
+}
+
+.tokenQuantityInput::placeholder {
+    color: var(--text3);
+}
+
+.tokenSelectButton {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--dark1);
+    outline: none;
+    border: 0.5px solid transparent;
+    padding: 0 4px;
+    height: 40px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text1);
+}
+
+.tokenSelectButton:hover {
+    border: 0.5px solid var(--accent1);
+    color: var(--accent1);
+    box-shadow: 0px 0px 20px 0px rgba(115, 113, 252, 0.25) inset;
+}
+
+.tokenSelectButton:focus-visible {
+    border: 1px solid var(--text1);
+}
+
+.justDisplay {
+    cursor: default;
+    pointer-events: none;
+    padding-left: 8px;
+    padding-right: 1.5rem;
+    
+}
+
+.buttonContainer{
+    width: 90%;
+   position: absolute;
+   bottom: 16px;
+   right: 0;
+   left: 0;
+   margin: 0 auto;
+}
