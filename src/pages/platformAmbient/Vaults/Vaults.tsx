@@ -30,13 +30,12 @@ function Vaults() {
 
     // vault data from tempest API
     const [vaultData, setVaultData] = useState(null);
-    console.log(vaultData);
+    // console.log(vaultData);
     false && vaultData;
 
     // logic to fetch vault data from API
     useEffect(() => {
         async function getData(): Promise<void> {
-            console.log('fetching!');
             const endpoint = 'https://protocol-service-api.tempestfinance.xyz/api/v1/vaults';
             const response = await fetch(endpoint);
             const { data } = await response.json();
@@ -45,7 +44,7 @@ function Vaults() {
         // run the first fetch immediately
         getData();
         // run subsequent fetches on an interval
-        const period = isUserIdle ? 120000 : 30000;
+        const period = isUserIdle ? 120000 : 60000;
         const interval = setInterval(getData, period);
         // clear the interval when this component dismounts
         return () => clearInterval(interval);
