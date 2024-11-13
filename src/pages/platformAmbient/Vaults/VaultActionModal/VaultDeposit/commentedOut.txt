@@ -1,0 +1,49 @@
+    // const extraInfo = [
+    //     {
+    //         title: 'Expected Output',
+    //         tooltipTitle:
+    //             'Expected Conversion Rate After Price Impact and Provider Fee',
+    //         data: '...',
+    //         placement: 'bottom',
+    //     },
+    //     {
+    //         title: 'Price Impact',
+    //         tooltipTitle: 'Expected Pool Price After Swap',
+    //         data: '...',
+    //         placement: 'bottom',
+    //     },
+    //     {
+    //         title: 'Slippage Tolerance',
+    //         tooltipTitle: 'Expected Pool Price After Swap',
+    //         data: '...',
+    //         placement: 'bottom',
+    //     },
+    //     {
+    //         title: 'Liquidity Provider Fee',
+    //         tooltipTitle: 'Expected Pool Price After Swap',
+    //         data: '...',
+    //         placement: 'bottom',
+    //     },
+    // ];
+
+    // const confirmationDetails = (
+    //     <div className={styles.confContainer}>
+
+    //     <div className={styles.confDetails}>
+    //         <div className={styles.confRow}>
+    //             <p>Current Price</p>
+    //             <p>1,690</p>
+    //         </div>
+    //         <div className={styles.confRow}>
+    //             <p>Price Limit</p>
+    //             <p>1,690</p>
+    //         </div>
+    //         <div className={styles.confRow}>
+    //             <p>Slippage</p>
+    //             <p>0.3%</p>
+    //         </div>
+    //         </div>
+
+    //         <p>Output is estimated. You will swap up to 1.00ETH for USDC. You may swap less than 1.00ETH if the price moves beyond the limit shown above. You can increase the likelihood of swapping the full amound by increasing your slippage tolerance in the settings.</p>
+    //     </div>
+    // );

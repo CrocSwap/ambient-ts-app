@@ -4,7 +4,7 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-    min-height: 348px;
+    min-height: 420px;
     position: relative;
     width: 398px;
 }
@@ -31,6 +31,7 @@
     grid-template-columns: 1fr 145px;
     min-height: 40px;
     margin-bottom: 8px;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .tokenQuantityInput {
@@ -155,6 +156,17 @@ font-style: normal;
 font-weight: 300;
 line-height: normal;
 padding: 0 8px;
+}
+
+.zapContainer{
+    background: var(--dark2);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    border-radius: 4px;
+    color: var(--text2)
 }
 .loading {
     display: flex;
