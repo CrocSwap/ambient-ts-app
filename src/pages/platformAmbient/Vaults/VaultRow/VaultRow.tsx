@@ -190,10 +190,12 @@ export default function VaultRow(props: propsIF) {
                             <button
                                 className={styles.actionButton}
                                 onClick={handleOpenDepositModal}
+                                disabled={!isUserConnected}
                             >
                                 Deposit
                             </button>
-                            {isUserConnected && balanceToken1 !== 0n && (
+                            {isUserConnected && (
+                                // {isUserConnected && !!balanceToken1 && (
                                 <button
                                     className={styles.actionButton}
                                     onClick={handleOpenWithdrawModal}
