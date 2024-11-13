@@ -18,6 +18,7 @@ import {
     TokenContext,
 } from '../../../../contexts';
 import { formatDollarAmount } from '../../../../utils/numbers';
+import { RiExternalLinkLine } from 'react-icons/ri';
 
 interface propsIF {
     idForDOM: string;
@@ -25,6 +26,7 @@ interface propsIF {
 }
 export default function VaultRow(props: propsIF) {
     const { idForDOM, vault } = props;
+    console.log(vault);
     const [isOpen, openModal, closeModal] = useModal();
     const [type, setType] = useState<'Deposit' | 'Withdraw'>('Deposit');
 
@@ -102,14 +104,29 @@ export default function VaultRow(props: propsIF) {
         openModal()
     }
 
+    function navigateExternal(): void {
+        const goToExternal = (url: string) => window.open(url, '_blank');
+        if (vault.chainId === 534352) {
+            const destination: string = 'https://scrollscan.com/address/' + vault.address;
+            goToExternal(destination);
+        } else if (vault.chainId === 1) {
+            const destination: string = 'https://etherscan.io/address/' + vault.address;
+            goToExternal(destination);
+        }
+    }
+
     return (
         <>
             <div id={idForDOM} className={styles.mainContainer}>
                 <div className={styles.contentColumn}>
                     <div className={styles.mainContent}>
                         {tokenIconsDisplay}
-                        <p className={styles.poolName}>
-                            {token1.symbol} / {token0.symbol}
+                        <p
+                            className={styles.poolName}
+                            onClick={() => navigateExternal()}
+                        >
+                            <span>{token1.symbol} / {token0.symbol}</span>
+                            <RiExternalLinkLine size={20} />
                         </p>
                         <p className={styles.tvlDisplay}>
                             {formatDollarAmount(parseFloat(vault.tvlUsd))}
