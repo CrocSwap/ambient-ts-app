@@ -223,7 +223,7 @@ export default function VaultDeposit(props: Props) {
                 showBackButton={showConfirmation}
             />
             <div className={styles.container}>
-            <p className={styles.disclaimer}>{`This deposit function uses "Zap Mode" to convert ${props.token1.symbol} deposit into vault position which hold both ${props.token1.symbol} and ${props.token0.symbol}. The value of a vault deposit will fluctuate with the value of both these tokens and their exchange rate.`}</p>
+            <p className={styles.disclaimer}>{`This deposit function uses "Zap Mode" to convert ${props.token1.symbol} deposit into vault position which holds both ${props.token1.symbol} and ${props.token0.symbol}. The value of a vault deposit will fluctuate with the value of both these tokens and their exchange rate.`}</p>
                 <div className={styles.content}>
                     <div
                         className={styles.tokenQuantityContainer}
