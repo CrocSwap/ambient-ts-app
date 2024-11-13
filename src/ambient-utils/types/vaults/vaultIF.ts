@@ -31,8 +31,10 @@ export interface VaultIF {
     koSize: number;
     token0InitPriceUsd: string;
     token1InitPriceUsd: string;
+    aprToken0: string;
+    aprToken1: string;
     aprUnitTokenPriceUsd: string;
+    aprRebaseUnitToken: string;
     tvlUsd: string;
-    tvlMainAsset: string;
     apr: string;
 }

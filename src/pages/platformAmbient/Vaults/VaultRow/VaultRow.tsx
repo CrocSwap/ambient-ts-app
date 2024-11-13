@@ -139,7 +139,7 @@ export default function VaultRow(props: propsIF) {
     );
 
     const formattedAPR = getFormattedNumber({
-        value: parseFloat(vault.apr),
+        value: parseFloat(vault.apr) * 100,
         prefix: '',
         suffix: '%',
         minFracDigits: 2,
@@ -177,11 +177,12 @@ export default function VaultRow(props: propsIF) {
         const goToExternal = (url: string) => window.open(url, '_blank');
         if (Number(vault.chainId) === 534352) {
             const destination: string =
-                'https://app.tempestdev.xyz/vaults/scroll/' + vault.address;
+                'https://app.tempestfinance.xyz/vaults/scroll/' + vault.address;
             goToExternal(destination);
         } else if (Number(vault.chainId) === 1) {
             const destination: string =
-                'https://app.tempestdev.xyz/vaults/ethereum/' + vault.address;
+                'https://app.tempestfinance.xyz/vaults/ethereum/' +
+                vault.address;
             goToExternal(destination);
         }
     }
