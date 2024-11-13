@@ -12,7 +12,7 @@ import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/S
 import Button from '../../../../../components/Form/Button';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
-import { ExtraInfo } from '../../../../../components/Trade/TradeModules/ExtraInfo/ExtraInfo';
+import { FaGasPump } from 'react-icons/fa';
 
 interface Props {
     token0: TokenIF;
@@ -69,7 +69,7 @@ export default function VaultDeposit(props: Props) {
     const [displayValue, setDisplayValue] = useState<string>('');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleTokenInputEvent = (evt: any) => console.log(evt);
-    const token = token0;
+    const token = token1;
 
     const fieldId = 'vault_deposit_input';
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -156,33 +156,33 @@ export default function VaultDeposit(props: Props) {
         </button>
     );
 
-    const extraInfo = [
-        {
-            title: 'Expected Output',
-            tooltipTitle:
-                'Expected Conversion Rate After Price Impact and Provider Fee',
-            data: '...',
-            placement: 'bottom',
-        },
-        {
-            title: 'Price Impact',
-            tooltipTitle: 'Expected Pool Price After Swap',
-            data: '...',
-            placement: 'bottom',
-        },
-        {
-            title: 'Slippage Tolerance',
-            tooltipTitle: 'Expected Pool Price After Swap',
-            data: '...',
-            placement: 'bottom',
-        },
-        {
-            title: 'Liquidity Provider Fee',
-            tooltipTitle: 'Expected Pool Price After Swap',
-            data: '...',
-            placement: 'bottom',
-        },
-    ];
+    // const extraInfo = [
+    //     {
+    //         title: 'Expected Output',
+    //         tooltipTitle:
+    //             'Expected Conversion Rate After Price Impact and Provider Fee',
+    //         data: '...',
+    //         placement: 'bottom',
+    //     },
+    //     {
+    //         title: 'Price Impact',
+    //         tooltipTitle: 'Expected Pool Price After Swap',
+    //         data: '...',
+    //         placement: 'bottom',
+    //     },
+    //     {
+    //         title: 'Slippage Tolerance',
+    //         tooltipTitle: 'Expected Pool Price After Swap',
+    //         data: '...',
+    //         placement: 'bottom',
+    //     },
+    //     {
+    //         title: 'Liquidity Provider Fee',
+    //         tooltipTitle: 'Expected Pool Price After Swap',
+    //         data: '...',
+    //         placement: 'bottom',
+    //     },
+    // ];
 
     const confirmationDetails = (
         <div className={styles.confContainer}>
@@ -213,6 +213,7 @@ export default function VaultDeposit(props: Props) {
         </div>
     )
 
+    const gasPrice = '1223'
     const includeWallet = true;
     return (
         <Modal usingCustomHeader onClose={onClose}>
@@ -234,14 +235,14 @@ export default function VaultDeposit(props: Props) {
                     {includeWallet && !showConfirmation && walletContent}
                 </div>
 
-            { showConfirmation ? confirmationDetails :   <ExtraInfo
-                    extraInfo={extraInfo}
-                    conversionRate={'conversionRate'}
-                    gasPrice={'1234'}
-                    showDropdown={true}
-                    showWarning={false}
-                    priceImpactExceedsThreshold={false}
-                />}
+                {showConfirmation ? confirmationDetails : (
+                    <div className={styles.gas_row}>
+                      <FaGasPump size={15} /> {gasPrice ?? '…'}
+                    </div>
+                ) 
+            
+                   
+                }
                 <div className={styles.buttonContainer}>
                     <Button
                         idForDOM='vault_deposit_submit'
