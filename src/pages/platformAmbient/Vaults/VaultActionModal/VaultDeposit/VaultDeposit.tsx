@@ -184,27 +184,27 @@ export default function VaultDeposit(props: Props) {
     //     },
     // ];
 
-    const confirmationDetails = (
-        <div className={styles.confContainer}>
+    // const confirmationDetails = (
+    //     <div className={styles.confContainer}>
 
-        <div className={styles.confDetails}>
-            <div className={styles.confRow}>
-                <p>Current Price</p>
-                <p>1,690</p>
-            </div>
-            <div className={styles.confRow}>
-                <p>Price Limit</p>
-                <p>1,690</p>
-            </div>
-            <div className={styles.confRow}>
-                <p>Slippage</p>
-                <p>0.3%</p>
-            </div>
-            </div>
+    //     <div className={styles.confDetails}>
+    //         <div className={styles.confRow}>
+    //             <p>Current Price</p>
+    //             <p>1,690</p>
+    //         </div>
+    //         <div className={styles.confRow}>
+    //             <p>Price Limit</p>
+    //             <p>1,690</p>
+    //         </div>
+    //         <div className={styles.confRow}>
+    //             <p>Slippage</p>
+    //             <p>0.3%</p>
+    //         </div>
+    //         </div>
             
-            <p>Output is estimated. You will swap up to 1.00ETH for USDC. You may swap less than 1.00ETH if the price moves beyond the limit shown above. You can increase the likelihood of swapping the full amound by increasing your slippage tolerance in the settings.</p>
-        </div>
-    );
+    //         <p>Output is estimated. You will swap up to 1.00ETH for USDC. You may swap less than 1.00ETH if the price moves beyond the limit shown above. You can increase the likelihood of swapping the full amound by increasing your slippage tolerance in the settings.</p>
+    //     </div>
+    // );
     const submittedButtonTitle = (
         <div className={styles.loading}>
             Submitting
@@ -236,14 +236,14 @@ export default function VaultDeposit(props: Props) {
                     {includeWallet && !showConfirmation && walletContent}
                 </div>
 
-                {showConfirmation ? confirmationDetails : (
+             
                     <div className={styles.gas_row}>
                       <FaGasPump size={15} /> {gasPrice ?? '…'}
                     </div>
-                ) 
+                
             
                    
-                }
+                
                 <div className={styles.buttonContainer}>
                     <Button
                         idForDOM='vault_deposit_submit'
@@ -251,11 +251,9 @@ export default function VaultDeposit(props: Props) {
                         title={showSubmitted ? submittedButtonTitle : 'Submit'}
                         disabled={showSubmitted}
                         action={() => {
-                            if (!showConfirmation) {
-                                setShowConfirmation(true);
-                            } else {
+                          
                                 setShowSubmitted(true);
-                            }
+                            
                         }}
                         
                         flat

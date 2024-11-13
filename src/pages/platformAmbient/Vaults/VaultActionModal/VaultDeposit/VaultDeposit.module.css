@@ -144,7 +144,8 @@ justify-content: space-between;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
+    gap: 8px;
 
     color: var(--text2, #8B98A5);
 text-align: center;
@@ -153,6 +154,7 @@ font-size: 12px;
 font-style: normal;
 font-weight: 300;
 line-height: normal;
+padding: 0 8px;
 }
 .loading {
     display: flex;
