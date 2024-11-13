@@ -198,7 +198,7 @@ export default function VaultDeposit(props: Props) {
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txType: 'Approve',
-                txDescription: `Approve ${mainAsset.symbol}`,
+                txDescription: `Approve ${mainAsset.symbol} / ${secondaryAsset.symbol}`,
             });
         } else {
             setShowSubmitted(false);
