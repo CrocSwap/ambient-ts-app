@@ -64,11 +64,20 @@ export default function VaultWithdraw(props: Props) {
         string | undefined
     >();
 
+    const slippageTolerance = 0.5;
+
     const submitWithdraw = async () => {
         if (!crocEnv || !balanceMainAsset || !userAddress || !vault) return;
+
         setShowSubmitted(true);
+
         const withdrawalQtyMainAssetBigint =
-            (balanceMainAsset * BigInt(removalPercentage)) / BigInt(101);
+            (balanceMainAsset * BigInt(removalPercentage)) / BigInt(100);
+
+        const withdrawalQtyMainAssetBigintMinusSlippage =
+            (withdrawalQtyMainAssetBigint *
+                (BigInt(10000) - BigInt(slippageTolerance * 100))) /
+            BigInt(10000);
 
         const balanceVault = await crocEnv
             .tempestVault(vault.address, vault.mainAsset)
@@ -79,7 +88,10 @@ export default function VaultWithdraw(props: Props) {
 
         const tx = await crocEnv
             .tempestVault(vault.address, vault.mainAsset)
-            .redeemZap(withdrawalQtyVaultBalance, withdrawalQtyMainAssetBigint)
+            .redeemZap(
+                withdrawalQtyVaultBalance,
+                withdrawalQtyMainAssetBigintMinusSlippage,
+            )
             .catch(console.error);
 
         if (tx?.hash) {
