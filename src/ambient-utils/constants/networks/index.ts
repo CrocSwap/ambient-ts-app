@@ -60,6 +60,9 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
                   ? getNetworks(Object.keys(plumeSepoliaBrandAssets.networks))
                   : getNetworks(Object.keys(defaultBrandAssets.networks));
 
+export const vaultSupportedNetworkIds = ['0x1', '0x82750'];
+export const vaultSupportedNetworks = getNetworks(vaultSupportedNetworkIds);
+
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
     if (brand === 'futa') {
         return (
