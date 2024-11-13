@@ -748,15 +748,6 @@ export const plumeSepoliaNEV: TokenIF = {
     logoURI: '',
 };
 
-export const plumeSepoliaUSDT: TokenIF = {
-    name: 'Tether USD',
-    address: '0x2413b8C79Ce60045882559f63d308aE3DFE0903d',
-    symbol: 'USDT',
-    decimals: 6,
-    chainId: 98864,
-    logoURI: '',
-};
-
 export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,
@@ -836,5 +827,4 @@ export const defaultTokens: TokenIF[] = [
     plumeSepoliaETH,
     plumeSepoliaUSD,
     plumeSepoliaNEV,
-    plumeSepoliaUSDT,
 ];

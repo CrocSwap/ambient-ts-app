@@ -62,8 +62,12 @@ function Range() {
         activeNetwork: { chainId, gridSize },
     } = useContext(AppStateContext);
 
-    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
-        useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+        isActiveNetworkPlume,
+    } = useContext(ChainDataContext);
     const { poolPriceDisplay, dailyVol } = useContext(PoolContext);
     const {
         advancedHighTick,
@@ -1252,7 +1256,14 @@ function Range() {
                         }
                         disabled={isApprovalPending}
                         action={async () => {
-                            await approve(tokenA.address, tokenA.symbol);
+                            await approve(
+                                tokenA.address,
+                                tokenA.symbol,
+                                undefined,
+                                isActiveNetworkPlume
+                                    ? tokenAQtyCoveredByWalletBalance
+                                    : undefined,
+                            );
                         }}
                         flat={true}
                     />
@@ -1270,7 +1281,14 @@ function Range() {
                         }
                         disabled={isApprovalPending}
                         action={async () => {
-                            await approve(tokenB.address, tokenB.symbol);
+                            await approve(
+                                tokenB.address,
+                                tokenB.symbol,
+                                undefined,
+                                isActiveNetworkPlume
+                                    ? tokenBQtyCoveredByWalletBalance
+                                    : undefined,
+                            );
                         }}
                         flat={true}
                     />

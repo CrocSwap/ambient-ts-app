@@ -85,8 +85,8 @@ function Vaults() {
                             const KEY_SLUG = 'vault_row_';
                             return (
                                 <VaultRow
-                                    key={KEY_SLUG + JSON.stringify(vault)}
-                                    idForDOM={KEY_SLUG + vault.toString()}
+                                    key={KEY_SLUG + vault.address}
+                                    idForDOM={KEY_SLUG + vault.address}
                                     vault={vault}
                                 />
                             );
