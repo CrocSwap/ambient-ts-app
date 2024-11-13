@@ -107,7 +107,7 @@
   
   @media only screen and (max-width: 428px) {
   .mainContent, .vaultHeader{
-      grid-template-columns: 50px repeat(2, 1fr)  50px 70px;
+      grid-template-columns: 50px repeat(2, 1fr)  80px;
   }
   
   .tempestDisplay{
@@ -118,6 +118,9 @@
       word-wrap: break-word;
       padding-right: 10px;
       
+  }
+  .apyDisplay{
+    display: none;
   }
   
   
