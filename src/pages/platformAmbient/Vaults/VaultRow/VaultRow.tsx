@@ -26,7 +26,6 @@ interface propsIF {
 }
 export default function VaultRow(props: propsIF) {
     const { idForDOM, vault } = props;
-    console.log(vault);
     const [isOpen, openModal, closeModal] = useModal();
     const [type, setType] = useState<'Deposit' | 'Withdraw'>('Deposit');
 
@@ -107,10 +106,10 @@ export default function VaultRow(props: propsIF) {
     function navigateExternal(): void {
         const goToExternal = (url: string) => window.open(url, '_blank');
         if (vault.chainId === 534352) {
-            const destination: string = 'https://scrollscan.com/address/' + vault.address;
+            const destination: string = 'https://app.tempestdev.xyz/vaults/ethereum/' + vault.address;
             goToExternal(destination);
         } else if (vault.chainId === 1) {
-            const destination: string = 'https://etherscan.io/address/' + vault.address;
+            const destination: string = 'https://app.tempestdev.xyz/vaults/scroll/' + vault.address;
             goToExternal(destination);
         }
     }
