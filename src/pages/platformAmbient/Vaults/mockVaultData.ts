@@ -1,6 +1,6 @@
 import { VaultIF } from '../../../ambient-utils/types';
 
-export const allVaultsData: VaultIF[] = [
+export const mockAllVaultsData: VaultIF[] = [
     {
         id: 'f69db06d-93f2-4856-a955-31967eaa8db8',
         createdAt: 1730700021,

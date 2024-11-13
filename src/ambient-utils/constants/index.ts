@@ -30,6 +30,10 @@ export const PAIR_LOOKUP_URL =
     import.meta.env.VITE_PAIR_LOOKUP_URL ||
     'https://croc-smart.liquidity.tools/pair-lookup?';
 
+export const VAULTS_API_URL =
+    import.meta.env.VITE_VAULTS_API_URLL ||
+    'https://protocol-service-api.tempestfinance.xyz/api/v1';
+
 export const HISTORICAL_CANDLES_URL =
     import.meta.env.VITE_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
 
