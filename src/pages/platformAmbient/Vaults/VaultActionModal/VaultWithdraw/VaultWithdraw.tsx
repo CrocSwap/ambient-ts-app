@@ -12,8 +12,13 @@ import Button from '../../../../../components/Form/Button';
 import { TokenIF } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
+import {
+    NUM_GWEI_IN_WEI,
+    GAS_DROPS_ESTIMATE_VAULT_WITHDRAWAL,
+} from '../../../../../ambient-utils/constants';
+import { ChainDataContext, CrocEnvContext } from '../../../../../contexts';
 
 interface Props {
     token0: TokenIF;
@@ -26,6 +31,12 @@ export default function VaultWithdraw(props: Props) {
     const { token1, onClose, token1BalanceDisplayQty } = props;
     const [showSubmitted, setShowSubmitted] = useState(false);
     const [removalPercentage, setRemovalPercentage] = useState(100);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
+
+    const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
+        string | undefined
+    >();
 
     // const [showWithdrawDropdown, setShowWithdrawDropdown] = useState(false);
 
@@ -124,7 +135,7 @@ export default function VaultWithdraw(props: Props) {
                 </div>
             </div>
             <div className={styles.pooledContentRight}>
-                {token1.symbol} Removal Summary
+                {token1.symbol} Removal Amount
                 <div className={styles.alignCenter}>
                     {getFormattedNumber({
                         value:
@@ -175,16 +186,33 @@ export default function VaultWithdraw(props: Props) {
                 </FlexContainer>
                 <p>0.5%</p>
             </div>
-            <div className={styles.extraDetailsRow}>
+            {/* <div className={styles.extraDetailsRow}>
                 <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                     <p>Network Fee</p>
                     <TooltipComponent title={'item.tooltipTitle'} />
                 </FlexContainer>
-                <p>~$3.69</p>
-            </div>
+                <p>~{withdrawGasPriceinDollars ?? '…'}</p>
+            </div> */}
         </div>
     );
-    const gasPrice = '550k';
+
+    // calculate price of gas for vault withdrawal
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                Number(NUM_GWEI_IN_WEI) *
+                ethMainnetUsdPrice *
+                Number(GAS_DROPS_ESTIMATE_VAULT_WITHDRAWAL);
+
+            setWithdrawGasPriceinDollars(
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     const submittedButtonTitle = (
         <div className={styles.loading}>
@@ -211,7 +239,7 @@ export default function VaultWithdraw(props: Props) {
 
                 {extraDetailsDisplay}
                 <div className={styles.gas_row}>
-                    <FaGasPump size={15} /> {gasPrice ?? '…'}
+                    <FaGasPump size={15} /> {withdrawGasPriceinDollars ?? '…'}
                 </div>
 
                 <Button

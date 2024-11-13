@@ -1,9 +1,16 @@
-import { ChangeEvent, useContext, useRef, useState } from 'react';
+import { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
 import { TokenIF } from '../../../../../ambient-utils/types';
-import { UserDataContext } from '../../../../../contexts';
+import {
+    AppStateContext,
+    CachedDataContext,
+    ChainDataContext,
+    CrocEnvContext,
+    UserDataContext,
+} from '../../../../../contexts';
 import styles from './VaultDeposit.module.css';
 import WalletBalanceSubinfo from '../../../../../components/Form/WalletBalanceSubinfo';
 import {
+    getFormattedNumber,
     precisionOfInput,
     uriToHttp,
 } from '../../../../../ambient-utils/dataLayer';
@@ -13,6 +20,11 @@ import Button from '../../../../../components/Form/Button';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
 import { FaGasPump } from 'react-icons/fa';
+import {
+    NUM_GWEI_IN_WEI,
+    GAS_DROPS_ESTIMATE_VAULT_DEPOSIT,
+} from '../../../../../ambient-utils/constants';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface Props {
     token0: TokenIF;
@@ -20,39 +32,106 @@ interface Props {
     onClose: () => void;
 }
 export default function VaultDeposit(props: Props) {
+    const { token1, onClose } = props;
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showSubmitted, setShowSubmitted] = useState(false);
-    // eslint-disable-next-line
-    const { token0, token1, onClose } = props;
-    // const {
-    //     tokenABalance,
-    //     tokenBBalance,
-    //     tokenADexBalance,
-    //     tokenBDexBalance,
-    //     isTokenAEth: isSellTokenEth,
-    //     isTokenBEth: isBuyTokenEth,
-    //     contextMatchesParams,
-    // } = useContext(TradeTokenContext);
+    const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
+        string | undefined
+    >();
+    const [displayValue, setDisplayValue] = useState<string>('');
+    const [token1Price, setToken1Price] = useState<number | undefined>();
+    const [token1Balance, setToken1Balance] = useState<string | undefined>();
 
     const { isUserConnected } = useContext(UserDataContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+    const { userAddress } = useContext(UserDataContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+
+    // calculate price of gas for vault deposit
+    useEffect(() => {
+        if (crocEnv) {
+            (async () => {
+                const baseTokenPrice =
+                    (
+                        await cachedFetchTokenPrice(
+                            token1.address,
+                            chainId,
+                            crocEnv,
+                        )
+                    )?.usdPrice || 0.0;
+
+                setToken1Price(baseTokenPrice);
+            })();
+        }
+    }, [crocEnv]);
+
+    // calculate price of gas for vault deposit
+    useEffect(() => {
+        if (crocEnv) {
+            if (!userAddress) {
+                setToken1Balance(undefined);
+            } else {
+                (async () => {
+                    crocEnv
+                        .token(token1.address)
+                        .wallet(userAddress)
+                        .then((bal: bigint) => {
+                            const displayBalance = toDisplayQty(
+                                bal,
+                                token1.decimals,
+                            );
+                            setToken1Balance(displayBalance);
+                        })
+                        .catch(console.error);
+                })();
+            }
+        }
+    }, [crocEnv, userAddress]);
+
+    // calculate price of gas for vault deposit
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                Number(NUM_GWEI_IN_WEI) *
+                ethMainnetUsdPrice *
+                Number(GAS_DROPS_ESTIMATE_VAULT_DEPOSIT);
+
+            setDepositGasPriceinDollars(
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
+    const usdValueForDom =
+        token1Price && parseFloat(displayValue) > 0
+            ? getFormattedNumber({
+                  value: token1Price * parseFloat(displayValue),
+                  prefix: '$',
+              })
+            : '';
+
+    const walletBalanceDisplay = token1Balance ? token1Balance : '...';
+
+    const balanceToDisplay = getFormattedNumber({
+        value: parseFloat(walletBalanceDisplay) ?? undefined,
+    });
 
     const walletContent = (
         <>
             <WalletBalanceSubinfo
-                usdValueForDom={
-                    '1234'
-                    // isLoading ||
-                    // impactCalculationPending ||
-                    // !usdValueForDom ||
-                    // disabledContent ||
-                    // !isPoolInitialized
-                    //     ? ''
-                    //     : usdValueForDom
-                }
+                usdValueForDom={usdValueForDom ?? '…'}
                 percentDiffUsdValue={123}
                 showWallet={isUserConnected}
                 isWithdraw={false}
-                balance={'1234'}
+                balance={balanceToDisplay}
                 availableBalance={0n}
                 useExchangeBalance={
                     // isDexSelected &&
@@ -62,11 +141,10 @@ export default function VaultDeposit(props: Props) {
                 }
                 isDexSelected={false}
                 onToggleDex={() => console.log('handleToggleDex')}
-                onMaxButtonClick={() => console.log('on max button click')}
+                onMaxButtonClick={() => setDisplayValue(walletBalanceDisplay)}
             />
         </>
     );
-    const [displayValue, setDisplayValue] = useState<string>('');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleTokenInputEvent = (evt: any) => console.log(evt);
     const token = token1;
@@ -212,7 +290,6 @@ export default function VaultDeposit(props: Props) {
         </div>
     );
 
-    const gasPrice = '550k';
     const includeWallet = true;
     return (
         <Modal usingCustomHeader onClose={onClose}>
@@ -238,7 +315,7 @@ export default function VaultDeposit(props: Props) {
                 </div>
 
                 <div className={styles.gas_row}>
-                    <FaGasPump size={15} /> {gasPrice ?? '…'}
+                    <FaGasPump size={15} /> {depositGasPriceinDollars ?? '…'}
                 </div>
 
                 <div className={styles.buttonContainer}>

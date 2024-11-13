@@ -144,7 +144,7 @@ export const allVaultsData: VaultIF[] = [
         initTime: 2,
         poolFee: '2',
         koSize: 2,
-        tvlUsd: '8992',
+        tvlUsd: '143.49',
         tvlMainAsset: '2',
         apr: '4.39',
     },
