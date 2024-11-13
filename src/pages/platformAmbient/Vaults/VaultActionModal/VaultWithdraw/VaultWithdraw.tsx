@@ -10,6 +10,7 @@ import { TokenIF } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
 import { useState } from 'react';
+import { FaGasPump } from 'react-icons/fa';
 
 interface Props {
     token0: TokenIF;
@@ -172,6 +173,9 @@ export default function VaultWithdraw(props: Props) {
             </div>
         </div>
     );
+    const gasPrice = '550k'
+        
+ 
 
     const submittedButtonTitle = (
         <div className={styles.loading}>
@@ -198,6 +202,9 @@ export default function VaultWithdraw(props: Props) {
             {pooledDisplay}
            
                 {extraDetailsDisplay}
+                <div className={styles.gas_row}>
+    <FaGasPump size={15} /> {gasPrice ?? '…'}
+  </div>
               
             <Button
                 idForDOM='approve_token_a_for_swap_module'

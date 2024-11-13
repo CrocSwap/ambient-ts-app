@@ -213,7 +213,7 @@ export default function VaultDeposit(props: Props) {
         </div>
     )
 
-    const gasPrice = '1223'
+    const gasPrice = '550k'
     const includeWallet = true;
     return (
         <Modal usingCustomHeader onClose={onClose}>
