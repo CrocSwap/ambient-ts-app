@@ -9,6 +9,7 @@
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
     z-index: 999;
+
 }
 
 /* Modal container (for desktop) */
@@ -101,6 +102,7 @@
 
 /* Bottom Sheet (for mobile) */
 .bottom_sheet {
+    
     position: fixed;
     left: 0;
     right: 0;
@@ -121,6 +123,8 @@
 
         max-height: 70sdh;
         overflow-y: auto;
+        z-index: 999;
+       
         
 }
 

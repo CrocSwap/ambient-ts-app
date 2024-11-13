@@ -10,8 +10,11 @@ import { Provider } from 'ethers';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 
-const chain = {
-    chainId: 534351,
+const chainIdHex = '0x8274f';
+const chainSpecFromSDK = lookupChain(chainIdHex);
+
+const chainSpecForWalletConnector = {
+    chainId: Number(chainIdHex),
     name: 'Scroll Sepolia',
     currency: 'ETH',
     rpcUrl: 'https://sepolia-rpc.scroll.io/',
@@ -19,28 +22,31 @@ const chain = {
 };
 
 export const scrollSepolia: NetworkIF = {
-    chainId: '0x8274f',
+    chainId: chainIdHex,
+    chainSpec: chainSpecFromSDK,
     graphCacheUrl: GCGO_TESTNET_URL,
-    evmRpcUrl: 'https://sepolia-rpc.scroll.io/',
-    chain: chain,
-    shouldPollBlock: true,
-    marketData: '0x1',
+    evmRpcUrl: chainSpecForWalletConnector.rpcUrl,
+    chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [scrollSepoliaETH, scrollSepoliaUSDC],
+    poolIndex: chainSpecFromSDK.poolIndex,
+    gridSize: chainSpecFromSDK.gridSize,
+    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    displayName: chainSpecForWalletConnector.name,
     topPools: [
         new TopPool(
             scrollSepoliaETH,
             scrollSepoliaUSDC,
-            lookupChain('0x8274f').poolIndex,
+            chainSpecFromSDK.poolIndex,
         ),
         new TopPool(
             scrollSepoliaETH,
             scrollSepoliaWBTC,
-            lookupChain('0xaa36a7').poolIndex,
+            chainSpecFromSDK.poolIndex,
         ),
         new TopPool(
             scrollSepoliaUSDC,
             scrollSepoliaWBTC,
-            lookupChain('0xaa36a7').poolIndex,
+            chainSpecFromSDK.poolIndex,
         ),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {

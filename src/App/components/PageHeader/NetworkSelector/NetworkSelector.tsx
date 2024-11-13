@@ -2,8 +2,6 @@
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import { useContext, useEffect, useState } from 'react';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-
 import { supportedNetworks } from '../../../../ambient-utils/constants';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useSearchParams } from 'react-router-dom';
@@ -16,12 +14,18 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
+// import plumeMainnetLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
+import plumeSepoliaLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
+// import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_network_logo.webp';
 import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
 import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
 import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { BrandContext } from '../../../../contexts/BrandContext';
+import {
+    BrandContext,
+    BrandContextIF,
+} from '../../../../contexts/BrandContext';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -30,8 +34,10 @@ interface propsIF {
     customBR?: string;
 }
 import { motion } from 'framer-motion';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
 
-interface NetworkIF {
+interface NetworkSelectorListItemIF {
     id: string;
     chainId: string;
     name: string;
@@ -46,12 +52,13 @@ interface NetworkIF {
 export default function NetworkSelector(props: propsIF) {
     const {
         chooseNetwork,
-        chainData: { chainId },
-        chainData,
-    } = useContext(CrocEnvContext);
-    const { networks, platformName, includeCanto } = useContext(BrandContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+    const { networks, platformName, includeCanto } =
+        useContext<BrandContextIF>(BrandContext);
+    const { closeBottomSheet } = useBottomSheet();
     const { switchNetwork } = useSwitchNetwork();
-    const smallScreen = useMediaQuery('(max-width: 600px)');
+    const smallScreen: boolean = useMediaQuery('(max-width: 600px)');
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const [searchParams, setSearchParams] = useSearchParams();
@@ -99,10 +106,7 @@ export default function NetworkSelector(props: propsIF) {
             // check if chain is supported and not the current chain in the app
             // yes → trigger machinery to switch the current network
             // no → no action except to clear the param from the URL
-            if (
-                supportedNetworks[targetChain] &&
-                targetChain !== chainData.chainId
-            ) {
+            if (supportedNetworks[targetChain] && targetChain !== chainId) {
                 // use web3modal if wallet is connected, otherwise use in-app toggle
                 if (isConnected) {
                     switchNetwork(parseInt(targetChain));
@@ -121,7 +125,7 @@ export default function NetworkSelector(props: propsIF) {
         }
     }, [isConnected, initialLoadComplete]);
 
-    const networksData: NetworkIF[] = [
+    const networksData: NetworkSelectorListItemIF[] = [
         {
             id: 'ethereum_network_selector',
             chainId: '0x1',
@@ -160,10 +164,10 @@ export default function NetworkSelector(props: propsIF) {
             chainId: '',
             name: 'Canto',
             logo: cantoLogo,
-            custom: chains.length + 1,
+            custom: 1,
             isExternal: true,
             testnet: false,
-            link: 'https://app.canto.io/lp',
+            link: 'https://www.canto.io/lp',
             condition: includeCanto && platformName === 'ambient',
         },
         {
@@ -171,18 +175,29 @@ export default function NetworkSelector(props: propsIF) {
             chainId: '0xaa36a7',
             name: 'Sepolia',
             logo: sepoliaLogo,
-            custom: 0,
+            custom: 2,
             isExternal: false,
             testnet: true,
             link: '',
             condition: chainMap.has('0xaa36a7'),
         },
         {
+            id: 'plume_sepolia_network_selector',
+            chainId: '0x18230',
+            name: 'Plume',
+            logo: plumeSepoliaLogo,
+            custom: 2,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x18230'),
+        },
+        {
             id: 'scroll_sepolia_network_selector',
             chainId: '0x8274f',
             name: 'Scroll',
             logo: scrollSepoliaLogo,
-            custom: 0,
+            custom: 2,
             isExternal: false,
             testnet: true,
             link: '',
@@ -193,7 +208,7 @@ export default function NetworkSelector(props: propsIF) {
             chainId: '0xa0c71fd',
             name: 'Blast',
             logo: blastSepoliaLogo,
-            custom: 0,
+            custom: 2,
             isExternal: false,
             testnet: true,
             link: '',
@@ -206,11 +221,14 @@ export default function NetworkSelector(props: propsIF) {
             <motion.li
                 className={styles.networkItem}
                 id={network.id}
-                onClick={() =>
-                    network.isExternal
-                        ? window.open(network.link, '_blank')
-                        : handleClick(chainMap.get(network.chainId))
-                }
+                onClick={() => {
+                    if (network.isExternal) {
+                        window.open(network.link, '_blank');
+                    } else {
+                        handleClick(chainMap.get(network.chainId));
+                    }
+                    closeBottomSheet();
+                }}
                 key={network.id}
                 custom={network.custom}
                 variants={ItemEnterAnimation}
@@ -242,7 +260,10 @@ export default function NetworkSelector(props: propsIF) {
                         <Text
                             color={'accent1'}
                             fontSize={'mini'}
-                            marginLeft='30px'
+                            style={{
+                                position: 'absolute', // Position Testnet absolutely
+                                right: '0', // Pin it to the right
+                            }}
                         >
                             Testnet
                         </Text>
@@ -250,13 +271,18 @@ export default function NetworkSelector(props: propsIF) {
                     {network.isExternal && (
                         <RiExternalLinkLine
                             size={14}
-                            style={{ marginLeft: '55px' }}
+                            style={{
+                                position: 'absolute', // Position external link absolutely
+                                right: '0', // Pin it to the right
+                            }}
                         />
                     )}
                 </div>
             </motion.li>
         ) : null,
     );
+
+    const networkSpec = supportedNetworks[chainId];
 
     return (
         <div
@@ -270,30 +296,12 @@ export default function NetworkSelector(props: propsIF) {
                     marginTop={'50px'}
                     marginRight={smallScreen ? '70px' : ''}
                     titleWidth={'80px'}
-                    title={lookupChain(chainId).displayName}
+                    title={networkSpec.displayName}
                     expandable={networks.length > 1}
                     logo={
-                        lookupChain(chainId)
-                            .displayName.toLowerCase()
-                            .includes('blast sepolia')
-                            ? blastSepoliaLogo
-                            : lookupChain(chainId)
-                                    .displayName.toLowerCase()
-                                    .includes('scroll sepolia')
-                              ? scrollSepoliaLogo
-                              : lookupChain(chainId)
-                                      .displayName.toLowerCase()
-                                      .includes('scroll')
-                                ? scrollLogo
-                                : lookupChain(chainId)
-                                        .displayName.toLowerCase()
-                                        .includes('blast')
-                                  ? blastLogo
-                                  : lookupChain(chainId)
-                                          .displayName.toLowerCase()
-                                          .includes('sepolia')
-                                    ? sepoliaLogo
-                                    : ETH
+                        networksData.find(
+                            (network) => network.chainId === chainId,
+                        )?.logo
                     }
                 >
                     <ul

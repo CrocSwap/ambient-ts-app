@@ -19,37 +19,58 @@ import {
 } from '../../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../contexts/CrocEnvContext';
 import { trimString } from '../../../ambient-utils/dataLayer';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import {
+    ChainDataContext,
+    ChainDataContextIF,
+} from '../../../contexts/ChainDataContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../contexts/AppStateContext';
+import { TokenContext, TokenContextIF } from '../../../contexts/TokenContext';
+import {
+    CachedDataContext,
+    CachedDataContextIF,
+} from '../../../contexts/CachedDataContext';
 import { useSimulatedIsUserConnected } from '../../../App/hooks/useSimulatedIsUserConnected';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
     BlastUserXpDataIF,
     UserDataContext,
+    UserDataContextIF,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import Level from '../Level/Level';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import {
+    TradeTableContext,
+    TradeTableContextIF,
+} from '../../../contexts/TradeTableContext';
 import styles from './Portfolio.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
 import NFTBannerAccount from '../../../components/Portfolio/PortfolioBanner/PortfolioBannerAccount/NFTBannerAccount';
 import { TokenBalanceContext } from '../../../contexts';
 import ModalHeader from '../../../components/Global/ModalHeader/ModalHeader';
+import { TokenBalanceContextIF } from '../../../contexts/TokenBalanceContext';
 
-interface PortfolioPropsIF {
+interface propsIF {
     isLevelsPage?: boolean;
     isRanksPage?: boolean;
     isViewMoreActive?: boolean;
     specificTab?: string;
 }
 
-function Portfolio(props: PortfolioPropsIF) {
+function Portfolio(props: propsIF) {
+    const { isLevelsPage, isRanksPage, isViewMoreActive, specificTab } = props;
 
-
+    const {
+        walletModal: { open: openModalWallet },
+        activeNetwork: { chainId, graphCacheUrl },
+    } = useContext<AppStateContextIF>(AppStateContext);
     const {
         userAddress,
         isfetchNftTriggered,
@@ -58,34 +79,25 @@ function Portfolio(props: PortfolioPropsIF) {
         setResolvedAddressInContext,
         ensName,
         setSecondaryEnsInContext,
-    } = useContext(UserDataContext);
+    } = useContext<UserDataContextIF>(UserDataContext);
     const { NFTData, NFTFetchSettings, setNFTFetchSettings } =
-        useContext(TokenBalanceContext);
-    const { isLevelsPage, isRanksPage, isViewMoreActive, specificTab } = props;
-
-    const isUserConnected = useSimulatedIsUserConnected();
-
-    const {
-        walletModal: { open: openModalWallet },
-    } = useContext(AppStateContext);
+        useContext<TokenBalanceContextIF>(TokenBalanceContext);
     const {
         cachedFetchAmbientListWalletBalances,
         cachedFetchDexBalances,
         cachedTokenDetails,
-    } = useContext(CachedDataContext);
-    const {
-        crocEnv,
-        activeNetwork,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
-    const { tokens } = useContext(TokenContext);
+    } = useContext<CachedDataContextIF>(CachedDataContext);
+    const { crocEnv, mainnetProvider } =
+        useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { isActiveNetworkBlast } =
+        useContext<ChainDataContextIF>(ChainDataContext);
+    const { tokens } = useContext<TokenContextIF>(TokenContext);
     const { setOutsideControl, setSelectedOutsideTab } =
-        useContext(TradeTableContext);
-
-    const { mainnetProvider } = useContext(CrocEnvContext);
+        useContext<TradeTableContextIF>(TradeTableContext);
 
     const { address: addressFromParams } = useParams();
+
+    const isUserConnected = useSimulatedIsUserConnected();
 
     const isAddressEns = addressFromParams?.endsWith('.eth');
     const isAddressHex =
@@ -230,10 +242,11 @@ function Portfolio(props: PortfolioPropsIF) {
 
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
 
-
-
     const exchangeBalanceModal = (
-        <Modal usingCustomHeader onClose={() => setShowTabsAndNotExchange(false)}>
+        <Modal
+            usingCustomHeader
+            onClose={() => setShowTabsAndNotExchange(false)}
+        >
             <ModalHeader
                 title={'Exchange Balance'}
                 onClose={() => setShowTabsAndNotExchange(false)}
@@ -248,13 +261,16 @@ function Portfolio(props: PortfolioPropsIF) {
         </Modal>
     );
 
-    const exchangeBalanceComponent = showMobileVersion && showTabsAndNotExchange ? exchangeBalanceModal : (
-        <ExchangeBalance
-            fullLayoutActive={fullLayoutActive}
-            setFullLayoutActive={setFullLayoutActive}
-            setIsAutoLayout={setIsAutoLayout}
-        />
-    );
+    const exchangeBalanceComponent =
+        showMobileVersion && showTabsAndNotExchange ? (
+            exchangeBalanceModal
+        ) : (
+            <ExchangeBalance
+                fullLayoutActive={fullLayoutActive}
+                setFullLayoutActive={setFullLayoutActive}
+                setIsAutoLayout={setIsAutoLayout}
+            />
+        );
 
     useEffect(() => {
         !connectedAccountActive
@@ -277,6 +293,11 @@ function Portfolio(props: PortfolioPropsIF) {
                 chainId &&
                 !connectedAccountActive
             ) {
+                if (
+                    !crocEnv ||
+                    (await crocEnv.context).chain.chainId !== chainId
+                )
+                    return;
                 try {
                     setResolvedAddressTokens([]);
                     const combinedBalances: TokenIF[] = [];
@@ -297,7 +318,7 @@ function Portfolio(props: PortfolioPropsIF) {
                         address: resolvedAddress,
                         chain: chainId,
                         crocEnv: crocEnv,
-                        graphCacheUrl: activeNetwork.graphCacheUrl,
+                        graphCacheUrl: graphCacheUrl,
                         _refreshTime: everyFiveMinutes,
                     });
 
@@ -369,7 +390,7 @@ function Portfolio(props: PortfolioPropsIF) {
         chainId,
         everyFiveMinutes,
         connectedAccountActive,
-        activeNetwork.graphCacheUrl,
+        graphCacheUrl,
     ]);
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
@@ -414,7 +435,7 @@ function Portfolio(props: PortfolioPropsIF) {
 
     const portfolioBannerProps = {
         ensName: connectedAccountActive
-            ? ensName ?? ''
+            ? (ensName ?? '')
             : secondaryEnsName
               ? secondaryEnsName
               : '',
@@ -425,10 +446,15 @@ function Portfolio(props: PortfolioPropsIF) {
         showTabsAndNotExchange: showTabsAndNotExchange,
         setShowTabsAndNotExchange: setShowTabsAndNotExchange,
 
-        nftTestWalletInput, setNftTestWalletInput, showNFTPage, setShowNFTPage, handleTestWalletChange,
-        NFTData, NFTFetchSettings, setNFTFetchSettings,
+        nftTestWalletInput,
+        setNftTestWalletInput,
+        showNFTPage,
+        setShowNFTPage,
+        handleTestWalletChange,
+        NFTData,
+        NFTFetchSettings,
+        setNFTFetchSettings,
         userAddress,
-        
     };
 
     const truncatedAccountAddressOrEnsName = connectedAccountActive
@@ -451,22 +477,20 @@ function Portfolio(props: PortfolioPropsIF) {
     const profileSettingsProps = {
         showProfileSettings: showProfileSettings,
         setShowProfileSettings: setShowProfileSettings,
-        ensName: secondaryEnsName ? secondaryEnsName : ensName ?? '',
+        ensName: secondaryEnsName ? secondaryEnsName : (ensName ?? ''),
     };
-
 
     const contentToRenderOnMobile = (() => {
         if (isUserConnected || addressFromParams !== undefined) {
             return (
                 <>
                     <PortfolioTabs {...portfolioTabsProps} />
-                    {showTabsAndNotExchange  && exchangeBalanceComponent}
+                    {showTabsAndNotExchange && exchangeBalanceComponent}
                 </>
             );
-        } 
+        }
         return notConnectedContent;
     })();
-    
 
     const [availableHeight, setAvailableHeight] = useState(window.innerHeight);
 
@@ -485,9 +509,6 @@ function Portfolio(props: PortfolioPropsIF) {
 
     const bannerHeight = 115;
     const contentHeight = availableHeight - bannerHeight;
-
- 
-
 
     const mobileBannerSettings = !showNFTPage ? null : (
         <Modal usingCustomHeader onClose={() => setShowNFTPage(false)}>
@@ -571,7 +592,7 @@ function Portfolio(props: PortfolioPropsIF) {
                     <PortfolioTabs {...portfolioTabsProps} />
                 ) : undefined}
 
-                {connectedAccountActive 
+                {connectedAccountActive
                     ? exchangeBalanceComponent
                     : !isUserConnected && !addressFromParams
                       ? notConnectedContent
@@ -579,23 +600,20 @@ function Portfolio(props: PortfolioPropsIF) {
             </div>
             <PortfolioBanner {...portfolioBannerProps} />
 
-            {
-                 showNFTPage &&
-                  NFTData && (
-                      <NFTBannerAccount
-                          setShowNFTPage={setShowNFTPage}
-                          showNFTPage={showNFTPage}
-                          NFTData={NFTData}
-                          isfetchNftTriggered={isfetchNftTriggered}
-                          setIsfetchNftTriggered={setIsfetchNftTriggered}
-                          NFTFetchSettings={NFTFetchSettings}
-                          setNFTFetchSettings={setNFTFetchSettings}
-                          setNftTestWalletInput={setNftTestWalletInput}
-                          nftTestWalletInput={nftTestWalletInput}
-                          handleTestWalletChange={handleTestWalletChange}
-                      />
-                  )
-                  }
+            {showNFTPage && NFTData && (
+                <NFTBannerAccount
+                    setShowNFTPage={setShowNFTPage}
+                    showNFTPage={showNFTPage}
+                    NFTData={NFTData}
+                    isfetchNftTriggered={isfetchNftTriggered}
+                    setIsfetchNftTriggered={setIsfetchNftTriggered}
+                    NFTFetchSettings={NFTFetchSettings}
+                    setNFTFetchSettings={setNFTFetchSettings}
+                    setNftTestWalletInput={setNftTestWalletInput}
+                    nftTestWalletInput={nftTestWalletInput}
+                    handleTestWalletChange={handleTestWalletChange}
+                />
+            )}
         </div>
     );
 }

@@ -51,6 +51,22 @@
             "symbol": "rswETH"
         },
         {
+            "name": "Swell Governance Token",
+            "address": "0x0a6E7Ba5042B38349e437ec6Db6214AEC7B35676",
+            "chainId": 1,
+            "decimals": 18,
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/24924.png",
+            "symbol": "SWELL"
+        },
+        {
+            "name": "StakeStone Ether",
+            "address": "0x7122985656e38bdc0302db86685bb972b145bd3c",
+            "symbol": "STONE",
+            "decimals": 18,
+            "chainId": 1,
+            "logoURI": "https://etherscan.io/token/images/stakestone_32.png"
+        },
+        {
             "name": "Maker",
             "address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
             "chainId": 1,
@@ -178,6 +194,15 @@
             "name": "Blast Pepe",
             "symbol": "BEPE",
             "logoURI": "https://assets.coingecko.com/coins/images/35658/standard/logo_200.png"
+        },
+        {
+            "address": "0x569FcbDa292f1a69AB14e401bAD13Cc0E1DEC790",
+            "chainId": 81457,
+            "decimals": 18,
+            "fromList": "/ambient-token-list.json",
+            "name": "Hyper Thrust",
+            "symbol": "hyperTHRUST",
+            "logoURI": "https://app.hyperlock.finance/assets/hyperthrust-3dda8fba.png"
         },
         {
             "address": "0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C",
@@ -365,11 +390,11 @@
         },
         {
             "name": "StakeStone Ether",
-            "address": "0x80137510979822322193FC997d400D5A6C747bf7",
+            "address": "0x80137510979822322193fc997d400d5a6c747bf7",
             "symbol": "STONE",
             "decimals": 18,
             "chainId": 534352,
-            "logoURI": ""
+            "logoURI": "https://etherscan.io/token/images/stakestone_32.png"
         },
         {
             "name": "StargateToken",
@@ -554,6 +579,38 @@
             "decimals": 18,
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png",
             "symbol": "DAI"
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 98864,
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+        },
+        {
+            "name": "Plume USD",
+            "address": "0xe644F07B1316f28a7F134998e021eA9f7135F351",
+            "symbol": "pUSD",
+            "decimals": 6,
+            "chainId": 98864,
+            "logoURI": ""
+        },
+        {
+            "name": "Nest Egg Vault",
+            "address": "0x659619AEdf381c3739B0375082C2d61eC1fD8835",
+            "symbol": "NEV",
+            "decimals": 6,
+            "chainId": 98864,
+            "logoURI": ""
+        },
+        {
+            "name": "Tether USD",
+            "address": "0x2413b8C79Ce60045882559f63d308aE3DFE0903d",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 98864,
+            "logoURI": ""
         }
     ]
 }

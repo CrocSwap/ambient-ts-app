@@ -2,7 +2,6 @@ import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { LimitOrderIF } from '../../../../ambient-utils/types';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import {
@@ -18,6 +17,7 @@ import {
 } from '../../../../styled/Components/Sidebar';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     limitOrderByUser?: LimitOrderIF[];
@@ -29,8 +29,8 @@ export default function SidebarLimitOrders(props: propsIF) {
     const { isUserConnected } = useContext(UserDataContext);
 
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const {
         setCurrentLimitOrderActive,
         setShowAllData,

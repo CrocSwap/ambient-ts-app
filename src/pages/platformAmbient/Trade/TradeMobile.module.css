@@ -3,29 +3,19 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
-   
-   
 }
-/* 
-.mobile_container > *{
-    border: 1px solid yellow;
-} */
 
 .mobile_tabs_container {
     padding:   1rem;
-   
-
     display: flex;
     grid-template-columns: repeat(4, 1fr);
     align-items: center;
     justify-content: center;
     gap: 8px;
-
     height: 30px;
-    z-index: 2;
     background-color: var(--dark1);
-    
 }
+
 .mobile_tabs_container button {
     width: 100%;
     background: var(--dark2);
@@ -49,11 +39,8 @@
     justify-content: space-between;
     padding: 8px 1rem;
     background: var(--dark1);
-    z-index: 2;
-
-   
-    
 }
+
 .mobile_token_icons {
     display: flex;
     flex-direction: row;
@@ -65,14 +52,10 @@
 .conv_rate {
     font-size: var(--header2-size);
     line-height: var(--body-lh);
-
     display: flex;
     flex-direction: row;
     align-items: center !important;
-  
-    
     gap: 8px;
-   
 }
 
 @media (min-width: 500px) and (max-width: 768px) {

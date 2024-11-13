@@ -83,14 +83,7 @@ body {
     /* padding: 0 1rem; */
 }
 
-footer {
-    /* To make page 100vh, turn off the footer position sticky and turn on absolute then style the footer based on route. */
-    /* position: absolute;
-  position: sticky;
-  right: 0;
- bottom: 0; */
-    margin-top: auto;
-}
+
 
 h3:focus-visible,
 h2:focus-visible,
@@ -114,7 +107,7 @@ p:focus-visible {
     align-items: center;
     right: 0;
     bottom: 0px;
-    z-index: 999;
+    z-index: 1;
 }
 
 .primary_apr {
@@ -231,7 +224,35 @@ input[type='number'] {
     appearance: textfield;
     -moz-appearance: textfield;
 }
-
+.custom_scroll_ambient {
+    overflow-y: auto !important;
+}
+.custom_scroll_ambient::-webkit-scrollbar,
+.content-container::-webkit-scrollbar {
+    width: 8px !important; /* Adjust the width as needed */
+}
+.custom_scroll_ambient::-webkit-scrollbar-thumb,
+.content-container::-webkit-scrollbar-thumb {
+    border: 2px solid transparent !important; /* Space for the border */
+    background-clip: padding-box !important; /* Create space for the border */
+    border-radius: 8px !important; /* Adjust the border radius as needed */
+    background-image: linear-gradient(#06060c, #06060c),
+        linear-gradient(
+            0deg,
+            var(--accent1) 0%,
+            var(--accent5) 49.48%,
+            var(--accent1) 100%
+        ) !important;
+    background-origin: border-box !important;
+    background-clip: content-box, border-box !important; /* Clip the border to show gradient */
+    min-height: 50px !important; /* Set the minimum height for the scrollbar thumb */
+}
+.custom_scroll_ambient::-webkit-scrollbar-track,
+.content-container::-webkit-scrollbar-track {
+    background: #06060c !important; /* Background color of the scrollbar track */
+    border-radius: 8px !important; /* Adjust the border radius as needed */
+    padding: 2px !important; /* Add padding to the track */
+}
 /* -----------------------FUTA------------ */
 
 .futa_main {
@@ -353,13 +374,10 @@ scrollbar-color: transparent;
         overflow-y: auto;
         overflow-x: hidden;
         height: calc(100vh - 56px);
-        
+
         background: var(--dark1);
-       
     }
     .content-container-trade {
         background: var(--dark1);
     }
 }
-
-

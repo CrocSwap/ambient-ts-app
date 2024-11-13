@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import { AiOutlineDollarCircle, AiOutlineAreaChart } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
@@ -29,7 +29,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         setIsFullScreen: setIsChartFullScreen,
         canvasRef,
         chartCanvasRef,
-        chartHeights,
         tradeTableState,
         isCandleDataNull,
         contextmenu,
@@ -39,8 +38,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
-      
-       
 
     const {
         isCondensedModeEnabled,
@@ -57,7 +54,10 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const { platformName } = useContext(BrandContext);
     const isFuta = ['futa'].includes(platformName);
-
+    const tradeChartHeaderRef = useRef<HTMLDivElement>(null);
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
     const { activeMobileComponent } = useContext(TradeTableContext);
 
     const [, copy] = useCopyToClipboard();
@@ -71,6 +71,12 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const copyChartToClipboard = async () => {
         if (canvasRef.current && chartCanvasRef.current) {
+            const filter = (el: Node) => {
+                if (el instanceof HTMLElement) {
+                    return el.id !== 'tx-table';
+                }
+                return true;
+            };
             const blob = isChartFullScreen
                 ? await printDomToImage(chartCanvasRef.current, '')
                 : await printDomToImage(
@@ -78,8 +84,12 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                       '',
                       undefined,
                       // height, trade charts header + chart height
-                      50 + chartHeights.current,
+                      (chartCanvasRef.current as HTMLDivElement).clientHeight +
+                          (tradeChartHeaderRef.current as HTMLDivElement)
+                              .clientHeight,
+                      filter,
                   );
+
             if (blob) {
                 copy(blob);
                 openSnackbar('Chart image copied to clipboard', 'info');
@@ -174,11 +184,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 <HeaderButtons
                     mobileHide
                     onClick={() => {
-                        setIsChartFullScreen(!isChartFullScreen)
-                        
-
-                    }
-                    }
+                        setIsChartFullScreen(!isChartFullScreen);
+                    }}
                 >
                     <BsFullscreen
                         size={16}
@@ -193,7 +200,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 enterDelay={500}
             >
                 <HeaderButtons mobileHide onClick={copyChartToClipboard}>
-
                     <RiScreenshot2Fill
                         size={20}
                         id='trade_chart_save_image'
@@ -214,7 +220,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         setContextMenuPlacement(() => {
                             return {
                                 top: 200,
-                                left: 550,
+                                left: window.innerWidth / 2 - 150,
                                 isReversed: false,
                             };
                         });
@@ -238,10 +244,11 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 useMediaQuery('(min-width: 2000px)') ? 'center' : 'flex-start'
             }
             padding={props.tradePage ? ' 8px' : '4px 4px 8px 4px'}
-            style={{background: isFuta ? 'var(--dark1)' : 'var(--dark2)'}}
+            style={{ background: isFuta ? 'var(--dark1)' : 'var(--dark2)' }}
+            ref={tradeChartHeaderRef}
         >
             <TradeChartsTokenInfo />
-            {tradeTableState === 'Expanded' || showNoChartData
+            {tradeTableState === 'Expanded' || showNoChartData || tabletView
                 ? null
                 : graphSettingsContent}
         </FlexContainer>

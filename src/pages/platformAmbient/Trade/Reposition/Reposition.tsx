@@ -37,8 +37,6 @@ import {
     trimString,
     isStablePair,
 } from '../../../../ambient-utils/dataLayer';
-import { TokenContext } from '../../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import {
     linkGenMethodsIF,
     useLinkGen,
@@ -46,30 +44,34 @@ import {
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import RangeWidth from '../../../../components/Form/RangeWidth/RangeWidth';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import SmolRefuelLink from '../../../../components/Global/SmolRefuelLink/SmolRefuelLink';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 function Reposition() {
     // current URL parameter string
     const { params } = useParams();
 
+    const { activeNetwork } = useContext(AppStateContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
+    const { crocEnv, provider, ethMainnetUsdPrice } =
+        useContext(CrocEnvContext);
+
     const {
-        crocEnv,
-        activeNetwork,
-        provider,
-        ethMainnetUsdPrice,
-        chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { blockExplorer },
+    } = useContext(AppStateContext);
+
     const { tokens } = useContext(TokenContext);
     const {
         gasPriceInGwei,

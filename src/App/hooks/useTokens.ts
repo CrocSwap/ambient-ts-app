@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { tokenListURIs, defaultTokens } from '../../ambient-utils/constants';
+import {
+    tokenListURIs,
+    defaultTokens,
+    hiddenTokens,
+} from '../../ambient-utils/constants';
 import { TokenIF, TokenListIF } from '../../ambient-utils/types';
 import {
     chainNumToString,
@@ -77,11 +81,20 @@ export const useTokens = (
     const tokenMap = useMemo<Map<string, TokenIF>>(() => {
         const retMap = new Map<string, TokenIF>();
         tokenLists
-            // Reverse add, so higher priority lists overwrite lower priority
-            // .reverse()
             .flatMap((tl) => tl.tokens)
             .concat(ackTokens)
-            .filter((t) => chainNumToString(t.chainId) === chainId)
+            .filter((t) => {
+                // First filter by chainId
+                if (chainNumToString(t.chainId) !== chainId) return false;
+
+                // Then check if token is in exclusion list
+                return !hiddenTokens.some(
+                    (excluded) =>
+                        excluded.address.toLowerCase() ===
+                            t.address.toLowerCase() &&
+                        excluded.chainId === t.chainId,
+                );
+            })
             .forEach((t) => {
                 // list URI of this iteration of the token
                 const originatingList: string = t.fromList ?? 'unknown';
@@ -96,6 +109,14 @@ export const useTokens = (
                     deepToken.listedBy = deepToken.listedBy?.concat(
                         tknFromMap.listedBy,
                     );
+                    // prevent overwriting ambient token list values
+                    if (tknFromMap.listedBy?.includes(tokenListURIs.ambient)) {
+                        deepToken.address = tknFromMap.address;
+                        deepToken.symbol = tknFromMap.symbol;
+                        deepToken.name = tknFromMap.name;
+                        deepToken.logoURI = tknFromMap.logoURI;
+                        deepToken.decimals = tknFromMap.decimals;
+                    }
                 }
                 // add updated deep copy to the Map
                 retMap.set(deepToken.address.toLowerCase(), deepToken);
@@ -121,7 +142,13 @@ export const useTokens = (
         if (tokenMap.size) {
             const newArray = [...tokenMap.values()];
             for (const token of tokenBalances ?? []) {
-                if (!newArray.some((tkn) => tkn.address === token.address)) {
+                if (
+                    !newArray.some(
+                        (tkn) =>
+                            tkn.address.toLowerCase() ===
+                            token.address.toLowerCase(),
+                    )
+                ) {
                     newArray.push(token);
                 }
             }
@@ -129,12 +156,27 @@ export const useTokens = (
         } else {
             const newArray = [...defaultTokens];
             for (const token of tokenBalances ?? []) {
-                if (!newArray.some((tkn) => tkn.address === token.address)) {
+                if (
+                    !newArray.some(
+                        (tkn) =>
+                            tkn.address.toLowerCase() ===
+                            token.address.toLowerCase(),
+                    )
+                ) {
                     newArray.push(token);
                 }
             }
             return newArray
                 .filter((tkn: TokenIF) => tkn.chainId === parseInt(chainId))
+                .filter((t) => {
+                    // Then check if token is in exclusion list
+                    return !hiddenTokens.some(
+                        (excluded) =>
+                            excluded.address.toLowerCase() ===
+                                t.address.toLowerCase() &&
+                            excluded.chainId === t.chainId,
+                    );
+                })
                 .map((tkn: TokenIF) =>
                     deepCopyToken(tkn, tkn.fromList ?? tokenListURIs.ambient),
                 );
@@ -300,11 +342,21 @@ export const useTokens = (
             // fn to search for exact matches
             const searchExact = (): TokenIF[] => {
                 // return tokens where name OR symbol exactly matches search string
-                return tokenUniv.filter(
-                    (tkn: TokenIF) =>
-                        tkn.name.toLowerCase() === cleanedInput ||
-                        tkn.symbol.toLowerCase() === cleanedInput,
-                );
+                return tokenUniv
+                    .filter(
+                        (tkn: TokenIF) =>
+                            tkn.name.toLowerCase() === cleanedInput ||
+                            tkn.symbol.toLowerCase() === cleanedInput,
+                    )
+                    .filter((t) => {
+                        // Then check if token is in exclusion list
+                        return !hiddenTokens.some(
+                            (excluded) =>
+                                excluded.address.toLowerCase() ===
+                                    t.address.toLowerCase() &&
+                                excluded.chainId === t.chainId,
+                        );
+                    });
             };
             // fn to search for partial matches (includes exact matches too)
             const searchPartial = (): TokenIF[] => {
@@ -327,7 +379,15 @@ export const useTokens = (
                         partialMatches.push(tkn);
                     }
                 });
-                return exactMatches.concat(partialMatches);
+                return exactMatches.concat(partialMatches).filter((t) => {
+                    // Then check if token is in exclusion list
+                    return !hiddenTokens.some(
+                        (excluded) =>
+                            excluded.address.toLowerCase() ===
+                                t.address.toLowerCase() &&
+                            excluded.chainId === t.chainId,
+                    );
+                });
             };
             // return requested results
             return exact ? searchExact() : searchPartial();

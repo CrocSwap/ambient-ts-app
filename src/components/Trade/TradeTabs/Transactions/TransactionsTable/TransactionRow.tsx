@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect, useRef } from 'react';
+import { memo, MutableRefObject, useContext, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { TransactionIF } from '../../../../../ambient-utils/types';
@@ -16,10 +16,17 @@ interface propsIF {
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
     openDetailsModal: () => void;
+    observedRowRef: MutableRefObject<HTMLDivElement | null> | undefined;
 }
 function TransactionRow(props: propsIF) {
-    const { idForDOM, tableView, tx, isAccountView, openDetailsModal } = props;
-
+    const {
+        idForDOM,
+        tableView,
+        tx,
+        isAccountView,
+        openDetailsModal,
+        observedRowRef,
+    } = props;
     const { userAddress } = useContext(UserDataContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
@@ -60,11 +67,10 @@ function TransactionRow(props: propsIF) {
     } = useProcessTransaction(tx, userAddress, crocEnv, isAccountView);
 
     const {
+        activeNetwork: { blockExplorer },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const {
-        chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
+
     const { showAllData: showAllDataSelection, currentTxActiveInTransactions } =
         useContext(TradeTableContext);
 
@@ -203,6 +209,7 @@ function TransactionRow(props: propsIF) {
         ambientPriceDisplay,
         lowAndHighPriceDisplay,
         priceDisplay,
+        hiddenIDColumn
     } = txRowConstants(txRowConstantsProps);
 
     return (
@@ -217,7 +224,9 @@ function TransactionRow(props: propsIF) {
                 ref={currentTxActiveInTransactions ? activePositionRef : null}
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
+                data-type='infinite-scroll-row'
             >
+                {hiddenIDColumn}
                 {tableView !== 'small' && TxTimeWithTooltip}
                 {isAccountView && tokenPair}
                 {(tableView === 'large' ||
@@ -239,7 +248,7 @@ function TransactionRow(props: propsIF) {
                 {tableView === 'large' && quoteQtyDisplayWithTooltip}
                 {tableView === 'medium' && baseQuoteQtyDisplayColumn}
 
-                <div data-label='menu'>
+                <div data-label='menu' ref={observedRowRef}>
                     <TransactionsMenu
                         tx={tx}
                         isAccountView={props.isAccountView}

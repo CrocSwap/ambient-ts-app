@@ -107,7 +107,6 @@ const decorateUserPositions = async ({
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
-                        skipENSFetch,
                     );
                 },
             ),

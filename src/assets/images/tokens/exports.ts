@@ -44,7 +44,8 @@ import BIG from './BIG.jpg';
 import PUNKETH20 from './PUNKETH-20.jpeg';
 import RSETH from './RSETH.webp';
 import SCROLLY from './SCROLLY.webp';
-// import SCR from './SCR.svg';
+import NEV from './NEV.webp';
+import SCR from './SCR.svg';
 import WEETH from './WEETH.svg';
 import BLAST from './BLAST.png';
 import ZCAT from './ZCAT.webp';
@@ -52,6 +53,10 @@ import SINU from './SINU.webp';
 import USDE from './USDe-Black.svg';
 import SUSDE from './SUSDE.svg';
 import NURI from './NURI.svg';
+import PUSD from './PUSD.svg';
+import SWELL from './SWELL.png';
+import RSWETH from './RSWETH.svg';
+import UNI from './UNI.webp';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -101,7 +106,8 @@ export {
     PUNKETH20,
     RSETH,
     SCROLLY,
-    // SCR,
+    NEV,
+    SCR,
     WEETH,
     BLAST,
     ZCAT,
@@ -109,4 +115,8 @@ export {
     USDE,
     SUSDE,
     NURI,
+    PUSD,
+    SWELL,
+    RSWETH,
+    UNI,
 };

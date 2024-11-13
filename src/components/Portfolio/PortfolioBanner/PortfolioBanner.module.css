@@ -10,30 +10,17 @@
     align-items: flex-end;
 
     padding: 8px;
-    position: relative;
+   
 
     display: flex;
 
-    background: radial-gradient(
-            45.48% 70.71% at 0% 100%,
-            rgba(115, 113, 252, 0.2) 0%,
-            rgba(115, 113, 252, 0.2) 11.79%,
-            rgba(115, 113, 252, 0.19) 21.38%,
-            rgba(115, 113, 252, 0.19) 29.12%,
-            rgba(115, 113, 252, 0.18) 35.34%,
-            rgba(115, 113, 252, 0.16) 40.37%,
-            rgba(115, 113, 252, 0.15) 44.56%,
-            rgba(115, 113, 252, 0.13) 48.24%,
-            rgba(115, 113, 252, 0.12) 51.76%,
-            rgba(115, 113, 252, 0.1) 55.44%,
-            rgba(115, 113, 252, 0.08) 59.63%,
-            rgba(115, 113, 252, 0.07) 64.66%,
-            rgba(115, 113, 252, 0.05) 70.88%,
-            rgba(115, 113, 252, 0.03) 78.62%,
-            rgba(115, 113, 252, 0.01) 88.21%,
-            rgba(115, 113, 252, 0) 100%
-        ),
-        #06060c;
+
+   
+
+    
+    
+
+ 
 }
 
 .portfolio_banner_rectangle_content {
@@ -54,6 +41,7 @@
     display: none;
     z-index: 2;
     background: rgba(18, 18, 26, 0.9);
+   
 
     z-index: 3;
 }
@@ -80,6 +68,11 @@
 .header_button:focus-visible {
     box-shadow: var(--glow-light-box-shadow);
 }
+@media only screen and (min-width: 568px) {
+.portfolio_banner_level_container{
+    display: flex;
+}
+}
 
 @media only screen and (max-width: 768px) {
     .portfolio_banner_rectangle_content {
@@ -88,9 +81,11 @@
 }
 
 @media only screen and (min-width: 768px) {
+    
     .portfolio_banner_level_container {
         display: flex;
         flex-shrink: 0;
+        justify-content: flex-end;
     }
 
     .portfolio_banner_rectangle_container {
@@ -102,6 +97,11 @@
         padding: 1rem;
         border: none;
         overflow: hidden;
+
+      
+
+        display: grid;
+        grid-template-columns:  auto auto;
     }
     .portfolio_banner_rectangle_content {
         justify-content: flex-start;

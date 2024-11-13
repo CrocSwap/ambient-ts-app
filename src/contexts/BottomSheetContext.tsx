@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 // Define the shape of the context
 interface BottomSheetContextType {
@@ -21,11 +21,28 @@ export const useBottomSheet = () => {
 export const BottomSheetContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
-  const openBottomSheet = () => setIsBottomSheetOpen(true);
-  const closeBottomSheet = () => setIsBottomSheetOpen(false);
+  
+  // Memoize the handler functions so they don't get recreated on every render
+  const openBottomSheet = useCallback(() => {
+    setIsBottomSheetOpen(true);
+  }, []);
+
+  const closeBottomSheet = useCallback(() => {
+    setIsBottomSheetOpen(false);
+  }, []);
+
+  // Memoize the context value to prevent unnecessary re-renders of consuming components
+  const value = useMemo(
+    () => ({
+      isBottomSheetOpen,
+      openBottomSheet,
+      closeBottomSheet,
+    }),
+    [isBottomSheetOpen, openBottomSheet, closeBottomSheet]
+  );
 
   return (
-    <BottomSheetContext.Provider value={{ isBottomSheetOpen, openBottomSheet, closeBottomSheet }}>
+    <BottomSheetContext.Provider value={value}>
       {children}
     </BottomSheetContext.Provider>
   );

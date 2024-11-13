@@ -1,15 +1,14 @@
 import { CrocEnv, bigIntToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
 import {
-    CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
     ZERO_ADDRESS,
     ethereumMainnet,
-    excludedTokenAddresses,
+    excludedTokenAddressesLowercase,
     mainnetETH,
 } from '../../constants';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
-import { TokenIF } from '../../types';
+import { SinglePoolDataIF, TokenIF } from '../../types';
 import { PoolQueryFn } from './querySpotPrice';
 import { isETHorStakedEthToken } from '..';
 
@@ -102,6 +101,50 @@ const fetchPoolStats = async (
     }
 };
 
+const fetchAllPoolStats = async (
+    chainId: string,
+    graphCacheUrl: string,
+    _cacheTimeTag: number | string,
+    with24hPrices?: boolean,
+): Promise<PoolStatsServerIF | undefined> => {
+    const allPoolStatsEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/all_pool_stats?'
+        : graphCacheUrl + '/all_pool_stats?';
+
+    if (with24hPrices) {
+        return fetch(
+            allPoolStatsEndpoint +
+                new URLSearchParams({
+                    chainId: chainId,
+                    with24hPrices: 'true',
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                if (!json?.data) {
+                    return;
+                }
+                const payload = json.data as PoolStatsServerIF;
+                return payload;
+            });
+    } else {
+        return fetch(
+            allPoolStatsEndpoint +
+                new URLSearchParams({
+                    chainId: chainId,
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                if (!json?.data) {
+                    return;
+                }
+                const payload = json.data as PoolStatsServerIF;
+                return payload;
+            });
+    }
+};
+
 export async function expandPoolStats(
     payload: PoolStatsServerIF,
     base: string,
@@ -175,35 +218,27 @@ export async function expandPoolStats(
         return mainnetEthPrice?.usdPrice;
     };
 
-    const getSpotPrice = async () => {
-        const spotPrice = await cachedQuerySpotPrice(
-            crocEnv,
-            base,
-            quote,
-            chainId,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-        );
-        const displayPoolPrice = toDisplayPrice(
-            spotPrice,
-            baseDecimals,
-            quoteDecimals,
-        );
-        return displayPoolPrice;
-    };
+    const lastPriceSwap = payload.lastPriceSwap;
+
+    const displayPoolPrice = toDisplayPrice(
+        lastPriceSwap,
+        baseDecimals,
+        quoteDecimals,
+    );
 
     const basePrice = baseUsdPrice
         ? baseUsdPrice
         : isETHorStakedEthToken(base)
           ? (await getEthPrice()) || 0.0
           : quoteUsdPrice
-            ? quoteUsdPrice / (await getSpotPrice())
+            ? quoteUsdPrice / displayPoolPrice
             : 0.0;
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
         : isETHorStakedEthToken(quote)
           ? (await getEthPrice()) || 0.0
           : baseUsdPrice
-            ? baseUsdPrice * (await getSpotPrice())
+            ? baseUsdPrice * displayPoolPrice
             : 0.0;
 
     return decoratePoolStats(
@@ -265,6 +300,7 @@ interface PoolStatsServerIF {
     baseFees: number;
     quoteFees: number;
     lastPriceIndic: number;
+    lastPriceSwap: number;
     feeRate: number;
     isHistorical: boolean;
 }
@@ -320,7 +356,7 @@ const get24hChange = async (
                 return;
             }
             const payload = json.data as PoolStatsServerIF;
-            return payload.lastPriceIndic;
+            return payload.lastPriceSwap;
         });
 
     const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
@@ -340,7 +376,7 @@ const get24hChange = async (
                 return;
             }
             const payload = json.data as PoolStatsServerIF;
-            return payload.lastPriceIndic;
+            return payload.lastPriceSwap;
         });
 
     const ydayPrice = await ydayQuery;
@@ -419,12 +455,9 @@ export async function getChainStats(
             }
 
             // Filter out excluded addresses
-            const lowercaseExcludedAddresses = excludedTokenAddresses.map(
-                (addr) => addr.toLowerCase(),
-            );
             const filteredData = json.data.filter(
                 (item: { tokenAddr: string }) =>
-                    !lowercaseExcludedAddresses.includes(
+                    !excludedTokenAddressesLowercase.includes(
                         item.tokenAddr.toLowerCase(),
                     ),
             );
@@ -520,6 +553,13 @@ export type PoolStatsFn = (
     histTime?: number,
 ) => Promise<PoolStatsServerIF>;
 
+export type AllPoolStatsFn = (
+    chain: string,
+    graphCacheUrl: string,
+    _cacheTimeTag: number | string,
+    with24hPrices?: boolean,
+) => Promise<SinglePoolDataIF[]>;
+
 export type Change24Fn = (
     chainId: string,
     baseToken: string,
@@ -541,6 +581,10 @@ export type LiquidityFeeFn = (
 
 export function memoizePoolStats(): PoolStatsFn {
     return memoizeCacheQueryFn(fetchPoolStats) as PoolStatsFn;
+}
+
+export function memoizeAllPoolStats(): AllPoolStatsFn {
+    return memoizeCacheQueryFn(fetchAllPoolStats) as AllPoolStatsFn;
 }
 
 export function memoizeGet24hChange(): Change24Fn {

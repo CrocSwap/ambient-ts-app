@@ -9,7 +9,6 @@ import styles from './TableMenus.module.css';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { TransactionIF } from '../../../../../ambient-utils/types';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
@@ -21,6 +20,7 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { AppStateContext } from '../../../../../contexts';
 
 // interface for React functional component props
 interface propsIF {
@@ -42,8 +42,8 @@ export default function TransactionsMenu(props: propsIF) {
         positionHash,
     } = props;
     const {
-        chainData: { blockExplorer, chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { blockExplorer, chainId },
+    } = useContext(AppStateContext);
     const {
         setSimpleRangeWidth,
         setRangeTicksCopied,

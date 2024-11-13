@@ -6,15 +6,15 @@ import {
     getFormattedNumber,
     isETHPair,
     isBtcPair,
-    isStableToken,
+    isUsdStableToken,
     isWbtcToken,
     uriToHttp,
 } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useContext, useState } from 'react';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { AppStateContext } from '../../../contexts';
 
 interface propsIF {
     pool: PoolIF;
@@ -25,8 +25,9 @@ export default function PoolCard(props: propsIF) {
     const { pool, spotPrice } = props;
 
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const [isHovered, setIsHovered] = useState(false);
@@ -44,9 +45,9 @@ export default function PoolCard(props: propsIF) {
         quotePrice,
     } = poolData;
 
-    const denomTokenIsStableToken = shouldInvertDisplay
-        ? isStableToken(pool.quote.address)
-        : isStableToken(pool.base.address);
+    const denomTokenIsUsdStableToken = shouldInvertDisplay
+        ? isUsdStableToken(pool.quote.address)
+        : isUsdStableToken(pool.base.address);
 
     const denomTokenIsWBTCToken = shouldInvertDisplay
         ? isWbtcToken(pool.quote.address)
@@ -64,31 +65,29 @@ export default function PoolCard(props: propsIF) {
 
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
-            {isHovered || denomTokenIsStableToken
-                ? denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
-                    ? `${
+            {poolPrice === undefined || spotPrice === undefined
+                ? '…'
+                : isHovered || denomTokenIsUsdStableToken
+                  ? denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
+                      ? `${
+                            usdPrice
+                                ? getFormattedNumber({
+                                      value: usdPrice,
+                                      prefix: '$',
+                                  })
+                                : '…'
+                        }`
+                      : poolPrice
+                  : denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
+                    ? poolPrice
+                    : `${
                           usdPrice
                               ? getFormattedNumber({
                                     value: usdPrice,
                                     prefix: '$',
                                 })
                               : '…'
-                      }`
-                    : poolPrice === undefined
-                      ? '…'
-                      : poolPrice
-                : denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
-                  ? poolPrice === undefined
-                      ? '…'
-                      : poolPrice
-                  : `${
-                        usdPrice
-                            ? getFormattedNumber({
-                                  value: usdPrice,
-                                  prefix: '$',
-                              })
-                            : '…'
-                    }`}
+                      }`}
         </div>
     );
 
@@ -119,7 +118,9 @@ export default function PoolCard(props: propsIF) {
                         : styles.change_negative
                 }
             >
-                {poolPrice === undefined || poolPriceChangePercent === undefined
+                {spotPrice === undefined ||
+                poolPrice === undefined ||
+                poolPriceChangePercent === undefined
                     ? '…'
                     : poolPriceChangePercent}
             </div>

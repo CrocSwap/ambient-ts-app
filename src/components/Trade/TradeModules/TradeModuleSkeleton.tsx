@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { useContext, useState, useMemo, ReactNode } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { FlexContainer, GridContainer } from '../../../styled/Common';
 import {
@@ -22,7 +21,7 @@ import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import {
     brand,
-    excludedTokenAddresses,
+    excludedTokenAddressesLowercase,
 } from '../../../ambient-utils/constants';
 import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
 import { openInNewTab } from '../../../ambient-utils/dataLayer';
@@ -60,12 +59,11 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     } = props;
 
     const {
+        activeNetwork: { blockExplorer },
         tutorial: { isActive: isTutorialActive },
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
-    const {
-        chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
+
     const { tokens } = useContext(TokenContext);
 
     const { isUserConnected } = useContext(UserDataContext);
@@ -86,22 +84,17 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const smallScreen = useMediaQuery('(max-width: 768px)');
 
-    const lowercaseExcludedAddresses = useMemo(
-        () => excludedTokenAddresses.map((addr) => addr.toLowerCase()),
-        [excludedTokenAddresses],
-    );
-
     const tokenAIsExcludedToken = useMemo(() => {
-        return lowercaseExcludedAddresses.includes(
+        return excludedTokenAddressesLowercase.includes(
             tokenA.address.toLowerCase(),
         );
-    }, [tokenA.address, lowercaseExcludedAddresses]);
+    }, [tokenA.address, excludedTokenAddressesLowercase]);
 
     const tokenBIsExcludedToken = useMemo(() => {
-        return lowercaseExcludedAddresses.includes(
+        return excludedTokenAddressesLowercase.includes(
             tokenB.address.toLowerCase(),
         );
-    }, [tokenB.address, lowercaseExcludedAddresses]);
+    }, [tokenB.address, excludedTokenAddressesLowercase]);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -129,7 +122,14 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
             text = '';
         }
         return text;
-    }, [needConfirmTokenA, needConfirmTokenB, tokenA.symbol, tokenB.symbol]);
+    }, [
+        needConfirmTokenA,
+        needConfirmTokenB,
+        tokenA.symbol,
+        tokenB.symbol,
+        tokenAIsExcludedToken,
+        tokenBIsExcludedToken,
+    ]);
 
     const formattedAckTokenMessage = ackTokenMessage.replace(
         /\b(not|(?<!many\s)fraudulent)\b/gi,
@@ -141,6 +141,28 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         tokenA: tokenA.address,
         tokenB: tokenB.address,
     };
+
+    const tokenAExplorerLink = (needConfirmTokenA || tokenAIsExcludedToken) && (
+        <AcknowledgeLink
+            href={blockExplorer + 'token/' + tokenA.address}
+            rel={'noopener noreferrer'}
+            target='_blank'
+            aria-label={`approve ${tokenA.symbol}`}
+        >
+            {tokenA.symbol || tokenA.name} <FiExternalLink />
+        </AcknowledgeLink>
+    );
+
+    const tokenBExplorerLink = (needConfirmTokenB || tokenBIsExcludedToken) && (
+        <a
+            href={blockExplorer + 'token/' + tokenB.address}
+            rel={'noopener noreferrer'}
+            target='_blank'
+            aria-label={`approve ${tokenB.symbol}`}
+        >
+            {tokenB.symbol || tokenB.name} <FiExternalLink />
+        </a>
+    );
 
     return (
         <>
@@ -201,45 +223,14 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                                         ></AcknowledgeText>
                                     )}
                                 {areDefaultTokensUpdatedForChain &&
-                                    (needConfirmTokenA ||
-                                        needConfirmTokenB) && (
+                                    ackTokenMessage && (
                                         <GridContainer
                                             numCols={2}
                                             gap={16}
                                             margin='4px 0'
                                         >
-                                            {needConfirmTokenA && (
-                                                <AcknowledgeLink
-                                                    href={
-                                                        blockExplorer +
-                                                        'token/' +
-                                                        tokenA.address
-                                                    }
-                                                    rel={'noopener noreferrer'}
-                                                    target='_blank'
-                                                    aria-label={`approve ${tokenA.symbol}`}
-                                                >
-                                                    {tokenA.symbol ||
-                                                        tokenA.name}{' '}
-                                                    <FiExternalLink />
-                                                </AcknowledgeLink>
-                                            )}
-                                            {needConfirmTokenB && (
-                                                <a
-                                                    href={
-                                                        blockExplorer +
-                                                        'token/' +
-                                                        tokenB.address
-                                                    }
-                                                    rel={'noopener noreferrer'}
-                                                    target='_blank'
-                                                    aria-label={`approve ${tokenB.symbol}`}
-                                                >
-                                                    {tokenB.symbol ||
-                                                        tokenB.name}{' '}
-                                                    <FiExternalLink />
-                                                </a>
-                                            )}
+                                            {tokenAExplorerLink}
+                                            {tokenBExplorerLink}
                                         </GridContainer>
                                     )}
                             </>
@@ -252,6 +243,22 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             flat
                         />
                     )}
+                    {!isUserConnected &&
+                    (tokenAIsExcludedToken || tokenBIsExcludedToken) ? (
+                        <AcknowledgeText
+                            fontSize='body'
+                            dangerouslySetInnerHTML={{
+                                __html: formattedAckTokenMessage,
+                            }}
+                        ></AcknowledgeText>
+                    ) : null}
+                    {!isUserConnected &&
+                    (tokenAIsExcludedToken || tokenBIsExcludedToken) ? (
+                        <GridContainer numCols={2} gap={16} margin='4px 0'>
+                            {tokenAExplorerLink}
+                            {tokenBExplorerLink}
+                        </GridContainer>
+                    ) : null}
                     {warnings && warnings}
                     {isFuta && (
                         <LPButton

@@ -21,7 +21,8 @@ text.market {
     overflow: hidden;
     grid-column-start: 1;
     grid-column-end: 2;
-    grid-row: 1;
+    grid-row-start: 1;
+    grid-row-end: 4;
 }
 
 .chart_grid {

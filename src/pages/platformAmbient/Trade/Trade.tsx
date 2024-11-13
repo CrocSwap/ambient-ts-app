@@ -9,7 +9,6 @@ import {
     useCallback,
     memo,
     useRef,
-    
 } from 'react';
 
 // START: Import JSX Components
@@ -57,11 +56,12 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const { futaActiveTab } = props;
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
-
+    const { provider } = useContext(CrocEnvContext);
     const {
-        chainData: { chainId },
-        provider,
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+        showTopPtsBanner,
+        dismissTopBannerPopup,
+    } = useContext(AppStateContext);
     const { setIsCandleSelected } = useContext(CandleContext);
     const { showPoints } = useContext(BrandContext);
 
@@ -84,18 +84,11 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { showTopPtsBanner, dismissTopBannerPopup } =
-        useContext(AppStateContext);
     const { setOutsideControl, setSelectedOutsideTab } =
         useContext(TradeTableContext);
 
-    const {
-        baseToken,
-        quoteToken,
-        isDenomBase,
-        limitTick,
-      
-    } = useContext(TradeDataContext);
+    const { baseToken, quoteToken, isDenomBase, limitTick } =
+        useContext(TradeDataContext);
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
@@ -129,7 +122,6 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         unselectCandle();
     }, [chartSettings.candleTime.global.time, baseToken.name, quoteToken.name]);
 
-
     const [
         isMobileSettingsModalOpen,
         openMobileSettingsModal,
@@ -161,7 +153,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const {
         poolPriceDisplay,
         poolPriceChangePercent,
-        
+
         usdPrice,
         isTradeDollarizationEnabled,
     } = useContext(PoolContext);
@@ -195,9 +187,6 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const poolPriceChangeString =
         poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent;
 
-
-
-
     const tradeMobileProps = {
         changeState: changeState,
         selectedDate: selectedDate,
@@ -210,7 +199,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         filter: transactionFilter,
         setTransactionFilter: setTransactionFilter,
         transactionFilter,
-       
+
         hasInitialized: hasInitialized,
         setHasInitialized: setHasInitialized,
         unselectCandle: unselectCandle,
@@ -218,17 +207,10 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         tokens,
         poolPrice,
         futaActiveTab,
-        poolPriceChangeString
-    }
+        poolPriceChangeString,
+    };
 
-
-
-
-
-
-    if (showMobileVersion) return (
-        <TradeMobile {...tradeMobileProps} />
-    )
+    if (showMobileVersion) return <TradeMobile {...tradeMobileProps} />;
 
     return (
         <>
@@ -237,7 +219,12 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                     flexDirection='column'
                     fullWidth
                     background='dark2'
-                    style={{ height: 'calc(100vh - 56px)' }}
+                    style={{
+                        height: 'calc(100vh - 56px)',
+                        ...(isChartFullScreen
+                            ? { gridColumnStart: 1, gridColumnEnd: 3 }
+                            : {}),
+                    }}
                     ref={canvasRef}
                 >
                     {showTopPtsBanner && showPoints && (
@@ -259,6 +246,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                                 !isChartFullScreen &&
                                 !isFuta
                             }
+                            isChartFullScreen={isChartFullScreen}
                             isFuta={isFuta}
                             enable={{
                                 bottom: !isChartFullScreen,
@@ -272,7 +260,10 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                             }}
                             size={{
                                 width: '100%',
-                                height: isFuta ? '100%' : chartHeights.current,
+                                height:
+                                    isFuta || isChartFullScreen
+                                        ? '100%'
+                                        : chartHeights.current,
                             }}
                             minHeight={4}
                             onResize={(
@@ -348,6 +339,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                                 ref={tradeTableRef}
                                 style={{ flex: 1 }}
                                 overflow='hidden'
+                                id='tx-table'
                             >
                                 <TradeTabs2 {...tradeTabsProps} />
                             </FlexContainer>

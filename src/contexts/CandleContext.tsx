@@ -15,10 +15,10 @@ import {
     CandleScaleIF,
     CandlesByPoolAndDurationIF,
 } from '../ambient-utils/types';
-import { AppStateContext } from './AppStateContext';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
-import { CrocEnvContext } from './CrocEnvContext';
+import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
@@ -69,7 +69,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         numCandlesFetched,
         setNumCandlesFetched,
     } = useContext(ChartContext);
-    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
+    const {
+        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -110,8 +113,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isResetRequest: false,
     });
 
-    const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timer>();
-    const offlineFetcherRef = useRef<NodeJS.Timer>();
+    const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timeout>();
+    const offlineFetcherRef = useRef<NodeJS.Timeout>();
     offlineFetcherRef.current = offlineFetcher;
 
     useEffect(() => {
@@ -208,6 +211,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
         isPoolInitialized,
+        crocEnv !== undefined,
     ]);
 
     useEffect(() => {
@@ -292,8 +296,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 chartSettings?.candleTimeGlobal || 3600;
             fetchCandleSeriesHybrid(
                 true,
-                chainData,
-                activeNetwork.graphCacheUrl,
+                chainId,
+                poolIndex,
+                graphCacheUrl,
                 candleTimeLocal || defaultCandleDuration,
                 baseTokenAddress,
                 quoteTokenAddress,
@@ -404,8 +409,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
         fetchCandleSeriesHybrid(
             true,
-            chainData,
-            activeNetwork.graphCacheUrl,
+            chainId,
+            poolIndex,
+            graphCacheUrl,
             candleTimeLocal,
             baseTokenAddress,
             quoteTokenAddress,

@@ -12,7 +12,11 @@ import { LuRefreshCcw, LuSearch } from 'react-icons/lu';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
 import DexTokens from '../../../components/Global/Explore/DexTokens/DexTokens';
-import { excludedTokenAddresses } from '../../../ambient-utils/constants';
+import { AppStateContext } from '../../../contexts';
+import {
+    excludedTokenAddressesLowercase,
+    hiddenTokens,
+} from '../../../ambient-utils/constants';
 
 interface ExploreIF {
     view: 'pools' | 'tokens';
@@ -27,7 +31,11 @@ export default function Explore(props: ExploreIF) {
         isExploreDollarizationEnabled,
         setIsExploreDollarizationEnabled,
     } = useContext(ExploreContext);
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const { poolList } = useContext(PoolContext);
     const {
         isActiveNetworkBlast,
@@ -35,11 +43,18 @@ export default function Explore(props: ExploreIF) {
         isActiveNetworkMainnet,
     } = useContext(ChainDataContext);
 
-    const getLimitedPools = async (): Promise<void> => {
+    const getAllPoolData = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
-            pools.getLimited(poolList, crocEnv, chainData.chainId);
+            pools.getAll(poolList, crocEnv, chainId);
         }
     };
+
+    const everyOneMinute = Math.floor(Date.now() / 60000);
+
+    // update top pools data
+    useEffect(() => {
+        getAllPoolData();
+    }, [everyOneMinute]);
 
     // trigger process to fetch and format token data when page loads with
     // ... gatekeeping to prevent re-fetch if data is already loaded
@@ -49,30 +64,23 @@ export default function Explore(props: ExploreIF) {
         }
     }, [crocEnv !== undefined]);
 
-    const getAllPools = async (): Promise<void> => {
+    const refreshPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
             pools.reset();
+            // pause for a moment to allow spinner to appear
+            await new Promise((resolve) => setTimeout(resolve, 100));
             // use metadata to get expanded pool data
-            getLimitedPools().then(() => {
-                pools.getExtra(poolList, crocEnv, chainData.chainId);
-            });
+            getAllPoolData();
         }
     };
-
-    // get expanded pool metadata, if not already fetched
-    useEffect(() => {
-        if (crocEnv !== undefined && poolList.length === 0) {
-            getAllPools();
-        }
-    }, [crocEnv, poolList.length]);
 
     // logic to handle onClick navigation action
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     function goToMarket(tknA: string, tknB: string): void {
         linkGenMarket.navigate({
-            chain: chainData.chainId,
+            chain: chainId,
             tokenA: tknA,
             tokenB: tknB,
         });
@@ -101,7 +109,7 @@ export default function Explore(props: ExploreIF) {
     function handleRefresh(): void {
         switch (view) {
             case 'pools':
-                getAllPools();
+                refreshPools();
                 break;
             case 'tokens':
                 topTokensOnchain.update();
@@ -123,15 +131,12 @@ export default function Explore(props: ExploreIF) {
     const [searchQueryToken, setSearchQueryToken] = useState<string>('');
 
     // Filter out excluded addresses
-    const lowercaseExcludedAddresses = excludedTokenAddresses.map((addr) =>
-        addr.toLowerCase(),
-    );
     const filteredPoolsNoExcludedTokens = pools.all.filter(
         (pool) =>
-            !lowercaseExcludedAddresses.includes(
+            !excludedTokenAddressesLowercase.includes(
                 pool.base.address.toLowerCase(),
             ) &&
-            !lowercaseExcludedAddresses.includes(
+            !excludedTokenAddressesLowercase.includes(
                 pool.quote.address.toLowerCase(),
             ),
     );
@@ -151,18 +156,36 @@ export default function Explore(props: ExploreIF) {
 
     const filteredTokens =
         searchQueryToken.length >= 2
-            ? topTokensOnchain.data.filter((token) => {
-                  const lowerCaseQuery = searchQueryToken.toLowerCase();
-                  return (
-                      token.tokenMeta?.name
-                          .toLowerCase()
-                          .includes(lowerCaseQuery) ||
-                      token.tokenMeta?.symbol
-                          .toLowerCase()
-                          .includes(lowerCaseQuery)
+            ? topTokensOnchain.data
+                  .filter((token) => {
+                      const lowerCaseQuery = searchQueryToken.toLowerCase();
+                      return (
+                          token.tokenMeta?.name
+                              .toLowerCase()
+                              .includes(lowerCaseQuery) ||
+                          token.tokenMeta?.symbol
+                              .toLowerCase()
+                              .includes(lowerCaseQuery)
+                      );
+                  })
+                  .filter((t) => {
+                      // check if token is in exclusion list
+                      return !hiddenTokens.some(
+                          (excluded) =>
+                              excluded.address.toLowerCase() ===
+                                  t.tokenAddr.toLowerCase() &&
+                              excluded.chainId === t.tokenMeta?.chainId,
+                      );
+                  })
+            : topTokensOnchain.data.filter((t) => {
+                  // check if token is in exclusion list
+                  return !hiddenTokens.some(
+                      (excluded) =>
+                          excluded.address.toLowerCase() ===
+                              t.tokenAddr.toLowerCase() &&
+                          excluded.chainId === t.tokenMeta?.chainId,
                   );
-              })
-            : topTokensOnchain.data;
+              });
 
     const searchInputRef = useRef<HTMLDivElement>(null);
 
@@ -296,7 +319,7 @@ export default function Explore(props: ExploreIF) {
             {view === 'tokens' && (
                 <DexTokens
                     dexTokens={filteredTokens}
-                    chainId={chainData.chainId}
+                    chainId={chainId}
                     goToMarket={goToMarket}
                     searchQuery={searchQueryToken}
                     setSearchQuery={setSearchQueryToken}
