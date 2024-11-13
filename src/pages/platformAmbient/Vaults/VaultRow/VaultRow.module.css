@@ -1,0 +1,176 @@
+.mainContainer {
+    background: var(--dark1);
+}
+.mainContent {
+    width: 100%;
+    padding: 8px;
+    display: grid;
+    height: 80px;
+    grid-template-columns: 120px repeat(4, 1fr) 100px;
+    align-items: center;
+}
+
+.vaultHeader {
+    width: 100%;
+    padding: 0 8px;
+    padding-top: 4px;
+    display: grid;
+    grid-template-columns: 120px repeat(4, 1fr) 100px;
+    align-items: center;
+}
+
+.vaultHeader span {
+    text-align: end;
+    color: var(--text2, #8b98a5);
+    text-align: right;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+}
+
+.tempestDisplay {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--dark2);
+}
+
+.tempestDisplay img {
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.poolName {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    color: var(--text1, #f0f0f8);
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    /* large */
+    -webkit-text-stroke-width: 1;
+    -webkit-text-stroke-color: #000;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    letter-spacing: -0.48px;
+    text-align: end;
+    gap: 14px;
+}
+
+.poolName:hover {
+    cursor: pointer;
+}
+
+.tvlDisplay {
+    color: var(--text1, #f0f0f8);
+    text-align: end;
+
+    /* medium */
+    font-family: 'Lexend Deca';
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    letter-spacing: -0.36px;
+}
+
+.apyDisplay {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+    text-align: right;
+    /* medium */
+    font-family: 'Lexend Deca';
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    letter-spacing: -0.36px;
+}
+
+.actionButtonContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 10px; /* Space between Deposit and Withdraw buttons */
+    align-items: flex-end;
+}
+
+.actionButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 8px;
+    align-items: flex-start;
+    gap: 10px;
+
+    border-radius: 50px;
+    border: 1px solid var(--accent1, #7371fc);
+    background: var(--dark1, #06060c);
+    color: var(--accent-accent1, #7371fc);
+    text-align: center;
+
+    /* small */
+    font-family: 'Lexend Deca';
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    height: 25px;
+    transition: all var(--animation) ease-in-out;
+    cursor: pointer;
+}
+
+.actionButton:hover{
+    color: var(--text1);
+}
+
+.disabledButton {
+    pointer-events: none;
+    color: var(--text2);
+    background-color: var(--dark2);
+    border: 1px solid transparent;
+}
+
+@media only screen and (max-width: 768px) {
+    .mainContent,
+    .vaultHeader {
+        grid-template-columns: 50px repeat(2, 1fr) 50px 100px;
+    }
+    .poolName {
+        display: none;
+    }
+
+    .tvlDisplay,
+    .apyDisplay,
+    .depositContainer {
+        font-size: 14px;
+    }
+}
+
+@media only screen and (max-width: 428px) {
+    .mainContent,
+    .vaultHeader {
+        grid-template-columns: 50px repeat(2, 1fr) 80px;
+    }
+
+    .tempestDisplay {
+        display: none;
+    }
+
+    .depositContainer {
+        word-wrap: break-word;
+    }
+
+    .apyDisplay {
+        display: none;
+    }
+}

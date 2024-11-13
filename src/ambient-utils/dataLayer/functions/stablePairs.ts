@@ -42,7 +42,6 @@ import {
     plumeSepoliaETH,
     plumeSepoliaUSD,
     plumeSepoliaNEV,
-    plumeSepoliaUSDT,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -121,7 +120,6 @@ export const STABLE_USD_TOKENS = [
     scrollAxlUSDC.address,
     scrollUSDE.address,
     scrollsUSDe.address,
-    plumeSepoliaUSDT.address,
     plumeSepoliaNEV.address,
 ]
     .concat(USDC_TOKENS)
