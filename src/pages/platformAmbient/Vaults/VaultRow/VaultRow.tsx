@@ -230,6 +230,10 @@ export default function VaultRow(props: propsIF) {
                             style={{ color: 'var(--other-green' }}
                         >
                             {formattedAPR}
+                            <TooltipComponent
+                                placement='top-end'
+                                title='APR estimates provided by vault provider.'
+                            />
                         </p>
                         <div className={styles.actionButtonContainer}>
                             <button
