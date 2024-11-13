@@ -407,11 +407,7 @@ const PageHeader = function () {
     return (
         <>
             <header
-                className={
-                    location.pathname === '/'
-                        ? styles.homepagePrimaryHeader
-                        : styles.primaryHeader
-                }
+                className={styles.primaryHeader}
                 data-testid={'page-header'}
                 style={{
                     position: 'sticky',

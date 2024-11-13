@@ -13,8 +13,6 @@
     flex-direction: column;
     background: red;
 }
-
-.homepagePrimaryHeader,
 .primaryHeader {
     width: 100%;
     height: 56px;
@@ -25,7 +23,6 @@
     border-bottom: 1px solid var(--navbar-border);
     padding: 0 1rem;
 }
-
 .primaryNavigation {
     display: flex;
     flex-direction: row;
@@ -96,6 +93,10 @@
 .logoContainer:focus-visible img {
     box-shadow: var(--glow-light-box-shadow);
 }
+.logoText {
+    max-width: 70%;
+    max-height: 70%;
+}
 
 @media (max-width: 800px) {
     .primaryNavigation {
@@ -118,7 +119,6 @@
 }
 
 @media only screen and (min-width: 800px) {
-    .homepagePrimaryHeader,
     .primaryHeader {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -128,45 +128,25 @@
         margin: 0 4px;
     }
 
-    .primaryHeader{
+    .primaryHeader {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
-        
     }
 
-    .left_side{
+    .left_side {
         display: flex;
         flex-direction: row;
         align-items: center;
         gap: 1rem;
     }
-
-    
 }
 
 @media (max-width: 1200px) {
     .logoContainer img:nth-of-type(2) {
         display: block;
         margin: 0 4px;
-    }
-}
-
-@media only screen and (max-width: 1180px) and (min-width: 800px) {
-    .navigationLink {
-        font-size: var(--header-size);
-        line-height: var(--header-lh);
-    }
-    .homepagePrimaryHeader {
-        display: grid;
-        grid-template-columns: 0.8fr auto auto;
-        padding: 0 16px;
-    }
-    .primaryHeader {
-        display: grid;
-        grid-template-columns: repeat(3, auto);
-        padding: 0 16px;
     }
 }
 
