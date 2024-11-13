@@ -56,6 +56,10 @@ export default function VaultRow(props: propsIF) {
 
     const [balanceMainAsset, setBalanceMainAsset] = useState<
         bigint | undefined
+        >();
+    // eslint-disable-next-line 
+    const [balanceSecondaryAsset, setBalanceSecondaryAsset] = useState<
+        bigint | undefined
     >();
 
     // useEffect to check if user has approved Tempest to sell token 1
@@ -128,6 +132,13 @@ export default function VaultRow(props: propsIF) {
               ),
           })
         : '...';
+    const secondaryAssetBalanceDisplayQty = balanceSecondaryAsset
+        ? getFormattedNumber({
+              value: parseFloat(
+                  toDisplayQty(balanceSecondaryAsset, secondaryAsset.decimals),
+              ),
+          })
+        : '...';
 
     const depositsDisplay = (
         <FlexContainer
@@ -185,10 +196,12 @@ export default function VaultRow(props: propsIF) {
             />
         ) : (
             <VaultWithdraw
-                mainAsset={mainAsset}
+                    mainAsset={mainAsset}
+                    secondaryAsset={secondaryAsset}
                 vault={vault}
                 balanceMainAsset={balanceMainAsset}
-                mainAssetBalanceDisplayQty={mainAssetBalanceDisplayQty}
+                    mainAssetBalanceDisplayQty={mainAssetBalanceDisplayQty}
+                    secondaryAssetBalanceDisplayQty={secondaryAssetBalanceDisplayQty}
                 onClose={closeModal}
             />
         );

@@ -5,7 +5,7 @@
     flex-direction: column;
     gap: 8px;
     padding:  16px;
-    min-height: 450px;
+    min-height: 500px;
 }
 .main_content {
     width: 100%;
