@@ -29,22 +29,26 @@ function Vaults() {
     );
 
     // vault data from tempest API
-    const [vaultData, setVaultData] = useState(null);
+    const [vaultData, setVaultData] = useState<VaultIF[]|null>(null);
     // console.log(vaultData);
     false && vaultData;
 
     // logic to fetch vault data from API
     useEffect(() => {
+        // logic to fetch and sort vault data
         async function getData(): Promise<void> {
             const endpoint = 'https://protocol-service-api.tempestfinance.xyz/api/v1/vaults';
             const response = await fetch(endpoint);
             const { data } = await response.json();
-            setVaultData(data.vaults);
+            const sorted: VaultIF[] = data.vaults.sort(
+                (a: VaultIF, b: VaultIF) => parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd)
+            );
+            setVaultData(sorted);
         }
         // run the first fetch immediately
         getData();
         // run subsequent fetches on an interval
-        const period = isUserIdle ? 120000 : 60000;
+        const period: number = isUserIdle ? 120000 : 60000;
         const interval = setInterval(getData, period);
         // clear the interval when this component dismounts
         return () => clearInterval(interval);
