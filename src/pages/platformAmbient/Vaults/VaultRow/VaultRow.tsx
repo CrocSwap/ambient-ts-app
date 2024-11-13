@@ -50,28 +50,31 @@ export default function VaultRow(props: propsIF) {
 
     // useEffect to check if user has approved Tempest to sell token 1
     useEffect(() => {
-        (async () => {
-            if (crocEnv && vault && userAddress) {
-                try {
-                    const tempestVault = crocEnv.tempestVault(
-                        vault.address,
-                        vault.token1Address,
-                    );
-
-                    const balanceToken1Response =
-                        await tempestVault.balanceToken1(
-                            '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
+        if (crocEnv && vault) {
+            setBalanceToken1(undefined);
+            if (userAddress) {
+                (async () => {
+                    try {
+                        const tempestVault = crocEnv.tempestVault(
+                            vault.address,
+                            vault.token1Address,
                         );
 
-                    // const balanceToken1Response =
-                    //     await tempestVault.balanceToken1(userAddress);
+                        const balanceToken1Response =
+                            await tempestVault.balanceToken1(
+                                '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc', // !! remove before deploy to prod
+                            );
 
-                    setBalanceToken1(balanceToken1Response);
-                } catch (err) {
-                    console.warn(err);
-                }
+                        // const balanceToken1Response =
+                        //     await tempestVault.balanceToken1(userAddress);
+
+                        setBalanceToken1(balanceToken1Response);
+                    } catch (err) {
+                        console.warn(err);
+                    }
+                })();
             }
-        })();
+        }
     }, [crocEnv, vault, userAddress]);
 
     if (Number(chainId) !== vault.chainId || !token0 || !token1) {
@@ -114,16 +117,18 @@ export default function VaultRow(props: propsIF) {
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                 {token1BalanceDisplayQty}
                 {!!balanceToken1 && (
-                    <><TokenIcon
-                        token={token1}
-                        src={uriToHttp(token1.logoURI)}
-                        alt={token1.symbol}
-                        size={'m'}
-                    />
-                    <TooltipComponent
-                        placement='top'
-                        title='Vault positions can hold both tokens in a pair. Displayed position values represent estimated redeemable token positions for the primary token on withdrawal.'
-                    /></>
+                    <>
+                        <TokenIcon
+                            token={token1}
+                            src={uriToHttp(token1.logoURI)}
+                            alt={token1.symbol}
+                            size={'m'}
+                        />
+                        <TooltipComponent
+                            placement='top'
+                            title='Vault positions can hold both tokens in a pair. Displayed position values represent estimated redeemable token positions for the primary token on withdrawal.'
+                        />
+                    </>
                 )}
             </FlexContainer>
         </FlexContainer>
