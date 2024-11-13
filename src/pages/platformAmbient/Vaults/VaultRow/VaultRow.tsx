@@ -77,7 +77,7 @@ export default function VaultRow(props: propsIF) {
         }
     }, [crocEnv, vault, userAddress]);
 
-    if (Number(chainId) !== vault.chainId || !token0 || !token1) {
+    if (Number(chainId) !== Number(vault.chainId) || !token0 || !token1) {
         return null;
     }
 
@@ -171,11 +171,11 @@ export default function VaultRow(props: propsIF) {
         );
     function navigateExternal(): void {
         const goToExternal = (url: string) => window.open(url, '_blank');
-        if (vault.chainId === 534352) {
+        if (Number(vault.chainId) === 534352) {
             const destination: string =
                 'https://app.tempestdev.xyz/vaults/scroll/' + vault.address;
             goToExternal(destination);
-        } else if (vault.chainId === 1) {
+        } else if (Number(vault.chainId) === 1) {
             const destination: string =
                 'https://app.tempestdev.xyz/vaults/ethereum/' + vault.address;
             goToExternal(destination);

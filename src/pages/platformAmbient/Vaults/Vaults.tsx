@@ -42,7 +42,10 @@ function Vaults() {
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
                     {allVaultsData
-                        .filter((vault) => vault.chainId === Number(chainId))
+                        .filter(
+                            (vault) =>
+                                Number(vault.chainId) === Number(chainId),
+                        )
                         .map((vault: VaultIF) => {
                             const KEY_SLUG = 'vault_row_';
                             return (
