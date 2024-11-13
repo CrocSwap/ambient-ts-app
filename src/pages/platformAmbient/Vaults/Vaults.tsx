@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { memo, useContext } from 'react';
+import { memo, useContext, useEffect, useState } from 'react';
 import styles from './Vaults.module.css';
 import VaultRow from './VaultRow/VaultRow';
 import { VaultIF } from '../../../ambient-utils/types';
@@ -25,6 +25,22 @@ function Vaults() {
             <span className={styles.actionButtonContainer} />
         </div>
     );
+
+    // vault data from tempest API
+    const [vaultData, setVaultData] = useState(null);
+    console.log(vaultData);
+    false && vaultData;
+
+    // logic to fetch vault data from API
+    useEffect(() => {
+        async function getData(): Promise<void> {
+            const endpoint = 'https://protocol-service-api.tempestfinance.xyz/api/v1/vaults';
+            const response = await fetch(endpoint);
+            const { data } = await response.json();
+            setVaultData(data.vaults);
+        }
+        vaultData ?? getData();
+    }, []);
 
     return (
         <div data-testid={'vaults'} className={styles.container}>
