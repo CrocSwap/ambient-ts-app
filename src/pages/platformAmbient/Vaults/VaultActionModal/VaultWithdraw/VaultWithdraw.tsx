@@ -173,6 +173,14 @@ export default function VaultWithdraw(props: Props) {
         </div>
     );
 
+    const submittedButtonTitle = (
+        <div className={styles.loading}>
+            Submitting
+            <span className={styles.dots}></span>
+
+        </div>
+    )
+
     return (
         <Modal usingCustomHeader onClose={onClose}>
         <ModalHeader
@@ -189,11 +197,12 @@ export default function VaultWithdraw(props: Props) {
             />
             {pooledDisplay}
            
-            {extraDetailsDisplay}
+                {extraDetailsDisplay}
+              
             <Button
                 idForDOM='approve_token_a_for_swap_module'
                 style={{ textTransform: 'none' }}
-                title={showSubmitted ? 'Submitting...' : 'Remove Liquidity'}
+                title={showSubmitted ? submittedButtonTitle : 'Remove Liquidity'}
                 disabled={showSubmitted}
                 action={() => setShowSubmitted(true)}
                 flat
