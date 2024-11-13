@@ -9,7 +9,6 @@ import {
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import VaultActionModal from '../VaultActionModal/VaultActionModal';
 import { VaultIF } from '../../../../ambient-utils/types';
 import { useContext, useState } from 'react';
 import {
@@ -18,6 +17,8 @@ import {
     TokenContext,
 } from '../../../../contexts';
 import { formatDollarAmount } from '../../../../utils/numbers';
+import VaultDeposit from '../VaultActionModal/VaultDeposit/VaultDeposit';
+import VaultWithdraw from '../VaultActionModal/VaultWithdraw/VaultWithdraw';
 import { RiExternalLinkLine } from 'react-icons/ri';
 
 interface propsIF {
@@ -103,6 +104,8 @@ export default function VaultRow(props: propsIF) {
         openModal()
     }
 
+    const modalToOpen = type === 'Deposit' ? <VaultDeposit token0={token0} token1={token1} onClose={closeModal} /> :
+        <VaultWithdraw token0={token0} token1={token1} onClose={closeModal}/>
     function navigateExternal(): void {
         const goToExternal = (url: string) => window.open(url, '_blank');
         if (vault.chainId === 534352) {
@@ -156,14 +159,7 @@ export default function VaultRow(props: propsIF) {
                     </div>
                 </div>
             </div>
-            {isOpen && (
-                <VaultActionModal
-                    type={type}
-                    onClose={closeModal}
-                    token0={token0}
-                    token1={token1}
-                />
-            )}
+            {isOpen && modalToOpen}
         </>
     );
 }
