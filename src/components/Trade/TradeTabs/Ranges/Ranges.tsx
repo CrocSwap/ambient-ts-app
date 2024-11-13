@@ -103,7 +103,7 @@ function Ranges(props: propsIF) {
 
     const { transactionsByType } = useContext(ReceiptContext);
 
-    const { baseToken, quoteToken } = useContext(TradeDataContext);
+    const { baseToken, quoteToken, blackListedTimeParams, addToBlackList } = useContext(TradeDataContext);
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
@@ -535,6 +535,15 @@ function Ranges(props: propsIF) {
                 break;
             }
 
+            if(blackListedTimeParams.has(selectedBaseAddress+selectedQuoteAddress) 
+                && blackListedTimeParams.get(selectedBaseAddress+selectedQuoteAddress)?.has(oldestTimeParam)){
+                setMoreDataLoading(false);
+                setTimeout( () => {
+                    setMoreDataLoading(false);
+                }, 1000)
+                break;
+            }
+
             setRequestedOldestTimes((prev) => [...prev, oldestTimeParam]);
 
             // fetch data
@@ -550,6 +559,7 @@ function Ranges(props: propsIF) {
             dirtyData = dirtyData.filter((e) => e.positionLiq !== 0);
 
             if (dirtyData.length == 0) {
+                addToBlackList(selectedBaseAddress+selectedQuoteAddress, oldestTimeParam);
                 const creditVal =
                     extraRequestCreditRef.current !== undefined
                         ? extraRequestCreditRef.current
