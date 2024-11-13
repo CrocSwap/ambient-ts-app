@@ -62,6 +62,10 @@ export default function VaultDeposit(props: Props) {
     const [minDepositBigint, setMinDepositBigint] = useState<
         bigint | undefined
     >();
+    const [token1ApprovalBigint, setToken1ApprovalBigint] = useState<
+        bigint | undefined
+    >();
+    const { sessionReceipts } = useContext(ReceiptContext);
 
     const {
         addPendingTx,
@@ -93,6 +97,14 @@ export default function VaultDeposit(props: Props) {
             token1BalanceBigint !== undefined &&
             depositBigint > token1BalanceBigint,
         [token1BalanceBigint, depositBigint],
+    );
+
+    const depositGreaterThanWalletAllowance = useMemo(
+        () =>
+            depositBigint !== undefined &&
+            token1ApprovalBigint !== undefined &&
+            depositBigint > token1ApprovalBigint,
+        [token1ApprovalBigint, depositBigint],
     );
 
     // calculate price of gas for vault deposit
@@ -139,10 +151,17 @@ export default function VaultDeposit(props: Props) {
                             setMinDepositBigint(min);
                         })
                         .catch(console.error);
+                    crocEnv
+                        .tempestVault(vault.address, vault.token1Address)
+                        .allowance(userAddress)
+                        .then((allowance: bigint) => {
+                            setToken1ApprovalBigint(allowance);
+                        })
+                        .catch(console.error);
                 })();
             }
         }
-    }, [crocEnv, userAddress, vault]);
+    }, [crocEnv, userAddress, vault, sessionReceipts.length]);
 
     // calculate price of gas for vault deposit
     useEffect(() => {
@@ -161,6 +180,55 @@ export default function VaultDeposit(props: Props) {
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
+    const approveToken1 = async () => {
+        if (!crocEnv || !userAddress || !vault) return;
+
+        setShowSubmitted(true);
+        const tx = await crocEnv
+            .tempestVault(vault.address, vault.token1Address)
+            .approve()
+            .catch(console.error);
+
+        if (tx?.hash) {
+            addPendingTx(tx?.hash);
+            addTransactionByType({
+                userAddress: userAddress || '',
+                txHash: tx.hash,
+                txType: 'Approve',
+                txDescription: `Approve ${token1.symbol}`,
+            });
+        }
+
+        let receipt;
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+            setShowSubmitted(false);
+            console.error({ error });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                removePendingTx(error.hash);
+
+                const newTransactionHash = error.replacement.hash;
+                addPendingTx(newTransactionHash);
+
+                updateTransactionHash(error.hash, error.replacement.hash);
+                receipt = error.receipt;
+            } else if (isTransactionFailedError(error)) {
+                console.error({ error });
+                receipt = error.receipt;
+            }
+        }
+
+        if (receipt) {
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.hash);
+            setShowSubmitted(false);
+        }
+    };
 
     const submitDeposit = async () => {
         if (!crocEnv || !userAddress || !vault || !depositBigint) return;
@@ -439,20 +507,26 @@ export default function VaultDeposit(props: Props) {
                         title={
                             !depositBigint
                                 ? 'Enter a Deposit Quantity'
-                                : !depositGreaterOrEqualToMinimum
-                                  ? `Minimum Deposit is ${displayMinDeposit} ${token1.symbol}`
-                                  : depositGreaterThanWalletBalance
-                                    ? 'Reduce Deposit Quantity'
-                                    : showSubmitted
-                                      ? submittedButtonTitle
-                                      : 'Submit'
+                                : depositGreaterThanWalletAllowance
+                                  ? `Approve ${token1.symbol}`
+                                  : !depositGreaterOrEqualToMinimum
+                                    ? `Minimum Deposit is ${displayMinDeposit} ${token1.symbol}`
+                                    : depositGreaterThanWalletBalance
+                                      ? 'Reduce Deposit Quantity'
+                                      : showSubmitted
+                                        ? submittedButtonTitle
+                                        : 'Submit'
                         }
                         disabled={
                             showSubmitted ||
                             !depositGreaterOrEqualToMinimum ||
                             depositGreaterThanWalletBalance
                         }
-                        action={() => submitDeposit()}
+                        action={() =>
+                            depositGreaterThanWalletAllowance
+                                ? approveToken1()
+                                : submitDeposit()
+                        }
                         flat
                     />
                 </div>
