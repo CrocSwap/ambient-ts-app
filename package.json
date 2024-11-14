@@ -1,10 +1,10 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.9.18",
+    "version": "2.10.2",
     "private": true,
     "type": "module",
     "dependencies": {
-        "@crocswap-libs/sdk": "^1.0.7",
+        "@crocswap-libs/sdk": "^1.0.12",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
@@ -51,6 +51,7 @@
         "start-only": "vite",
         "force": "yarn start --force",
         "futa": "yarn start --force --mode futa --port 3001",
+        "plume": "yarn start --force --mode plume --port 3001",
         "build": "tsc && vite build",
         "preview": "vite preview",
         "dev": "vite --host",

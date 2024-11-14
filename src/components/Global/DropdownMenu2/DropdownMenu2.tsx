@@ -7,7 +7,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import useKeyPress from '../../../App/hooks/useKeyPress';
 import { brand } from '../../../ambient-utils/constants';
 import Modal from '../Modal/Modal';
-import styles from './DropdownMenu2.module.css'
+import styles from './DropdownMenu2.module.css';
 import { motion } from 'framer-motion';
 // Interface for React functional components
 interface propsIF {
@@ -34,7 +34,7 @@ export default function DropdownMenu2(props: propsIF) {
         right,
         expandable,
         marginRight,
-        marginLeft
+        marginLeft,
     } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { appHeaderDropdown } = useContext(AppStateContext);
@@ -56,14 +56,15 @@ export default function DropdownMenu2(props: propsIF) {
         // } else appHeaderDropdown.setIsActive(false);
     }
     const clickOutsideHandler = () => {
-        if (showMobileVersion) return null
+        if (showMobileVersion) return null;
         setIsMenuOpen(false);
     };
 
     UseOnClickOutside(dropdownRefItem, clickOutsideHandler);
 
     const dropdownMenuContent = (
-        <motion.div className={styles.menuContainer}
+        <motion.div
+            className={styles.menuContainer}
             onClick={() => {
                 setIsMenuOpen(false);
                 appHeaderDropdown.setIsActive(false);
@@ -82,19 +83,18 @@ export default function DropdownMenu2(props: propsIF) {
         </motion.div>
     );
 
- 
-
     const showFullMenu = desktopScreen && brand !== 'futa';
 
     const modalVersion = (
         <Modal usingCustomHeader onClose={() => setIsMenuOpen(false)}>
             {dropdownMenuContent}
-            </Modal>
-    )
+        </Modal>
+    );
 
     return (
         <div ref={dropdownRefItem}>
-            <div className={styles.menu}
+            <div
+                className={styles.menu}
                 onClick={() => expandable && toggleMenu()}
                 style={{
                     minWidth: !showFullMenu
@@ -106,8 +106,11 @@ export default function DropdownMenu2(props: propsIF) {
             >
                 <div className={styles.menuItem}>
                     {showFullMenu && (
-                        <div className={styles.iconContainer}
-                            style={{cursor: expandable ? 'pointer' : 'default'}}
+                        <div
+                            className={styles.iconContainer}
+                            style={{
+                                cursor: expandable ? 'pointer' : 'default',
+                            }}
                         >
                             <img
                                 src={logo}
@@ -124,13 +127,7 @@ export default function DropdownMenu2(props: propsIF) {
                                     marginLeft: '2px',
                                 }}
                             />
-                            {title === 'Scroll Sepolia'
-                                ? 'Scroll Testnet'
-                                : title === 'Blast Sepolia'
-                                  ? 'Blast Testnet'
-                                  : title === 'Sepolia'
-                                    ? 'Sepolia Testnet'
-                                    : title}
+                            {title}
                         </div>
                     )}
                     {!showFullMenu && (
@@ -153,7 +150,8 @@ export default function DropdownMenu2(props: propsIF) {
                     />
                 )}
             </div>
-            {isMenuOpen && (showMobileVersion ? modalVersion :  dropdownMenuContent)}
+            {isMenuOpen &&
+                (showMobileVersion ? modalVersion : dropdownMenuContent)}
         </div>
     );
 }

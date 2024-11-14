@@ -16,19 +16,10 @@ import {
     diffHashSigLiquidity,
     getPinnedPriceValuesFromTicks,
 } from '../../../../ambient-utils/dataLayer';
-import {
-    CandleContext,
-    CandleContextIF,
-} from '../../../../contexts/CandleContext';
-import { PoolContext, PoolContextIF } from '../../../../contexts/PoolContext';
-import {
-    ChartContext,
-    ChartContextIF,
-} from '../../../../contexts/ChartContext';
-import {
-    TradeTokenContext,
-    TradeTokenContextIF,
-} from '../../../../contexts/TradeTokenContext';
+import { CandleContext } from '../../../../contexts/CandleContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import Spinner from '../../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
 import {
@@ -52,14 +43,8 @@ import {
     xAxisBuffer,
 } from '../../Chart/ChartUtils/chartConstants';
 import { filterCandleWithTransaction } from '../../../Chart/ChartUtils/discontinuityScaleUtils';
-import {
-    BrandContext,
-    BrandContextIF,
-} from '../../../../contexts/BrandContext';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 import ChartTooltip from '../../../Chart/ChartTooltip/ChartTooltip';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -97,7 +82,7 @@ function TradeCandleStickChart(props: propsIF) {
     const {
         activeNetwork: { gridSize, poolIndex, chainId },
         isUserIdle20min,
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
     const {
         candleData,
         isFetchingCandle,
@@ -108,16 +93,16 @@ function TradeCandleStickChart(props: propsIF) {
         setIsCondensedModeEnabled,
         candleDomains,
         setCandleDomains,
-    } = useContext<CandleContextIF>(CandleContext);
+    } = useContext(CandleContext);
     const { chartSettings, isChangeScaleChart, setSelectedDrawnShape } =
-        useContext<ChartContextIF>(ChartContext);
+        useContext(ChartContext);
     const { poolPriceDisplay: poolPriceWithoutDenom, isPoolInitialized } =
-        useContext<PoolContextIF>(PoolContext);
+        useContext(PoolContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
-    } = useContext<TradeTokenContextIF>(TradeTokenContext);
-    const { platformName } = useContext<BrandContextIF>(BrandContext);
+    } = useContext(TradeTokenContext);
+    const { platformName } = useContext(BrandContext);
 
     const period = useMemo(
         () => chartSettings.candleTime.global.time,

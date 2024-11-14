@@ -155,9 +155,6 @@ export const useAppChain = (): {
                                     activeNetwork.chainId !=
                                     incomingChainFromWallet
                                 ) {
-                                    // !IMPORTANT:  not this one
-                                    // alert('wow!');
-                                    // console.log('wow');
                                     window.location.reload();
                                 }
                             } else {
@@ -165,7 +162,6 @@ export const useAppChain = (): {
                             }
                         }
                         if (activeNetwork.chainId != incomingChainFromWallet) {
-                            // !IMPORTANT:  not this one
                             window.location.reload();
                         } else {
                             setIgnoreFirst(false);
@@ -214,13 +210,16 @@ export const useAppChain = (): {
     // ... else in this file responds to changes in the browser environment
     function chooseNetwork(network: NetworkIF): void {
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
-        const { pathname } = window.location;
-
         setActiveNetwork(network);
+
+        const { pathname } = window.location;
         const isPathENS = pathname.slice(1)?.includes('.eth');
         const isPathHexEoaAddress = checkEoaHexAddress(pathname);
         const isPathUserAddress = isPathENS || isPathHexEoaAddress;
         const isPathUserXpOrLeaderboard = pathname.includes('/xp');
+        const shouldStayOnCurrentExactPath =
+            isPathUserAddress || isPathUserXpOrLeaderboard;
+
         if (
             linkGenCurrent.currentPage === 'initpool' ||
             linkGenCurrent.currentPage === 'reposition'
@@ -230,16 +229,11 @@ export const useAppChain = (): {
             linkGenSwap.navigate(`chain=${network.chainId}`);
         } else if (pathname.includes('chain')) {
             linkGenCurrent.navigate(`chain=${network.chainId}`);
-        } else if (isPathUserAddress || isPathUserXpOrLeaderboard) {
-            // this one is specific to user account pages
-            // !IMPORTANT:  not this one
-            window.location.reload();
+        } else if (shouldStayOnCurrentExactPath) {
+            // do not navigate away from current path
         } else {
             linkGenCurrent.navigate();
         }
-        // this one seems to be necessary for chain switching, when disabled
-        // ... the app appears to switch chains but doesn't get any pool data
-        // window.location.reload();
     }
 
     return {

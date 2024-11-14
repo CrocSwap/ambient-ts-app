@@ -15,12 +15,15 @@ import {
     supportedNetworks,
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
+import ethLogo from './assets/images/networks/ethereum_logo.svg';
 import scrollLogo from './assets/images/networks/scroll_logo.webp';
 import blastLogo from './assets/images/networks/blast_logo.png';
+// import plumeLogo from './assets/images/networks/plume_mainnet_logo.webp';
+import sepoliaLogo from './assets/images/networks/sepolia_logo.webp';
+// import plumeSepoliaLogo from './assets/images/networks/plume_sepolia_network_logo.webp';
+import plumeSepoliaLogo from './assets/images/networks/plume_mainnet_logo_small.webp';
 import blastSepoliaLogo from './assets/images/networks/blast_sepolia_logo.webp';
 import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia_logo.webp';
-import sepoliaLogo from './assets/images/networks/sepolia_logo.webp';
-import ethLogo from './assets/images/networks/ethereum_logo.svg';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
@@ -60,7 +63,9 @@ const ethersConfig = defaultConfig({
 
 const modal = createWeb3Modal({
     ethersConfig,
-    chains: Object.values(supportedNetworks).map((network) => network.chain),
+    chains: Object.values(supportedNetworks).map(
+        (network) => network.chainSpecForWalletConnector,
+    ),
     projectId: WALLETCONNECT_PROJECT_ID as string,
     chainImages: {
         1: ethLogo,
@@ -69,6 +74,7 @@ const modal = createWeb3Modal({
         534351: scrollSepoliaLogo,
         534352: scrollLogo,
         11155111: sepoliaLogo,
+        98864: plumeSepoliaLogo,
     },
     termsConditionsUrl: '/terms',
     privacyPolicyUrl: '/privacy',
@@ -89,13 +95,13 @@ const modal = createWeb3Modal({
 
 modal.subscribeEvents((event) => {
     const networkIds = Object.values(supportedNetworks).map(
-        (network) => network.chain.chainId,
+        (network) => network.chainSpecForWalletConnector.chainId,
     );
     if (
         event.data.event === 'MODAL_CLOSE' &&
         event.data.properties.connected === true
     ) {
-        if (networkIds.includes(modal.getState().selectedNetworkId)) {
+        if (networkIds.includes(modal.getState().selectedNetworkId as number)) {
             // prevents the 'unknown account #0' bug
             window.location.reload();
         } else {

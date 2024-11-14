@@ -889,13 +889,13 @@ export default function InitPool() {
             ? true
             : isMintLiqEnabled
               ? tokenAAllowance > tokenAQtyCoveredByWalletBalance
-              : tokenAAllowance > 0;
+              : tokenAAllowance >= fromDisplayQty('0.1', tokenA.decimals);
     const isTokenBAllowanceSufficient =
         tokenBAllowance === undefined
             ? true
             : isMintLiqEnabled
               ? tokenBAllowance > tokenBQtyCoveredByWalletBalance
-              : tokenBAllowance > 0;
+              : tokenBAllowance >= fromDisplayQty('0.1', tokenB.decimals);
 
     const focusInput = () => {
         const inputField = document.getElementById(
@@ -1138,6 +1138,8 @@ export default function InitPool() {
         defaultLowTick,
         defaultHighTick,
         selectedPoolPriceTick,
+        tokenAQtyCoveredByWalletBalance,
+        tokenBQtyCoveredByWalletBalance,
     };
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
