@@ -12,7 +12,7 @@ import Button from '../../../../../components/Form/Button';
 import { TokenIF, VaultIF } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import {
     NUM_GWEI_IN_WEI,
@@ -30,6 +30,9 @@ import {
     isTransactionReplacedError,
     isTransactionFailedError,
 } from '../../../../../utils/TransactionError';
+import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
+import SlippageTolerance from '../../../../../components/Global/SlippageTolerance/SlippageTolerance';
+import { RiArrowDropDownLine } from 'react-icons/ri';
 
 interface Props {
     mainAsset: TokenIF;
@@ -278,6 +281,36 @@ export default function VaultWithdraw(props: Props) {
         </div>
     );
 
+    const slipDropdownRef = useRef<HTMLDivElement>(null);
+
+    const clickOutsideHandler = () => {
+       setShowSlipDropdown(false)
+        
+    };
+
+    useOnClickOutside(slipDropdownRef, clickOutsideHandler);
+
+    const [ showSlipDropdown, setShowSlipDropdown] = useState(false)
+    const presets = [0.5, 1, 3];
+
+    const slipTolerance = (
+        <div className={styles.slipContainer} >
+            <button className={styles.slipButton} onClick={() => setShowSlipDropdown(!showSlipDropdown)}>slippage Tolerance <RiArrowDropDownLine size={24} />
+            </button>
+
+           {showSlipDropdown && <div className={styles.slipDropdown} ref={slipDropdownRef}>
+
+            <SlippageTolerance
+                persistedSlippage={slippageTolerance}
+                setCurrentSlippage={() => console.log('set')}
+                // eslint-disable-next-line
+                handleKeyDown={(event: any) => console.log('event')}
+                presets={presets}
+                />
+                </div>}
+        </div>
+    );
+
     return (
         <Modal usingCustomHeader onClose={onClose}>
             <ModalHeader
@@ -287,6 +320,7 @@ export default function VaultWithdraw(props: Props) {
                 // showBackButton={handleGoBack ? true: false}
             />
             <div className={styles.withdrawContainer}>
+            {slipTolerance}
                 {tokensDisplay}
                 <RemoveRangeWidth
                     removalPercentage={removalPercentage}

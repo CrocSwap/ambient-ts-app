@@ -70,13 +70,13 @@ export default function VaultRow(props: propsIF) {
                             vault.mainAsset,
                         );
 
-                        // const balanceMainAssetResponse =
-                        //     await tempestVault.balanceToken1(
-                        //         '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
-                        //     );
-
                         const balanceMainAssetResponse =
-                            await tempestVault.balanceToken1(userAddress);
+                            await tempestVault.balanceToken1(
+                                '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
+                            );
+
+                        // const balanceMainAssetResponse =
+                        //     await tempestVault.balanceToken1(userAddress);
 
                         setBalanceMainAsset(balanceMainAssetResponse);
                     } catch (err) {

@@ -169,6 +169,51 @@ line-height: normal;
 padding: 0 8px;
 }
 
+.slipContainer{
+    position: relative;
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+.slipButton{
+    outline: none;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    border: 1px solid var(--text2);
+    padding: 2px 8px;
+    border-radius: 4px;
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
+
+}
+.slipButton:hover{
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
+    /* border: 1px solid var(--dark3); */
+}
+.slipDropdown{
+    position: absolute;
+    top: 40px;
+    width: 100%;
+    
+    height: 100px;
+    background: var(--dark3);
+    padding: 8px;
+    border-radius: 4px;
+    transition: all var(--animation-speed) ease-in-out;
+    z-index: 2;
+}
+
 .loading {
     display: flex;
     align-items: center;
