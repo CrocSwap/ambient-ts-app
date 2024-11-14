@@ -442,26 +442,6 @@ function Ranges(props: propsIF) {
             }else if(newPositions.length > 0){
                 updateHotTransactions(newPositions);
             }
-
-            // if (newPositions.length > 0) {
-            //     if (pagesVisible[0] === 0) {
-            //         setFetchedTransactions((prev) => {
-
-            //             return {
-            //                 dataReceived: true,
-            //                 positions: [...newPositions, ...prev.positions],
-            //             };
-            //         });
-            //     } else {
-            //     }
-            // }
-
-            // if (
-            //     pageDataCount.counts[0] == 0 &&
-            //     positionsByPool.positions.length > 0
-            // ) {
-            //     setPageDataCount(getInitialDataPageCounts());
-            // }
         }
     }, [positionsByPool]);
 
