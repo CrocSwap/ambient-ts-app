@@ -166,7 +166,6 @@ export default function Navbar() {
         isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
     const clickLogout = useCallback(async () => {
-        setCrocEnv(undefined);
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -176,6 +175,7 @@ export default function Navbar() {
         resetTokenBalances();
         setShowAllData(true);
         disconnectUser();
+        setCrocEnv(undefined);
     }, []);
 
     // Custom Hooks

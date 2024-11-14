@@ -19,7 +19,7 @@ const chainSpecForWalletConnector = {
     name: 'Sepolia',
     currency: 'ETH',
     rpcUrl: SEPOLIA_RPC_URL,
-    explorerUrl: 'https://sepolia.etherscan.io',
+    explorerUrl: 'https://sepolia.etherscan.io/',
 };
 
 export const ethereumSepolia: NetworkIF = {

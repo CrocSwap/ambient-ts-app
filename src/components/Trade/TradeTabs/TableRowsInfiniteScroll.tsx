@@ -297,6 +297,12 @@ function TableRowsInfiniteScroll({
                 Data Counts: [{pageDataCount.map(e=> e + ' ')}]
             </div>)
             }
+            {data.length > 0
+            &&
+            (<div style={{position: 'absolute',  background: 'black', color: 'cyan', left: '1rem', top: '6.5rem'}}>
+                rendered rows: {data.length}
+            </div>)
+            }
             
 
             </span>
@@ -539,8 +545,8 @@ function TableRowsInfiniteScroll({
     }, [moreDataAvailable])
 
     useEffect(() => {
-        bindTableReadyState(!moreDataLoading);
-    }, [moreDataLoading])
+        bindTableReadyState(!moreDataLoadingRef.current);
+    }, [moreDataLoadingRef.current])
 
 
 
@@ -687,7 +693,7 @@ function TableRowsInfiniteScroll({
                     renderDebugData()
                 }
                 {
-                    !isTableReadyRef.current &&
+                    (!isTableReadyRef.current && moreDataLoadingRef.current) &&
                     (<div className={styles.data_fetching_panel}> 
                         <div className={styles.data_fetching_bar2}></div>
                     </div>)

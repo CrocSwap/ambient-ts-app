@@ -1,12 +1,5 @@
-import { CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { GCGO_OVERRIDE_URL } from '../../ambient-utils/constants';
 import {
     LimitOrderIF,
@@ -14,63 +7,52 @@ import {
     PositionIF,
     PositionServerIF,
     SinglePoolDataIF,
-    TokenIF,
     TransactionIF,
     TransactionServerIF,
 } from '../../ambient-utils/types';
 import {
-    TokenPriceFn,
-    FetchAddrFn,
-    FetchContractDetailsFn,
     fetchPoolRecentChanges,
     fetchPoolLiquidity,
 } from '../../ambient-utils/api';
 import {
-    SpotPriceFn,
     filterLimitArray,
     getLimitOrderData,
     getPositionData,
     getTransactionData,
 } from '../../ambient-utils/dataLayer';
-import { Provider } from 'ethers';
 import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { ChainDataContext } from '../../contexts';
+import {
+    CachedDataContext,
+    ChainDataContext,
+    CrocEnvContext,
+    ReceiptContext,
+    TokenContext,
+    UserDataContext,
+} from '../../contexts';
 import { fetchPoolLimitOrders } from '../../ambient-utils/api/fetchPoolLimitOrders';
 
-interface PoolParamsHookIF {
-    crocEnv?: CrocEnv;
-    graphCacheUrl: string;
-    provider?: Provider;
-    chainId: string;
-    poolIndex: number;
-    userAddress: `0x${string}` | undefined;
-    searchableTokens: TokenIF[];
-    receiptCount: number;
-    lastBlockNumber: number;
-    isServerEnabled: boolean;
-    isChartEnabled: boolean;
-    cachedFetchTokenPrice: TokenPriceFn;
-    cachedQuerySpotPrice: SpotPriceFn;
-    cachedQuerySpotTick: SpotPriceFn;
-    cachedTokenDetails: FetchContractDetailsFn;
-    cachedEnsResolve: FetchAddrFn;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-}
-
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
-export function usePoolMetadata(props: PoolParamsHookIF) {
-    const { chainId, poolIndex, crocEnv, provider } = props;
-    const {
-        tokenA,
-        tokenB,
-        defaultRangeWidthForActivePool,
-        currentPoolPriceTick,
-    } = useContext(TradeDataContext);
+export function usePoolMetadata() {
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
+    const { allPoolStats } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const { sessionReceipts } = useContext(ReceiptContext);
+    const { userAddress } = useContext(UserDataContext);
+    const {
+        isUserIdle,
+        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+    } = useContext(AppStateContext);
+    const {
+        setAdvancedLowTick,
+        setAdvancedHighTick,
+        setAdvancedMode,
+        setSimpleRangeWidth,
+    } = useContext(RangeContext);
     const {
         setUserPositionsByPool,
         setUserTransactionsByPool,
@@ -84,18 +66,21 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         positionsByPool,
         limitOrdersByPool,
     } = useContext(GraphDataContext);
+    const {
+        tokenA,
+        tokenB,
+        defaultRangeWidthForActivePool,
+        currentPoolPriceTick,
+    } = useContext(TradeDataContext);
+    const {
+        cachedQuerySpotPrice,
+        cachedQuerySpotTick,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
 
     const { pathname } = location;
-
-    const { allPoolStats } = useContext(ChainDataContext);
-
-    const {
-        server: { isEnabled: isServerEnabled },
-        isUserIdle,
-    } = useContext(AppStateContext);
-
-    const { setAdvancedLowTick, setAdvancedHighTick, setAdvancedMode } =
-        useContext(RangeContext);
 
     const ticksInParams =
         pathname.includes('lowTick') && pathname.includes('highTick');
@@ -172,7 +157,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 setAdvancedLowTick(0);
                 setAdvancedHighTick(0);
                 setAdvancedMode(false);
-                props.setSimpleRangeWidth(defaultRangeWidthForActivePool);
+                setSimpleRangeWidth(defaultRangeWidthForActivePool);
             }
         }
     }, [contextMatchesParams, tokenA.address + tokenB.address, ticksInParams]);
@@ -340,13 +325,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             crocEnv &&
             provider &&
             baseTokenAddress !== '' &&
-            quoteTokenAddress !== '' &&
-            isServerEnabled
+            quoteTokenAddress !== ''
         ) {
             // retrieve pool_positions
             const allPositionsCacheEndpoint = GCGO_OVERRIDE_URL
                 ? GCGO_OVERRIDE_URL + '/pool_positions?'
-                : props.graphCacheUrl + '/pool_positions?';
+                : graphCacheUrl + '/pool_positions?';
             fetch(
                 allPositionsCacheEndpoint +
                     new URLSearchParams({
@@ -367,14 +351,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             poolPositions.map((position: PositionServerIF) => {
                                 return getPositionData(
                                     position,
-                                    props.searchableTokens,
+                                    tokens.tokenUniv,
                                     crocEnv,
                                     provider,
                                     chainId,
-                                    props.cachedFetchTokenPrice,
-                                    props.cachedQuerySpotPrice,
-                                    props.cachedTokenDetails,
-                                    props.cachedEnsResolve,
+                                    cachedFetchTokenPrice,
+                                    cachedQuerySpotPrice,
+                                    cachedTokenDetails,
+                                    cachedEnsResolve,
                                     skipENSFetch,
                                 );
                             }),
@@ -412,7 +396,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             // retrieve positions for leaderboard
             const poolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
                 ? GCGO_OVERRIDE_URL + '/pool_position_apy_leaders?'
-                : props.graphCacheUrl + '/pool_position_apy_leaders?';
+                : graphCacheUrl + '/pool_position_apy_leaders?';
             fetch(
                 poolPositionsCacheEndpoint +
                     new URLSearchParams({
@@ -434,14 +418,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 (position: PositionServerIF) => {
                                     return getPositionData(
                                         position,
-                                        props.searchableTokens,
+                                        tokens.tokenUniv,
                                         crocEnv,
                                         provider,
                                         chainId,
-                                        props.cachedFetchTokenPrice,
-                                        props.cachedQuerySpotPrice,
-                                        props.cachedTokenDetails,
-                                        props.cachedEnsResolve,
+                                        cachedFetchTokenPrice,
+                                        cachedQuerySpotPrice,
+                                        cachedTokenDetails,
+                                        cachedEnsResolve,
                                         skipENSFetch,
                                     );
                                 },
@@ -475,19 +459,19 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
             // retrieve pool recent changes
             fetchPoolRecentChanges({
-                tokenList: props.searchableTokens,
+                tokenList: tokens.tokenUniv,
                 base: baseTokenAddress,
                 quote: quoteTokenAddress,
                 poolIdx: poolIndex,
                 chainId: chainId,
                 n: 100,
                 crocEnv: crocEnv,
-                graphCacheUrl: props.graphCacheUrl,
+                graphCacheUrl: graphCacheUrl,
                 provider: provider,
-                cachedFetchTokenPrice: props.cachedFetchTokenPrice,
-                cachedQuerySpotPrice: props.cachedQuerySpotPrice,
-                cachedTokenDetails: props.cachedTokenDetails,
-                cachedEnsResolve: props.cachedEnsResolve,
+                cachedFetchTokenPrice: cachedFetchTokenPrice,
+                cachedQuerySpotPrice: cachedQuerySpotPrice,
+                cachedTokenDetails: cachedTokenDetails,
+                cachedEnsResolve: cachedEnsResolve,
             })
                 .then((poolChangesJsonData) => {
                     if (poolChangesJsonData && poolChangesJsonData.length > 0) {
@@ -507,19 +491,19 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 .catch(console.error);
 
             fetchPoolLimitOrders({
-                tokenList: props.searchableTokens,
+                tokenList: tokens.tokenUniv,
                 base: baseTokenAddress,
                 quote: quoteTokenAddress,
                 poolIdx: poolIndex,
                 chainId: chainId,
                 n: 100,
                 crocEnv: crocEnv,
-                graphCacheUrl: props.graphCacheUrl,
+                graphCacheUrl: graphCacheUrl,
                 provider: provider,
-                cachedFetchTokenPrice: props.cachedFetchTokenPrice,
-                cachedQuerySpotPrice: props.cachedQuerySpotPrice,
-                cachedTokenDetails: props.cachedTokenDetails,
-                cachedEnsResolve: props.cachedEnsResolve,
+                cachedFetchTokenPrice: cachedFetchTokenPrice,
+                cachedQuerySpotPrice: cachedQuerySpotPrice,
+                cachedTokenDetails: cachedTokenDetails,
+                cachedEnsResolve: cachedEnsResolve,
             })
                 .then((updatedLimitOrderStates) => {
                     if (
@@ -543,14 +527,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     }
                 })
                 .catch(console.error);
-            if (props.userAddress) {
+            if (userAddress) {
                 const userPoolTransactionsCacheEndpoint = GCGO_OVERRIDE_URL
                     ? GCGO_OVERRIDE_URL + '/user_pool_txs?'
-                    : props.graphCacheUrl + '/user_pool_txs?';
+                    : graphCacheUrl + '/user_pool_txs?';
                 fetch(
                     userPoolTransactionsCacheEndpoint +
                         new URLSearchParams({
-                            user: props.userAddress,
+                            user: userAddress,
                             base: baseTokenAddress.toLowerCase(),
                             quote: quoteTokenAddress.toLowerCase(),
                             poolIdx: poolIndex.toString(),
@@ -568,14 +552,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     (position: TransactionServerIF) => {
                                         return getTransactionData(
                                             position,
-                                            props.searchableTokens,
+                                            tokens.tokenUniv,
                                             crocEnv,
                                             provider,
                                             chainId,
-                                            props.cachedFetchTokenPrice,
-                                            props.cachedQuerySpotPrice,
-                                            props.cachedTokenDetails,
-                                            props.cachedEnsResolve,
+                                            cachedFetchTokenPrice,
+                                            cachedQuerySpotPrice,
+                                            cachedTokenDetails,
+                                            cachedEnsResolve,
                                             skipENSFetch,
                                         );
                                     },
@@ -609,12 +593,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 // retrieve user_pool_positions
                 const userPoolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
                     ? GCGO_OVERRIDE_URL + '/user_pool_positions?'
-                    : props.graphCacheUrl + '/user_pool_positions?';
+                    : graphCacheUrl + '/user_pool_positions?';
                 const forceOnchainLiqUpdate = true;
                 fetch(
                     userPoolPositionsCacheEndpoint +
                         new URLSearchParams({
-                            user: props.userAddress,
+                            user: userAddress,
                             base: baseTokenAddress.toLowerCase(),
                             quote: quoteTokenAddress.toLowerCase(),
                             poolIdx: poolIndex.toString(),
@@ -632,14 +616,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     (position: PositionServerIF) => {
                                         return getPositionData(
                                             position,
-                                            props.searchableTokens,
+                                            tokens.tokenUniv,
                                             crocEnv,
                                             provider,
                                             chainId,
-                                            props.cachedFetchTokenPrice,
-                                            props.cachedQuerySpotPrice,
-                                            props.cachedTokenDetails,
-                                            props.cachedEnsResolve,
+                                            cachedFetchTokenPrice,
+                                            cachedQuerySpotPrice,
+                                            cachedTokenDetails,
+                                            cachedEnsResolve,
                                             skipENSFetch,
                                             forceOnchainLiqUpdate,
                                         );
@@ -675,11 +659,11 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 // retrieve user_pool_limit_orders
                 const userPoolLimitOrdersCacheEndpoint = GCGO_OVERRIDE_URL
                     ? GCGO_OVERRIDE_URL + '/user_pool_limit_orders?'
-                    : props.graphCacheUrl + '/user_pool_limit_orders?';
+                    : graphCacheUrl + '/user_pool_limit_orders?';
                 fetch(
                     userPoolLimitOrdersCacheEndpoint +
                         new URLSearchParams({
-                            user: props.userAddress,
+                            user: userAddress,
                             base: baseTokenAddress.toLowerCase(),
                             quote: quoteTokenAddress.toLowerCase(),
                             poolIdx: poolIndex.toString(),
@@ -695,14 +679,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     (limitOrder: LimitOrderServerIF) => {
                                         return getLimitOrderData(
                                             limitOrder,
-                                            props.searchableTokens,
+                                            tokens.tokenUniv,
                                             crocEnv,
                                             provider,
                                             chainId,
-                                            props.cachedFetchTokenPrice,
-                                            props.cachedQuerySpotPrice,
-                                            props.cachedTokenDetails,
-                                            props.cachedEnsResolve,
+                                            cachedFetchTokenPrice,
+                                            cachedQuerySpotPrice,
+                                            cachedTokenDetails,
+                                            cachedEnsResolve,
                                         );
                                     },
                                 ),
@@ -737,18 +721,17 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             }
         }
     }, [
-        props.userAddress,
-        props.receiptCount,
+        userAddress,
         contextMatchesParams,
         crocEnv,
         baseTokenAddress !== '' && quoteTokenAddress !== '',
         chainId,
-        props.searchableTokens,
+        tokens.tokenUniv,
         isUserIdle
             ? Math.floor(Date.now() / 60000) // cache for 60 seconds if idle
             : Math.floor(Date.now() / 10000), // cache for 10 seconds if not idle
         provider,
-        isServerEnabled,
+        sessionReceipts.length,
     ]);
 
     const updateLiquidity = () => {
@@ -767,9 +750,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 quoteTokenAddress.toLowerCase(),
                 poolIndex,
                 crocEnv,
-                props.graphCacheUrl,
-                props.cachedFetchTokenPrice,
-                props.cachedQuerySpotTick,
+                graphCacheUrl,
+                cachedFetchTokenPrice,
+                cachedQuerySpotTick,
                 currentPoolPriceTick,
             )
                 .then((liqCurve) => {

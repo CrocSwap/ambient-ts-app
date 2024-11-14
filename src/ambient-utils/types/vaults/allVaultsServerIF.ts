@@ -1,4 +1,4 @@
-export interface VaultServerIF {
+export interface AllVaultsServerIF {
     id: string;
     createdAt: number;
     updatedAt: number;
