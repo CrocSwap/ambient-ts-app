@@ -311,30 +311,34 @@ export default function VaultWithdraw(props: Props) {
     const slipDropdownRef = useRef<HTMLDivElement>(null);
 
     const clickOutsideHandler = () => {
-       setShowSlipDropdown(false)
-        
+        setShowSlipDropdown(false);
     };
 
     useOnClickOutside(slipDropdownRef, clickOutsideHandler);
 
-    const [ showSlipDropdown, setShowSlipDropdown] = useState(false)
+    const [showSlipDropdown, setShowSlipDropdown] = useState(false);
     const presets = [0.5, 1, 3];
 
     const slipTolerance = (
-        <div className={styles.slipContainer} >
-            <button className={styles.slipButton} onClick={() => setShowSlipDropdown(!showSlipDropdown)}>slippage Tolerance <RiArrowDropDownLine size={24} />
+        <div className={styles.slipContainer}>
+            <button
+                className={styles.slipButton}
+                onClick={() => setShowSlipDropdown(!showSlipDropdown)}
+            >
+                slippage Tolerance <RiArrowDropDownLine size={24} />
             </button>
 
-           {showSlipDropdown && <div className={styles.slipDropdown} ref={slipDropdownRef}>
-
-            <SlippageTolerance
-                persistedSlippage={10}
-                setCurrentSlippage={() => console.log('set')}
-                // eslint-disable-next-line
-                handleKeyDown={(event: any) => console.log('event')}
-                presets={presets}
-                />
-                </div>}
+            {showSlipDropdown && (
+                <div className={styles.slipDropdown} ref={slipDropdownRef}>
+                    <SlippageTolerance
+                        persistedSlippage={10}
+                        setCurrentSlippage={() => console.log('set')}
+                        // eslint-disable-next-line
+                        handleKeyDown={(event: any) => console.log('event')}
+                        presets={presets}
+                    />
+                </div>
+            )}
         </div>
     );
 
@@ -355,10 +359,9 @@ export default function VaultWithdraw(props: Props) {
             />
 
             <div className={styles.withdrawContainer}>
-
                 {slipTolerance}
                 {tokensDisplay}
-               
+
                 <div className={styles.zapContainer}>
                     <p>Zap In</p>
 
@@ -380,20 +383,19 @@ export default function VaultWithdraw(props: Props) {
                 <div className={styles.gas_row}>
                     <FaGasPump size={15} /> {withdrawGasPriceinDollars ?? '…'}
                 </div>
-                <div className={styles.buttonContainer}>
-                    <Button
-                        idForDOM='approve_token_a_for_swap_module'
-                        style={{ textTransform: 'none' }}
-                        title={
-                            showSubmitted
-                                ? submittedButtonTitle
-                                : 'Remove Liquidity'
-                        }
-                        disabled={showSubmitted}
-                        action={() => submitWithdraw()}
-                        flat
-                    />
-                </div>
+
+                <Button
+                    idForDOM='approve_token_a_for_swap_module'
+                    style={{ textTransform: 'none' }}
+                    title={
+                        showSubmitted
+                            ? submittedButtonTitle
+                            : 'Remove Liquidity'
+                    }
+                    disabled={showSubmitted || balanceMainAsset === 0n}
+                    action={() => submitWithdraw()}
+                    flat
+                />
             </div>
         </Modal>
     );

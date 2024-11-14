@@ -178,7 +178,7 @@ export const txRowConstants = (props: propsIF) => {
             style={{ display: 'none' }}
             tabIndex={0}
         >
-            <span>{tx.txHash}</span>
+            <span>{tx.txId}</span>
         </RowItem>
     );
 

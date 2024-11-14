@@ -39,6 +39,7 @@ import {
     isTransactionFailedError,
 } from '../../../../../utils/TransactionError';
 import Toggle from '../../../../../components/Form/Toggle';
+import { useApprove } from '../../../../../App/functions/approve';
 
 interface Props {
     mainAsset: TokenIF;
@@ -48,6 +49,7 @@ interface Props {
 }
 export default function VaultDeposit(props: Props) {
     const { mainAsset, secondaryAsset, onClose, vault } = props;
+    const { approveVault, isApprovalPending } = useApprove();
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showSubmitted, setShowSubmitted] = useState(false);
     const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
@@ -89,7 +91,8 @@ export default function VaultDeposit(props: Props) {
         updateTransactionHash,
     } = useContext(ReceiptContext);
     const { isUserConnected } = useContext(UserDataContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkPlume } =
+        useContext(ChainDataContext);
     const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
     const {
         activeNetwork: { chainId },
@@ -227,57 +230,6 @@ export default function VaultDeposit(props: Props) {
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
-
-    const approveMainAsset = async () => {
-        if (!crocEnv || !userAddress || !vault) return;
-
-        setShowSubmitted(true);
-        const tx = await crocEnv
-            .tempestVault(vault.address, vault.mainAsset)
-            .approve()
-            .catch(console.error);
-
-        if (tx?.hash) {
-            addPendingTx(tx?.hash);
-            addTransactionByType({
-                userAddress: userAddress || '',
-                txHash: tx.hash,
-                txType: 'Approve',
-                txDescription: `Approve ${mainAsset.symbol}/${secondaryAsset.symbol}`,
-            });
-        } else {
-            setShowSubmitted(false);
-        }
-
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            setShowSubmitted(false);
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                removePendingTx(error.hash);
-
-                const newTransactionHash = error.replacement.hash;
-                addPendingTx(newTransactionHash);
-
-                updateTransactionHash(error.hash, error.replacement.hash);
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
-                console.error({ error });
-                receipt = error.receipt;
-            }
-        }
-
-        if (receipt) {
-            addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.hash);
-            setShowSubmitted(false);
-        }
-    };
 
     const submitDeposit = async () => {
         if (!crocEnv || !userAddress || !vault || !depositBigint) return;
@@ -558,6 +510,57 @@ export default function VaultDeposit(props: Props) {
         ? toDisplayQty(minDepositBigint, mainAsset.decimals)
         : '…';
 
+    const approveButton = (
+        <Button
+            idForDOM='approve_vault_button'
+            style={{ textTransform: 'none' }}
+            title={
+                !isApprovalPending
+                    ? `Approve ${mainAsset.symbol} / ${secondaryAsset.symbol}`
+                    : `${mainAsset.symbol} / ${secondaryAsset.symbol} Approval Pending`
+            }
+            disabled={isApprovalPending}
+            action={async () => {
+                await approveVault(
+                    vault,
+                    mainAsset,
+                    secondaryAsset,
+                    undefined,
+                    isActiveNetworkPlume ? depositBigint : undefined,
+                );
+            }}
+            flat={true}
+        />
+    );
+
+    const submitButton = (
+        <Button
+            idForDOM='vault_deposit_submit'
+            style={{ textTransform: 'none' }}
+            title={
+                showSubmitted
+                    ? submittedButtonTitle
+                    : !depositBigint
+                      ? 'Enter a Deposit Quantity'
+                      : !depositGreaterOrEqualToMinimum
+                        ? `Minimum Deposit is ${displayMinDeposit} ${mainAsset.symbol}`
+                        : mainAssetDepositGreaterThanWalletBalance
+                          ? `${mainAsset.symbol} Quantity Exceeds Wallet Balance`
+                          : secondaryAssetDepositGreaterThanWalletBalance
+                            ? `${secondaryAsset.symbol} Quantity Exceeds Wallet Balance`
+                            : 'Submit'
+            }
+            disabled={
+                showSubmitted ||
+                !depositGreaterOrEqualToMinimum ||
+                mainAssetDepositGreaterThanWalletBalance ||
+                secondaryAssetDepositGreaterThanWalletBalance
+            }
+            action={() => submitDeposit()}
+            flat
+        />
+    );
+
     const includeWallet = true;
     return (
         <Modal usingCustomHeader onClose={onClose}>
@@ -617,37 +620,9 @@ export default function VaultDeposit(props: Props) {
                 </div>
 
                 <div className={styles.buttonContainer}>
-                    <Button
-                        idForDOM='vault_deposit_submit'
-                        style={{ textTransform: 'none' }}
-                        title={
-                            showSubmitted
-                                ? submittedButtonTitle
-                                : !depositBigint
-                                  ? 'Enter a Deposit Quantity'
-                                  : !depositGreaterOrEqualToMinimum
-                                    ? `Minimum Deposit is ${displayMinDeposit} ${mainAsset.symbol}`
-                                    : mainAssetDepositGreaterThanWalletBalance
-                                      ? `${mainAsset.symbol} Quantity Exceeds Wallet Balance`
-                                      : secondaryAssetDepositGreaterThanWalletBalance
-                                        ? `${secondaryAsset.symbol} Quantity Exceeds Wallet Balance`
-                                        : depositGreaterThanWalletAllowance
-                                          ? `Approve ${mainAsset.symbol} / ${secondaryAsset.symbol}`
-                                          : 'Submit'
-                        }
-                        disabled={
-                            showSubmitted ||
-                            !depositGreaterOrEqualToMinimum ||
-                            mainAssetDepositGreaterThanWalletBalance ||
-                            secondaryAssetDepositGreaterThanWalletBalance
-                        }
-                        action={() =>
-                            depositGreaterThanWalletAllowance
-                                ? approveMainAsset()
-                                : submitDeposit()
-                        }
-                        flat
-                    />
+                    {depositGreaterThanWalletAllowance
+                        ? approveButton
+                        : submitButton}
                 </div>
             </div>
         </Modal>

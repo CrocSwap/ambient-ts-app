@@ -24,7 +24,7 @@ const chainSpecForWalletConnector = {
     name: 'Ethereum',
     currency: 'ETH',
     rpcUrl: MAINNET_RPC_URL,
-    explorerUrl: 'https://etherscan.io',
+    explorerUrl: 'https://etherscan.io/',
 };
 
 export const ethereumMainnet: NetworkIF = {

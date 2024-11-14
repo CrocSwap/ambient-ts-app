@@ -8,19 +8,14 @@ import {
 } from 'react';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../ambient-utils/constants';
+import { ZERO_ADDRESS } from '../ambient-utils/constants';
 import { AppStateContext } from './AppStateContext';
-import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
-import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
-import { RangeContext } from './RangeContext';
-import { TokenContext } from './TokenContext';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { UserDataContext } from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
 import { TradeDataContext } from './TradeDataContext';
-import { ReceiptContext } from './ReceiptContext';
 
 export interface TradeTokenContextIF {
     baseToken: {
@@ -58,39 +53,20 @@ export const TradeTokenContext = createContext<TradeTokenContextIF>(
 );
 
 export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
-    const {
-        activeNetwork: { graphCacheUrl, chainId, poolIndex },
-        server: { isEnabled: isServerEnabled },
-        isUserIdle,
-    } = useContext(AppStateContext);
-    const {
-        cachedQuerySpotPrice,
-        cachedQuerySpotTick,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
-    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const { isUserIdle } = useContext(AppStateContext);
+
+    const { crocEnv } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { setTokenBalance } = useContext(TokenBalanceContext);
-    const { isEnabled: isChartEnabled } = useContext(ChartContext);
-    const { setSimpleRangeWidth } = useContext(RangeContext);
-    const { tokens } = useContext(TokenContext);
-    const { sessionReceipts } = useContext(ReceiptContext);
+    const { userAddress, isUserConnected } = useContext(UserDataContext);
     const { tokenA, tokenB, baseToken, quoteToken } =
         useContext(TradeDataContext);
-    const { userAddress, isUserConnected } = useContext(UserDataContext);
-
     const {
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
-    } = useTokenPairAllowance({
-        crocEnv,
-        userAddress,
-        lastBlockNumber,
-    });
+    } = useTokenPairAllowance();
 
     const {
         baseTokenAddress,
@@ -99,25 +75,7 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         quoteTokenDecimals,
         isTokenABase,
         contextMatchesParams,
-    } = usePoolMetadata({
-        crocEnv,
-        graphCacheUrl: graphCacheUrl,
-        provider,
-        chainId: chainId,
-        poolIndex: poolIndex,
-        userAddress,
-        searchableTokens: tokens.tokenUniv,
-        receiptCount: sessionReceipts.length,
-        lastBlockNumber,
-        isServerEnabled,
-        cachedFetchTokenPrice,
-        cachedQuerySpotPrice,
-        cachedQuerySpotTick,
-        cachedTokenDetails,
-        cachedEnsResolve,
-        setSimpleRangeWidth,
-        isChartEnabled,
-    });
+    } = usePoolMetadata();
 
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
@@ -229,8 +187,6 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
                 .then((bal: bigint) => {
                     const displayBalance = toDisplayQty(bal, baseTokenDecimals);
                     if (displayBalance !== baseTokenDexBalance) {
-                        IS_LOCAL_ENV &&
-                            console.debug('setting base token dex balance');
                         setBaseTokenDexBalance(displayBalance);
                         setTokenBalance({
                             tokenAddress: baseToken.address,
@@ -248,8 +204,6 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
                         quoteTokenDecimals,
                     );
                     if (displayBalance !== quoteTokenBalance) {
-                        IS_LOCAL_ENV &&
-                            console.debug('setting quote token balance');
                         setQuoteTokenBalance(displayBalance);
                         setTokenBalance({
                             tokenAddress: quoteToken.address,
