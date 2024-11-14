@@ -1025,6 +1025,7 @@ function Ranges(props: propsIF) {
                               pendingPositionUpdate.txDetails.lowTick || 0,
                               pendingPositionUpdate.txDetails.highTick || 0,
                           );
+
                     const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
 
                     let positionLiqBase, positionLiqQuote;
@@ -1122,6 +1123,7 @@ function Ranges(props: propsIF) {
                         cachedEnsResolve,
                         skipENSFetch,
                     );
+
                     const onChainPosition: PositionIF = {
                         chainId: chainId,
                         base: pendingPositionUpdate.txDetails.baseAddress,
@@ -1131,8 +1133,8 @@ function Ranges(props: propsIF) {
                         askTick: pendingPositionUpdate.txDetails.highTick,
                         isBid: pendingPositionUpdate.txDetails.isBid,
                         user: pendingPositionUpdate.userAddress,
-                        timeFirstMint: Number(position.timestamp), // from on-chain call (not updated for removes?)
-                        latestUpdateTime: Number(position.timestamp), // from on-chain call (not updated for removes?)
+                        timeFirstMint: currentTime, // unknown
+                        latestUpdateTime: currentTime,
                         lastMintTx: '', // unknown
                         firstMintTx: '', // unknown
                         positionType: pendingPositionUpdate.txDetails.isAmbient
@@ -1223,8 +1225,9 @@ function Ranges(props: propsIF) {
                 newlyUpdatedPositions.filter(
                     (position) => position !== undefined,
                 ) as PositionIF[];
-            if (definedUpdatedPositions.length)
+            if (definedUpdatedPositions.length) {
                 setUnindexedUpdatedPositions(definedUpdatedPositions);
+            }
         })();
     }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
 
