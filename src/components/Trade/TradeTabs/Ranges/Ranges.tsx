@@ -153,7 +153,6 @@ function Ranges(props: propsIF) {
     const infiniteScrollLockRef = useRef<boolean>();
     infiniteScrollLockRef.current = infiniteScrollLock;
 
-
     const [requestedOldestTimes, setRequestedOldestTimes] = useState<number[]>(
         [],
     );
@@ -429,17 +428,16 @@ function Ranges(props: propsIF) {
                     change.positionLiq !== 0,
             );
 
-            if(pagesVisible[0] === 0){
+            if (pagesVisible[0] === 0) {
                 setFetchedTransactions({
-                        dataReceived: true,
+                    dataReceived: true,
                     positions: [...newPositions, ...positionsByPool.positions],
                 });
 
-                if(positionsByPool.positions.length > 0){
+                if (positionsByPool.positions.length > 0) {
                     setPageDataCount(getInitialDataPageCounts());
                 }
-
-            }else if(newPositions.length > 0){
+            } else if (newPositions.length > 0) {
                 updateHotTransactions(newPositions);
             }
         }
@@ -635,8 +633,6 @@ function Ranges(props: propsIF) {
         ],
     );
 
-    
-
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const oldestTxTime = useMemo(
         () =>
@@ -716,7 +712,9 @@ function Ranges(props: propsIF) {
 
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const sortedLimitDataToDisplay = useMemo<PositionIF[]>(() => {
-        const uniqueSortedPositions = getUniqueSortedPositions(sortedPositions.filter(e=>e.positionLiq !== 0));
+        const uniqueSortedPositions = getUniqueSortedPositions(
+            sortedPositions.filter((e) => e.positionLiq !== 0),
+        );
 
         return isAccountView
             ? uniqueSortedPositions
@@ -724,7 +722,7 @@ function Ranges(props: propsIF) {
                   getIndexForPages(true),
                   getIndexForPages(false),
               );
-    }, [sortedPositions, pagesVisible, isAccountView, fetchedTransactions.positions]);
+    }, [sortedPositions, pagesVisible, isAccountView]);
 
     // -----------------------------------------------------------------------------------------------------------------------------
 
