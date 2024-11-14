@@ -17,8 +17,8 @@ import {
     isStablePair,
     translateTokenSymbol,
 } from '../ambient-utils/dataLayer';
-import { TokenContext, TokenContextIF } from './TokenContext';
-import { AppStateContextIF, AppStateContext } from './AppStateContext';
+import { TokenContext } from './TokenContext';
+import { AppStateContext } from './AppStateContext';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -58,6 +58,8 @@ export interface TradeDataContextIF {
     ) => number;
     noGoZoneBoundaries: number[];
     setNoGoZoneBoundaries: Dispatch<SetStateAction<number[]>>;
+    blackListedTimeParams: Map<string, Set<number>>;
+    addToBlackList: (tokenPair: string, timeParam: number) => void;
 }
 
 export const TradeDataContext = createContext<TradeDataContextIF>(
@@ -71,8 +73,8 @@ export const TradeDataContext = createContext<TradeDataContextIF>(
 export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     const {
         activeNetwork: { chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { tokens } = useContext<TokenContextIF>(TokenContext);
+    } = useContext(AppStateContext);
+    const { tokens } = useContext(TokenContext);
 
     const savedTokenASymbol = localStorage.getItem('tokenA');
     const savedTokenBSymbol = localStorage.getItem('tokenB');
@@ -123,6 +125,8 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
               ? dfltTokenA
               : dfltTokenB,
     );
+
+    const [blackListedTimeParams, setBlackListedTimeParams] = useState<Map<string, Set<number>>>(new Map());
 
     useEffect(() => {
         // update tokenA and tokenB when chain changes
@@ -250,6 +254,18 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         return defaultWidth;
     }, [baseToken.address + quoteToken.address + chainId]);
 
+
+    const addToBlackList = (tokenPair: string, timeParam: number) => {
+        setBlackListedTimeParams(prev => {
+            if(prev.has(tokenPair)){
+                prev.get(tokenPair)?.add(timeParam);
+            } else {
+                prev.set(tokenPair, new Set([timeParam]));
+            }
+            return prev;
+        });
+    };
+
     const tradeDataContext = {
         tokenA,
         tokenB,
@@ -283,6 +299,8 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         getDefaultRangeWidthForTokenPair,
         noGoZoneBoundaries,
         setNoGoZoneBoundaries,
+        blackListedTimeParams,
+        addToBlackList,
     };
 
     return (

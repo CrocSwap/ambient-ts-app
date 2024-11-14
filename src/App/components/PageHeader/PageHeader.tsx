@@ -6,27 +6,12 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../contexts/CrocEnvContext';
-import { PoolContext, PoolContextIF } from '../../../contexts/PoolContext';
-import {
-    SidebarContext,
-    SidebarContextIF,
-} from '../../../contexts/SidebarContext';
-import {
-    TradeTokenContext,
-    TradeTokenContextIF,
-} from '../../../contexts/TradeTokenContext';
-import {
-    TradeTableContext,
-    TradeTableContextIF,
-} from '../../../contexts/TradeTableContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
     getFormattedNumber,
     chainNumToString,
@@ -40,45 +25,30 @@ import {
 } from '../../../utils/hooks/useLinkGen';
 import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
-import {
-    UserDataContext,
-    UserDataContextIF,
-} from '../../../contexts/UserDataContext';
-import {
-    GraphDataContext,
-    GraphDataContextIF,
-} from '../../../contexts/GraphDataContext';
-import {
-    TokenBalanceContext,
-    TokenBalanceContextIF,
-} from '../../../contexts/TokenBalanceContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import {
-    ReceiptContext,
-    ReceiptContextIF,
-} from '../../../contexts/ReceiptContext';
-import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import styles from './PageHeader.module.css';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
+import { BrandContext, ChainDataContext } from '../../../contexts';
 
 const PageHeader = function () {
     const {
         activeNetwork: { chainId, poolIndex: poolId },
         walletModal: { open: openWalletModal },
         appHeaderDropdown,
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { crocEnv, setCrocEnv } =
-        useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { headerImage } = useContext<BrandContextIF>(BrandContext);
-    const { resetTokenBalances } =
-        useContext<TokenBalanceContextIF>(TokenBalanceContext);
-    const { resetUserGraphData } =
-        useContext<GraphDataContextIF>(GraphDataContext);
+    } = useContext(AppStateContext);
+    const { headerImage } = useContext(BrandContext);
+    const { crocEnv, setCrocEnv } = useContext(CrocEnvContext);
+    const { resetTokenBalances } = useContext(TokenBalanceContext);
+    const { resetUserGraphData } = useContext(GraphDataContext);
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
-        useContext<PoolContextIF>(PoolContext);
-    const { recentPools } = useContext<SidebarContextIF>(SidebarContext);
-    const { setShowAllData, activeTradeTab } =
-        useContext<TradeTableContextIF>(TradeTableContext);
+        useContext(PoolContext);
+    const { recentPools } = useContext(SidebarContext);
+    const { setShowAllData, activeTradeTab } = useContext(TradeTableContext);
+    const { isVaultSupportedOnNetwork } = useContext(ChainDataContext);
     const {
         baseToken: {
             setBalance: setBaseTokenBalance,
@@ -88,10 +58,10 @@ const PageHeader = function () {
             setBalance: setQuoteTokenBalance,
             setDexBalance: setQuoteTokenDexBalance,
         },
-    } = useContext<TradeTokenContextIF>(TradeTokenContext);
+    } = useContext(TradeTokenContext);
     const { userAddress, isUserConnected, disconnectUser, ensName } =
-        useContext<UserDataContextIF>(UserDataContext);
-    const { resetReceiptData } = useContext<ReceiptContextIF>(ReceiptContext);
+        useContext(UserDataContext);
+    const { resetReceiptData } = useContext(ReceiptContext);
     const { isBottomSheetOpen } = useBottomSheet();
 
     // eslint-disable-next-line
@@ -182,13 +152,11 @@ const PageHeader = function () {
 
     useEffect(() => {
         const path = location.pathname;
-
         const pathNoLeadingSlash = path.slice(1);
-
         const isAddressEns = pathNoLeadingSlash?.includes('.eth');
         const isAddressHex = checkEoaHexAddress(path);
-
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
+
         if (pathNoLeadingSlash.startsWith('account') && !isPathValidAddress) {
             if (pathNoLeadingSlash.includes('points')) {
                 document.title = 'My Points ~ Ambient';
@@ -230,6 +198,8 @@ const PageHeader = function () {
                 document.title = `${ensNameOrAddressTruncated} Wallet Balances ~ Ambient`;
             } else if (pathNoLeadingSlash.includes('exchange-balances')) {
                 document.title = `${ensNameOrAddressTruncated} Exchange Balances ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('xp')) {
+                document.title = `${ensNameOrAddressTruncated} XP ~ Ambient`;
             } else {
                 document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
             }
@@ -252,6 +222,10 @@ const PageHeader = function () {
             } else {
                 document.title = 'Explore ~ Ambient';
             }
+        } else if (pathNoLeadingSlash.includes('xp-leaderboard')) {
+            document.title = 'XP Leaderboard ~ Ambient';
+        } else if (pathNoLeadingSlash.includes('vaults')) {
+            document.title = 'Vaults ~ Ambient';
         } else if (location.pathname.includes('404')) {
             document.title = '404 ~ Ambient';
         } else {
@@ -323,6 +297,11 @@ const PageHeader = function () {
             title: 'Explore',
             destination: '/explore',
             shouldDisplay: true,
+        },
+        {
+            title: 'Vaults',
+            destination: '/vaults',
+            shouldDisplay: isVaultSupportedOnNetwork,
         },
         {
             title: 'Account',
@@ -443,6 +422,7 @@ const PageHeader = function () {
                             appHeaderDropdown.setIsActive(false);
                         }
                     }}
+                    className={styles.left_side}
                 >
                     <Link
                         to='/'
@@ -450,18 +430,22 @@ const PageHeader = function () {
                         aria-label='Home'
                     >
                         {desktopScreen ? (
-                            <img src={headerImage} alt='ambient' />
+                            <img
+                                src={headerImage}
+                                alt='ambient'
+                                style={{ marginRight: '20px' }}
+                            />
                         ) : (
                             <img
                                 className={styles.logoText}
                                 src={logo}
                                 alt='ambient'
-                                width='70px'
+                                width='60px'
                             />
                         )}
                     </Link>
+                    {routeDisplay}
                 </div>
-                {routeDisplay}
                 <div className={styles.rightSide}>
                     {show ? (
                         <div className={styles.tradeNowDiv}>

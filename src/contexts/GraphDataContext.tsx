@@ -15,19 +15,15 @@ import {
     LiquidityDataIF,
     RecordType,
 } from '../ambient-utils/types';
-import { AppStateContext, AppStateContextIF } from './AppStateContext';
-import { CachedDataContext, CachedDataContextIF } from './CachedDataContext';
-import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
-import { TokenContext, TokenContextIF } from './TokenContext';
-import { UserDataContext, UserDataContextIF } from './UserDataContext';
-import { DataLoadingContext, DataLoadingContextIF } from './DataLoadingContext';
-import {
-    PositionUpdateIF,
-    ReceiptContext,
-    ReceiptContextIF,
-} from './ReceiptContext';
+import { AppStateContext } from './AppStateContext';
+import { CachedDataContext } from './CachedDataContext';
+import { CrocEnvContext } from './CrocEnvContext';
+import { TokenContext } from './TokenContext';
+import { UserDataContext } from './UserDataContext';
+import { DataLoadingContext } from './DataLoadingContext';
+import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
 import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
-import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
+import { TradeDataContext } from './TradeDataContext';
 
 export interface Changes {
     dataReceived: boolean;
@@ -111,23 +107,21 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         activeNetwork: { graphCacheUrl, chainId },
         server: { isEnabled: isServerEnabled },
         isUserIdle,
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { baseToken, quoteToken } =
-        useContext<TradeDataContextIF>(TradeDataContext);
+    } = useContext(AppStateContext);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
     const { pendingTransactions, allReceipts, sessionPositionUpdates } =
-        useContext<ReceiptContextIF>(ReceiptContext);
-    const { setDataLoadingStatus } =
-        useContext<DataLoadingContextIF>(DataLoadingContext);
+        useContext(ReceiptContext);
+    const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
-    } = useContext<CachedDataContextIF>(CachedDataContext);
-    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { tokens } = useContext<TokenContextIF>(TokenContext);
+    } = useContext(CachedDataContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
     const { userAddress: userDefaultAddress, isUserConnected } =
-        useContext<UserDataContextIF>(UserDataContext);
+        useContext(UserDataContext);
 
     const [positionsByUser, setPositionsByUser] = useState<PositionsByUser>({
         dataReceived: false,

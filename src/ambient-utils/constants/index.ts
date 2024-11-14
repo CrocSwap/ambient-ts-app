@@ -30,6 +30,10 @@ export const PAIR_LOOKUP_URL =
     import.meta.env.VITE_PAIR_LOOKUP_URL ||
     'https://croc-smart.liquidity.tools/pair-lookup?';
 
+export const VAULTS_API_URL =
+    import.meta.env.VITE_VAULTS_API_URL ||
+    'https://protocol-service-api.tempestfinance.xyz/api/v1';
+
 export const HISTORICAL_CANDLES_URL =
     import.meta.env.VITE_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
 
@@ -65,26 +69,6 @@ export const BLOCK_POLLING_RPC_URL =
     import.meta.env.VITE_BLOCK_POLLING_RPC_URL !== undefined
         ? import.meta.env.VITE_BLOCK_POLLING_RPC_URL
         : '';
-
-export const MAINNET_RPC_URL =
-    import.meta.env.VITE_MAINNET_RPC_URL !== undefined
-        ? import.meta.env.VITE_MAINNET_RPC_URL
-        : 'https://eth.llamarpc.com';
-
-export const BLAST_RPC_URL =
-    import.meta.env.VITE_BLAST_RPC_URL !== undefined
-        ? import.meta.env.VITE_BLAST_RPC_URL
-        : 'https://rpc.blast.io';
-
-export const SCROLL_RPC_URL =
-    import.meta.env.VITE_SCROLL_RPC_URL !== undefined
-        ? import.meta.env.VITE_SCROLL_RPC_URL
-        : 'https://rpc.scroll.io';
-
-export const SEPOLIA_RPC_URL =
-    import.meta.env.VITE_SEPOLIA_RPC_URL !== undefined
-        ? import.meta.env.VITE_SEPOLIA_RPC_URL
-        : 'https://ethereum-sepolia-rpc.publicnode.com';
 
 export const ALCHEMY_API_KEY =
     import.meta.env.VITE_ALCHEMY_API_KEY !== undefined

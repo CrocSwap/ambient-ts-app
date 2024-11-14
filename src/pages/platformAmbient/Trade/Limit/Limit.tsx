@@ -63,8 +63,12 @@ export default function Limit() {
     const {
         activeNetwork: { chainId, gridSize, poolIndex },
     } = useContext(AppStateContext);
-    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
-        useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+        isActiveNetworkPlume,
+    } = useContext(ChainDataContext);
     const {
         pool,
         isPoolInitialized,
@@ -1074,7 +1078,14 @@ export default function Limit() {
                         }
                         disabled={isApprovalPending}
                         action={async () => {
-                            await approve(tokenA.address, tokenA.symbol);
+                            await approve(
+                                tokenA.address,
+                                tokenA.symbol,
+                                undefined,
+                                isActiveNetworkPlume
+                                    ? tokenAQtyCoveredByWalletBalance
+                                    : undefined,
+                            );
                         }}
                         flat={true}
                     />
