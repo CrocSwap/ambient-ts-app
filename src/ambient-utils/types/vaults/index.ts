@@ -1,3 +1,3 @@
 export * from './vaultIF';
 export * from './allVaultsServerIF';
-export * from './UserVaultsServerIF';
+export * from './userVaultsServerIF';

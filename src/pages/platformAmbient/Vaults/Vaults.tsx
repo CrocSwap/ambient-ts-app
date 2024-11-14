@@ -6,7 +6,7 @@ import { AllVaultsServerIF, VaultIF } from '../../../ambient-utils/types';
 import { AppStateContext, ReceiptContext } from '../../../contexts';
 import { VAULTS_API_URL } from '../../../ambient-utils/constants';
 import { mockAllVaultsData } from './mockVaultData';
-import { UserVaultsServerIF } from '../../../ambient-utils/types/vaults/UserVaultsServerIF';
+import { UserVaultsServerIF } from '../../../ambient-utils/types/vaults/userVaultsServerIF';
 
 function Vaults() {
     // !important:  once we have mock data, change the type on this
