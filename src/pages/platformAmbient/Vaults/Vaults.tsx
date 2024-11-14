@@ -5,7 +5,7 @@ import VaultRow from './VaultRow/VaultRow';
 import { VaultServerIF, VaultIF } from '../../../ambient-utils/types';
 import { AppStateContext, ReceiptContext } from '../../../contexts';
 import { VAULTS_API_URL } from '../../../ambient-utils/constants';
-import { mockAllVaultsData } from './mockVaultData';
+// import { mockAllVaultsData } from './mockVaultData';
 import { userVaultServerIF } from '../../../ambient-utils/types/vaults/userVaultServerIF';
 
 function Vaults() {
@@ -114,18 +114,16 @@ function Vaults() {
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
-                    {(
-                        allVaultsData ||
-                        mockAllVaultsData.sort(
-                            (a: VaultServerIF, b: VaultServerIF) =>
+                    {vaultsForDOM && 
+                            vaultsForDOM.sort(
+                            (a: VaultIF, b: VaultIF) =>
                                 parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
                         )
-                    )
                         .filter(
                             (vault) =>
                                 Number(vault.chainId) === Number(chainId),
                         )
-                        .map((vault: VaultServerIF) => {
+                        .map((vault: VaultIF) => {
                             const KEY_SLUG = 'vault_row_';
                             return (
                                 <VaultRow
