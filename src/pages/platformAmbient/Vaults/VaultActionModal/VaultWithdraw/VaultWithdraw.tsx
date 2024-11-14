@@ -12,7 +12,7 @@ import Button from '../../../../../components/Form/Button';
 import { TokenIF, VaultIF } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import {
     NUM_GWEI_IN_WEI,
@@ -31,6 +31,9 @@ import {
     isTransactionFailedError,
 } from '../../../../../utils/TransactionError';
 import Toggle from '../../../../../components/Form/Toggle';
+import SlippageTolerance from '../../../../../components/Global/SlippageTolerance/SlippageTolerance';
+import { RiArrowDropDownLine } from 'react-icons/ri';
+import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 
 interface Props {
     mainAsset: TokenIF;
@@ -49,7 +52,7 @@ export default function VaultWithdraw(props: Props) {
         secondaryAssetBalanceDisplayQty,
         vault,
         balanceMainAsset,
-        secondaryAsset
+        secondaryAsset,
     } = props;
     const [showSubmitted, setShowSubmitted] = useState(false);
     const [isZapOn, setIsZapOn] = useState(true);
@@ -148,19 +151,24 @@ export default function VaultWithdraw(props: Props) {
             gap={5}
             style={{ flexShrink: 0 }}
         >
-            {!isZapOn && <TokenIcon
-                token={secondaryAsset}
-                src={uriToHttp(secondaryAsset.logoURI)}
-                alt={secondaryAsset.symbol}
-                size={'xl'}
-            />}
+            {!isZapOn && (
+                <TokenIcon
+                    token={secondaryAsset}
+                    src={uriToHttp(secondaryAsset.logoURI)}
+                    alt={secondaryAsset.symbol}
+                    size={'xl'}
+                />
+            )}
             <TokenIcon
                 token={mainAsset}
                 src={uriToHttp(mainAsset.logoURI)}
                 alt={mainAsset.symbol}
                 size={'xl'}
             />
-            <p className={styles.poolName}>{ !isZapOn && secondaryAsset.symbol + ' / '}{mainAsset.symbol}</p>
+            <p className={styles.poolName}>
+                {!isZapOn && secondaryAsset.symbol + ' / '}
+                {mainAsset.symbol}
+            </p>
         </FlexContainer>
     );
 
@@ -216,7 +224,7 @@ export default function VaultWithdraw(props: Props) {
                 </div>
             </div>
         </>
-    )
+    );
 
     const secondaryDetailsDisplay = (
         <>
@@ -250,14 +258,16 @@ export default function VaultWithdraw(props: Props) {
                 </div>
             </div>
         </>
-    )
+    );
 
     const pooledDisplay = (
         <section className={styles.pooledContent}>
             {mainDetailsDisplay}
-         {!isZapOn &&   <div className={styles.seperator}>
-                <span />
-            </div>}
+            {!isZapOn && (
+                <div className={styles.seperator}>
+                    <span />
+                </div>
+            )}
             {!isZapOn && secondaryDetailsDisplay}
         </section>
     );
@@ -298,6 +308,36 @@ export default function VaultWithdraw(props: Props) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
+    const slipDropdownRef = useRef<HTMLDivElement>(null);
+
+    const clickOutsideHandler = () => {
+       setShowSlipDropdown(false)
+        
+    };
+
+    useOnClickOutside(slipDropdownRef, clickOutsideHandler);
+
+    const [ showSlipDropdown, setShowSlipDropdown] = useState(false)
+    const presets = [0.5, 1, 3];
+
+    const slipTolerance = (
+        <div className={styles.slipContainer} >
+            <button className={styles.slipButton} onClick={() => setShowSlipDropdown(!showSlipDropdown)}>slippage Tolerance <RiArrowDropDownLine size={24} />
+            </button>
+
+           {showSlipDropdown && <div className={styles.slipDropdown} ref={slipDropdownRef}>
+
+            <SlippageTolerance
+                persistedSlippage={10}
+                setCurrentSlippage={() => console.log('set')}
+                // eslint-disable-next-line
+                handleKeyDown={(event: any) => console.log('event')}
+                presets={presets}
+                />
+                </div>}
+        </div>
+    );
+
     const submittedButtonTitle = (
         <div className={styles.loading}>
             Submitting
@@ -315,7 +355,10 @@ export default function VaultWithdraw(props: Props) {
             />
 
             <div className={styles.withdrawContainer}>
+
+                {slipTolerance}
                 {tokensDisplay}
+               
                 <div className={styles.zapContainer}>
                     <p>Zap In</p>
 
@@ -333,7 +376,7 @@ export default function VaultWithdraw(props: Props) {
                 />
                 {pooledDisplay}
 
-                { extraDetailsDisplay}
+                {extraDetailsDisplay}
                 <div className={styles.gas_row}>
                     <FaGasPump size={15} /> {withdrawGasPriceinDollars ?? '…'}
                 </div>

@@ -79,7 +79,9 @@ export default function TransactionSettingsModal(props: propsIF) {
 
     const confirmAriaLabel = `Confirm slippage tolerance of ${currentSlippage}% and ${
         currentSkipConfirm ? 'skip' : 'dont skip'
-    } ${module} confirmation modal`;
+        } ${module} confirmation modal`;
+    
+    
 
     return (
         <Modal title={`${module} Settings`} onClose={onClose}>
