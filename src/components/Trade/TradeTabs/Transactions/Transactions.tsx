@@ -168,12 +168,6 @@ function Transactions(props: propsIF) {
         changes: [...getInitialChangesData()],
     });
 
-    useEffect(() => {
-        setFetchedTransactions({
-            dataReceived: false,
-            changes: [...getInitialChangesData()],
-        });
-    }, [activeAccountTransactionData]);
 
     const [hotTransactions, setHotTransactions] = useState<TransactionIF[]>([]);
 
