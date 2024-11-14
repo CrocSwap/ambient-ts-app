@@ -422,30 +422,23 @@ function Ranges(props: propsIF) {
                 ),
             ); // Adjust if using a different unique identifier
 
-            const uniqueChanges = positionsByPool.positions.filter(
+            const newPositions = positionsByPool.positions.filter(
                 (change) =>
                     !existingChanges.has(change.positionId) &&
                     change.positionLiq !== 0,
             );
 
-            if (uniqueChanges.length > 0) {
-                if (pagesVisible[0] === 0) {
-                    setFetchedTransactions((prev) => {
-                        return {
-                            dataReceived: true,
-                            positions: [...uniqueChanges, ...prev.positions],
-                        };
-                    });
-                } else {
-                    updateHotTransactions(uniqueChanges);
-                }
-            }
+            if (pagesVisible[0] === 0) {
+                setFetchedTransactions({
+                    dataReceived: true,
+                    positions: [...newPositions, ...positionsByPool.positions],
+                });
 
-            if (
-                pageDataCount.counts[0] == 0 &&
-                positionsByPool.positions.length > 0
-            ) {
-                setPageDataCount(getInitialDataPageCounts());
+                if (positionsByPool.positions.length > 0) {
+                    setPageDataCount(getInitialDataPageCounts());
+                }
+            } else if (newPositions.length > 0) {
+                updateHotTransactions(newPositions);
             }
         }
     }, [positionsByPool]);
@@ -636,7 +629,7 @@ function Ranges(props: propsIF) {
             isAccountView,
             activeAccountPositionData,
             activeUserPositionsByPool,
-            fetchedTransactions.positions, // infinite scroll
+            fetchedTransactions, // infinite scroll
         ],
     );
 
@@ -719,7 +712,9 @@ function Ranges(props: propsIF) {
 
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const sortedLimitDataToDisplay = useMemo<PositionIF[]>(() => {
-        const uniqueSortedPositions = getUniqueSortedPositions(sortedPositions);
+        const uniqueSortedPositions = getUniqueSortedPositions(
+            sortedPositions.filter((e) => e.positionLiq !== 0),
+        );
 
         return isAccountView
             ? uniqueSortedPositions
