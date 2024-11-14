@@ -1,22 +1,22 @@
 // START: Import React and Dongles
-import { memo, useContext, useEffect, useState } from 'react';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import styles from './Vaults.module.css';
 import VaultRow from './VaultRow/VaultRow';
-import { VaultIF } from '../../../ambient-utils/types';
-import { AppStateContext, ReceiptContext, UserDataContext } from '../../../contexts';
+import { VaultServerIF, VaultIF } from '../../../ambient-utils/types';
+import { AppStateContext, ReceiptContext } from '../../../contexts';
 import { VAULTS_API_URL } from '../../../ambient-utils/constants';
 import { mockAllVaultsData } from './mockVaultData';
+import { userVaultServerIF } from '../../../ambient-utils/types/vaults/userVaultServerIF';
 
 function Vaults() {
     // !important:  once we have mock data, change the type on this
-    // !important:  ... value to `VaultIF[]` and then fix linter
+    // !important:  ... value to `VaultServerIF[]` and then fix linter
     // !important:  ... warnings which manifest in response
 
     const {
         activeNetwork: { chainId },
         isUserIdle,
     } = useContext(AppStateContext);
-    const { userAddress } = useContext(UserDataContext);
     const { sessionReceipts } = useContext(ReceiptContext);
 
     const vaultHeader = (
@@ -31,31 +31,62 @@ function Vaults() {
     );
 
     // vault data from tempest API
-    const [allVaultsData, setAllVaultsData] = useState<VaultIF[] | null | undefined>(null);
+    const [allVaultsData, setAllVaultsData] = useState<VaultServerIF[] | null | undefined>(null);
 
     async function getAllVaultsData(): Promise<void> {
         const endpoint = `${VAULTS_API_URL}/vaults`;
         const response = await fetch(endpoint);
         const { data } = await response.json();
-        const sorted: VaultIF[] = data.vaults.sort(
-            (a: VaultIF, b: VaultIF) =>
+        const sorted: VaultServerIF[] = data.vaults.sort(
+            (a: VaultServerIF, b: VaultServerIF) =>
                 parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
         );
+        console.log(sorted);
         setAllVaultsData(sorted);
     }
 
+    // hooks to fetch and hold user vault data
+    const [userVaultData, setUserVaultData] = useState<userVaultServerIF[]|null|undefined>(null);
     async function getUserVaultData(): Promise<void> {
-        // const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=${userAddress}`;
         const endpoint =
             `${VAULTS_API_URL}/users/positions?walletAddress=0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc`;
         const response = await fetch(endpoint);
         const { data } = await response.json();
-        console.log(data);
+        setUserVaultData(data);
     }
 
     useEffect(() => {
         getUserVaultData();
     }, []);
+
+    const vaultsForDOM = useMemo<VaultIF[]|undefined>(() => {
+        function decorateVault(v: VaultServerIF): VaultIF {
+        const output: VaultIF = {
+            ...v,
+            balance: undefined,
+            balanceAmount: undefined,
+            balanceUsd: undefined,
+        }
+        if (userVaultData) {
+            const userVault: userVaultServerIF|undefined = userVaultData.find(
+                (uV: userVaultServerIF) => uV.vaultAddress.toLowerCase() === v.address.toLowerCase()
+            );
+            if (userVault) {
+                output.balance = userVault.balance;
+                output.balanceAmount = userVault.balanceAmount;
+                output.balanceUsd = userVault.balanceUsd;
+            }
+        };
+            return output;
+        }
+        let output: VaultIF[]|undefined;
+        if (allVaultsData && userVaultData) {
+            output = allVaultsData.map((v: VaultServerIF) => decorateVault(v));
+        };
+        return output;
+    }, [allVaultsData, userVaultData]);
+
+    console.log(vaultsForDOM);
 
     // logic to fetch vault data from API
     useEffect(() => {
@@ -86,7 +117,7 @@ function Vaults() {
                     {(
                         allVaultsData ||
                         mockAllVaultsData.sort(
-                            (a: VaultIF, b: VaultIF) =>
+                            (a: VaultServerIF, b: VaultServerIF) =>
                                 parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
                         )
                     )
@@ -94,14 +125,13 @@ function Vaults() {
                             (vault) =>
                                 Number(vault.chainId) === Number(chainId),
                         )
-                        .map((vault: VaultIF) => {
+                        .map((vault: VaultServerIF) => {
                             const KEY_SLUG = 'vault_row_';
                             return (
                                 <VaultRow
                                     key={KEY_SLUG + JSON.stringify(vault)}
                                     idForDOM={KEY_SLUG + vault.toString()}
                                     vault={vault}
-                                    queryFailed={allVaultsData === undefined}
                                 />
                             );
                         })}

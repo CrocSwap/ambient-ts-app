@@ -1,12 +1,40 @@
-import { VaultIF } from './vaultIF';
-
-export interface vaultServerIF {
-    code: number;
-    message: 'Successfully';
-    data: {
-        vaults: VaultIF[];
-    };
-    pagination: {
-        totalItems: number;
-    };
+export interface VaultServerIF {
+    id: string;
+    createdAt: number;
+    updatedAt: number;
+    createdBy: string;
+    updatedBy: string;
+    protocol: string;
+    chainId: string;
+    address: `0x${string}`;
+    strategy: string;
+    token0Address: `0x${string}`;
+    token1Address: `0x${string}`;
+    token0Decimals: number;
+    token1Decimals: number;
+    vaultSymbol: string;
+    vaultDecimals: number;
+    vaultShow: boolean;
+    mainAsset: `0x${string}`;
+    aprUnitTokenAddress: string;
+    aprShow: string;
+    initTime: number;
+    initBlockNumber: number;
+    oracleAddress: string;
+    oracleDecimals: number;
+    oracleInitRate: string;
+    aprUnitOracleAddress: string;
+    aprUnitOracleDecimals: number;
+    aprUnitOracleInitRate: string;
+    poolFee: string;
+    reverseChart: boolean;
+    koSize: number;
+    token0InitPriceUsd: string;
+    token1InitPriceUsd: string;
+    aprToken0: string;
+    aprToken1: string;
+    aprUnitTokenPriceUsd: string;
+    aprRebaseUnitToken: string;
+    tvlUsd: string;
+    apr: string;
 }

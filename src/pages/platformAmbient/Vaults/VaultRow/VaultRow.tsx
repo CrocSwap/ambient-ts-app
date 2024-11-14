@@ -9,7 +9,7 @@ import {
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { VaultIF } from '../../../../ambient-utils/types';
+import { VaultServerIF } from '../../../../ambient-utils/types';
 import { useContext, useEffect, useState } from 'react';
 import {
     AppStateContext,
@@ -29,12 +29,11 @@ import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconW
 
 interface propsIF {
     idForDOM: string;
-    vault: VaultIF;
-    queryFailed: boolean;
+    vault: VaultServerIF;
 }
 
 export default function VaultRow(props: propsIF) {
-    const { idForDOM, vault, queryFailed } = props;
+    const { idForDOM, vault } = props;
     const [isOpen, openModal, closeModal] = useModal();
     const [type, setType] = useState<'Deposit' | 'Withdraw'>('Deposit');
 

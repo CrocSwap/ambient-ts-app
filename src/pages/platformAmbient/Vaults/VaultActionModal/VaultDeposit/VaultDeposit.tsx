@@ -6,7 +6,7 @@ import {
     useRef,
     useState,
 } from 'react';
-import { TokenIF, VaultIF } from '../../../../../ambient-utils/types';
+import { TokenIF, VaultServerIF } from '../../../../../ambient-utils/types';
 import {
     AppStateContext,
     CachedDataContext,
@@ -42,7 +42,7 @@ import {
 interface Props {
     mainAsset: TokenIF;
     secondaryAsset: TokenIF;
-    vault: VaultIF;
+    vault: VaultServerIF;
     onClose: () => void;
 }
 export default function VaultDeposit(props: Props) {
