@@ -67,7 +67,7 @@ export default function VaultWithdraw(props: Props) {
         string | undefined
     >();
 
-    const slippageTolerance = 0.5;
+    const [slippageTolerance, setSlippageTolerance] = useState(0.5);
 
     const submitWithdraw = async () => {
         if (!crocEnv || !balanceMainAsset || !userAddress || !vault) return;
@@ -284,30 +284,34 @@ export default function VaultWithdraw(props: Props) {
     const slipDropdownRef = useRef<HTMLDivElement>(null);
 
     const clickOutsideHandler = () => {
-       setShowSlipDropdown(false)
-        
+        setShowSlipDropdown(false);
     };
 
     useOnClickOutside(slipDropdownRef, clickOutsideHandler);
 
-    const [ showSlipDropdown, setShowSlipDropdown] = useState(false)
+    const [showSlipDropdown, setShowSlipDropdown] = useState(false);
     const presets = [0.5, 1, 3];
 
     const slipTolerance = (
-        <div className={styles.slipContainer} >
-            <button className={styles.slipButton} onClick={() => setShowSlipDropdown(!showSlipDropdown)}>slippage Tolerance <RiArrowDropDownLine size={24} />
+        <div className={styles.slipContainer}>
+            <button
+                className={styles.slipButton}
+                onClick={() => setShowSlipDropdown(!showSlipDropdown)}
+            >
+                slippage Tolerance <RiArrowDropDownLine size={24} />
             </button>
 
-           {showSlipDropdown && <div className={styles.slipDropdown} ref={slipDropdownRef}>
-
-            <SlippageTolerance
-                persistedSlippage={slippageTolerance}
-                setCurrentSlippage={() => console.log('set')}
-                // eslint-disable-next-line
-                handleKeyDown={(event: any) => console.log('event')}
-                presets={presets}
-                />
-                </div>}
+            {showSlipDropdown && (
+                <div className={styles.slipDropdown} ref={slipDropdownRef}>
+                    <SlippageTolerance
+                        persistedSlippage={slippageTolerance}
+                        setCurrentSlippage={setSlippageTolerance}
+                        // eslint-disable-next-line
+                        handleKeyDown={(event: any) => console.log('event')}
+                        presets={presets}
+                    />
+                </div>
+            )}
         </div>
     );
 
@@ -320,7 +324,7 @@ export default function VaultWithdraw(props: Props) {
                 // showBackButton={handleGoBack ? true: false}
             />
             <div className={styles.withdrawContainer}>
-            {slipTolerance}
+                {slipTolerance}
                 {tokensDisplay}
                 <RemoveRangeWidth
                     removalPercentage={removalPercentage}
