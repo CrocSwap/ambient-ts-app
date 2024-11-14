@@ -25,7 +25,7 @@ const chainSpecForWalletConnector = {
     name: 'Scroll',
     currency: 'ETH',
     rpcUrl: SCROLL_RPC_URL,
-    explorerUrl: 'https://scrollscan.com',
+    explorerUrl: 'https://scrollscan.com/',
 };
 
 export const scrollMainnet: NetworkIF = {

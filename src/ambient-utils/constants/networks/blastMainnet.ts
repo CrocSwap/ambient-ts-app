@@ -25,7 +25,7 @@ const chainSpecForWalletConnector = {
     name: 'Blast',
     currency: 'ETH',
     rpcUrl: BLAST_RPC_URL,
-    explorerUrl: 'https://blastscan.io',
+    explorerUrl: 'https://blastscan.io/',
 };
 
 export const blast: NetworkIF = {

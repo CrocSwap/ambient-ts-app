@@ -18,7 +18,7 @@ const chainSpecForWalletConnector = {
     name: 'Scroll Sepolia',
     currency: 'ETH',
     rpcUrl: 'https://sepolia-rpc.scroll.io/',
-    explorerUrl: 'https://sepolia.scrollscan.dev',
+    explorerUrl: 'https://sepolia.scrollscan.dev/',
 };
 
 export const scrollSepolia: NetworkIF = {
