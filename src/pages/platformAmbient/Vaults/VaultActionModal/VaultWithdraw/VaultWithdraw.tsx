@@ -12,7 +12,14 @@ import Button from '../../../../../components/Form/Button';
 import { TokenIF, VaultIF } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
-import { useContext, useEffect, useRef, useState } from 'react';
+import {
+    ChangeEvent,
+    KeyboardEvent,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import {
     NUM_GWEI_IN_WEI,
@@ -31,8 +38,8 @@ import {
     isTransactionFailedError,
 } from '../../../../../utils/TransactionError';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import SlippageTolerance from '../../../../../components/Global/SlippageTolerance/SlippageTolerance';
-import { RiArrowDropDownLine } from 'react-icons/ri';
+
+import { MdEdit } from 'react-icons/md';
 
 interface Props {
     mainAsset: TokenIF;
@@ -67,7 +74,10 @@ export default function VaultWithdraw(props: Props) {
         string | undefined
     >();
 
-    const slippageTolerance = 0.5;
+    const [slippageTolerance, setSlippageTolerance] = useState(0.5);
+    const [tempSlippage, setTempSlippage] = useState<string>(
+        slippageTolerance.toString(),
+    );
 
     const submitWithdraw = async () => {
         if (!crocEnv || !balanceMainAsset || !userAddress || !vault) return;
@@ -229,22 +239,72 @@ export default function VaultWithdraw(props: Props) {
             </div>
         </section>
     );
+
+    // const slipValue = getFormattedNumber({
+    //     value: slippageTolerance,
+    //     isPercentage: true,
+    //     // suffix: '%',
+    // });
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            const newValue = parseFloat(tempSlippage);
+            if (!isNaN(newValue)) {
+                setSlippageTolerance(newValue);
+            }
+        }
+    };
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setTempSlippage(e.target.value);
+    };
+    
+    const slipDropdownRef = useRef<HTMLDivElement>(null);
+    
+    const [editSlippageTolerance, setEditSlippageTolerance] = useState(false);
+    
+    
+    const clickOutsideHandler = () => {
+        setEditSlippageTolerance(false);
+        
+    };
+    useOnClickOutside(slipDropdownRef, clickOutsideHandler);
+
+
     const extraDetailsDisplay = (
         <div className={styles.extraDetailsContainer}>
             <div className={styles.extraDetailsRow}>
-                <FlexContainer flexDirection='row' alignItems='center' gap={4}>
+                <FlexContainer
+                    flexDirection='row'
+                    alignItems='center'
+                    gap={4}
+                    style={{ zIndex: '5' }}
+                >
                     <p>Slippage Tolerance</p>
                     <TooltipComponent
                         title={'This can be changed in settings.'}
                     />
                 </FlexContainer>
-                <p>
-                    {getFormattedNumber({
+                <div className={styles.slipTolValueContainer} ref={slipDropdownRef}>
+                    {/* {getFormattedNumber({
                         value: slippageTolerance,
                         isPercentage: true,
                         suffix: '%',
-                    })}
-                </p>
+                    })} */}
+                    <input
+                        id='slippage_tolerance_input_field_vault_withdraw'
+                        onKeyDown={handleKeyDown}
+                        onChange={handleInputChange}
+                        type='number'
+                        step='any'
+                        value={tempSlippage}
+                        autoComplete='off'
+                        placeholder={tempSlippage}
+                        aria-label='Enter Slippage Tolerance'
+                        disabled={!editSlippageTolerance}
+                    />
+                    <p>%</p>
+                    <MdEdit size={18} onClick={() => setEditSlippageTolerance(true)} color={editSlippageTolerance ? 'var(--accent1)' : ''} />
+                </div>
             </div>
             {/* <div className={styles.extraDetailsRow}>
                 <FlexContainer flexDirection='row' alignItems='center' gap={4}>
@@ -281,35 +341,8 @@ export default function VaultWithdraw(props: Props) {
         </div>
     );
 
-    const slipDropdownRef = useRef<HTMLDivElement>(null);
 
-    const clickOutsideHandler = () => {
-       setShowSlipDropdown(false)
-        
-    };
-
-    useOnClickOutside(slipDropdownRef, clickOutsideHandler);
-
-    const [ showSlipDropdown, setShowSlipDropdown] = useState(false)
-    const presets = [0.5, 1, 3];
-
-    const slipTolerance = (
-        <div className={styles.slipContainer} >
-            <button className={styles.slipButton} onClick={() => setShowSlipDropdown(!showSlipDropdown)}>slippage Tolerance <RiArrowDropDownLine size={24} />
-            </button>
-
-           {showSlipDropdown && <div className={styles.slipDropdown} ref={slipDropdownRef}>
-
-            <SlippageTolerance
-                persistedSlippage={slippageTolerance}
-                setCurrentSlippage={() => console.log('set')}
-                // eslint-disable-next-line
-                handleKeyDown={(event: any) => console.log('event')}
-                presets={presets}
-                />
-                </div>}
-        </div>
-    );
+   
 
     return (
         <Modal usingCustomHeader onClose={onClose}>
@@ -320,7 +353,6 @@ export default function VaultWithdraw(props: Props) {
                 // showBackButton={handleGoBack ? true: false}
             />
             <div className={styles.withdrawContainer}>
-            {slipTolerance}
                 {tokensDisplay}
                 <RemoveRangeWidth
                     removalPercentage={removalPercentage}
