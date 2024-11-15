@@ -217,11 +217,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isChartEnabled,
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
-        candleScale?.isFetchForTimeframe,
         isPoolInitialized,
         crocEnv !== undefined,
     ]);
-    
+
+    useEffect(() => {
+        isChartEnabled && isUserOnline && fetchCandles();
+    }, [candleScale?.isFetchForTimeframe]);
+
     useEffect(() => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
             if (
