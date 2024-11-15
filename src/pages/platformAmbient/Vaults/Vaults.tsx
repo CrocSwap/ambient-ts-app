@@ -60,6 +60,9 @@ function Vaults() {
         UserVaultsServerIF[] | undefined
     >();
 
+    const [serverErrorReceived, setServerErrorReceived] =
+        useState<boolean>(false);
+
     // logic to get user vault data
     async function getUserVaultData(): Promise<void> {
         // endpoint to query
@@ -67,13 +70,17 @@ function Vaults() {
         const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=${userAddress}`;
         // fn to fetch data from endpoint and send to local state
         const fetchData = async () => {
-            const response = await fetch(endpoint);
-            if (!response.ok) {
+            try {
+                const response = await fetch(endpoint);
+                setServerErrorReceived(false);
+                const { data } = await response.json();
+                setUserVaultData(data ?? undefined);
+            } catch (error) {
+                console.log({ error });
+                setServerErrorReceived(true);
                 setUserVaultData(undefined);
                 return;
             }
-            const { data } = await response.json();
-            setUserVaultData(data);
         };
         fetchData();
     }
@@ -137,9 +144,7 @@ function Vaults() {
                                                 ),
                                             )
                                         }
-                                        needsFallbackQuery={
-                                            userVaultData === undefined
-                                        }
+                                        needsFallbackQuery={serverErrorReceived}
                                     />
                                 );
                             })}

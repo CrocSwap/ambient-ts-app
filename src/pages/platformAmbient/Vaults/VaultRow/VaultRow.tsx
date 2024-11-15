@@ -61,24 +61,28 @@ export default function VaultRow(props: propsIF) {
 
     const [crocEnvBal, setCrocEnvBal] = useState<bigint>();
 
+    async function getCrocEnvBalance(): Promise<void> {
+        if (
+            crocEnv &&
+            !vault.balanceAmount &&
+            userAddress &&
+            needsFallbackQuery
+        ) {
+            const tempestVault = crocEnv.tempestVault(
+                vault.address,
+                vault.mainAsset,
+            );
+            setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
+        }
+    }
+
     // useEffect to check if user has approved Tempest to sell token 1
     useEffect(() => {
-        async function getCrocEnvBalance(): Promise<void> {
-            if (
-                crocEnv &&
-                !vault.balanceAmount &&
-                userAddress &&
-                needsFallbackQuery
-            ) {
-                console.log('checking');
-                const tempestVault = crocEnv.tempestVault(
-                    vault.address,
-                    vault.mainAsset,
-                );
-                setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
-            }
+        if (needsFallbackQuery) {
+            getCrocEnvBalance();
+        } else {
+            setCrocEnvBal(undefined);
         }
-        getCrocEnvBalance();
     }, [
         crocEnv,
         vault,
