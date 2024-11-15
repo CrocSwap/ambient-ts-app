@@ -72,21 +72,30 @@ function Vaults() {
         const fetchData = async () => {
             try {
                 const response = await fetch(endpoint);
-                setServerErrorReceived(false);
                 const { data } = await response.json();
                 setUserVaultData(data ?? undefined);
+                setServerErrorReceived(false);
             } catch (error) {
                 console.log({ error });
-                setServerErrorReceived(true);
                 setUserVaultData(undefined);
+                setServerErrorReceived(true);
                 return;
             }
         };
+
+        const timeout = new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 2000);
+        });
+
+        await Promise.race([fetchData(), timeout]);
+
         fetchData();
     }
 
     useEffect(() => {
-        getUserVaultData();
+        if (userAddress && chainId) getUserVaultData();
     }, [chainId, userAddress, sessionReceipts.length]);
 
     // logic to fetch vault data from API
