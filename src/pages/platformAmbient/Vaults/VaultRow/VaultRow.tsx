@@ -173,6 +173,7 @@ export default function VaultRow(props: propsIF) {
         suffix: '%',
         minFracDigits: 2,
         maxFracDigits: 2,
+        isPercentage: true,
     });
 
     function handleOpenWithdrawModal() {
