@@ -757,8 +757,6 @@ function DrawCanvas(props: DrawCanvasProps) {
                         scaleData?.drawingLinearxScale(lineData[1].x),
                     ];
 
-                    console.log(scaleData.drawingLinearxScale.domain(), scaleData.xScale.domain())
-
                     bandArea.xScale().range(range);
 
                     bandArea && bandArea([bandData]);

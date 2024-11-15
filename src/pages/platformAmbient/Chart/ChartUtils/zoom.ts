@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import { findSnapTime, scaleData } from './chartUtils';
+import { findSnapTime, scaleData, timeGapsValue } from './chartUtils';
 import * as d3 from 'd3';
 import { CandleDomainIF } from '../../../../ambient-utils/types';
 
@@ -9,14 +9,65 @@ export class Zoom {
     setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>;
     period: number;
     isDiscontinuityScaleEnabled: boolean;
+    timeGaps: timeGapsValue[];
     constructor(
         setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>,
         period: number,
         isDiscontinuityScaleEnabled: boolean,
+        timeGaps: timeGapsValue[],
     ) {
         this.setCandleDomains = setCandleDomains;
         this.period = period;
         this.isDiscontinuityScaleEnabled = isDiscontinuityScaleEnabled;
+        this.timeGaps = timeGaps;
+    }
+
+    private calculateDrawingDomains(
+        deltaX: number,
+        scaleData: scaleData,
+        isWheel: boolean,
+        drawMouseX?: number,
+        lastCandleDate?: number,
+    ) {
+        if (!isWheel) {
+            const newMinDomain = scaleData?.drawingLinearxScale.invert(
+                scaleData?.drawingLinearxScale.range()[0] - deltaX,
+            );
+            const newMaxDomain = scaleData?.drawingLinearxScale.invert(
+                scaleData?.drawingLinearxScale.range()[1] - deltaX,
+            );
+
+            scaleData?.drawingLinearxScale.domain([newMinDomain, newMaxDomain]);
+        } else {
+            if (drawMouseX && lastCandleDate) {
+                const drawDomain = this.changeCandleSize(
+                    scaleData.drawingLinearxScale,
+                    deltaX,
+                    drawMouseX,
+                    lastCandleDate,
+                );
+                if (drawDomain) {
+                    const newMaxDomain = scaleData?.drawingLinearxScale.invert(
+                        scaleData?.drawingLinearxScale(drawDomain[1]) -
+                            deltaX / 10,
+                    );
+
+                    if (deltaX > 0) {
+                        scaleData?.drawingLinearxScale.domain([
+                            drawDomain[0],
+                            newMaxDomain < lastCandleDate
+                                ? lastCandleDate
+                                : newMaxDomain,
+                        ]);
+                    } else {
+                        scaleData?.drawingLinearxScale.domain([
+                            drawDomain[0],
+                            newMaxDomain,
+                        ]);
+                    }
+                }
+            }
+        }
     }
 
     private isNegativeZero(value: number) {
@@ -51,6 +102,7 @@ export class Zoom {
                 : event.deltaY / zoomSpeedFactor;
 
         const mouseX = scaleData?.xScale.invert(event.offsetX);
+        const drawMouseX = scaleData?.drawingLinearxScale.invert(event.offsetX);
 
         const isPressAltOrShiftKey =
             (event.shiftKey || event.altKey) &&
@@ -79,6 +131,7 @@ export class Zoom {
                     firstCandleDate,
                     lastCandleDate,
                     mouseX,
+                    drawMouseX,
                 );
             } else {
                 this.wheelWithoutPressKey(
@@ -91,7 +144,7 @@ export class Zoom {
             }
         } else {
             if (isPressCtrlOrMetaKey) {
-                this.wheelWithPressCtrlKey(dx, scaleData, mouseX);
+                this.wheelWithPressCtrlKey(dx, scaleData, mouseX, drawMouseX);
             } else {
                 if (isTouchPad) {
                     this.wheelWithoutPressKey(
@@ -108,6 +161,7 @@ export class Zoom {
                         firstCandleDate,
                         lastCandleDate,
                         mouseX,
+                        drawMouseX,
                     );
                 }
             }
@@ -118,12 +172,25 @@ export class Zoom {
         deltaX: number,
         scaleData: scaleData,
         mouseX: number,
+        drawMouseX?: number,
     ) {
         const beforeMinDomain = scaleData.xScale.domain()[0];
-        const domain = this.changeCandleSize(scaleData, deltaX, mouseX);
+        const domain = this.changeCandleSize(scaleData.xScale, deltaX, mouseX);
 
         if (domain) {
             scaleData?.xScale.domain(domain);
+        }
+
+        if (drawMouseX) {
+            const drawDomain = this.changeCandleSize(
+                scaleData.drawingLinearxScale,
+                deltaX,
+                drawMouseX,
+            );
+
+            if (drawDomain) {
+                scaleData?.drawingLinearxScale.domain(drawDomain);
+            }
         }
 
         this.getNewCandleDataLeftWithRight(scaleData, beforeMinDomain);
@@ -135,6 +202,7 @@ export class Zoom {
         firstCandleDate: number,
         lastCandleDate: number,
         mouseX: number,
+        drawMouseX?: number,
     ) {
         const newMinDomain = scaleData?.xScale.invert(
             scaleData?.xScale.range()[0] - deltaX,
@@ -148,7 +216,7 @@ export class Zoom {
             this.getNewCandleDataLeft(newMinDomain, firstCandleDate);
 
             const domain = this.changeCandleSize(
-                scaleData,
+                scaleData.xScale,
                 deltaX,
                 mouseX,
                 lastCandleDate,
@@ -168,6 +236,16 @@ export class Zoom {
                 } else {
                     scaleData?.xScale.domain([domain[0], newMaxDomain]);
                 }
+            }
+
+            if (drawMouseX) {
+                this.calculateDrawingDomains(
+                    deltaX,
+                    scaleData,
+                    true,
+                    drawMouseX,
+                    lastCandleDate,
+                );
             }
         }
     }
@@ -193,6 +271,8 @@ export class Zoom {
                 this.getNewCandleDataRight(scaleData, lastCandleDate);
             }
         }
+
+        this.calculateDrawingDomains(deltaX, scaleData, false);
 
         scaleData?.xScale.domain([newMinDomain, newMaxDomain]);
     }
@@ -241,7 +321,7 @@ export class Zoom {
 
     public changeCandleSize(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        scaleData: any,
+        scale: any,
         deltaX: number,
         mouseX: number,
         zoomCandle?: number | Date,
@@ -250,22 +330,19 @@ export class Zoom {
             ? zoomCandle
             : findSnapTime(mouseX, this.period);
 
-        const domain = scaleData.xScale.domain();
-        const pixelPoint = scaleData.xScale(point);
-        const maxDomainPixel = scaleData.xScale(domain[1]);
-        const minDomainPixel = scaleData.xScale(domain[0]);
+        const domain = scale.domain();
+        const pixelPoint = scale(point);
+        const maxDomainPixel = scale(domain[1]);
+        const minDomainPixel = scale(domain[0]);
         const gapRight = maxDomainPixel - pixelPoint;
         const gapLeft = pixelPoint - minDomainPixel;
 
         const zoomPixelMax = (deltaX * gapRight) / (gapLeft + gapRight);
         const zoomPixelMin = (deltaX * gapLeft) / (gapLeft + gapRight);
 
-        const newMinDomain = scaleData.xScale.invert(
-            scaleData.xScale.range()[0] - zoomPixelMin,
-        );
-        const newMaxDomain = scaleData.xScale.invert(
-            scaleData.xScale.range()[1] + zoomPixelMax,
-        );
+        const newMinDomain = scale.invert(scale.range()[0] - zoomPixelMin);
+        const newMaxDomain = scale.invert(scale.range()[1] + zoomPixelMax);
+
         return [newMinDomain, newMaxDomain];
     }
 
@@ -390,7 +467,7 @@ export class Zoom {
             const point = firstTouch - (firstTouch - secondTouch) / 2;
 
             const domain = this.changeCandleSize(
-                scaleData,
+                scaleData.xScale,
                 deltaX,
                 firstTouch,
                 point,

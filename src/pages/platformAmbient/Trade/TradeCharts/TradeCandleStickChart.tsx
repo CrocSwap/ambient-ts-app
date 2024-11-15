@@ -842,6 +842,7 @@ function TradeCandleStickChart(props: propsIF) {
                         !isShowLatestCandle
                     ) {
                         scaleData.xScale.domain([domainLeft, domainRight]);
+                        console.log('nedir')
                         scaleData.drawingLinearxScale.domain([domainLeft, domainRight]);
 
                         let nCandles = Math.floor(

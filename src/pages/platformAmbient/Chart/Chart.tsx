@@ -785,8 +785,13 @@ export default function Chart(props: propsIF) {
     const debouncedGetNewCandleDataRight = useDebounce(localCandleDomains, 500);
 
     const zoomBase = useMemo(() => {
-        return new Zoom(setLocalCandleDomains, period, isCondensedModeEnabled);
-    }, [period, isCondensedModeEnabled]);
+        return new Zoom(
+            setLocalCandleDomains,
+            period,
+            isCondensedModeEnabled,
+            timeGaps,
+        );
+    }, [period, isCondensedModeEnabled, timeGaps]);
 
     useEffect(() => {
         useHandleSwipeBack(d3Container, toolbarRef);
@@ -970,7 +975,6 @@ export default function Chart(props: propsIF) {
                                     );
                                 }
                                 scaleData.xScale.domain([min, maxDom]);
-                                scaleData.drawingLinearxScale.domain([min, maxDom]);
 
                                 element.isAddedPixel = true;
                             }
@@ -3132,7 +3136,10 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
-                    scaleData?.drawingLinearxScale.range([0, event.detail.width]);
+                    scaleData?.drawingLinearxScale.range([
+                        0,
+                        event.detail.width,
+                    ]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     ctx.setLineDash([4, 2]);
                     crosshairVerticalCanvas.context(ctx);
@@ -3149,7 +3156,7 @@ export default function Chart(props: propsIF) {
     ]);
 
     const circleSeries = createCircle(
-        scaleData?.xScale,
+        scaleData?.drawingLinearxScale,
         scaleData?.yScale,
         60,
         0.5,
@@ -3157,7 +3164,7 @@ export default function Chart(props: propsIF) {
     );
 
     const selectedCircleSeries = createCircle(
-        scaleData?.xScale,
+        scaleData?.drawingLinearxScale,
         scaleData?.yScale,
         80,
         0.5,
@@ -3226,8 +3233,12 @@ export default function Chart(props: propsIF) {
                                     item.type === 'DPRange'
                                 ) {
                                     const range = [
-                                        scaleData?.drawingLinearxScale(item.data[0].x),
-                                        scaleData?.drawingLinearxScale(item.data[1].x),
+                                        scaleData?.drawingLinearxScale(
+                                            item.data[0].x,
+                                        ),
+                                        scaleData?.drawingLinearxScale(
+                                            item.data[1].x,
+                                        ),
                                     ];
 
                                     bandArea.xScale().range(range);
@@ -3431,7 +3442,9 @@ export default function Chart(props: propsIF) {
                                         );
 
                                         const width = Math.abs(
-                                            scaleData.drawingLinearxScale(item.data[0].x) -
+                                            scaleData.drawingLinearxScale(
+                                                item.data[0].x,
+                                            ) -
                                                 scaleData.drawingLinearxScale(
                                                     item.data[1].x,
                                                 ),
@@ -3608,7 +3621,7 @@ export default function Chart(props: propsIF) {
                                             const showCandleCount =
                                                 getCandleCount(
                                                     scaleData.drawingLinearxScale,
-                                                    visibleCandleData,
+                                                    unparsedCandleData,
                                                     [min, max],
                                                     period,
                                                     isCondensedModeEnabled,
@@ -3682,14 +3695,18 @@ export default function Chart(props: propsIF) {
                                 if (item.type === 'Ray') {
                                     rayLine
                                         .xScale()
-                                        .domain(scaleData.drawingLinearxScale.domain());
+                                        .domain(
+                                            scaleData.drawingLinearxScale.domain(),
+                                        );
 
                                     rayLine
                                         .yScale()
                                         .domain(scaleData.yScale.domain());
 
                                     const range = [
-                                        scaleData.drawingLinearxScale(item.data[0].x),
+                                        scaleData.drawingLinearxScale(
+                                            item.data[0].x,
+                                        ),
                                         scaleData.drawingLinearxScale.range()[1],
                                     ];
 
@@ -3872,17 +3889,18 @@ export default function Chart(props: propsIF) {
                                             lineMeasures &&
                                             ctx
                                         ) {
-                                            const buffer = scaleData.drawingLinearxScale(
-                                                Math.min(
-                                                    lineData[0].x,
-                                                    lineData[1].x,
-                                                ) +
-                                                    Math.abs(
-                                                        lineData[0].x -
-                                                            lineData[1].x,
-                                                    ) /
-                                                        2,
-                                            );
+                                            const buffer =
+                                                scaleData.drawingLinearxScale(
+                                                    Math.min(
+                                                        lineData[0].x,
+                                                        lineData[1].x,
+                                                    ) +
+                                                        Math.abs(
+                                                            lineData[0].x -
+                                                                lineData[1].x,
+                                                        ) /
+                                                            2,
+                                                );
 
                                             ctx.save();
                                             ctx.beginPath();
@@ -4025,7 +4043,9 @@ export default function Chart(props: propsIF) {
                                             }
 
                                             const linePlacement =
-                                                scaleData.drawingLinearxScale(location) +
+                                                scaleData.drawingLinearxScale(
+                                                    location,
+                                                ) +
                                                 (alignment === 'right'
                                                     ? -10
                                                     : alignment === 'left'
@@ -4231,7 +4251,10 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
-                    scaleData?.drawingLinearxScale.range([0, event.detail.width]);
+                    scaleData?.drawingLinearxScale.range([
+                        0,
+                        event.detail.width,
+                    ]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     ctx.setLineDash([5, 3]);
                     marketLine.context(ctx);
@@ -5092,8 +5115,8 @@ export default function Chart(props: propsIF) {
 
                         const dpRangeTooltipData: lineData[] = [
                             {
-                                x: scaleData.xScale.invert(
-                                    scaleData.xScale(
+                                x: scaleData.drawingLinearxScale.invert(
+                                    scaleData.drawingLinearxScale(
                                         Math.min(
                                             element.data[0].x,
                                             element.data[1].x,
@@ -5112,8 +5135,8 @@ export default function Chart(props: propsIF) {
                                 denomInBase: element.data[0].denomInBase,
                             },
                             {
-                                x: scaleData.xScale.invert(
-                                    scaleData.xScale(
+                                x: scaleData.drawingLinearxScale.invert(
+                                    scaleData.drawingLinearxScale(
                                         Math.min(
                                             element.data[0].x,
                                             element.data[1].x,
@@ -5813,7 +5836,7 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (scaleData) {
             const lineSeries = createLinearLineSeries(
-                scaleData?.xScale,
+                scaleData?.drawingLinearxScale,
                 scaleData?.yScale,
                 denomInBase,
             );
@@ -5821,7 +5844,7 @@ export default function Chart(props: propsIF) {
             setLineSeries(() => lineSeries);
 
             const annotationLineSeries = createAnnotationLineSeries(
-                scaleData?.xScale.copy(),
+                scaleData?.drawingLinearxScale.copy(),
                 scaleData?.yScale,
                 denomInBase,
             );
@@ -6172,7 +6195,9 @@ export default function Chart(props: propsIF) {
                         period={period}
                         crosshairData={crosshairData}
                         snapForCandle={snapForCandle}
-                        visibleCandleData={visibleCandleData}
+                        visibleCandleData={
+                            unparsedData.candles as Array<CandleDataChart>
+                        }
                         render={render}
                         zoomBase={zoomBase}
                         setIsChartZoom={setIsChartZoom}
