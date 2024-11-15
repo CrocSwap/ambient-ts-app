@@ -1,4 +1,4 @@
-import { AllVaultsServerIF, VaultIF } from '../../../ambient-utils/types';
+import { AllVaultsServerIF, UserVaultsServerIF, VaultIF } from '../../../ambient-utils/types';
 
 export class Vault implements VaultIF {
     id: string;
@@ -42,7 +42,10 @@ export class Vault implements VaultIF {
     balance: string|undefined;
     balanceAmount: string|undefined;
     balanceUsd: string|undefined;
-    constructor(v: VaultIF|AllVaultsServerIF) {
+    constructor(
+        v: VaultIF|AllVaultsServerIF,
+        userVault: UserVaultsServerIF | null | undefined
+    ) {
         this.id = v.id;
         this.createdAt = v.createdAt;
         this.updatedAt = v.updatedAt;
@@ -85,10 +88,17 @@ export class Vault implements VaultIF {
         type entryTuple = [string, string|undefined];
 
         const entries: entryTuple[] = Object.entries(v);
-        const findVal = (k: string): string|undefined => {
+        const findVal = (k: 'balance'|'balanceAmount'|'balanceUsd'): string|undefined => {
             const tuple: entryTuple|undefined = entries.find((e) => e[0] === k);
-            return tuple ? tuple[1] : undefined;
+            let output: string|undefined;
+            if (userVault) {
+                output = userVault[k];
+            } else if (tuple) {
+                output = tuple[1];
+            }
+            return output;
         }
+
         this.balance = findVal('balance');
         this.balanceAmount = findVal('balanceAmount');
         this.balanceUsd = findVal('balanceUsd');

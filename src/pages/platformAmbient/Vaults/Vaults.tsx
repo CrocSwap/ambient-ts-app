@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect, useMemo, useState } from 'react';
+import { memo, useContext, useEffect, useState } from 'react';
 import styles from './Vaults.module.css';
 import VaultRow from './VaultRow/VaultRow';
 import { AllVaultsServerIF, UserVaultsServerIF, VaultIF } from '../../../ambient-utils/types';
@@ -60,38 +60,6 @@ function Vaults() {
         getUserVaultData();
     }, []);
 
-    const vaultsForDOM = useMemo<VaultIF[] | undefined>(() => {
-        function decorateVault(v: AllVaultsServerIF): VaultIF {
-            const output: VaultIF = {
-                ...v,
-                balance: undefined,
-                balanceAmount: undefined,
-                balanceUsd: undefined,
-            };
-            if (userVaultData) {
-                const userVault: UserVaultsServerIF | undefined =
-                    userVaultData.find(
-                        (uV: UserVaultsServerIF) =>
-                            uV.vaultAddress.toLowerCase() ===
-                            v.address.toLowerCase(),
-                    );
-                if (userVault) {
-                    output.balance = userVault.balance;
-                    output.balanceAmount = userVault.balanceAmount;
-                    output.balanceUsd = userVault.balanceUsd;
-                }
-            }
-            return output;
-        }
-        let output: VaultIF[] | undefined;
-        if (allVaultsData && userVaultData) {
-            output = allVaultsData.map((v: AllVaultsServerIF) =>
-                decorateVault(v),
-            );
-        }
-        return output;
-    }, [allVaultsData, userVaultData]);
-
     // logic to fetch vault data from API
     useEffect(() => {
         // run the first fetch immediately
@@ -118,8 +86,8 @@ function Vaults() {
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
-                    {(vaultsForDOM ?? mockAllVaultsData) && 
-                            (vaultsForDOM ?? mockAllVaultsData).sort(
+                    {(allVaultsData ?? mockAllVaultsData) && 
+                            (allVaultsData ?? mockAllVaultsData).sort(
                             (a: VaultIF|AllVaultsServerIF, b: VaultIF|AllVaultsServerIF) =>
                                 parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
                         )
@@ -133,7 +101,16 @@ function Vaults() {
                                 <VaultRow
                                     key={KEY_SLUG + vault.address}
                                     idForDOM={KEY_SLUG + vault.address}
-                                    vault={new Vault(vault)}
+                                    vault={
+                                        new Vault(
+                                            vault,
+                                            userVaultData?.find(
+                                                (uV: UserVaultsServerIF) =>
+                                                    uV.vaultAddress.toLowerCase() ===
+                                                    vault.address.toLowerCase(),
+                                            )
+                                        )
+                                    }
                                 />
                             );
                         })}
