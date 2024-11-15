@@ -41,12 +41,13 @@ export default function VaultRow(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
     const { crocEnv } = useContext(CrocEnvContext);
-    const {
-        isUserConnected,
+    const { isUserConnected,
         // userAddress
     } = useContext(UserDataContext);
     const { sessionReceipts } = useContext(ReceiptContext);
-const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
+
+    const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
+
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
@@ -79,13 +80,14 @@ const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
 
     const balDisplay = useMemo<string>(() => {
         const rawValue = vault.balance ?? crocEnvBal;
-        const output: string = (rawValue && mainAsset)
-            ? getFormattedNumber({
-                value: parseFloat(
-                    toDisplayQty(rawValue, mainAsset.decimals),
-                ),
-            })
-          : '...';
+        const output: string =
+            rawValue && mainAsset
+                ? getFormattedNumber({
+                      value: parseFloat(
+                          toDisplayQty(rawValue, mainAsset.decimals),
+                      ),
+                  })
+                : '...';
         return output;
     }, [vault.balance, crocEnvBal, mainAsset]);
 
@@ -181,7 +183,11 @@ const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
             <VaultWithdraw
                 mainAsset={mainAsset}
                 vault={vault}
-                balanceMainAsset={(vault.balance && BigInt(vault.balance)) || crocEnvBal || undefined}
+                balanceMainAsset={
+                    (vault.balance && BigInt(vault.balance)) ||
+                    crocEnvBal ||
+                    undefined
+                }
                 mainAssetBalanceDisplayQty={balDisplay}
                 onClose={closeModal}
             />
@@ -237,14 +243,15 @@ const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
                                 Deposit
                             </button>
 
-                            {isUserConnected && !!(vault.balance || crocEnvBal) && (
-                                <button
-                                    className={styles.actionButton}
-                                    onClick={handleOpenWithdrawModal}
-                                >
-                                    Withdraw
-                                </button>
-                            )}
+                            {isUserConnected &&
+                                !!(vault.balance || crocEnvBal) && (
+                                    <button
+                                        className={styles.actionButton}
+                                        onClick={handleOpenWithdrawModal}
+                                    >
+                                        Withdraw
+                                    </button>
+                                )}
                         </div>
                     </div>
                 </div>

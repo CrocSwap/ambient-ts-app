@@ -1,8 +1,16 @@
 import { memo, useContext, useEffect, useState } from 'react';
 import styles from './Vaults.module.css';
 import VaultRow from './VaultRow/VaultRow';
-import { AllVaultsServerIF, UserVaultsServerIF, VaultIF } from '../../../ambient-utils/types';
-import { AppStateContext, ReceiptContext } from '../../../contexts';
+import {
+    AllVaultsServerIF,
+    UserVaultsServerIF,
+    VaultIF,
+} from '../../../ambient-utils/types';
+import {
+    AppStateContext,
+    ReceiptContext,
+    UserDataContext,
+} from '../../../contexts';
 import { VAULTS_API_URL } from '../../../ambient-utils/constants';
 import { mockAllVaultsData } from './mockVaultData';
 import { Vault } from './Vault';
@@ -17,6 +25,8 @@ function Vaults() {
         isUserIdle,
     } = useContext(AppStateContext);
     const { sessionReceipts } = useContext(ReceiptContext);
+
+    const { userAddress } = useContext(UserDataContext);
 
     const vaultHeader = (
         <div className={styles.vaultHeader}>
@@ -49,7 +59,9 @@ function Vaults() {
     const [userVaultData, setUserVaultData] = useState<
         UserVaultsServerIF[] | null | undefined
     >(null);
+
     async function getUserVaultData(): Promise<void> {
+        // const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=${userAddress}`;
         const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc`;
         const response = await fetch(endpoint);
         const { data } = await response.json();
@@ -58,7 +70,7 @@ function Vaults() {
 
     useEffect(() => {
         getUserVaultData();
-    }, []);
+    }, [chainId, userAddress, sessionReceipts.length]);
 
     // logic to fetch vault data from API
     useEffect(() => {
@@ -86,35 +98,39 @@ function Vaults() {
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
-                    {(allVaultsData ?? mockAllVaultsData) && 
-                            (allVaultsData ?? mockAllVaultsData).sort(
-                            (a: VaultIF|AllVaultsServerIF, b: VaultIF|AllVaultsServerIF) =>
-                                parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
-                        )
-                        .filter(
-                            (vault) =>
-                                Number(vault.chainId) === Number(chainId),
-                        )
-                        .map((vault: VaultIF|AllVaultsServerIF) => {
-                            const KEY_SLUG = 'vault_row_';
-                            return (
-                                <VaultRow
-                                    key={KEY_SLUG + vault.address}
-                                    idForDOM={KEY_SLUG + vault.address}
-                                    vault={
-                                        new Vault(
-                                            vault,
-                                            userVaultData?.find(
-                                                (uV: UserVaultsServerIF) =>
-                                                    uV.vaultAddress.toLowerCase() ===
-                                                    vault.address.toLowerCase(),
+                    {(allVaultsData ?? mockAllVaultsData) &&
+                        (allVaultsData ?? mockAllVaultsData)
+                            .sort(
+                                (
+                                    a: VaultIF | AllVaultsServerIF,
+                                    b: VaultIF | AllVaultsServerIF,
+                                ) =>
+                                    parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
+                            )
+                            .filter(
+                                (vault) =>
+                                    Number(vault.chainId) === Number(chainId),
+                            )
+                            .map((vault: VaultIF | AllVaultsServerIF) => {
+                                const KEY_SLUG = 'vault_row_';
+                                return (
+                                    <VaultRow
+                                        key={KEY_SLUG + vault.address}
+                                        idForDOM={KEY_SLUG + vault.address}
+                                        vault={
+                                            new Vault(
+                                                vault,
+                                                userVaultData?.find(
+                                                    (uV: UserVaultsServerIF) =>
+                                                        uV.vaultAddress.toLowerCase() ===
+                                                        vault.address.toLowerCase(),
+                                                ),
                                             )
-                                        )
-                                    }
-                                    needsFallbackQuery={userVaultData === undefined}
-                                />
-                            );
-                        })}
+                                        }
+                                        needsFallbackQuery={userVaultData === undefined}
+                                    />
+                                );
+                            })}
                 </div>
             </div>
         </div>
