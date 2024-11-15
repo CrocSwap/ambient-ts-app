@@ -4881,9 +4881,9 @@ export default function Chart(props: propsIF) {
             const distance = distanceToLine(
                 mouseX,
                 mouseY,
-                scaleData.xScale(startX),
+                scaleData.drawingLinearxScale(startX),
                 scaleData.yScale(startY),
-                scaleData.xScale(endX),
+                scaleData.drawingLinearxScale(endX),
                 scaleData.yScale(endY),
             );
 
@@ -4920,8 +4920,8 @@ export default function Chart(props: propsIF) {
             const endX = Math.max(element[0].x, element[1].x);
 
             if (
-                mouseX > scaleData.xScale(startX) - threshold &&
-                mouseX < scaleData.xScale(endX) + threshold &&
+                mouseX > scaleData.drawingLinearxScale(startX) - threshold &&
+                mouseX < scaleData.drawingLinearxScale(endX) + threshold &&
                 mouseY < scaleData.yScale(startY) + threshold &&
                 mouseY > scaleData.yScale(endY) - threshold
             ) {
@@ -4944,7 +4944,7 @@ export default function Chart(props: propsIF) {
                 element[0].denomInBase === denomInBase
                     ? element[0].y
                     : 1 / element[0].y;
-            const endX = scaleData.xScale.domain()[1];
+            const endX = scaleData.drawingLinearxScale.domain()[1];
             const endY =
                 element[0].denomInBase === denomInBase
                     ? element[0].y
@@ -4954,9 +4954,9 @@ export default function Chart(props: propsIF) {
             const distance = distanceToLine(
                 mouseX,
                 mouseY,
-                scaleData.xScale(startX),
+                scaleData.drawingLinearxScale(startX),
                 scaleData.yScale(startY),
-                scaleData.xScale(endX),
+                scaleData.drawingLinearxScale(endX),
                 scaleData.yScale(endY),
             );
 
@@ -5009,8 +5009,8 @@ export default function Chart(props: propsIF) {
 
             const startX = fibLineData[0][0].x;
             const endX = fibLineData[0][1].x;
-            const tempStartXLocation = scaleData.xScale(startX);
-            const tempEndXLocation = scaleData.xScale(endX);
+            const tempStartXLocation = scaleData.drawingLinearxScale(startX);
+            const tempEndXLocation = scaleData.drawingLinearxScale(endX);
 
             const threshold = 10;
 

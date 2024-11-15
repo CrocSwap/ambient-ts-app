@@ -99,9 +99,9 @@ export function checkCircleLocation(
     if (data && scaleData) {
         for (let i = 0; i < data.length; i++) {
             if (
-                scaleData.xScale(data[i].x) < mouseX + circleDiameter &&
+                scaleData.drawingLinearxScale(data[i].x) < mouseX + circleDiameter &&
                 scaleData.yScale(data[i].y) < mouseY + circleDiameter &&
-                scaleData.xScale(data[i].x) > mouseX - circleDiameter &&
+                scaleData.drawingLinearxScale(data[i].x) > mouseX - circleDiameter &&
                 scaleData.yScale(data[i].y) > mouseY - circleDiameter
             ) {
                 result = data[i];

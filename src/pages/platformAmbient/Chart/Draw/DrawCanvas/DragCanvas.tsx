@@ -125,90 +125,76 @@ export default function DragCanvas(props: DragCanvasProps) {
         includeY = true,
     ) {
         let valueY = scaleData?.yScale.invert(offsetY);
-        const nearest = snapForCandle(offsetX, visibleCandleData);
 
-        if (nearest && includeY) {
-            const high = denomInBase
-                ? nearest?.invMinPriceExclMEVDecimalCorrected
-                : nearest?.minPriceExclMEVDecimalCorrected;
+        if (isMagnetActive.value) {
+            const nearest = snapForCandle(offsetX, visibleCandleData);
 
-            const low = denomInBase
-                ? nearest?.invMaxPriceExclMEVDecimalCorrected
-                : nearest?.maxPriceExclMEVDecimalCorrected;
+            if (nearest && includeY) {
+                const high = denomInBase
+                    ? nearest?.invMinPriceExclMEVDecimalCorrected
+                    : nearest?.minPriceExclMEVDecimalCorrected;
 
-            const open = denomInBase
-                ? nearest.invPriceOpenExclMEVDecimalCorrected
-                : nearest.priceOpenExclMEVDecimalCorrected;
+                const low = denomInBase
+                    ? nearest?.invMaxPriceExclMEVDecimalCorrected
+                    : nearest?.maxPriceExclMEVDecimalCorrected;
 
-            const close = denomInBase
-                ? nearest.invPriceCloseExclMEVDecimalCorrected
-                : nearest.priceCloseExclMEVDecimalCorrected;
+                const open = denomInBase
+                    ? nearest.invPriceOpenExclMEVDecimalCorrected
+                    : nearest.priceOpenExclMEVDecimalCorrected;
 
-            const highToCoordinat = scaleData.yScale(high);
-            const lowToCoordinat = scaleData.yScale(low);
-            const openToCoordinat = scaleData.yScale(open);
-            const closeToCoordinat = scaleData.yScale(close);
+                const close = denomInBase
+                    ? nearest.invPriceCloseExclMEVDecimalCorrected
+                    : nearest.priceCloseExclMEVDecimalCorrected;
 
-            const highDiff = Math.abs(offsetY - highToCoordinat);
-            const lowDiff = Math.abs(offsetY - lowToCoordinat);
-            const openDiff = Math.abs(offsetY - openToCoordinat);
-            const closeDiff = Math.abs(offsetY - closeToCoordinat);
+                const highToCoordinat = scaleData.yScale(high);
+                const lowToCoordinat = scaleData.yScale(low);
+                const openToCoordinat = scaleData.yScale(open);
+                const closeToCoordinat = scaleData.yScale(close);
 
-            if (
-                isMagnetActive.value &&
-                (highDiff <= 100 ||
+                const highDiff = Math.abs(offsetY - highToCoordinat);
+                const lowDiff = Math.abs(offsetY - lowToCoordinat);
+                const openDiff = Math.abs(offsetY - openToCoordinat);
+                const closeDiff = Math.abs(offsetY - closeToCoordinat);
+
+                if (
+                    highDiff <= 100 ||
                     lowDiff <= 100 ||
                     openDiff <= 100 ||
-                    closeDiff <= 100)
-            ) {
-                const minDiffForYValue = Math.min(
-                    openDiff,
-                    closeDiff,
-                    lowDiff,
-                    highDiff,
-                );
+                    closeDiff <= 100
+                ) {
+                    const minDiffForYValue = Math.min(
+                        openDiff,
+                        closeDiff,
+                        lowDiff,
+                        highDiff,
+                    );
 
-                switch (minDiffForYValue) {
-                    case highDiff:
-                        valueY = high;
-                        break;
+                    switch (minDiffForYValue) {
+                        case highDiff:
+                            valueY = high;
+                            break;
 
-                    case lowDiff:
-                        valueY = low;
-                        break;
-                    case openDiff:
-                        valueY = open;
-                        break;
+                        case lowDiff:
+                            valueY = low;
+                            break;
+                        case openDiff:
+                            valueY = open;
+                            break;
 
-                    case closeDiff:
-                        valueY = close;
-                        break;
+                        case closeDiff:
+                            valueY = close;
+                            break;
+                    }
                 }
             }
         }
 
         const snappedTime = findSnapTime(
-            scaleData?.xScale.invert(offsetX),
+            scaleData?.drawingLinearxScale.invert(offsetX),
             period,
         );
 
-        let valueX = snappedTime;
-
-        const checkVisibleCandle = visibleCandleData.length === 0;
-
-        if (!checkVisibleCandle && nearest) {
-            const lastDateLocation = scaleData.xScale(
-                visibleCandleData[0].time * 1000,
-            );
-
-            const firstDateLocation = scaleData.xScale(
-                visibleCandleData[visibleCandleData.length - 1].time * 1000,
-            );
-
-            if (offsetX < lastDateLocation && offsetX > firstDateLocation) {
-                valueX = nearest.time * 1000;
-            }
-        }
+        const valueX = snappedTime;
 
         return { valueX: valueX, valueY: valueY };
     }
@@ -241,12 +227,14 @@ export default function DragCanvas(props: DragCanvasProps) {
 
             if (firstPoint > 0 && secondPoint > 0) {
                 const calPoint0 =
-                    scaleData.xScale(hoveredDrawnShape?.data?.data[0].x) +
-                    movementX;
+                    scaleData.drawingLinearxScale(
+                        hoveredDrawnShape?.data?.data[0].x,
+                    ) + movementX;
 
                 const calPoint1 =
-                    scaleData.xScale(hoveredDrawnShape.data.data[1].x) +
-                    movementX;
+                    scaleData.drawingLinearxScale(
+                        hoveredDrawnShape.data.data[1].x,
+                    ) + movementX;
 
                 const snap0 = getXandYvalueOfDrawnShape(calPoint0, 1, false);
                 const snap1 = getXandYvalueOfDrawnShape(calPoint1, 1, false);
@@ -579,10 +567,12 @@ export default function DragCanvas(props: DragCanvasProps) {
 
                         const shouldSnap =
                             movementX < 0
-                                ? valueX > scaleData.xScale.invert(offsetX)
-                                : valueX < scaleData.xScale.invert(offsetX);
+                                ? valueX >
+                                  scaleData.drawingLinearxScale.invert(offsetX)
+                                : valueX <
+                                  scaleData.drawingLinearxScale.invert(offsetX);
 
-                        setCrossHairDataFunc(valueX,offsetX,offsetY);
+                        setCrossHairDataFunc(valueX, offsetX, offsetY);
 
                         if (
                             hoveredDrawnShape &&

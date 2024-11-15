@@ -134,7 +134,10 @@ function DrawCanvas(props: DrawCanvasProps) {
     function createScaleForBandArea(x: number, x2: number) {
         const newXScale = scaleData?.drawingLinearxScale.copy();
 
-        newXScale.range([scaleData?.drawingLinearxScale(x), scaleData?.drawingLinearxScale(x2)]);
+        newXScale.range([
+            scaleData?.drawingLinearxScale(x),
+            scaleData?.drawingLinearxScale(x2),
+        ]);
 
         return newXScale;
     }
@@ -209,64 +212,65 @@ function DrawCanvas(props: DrawCanvasProps) {
     function getXandYvalueOfDrawnShape(offsetX: number, offsetY: number) {
         let valueY = scaleData?.yScale.invert(offsetY);
 
-        const nearest = snapForCandle(offsetX, visibleCandleData);
+        if (isMagnetActive.value) {
+            const nearest = snapForCandle(offsetX, visibleCandleData);
 
-        if (nearest) {
-            const high = denomInBase
-                ? nearest?.invMinPriceExclMEVDecimalCorrected
-                : nearest?.minPriceExclMEVDecimalCorrected;
+            if (nearest) {
+                const high = denomInBase
+                    ? nearest?.invMinPriceExclMEVDecimalCorrected
+                    : nearest?.minPriceExclMEVDecimalCorrected;
 
-            const low = denomInBase
-                ? nearest?.invMaxPriceExclMEVDecimalCorrected
-                : nearest?.maxPriceExclMEVDecimalCorrected;
+                const low = denomInBase
+                    ? nearest?.invMaxPriceExclMEVDecimalCorrected
+                    : nearest?.maxPriceExclMEVDecimalCorrected;
 
-            const open = denomInBase
-                ? nearest.invPriceOpenExclMEVDecimalCorrected
-                : nearest.priceOpenExclMEVDecimalCorrected;
+                const open = denomInBase
+                    ? nearest.invPriceOpenExclMEVDecimalCorrected
+                    : nearest.priceOpenExclMEVDecimalCorrected;
 
-            const close = denomInBase
-                ? nearest.invPriceCloseExclMEVDecimalCorrected
-                : nearest.priceCloseExclMEVDecimalCorrected;
+                const close = denomInBase
+                    ? nearest.invPriceCloseExclMEVDecimalCorrected
+                    : nearest.priceCloseExclMEVDecimalCorrected;
 
-            const highToCoordinat = scaleData.yScale(high);
-            const lowToCoordinat = scaleData.yScale(low);
-            const openToCoordinat = scaleData.yScale(open);
-            const closeToCoordinat = scaleData.yScale(close);
+                const highToCoordinat = scaleData.yScale(high);
+                const lowToCoordinat = scaleData.yScale(low);
+                const openToCoordinat = scaleData.yScale(open);
+                const closeToCoordinat = scaleData.yScale(close);
 
-            const highDiff = Math.abs(offsetY - highToCoordinat);
-            const lowDiff = Math.abs(offsetY - lowToCoordinat);
-            const openDiff = Math.abs(offsetY - openToCoordinat);
-            const closeDiff = Math.abs(offsetY - closeToCoordinat);
+                const highDiff = Math.abs(offsetY - highToCoordinat);
+                const lowDiff = Math.abs(offsetY - lowToCoordinat);
+                const openDiff = Math.abs(offsetY - openToCoordinat);
+                const closeDiff = Math.abs(offsetY - closeToCoordinat);
 
-            if (
-                isMagnetActive.value &&
-                (highDiff <= 100 ||
+                if (
+                    highDiff <= 100 ||
                     lowDiff <= 100 ||
                     openDiff <= 100 ||
-                    closeDiff <= 100)
-            ) {
-                const minDiffForYValue = Math.min(
-                    openDiff,
-                    closeDiff,
-                    lowDiff,
-                    highDiff,
-                );
+                    closeDiff <= 100
+                ) {
+                    const minDiffForYValue = Math.min(
+                        openDiff,
+                        closeDiff,
+                        lowDiff,
+                        highDiff,
+                    );
 
-                switch (minDiffForYValue) {
-                    case highDiff:
-                        valueY = high;
-                        break;
+                    switch (minDiffForYValue) {
+                        case highDiff:
+                            valueY = high;
+                            break;
 
-                    case lowDiff:
-                        valueY = low;
-                        break;
-                    case openDiff:
-                        valueY = open;
-                        break;
+                        case lowDiff:
+                            valueY = low;
+                            break;
+                        case openDiff:
+                            valueY = open;
+                            break;
 
-                    case closeDiff:
-                        valueY = close;
-                        break;
+                        case closeDiff:
+                            valueY = close;
+                            break;
+                    }
                 }
             }
         }
@@ -276,25 +280,9 @@ function DrawCanvas(props: DrawCanvasProps) {
             period,
         );
 
-        let valueX = snappedTime;
+        const valueX = snappedTime;
 
-        const checkVisibleCandle = visibleCandleData.length === 0;
-
-        if (!checkVisibleCandle && nearest) {
-            const lastDateLocation = scaleData.drawingLinearxScale(
-                visibleCandleData[0].time * 1000,
-            );
-
-            const firstDateLocation = scaleData.drawingLinearxScale(
-                visibleCandleData[visibleCandleData.length - 1].time * 1000,
-            );
-
-            if (offsetX < lastDateLocation && offsetX > firstDateLocation) {
-                valueX = nearest.time * 1000;
-            }
-        }
-
-        return { valueX: valueX, valueY: valueY, nearest: nearest };
+        return { valueX: valueX, valueY: valueY };
     }
 
     useEffect(() => {
@@ -407,8 +395,12 @@ function DrawCanvas(props: DrawCanvasProps) {
                 );
 
                 if (activeDrawingType !== 'Ray') {
-                    const firstValueX = scaleData?.drawingLinearxScale(tempLineData[0].x);
-                    const firstValueY = scaleData?.drawingLinearxScale(tempLineData[0].y);
+                    const firstValueX = scaleData?.drawingLinearxScale(
+                        tempLineData[0].x,
+                    );
+                    const firstValueY = scaleData?.drawingLinearxScale(
+                        tempLineData[0].y,
+                    );
 
                     const checkThreshold = Math.hypot(
                         offsetX - firstValueX,
@@ -632,7 +624,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                             );
                             const side = Math.abs(
                                 scaleData.drawingLinearxScale(lineData[0].x) -
-                                    scaleData.drawingLinearxScale(lineData[1].x),
+                                    scaleData.drawingLinearxScale(
+                                        lineData[1].x,
+                                    ),
                             );
 
                             const distance = opposite / side;
@@ -642,14 +636,18 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     ? Math.abs(lineData[0].x - lineData[1].x) /
                                       4
                                     : scaleData.drawingLinearxScale.invert(
-                                          scaleData.drawingLinearxScale(lineData[0].x) + 80,
+                                          scaleData.drawingLinearxScale(
+                                              lineData[0].x,
+                                          ) + 80,
                                       ) - lineData[0].x;
 
                             const minAngleTextLength =
                                 lineData[0].x +
                                 minAngleLineLength +
                                 scaleData.drawingLinearxScale.invert(
-                                    scaleData.drawingLinearxScale(lineData[0].x) + 20,
+                                    scaleData.drawingLinearxScale(
+                                        lineData[0].x,
+                                    ) + 20,
                                 ) -
                                 lineData[0].x;
 
@@ -681,7 +679,8 @@ function DrawCanvas(props: DrawCanvasProps) {
                             const radius =
                                 scaleData.drawingLinearxScale(
                                     lineData[0].x + minAngleLineLength,
-                                ) - scaleData.drawingLinearxScale(lineData[0].x);
+                                ) -
+                                scaleData.drawingLinearxScale(lineData[0].x);
 
                             if (ctx) {
                                 ctx.setLineDash([5, 3]);
@@ -689,7 +688,9 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                                 ctx.beginPath();
                                 ctx.arc(
-                                    scaleData.drawingLinearxScale(lineData[0].x),
+                                    scaleData.drawingLinearxScale(
+                                        lineData[0].x,
+                                    ),
                                     scaleData.yScale(lineData[0].y),
                                     radius,
                                     arcX,
@@ -711,7 +712,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     (lineData[1].y > lineData[0].y ? '' : '-') +
                                         angleDisplay.toFixed(0).toString() +
                                         'º',
-                                    scaleData.drawingLinearxScale(minAngleTextLength),
+                                    scaleData.drawingLinearxScale(
+                                        minAngleTextLength,
+                                    ),
                                     scaleData.yScale(lineData[0].y),
                                 );
 
@@ -887,7 +890,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                             ctx.beginPath();
                             ctx.fillStyle = 'rgb(34,44,58)';
                             ctx.fillRect(
-                                scaleData.drawingLinearxScale(infoLabelXAxisData) -
+                                scaleData.drawingLinearxScale(
+                                    infoLabelXAxisData,
+                                ) -
                                     infoLabelWidth / 2,
                                 dpRangeLabelYPlacement,
                                 infoLabelWidth,
@@ -929,7 +934,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     heightAsPercentage.toString() +
                                     '%)  ' +
                                     dpRangeTickPrice,
-                                scaleData.drawingLinearxScale(infoLabelXAxisData),
+                                scaleData.drawingLinearxScale(
+                                    infoLabelXAxisData,
+                                ),
                                 dpRangeLabelYPlacement + 16,
                             );
 
@@ -945,7 +952,9 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                             ctx.fillText(
                                 showCandleCount + ' bars,  ' + lengthAsDate,
-                                scaleData.drawingLinearxScale(infoLabelXAxisData),
+                                scaleData.drawingLinearxScale(
+                                    infoLabelXAxisData,
+                                ),
                                 dpRangeLabelYPlacement + 33,
                             );
                             ctx.fillText(
@@ -953,7 +962,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     formatDollarAmountAxis(
                                         totalVolumeCovered,
                                     ).replace('$', ''),
-                                scaleData.drawingLinearxScale(infoLabelXAxisData),
+                                scaleData.drawingLinearxScale(
+                                    infoLabelXAxisData,
+                                ),
                                 dpRangeLabelYPlacement + 50,
                             );
                         }
