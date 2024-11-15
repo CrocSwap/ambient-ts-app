@@ -157,8 +157,14 @@ export default function rangeRowConstants(props: propsIF) {
     );
 
     const hiddenIDColumn = (
-        <RowItem hover data-label='hidden-id' role='button' style={{display: 'none'}} tabIndex={0}>
-             <span>{posHash.toString()}</span>
+        <RowItem
+            hover
+            data-label='hidden-id'
+            role='button'
+            style={{ display: 'none' }}
+            tabIndex={0}
+        >
+            <span>{posHash.toString()}</span>
         </RowItem>
     );
 
@@ -200,7 +206,7 @@ export default function rangeRowConstants(props: propsIF) {
                             onClick={handleWalletLinkClick}
                             style={{ cursor: 'pointer' }}
                         >
-                           {ownerId}
+                            {ownerId}
                         </Text>
                         <FiCopy
                             size={'12px'}
@@ -610,6 +616,6 @@ export default function rangeRowConstants(props: propsIF) {
         tokenValues,
         apyDisplay,
         rangeDisplay,
-        hiddenIDColumn
+        hiddenIDColumn,
     };
 }
