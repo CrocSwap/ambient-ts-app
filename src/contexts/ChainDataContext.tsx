@@ -388,116 +388,106 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 isUserConnected &&
                 userAddress &&
                 chainId &&
-                lastBlockNumber
+                everyFiveMinutes
             ) {
-                setTimeout(async () => {
-                    try {
-                        const combinedBalances: TokenIF[] = [];
+                try {
+                    const combinedBalances: TokenIF[] = [];
 
-                        console.log({ lastBlockNumber });
-                        // fetch wallet balances for tokens in ambient token list
-                        const AmbientListWalletBalances: TokenIF[] | undefined =
-                            await cachedFetchAmbientListWalletBalances({
-                                address: userAddress,
-                                chain: chainId,
-                                crocEnv: crocEnv,
-                                _refreshTime: lastBlockNumber,
-                            });
+                    // fetch wallet balances for tokens in ambient token list
+                    const AmbientListWalletBalances: TokenIF[] | undefined =
+                        await cachedFetchAmbientListWalletBalances({
+                            address: userAddress,
+                            chain: chainId,
+                            crocEnv: crocEnv,
+                            _refreshTime: everyFiveMinutes,
+                        });
 
-                        combinedBalances.push(...AmbientListWalletBalances);
+                    combinedBalances.push(...AmbientListWalletBalances);
 
-                        // fetch exchange balances and wallet balances for tokens in user's exchange balances
-                        const dexBalancesFromCache =
-                            await cachedFetchDexBalances({
-                                address: userAddress,
-                                chain: chainId,
-                                crocEnv: crocEnv,
-                                graphCacheUrl: graphCacheUrl,
-                                _refreshTime: lastBlockNumber,
-                            });
+                    // fetch exchange balances and wallet balances for tokens in user's exchange balances
+                    const dexBalancesFromCache = await cachedFetchDexBalances({
+                        address: userAddress,
+                        chain: chainId,
+                        crocEnv: crocEnv,
+                        graphCacheUrl: graphCacheUrl,
+                        _refreshTime: everyFiveMinutes,
+                    });
 
-                        if (dexBalancesFromCache !== undefined) {
-                            await Promise.all(
-                                dexBalancesFromCache.map(
-                                    async (
-                                        tokenBalances: IDexTokenBalances,
-                                    ) => {
-                                        const indexOfExistingToken = (
-                                            combinedBalances ?? []
-                                        ).findIndex(
-                                            (existingToken) =>
-                                                existingToken.address.toLowerCase() ===
-                                                tokenBalances.tokenAddress.toLowerCase(),
-                                        );
-                                        const newToken =
-                                            await expandTokenBalances(
-                                                tokenBalances,
-                                                tokens.tokenUniv,
-                                                cachedTokenDetails,
-                                                crocEnv,
-                                                chainId,
-                                            );
+                    if (dexBalancesFromCache !== undefined) {
+                        await Promise.all(
+                            dexBalancesFromCache.map(
+                                async (tokenBalances: IDexTokenBalances) => {
+                                    const indexOfExistingToken = (
+                                        combinedBalances ?? []
+                                    ).findIndex(
+                                        (existingToken) =>
+                                            existingToken.address.toLowerCase() ===
+                                            tokenBalances.tokenAddress.toLowerCase(),
+                                    );
+                                    const newToken = await expandTokenBalances(
+                                        tokenBalances,
+                                        tokens.tokenUniv,
+                                        cachedTokenDetails,
+                                        crocEnv,
+                                        chainId,
+                                    );
 
-                                        if (indexOfExistingToken === -1) {
-                                            const updatedToken = {
-                                                ...newToken,
-                                            };
-                                            combinedBalances.push(updatedToken);
-                                        } else {
-                                            const existingToken =
-                                                combinedBalances[
-                                                    indexOfExistingToken
-                                                ];
-
-                                            const updatedToken = {
-                                                ...existingToken,
-                                            };
-
-                                            updatedToken.dexBalance =
-                                                newToken.dexBalance;
-
+                                    if (indexOfExistingToken === -1) {
+                                        const updatedToken = {
+                                            ...newToken,
+                                        };
+                                        combinedBalances.push(updatedToken);
+                                    } else {
+                                        const existingToken =
                                             combinedBalances[
                                                 indexOfExistingToken
-                                            ] = updatedToken;
-                                        }
-                                    },
-                                ),
-                            );
-                        }
+                                            ];
 
-                        const tokensWithLogos = combinedBalances
-                            .filter((t) => {
-                                // Then check if token is in exclusion list
-                                return !hiddenTokens.some(
-                                    (excluded) =>
-                                        excluded.address.toLowerCase() ===
-                                            t.address.toLowerCase() &&
-                                        excluded.chainId === t.chainId,
-                                );
-                            })
-                            .map((token) => {
-                                const oldToken: TokenIF | undefined =
-                                    tokens.getTokenByAddress(token.address);
-                                const newToken = { ...token };
+                                        const updatedToken = {
+                                            ...existingToken,
+                                        };
 
-                                newToken.decimals =
-                                    oldToken?.decimals ||
-                                    newToken?.decimals ||
-                                    18;
-                                newToken.name =
-                                    oldToken?.name || newToken.name || '';
-                                newToken.logoURI =
-                                    oldToken?.logoURI || newToken.logoURI || '';
-                                newToken.symbol =
-                                    oldToken?.symbol || newToken.symbol || '';
-                                return newToken;
-                            });
-                        setTokenBalances(tokensWithLogos);
-                    } catch (error) {
-                        // setTokenBalances(undefined);
-                        console.error({ error });
+                                        updatedToken.dexBalance =
+                                            newToken.dexBalance;
+
+                                        combinedBalances[indexOfExistingToken] =
+                                            updatedToken;
+                                    }
+                                },
+                            ),
+                        );
                     }
-                }, 2000);
+
+                    const tokensWithLogos = combinedBalances
+                        .filter((t) => {
+                            // Then check if token is in exclusion list
+                            return !hiddenTokens.some(
+                                (excluded) =>
+                                    excluded.address.toLowerCase() ===
+                                        t.address.toLowerCase() &&
+                                    excluded.chainId === t.chainId,
+                            );
+                        })
+                        .map((token) => {
+                            const oldToken: TokenIF | undefined =
+                                tokens.getTokenByAddress(token.address);
+                            const newToken = { ...token };
+
+                            newToken.decimals =
+                                oldToken?.decimals || newToken?.decimals || 18;
+                            newToken.name =
+                                oldToken?.name || newToken.name || '';
+                            newToken.logoURI =
+                                oldToken?.logoURI || newToken.logoURI || '';
+                            newToken.symbol =
+                                oldToken?.symbol || newToken.symbol || '';
+                            return newToken;
+                        });
+                    setTokenBalances(tokensWithLogos);
+                } catch (error) {
+                    // setTokenBalances(undefined);
+                    console.error({ error });
+                }
             }
         })();
     }, [
