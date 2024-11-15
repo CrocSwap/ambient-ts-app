@@ -287,7 +287,7 @@ export default function VaultWithdraw(props: propsIF) {
                             ? submittedButtonTitle
                             : 'Remove Liquidity'
                     }
-                    disabled={showSubmitted}
+                    disabled={showSubmitted || balanceMainAsset === 0n}
                     action={() => submitWithdraw()}
                     flat
                 />
