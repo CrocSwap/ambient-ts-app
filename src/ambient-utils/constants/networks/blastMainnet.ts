@@ -41,9 +41,9 @@ export const blast: NetworkIF = {
     displayName: chainSpecForWalletConnector.name,
     topPools: [
         new TopPool(blastETH, blastUSDB, chainSpecFromSDK.poolIndex),
+        new TopPool(blastEzETH, blastETH, chainSpecFromSDK.poolIndex),
         new TopPool(blastBLAST, blastETH, chainSpecFromSDK.poolIndex),
         new TopPool(blastUSDPLUS, blastUSDB, chainSpecFromSDK.poolIndex),
-        new TopPool(blastEzETH, blastETH, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
