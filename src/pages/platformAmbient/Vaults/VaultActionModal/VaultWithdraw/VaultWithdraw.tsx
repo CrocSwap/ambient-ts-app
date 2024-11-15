@@ -248,26 +248,20 @@ export default function VaultWithdraw(props: propsIF) {
     const [editSlippageTolerance, setEditSlippageTolerance] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string>('');
     const validateAndSetSlippage = (value: string) => {
+        setTempSlippage(value);
+    
+        
         const numericValue = parseFloat(value);
-
         if (isNaN(numericValue)) {
             setErrorMessage('');
-            setTempSlippage('');
-            return;
-        }
-
-        if (numericValue < 0.1) {
-            setErrorMessage('Value cannot be less than 0.1.');
-            setTempSlippage('0.1');
         } else if (numericValue > 100) {
             setErrorMessage('Value cannot be greater than 100.');
-            setTempSlippage('100');
         } else {
-            setErrorMessage('');
-            setTempSlippage(value);
+            setErrorMessage(''); 
         }
     };
 
+    const [ borderColor, setBorderColor ] = useState(false)
 
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -275,15 +269,18 @@ export default function VaultWithdraw(props: propsIF) {
             const numericValue = parseFloat(tempSlippage);
             if (!isNaN(numericValue) && numericValue >= 0.1 && numericValue <= 100) {
                 setSlippageTolerance(numericValue);
+                setEditSlippageTolerance(false);
                 setErrorMessage('');
+                setBorderColor(false)
             } else {
-                setErrorMessage('Press Enter only when the value is between 0.1 and 100.');
+                setErrorMessage('Please enter a value between 0.5 and 100.');
+                setBorderColor(true)
             }
         }
     };
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        validateAndSetSlippage(e.target.value); // Pass the value directly
+        validateAndSetSlippage(e.target.value); 
     };
     
     
@@ -312,10 +309,13 @@ export default function VaultWithdraw(props: propsIF) {
             inputRefSlip.current.focus();
         }
     }, [editSlippageTolerance]);
+   
 
     const extraDetailsDisplay = (
         <>
-        <div className={styles.extraDetailsContainer}>
+            <div className={styles.extraDetailsContainer}
+            style={{border: borderColor ? '1px solid var(--other-red)' : ''}}
+            >
             <div className={styles.extraDetailsRow}>
                 <FlexContainer
                     flexDirection='row'
@@ -345,12 +345,13 @@ export default function VaultWithdraw(props: propsIF) {
                 step='any'
                 value={tempSlippage}
                 autoComplete='off'
-                placeholder='Enter Slippage Tolerance'
+                placeholder='0.5'
                 aria-label='Enter Slippage Tolerance'
                 disabled={!editSlippageTolerance}
                 ref={inputRefSlip}
-                min={0.1}
-                max={100}
+                min={0.5}
+                            max={100}
+                           
             />
                     <p>%</p>
                     <MdEdit
