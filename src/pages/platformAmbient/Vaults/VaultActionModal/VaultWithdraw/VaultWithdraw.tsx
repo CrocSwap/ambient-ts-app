@@ -31,14 +31,14 @@ import {
     isTransactionFailedError,
 } from '../../../../../utils/TransactionError';
 
-interface Props {
+interface propsIF {
     mainAsset: TokenIF;
     vault: AllVaultsServerIF;
     balanceMainAsset: bigint | undefined;
     mainAssetBalanceDisplayQty: string;
     onClose: () => void;
 }
-export default function VaultWithdraw(props: Props) {
+export default function VaultWithdraw(props: propsIF) {
     const {
         mainAsset,
         onClose,

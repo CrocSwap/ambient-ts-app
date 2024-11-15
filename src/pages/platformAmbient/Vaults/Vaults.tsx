@@ -4,6 +4,8 @@ import VaultRow from './VaultRow/VaultRow';
 import { AllVaultsServerIF, UserVaultsServerIF, VaultIF } from '../../../ambient-utils/types';
 import { AppStateContext, ReceiptContext } from '../../../contexts';
 import { VAULTS_API_URL } from '../../../ambient-utils/constants';
+import { mockAllVaultsData } from './mockVaultData';
+import { Vault } from './Vault';
 
 function Vaults() {
     // !important:  once we have mock data, change the type on this
@@ -40,7 +42,6 @@ function Vaults() {
             (a: AllVaultsServerIF, b: AllVaultsServerIF) =>
                 parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
         );
-        console.log(sorted);
         setAllVaultsData(sorted);
     }
 
@@ -91,8 +92,6 @@ function Vaults() {
         return output;
     }, [allVaultsData, userVaultData]);
 
-    console.log(vaultsForDOM);
-
     // logic to fetch vault data from API
     useEffect(() => {
         // run the first fetch immediately
@@ -119,22 +118,22 @@ function Vaults() {
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
-                    {vaultsForDOM && 
-                            vaultsForDOM.sort(
-                            (a: VaultIF, b: VaultIF) =>
+                    {(vaultsForDOM ?? mockAllVaultsData) && 
+                            (vaultsForDOM ?? mockAllVaultsData).sort(
+                            (a: VaultIF|AllVaultsServerIF, b: VaultIF|AllVaultsServerIF) =>
                                 parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
                         )
                         .filter(
                             (vault) =>
                                 Number(vault.chainId) === Number(chainId),
                         )
-                        .map((vault: VaultIF) => {
+                        .map((vault: VaultIF|AllVaultsServerIF) => {
                             const KEY_SLUG = 'vault_row_';
                             return (
                                 <VaultRow
                                     key={KEY_SLUG + vault.address}
                                     idForDOM={KEY_SLUG + vault.address}
-                                    vault={vault}
+                                    vault={new Vault(vault)}
                                 />
                             );
                         })}
