@@ -94,7 +94,7 @@ export default function VaultRow(props: propsIF) {
     const balDisplay = useMemo<string>(() => {
         const rawValue = vault.balance ?? crocEnvBal;
         const output: string =
-            rawValue && mainAsset
+            rawValue && mainAsset && userAddress
                 ? getFormattedNumber({
                       value: parseFloat(
                           toDisplayQty(rawValue, mainAsset.decimals),
@@ -102,7 +102,7 @@ export default function VaultRow(props: propsIF) {
                   })
                 : '...';
         return output;
-    }, [vault.balance, crocEnvBal, mainAsset]);
+    }, [vault.balance, crocEnvBal, mainAsset, userAddress]);
 
     if (
         Number(chainId) !== Number(vault.chainId) ||
@@ -149,7 +149,7 @@ export default function VaultRow(props: propsIF) {
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                 {balDisplay}
-                {!!crocEnvBal && (
+                {!!crocEnvBal && !!userAddress && (
                     <>
                         <TokenIcon
                             token={mainAsset}
