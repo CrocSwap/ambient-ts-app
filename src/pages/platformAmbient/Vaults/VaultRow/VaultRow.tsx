@@ -30,10 +30,11 @@ import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconW
 interface propsIF {
     idForDOM: string;
     vault: VaultIF;
+    needsFallbackQuery: boolean;
 }
 
 export default function VaultRow(props: propsIF) {
-    const { idForDOM, vault } = props;
+    const { idForDOM, vault, needsFallbackQuery } = props;
 
     const [isOpen, openModal, closeModal] = useModal();
     const [type, setType] = useState<'Deposit' | 'Withdraw'>('Deposit');
@@ -64,7 +65,8 @@ const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
     // useEffect to check if user has approved Tempest to sell token 1
     useEffect(() => {
         async function getCrocEnvBalance(): Promise<void> {
-            if (crocEnv && !vault.balanceAmount && userAddress) {
+            if (crocEnv && !vault.balanceAmount && userAddress && needsFallbackQuery) {
+                console.log('checking');
                 const tempestVault = crocEnv.tempestVault(
                     vault.address,
                     vault.mainAsset,

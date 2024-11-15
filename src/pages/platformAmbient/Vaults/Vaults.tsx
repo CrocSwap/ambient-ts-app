@@ -111,6 +111,7 @@ function Vaults() {
                                             )
                                         )
                                     }
+                                    needsFallbackQuery={userVaultData === undefined}
                                 />
                             );
                         })}
