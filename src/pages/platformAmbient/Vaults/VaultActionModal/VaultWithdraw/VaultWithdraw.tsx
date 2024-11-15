@@ -9,7 +9,7 @@ import styles from './VaultWithdraw.module.css';
 import TooltipComponent from '../../../../../components/Global/TooltipComponent/TooltipComponent';
 import Button from '../../../../../components/Form/Button';
 
-import { TokenIF, VaultIF } from '../../../../../ambient-utils/types';
+import { TokenIF, AllVaultsServerIF } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
 import { useContext, useEffect, useState } from 'react';
@@ -31,14 +31,14 @@ import {
     isTransactionFailedError,
 } from '../../../../../utils/TransactionError';
 
-interface Props {
+interface propsIF {
     mainAsset: TokenIF;
-    vault: VaultIF;
+    vault: AllVaultsServerIF;
     balanceMainAsset: bigint | undefined;
     mainAssetBalanceDisplayQty: string;
     onClose: () => void;
 }
-export default function VaultWithdraw(props: Props) {
+export default function VaultWithdraw(props: propsIF) {
     const {
         mainAsset,
         onClose,
