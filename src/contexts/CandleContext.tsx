@@ -27,6 +27,7 @@ import {
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
 import { chartSettingsIF } from '../App/hooks/useChartSettings';
 import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
+import { UserDataContext } from './UserDataContext';
 
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
@@ -73,6 +74,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         activeNetwork: { chainId, poolIndex, graphCacheUrl },
     } = useContext<AppStateContextIF>(AppStateContext);
     const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+
+    const { isUserConnected } = useContext(UserDataContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -116,6 +119,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timeout>();
     const offlineFetcherRef = useRef<NodeJS.Timeout>();
     offlineFetcherRef.current = offlineFetcher;
+
+    const checkUserConnected = useRef(isUserConnected);
 
     useEffect(() => {
         if (isFinishRequest) {
@@ -200,19 +205,25 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setIsFirstFetch(true);
     }, [isFirstFetch]);
 
-    useEffect(() => {
-        isChartEnabled && isUserOnline && fetchCandles();
+    useEffect(() => {        
+        const isChangeUserConnected = checkUserConnected.current === isUserConnected;
+        isChangeUserConnected && isChartEnabled && isUserOnline && fetchCandles();
         if (isManualCandleFetchRequested)
             setIsManualCandleFetchRequested(false);
+
+        checkUserConnected.current = isUserConnected;   
     }, [
         isManualCandleFetchRequested,
         isChartEnabled,
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
-        candleScale?.isFetchForTimeframe,
         isPoolInitialized,
         crocEnv !== undefined,
     ]);
+
+    useEffect(() => {
+        isChartEnabled && isUserOnline && fetchCandles();
+    }, [candleScale?.isFetchForTimeframe]);
 
     useEffect(() => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {

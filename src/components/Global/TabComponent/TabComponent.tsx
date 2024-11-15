@@ -145,9 +145,13 @@ export default function TabComponent(props: TabPropsIF) {
         if (currentTabData) {
             setSelectedTab(currentTabData);
             if (
-                ['transactions', 'limits', 'liquidity'].includes(
-                    currentTabData.label.toLowerCase(),
-                )
+                [
+                    'transactions',
+                    'limits',
+                    'liquidity',
+                    'wallet balances',
+                    'exchange balances',
+                ].includes(currentTabData.label.toLowerCase())
             ) {
                 setActiveTradeTab(currentTabData.label.toLowerCase());
             }
