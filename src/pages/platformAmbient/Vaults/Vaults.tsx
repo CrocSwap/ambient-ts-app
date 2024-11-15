@@ -60,12 +60,29 @@ function Vaults() {
         UserVaultsServerIF[] | null | undefined
     >(null);
 
+    // logic to get user vault data
     async function getUserVaultData(): Promise<void> {
-        // const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=${userAddress}`;
-        const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc`;
-        const response = await fetch(endpoint);
-        const { data } = await response.json();
-        setUserVaultData(data);
+        // endpoint to query
+        const endpoint = `${VAULTS_API_URL}/uers/positions?walletAddress=0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc`;
+    
+        // fn to fetch data from endpoint and send to local state
+        const fetchData = async () => {
+            const response = await fetch(endpoint);
+            const { data } = await response.json();
+            setUserVaultData(data);
+        };
+    
+        // logic to set local state to `undefined` if no response is received
+        // setting to `undefined` triggers a backup query
+        const timeout = new Promise<void>((resolve) => {
+            setTimeout(() => {
+                setUserVaultData(undefined);
+                resolve();
+            }, 2000);
+        });
+    
+        // run primary query and trigger backup action if not received
+        await Promise.race([fetchData(), timeout]);
     }
 
     useEffect(() => {
