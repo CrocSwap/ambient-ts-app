@@ -41,12 +41,10 @@ export default function VaultRow(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
     const { crocEnv } = useContext(CrocEnvContext);
-    const { isUserConnected,
-        // userAddress
-    } = useContext(UserDataContext);
+    const { isUserConnected, userAddress } = useContext(UserDataContext);
     const { sessionReceipts } = useContext(ReceiptContext);
 
-    const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
+    // const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
 
     const {
         activeNetwork: { chainId },
@@ -66,7 +64,12 @@ export default function VaultRow(props: propsIF) {
     // useEffect to check if user has approved Tempest to sell token 1
     useEffect(() => {
         async function getCrocEnvBalance(): Promise<void> {
-            if (crocEnv && !vault.balanceAmount && userAddress && needsFallbackQuery) {
+            if (
+                crocEnv &&
+                !vault.balanceAmount &&
+                userAddress &&
+                needsFallbackQuery
+            ) {
                 console.log('checking');
                 const tempestVault = crocEnv.tempestVault(
                     vault.address,
@@ -76,7 +79,13 @@ export default function VaultRow(props: propsIF) {
             }
         }
         getCrocEnvBalance();
-    }, [crocEnv, vault, userAddress, sessionReceipts.length]);
+    }, [
+        crocEnv,
+        vault,
+        userAddress,
+        sessionReceipts.length,
+        needsFallbackQuery,
+    ]);
 
     const balDisplay = useMemo<string>(() => {
         const rawValue = vault.balance ?? crocEnvBal;

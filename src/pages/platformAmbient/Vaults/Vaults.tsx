@@ -57,13 +57,14 @@ function Vaults() {
 
     // hooks to fetch and hold user vault data
     const [userVaultData, setUserVaultData] = useState<
-        UserVaultsServerIF[] | null | undefined
-    >(null);
+        UserVaultsServerIF[] | undefined
+    >();
 
     // logic to get user vault data
     async function getUserVaultData(): Promise<void> {
         // endpoint to query
-        const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc`;
+        // const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc`;
+        const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=${userAddress}`;
         // fn to fetch data from endpoint and send to local state
         const fetchData = async () => {
             const response = await fetch(endpoint);
@@ -136,7 +137,9 @@ function Vaults() {
                                                 ),
                                             )
                                         }
-                                        needsFallbackQuery={userVaultData === undefined}
+                                        needsFallbackQuery={
+                                            userVaultData === undefined
+                                        }
                                     />
                                 );
                             })}
