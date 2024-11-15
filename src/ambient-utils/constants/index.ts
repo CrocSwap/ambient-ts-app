@@ -31,7 +31,7 @@ export const PAIR_LOOKUP_URL =
     'https://croc-smart.liquidity.tools/pair-lookup?';
 
 export const VAULTS_API_URL =
-    import.meta.env.VITE_VAULTS_API_URLL ||
+    import.meta.env.VITE_VAULTS_API_URL ||
     'https://protocol-service-api.tempestfinance.xyz/api/v1';
 
 export const HISTORICAL_CANDLES_URL =

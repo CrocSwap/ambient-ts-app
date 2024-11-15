@@ -388,7 +388,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 isUserConnected &&
                 userAddress &&
                 chainId &&
-                lastBlockNumber
+                everyFiveMinutes
             ) {
                 try {
                     const combinedBalances: TokenIF[] = [];
@@ -399,7 +399,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                             address: userAddress,
                             chain: chainId,
                             crocEnv: crocEnv,
-                            _refreshTime: lastBlockNumber,
+                            _refreshTime: everyFiveMinutes,
                         });
 
                     combinedBalances.push(...AmbientListWalletBalances);
@@ -410,7 +410,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                         chain: chainId,
                         crocEnv: crocEnv,
                         graphCacheUrl: graphCacheUrl,
-                        _refreshTime: lastBlockNumber,
+                        _refreshTime: everyFiveMinutes,
                     });
 
                     if (dexBalancesFromCache !== undefined) {

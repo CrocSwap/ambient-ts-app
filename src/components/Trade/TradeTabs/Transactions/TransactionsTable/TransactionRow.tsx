@@ -209,7 +209,7 @@ function TransactionRow(props: propsIF) {
         ambientPriceDisplay,
         lowAndHighPriceDisplay,
         priceDisplay,
-        hiddenIDColumn
+        hiddenIDColumn,
     } = txRowConstants(txRowConstantsProps);
 
     return (

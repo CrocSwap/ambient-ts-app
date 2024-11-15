@@ -14,7 +14,7 @@ const chainSpecForWalletConnector = {
     name: 'Blast Sepolia',
     currency: 'ETH',
     rpcUrl: 'https://sepolia.blast.io/',
-    explorerUrl: 'https://testnet.blastscan.io',
+    explorerUrl: 'https://testnet.blastscan.io/',
 };
 
 export const blastSepolia: NetworkIF = {
