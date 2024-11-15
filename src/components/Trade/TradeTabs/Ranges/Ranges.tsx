@@ -992,6 +992,22 @@ function Ranges(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
+    type RecentlyUpdatedPosition = {
+        posHash: string;
+        timestamp: number;
+    };
+
+    // list of recently updated positions
+    const [listOfRecentlyUpdatedPositions, setListOfRecentlyUpdatedPositions] =
+        useState<RecentlyUpdatedPosition[]>([]);
+
+    const addPositionHash = (posHash: string) => {
+        setListOfRecentlyUpdatedPositions((prevList) => [
+            ...prevList,
+            { posHash, timestamp: Math.floor(Date.now() / 1000) },
+        ]);
+    };
+
     useEffect(() => {
         (async () => {
             if (relevantTransactionsByType.length === 0) {
@@ -1077,8 +1093,6 @@ function Ranges(props: propsIF) {
                         );
                     }
 
-                    const currentTime = Math.floor(Date.now() / 1000);
-
                     const posHash = getPositionHash(undefined, {
                         isPositionTypeAmbient:
                             pendingPositionUpdate.txDetails.isAmbient || false,
@@ -1097,13 +1111,13 @@ function Ranges(props: propsIF) {
                             (position) => position.positionId === posHash,
                         );
 
-                    const onChainLiqGreaterThanMatchingPositionLiq =
+                    const onChainLiqDifferentThanMatchingPositionLiq =
                         liqBigInt >
                         BigInt(matchingExistingPosition?.positionLiq || 0);
 
-                    const matchingExistingPositionRecentlyUpdated =
-                        (matchingExistingPosition?.latestUpdateTime || 0) >
-                        currentTime - 60;
+                    if (onChainLiqDifferentThanMatchingPositionLiq) {
+                        addPositionHash(posHash);
+                    }
 
                     const mockServerPosition: PositionServerIF = {
                         positionId: posHash,
@@ -1154,11 +1168,7 @@ function Ranges(props: propsIF) {
                         isBid: pendingPositionUpdate.txDetails.isBid,
                         user: pendingPositionUpdate.userAddress,
                         timeFirstMint: 0, // unknown
-                        latestUpdateTime:
-                            onChainLiqGreaterThanMatchingPositionLiq ||
-                            matchingExistingPositionRecentlyUpdated
-                                ? currentTime
-                                : undefined,
+                        latestUpdateTime: 0,
                         lastMintTx: '', // unknown
                         firstMintTx: '', // unknown
                         positionType: pendingPositionUpdate.txDetails.isAmbient
@@ -1171,11 +1181,7 @@ function Ranges(props: propsIF) {
                             ? liqNum
                             : 0,
                         rewardLiq: 0, // unknown
-                        liqRefreshTime:
-                            onChainLiqGreaterThanMatchingPositionLiq ||
-                            matchingExistingPositionRecentlyUpdated
-                                ? currentTime
-                                : undefined,
+                        liqRefreshTime: 0,
                         aprDuration: 0, // unknown
                         aprPostLiq: 0,
                         aprContributedLiq: 0,
@@ -1286,10 +1292,13 @@ function Ranges(props: propsIF) {
             );
             const matchingPositionUpdatedInLastMinute =
                 !!matchingPosition &&
-                Date.now() / 1000 -
-                    (matchingPosition?.liqRefreshTime ||
-                        matchingPosition?.latestUpdateTime) <
-                    60;
+                listOfRecentlyUpdatedPositions.some(
+                    (recentlyUpdatedPosition) =>
+                        recentlyUpdatedPosition.posHash ===
+                            matchingPosition.positionId &&
+                        recentlyUpdatedPosition.timestamp >
+                            Date.now() / 1000 - 60,
+                );
 
             // identify completed adds when update time in last minute (does not work for removes)
             return (
