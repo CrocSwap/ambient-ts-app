@@ -40,8 +40,8 @@ export const ethereumMainnet: NetworkIF = {
     displayName: chainSpecForWalletConnector.name,
     topPools: [
         new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetUSDT, mainnetUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetWBTC, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetETH, mainnetUSDT, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
