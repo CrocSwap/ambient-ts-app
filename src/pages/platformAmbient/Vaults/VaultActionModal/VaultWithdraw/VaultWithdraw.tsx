@@ -74,11 +74,7 @@ export default function VaultWithdraw(props: Props) {
         string | undefined
     >();
 
-    const [slippageTolerance, setSlippageTolerance] = useState(0.5);
-    const [tempSlippage, setTempSlippage] = useState<string>(
-        slippageTolerance.toString(),
-    );
-
+  
     const submitWithdraw = async () => {
         if (!crocEnv || !balanceMainAsset || !userAddress || !vault) return;
 
@@ -245,32 +241,80 @@ export default function VaultWithdraw(props: Props) {
     //     isPercentage: true,
     //     // suffix: '%',
     // });
+    const [slippageTolerance, setSlippageTolerance] = useState(0.5);
+    const [tempSlippage, setTempSlippage] = useState<string>(
+        slippageTolerance.toString(),
+    );
+    const [editSlippageTolerance, setEditSlippageTolerance] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const validateAndSetSlippage = (value: string) => {
+        const numericValue = parseFloat(value);
+
+        if (isNaN(numericValue)) {
+            setErrorMessage('');
+            setTempSlippage('');
+            return;
+        }
+
+        if (numericValue < 0.1) {
+            setErrorMessage('Value cannot be less than 0.1.');
+            setTempSlippage('0.1');
+        } else if (numericValue > 100) {
+            setErrorMessage('Value cannot be greater than 100.');
+            setTempSlippage('100');
+        } else {
+            setErrorMessage('');
+            setTempSlippage(value);
+        }
+    };
+
+
+
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            const newValue = parseFloat(tempSlippage);
-            if (!isNaN(newValue)) {
-                setSlippageTolerance(newValue);
+            const numericValue = parseFloat(tempSlippage);
+            if (!isNaN(numericValue) && numericValue >= 0.1 && numericValue <= 100) {
+                setSlippageTolerance(numericValue);
+                setErrorMessage('');
+            } else {
+                setErrorMessage('Press Enter only when the value is between 0.1 and 100.');
             }
         }
     };
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setTempSlippage(e.target.value);
+        validateAndSetSlippage(e.target.value); // Pass the value directly
     };
     
+    
+    const inputRefSlip = useRef<HTMLInputElement>(null);
+    const handleFocusSlip = () => {
+        if (inputRefSlip.current) {
+            inputRefSlip.current.focus();
+        }
+    };
+
     const slipDropdownRef = useRef<HTMLDivElement>(null);
-    
-    const [editSlippageTolerance, setEditSlippageTolerance] = useState(false);
-    
-    
+
+
     const clickOutsideHandler = () => {
         setEditSlippageTolerance(false);
-        
     };
     useOnClickOutside(slipDropdownRef, clickOutsideHandler);
 
+    function handleEditClick() {
+        setEditSlippageTolerance(true);
+        handleFocusSlip();
+    }
+
+    useEffect(() => {
+        if (editSlippageTolerance && inputRefSlip.current) {
+            inputRefSlip.current.focus();
+        }
+    }, [editSlippageTolerance]);
 
     const extraDetailsDisplay = (
+        <>
         <div className={styles.extraDetailsContainer}>
             <div className={styles.extraDetailsRow}>
                 <FlexContainer
@@ -278,42 +322,49 @@ export default function VaultWithdraw(props: Props) {
                     alignItems='center'
                     gap={4}
                     style={{ zIndex: '5' }}
-                >
+                    >
                     <p>Slippage Tolerance</p>
                     <TooltipComponent
                         title={'This can be changed in settings.'}
-                    />
+                        />
                 </FlexContainer>
-                <div className={styles.slipTolValueContainer} ref={slipDropdownRef}>
+                <div
+                    className={styles.slipTolValueContainer}
+                    ref={slipDropdownRef}
+                    >
                     {/* {getFormattedNumber({
                         value: slippageTolerance,
                         isPercentage: true,
                         suffix: '%',
-                    })} */}
-                    <input
-                        id='slippage_tolerance_input_field_vault_withdraw'
-                        onKeyDown={handleKeyDown}
-                        onChange={handleInputChange}
-                        type='number'
-                        step='any'
-                        value={tempSlippage}
-                        autoComplete='off'
-                        placeholder={tempSlippage}
-                        aria-label='Enter Slippage Tolerance'
-                        disabled={!editSlippageTolerance}
-                    />
+                        })} */}
+                 <input
+                id='slippage_tolerance_input_field_vault_withdraw'
+                onKeyDown={handleKeyDown}
+                onChange={handleInputChange}
+                type='number'
+                step='any'
+                value={tempSlippage}
+                autoComplete='off'
+                placeholder='Enter Slippage Tolerance'
+                aria-label='Enter Slippage Tolerance'
+                disabled={!editSlippageTolerance}
+                ref={inputRefSlip}
+                min={0.1}
+                max={100}
+            />
                     <p>%</p>
-                    <MdEdit size={18} onClick={() => setEditSlippageTolerance(true)} color={editSlippageTolerance ? 'var(--accent1)' : ''} />
+                    <MdEdit
+                        size={18}
+                        onClick={handleEditClick}
+                        color={editSlippageTolerance ? 'var(--accent1)' : ''}
+                        />
                 </div>
             </div>
-            {/* <div className={styles.extraDetailsRow}>
-                <FlexContainer flexDirection='row' alignItems='center' gap={4}>
-                    <p>Network Fee</p>
-                    <TooltipComponent title={'item.tooltipTitle'} />
-                </FlexContainer>
-                <p>~{withdrawGasPriceinDollars ?? '…'}</p>
-            </div> */}
-        </div>
+         
+            </div>
+            <p className={styles.errorMessage}>{errorMessage ?? ''}</p>
+               
+                        </>
     );
 
     // calculate price of gas for vault withdrawal
@@ -340,9 +391,6 @@ export default function VaultWithdraw(props: Props) {
             <span className={styles.dots}></span>
         </div>
     );
-
-
-   
 
     return (
         <Modal usingCustomHeader onClose={onClose}>

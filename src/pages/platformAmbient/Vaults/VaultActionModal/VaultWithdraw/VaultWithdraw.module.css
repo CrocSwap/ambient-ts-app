@@ -225,3 +225,15 @@ padding: 0 8px;
 .slipTolValueContainer input::placeholder {
     color: var(--text2);
 }
+.errorMessage{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    align-items: end;
+    text-align: end;
+    color: var(--other-red);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+   
+    height: 13px;
+}
