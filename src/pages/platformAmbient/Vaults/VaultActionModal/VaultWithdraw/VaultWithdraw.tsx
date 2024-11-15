@@ -9,7 +9,7 @@ import styles from './VaultWithdraw.module.css';
 import TooltipComponent from '../../../../../components/Global/TooltipComponent/TooltipComponent';
 import Button from '../../../../../components/Form/Button';
 
-import { TokenIF, VaultIF } from '../../../../../ambient-utils/types';
+import { TokenIF, AllVaultsServerIF } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -35,16 +35,16 @@ import SlippageTolerance from '../../../../../components/Global/SlippageToleranc
 import { RiArrowDropDownLine } from 'react-icons/ri';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 
-interface Props {
+interface propsIF {
     mainAsset: TokenIF;
     secondaryAsset: TokenIF;
-    vault: VaultIF;
+    vault: AllVaultsServerIF;
     balanceMainAsset: bigint | undefined;
     mainAssetBalanceDisplayQty: string;
     secondaryAssetBalanceDisplayQty: string;
     onClose: () => void;
 }
-export default function VaultWithdraw(props: Props) {
+export default function VaultWithdraw(props: propsIF) {
     const {
         mainAsset,
         onClose,
@@ -280,13 +280,6 @@ export default function VaultWithdraw(props: Props) {
                 </FlexContainer>
                 <p>0.5%</p>
             </div>
-            {/* <div className={styles.extraDetailsRow}>
-                <FlexContainer flexDirection='row' alignItems='center' gap={4}>
-                    <p>Network Fee</p>
-                    <TooltipComponent title={'item.tooltipTitle'} />
-                </FlexContainer>
-                <p>~{withdrawGasPriceinDollars ?? '…'}</p>
-            </div> */}
         </div>
     );
 
@@ -359,11 +352,11 @@ export default function VaultWithdraw(props: Props) {
             />
 
             <div className={styles.withdrawContainer}>
-                {slipTolerance}
+                {isZapOn && slipTolerance}
                 {tokensDisplay}
 
                 <div className={styles.zapContainer}>
-                    <p>Zap In</p>
+                    <p>Zap Out</p>
 
                     <Toggle
                         isOn={isZapOn}
@@ -379,7 +372,7 @@ export default function VaultWithdraw(props: Props) {
                 />
                 {pooledDisplay}
 
-                {extraDetailsDisplay}
+                {isZapOn && extraDetailsDisplay}
                 <div className={styles.gas_row}>
                     <FaGasPump size={15} /> {withdrawGasPriceinDollars ?? '…'}
                 </div>

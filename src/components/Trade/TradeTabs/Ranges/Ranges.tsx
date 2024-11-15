@@ -182,6 +182,10 @@ function Ranges(props: propsIF) {
     const moreDataAvailableRef = useRef<boolean>();
     moreDataAvailableRef.current = moreDataAvailable;
 
+    const [unindexedUpdatedPositions, setUnindexedUpdatedPositions] = useState<
+        PositionIF[]
+    >([]);
+
     const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
 
     const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
@@ -711,9 +715,15 @@ function Ranges(props: propsIF) {
     ] = useSortedPositions('time', rangeData);
 
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
-    const sortedLimitDataToDisplay = useMemo<PositionIF[]>(() => {
+    const sortedPositionDataToDisplay = useMemo<PositionIF[]>(() => {
         const uniqueSortedPositions = getUniqueSortedPositions(
-            sortedPositions.filter((e) => e.positionLiq !== 0),
+            sortedPositions.filter(
+                (e) =>
+                    e.positionLiq !== 0 &&
+                    !unindexedUpdatedPositions.some(
+                        (p) => p.positionId === e.positionId,
+                    ),
+            ),
         );
 
         return isAccountView
@@ -722,7 +732,12 @@ function Ranges(props: propsIF) {
                   getIndexForPages(true),
                   getIndexForPages(false),
               );
-    }, [sortedPositions, pagesVisible, isAccountView]);
+    }, [
+        sortedPositions,
+        pagesVisible,
+        isAccountView,
+        unindexedUpdatedPositions,
+    ]);
 
     // -----------------------------------------------------------------------------------------------------------------------------
 
@@ -977,9 +992,21 @@ function Ranges(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
-    const [unindexedUpdatedPositions, setUnindexedUpdatedPositions] = useState<
-        PositionIF[]
-    >([]);
+    type RecentlyUpdatedPosition = {
+        posHash: string;
+        timestamp: number;
+    };
+
+    // list of recently updated positions
+    const [listOfRecentlyUpdatedPositions, setListOfRecentlyUpdatedPositions] =
+        useState<RecentlyUpdatedPosition[]>([]);
+
+    const addPositionHash = (posHash: string) => {
+        setListOfRecentlyUpdatedPositions((prevList) => [
+            ...prevList,
+            { posHash, timestamp: Math.floor(Date.now() / 1000) },
+        ]);
+    };
 
     useEffect(() => {
         (async () => {
@@ -1000,6 +1027,7 @@ function Ranges(props: propsIF) {
                 pendingPositionUpdates.map(async (pendingPositionUpdate) => {
                     if (!crocEnv || !pendingPositionUpdate.txDetails)
                         return {} as PositionIF;
+
                     const pos = crocEnv.positions(
                         pendingPositionUpdate.txDetails.baseAddress,
                         pendingPositionUpdate.txDetails.quoteAddress,
@@ -1065,8 +1093,6 @@ function Ranges(props: propsIF) {
                         );
                     }
 
-                    const currentTime = Math.floor(Date.now() / 1000);
-
                     const posHash = getPositionHash(undefined, {
                         isPositionTypeAmbient:
                             pendingPositionUpdate.txDetails.isAmbient || false,
@@ -1079,6 +1105,19 @@ function Ranges(props: propsIF) {
                         bidTick: pendingPositionUpdate.txDetails.lowTick || 0,
                         askTick: pendingPositionUpdate.txDetails.highTick || 0,
                     });
+
+                    const matchingExistingPosition =
+                        activeUserPositionsByPool.find(
+                            (position) => position.positionId === posHash,
+                        );
+
+                    const onChainLiqDifferentThanMatchingPositionLiq =
+                        liqBigInt >
+                        BigInt(matchingExistingPosition?.positionLiq || 0);
+
+                    if (onChainLiqDifferentThanMatchingPositionLiq) {
+                        addPositionHash(posHash);
+                    }
 
                     const mockServerPosition: PositionServerIF = {
                         positionId: posHash,
@@ -1099,7 +1138,7 @@ function Ranges(props: propsIF) {
                         positionType: pendingPositionUpdate.txDetails.isAmbient
                             ? 'ambient'
                             : 'concentrated',
-                        timeFirstMint: currentTime, // unknown
+                        timeFirstMint: 0, // unknown
                         lastMintTx: '', // unknown
                         firstMintTx: '', // unknown
                         aprEst: 0, // unknown
@@ -1128,8 +1167,8 @@ function Ranges(props: propsIF) {
                         askTick: pendingPositionUpdate.txDetails.highTick,
                         isBid: pendingPositionUpdate.txDetails.isBid,
                         user: pendingPositionUpdate.userAddress,
-                        timeFirstMint: currentTime, // unknown
-                        latestUpdateTime: currentTime,
+                        timeFirstMint: 0, // unknown
+                        latestUpdateTime: 0,
                         lastMintTx: '', // unknown
                         firstMintTx: '', // unknown
                         positionType: pendingPositionUpdate.txDetails.isAmbient
@@ -1142,7 +1181,7 @@ function Ranges(props: propsIF) {
                             ? liqNum
                             : 0,
                         rewardLiq: 0, // unknown
-                        liqRefreshTime: currentTime, // unknown
+                        liqRefreshTime: 0,
                         aprDuration: 0, // unknown
                         aprPostLiq: 0,
                         aprContributedLiq: 0,
@@ -1252,9 +1291,15 @@ function Ranges(props: propsIF) {
                 },
             );
             const matchingPositionUpdatedInLastMinute =
-                (matchingPosition?.liqRefreshTime || 0) -
-                    (matchingPosition?.latestUpdateTime || 0) <
-                60;
+                !!matchingPosition &&
+                listOfRecentlyUpdatedPositions.some(
+                    (recentlyUpdatedPosition) =>
+                        recentlyUpdatedPosition.posHash ===
+                            matchingPosition.positionId &&
+                        recentlyUpdatedPosition.timestamp >
+                            Date.now() / 1000 - 60,
+                );
+
             // identify completed adds when update time in last minute (does not work for removes)
             return (
                 !unindexedUpdatedPositionHashes.includes(pendingPosHash) ||
@@ -1338,7 +1383,9 @@ function Ranges(props: propsIF) {
                 {showInfiniteScroll ? (
                     <TableRowsInfiniteScroll
                         type='Range'
-                        data={sortedLimitDataToDisplay}
+                        data={unindexedUpdatedPositions.concat(
+                            sortedPositionDataToDisplay,
+                        )}
                         tableView={tableView}
                         isAccountView={isAccountView}
                         fetcherFunction={addMoreData}

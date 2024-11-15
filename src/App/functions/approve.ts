@@ -10,7 +10,7 @@ import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
-import { TokenIF, VaultIF } from '../../ambient-utils/types';
+import { TokenIF, AllVaultsServerIF } from '../../ambient-utils/types';
 
 export function useApprove() {
     const {
@@ -93,7 +93,7 @@ export function useApprove() {
     };
 
     const approveVault = async (
-        vault: VaultIF,
+        vault: AllVaultsServerIF,
         mainAsset: TokenIF,
         secondaryAsset: TokenIF,
         cb?: (b: boolean) => void,
