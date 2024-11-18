@@ -174,9 +174,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             quoteTvl: poolStats?.quoteTvl || 0,
             quoteVolume: poolStats?.quoteVolume24hAgo || 0,
             feeRate: poolStats?.feeRate || 0,
-            lastPriceIndic: poolStats?.priceIndic24hAgo || 0,
-            lastPriceLiq: poolStats?.priceLiq24hAgo || 0,
-            lastPriceSwap: poolStats?.priceSwap24hAgo || 0,
+            lastPriceIndic: poolStats?.lastPriceIndic || 0,
+            lastPriceLiq: poolStats?.lastPriceLiq || 0,
+            lastPriceSwap: poolStats?.lastPriceSwap || 0,
             latestTime: poolStats?.latestTime || 0,
             isHistorical: false,
         };
