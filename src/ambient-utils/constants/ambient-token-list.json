@@ -397,6 +397,14 @@
             "symbol": "rswETH"
         },
         {
+            "name": "KelpDao Restaked ETH",
+            "address": "0x65421ba909200b81640d98b979d07487c9781b66",
+            "chainId": 534352,
+            "decimals": 18,
+            "logoURI": "",
+            "symbol": "rsETH"
+        },
+        {
             "name": "StakeStone Ether",
             "address": "0x80137510979822322193fc997d400d5a6c747bf7",
             "symbol": "STONE",
