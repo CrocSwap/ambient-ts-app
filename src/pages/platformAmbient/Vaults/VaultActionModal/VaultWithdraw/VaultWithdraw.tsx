@@ -40,6 +40,7 @@ import {
 
 import { MdEdit } from 'react-icons/md';
 import { ClickAwayListener } from '@mui/material';
+import useKeyPress from '../../../../../App/hooks/useKeyPress';
 
 interface propsIF {
     mainAsset: TokenIF;
@@ -303,6 +304,8 @@ export default function VaultWithdraw(props: propsIF) {
             inputRefSlip.current.focus();
         }
     }, [editSlippageTolerance]);
+
+    useKeyPress('Escape', () => setEditSlippageTolerance(false));
    
 
     const extraDetailsDisplay = (
@@ -400,7 +403,7 @@ export default function VaultWithdraw(props: propsIF) {
     );
 
     return (
-        <Modal usingCustomHeader onClose={onClose}>
+        <Modal usingCustomHeader onClose={onClose} isEscapeKeyEnabled={!editSlippageTolerance}>
             <ModalHeader
                 onClose={onClose}
                 title={'Withdraw'}
