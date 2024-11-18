@@ -82,7 +82,6 @@ export default function MobileDropdown() {
     }
 
     const clickLogout = useCallback(async () => {
-        setCrocEnv(undefined);
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -92,6 +91,7 @@ export default function MobileDropdown() {
         resetTokenBalances();
         setShowAllData(true);
         disconnectUser();
+        setCrocEnv(undefined);
     }, []);
 
     const actionsContainer = (
