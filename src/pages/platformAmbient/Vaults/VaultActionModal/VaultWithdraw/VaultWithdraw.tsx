@@ -12,14 +12,7 @@ import Button from '../../../../../components/Form/Button';
 import { TokenIF, AllVaultsServerIF } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
-import {
-    ChangeEvent,
-    KeyboardEvent,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import {
     NUM_GWEI_IN_WEI,
@@ -39,7 +32,6 @@ import {
 } from '../../../../../utils/TransactionError';
 
 import { MdEdit } from 'react-icons/md';
-import { ClickAwayListener } from '@mui/material';
 import useKeyPress from '../../../../../App/hooks/useKeyPress';
 
 interface propsIF {
@@ -145,16 +137,6 @@ export default function VaultWithdraw(props: propsIF) {
         }
     };
 
-    // const [showWithdrawDropdown, setShowWithdrawDropdown] = useState(false);
-
-    // const dropdownRef = useRef<HTMLDivElement>(null);
-
-    // const clickOutsideHandler = () => {
-    //     setShowWithdrawDropdown(false);
-    // };
-
-    // useOnClickOutside(dropdownRef, clickOutsideHandler);
-
     const tokensDisplay = (
         <FlexContainer
             alignItems='center'
@@ -236,66 +218,41 @@ export default function VaultWithdraw(props: propsIF) {
         </section>
     );
 
-    // const slipValue = getFormattedNumber({
-    //     value: slippageTolerance,
-    //     isPercentage: true,
-    //     // suffix: '%',
-    // });
     const [slippageTolerance, setSlippageTolerance] = useState(0.5);
     const [tempSlippage, setTempSlippage] = useState<string>(
         slippageTolerance.toString(),
     );
     const [editSlippageTolerance, setEditSlippageTolerance] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string>('');
-    const validateAndSetSlippage = (value: string) => {
-        setTempSlippage(value);
-
-        const numericValue = parseFloat(value);
-        if (isNaN(numericValue)) {
-            setErrorMessage('');
-        } else if (numericValue > 100) {
-            setErrorMessage('Value cannot be greater than 100.');
-        } else {
-            setErrorMessage('');
-        }
-    };
 
     const [borderColor, setBorderColor] = useState(false);
 
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            const numericValue = parseFloat(tempSlippage);
-            if (
-                !isNaN(numericValue) &&
-                numericValue >= 0.5 &&
-                numericValue <= 100
-            ) {
-                setSlippageTolerance(numericValue);
-                setEditSlippageTolerance(false);
-                setErrorMessage('');
-                setBorderColor(false);
-            } else {
-                setErrorMessage('Please enter a value between 0.5 and 100.');
-                setBorderColor(true);
-            }
-        }
-    };
-
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        validateAndSetSlippage(e.target.value);
-    };
-
     const inputRefSlip = useRef<HTMLInputElement>(null);
-    const handleFocusSlip = () => {
-        if (inputRefSlip.current) {
-            inputRefSlip.current.focus();
+
+    const handleSlippageUpdate = (value: string) => {
+        const numericValue = parseFloat(value);
+        if (
+            !isNaN(numericValue) &&
+            numericValue >= 0.5 &&
+            numericValue <= 100
+        ) {
+            setSlippageTolerance(numericValue);
+            setTempSlippage(value);
+            setErrorMessage('');
+            setBorderColor(false);
+            return true;
+        } else {
+            setErrorMessage('Please enter a value between 0.5 and 100.');
+            setBorderColor(true);
+            return false;
         }
     };
 
-    function handleEditClick() {
-        setEditSlippageTolerance(true);
-        handleFocusSlip();
-    }
+    const handleCloseEdit = () => {
+        if (handleSlippageUpdate(tempSlippage)) {
+            setEditSlippageTolerance(false);
+        }
+    };
 
     useEffect(() => {
         if (editSlippageTolerance && inputRefSlip.current) {
@@ -304,74 +261,6 @@ export default function VaultWithdraw(props: propsIF) {
     }, [editSlippageTolerance]);
 
     useKeyPress('Escape', () => setEditSlippageTolerance(false));
-
-    const extraDetailsDisplay = (
-        <>
-            <div
-                className={styles.extraDetailsContainer}
-                style={{
-                    border: borderColor ? '1px solid var(--other-red)' : '',
-                }}
-            >
-                <div className={styles.extraDetailsRow}>
-                    <FlexContainer
-                        flexDirection='row'
-                        alignItems='center'
-                        gap={4}
-                        style={{ zIndex: '5' }}
-                    >
-                        <p>Slippage Tolerance</p>
-                        <TooltipComponent
-                            title={'This can be changed in settings.'}
-                        />
-                    </FlexContainer>
-                    <div className={styles.slipTolValueContainer}>
-                        {/* {getFormattedNumber({
-                        value: slippageTolerance,
-                        isPercentage: true,
-                        suffix: '%',
-                        })} */}
-                        <ClickAwayListener
-                            onClickAway={() => {
-                                validateAndSetSlippage(tempSlippage);
-                                setEditSlippageTolerance(false);
-                                console.log('i am working');
-                                console.log({ tempSlippage });
-                            }}
-                        >
-                            <input
-                                id='slippage_tolerance_input_field_vault_withdraw'
-                                onKeyDown={handleKeyDown}
-                                onChange={handleInputChange}
-                                type='number'
-                                step='any'
-                                value={tempSlippage}
-                                autoComplete='off'
-                                placeholder='0.5'
-                                aria-label='Enter Slippage Tolerance'
-                                disabled={!editSlippageTolerance}
-                                ref={inputRefSlip}
-                                min={0.5}
-                                max={100}
-                            />
-                        </ClickAwayListener>
-                        <p>%</p>
-                        <MdEdit
-                            size={18}
-                            onClick={handleEditClick}
-                            color={
-                                editSlippageTolerance ? 'var(--accent1)' : ''
-                            }
-                        />
-                    </div>
-                </div>
-            </div>
-            <p className={styles.errorMessage}>
-                {' '}
-                {errorMessage ?? errorMessage}
-            </p>
-        </>
-    );
 
     // calculate price of gas for vault withdrawal
     useEffect(() => {
@@ -410,6 +299,7 @@ export default function VaultWithdraw(props: propsIF) {
                 // onBackButton={handleGoBack}
                 // showBackButton={handleGoBack ? true: false}
             />
+
             <div className={styles.withdrawContainer}>
                 {tokensDisplay}
                 <RemoveRangeWidth
@@ -418,7 +308,89 @@ export default function VaultWithdraw(props: propsIF) {
                 />
                 {pooledDisplay}
 
-                {extraDetailsDisplay}
+                <div
+                    className={styles.extraDetailsContainer}
+                    style={{
+                        border: borderColor ? '1px solid var(--other-red)' : '',
+                    }}
+                    onBlur={() => {
+                        if (editSlippageTolerance) {
+                            handleCloseEdit();
+                        }
+                    }}
+                >
+                    <div
+                        className={styles.extraDetailsRow}
+                        onClick={(e) => {
+                            // Prevent clicks on the row from triggering clickaway
+                            e.stopPropagation();
+                        }}
+                    >
+                        <FlexContainer
+                            flexDirection='row'
+                            alignItems='center'
+                            gap={4}
+                            style={{ zIndex: '5' }}
+                        >
+                            <p>Slippage Tolerance</p>
+                            <TooltipComponent
+                                title={'This can be changed in settings.'}
+                            />
+                        </FlexContainer>
+                        <div
+                            className={styles.slipTolValueContainer}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div
+                                className={styles.inputWrapper}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <input
+                                    id='slippage_tolerance_input_field_vault_withdraw'
+                                    onKeyDown={(e) => {
+                                        if (
+                                            e.key === 'Enter' ||
+                                            e.key === 'Escape'
+                                        ) {
+                                            handleCloseEdit();
+                                        }
+                                    }}
+                                    onChange={(e) =>
+                                        setTempSlippage(e.target.value)
+                                    }
+                                    onClick={(e) => e.stopPropagation()}
+                                    type='number'
+                                    step='any'
+                                    value={tempSlippage}
+                                    autoComplete='off'
+                                    placeholder='0.5'
+                                    aria-label='Enter Slippage Tolerance'
+                                    disabled={!editSlippageTolerance}
+                                    ref={inputRefSlip}
+                                    min={0.5}
+                                    max={100}
+                                />
+                                <p>%</p>
+                                <MdEdit
+                                    size={18}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditSlippageTolerance(true);
+                                        inputRefSlip.current?.focus();
+                                    }}
+                                    color={
+                                        editSlippageTolerance
+                                            ? 'var(--accent1)'
+                                            : ''
+                                    }
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p className={styles.errorMessage}>
+                    {errorMessage ?? errorMessage}
+                </p>
                 <div className={styles.gas_row}>
                     <FaGasPump size={15} /> {withdrawGasPriceinDollars ?? '…'}
                 </div>
