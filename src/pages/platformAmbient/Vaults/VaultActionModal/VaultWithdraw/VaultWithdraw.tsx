@@ -37,9 +37,9 @@ import {
     isTransactionReplacedError,
     isTransactionFailedError,
 } from '../../../../../utils/TransactionError';
-import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 
 import { MdEdit } from 'react-icons/md';
+import { ClickAwayListener } from '@mui/material';
 
 interface propsIF {
     mainAsset: TokenIF;
@@ -267,7 +267,7 @@ export default function VaultWithdraw(props: propsIF) {
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             const numericValue = parseFloat(tempSlippage);
-            if (!isNaN(numericValue) && numericValue >= 0.1 && numericValue <= 100) {
+            if (!isNaN(numericValue) && numericValue >= 0.5 && numericValue <= 100) {
                 setSlippageTolerance(numericValue);
                 setEditSlippageTolerance(false);
                 setErrorMessage('');
@@ -291,13 +291,7 @@ export default function VaultWithdraw(props: propsIF) {
         }
     };
 
-    const slipDropdownRef = useRef<HTMLDivElement>(null);
 
-
-    const clickOutsideHandler = () => {
-        setEditSlippageTolerance(false);
-    };
-    useOnClickOutside(slipDropdownRef, clickOutsideHandler);
 
     function handleEditClick() {
         setEditSlippageTolerance(true);
@@ -314,7 +308,8 @@ export default function VaultWithdraw(props: propsIF) {
     const extraDetailsDisplay = (
         <>
             <div className={styles.extraDetailsContainer}
-            style={{border: borderColor ? '1px solid var(--other-red)' : ''}}
+                style={{ border: borderColor ? '1px solid var(--other-red)' : '' }}
+                
             >
             <div className={styles.extraDetailsRow}>
                 <FlexContainer
@@ -329,14 +324,24 @@ export default function VaultWithdraw(props: propsIF) {
                         />
                 </FlexContainer>
                 <div
-                    className={styles.slipTolValueContainer}
-                    ref={slipDropdownRef}
+                        className={styles.slipTolValueContainer}
+                     
+                 
                     >
                     {/* {getFormattedNumber({
                         value: slippageTolerance,
                         isPercentage: true,
                         suffix: '%',
                         })} */}
+                        <ClickAwayListener
+                            onClickAway={() => {
+                            validateAndSetSlippage(tempSlippage);
+                            setEditSlippageTolerance(false);
+                                console.log('i am working')     
+                            console.log({tempSlippage})    
+                        }}
+                        >
+
                  <input
                 id='slippage_tolerance_input_field_vault_withdraw'
                 onKeyDown={handleKeyDown}
@@ -350,9 +355,10 @@ export default function VaultWithdraw(props: propsIF) {
                 disabled={!editSlippageTolerance}
                 ref={inputRefSlip}
                 min={0.5}
-                            max={100}
-                           
-            />
+                max={100}
+                
+                />
+                </ClickAwayListener>
                     <p>%</p>
                     <MdEdit
                         size={18}
@@ -363,7 +369,7 @@ export default function VaultWithdraw(props: propsIF) {
             </div>
          
             </div>
-            <p className={styles.errorMessage}>{errorMessage ?? ''}</p>
+            <p className={styles.errorMessage}> {errorMessage ?? errorMessage}</p>
                
                         </>
     );
@@ -418,11 +424,13 @@ export default function VaultWithdraw(props: propsIF) {
                     idForDOM='approve_token_a_for_swap_module'
                     style={{ textTransform: 'none' }}
                     title={
+                        errorMessage ? 
+                            'Invalid slippage tolerance' : 
                         showSubmitted
                             ? submittedButtonTitle
                             : 'Remove Liquidity'
                     }
-                    disabled={showSubmitted || balanceMainAsset === 0n}
+                    disabled={showSubmitted || balanceMainAsset === 0n || errorMessage !== ''}
                     action={() => submitWithdraw()}
                     flat
                 />
