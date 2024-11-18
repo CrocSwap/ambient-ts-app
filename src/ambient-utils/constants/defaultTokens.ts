@@ -538,7 +538,7 @@ export const scrollWrsETH: TokenIF = {
 
 export const scrollRsETH: TokenIF = {
     name: 'Restaked Swell ETH',
-    address: '0xa25b25548b4c98b0c7d3d27dca5d5ca743d68b7f',
+    address: '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0',
     symbol: 'rswETH',
     decimals: 18,
     chainId: 534352,
