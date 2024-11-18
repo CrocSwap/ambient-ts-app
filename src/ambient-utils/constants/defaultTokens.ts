@@ -536,6 +536,15 @@ export const scrollWrsETH: TokenIF = {
     logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png',
 };
 
+export const scrollRsETH: TokenIF = {
+    name: 'Restaked Swell ETH',
+    address: '0xa25b25548b4c98b0c7d3d27dca5d5ca743d68b7f',
+    symbol: 'rswETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://etherscan.io/token/images/rsweth_32.png?=v3',
+};
+
 export const scrollSTONE: TokenIF = {
     name: 'StakeStone Ether',
     address: '0x80137510979822322193FC997d400D5A6C747bf7',
@@ -815,6 +824,7 @@ export const defaultTokens: TokenIF[] = [
     scrollSKY,
     scrollSOL,
     scrollWrsETH,
+    scrollRsETH,
     scrollSTONE,
     scrollUniETH,
     sepoliaETH,
