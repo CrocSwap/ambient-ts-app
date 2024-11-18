@@ -36,6 +36,8 @@ export default function MobileLandingSections() {
         const userAgent = window.navigator.userAgent;
         const isiPhone = /iPhone|iOS/i.test(userAgent);
         setIsIPhone(isiPhone);
+        // reset the active tab to the default when returning to the home page
+        localStorage.setItem('activeTradeTabOnMobile', 'Order');
     }, []);
 
     const heroSection = (
