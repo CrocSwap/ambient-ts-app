@@ -198,7 +198,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
         const nowPrice = expandedPoolStatsNow?.lastPriceSwap;
-        const ydayPrice = expandedPoolStats24hAgo?.lastPriceSwap;
+        const ydayPrice = poolStats?.priceSwap24hAgo;
 
         const feesTotalNow = expandedPoolStatsNow?.feesTotalUsd;
         const feesTotal24hAgo = expandedPoolStats24hAgo?.feesTotalUsd;
