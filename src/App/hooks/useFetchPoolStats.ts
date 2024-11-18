@@ -345,7 +345,6 @@ const useFetchPoolStats = (
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
-                cachedQuerySpotPrice,
                 tokens.allDefaultTokens,
                 enableTotalSupply,
             );
@@ -358,9 +357,9 @@ const useFetchPoolStats = (
                 quoteTvl: currentPoolStats?.quoteTvl || 0,
                 quoteVolume: currentPoolStats?.quoteVolume24hAgo || 0,
                 feeRate: currentPoolStats?.feeRate || 0,
-                lastPriceIndic: currentPoolStats?.priceIndic24hAgo || 0,
-                lastPriceLiq: currentPoolStats?.priceLiq24hAgo || 0,
-                lastPriceSwap: currentPoolStats?.priceSwap24hAgo || 0,
+                lastPriceIndic: currentPoolStats?.lastPriceIndic || 0,
+                lastPriceLiq: currentPoolStats?.lastPriceLiq || 0,
+                lastPriceSwap: currentPoolStats?.lastPriceSwap || 0,
                 latestTime: currentPoolStats?.latestTime || 0,
                 isHistorical: true,
             };
@@ -373,7 +372,6 @@ const useFetchPoolStats = (
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
-                cachedQuerySpotPrice,
                 tokens.allDefaultTokens,
             );
 
@@ -429,6 +427,7 @@ const useFetchPoolStats = (
                 const volumeChange24hString = getFormattedNumber({
                     value: volumeChange24h,
                 });
+
                 setPoolVolume24h(volumeChange24hString);
             }
             if (feesChange24h) {

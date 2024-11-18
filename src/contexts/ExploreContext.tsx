@@ -62,7 +62,7 @@ export const ExploreContext = createContext<ExploreContextIF>(
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { activeNetwork } = useContext(AppStateContext);
-    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+    const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
@@ -163,7 +163,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedTokenDetails,
-            cachedQuerySpotPrice,
             tokens.tokenUniv,
         );
 
@@ -190,7 +189,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedTokenDetails,
-            cachedQuerySpotPrice,
             tokens.tokenUniv,
         );
 
