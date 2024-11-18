@@ -43,6 +43,7 @@ import {
     plumeSepoliaUSD,
     plumeSepoliaNEV,
     scrollRsETH,
+    scrollRswETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -142,6 +143,7 @@ export const STAKED_ETH_TOKENS = [
     scrollWstETH.address,
     scrollWrsETH.address,
     scrollRsETH.address,
+    scrollRswETH.address,
     scrollSTONE.address,
     scrollUniETH.address,
     scrollWeETH.address,
