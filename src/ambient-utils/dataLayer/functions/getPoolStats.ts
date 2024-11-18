@@ -9,7 +9,6 @@ import {
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { SinglePoolDataIF, TokenIF } from '../../types';
-import { PoolQueryFn } from './querySpotPrice';
 import { isETHorStakedEthToken } from '..';
 
 const getLiquidityFee = async (
@@ -153,7 +152,6 @@ export async function expandPoolStats(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
-    cachedQuerySpotPrice: PoolQueryFn,
     tokenList: TokenIF[],
     enableTotalSupply?: boolean,
 ): Promise<PoolStatsIF> {
@@ -233,6 +231,7 @@ export async function expandPoolStats(
           : quoteUsdPrice
             ? quoteUsdPrice / displayPoolPrice
             : 0.0;
+
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
         : isETHorStakedEthToken(quote)
