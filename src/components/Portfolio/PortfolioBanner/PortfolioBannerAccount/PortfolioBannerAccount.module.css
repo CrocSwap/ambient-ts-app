@@ -33,6 +33,7 @@
     flex-direction: column;
     min-width: 130px;
     gap: 4px;
+    white-space: nowrap;
 }
 
 .address_or_ens {
