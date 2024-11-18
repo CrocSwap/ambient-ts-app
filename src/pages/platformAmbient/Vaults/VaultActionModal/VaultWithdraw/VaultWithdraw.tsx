@@ -218,7 +218,10 @@ export default function VaultWithdraw(props: propsIF) {
         </section>
     );
 
-    const [slippageTolerance, setSlippageTolerance] = useState(0.5);
+    const minSlippageNum = 0.5;
+    const maxSlippageNum = 100;
+
+    const [slippageTolerance, setSlippageTolerance] = useState(minSlippageNum);
     const [tempSlippage, setTempSlippage] = useState<string>(
         slippageTolerance.toString(),
     );
@@ -233,8 +236,8 @@ export default function VaultWithdraw(props: propsIF) {
         const numericValue = parseFloat(value);
         if (
             !isNaN(numericValue) &&
-            numericValue >= 0.5 &&
-            numericValue <= 100
+            numericValue >= minSlippageNum &&
+            numericValue <= maxSlippageNum
         ) {
             setSlippageTolerance(numericValue);
             setTempSlippage(value);
@@ -242,7 +245,9 @@ export default function VaultWithdraw(props: propsIF) {
             setBorderColor(false);
             return true;
         } else {
-            setErrorMessage('Please enter a value between 0.5 and 100.');
+            setErrorMessage(
+                `Please enter a value between ${minSlippageNum} and ${maxSlippageNum}`,
+            );
             setBorderColor(true);
             return false;
         }
@@ -360,15 +365,15 @@ export default function VaultWithdraw(props: propsIF) {
                                     }
                                     onClick={(e) => e.stopPropagation()}
                                     type='number'
-                                    step='any'
+                                    step='0.1'
                                     value={tempSlippage}
                                     autoComplete='off'
-                                    placeholder='0.5'
+                                    placeholder={minSlippageNum.toString()}
                                     aria-label='Enter Slippage Tolerance'
                                     disabled={!editSlippageTolerance}
                                     ref={inputRefSlip}
-                                    min={0.5}
-                                    max={100}
+                                    min={minSlippageNum}
+                                    max={maxSlippageNum}
                                 />
                                 <p>%</p>
                                 <MdEdit
