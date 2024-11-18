@@ -117,7 +117,6 @@ export default function Modal(props: ModalPropsIF) {
     if (!isInitialized) {
         return null; // Prevent rendering modal or bottom sheet until initialization
     }
-    console.log({isEscapeKeyEnabled})
 
     if (isMobile && isBottomSheetOpen) {
         // Render Bottom Sheet style for mobile
