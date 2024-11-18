@@ -127,7 +127,7 @@ export default function TradeMobile(props: propsIF) {
 
     // Tab management
     const [activeTab, setActiveTab] = useState<string>(() => {
-        const savedTab = localStorage.getItem('mobileActiveTab');
+        const savedTab = localStorage.getItem('activeTradeTabOnMobile');
         return savedTab ? savedTab : 'Order';
     });
     // const [direction, setDirection] = useState<number>(0);
@@ -251,7 +251,7 @@ export default function TradeMobile(props: propsIF) {
             // const newIndex = tabs.findIndex(tab => tab.id === newTab);
             // setDirection(newIndex > currentIndex ? 1 : -1);
             setActiveTab(newTab);
-            localStorage.setItem('mobileActiveTab', newTab);
+            localStorage.setItem('activeTradeTabOnMobile', newTab);
         },
         [activeTab, tabs],
     );
