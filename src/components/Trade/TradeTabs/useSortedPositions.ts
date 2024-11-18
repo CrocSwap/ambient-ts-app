@@ -24,7 +24,7 @@ export const useSortedPositions = (
     boolean,
     Dispatch<SetStateAction<boolean>>,
     PositionIF[],
-    (data:PositionIF[]) => PositionIF[]
+    (data: PositionIF[]) => PositionIF[],
 ] => {
     // default sort function
     const sortByTime = (unsortedData: PositionIF[]): PositionIF[] =>
@@ -217,7 +217,14 @@ export const useSortedPositions = (
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo<PositionIF[]>(() => {
         return sortData(positions);
-    }, [sortBy, reverseSort, positions[0]?.positionId, positions.length]); // fix failure to refresh rows when data changes
+    }, [sortBy, reverseSort, positions]); // fix failure to refresh rows when data changes
 
-    return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions, sortData];
+    return [
+        sortBy,
+        setSortBy,
+        reverseSort,
+        setReverseSort,
+        sortedPositions,
+        sortData,
+    ];
 };
