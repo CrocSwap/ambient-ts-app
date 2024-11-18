@@ -75,7 +75,6 @@ export default function VaultWithdraw(props: propsIF) {
         string | undefined
     >();
 
-  
     const submitWithdraw = async () => {
         if (!crocEnv || !balanceMainAsset || !userAddress || !vault) return;
 
@@ -250,49 +249,48 @@ export default function VaultWithdraw(props: propsIF) {
     const [errorMessage, setErrorMessage] = useState<string>('');
     const validateAndSetSlippage = (value: string) => {
         setTempSlippage(value);
-    
-        
+
         const numericValue = parseFloat(value);
         if (isNaN(numericValue)) {
             setErrorMessage('');
         } else if (numericValue > 100) {
             setErrorMessage('Value cannot be greater than 100.');
         } else {
-            setErrorMessage(''); 
+            setErrorMessage('');
         }
     };
 
-    const [ borderColor, setBorderColor ] = useState(false)
-
+    const [borderColor, setBorderColor] = useState(false);
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             const numericValue = parseFloat(tempSlippage);
-            if (!isNaN(numericValue) && numericValue >= 0.5 && numericValue <= 100) {
+            if (
+                !isNaN(numericValue) &&
+                numericValue >= 0.5 &&
+                numericValue <= 100
+            ) {
                 setSlippageTolerance(numericValue);
                 setEditSlippageTolerance(false);
                 setErrorMessage('');
-                setBorderColor(false)
+                setBorderColor(false);
             } else {
                 setErrorMessage('Please enter a value between 0.5 and 100.');
-                setBorderColor(true)
+                setBorderColor(true);
             }
         }
     };
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        validateAndSetSlippage(e.target.value); 
+        validateAndSetSlippage(e.target.value);
     };
-    
-    
+
     const inputRefSlip = useRef<HTMLInputElement>(null);
     const handleFocusSlip = () => {
         if (inputRefSlip.current) {
             inputRefSlip.current.focus();
         }
     };
-
-
 
     function handleEditClick() {
         setEditSlippageTolerance(true);
@@ -306,75 +304,73 @@ export default function VaultWithdraw(props: propsIF) {
     }, [editSlippageTolerance]);
 
     useKeyPress('Escape', () => setEditSlippageTolerance(false));
-   
 
     const extraDetailsDisplay = (
         <>
-            <div className={styles.extraDetailsContainer}
-                style={{ border: borderColor ? '1px solid var(--other-red)' : '' }}
-                
+            <div
+                className={styles.extraDetailsContainer}
+                style={{
+                    border: borderColor ? '1px solid var(--other-red)' : '',
+                }}
             >
-            <div className={styles.extraDetailsRow}>
-                <FlexContainer
-                    flexDirection='row'
-                    alignItems='center'
-                    gap={4}
-                    style={{ zIndex: '5' }}
+                <div className={styles.extraDetailsRow}>
+                    <FlexContainer
+                        flexDirection='row'
+                        alignItems='center'
+                        gap={4}
+                        style={{ zIndex: '5' }}
                     >
-                    <p>Slippage Tolerance</p>
-                    <TooltipComponent
-                        title={'This can be changed in settings.'}
+                        <p>Slippage Tolerance</p>
+                        <TooltipComponent
+                            title={'This can be changed in settings.'}
                         />
-                </FlexContainer>
-                <div
-                        className={styles.slipTolValueContainer}
-                     
-                 
-                    >
-                    {/* {getFormattedNumber({
+                    </FlexContainer>
+                    <div className={styles.slipTolValueContainer}>
+                        {/* {getFormattedNumber({
                         value: slippageTolerance,
                         isPercentage: true,
                         suffix: '%',
                         })} */}
                         <ClickAwayListener
                             onClickAway={() => {
-                            validateAndSetSlippage(tempSlippage);
-                            setEditSlippageTolerance(false);
-                                console.log('i am working')     
-                            console.log({tempSlippage})    
-                        }}
+                                validateAndSetSlippage(tempSlippage);
+                                setEditSlippageTolerance(false);
+                                console.log('i am working');
+                                console.log({ tempSlippage });
+                            }}
                         >
-
-                 <input
-                id='slippage_tolerance_input_field_vault_withdraw'
-                onKeyDown={handleKeyDown}
-                onChange={handleInputChange}
-                type='number'
-                step='any'
-                value={tempSlippage}
-                autoComplete='off'
-                placeholder='0.5'
-                aria-label='Enter Slippage Tolerance'
-                disabled={!editSlippageTolerance}
-                ref={inputRefSlip}
-                min={0.5}
-                max={100}
-                
-                />
-                </ClickAwayListener>
-                    <p>%</p>
-                    <MdEdit
-                        size={18}
-                        onClick={handleEditClick}
-                        color={editSlippageTolerance ? 'var(--accent1)' : ''}
+                            <input
+                                id='slippage_tolerance_input_field_vault_withdraw'
+                                onKeyDown={handleKeyDown}
+                                onChange={handleInputChange}
+                                type='number'
+                                step='any'
+                                value={tempSlippage}
+                                autoComplete='off'
+                                placeholder='0.5'
+                                aria-label='Enter Slippage Tolerance'
+                                disabled={!editSlippageTolerance}
+                                ref={inputRefSlip}
+                                min={0.5}
+                                max={100}
+                            />
+                        </ClickAwayListener>
+                        <p>%</p>
+                        <MdEdit
+                            size={18}
+                            onClick={handleEditClick}
+                            color={
+                                editSlippageTolerance ? 'var(--accent1)' : ''
+                            }
                         />
+                    </div>
                 </div>
             </div>
-         
-            </div>
-            <p className={styles.errorMessage}> {errorMessage ?? errorMessage}</p>
-               
-                        </>
+            <p className={styles.errorMessage}>
+                {' '}
+                {errorMessage ?? errorMessage}
+            </p>
+        </>
     );
 
     // calculate price of gas for vault withdrawal
@@ -403,7 +399,11 @@ export default function VaultWithdraw(props: propsIF) {
     );
 
     return (
-        <Modal usingCustomHeader onClose={onClose} isEscapeKeyEnabled={!editSlippageTolerance}>
+        <Modal
+            usingCustomHeader
+            onClose={onClose}
+            isEscapeKeyEnabled={!editSlippageTolerance}
+        >
             <ModalHeader
                 onClose={onClose}
                 title={'Withdraw'}
@@ -427,13 +427,17 @@ export default function VaultWithdraw(props: propsIF) {
                     idForDOM='approve_token_a_for_swap_module'
                     style={{ textTransform: 'none' }}
                     title={
-                        errorMessage ? 
-                            'Invalid slippage tolerance' : 
-                        showSubmitted
-                            ? submittedButtonTitle
-                            : 'Remove Liquidity'
+                        errorMessage
+                            ? 'Invalid slippage tolerance'
+                            : showSubmitted
+                              ? submittedButtonTitle
+                              : 'Remove Liquidity'
                     }
-                    disabled={showSubmitted || balanceMainAsset === 0n || errorMessage !== ''}
+                    disabled={
+                        showSubmitted ||
+                        balanceMainAsset === 0n ||
+                        errorMessage !== ''
+                    }
                     action={() => submitWithdraw()}
                     flat
                 />
