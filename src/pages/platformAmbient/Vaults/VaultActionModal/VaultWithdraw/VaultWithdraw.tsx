@@ -360,9 +360,15 @@ export default function VaultWithdraw(props: propsIF) {
                                             handleCloseEdit();
                                         }
                                     }}
-                                    onChange={(e) =>
-                                        setTempSlippage(e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                        console.log(e.target.value);
+
+                                        setTempSlippage(
+                                            e.target.value.startsWith('.')
+                                                ? '0' + e.target.value
+                                                : e.target.value,
+                                        );
+                                    }}
                                     onClick={(e) => e.stopPropagation()}
                                     type='number'
                                     step='0.1'
