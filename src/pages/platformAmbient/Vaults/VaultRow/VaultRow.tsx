@@ -113,7 +113,12 @@ export default function VaultRow(props: propsIF) {
     }
 
     const tokenIconsDisplay = (
-        <FlexContainer alignItems='center' gap={5} style={{ flexShrink: 0 }} >
+        <FlexContainer
+            alignItems='center'
+            gap={5}
+            style={{ flexShrink: 0 }}
+            onClick={() => navigateExternal()}
+        >
             <div className={styles.tempestDisplay}>
                 <DefaultTooltip title={'Tempest Finance'}>
                     <img src={tempestLogoColor} alt='tempest' />
@@ -135,8 +140,7 @@ export default function VaultRow(props: propsIF) {
                     size={showMobileVersion ? 'm' : '2xl'}
                 />{' '}
             </IconWithTooltip>
-           {showMobileVersion && <RiExternalLinkLine size={20}  />}
-          
+            {showMobileVersion && <RiExternalLinkLine size={20} />}
         </FlexContainer>
     );
 
@@ -260,8 +264,7 @@ export default function VaultRow(props: propsIF) {
                             </button>
 
                             {isUserConnected &&
-                                !!(vault.balance || crocEnvBal) &&
-                                (
+                                !!(vault.balance || crocEnvBal) && (
                                     <button
                                         className={styles.actionButton}
                                         onClick={handleOpenWithdrawModal}
