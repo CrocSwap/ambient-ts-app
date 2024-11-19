@@ -8,8 +8,16 @@ import {
 } from '../../ambient-utils/dataLayer';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { NetworkIF } from '../../ambient-utils/types';
-import { blast, blastSepolia, ethereumMainnet, ethereumSepolia, scrollMainnet, scrollSepolia, supportedNetworks } from '../../ambient-utils/constants';
-import { plumeSepolia } from '../../ambient-utils/constants/networks/plumeSepolia';
+import {
+    blast,
+    blastSepolia,
+    ethereumMainnet,
+    ethereumSepolia,
+    plumeSepolia,
+    scrollMainnet,
+    scrollSepolia,
+    supportedNetworks,
+} from '../../ambient-utils/constants';
 
 export const useAppChain = (): {
     activeNetwork: NetworkIF;
@@ -167,12 +175,14 @@ export const useAppChain = (): {
                         }
                         // wallet authenticated, different chain in active app
                         if (activeNetwork.chainId != incomingChainFromWallet) {
-                            let nextNetwork: NetworkIF|undefined;
+                            let nextNetwork: NetworkIF | undefined;
                             if (incomingChainFromWallet === '0x1') {
                                 nextNetwork = ethereumMainnet;
                             } else if (incomingChainFromWallet === '0x13e31') {
                                 nextNetwork = blast;
-                            } else if (incomingChainFromWallet === '0xa0c71fd') {
+                            } else if (
+                                incomingChainFromWallet === '0xa0c71fd'
+                            ) {
                                 nextNetwork = blastSepolia;
                             } else if (incomingChainFromWallet === '0xaa36a7') {
                                 nextNetwork = ethereumSepolia;
@@ -181,12 +191,15 @@ export const useAppChain = (): {
                             } else if (incomingChainFromWallet === '0x8274f') {
                                 nextNetwork = scrollSepolia;
                             } else if (incomingChainFromWallet === '0x18230') {
-                                nextNetwork === plumeSepolia;
-                            };
+                                nextNetwork = plumeSepolia;
+                            }
                             if (nextNetwork) {
                                 setActiveNetwork(nextNetwork);
                             } else {
-                                console.warn('Chain ID from authenticated wallet not recognized. App will stay on the current chain. Current chain is: ', activeNetwork);
+                                console.warn(
+                                    'Chain ID from authenticated wallet not recognized. App will stay on the current chain. Current chain is: ',
+                                    activeNetwork,
+                                );
                             }
                         } else {
                             setIgnoreFirst(false);
