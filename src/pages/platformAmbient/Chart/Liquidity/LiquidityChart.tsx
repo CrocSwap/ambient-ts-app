@@ -51,7 +51,6 @@ interface liquidityPropsIF {
     isActiveDragOrZoom: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mainCanvasBoundingClientRect: any;
-    setLiqMaxActiveLiq: React.Dispatch<number | undefined>;
     chartThemeColors: ChartThemeIF | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     render: any;
@@ -128,14 +127,13 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         mouseLeaveEvent,
         isActiveDragOrZoom,
         mainCanvasBoundingClientRect,
-        setLiqMaxActiveLiq,
         chartThemeColors,
         render,
         colorChangeTrigger,
         setColorChangeTrigger,
     } = props;
 
-    const mobileView = useMediaQuery('(max-width: 1200px)');
+    const mobileView = useMediaQuery('(max-width: 800px)');
 
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
@@ -593,12 +591,12 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 .on('measure', (event: CustomEvent) => {
                     liquidityScale.range([
                         event.detail.width,
-                        mobileView ? 0 : (event.detail.width / 10) * 6,
+                        0,
                     ]);
 
                     liquidityDepthScale.range([
                         event.detail.width,
-                        event.detail.width * 0.5,
+                        0,
                     ]);
                     scaleData?.yScale.range([event.detail.height, 0]);
 
@@ -942,22 +940,6 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     ]);
 
     useEffect(() => {
-        if (liquidityDepthScale && liquidityScale && liqMaxActiveLiq) {
-            const liqMaxActiveLiqX =
-                liqMode === 'depth'
-                    ? liquidityDepthScale(liqMaxActiveLiq)
-                    : liquidityScale(liqMaxActiveLiq);
-
-            setLiqMaxActiveLiq(liqMaxActiveLiqX * 8);
-        }
-    }, [
-        liqMaxActiveLiq,
-        liquidityDepthScale?.domain(),
-        liquidityScale?.domain(),
-        liqMode,
-    ]);
-
-    useEffect(() => {
         if (chartMousemoveEvent && liqMode !== 'none') {
             liqDataHover(chartMousemoveEvent);
             renderCanvasArray([d3CanvasLiqHover]);
@@ -1012,16 +994,16 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 ref={d3CanvasLiqHover}
                 style={{
                     position: 'relative',
-                    width: '20%',
-                    marginLeft: '80%',
+                    width: mobileView ? '20%' :'8%',
+                    marginLeft: mobileView ? '80%' :  '92%',
                 }}
             ></d3fc-canvas>
             <d3fc-canvas
                 ref={d3CanvasLiq}
                 style={{
                     position: 'relative',
-                    width: '20%',
-                    marginLeft: '80%',
+                    width: mobileView ? '20%' : '8%',
+                    marginLeft:  mobileView ? '80%' : '92%',
                 }}
             ></d3fc-canvas>
         </>
