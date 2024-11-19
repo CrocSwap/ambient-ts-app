@@ -339,7 +339,7 @@ export default function VaultWithdraw(props: propsIF) {
                         >
                             <p>Slippage Tolerance</p>
                             <TooltipComponent
-                                title={'This can be changed in settings.'}
+                                title={'This can be set between 0.5% and 100%'}
                             />
                         </FlexContainer>
                         <div
@@ -381,7 +381,7 @@ export default function VaultWithdraw(props: propsIF) {
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setEditSlippageTolerance(true);
-                                        inputRefSlip.current?.focus();
+                                        inputRefSlip.current?.select();
                                     }}
                                     color={
                                         editSlippageTolerance
