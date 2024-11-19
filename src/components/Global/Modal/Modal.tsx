@@ -35,7 +35,7 @@ export default function Modal(props: ModalPropsIF) {
         centeredTitle = true,
         usingCustomHeader = false,
         onClose = () => null,
-        isEscapeKeyEnabled = true
+        isEscapeKeyEnabled = true,
     } = props;
 
     const { openBottomSheet, closeBottomSheet, isBottomSheetOpen } =
@@ -45,22 +45,20 @@ export default function Modal(props: ModalPropsIF) {
     // Track initialization to avoid rendering until states are fully resolved
     const [isInitialized, setIsInitialized] = useState(false);
 
-      // Handle closing both modal and bottom sheet
-      const handleClose = () => {
+    // Handle closing both modal and bottom sheet
+    const handleClose = () => {
         onClose();
         closeBottomSheet();
     };
-
 
     const escFunction = useCallback(
         (event: KeyboardEvent) => {
             if (event.key === 'Escape' && isEscapeKeyEnabled) {
                 handleClose();
-            } 
+            }
         },
-        [isEscapeKeyEnabled, handleClose]
+        [isEscapeKeyEnabled, handleClose],
     );
-    
 
     useEffect(() => {
         document.addEventListener('keydown', escFunction, false);
@@ -78,8 +76,6 @@ export default function Modal(props: ModalPropsIF) {
         }
         setIsInitialized(true); // Mark as initialized after states resolve
     }, [isMobile, isBottomSheetOpen, openBottomSheet, closeBottomSheet]);
-
-  
 
     const headerJSX = !usingCustomHeader ? (
         <header className={styles.modal_header}>
@@ -118,7 +114,7 @@ export default function Modal(props: ModalPropsIF) {
         return null; // Prevent rendering modal or bottom sheet until initialization
     }
 
-    if (isMobile && isBottomSheetOpen) {
+    if (isBottomSheetOpen) {
         // Render Bottom Sheet style for mobile
         return (
             <>
