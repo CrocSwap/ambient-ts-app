@@ -124,5 +124,8 @@
     display: none;
   }
   
+  .scrollableContainer{
+    margin-bottom: 56px;
+  }
   
   }
