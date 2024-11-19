@@ -90,10 +90,11 @@
 .tvl{
   padding-right: 8px;
 }
+
 @media only screen and (max-width: 768px) {
 
   .mainContent, .vaultHeader{
-      grid-template-columns: 50px repeat(2, 1fr)  50px 100px;
+      grid-template-columns: 100px repeat(2, 1fr)  150px 100px;
   }
   .poolName{
       display: none;
@@ -105,9 +106,9 @@
   }
   }
   
-  @media only screen and (max-width: 428px) {
+  @media only screen and (max-width: 500px) {
   .mainContent, .vaultHeader{
-      grid-template-columns: 50px repeat(2, 1fr)  80px;
+      grid-template-columns: 100px repeat(2, 1fr)  80px;
   }
   
   .tempestDisplay{

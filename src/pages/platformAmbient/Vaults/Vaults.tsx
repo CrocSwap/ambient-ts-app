@@ -30,12 +30,12 @@ function Vaults() {
 
     const vaultHeader = (
         <div className={styles.vaultHeader}>
-            <span />
-            <span className={styles.poolName}></span>
+            <span/>
+            <span className={styles.poolName}/>
             <span className={styles.tvl}>TVL</span>
             <span className={styles.depositContainer}>My Deposit</span>
             <span className={styles.apyDisplay}>APR</span>
-            <span className={styles.actionButtonContainer} />
+            <span className={styles.actionButtonContainer}/>
         </div>
     );
 

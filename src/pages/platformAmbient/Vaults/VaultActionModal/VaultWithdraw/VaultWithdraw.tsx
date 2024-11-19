@@ -6,7 +6,6 @@ import TokenIcon from '../../../../../components/Global/TokenIcon/TokenIcon';
 import RemoveRangeWidth from '../../../../../components/RangeActionModal/RemoveRangeWidth/RemoveRangeWidth';
 import { FlexContainer } from '../../../../../styled/Common';
 import styles from './VaultWithdraw.module.css';
-import TooltipComponent from '../../../../../components/Global/TooltipComponent/TooltipComponent';
 import Button from '../../../../../components/Form/Button';
 
 import { TokenIF, AllVaultsServerIF } from '../../../../../ambient-utils/types';
@@ -183,9 +182,7 @@ export default function VaultWithdraw(props: propsIF) {
 
     const pooledDisplay = (
         <section className={styles.pooledContent}>
-            <div className={styles.seperator}>
-                <span />
-            </div>
+         
             <div className={styles.pooledContentContainer}>
                 Deposited {mainAsset.symbol}
                 <div className={styles.alignCenter}>
@@ -338,9 +335,7 @@ export default function VaultWithdraw(props: propsIF) {
                             style={{ zIndex: '5' }}
                         >
                             <p>Slippage Tolerance</p>
-                            <TooltipComponent
-                                title={'This can be set between 0.5% and 100%'}
-                            />
+                    
                         </FlexContainer>
                         <div
                             className={styles.slipTolValueContainer}
