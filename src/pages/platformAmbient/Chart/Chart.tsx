@@ -4423,21 +4423,23 @@ export default function Chart(props: propsIF) {
                 minYBoundary !== undefined
             ) {
                 if (simpleRangeWidth !== 100 || advancedMode) {
-                    ranges[0] = { name: 'Min', value: minPrice };
-                    ranges[1] = { name: 'Max', value: maxPrice };
+                    if (minPrice && maxPrice) {
+                        ranges[0] = { name: 'Min', value: minPrice };
+                        ranges[1] = { name: 'Max', value: maxPrice };
 
-                    const low = Math.min(min, max, minYBoundary, market);
+                        const low = Math.min(min, max, minYBoundary, market);
 
-                    const high = Math.max(min, max, maxYBoundary, market);
+                        const high = Math.max(min, max, maxYBoundary, market);
 
-                    const bufferForRange = Math.abs((low - high) / 6);
+                        const bufferForRange = Math.abs((low - high) / 6);
 
-                    const domain = [
-                        Math.min(low, high) - bufferForRange,
-                        Math.max(low, high) + bufferForRange / 2,
-                    ];
+                        const domain = [
+                            Math.min(low, high) - bufferForRange,
+                            Math.max(low, high) + bufferForRange / 2,
+                        ];
 
-                    setYaxisDomain(domain[0], domain[1]);
+                        setYaxisDomain(domain[0], domain[1]);
+                    }
                 } else {
                     const lowTick =
                         currentPoolPriceTick - simpleRangeWidth * 100;
