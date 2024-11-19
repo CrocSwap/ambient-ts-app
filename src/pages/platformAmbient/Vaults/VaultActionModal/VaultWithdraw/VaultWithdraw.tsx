@@ -361,8 +361,6 @@ export default function VaultWithdraw(props: propsIF) {
                                         }
                                     }}
                                     onChange={(e) => {
-                                        console.log(e.target.value);
-
                                         setTempSlippage(
                                             e.target.value.startsWith('.')
                                                 ? '0' + e.target.value
