@@ -168,7 +168,7 @@ font-weight: 300;
 line-height: normal;
 padding: 0 8px;
 }
-.row{
+.inputWrapper{
     display: flex;
     flex-direction: row;
     align-items: center;
