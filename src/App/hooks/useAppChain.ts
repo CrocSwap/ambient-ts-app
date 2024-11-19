@@ -9,7 +9,7 @@ import {
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { NetworkIF } from '../../ambient-utils/types';
 import { supportedNetworks } from '../../ambient-utils/constants';
-
+ 
 export const useAppChain = (): {
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
