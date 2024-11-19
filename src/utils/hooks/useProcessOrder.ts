@@ -247,13 +247,13 @@ export const useProcessOrder = (
     const baseQty = getFormattedNumber({
         value: liqBaseNum,
         zeroDisplay: '0',
-        trailingZeros: false,
+        removeExtraTrailingZeros: true,
     });
 
     const quoteQty = getFormattedNumber({
         value: liqQuoteNum,
         zeroDisplay: '0',
-        trailingZeros: false,
+        removeExtraTrailingZeros: true,
     });
 
     const fillPercentage =
@@ -264,22 +264,22 @@ export const useProcessOrder = (
 
     const originalPositionLiqBase = getFormattedNumber({
         value: limitOrder.originalPositionLiqBaseDecimalCorrected,
-        trailingZeros: false,
+        removeExtraTrailingZeros: true,
     });
 
     const originalPositionLiqQuote = getFormattedNumber({
         value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
-        trailingZeros: false,
+        removeExtraTrailingZeros: true,
     });
 
     const expectedPositionLiqBase = getFormattedNumber({
         value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
-        trailingZeros: false,
+        removeExtraTrailingZeros: true,
     });
 
     const expectedPositionLiqQuote = getFormattedNumber({
         value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
-        trailingZeros: false,
+        removeExtraTrailingZeros: true,
     });
 
     const usdValueNum = limitOrder.totalValueUSD;

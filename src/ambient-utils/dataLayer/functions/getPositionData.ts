@@ -329,14 +329,14 @@ export const getPositionData = async (
     newPosition.positionLiqBaseTruncated = getFormattedNumber({
         value: liqBaseNum,
         zeroDisplay: '0',
-        trailingZeros: false,
+        removeExtraTrailingZeros: true,
     });
 
     const liqQuoteNum = newPosition.positionLiqQuoteDecimalCorrected;
     newPosition.positionLiqQuoteTruncated = getFormattedNumber({
         value: liqQuoteNum,
         zeroDisplay: '0',
-        trailingZeros: false,
+        removeExtraTrailingZeros: true,
     });
 
     const poolPrice = toDisplayPrice(

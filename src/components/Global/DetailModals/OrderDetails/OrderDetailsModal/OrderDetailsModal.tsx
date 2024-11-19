@@ -170,12 +170,12 @@ export default function OrderDetailsModal(props: propsIF) {
 
                     const liqBaseDisplay = getFormattedNumber({
                         value: liqBaseNum,
-                        trailingZeros: false,
+                        removeExtraTrailingZeros: true,
                     });
 
                     const claimableBaseDisplay = getFormattedNumber({
                         value: claimableBaseNum,
-                        trailingZeros: false,
+                        removeExtraTrailingZeros: true,
                     });
 
                     console.log({ claimableBaseDisplay, liqBaseDisplay });
@@ -188,12 +188,12 @@ export default function OrderDetailsModal(props: propsIF) {
 
                     const liqQuoteDisplay = getFormattedNumber({
                         value: liqQuoteNum,
-                        trailingZeros: false,
+                        removeExtraTrailingZeros: true,
                     });
 
                     const claimableQuoteDisplay = getFormattedNumber({
                         value: claimableQuoteNum,
-                        trailingZeros: false,
+                        removeExtraTrailingZeros: true,
                     });
 
                     isOrderFilled
