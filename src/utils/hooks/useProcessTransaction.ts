@@ -366,6 +366,7 @@ export const useProcessTransaction = (
         baseFlowDisplay = getFormattedNumber({
             value: baseFlowAbsNum,
             zeroDisplay: '0',
+            trailingZeros: false,
         });
 
         estimatedQuoteFlowDisplay = getFormattedNumber({
@@ -386,6 +387,7 @@ export const useProcessTransaction = (
         quoteFlowDisplay = getFormattedNumber({
             value: quoteFlowAbsNum,
             zeroDisplay: '0',
+            trailingZeros: false,
         });
         estimatedBaseFlowDisplay = getFormattedNumber({
             value: isDenomBase

@@ -17,6 +17,7 @@ type FormatParams = {
     isLevel?: boolean;
     isPercentage?: boolean;
     mantissa?: number;
+    trailingZeros?: boolean;
 };
 
 export function getFormattedNumber({
@@ -36,6 +37,7 @@ export function getFormattedNumber({
     isLevel = false,
     isPercentage = false,
     mantissa = 2,
+    trailingZeros = true,
 }: FormatParams) {
     let valueString = '';
     if (value === 0) {
@@ -122,6 +124,7 @@ export function getFormattedNumber({
     }
 
     if (removeCommas) valueString = valueString.replaceAll(',', '');
+    if (!trailingZeros) valueString = removeTrailingZeros(valueString);
     return `${prefix}${valueString}${suffix}`;
 }
 
@@ -173,3 +176,7 @@ const formatAbbrev = (value: number, isTvl?: boolean, mantissa = 2) => {
         },
     });
 };
+
+export function removeTrailingZeros(amount: string) {
+    return amount.replace(/(\.[0-9]*[1-9])0+(?=0$)/, '$1'); // remove all trailing zeros, except for the last one
+}

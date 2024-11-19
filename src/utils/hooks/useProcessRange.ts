@@ -295,14 +295,8 @@ export const useProcessRange = (
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
-    const baseDisplayFrontend = quantitiesAvailable
-        ? `${baseQty || '0.00'}`
-        : '…';
     const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
 
-    const quoteDisplayFrontend = quantitiesAvailable
-        ? `${quoteQty || '0.00'}`
-        : '…';
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
 
     const ensNameOrOwnerTruncated = ensName
@@ -397,8 +391,6 @@ export const useProcessRange = (
         quoteTokenAddressTruncated,
         baseTokenLogo,
         quoteTokenLogo,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenName,

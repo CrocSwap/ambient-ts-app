@@ -33,8 +33,6 @@ interface propsIF {
     isDenomBase: boolean;
     isOrderFilled: boolean;
     isBid: boolean;
-    baseDisplayFrontend: string;
-    quoteDisplayFrontend: string;
     quoteTokenLogo: string;
     baseTokenLogo: string;
     baseTokenSymbol: string;
@@ -44,6 +42,10 @@ interface propsIF {
     isFillStarted: boolean;
     truncatedDisplayPrice: string | undefined;
     isAccountView: boolean;
+    originalPositionLiqBase: string;
+    originalPositionLiqQuote: string;
+    expectedPositionLiqBase: string;
+    expectedPositionLiqQuote: string;
 }
 
 // TODO: refactor to using styled-components
@@ -60,6 +62,10 @@ function OrderDetailsSimplify(props: propsIF) {
         limitOrder,
         isAccountView,
         timeFirstMintMemo,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
     } = props;
 
     const {
@@ -261,16 +267,8 @@ function OrderDetailsSimplify(props: propsIF) {
         {
             title: 'From Qty ',
             content: isBid
-                ? getFormattedNumber({
-                      value: limitOrder.originalPositionLiqBaseDecimalCorrected,
-                  }) +
-                  ' ' +
-                  baseTokenSymbol
-                : getFormattedNumber({
-                      value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
-                  }) +
-                  ' ' +
-                  quoteTokenSymbol,
+                ? originalPositionLiqBase + ' ' + baseTokenSymbol
+                : originalPositionLiqQuote + ' ' + quoteTokenSymbol,
             explanation: `The approximate input quantity of ${
                 isBid ? baseTokenSymbol : quoteTokenSymbol
             }`,
@@ -292,16 +290,8 @@ function OrderDetailsSimplify(props: propsIF) {
         {
             title: 'To Qty ',
             content: isBid
-                ? getFormattedNumber({
-                      value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
-                  }) +
-                  ' ' +
-                  quoteTokenSymbol
-                : getFormattedNumber({
-                      value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
-                  }) +
-                  ' ' +
-                  baseTokenSymbol,
+                ? expectedPositionLiqQuote + ' ' + quoteTokenSymbol
+                : expectedPositionLiqBase + ' ' + baseTokenSymbol,
             explanation: `The approximate output quantity of ${
                 isBid ? quoteTokenSymbol : baseTokenSymbol
             } `,
