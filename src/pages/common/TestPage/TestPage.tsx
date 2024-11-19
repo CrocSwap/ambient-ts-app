@@ -19,6 +19,7 @@ export default function TestPage() {
     return (
       <div>
         {/* Control buttons in another component */}
+        TESTING KEY JUNIOR ADESSU
         <div>
           <button onClick={() => setActiveTab(0)}>Go to Trade</button>
           <button onClick={() => setActiveTab(1)}>Go to Explore</button>
