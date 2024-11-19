@@ -54,7 +54,6 @@ export default function NetworkSelector(props: propsIF) {
         chooseNetwork,
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    console.log(chainId);
     const { networks, platformName, includeCanto } =
         useContext<BrandContextIF>(BrandContext);
     const { closeBottomSheet } = useBottomSheet();
