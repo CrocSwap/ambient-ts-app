@@ -28,8 +28,6 @@ export const MainSection = styled.section<{
                 return `
         display: grid;
         grid-template-columns: minmax(0, 1fr) 350px; /* Prevents overflowing */
-        margin: 0 auto;
-       
       `;
             }
         }}
