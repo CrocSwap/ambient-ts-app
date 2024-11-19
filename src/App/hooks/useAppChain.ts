@@ -9,6 +9,7 @@ import {
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { NetworkIF } from '../../ambient-utils/types';
 import { supportedNetworks } from '../../ambient-utils/constants';
+import { plumeSepolia } from '../../ambient-utils/constants/networks/plumeSepolia';
 
 export const useAppChain = (): {
     activeNetwork: NetworkIF;
@@ -76,6 +77,7 @@ export const useAppChain = (): {
         if (walletChainId) {
             // chain ID from wallet (current live value, not memoized in the app)
             const incomingChainFromWallet: string | null = getChainFromWallet();
+            console.log('getting new chain: ', incomingChainFromWallet);
             // if a wallet is connected, evaluate action to take
             // if none is connected, nullify memoized record of chain ID from wallet
             if (incomingChainFromWallet) {
@@ -83,6 +85,7 @@ export const useAppChain = (): {
                 if (validateChainId(incomingChainFromWallet)) {
                     // if wallet chain is valid and does not match record in app, update
                     // without this gatekeeping the app refreshes itself endlessly
+                    console.log('yep');
                     if (
                         chainInWalletValidated.current !==
                         incomingChainFromWallet
@@ -155,6 +158,7 @@ export const useAppChain = (): {
                                     activeNetwork.chainId !=
                                     incomingChainFromWallet
                                 ) {
+                                    alert('reloading 2');
                                     window.location.reload();
                                 }
                             } else {
@@ -162,7 +166,9 @@ export const useAppChain = (): {
                             }
                         }
                         if (activeNetwork.chainId != incomingChainFromWallet) {
-                            window.location.reload();
+                            alert('reloading 3');
+                            // window.location.reload();
+                            setActiveNetwork(plumeSepolia);
                         } else {
                             setIgnoreFirst(false);
                         }
