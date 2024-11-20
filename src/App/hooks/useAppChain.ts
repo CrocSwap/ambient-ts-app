@@ -192,7 +192,7 @@ export const useAppChain = (): {
                                 nextNetwork = scrollSepolia;
                             } else if (incomingChainFromWallet === '0x18230') {
                                 nextNetwork = plumeSepolia;
-                            }
+                            };
                             if (nextNetwork) {
                                 setActiveNetwork(nextNetwork);
                             } else {
