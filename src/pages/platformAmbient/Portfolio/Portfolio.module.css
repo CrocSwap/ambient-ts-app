@@ -16,68 +16,63 @@
     transition: var(--transition);
     overflow: hidden;
     flex: 1;
-  }
+}
 
+.portfolio_tabs_container.fullLayoutContainer {
+    grid-template-columns: auto 36px;
+    column-gap: 16px;
+}
+
+.portfolio_tabs_container:not(.fullLayoutContainer) {
+    grid-template-columns: auto 380px;
+    gap: 1rem;
+}
+
+.portfolio_tabs_container:not(.active) {
+    grid-template-columns: auto;
+    column-gap: 16px;
+}
+
+.portfolio_tabs_container.active.fullLayoutContainer {
+    grid-template-columns: auto 36px;
+    column-gap: 16px;
+}
+
+.portfolio_tabs_container.active:not(.fullLayoutContainer) {
+    grid-template-columns: auto 380px;
+    gap: 1rem;
+}
+
+@media (min-width: 1200px) {
     .portfolio_tabs_container.fullLayoutContainer {
-      grid-template-columns: auto 36px;
-      column-gap: 16px;
+        grid-template-columns: auto 36px;
+        column-gap: 16px;
     }
-  
+
     .portfolio_tabs_container:not(.fullLayoutContainer) {
-      grid-template-columns: auto 380px;
-      gap: 1rem;
+        grid-template-columns: auto 380px;
+        gap: 1rem;
     }
-  
+
     .portfolio_tabs_container:not(.active) {
-      grid-template-columns: auto;
-      column-gap: 16px;
+        grid-template-columns: auto;
+        column-gap: 16px;
     }
-  
+
     .portfolio_tabs_container.active.fullLayoutContainer {
-      grid-template-columns: auto 36px;
-      column-gap: 16px;
+        grid-template-columns: auto 36px;
+        column-gap: 16px;
     }
-  
+
     .portfolio_tabs_container.active:not(.fullLayoutContainer) {
-      grid-template-columns: auto 380px;
-      gap: 1rem;
+        grid-template-columns: auto 380px;
+        gap: 1rem;
     }
-  
-  
+}
 
-
-
-  @media (min-width: 1200px) {
-    .portfolio_tabs_container.fullLayoutContainer {
-      grid-template-columns: auto 36px;
-      column-gap: 16px;
-    }
-  
-    .portfolio_tabs_container:not(.fullLayoutContainer) {
-      grid-template-columns: auto 380px;
-      gap: 1rem;
-    }
-  
-    .portfolio_tabs_container:not(.active) {
-      grid-template-columns: auto;
-      column-gap: 16px;
-    }
-  
-    .portfolio_tabs_container.active.fullLayoutContainer {
-      grid-template-columns: auto 36px;
-      column-gap: 16px;
-    }
-  
-    .portfolio_tabs_container.active:not(.fullLayoutContainer) {
-      grid-template-columns: auto 380px;
-      gap: 1rem;
-    }
-  }
-  
 @media only screen and (max-width: 600px) {
     .portfolio_container {
         overflow-y: hidden;
         max-height: calc(100svh - 7.5rem);
-      
     }
 }
