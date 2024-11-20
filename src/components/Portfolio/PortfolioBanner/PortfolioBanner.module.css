@@ -3,22 +3,11 @@
     font-family: var(--font-family);
     width: 100%;
 
-
     background-size: cover;
     justify-content: space-between;
     align-items: flex-end;
 
-   
-
     display: flex;
-
-
-   
-
-    
-    
-
- 
 }
 
 .portfolio_banner_rectangle_content {
@@ -39,7 +28,6 @@
     display: none;
     z-index: 2;
     background: rgba(18, 18, 26, 0.9);
-   
 
     z-index: 3;
 }
@@ -67,20 +55,18 @@
     box-shadow: var(--glow-light-box-shadow);
 }
 @media only screen and (min-width: 568px) {
-.portfolio_banner_level_container{
-    display: flex;
-}
+    .portfolio_banner_level_container {
+        display: flex;
+    }
 }
 
 @media only screen and (max-width: 768px) {
     .portfolio_banner_rectangle_content {
         width: 100%;
-       
     }
 }
 
 @media only screen and (min-width: 768px) {
-    
     .portfolio_banner_level_container {
         display: flex;
         flex-shrink: 0;
@@ -96,12 +82,9 @@
         padding: 1rem;
         border: none;
         overflow: hidden;
-        
-
-      
 
         display: grid;
-        grid-template-columns:  auto auto;
+        grid-template-columns: auto auto;
     }
     .portfolio_banner_rectangle_content {
         justify-content: flex-start;
