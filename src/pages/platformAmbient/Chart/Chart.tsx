@@ -1,26 +1,26 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import {
+    MouseEvent,
     useCallback,
     useContext,
     useEffect,
+    useMemo,
     useRef,
     useState,
-    useMemo,
-    MouseEvent,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { PoolContext } from '../../../contexts/PoolContext';
-import './Chart.css';
 import {
     pinTickLower,
     pinTickUpper,
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import useHandleSwipeBack from '../../../utils/hooks/useHandleSwipeBack';
+import { CSSTransition } from 'react-transition-group';
 import { candleTimeIF } from '../../../App/hooks/useChartSettings';
+import useDebounce from '../../../App/hooks/useDebounce';
+import { useDrawSettings } from '../../../App/hooks/useDrawSettings';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import {
     diffHashSig,
@@ -30,27 +30,49 @@ import {
     getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
 } from '../../../ambient-utils/dataLayer';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { CandleContext } from '../../../contexts/CandleContext';
-import { SidebarContext } from '../../../contexts/SidebarContext';
-import { RangeContext } from '../../../contexts/RangeContext';
+import {
+    pinTickToTickLower,
+    pinTickToTickUpper,
+} from '../../../ambient-utils/dataLayer/functions/pinTick';
 import {
     CandleDataIF,
-    CandlesByPoolAndDurationIF,
     CandleDomainIF,
     CandleScaleIF,
+    CandlesByPoolAndDurationIF,
     TransactionIF,
 } from '../../../ambient-utils/types';
-import CandleChart from './Candle/CandleChart';
-import LiquidityChart from './Liquidity/LiquidityChart';
-import VolumeBarCanvas from './Volume/VolumeBarCanvas';
-import { CSSTransition } from 'react-transition-group';
 import Divider from '../../../components/Global/Divider/Divider';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { BrandContext } from '../../../contexts/BrandContext';
+import { CandleContext } from '../../../contexts/CandleContext';
+import { ChartContext } from '../../../contexts/ChartContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { RangeContext } from '../../../contexts/RangeContext';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import useHandleSwipeBack from '../../../utils/hooks/useHandleSwipeBack';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import { updatesIF } from '../../../utils/hooks/useUrlParams';
+import { formatDollarAmountAxis } from '../../../utils/numbers';
+import ChartSettings from '../../Chart/ChartSettings/ChartSettings';
+import { filterCandleWithTransaction } from '../../Chart/ChartUtils/discontinuityScaleUtils';
+import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
+import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 import YAxisCanvas from './Axes/yAxis/YaxisCanvas';
-import TvlChart from './Tvl/TvlChart';
-import LimitLineChart from './LimitLine/LimitLineChart';
-import FeeRateChart from './FeeRate/FeeRateChart';
-import RangeLinesChart from './RangeLine/RangeLinesChart';
+import CandleChart from './Candle/CandleChart';
+import './Chart.css';
+import {
+    LS_KEY_CHART_ANNOTATIONS,
+    defaultCandleBandwith,
+    mainCanvasElementId,
+    xAxisBuffer,
+    xAxisHeightPixel,
+    xAxisMobileBuffer,
+} from './ChartUtils/chartConstants';
 import {
     CandleDataChart,
     SubChartValue,
@@ -61,7 +83,6 @@ import {
     checkShowLatestCandle,
     crosshair,
     fillLiqAdvanced,
-    roundToNearestPreset,
     formatTimeDifference,
     getCandleCount,
     getInitialDisplayCandleCount,
@@ -72,60 +93,39 @@ import {
     liquidityChartData,
     renderCanvasArray,
     renderSubchartCrCanvas,
+    roundToNearestPreset,
     scaleData,
     selectedDrawnData,
     setCanvasResolution,
     standardDeviation,
     timeGapsValue,
 } from './ChartUtils/chartUtils';
+import { checkCircleLocation, createCircle } from './ChartUtils/circle';
+import useDollarPrice from './ChartUtils/getDollarPrice';
 import { Zoom } from './ChartUtils/zoom';
-import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import useDebounce from '../../../App/hooks/useDebounce';
-import DrawCanvas from './Draw/DrawCanvas/DrawCanvas';
-import {
-    createAnnotationLineSeries,
-    createLinearLineSeries,
-    distanceToLine,
-} from './Draw/DrawCanvas/LinearLineSeries';
 import {
     createArrowPointsOfDPRangeLine,
     createBandArea,
     createPointsOfBandLine,
     createPointsOfDPRangeLine,
 } from './Draw/DrawCanvas/BandArea';
-import { checkCircleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
-import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
-import { updatesIF } from '../../../utils/hooks/useUrlParams';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { formatDollarAmountAxis } from '../../../utils/numbers';
-import { ChartContext } from '../../../contexts/ChartContext';
-import { useDrawSettings } from '../../../App/hooks/useDrawSettings';
+import DrawCanvas from './Draw/DrawCanvas/DrawCanvas';
 import {
-    LS_KEY_CHART_ANNOTATIONS,
-    defaultCandleBandwith,
-    mainCanvasElementId,
-    xAxisBuffer,
-    xAxisHeightPixel,
-    xAxisMobileBuffer,
-} from './ChartUtils/chartConstants';
+    createAnnotationLineSeries,
+    createLinearLineSeries,
+    distanceToLine,
+} from './Draw/DrawCanvas/LinearLineSeries';
+import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
+import FeeRateChart from './FeeRate/FeeRateChart';
+import LimitLineChart from './LimitLine/LimitLineChart';
+import CandleLineChart from './LineChart/LineChart';
+import LiquidityChart from './Liquidity/LiquidityChart';
 import OrderHistoryCanvas from './OrderHistoryCh/OrderHistoryCanvas';
 import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import useDollarPrice from './ChartUtils/getDollarPrice';
-import {
-    pinTickToTickLower,
-    pinTickToTickUpper,
-} from '../../../ambient-utils/dataLayer/functions/pinTick';
-import { filterCandleWithTransaction } from '../../Chart/ChartUtils/discontinuityScaleUtils';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import ChartSettings from '../../Chart/ChartSettings/ChartSettings';
-import { BrandContext } from '../../../contexts/BrandContext';
-import CandleLineChart from './LineChart/LineChart';
-import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
+import RangeLinesChart from './RangeLine/RangeLinesChart';
+import TvlChart from './Tvl/TvlChart';
+import VolumeBarCanvas from './Volume/VolumeBarCanvas';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -212,6 +212,18 @@ export default function Chart(props: propsIF) {
     } = props;
 
     const {
+        tokenA,
+        tokenB,
+        isDenomBase,
+        isTokenABase: isBid,
+        setIsTokenAPrimary,
+        limitTick,
+        setLimitTick,
+        currentPoolPriceTick,
+        noGoZoneBoundaries,
+        setNoGoZoneBoundaries,
+    } = useContext(TradeDataContext);
+    const {
         activeNetwork: { gridSize, chainId },
     } = useContext(AppStateContext);
     const {
@@ -288,19 +300,9 @@ export default function Chart(props: propsIF) {
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
 
-    const currentPool = useContext(TradeDataContext);
-    const {
-        tokenA,
-        tokenB,
-        isDenomBase,
-        isTokenABase: isBid,
-        setIsTokenAPrimary,
-        limitTick,
-        setLimitTick,
-        currentPoolPriceTick,
-        noGoZoneBoundaries,
-        setNoGoZoneBoundaries,
-    } = currentPool;
+    // useEffect(() => {
+    console.log({ tokenA, tokenB });
+    // }, [tokenA, tokenB]);
 
     const [isChartZoom, setIsChartZoom] = useState(false);
     const [cursorStyleTrigger, setCursorStyleTrigger] = useState(false);
@@ -3189,11 +3191,11 @@ export default function Chart(props: propsIF) {
                     drawnShapeHistory?.forEach((item) => {
                         if (item.pool) {
                             const isShapeInCurrentPool =
-                                currentPool.tokenA.address ===
+                                tokenA.address ===
                                     (isTokenABase === item.pool.isTokenABase
                                         ? item.pool.tokenA
                                         : item.pool.tokenB) &&
-                                currentPool.tokenB.address ===
+                                tokenB.address ===
                                     (isTokenABase === item.pool.isTokenABase
                                         ? item.pool.tokenB
                                         : item.pool.tokenA);
@@ -4589,7 +4591,8 @@ export default function Chart(props: propsIF) {
         diffHashSig(drawnShapeHistory),
         isLineDrag,
         period,
-        currentPool,
+        tokenA,
+        tokenB,
         showSwap,
         isCondensedModeEnabled,
     ]);
@@ -5032,11 +5035,11 @@ export default function Chart(props: propsIF) {
 
         drawnShapeHistory.forEach((element) => {
             const isShapeInCurrentPool =
-                currentPool.tokenA.address ===
+                tokenA.address ===
                     (isTokenABase === element.pool.isTokenABase
                         ? element.pool.tokenA
                         : element.pool.tokenB) &&
-                currentPool.tokenB.address ===
+                tokenB.address ===
                     (isTokenABase === element.pool.isTokenABase
                         ? element.pool.tokenB
                         : element.pool.tokenA);
