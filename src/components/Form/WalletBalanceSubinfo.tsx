@@ -269,8 +269,9 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                     alignItems='center'
                     gap={8}
                     fontSize='body'
-                    style={{marginRight: isWithdraw || isDexSelected ? '0' : '4px'}}
-                   
+                    style={{
+                        marginRight: isWithdraw || isDexSelected ? '0' : '4px',
+                    }}
                 >
                     {walletPriceWithTooltip}
                     {onMaxButtonClick &&

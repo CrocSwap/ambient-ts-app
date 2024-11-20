@@ -14,13 +14,12 @@
     /* padding: 0 8px; */
 }
 
-.gridContainer:hover{
+.gridContainer:hover {
     background: var(--dark2);
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
     border-radius: 4px;
 }
-
 
 .gridItem {
     box-sizing: border-box;
@@ -72,7 +71,7 @@
         background-position: -100% 0;
     }
 }
-.skeletonItem{
+.skeletonItem {
     background: linear-gradient(
         to right,
         var(--dark2) 0%,
@@ -86,7 +85,6 @@
 
     color: transparent;
     pointer-events: none !important;
-   
 }
 /* END OF SKELETON */
 
@@ -106,14 +104,11 @@
 }
 
 @media only screen and (min-width: 1024px) {
-
-  
     .gridItem,
     .tradeButton,
     .tradeButton,
     .poolName {
         width: 100px;
-       
     }
 
     .gridItem {
@@ -126,9 +121,5 @@
     .tradeButton,
     .poolName {
         width: 133px;
-        
     }
-
-   
 }
-

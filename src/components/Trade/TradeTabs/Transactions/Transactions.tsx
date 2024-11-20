@@ -168,7 +168,6 @@ function Transactions(props: propsIF) {
         changes: [...getInitialChangesData()],
     });
 
-
     const [hotTransactions, setHotTransactions] = useState<TransactionIF[]>([]);
 
     const fetchedTransactionsRef = useRef<Changes>();

@@ -1,4 +1,4 @@
-.container{
+.container {
     height: auto;
     border: none;
     overflow: hidden;
@@ -8,8 +8,7 @@
 }
 
 @media only screen and (min-width: 768px) {
-    .container{
-        
+    .container {
         height: 510px;
         border-radius: var(--border-radius);
         box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
@@ -19,5 +18,4 @@
         right: 5px;
         border: 1px solid var(--accent1);
     }
-
 }

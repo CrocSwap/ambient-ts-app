@@ -6,8 +6,7 @@ import React, {
     useContext,
 } from 'react';
 import { AnimatePresence, useAnimation, motion } from 'framer-motion';
-import styles from './ActivityIndicator.module.css'
-
+import styles from './ActivityIndicator.module.css';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
@@ -57,8 +56,13 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
     const isFuta = ['futa'].includes(platformName);
 
     const pendingCircle = (
-        <button className={`${styles.circleContainer}${isFuta ? styles.circleContainerFuta : ''}`} onClick={toggleNotificationCenter} >
-            <span className={`${styles.ring}${isFuta ? styles.ringFuta : ''}`}  />
+        <button
+            className={`${styles.circleContainer}${isFuta ? styles.circleContainerFuta : ''}`}
+            onClick={toggleNotificationCenter}
+        >
+            <span
+                className={`${styles.ring}${isFuta ? styles.ringFuta : ''}`}
+            />
         </button>
     );
 
@@ -66,7 +70,8 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
     return (
         <AnimatePresence>
             {value > 0 && (
-                <motion.button className={styles.circleButton}
+                <motion.button
+                    className={styles.circleButton}
                     initial={false}
                     exit='hidden'
                     animate='visible'
@@ -76,13 +81,13 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
                     tabIndex={0}
                     aria-label='Notification center'
                 >
-                    <motion.div className={styles.activityIndicatorDiv}
-                        style={{borderRadius: isFuta ? '0' : '50%'}}
+                    <motion.div
+                        className={styles.activityIndicatorDiv}
+                        style={{ borderRadius: isFuta ? '0' : '50%' }}
                         animate={controls}
                         whileHover='hover'
                         whileTap='pressed'
                         variants={animStates}
-                        
                     >
                         <span
                             aria-live='polite'

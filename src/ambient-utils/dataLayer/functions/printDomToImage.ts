@@ -5,7 +5,7 @@ export const printDomToImage = async (
     background?: string,
     additionalStyles?: Partial<CSSStyleDeclaration>,
     height?: number,
-    filterNode?:((el: Node) => boolean),
+    filterNode?: (el: Node) => boolean,
 ) => {
     const scale = 2;
     try {
@@ -20,7 +20,7 @@ export const printDomToImage = async (
                 height: node.offsetHeight + 'px',
                 ...additionalStyles,
             },
-            filter:filterNode,
+            filter: filterNode,
         });
         return blob;
     } catch (e) {

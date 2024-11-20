@@ -664,7 +664,7 @@ function TradeCandleStickChart(props: propsIF) {
     }, [candleScale.isFetchFirst200Candle]);
 
     useEffect(() => {
-        if (!mobileView) { 
+        if (!mobileView) {
             setMinPrice(0);
             setMaxPrice(0);
         }

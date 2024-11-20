@@ -50,13 +50,13 @@ export default function SidebarRangePositionsCard(props: propsIF) {
               })
             : '...'
         : position.quoteUsdPrice
-        ? getFormattedNumber({
-              value:
-                  position.bidTickInvPriceDecimalCorrected *
-                  position.quoteUsdPrice,
-              prefix: '$',
-          })
-        : '...';
+          ? getFormattedNumber({
+                value:
+                    position.bidTickInvPriceDecimalCorrected *
+                    position.quoteUsdPrice,
+                prefix: '$',
+            })
+          : '...';
 
     const formattedHighUsdPrice = position.isBaseTokenMoneynessGreaterOrEqual
         ? position.baseUsdPrice
@@ -68,23 +68,23 @@ export default function SidebarRangePositionsCard(props: propsIF) {
               })
             : '...'
         : position.quoteUsdPrice
-        ? getFormattedNumber({
-              value:
-                  position.askTickInvPriceDecimalCorrected *
-                  position.quoteUsdPrice,
-              prefix: '$',
-          })
-        : '...';
+          ? getFormattedNumber({
+                value:
+                    position.askTickInvPriceDecimalCorrected *
+                    position.quoteUsdPrice,
+                prefix: '$',
+            })
+          : '...';
 
     const rangeDisplayUsd = `${formattedLowUsdPrice}-${formattedHighUsdPrice}`;
 
     const rangeDisplay = isTradeDollarizationEnabled
         ? rangeDisplayUsd
         : position?.positionType === 'ambient'
-        ? 'ambient'
-        : isDenomBase
-        ? `${quoteTokenCharacter}${position?.lowRangeDisplayInBase}-${quoteTokenCharacter}${position?.highRangeDisplayInBase}`
-        : `${baseTokenCharacter}${position?.lowRangeDisplayInQuote}-${baseTokenCharacter}${position?.highRangeDisplayInQuote}`;
+          ? 'ambient'
+          : isDenomBase
+            ? `${quoteTokenCharacter}${position?.lowRangeDisplayInBase}-${quoteTokenCharacter}${position?.highRangeDisplayInBase}`
+            : `${baseTokenCharacter}${position?.lowRangeDisplayInQuote}-${baseTokenCharacter}${position?.highRangeDisplayInQuote}`;
 
     // human-readable string showing total value of the position
     const value = getFormattedNumber({
@@ -114,8 +114,8 @@ export default function SidebarRangePositionsCard(props: propsIF) {
                         position.positionType === 'ambient'
                             ? 'ambient'
                             : position.isPositionInRange
-                            ? 'positive'
-                            : 'negative'
+                              ? 'positive'
+                              : 'negative'
                     }
                 />
             </FlexContainer>

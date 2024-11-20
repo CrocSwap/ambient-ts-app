@@ -182,7 +182,6 @@ export default function VaultWithdraw(props: propsIF) {
 
     const pooledDisplay = (
         <section className={styles.pooledContent}>
-         
             <div className={styles.pooledContentContainer}>
                 Deposited {mainAsset.symbol}
                 <div className={styles.alignCenter}>
@@ -335,7 +334,6 @@ export default function VaultWithdraw(props: propsIF) {
                             style={{ zIndex: '5' }}
                         >
                             <p>Slippage Tolerance</p>
-                    
                         </FlexContainer>
                         <div
                             className={styles.slipTolValueContainer}

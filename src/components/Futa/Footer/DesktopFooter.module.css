@@ -10,11 +10,9 @@
 
 .futa_footer_desktop * {
     font-family: 'Fira Mono', monospace;
-
 }
 
 .futa_footer_desktop > div {
     display: flex;
     flex-basis: row nowrap;
 }
-

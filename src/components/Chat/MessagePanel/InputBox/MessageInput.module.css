@@ -17,7 +17,7 @@
     position: relative;
     bottom: 0;
 }
-.message_input_field{
+.message_input_field {
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
@@ -34,7 +34,7 @@
     flex-grow: 1;
 }
 
-.message_input_field_limit_exceeded{
+.message_input_field_limit_exceeded {
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
@@ -133,7 +133,6 @@
     cursor: not-allowed;
 }
 
-
 .emojiPicker {
     width: 97%;
     padding: 0px 8px;
@@ -194,7 +193,7 @@
     cursor: not-allowed;
 }
 
-.not_LoggedIn_svgButton:hover{
+.not_LoggedIn_svgButton:hover {
     fill: var(--text2);
 }
 
@@ -285,36 +284,36 @@
     flex-grow: 1;
 }
 
-
-.disabled_text{
+.disabled_text {
     text-align: center;
-    font-size: .72rem;
+    font-size: 0.72rem;
     font-weight: 600;
     color: var(--accent1);
     opacity: 1;
     /* animation: opaToggle 2s ease-in-out infinite; */
-
 }
 
-.not_LoggedIn_send_message_button svg, .not_LoggedIn_svgButton, .not_LoggedIn_send_message_button svg path, .not_LoggedIn_svgButton path{
+.not_LoggedIn_send_message_button svg,
+.not_LoggedIn_svgButton,
+.not_LoggedIn_send_message_button svg path,
+.not_LoggedIn_svgButton path {
     cursor: not-allowed !important;
 }
 
-@keyframes opaToggle{
+@keyframes opaToggle {
     from {
         opacity: 1;
     }
-    to{
+    to {
         opacity: 0;
     }
-
 }
 
-section[class^="emoji-scroll-wrapper"]{
+section[class^='emoji-scroll-wrapper'] {
     scroll-behavior: auto;
 }
 
-.hidden_picker_wrapper{
+.hidden_picker_wrapper {
     position: fixed;
     top: 3rem;
     left: 50%;
@@ -322,99 +321,97 @@ section[class^="emoji-scroll-wrapper"]{
     z-index: -1;
 }
 
-.custom_emoji_pool{
+.custom_emoji_pool {
     display: none;
 }
 
-.custom_emoji_picker_wrapper{
-    bottom: -5rem;    
+.custom_emoji_picker_wrapper {
+    bottom: -5rem;
     position: absolute;
-    transition: all .2s ease-in-out;
+    transition: all 0.2s ease-in-out;
     max-width: 18rem;
     /* display: flex; */
     overflow: hidden;
     box-shadow: 0px 0px 12px color-mix(in srgb, var(--accent1) 20%, transparent);
     background-color: color-mix(in srgb, var(--accent1) 20%, transparent);
     backdrop-filter: blur(5px);
-    border-radius: .2rem;
-    padding: .5rem 0;
+    border-radius: 0.2rem;
+    padding: 0.5rem 0;
     white-space: nowrap;
 }
 
-.custom_emoji_picker_wrapper.active{
+.custom_emoji_picker_wrapper.active {
     bottom: 3rem;
 }
 
-.custom_emoji_picker_wrapper button, .custom_emoji_picker_wrapper span{
-    transition: all .2s ease-in-out;
+.custom_emoji_picker_wrapper button,
+.custom_emoji_picker_wrapper span {
+    transition: all 0.2s ease-in-out;
     /* flex:  1 1; */
     display: inline-block;
     background: transparent;
     border: none;
-    margin-left: .2rem;
-    border-radius: .4rem;
+    margin-left: 0.2rem;
+    border-radius: 0.4rem;
     cursor: pointer;
     width: 2rem;
 }
 
-.custom_emoji_picker_wrapper button.focused, .custom_emoji_picker_wrapper span.focused{
-
+.custom_emoji_picker_wrapper button.focused,
+.custom_emoji_picker_wrapper span.focused {
     background-color: color-mix(in srgb, var(--accent1) 70%, transparent);
     transform: scale(1.3);
 }
 
-.custom_emoji_picker_wrapper button img, .custom_emoji_picker_wrapper span img{
+.custom_emoji_picker_wrapper button img,
+.custom_emoji_picker_wrapper span img {
     max-height: 100%;
     max-width: 100%;
-    padding: .2rem;
+    padding: 0.2rem;
     vertical-align: middle;
 }
 
-.emoji_node{
-    flex:  1 1;
-    padding: .5rem;
+.emoji_node {
+    flex: 1 1;
+    padding: 0.5rem;
 }
 
-
-
-
-
-
-
-
-@media only screen and (max-width: 600px){
-
-    .input, .input_not_allowed {
+@media only screen and (max-width: 600px) {
+    .input,
+    .input_not_allowed {
         width: 100vw;
-            border-radius: 0;
-            bottom: 0;
-            padding: 1.6rem;
-            margin-bottom: 0;
+        border-radius: 0;
+        bottom: 0;
+        padding: 1.6rem;
+        margin-bottom: 0;
     }
 
-    .send_message_button, .not_LoggedIn_send_message_button{
-        box-shadow: 0px 0px 20px 0px rgba(115,113,252,1);
+    .send_message_button,
+    .not_LoggedIn_send_message_button {
+        box-shadow: 0px 0px 20px 0px rgba(115, 113, 252, 1);
         background: var(--accent1);
-        padding: .2rem;
-        border-radius: .4rem;
-        margin-left: .5rem;
+        padding: 0.2rem;
+        border-radius: 0.4rem;
+        margin-left: 0.5rem;
         margin-top: -0.2rem;
     }
-    
-    .not_LoggedIn_send_message_button{
+
+    .not_LoggedIn_send_message_button {
         box-shadow: none;
         background: #4a6081;
         cursor: not-allowed !important;
     }
 
-    .send_message_button svg, .not_LoggedIn_send_message_button svg{
+    .send_message_button svg,
+    .not_LoggedIn_send_message_button svg {
         width: 1.4rem;
         height: 1.4rem;
         display: block;
         margin: 0 auto;
     }
-    
-    .send_message_button svg path, .not_LoggedIn_send_message_button svg path{
+
+    .send_message_button svg path,
+    .not_LoggedIn_send_message_button svg path {
         stroke: white;
         stroke-opacity: 1;
         cursor: not-allowed !important;
@@ -422,9 +419,9 @@ section[class^="emoji-scroll-wrapper"]{
     .send_message_button .svgButton {
         color: white !important;
     }
-    .not_LoggedIn_svgButton, .svgButton{
+    .not_LoggedIn_svgButton,
+    .svgButton {
         width: 1.2rem;
         height: 1.2rem;
     }
-
 }

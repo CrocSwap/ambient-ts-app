@@ -24,7 +24,10 @@ import {
 } from '../../Chat/ChatUtils';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useOnBoundryChange from '../../../utils/hooks/useOnBoundryChange';
-import { AppStateContext, AppStateContextIF } from '../../../contexts/AppStateContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../contexts/AppStateContext';
 
 type ShimmerListProps = {
     count: number;

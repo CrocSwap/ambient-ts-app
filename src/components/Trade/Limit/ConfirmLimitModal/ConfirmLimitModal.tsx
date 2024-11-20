@@ -54,7 +54,7 @@ export default function ConfirmLimitModal(props: propsIF) {
     const displayPoolPriceWithDenom =
         isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
-            : poolPriceDisplay ?? 0;
+            : (poolPriceDisplay ?? 0);
 
     const displayPoolPriceString = getFormattedNumber({
         value: displayPoolPriceWithDenom,

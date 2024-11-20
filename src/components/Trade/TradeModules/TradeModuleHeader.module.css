@@ -1,11 +1,11 @@
-.main_container{
+.main_container {
     width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     font-size: var(--header1-size);
-    color: var(--text2)
+    color: var(--text2);
 }
 
 .main_container svg {
@@ -18,40 +18,34 @@
     color: var(--accent1) !important;
 }
 
-
-.mobile_container{
+.mobile_container {
     width: 100%;
-  
-    
-   
+
     align-items: center;
     height: 35px;
 
     display: grid;
     grid-template-columns: 1fr 50px;
     gap: 8px;
-
-   
-    
 }
 
-.icon_container{
+.icon_container {
     outline: transparent;
     border: transparent;
     background: var(--dark2);
-  display: flex;
- 
+    display: flex;
+
     justify-content: center;
     align-items: center;
     padding: 2px 0;
     border-radius: var(--border-radius);
 }
 
-.token_pair{
+.token_pair {
     color: var(--text1);
     font-size: var(--header1-size);
     cursor: pointer;
 }
-.swap_title{
+.swap_title {
     color: var(--text1);
 }

@@ -5,7 +5,8 @@ interface propsIF {
 }
 
 export default function AddressPrint(props: propsIF) {
-    const address = props.address ?? '0x0000000000000000000000000000000000000000';
+    const address =
+        props.address ?? '0x0000000000000000000000000000000000000000';
 
     const [paths, setPaths] = useState<
         { path: string | undefined; opacity: number; id: string }[]
@@ -127,7 +128,12 @@ export default function AddressPrint(props: propsIF) {
             ref={containerRef}
             width={'100%'}
             height={'100%'}
-            style={{ position: 'absolute', cursor: 'default', pointerEvents: 'none', overflow: 'hidden' }}
+            style={{
+                position: 'absolute',
+                cursor: 'default',
+                pointerEvents: 'none',
+                overflow: 'hidden',
+            }}
         >
             <defs>
                 {Array.from({ length: numLines }, (_, index) => (

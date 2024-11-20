@@ -8,23 +8,16 @@ interface ContentContainerPropsIF {
 }
 
 export default function ContentContainer(props: ContentContainerPropsIF) {
-    const {
-        children,
-        isOnTradeRoute,
-        style
-    } = props;
+    const { children, isOnTradeRoute, style } = props;
 
     const tradeRouteStyle = isOnTradeRoute
         ? styles.trade_route
-        : styles.swap_route
-    
+        : styles.swap_route;
 
     return (
         <section className={tradeRouteStyle} style={style}>
-            <div className={styles.container} >
-                <div className={styles.main_content}>
-                    {children}
-                </div>
+            <div className={styles.container}>
+                <div className={styles.main_content}>{children}</div>
             </div>
         </section>
     );

@@ -476,7 +476,10 @@ function YAxisCanvas(props: yAxisIF) {
                         : liqTransitionPointforDepth
                     : poolPriceDisplay;
 
-                if ((simpleRangeWidth !== 100 || advancedMode) &&  !(low ===0 && high === 0)) {
+                if (
+                    (simpleRangeWidth !== 100 || advancedMode) &&
+                    !(low === 0 && high === 0)
+                ) {
                     const { tick: lowTick, tickSubString: lowTickSubString } =
                         prepareTickLabel(low);
 

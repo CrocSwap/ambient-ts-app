@@ -60,7 +60,6 @@
     color: var(--accent1);
 }
 
-
 .active_label_container {
     font-size: 15px;
     color: var(--accent1);
@@ -214,11 +213,11 @@
         grid-template-columns: repeat(3, 33%);
     }
 
-    .navbar_header_container{
+    .navbar_header_container {
         grid-template-columns: 75% 25%;
     }
 
-    .single_tab{
+    .single_tab {
         justify-content: center;
     }
 }
