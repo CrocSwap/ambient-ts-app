@@ -841,8 +841,18 @@ function TradeCandleStickChart(props: propsIF) {
                         isChangeScaleChart &&
                         !isShowLatestCandle
                     ) {
+
+                        // const drawFactor = scaleData.xScale.domain();
+
+                        // const factorLeft = domainLeft / drawFactor[0];
+                        // const factorRight = domainRight / drawFactor[1];
+
+                        // const newDrawDomainLeft = factorLeft * scaleData.drawingLinearxScale.domain()[0];
+                        // const newDrawDomainRight = factorRight * scaleData.drawingLinearxScale.domain()[1];
+                        
+                        // console.log(scaleData.drawingLinearxScale.domain(), newDrawDomainLeft , newDrawDomainRight);
+
                         scaleData.xScale.domain([domainLeft, domainRight]);
-                        console.log('nedir')
                         scaleData.drawingLinearxScale.domain([domainLeft, domainRight]);
 
                         let nCandles = Math.floor(
@@ -929,6 +939,7 @@ function TradeCandleStickChart(props: propsIF) {
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
             resetXScale(scaleData.xScale);
+            resetXScale(scaleData.drawingLinearxScale);
 
             setCandleScale((prev: CandleScaleIF) => {
                 return {

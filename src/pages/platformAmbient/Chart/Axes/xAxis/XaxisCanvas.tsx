@@ -50,6 +50,7 @@ interface xAxisIF {
     isUpdatingShape: boolean;
     timeGaps: timeGapsValue[];
     isDiscontinuityScaleEnabled: boolean;
+    bandwidth: number;
 }
 
 function XAxisCanvas(props: xAxisIF) {
@@ -76,6 +77,7 @@ function XAxisCanvas(props: xAxisIF) {
         isUpdatingShape,
         timeGaps,
         isDiscontinuityScaleEnabled,
+        bandwidth,
     } = props;
 
     const { timeOfEndCandle } = useContext(CandleContext);
@@ -517,6 +519,7 @@ function XAxisCanvas(props: xAxisIF) {
                                     scaleData,
                                     firstCandleDate,
                                     previousTouch,
+                                    bandwidth,
                                 );
                             }
                             changeScale(true);

@@ -3,8 +3,6 @@ import { findSnapTime, scaleData, timeGapsValue } from './chartUtils';
 import * as d3 from 'd3';
 import { CandleDomainIF } from '../../../../ambient-utils/types';
 
-const maxNumCandlesForZoom = 2000;
-
 export class Zoom {
     setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>;
     period: number;
@@ -501,65 +499,38 @@ export class Zoom {
         firstCandleDate: number,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         previousTouch: any,
+        bandwidth: number,
     ) {
         const domainX = scaleData?.xScale.domain();
+        const drawDomain = scaleData?.drawingLinearxScale.domain();
 
-        let deltaX;
+        let dx = event.movementX;
+
         if (event.type === 'touchmove') {
-            deltaX = this.handlePanningXMobile(event, scaleData, previousTouch);
-        } else {
-            deltaX = this.handlePanningXDesktop(event, scaleData);
+            const touch = event.changedTouches[0];
+            const currentPageX = touch.pageX;
+            const previousTouchPageX = previousTouch.pageX;
+            const movement = currentPageX - previousTouchPageX;
+            // calculate panning speed based on bandwidth
+            dx = movement * (bandwidth < 1 ? 1 : Math.sqrt(bandwidth));
         }
-        const lastTime = domainX[1];
 
-        const firstTime = domainX[0];
-        const isZoomingIn = deltaX > 0;
+        const newMinDomainDrawScale = scaleData?.drawingLinearxScale.invert(
+            scaleData?.drawingLinearxScale.range()[0] - dx,
+        );
 
-        const isZoomingOutCandleCount =
-            isZoomingIn ||
-            Math.abs(lastTime - firstTime) <=
-                this.period * 1000 * maxNumCandlesForZoom;
+        scaleData?.drawingLinearxScale.domain([
+            newMinDomainDrawScale,
+            drawDomain[1],
+        ]);
 
-        if (deltaX !== undefined && isZoomingOutCandleCount) {
-            this.getNewCandleDataLeft(domainX[0] + deltaX, firstCandleDate);
+        const newMinDomain = scaleData?.xScale.invert(
+            scaleData?.xScale.range()[0] - dx,
+        );
 
-            scaleData?.xScale.domain([domainX[0] + deltaX, domainX[1]]);
-        }
-    }
+        this.getNewCandleDataLeft(newMinDomain, firstCandleDate);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public handlePanningXDesktop(event: any, scaleData: scaleData) {
-        const domainX = scaleData?.xScale.domain();
-
-        const linearX = d3
-            .scaleTime()
-            .domain(scaleData?.xScale.range())
-            .range([0, domainX[1] - domainX[0]]);
-
-        const deltaX = linearX(-event.movementX);
-        return deltaX;
-    }
-
-    public handlePanningXMobile(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        event: any,
-        scaleData: scaleData,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        previousTouch: any,
-    ) {
-        const domainX = scaleData?.xScale.domain();
-        const linearX = d3
-            .scaleTime()
-            .domain(scaleData?.xScale.range())
-            .range([0, domainX[1] - domainX[0]]);
-
-        const touch = event.changedTouches[0];
-        const currentPageX = touch.pageX;
-        const previousTouchPageX = previousTouch.pageX;
-        const movement = previousTouchPageX - currentPageX;
-        const deltaX = linearX(movement);
-
-        return deltaX;
+        scaleData?.xScale.domain([newMinDomain, domainX[1]]);
     }
 
     public handlePanningYMobile(

@@ -6334,6 +6334,7 @@ export default function Chart(props: propsIF) {
                         isUpdatingShape={isUpdatingShape}
                         timeGaps={timeGaps}
                         isDiscontinuityScaleEnabled={isCondensedModeEnabled}
+                        bandwidth={bandwidth}
                     />
                 </div>
             </d3fc-group>
