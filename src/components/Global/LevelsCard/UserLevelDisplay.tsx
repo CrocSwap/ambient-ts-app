@@ -33,8 +33,8 @@ export default function UserLevelDisplay(props: propsIF) {
     const linkToNavigateTo: string = user
         ? `/${user}/xp`
         : resolvedAddressFromContext
-        ? `/${resolvedAddressFromContext}/xp`
-        : `/${userAddress}/xp`;
+          ? `/${resolvedAddressFromContext}/xp`
+          : `/${userAddress}/xp`;
 
     const progressPercentage = progressToNextLevel(globalPoints ?? 0);
 
@@ -51,7 +51,10 @@ export default function UserLevelDisplay(props: propsIF) {
     });
 
     return (
-        <Link to={linkToNavigateTo} className={`${styles.level_only_container} ${isMobileDropdown && styles.mobile_dropdown}`}>
+        <Link
+            to={linkToNavigateTo}
+            className={`${styles.level_only_container} ${isMobileDropdown && styles.mobile_dropdown}`}
+        >
             <div
                 className={`${styles.level_border} ${
                     formattedXpLevel.length > 2 ? styles.auto_width : ''

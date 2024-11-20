@@ -9,7 +9,6 @@
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
     z-index: 999;
-
 }
 
 /* Modal container (for desktop) */
@@ -50,7 +49,6 @@
     /* max-height: 80vh; */
     color: var(--text1);
     /* min-height: 80vh; */
-
 }
 
 .no_background_modal {
@@ -102,7 +100,6 @@
 
 /* Bottom Sheet (for mobile) */
 .bottom_sheet {
-    
     position: fixed;
     left: 0;
     right: 0;
@@ -121,11 +118,9 @@
         height 0.3s ease,
         backdrop-filter 0.3s ease;
 
-        max-height: 70sdh;
-        overflow-y: auto;
-        z-index: 999;
-       
-        
+    max-height: 70sdh;
+    overflow-y: auto;
+    z-index: 999;
 }
 
 /* Drag handle for bottom sheet */

@@ -141,11 +141,9 @@
 }
 
 @media only screen and (max-width: 1280px) {
-.poolName{
-    font-size: 14px;
-}
-
-
+    .poolName {
+        font-size: 14px;
+    }
 }
 @media only screen and (max-width: 768px) {
     .vaultHeader,

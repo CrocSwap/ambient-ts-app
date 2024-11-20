@@ -18,7 +18,7 @@ function SwapFuta() {
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 768px)');
 
-    const { isCandleDataNull,isFullScreen } = useContext(ChartContext);
+    const { isCandleDataNull, isFullScreen } = useContext(ChartContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
@@ -101,9 +101,7 @@ function SwapFuta() {
         >
             {mobileTabs}
 
-            <div style={{ height: '100%'}}>
-                {activeTabData}
-            </div>
+            <div style={{ height: '100%' }}>{activeTabData}</div>
         </section>
     );
 
@@ -111,7 +109,12 @@ function SwapFuta() {
 
     return (
         <section className={styles.mainSection}>
-            <div className={styles.chartSection} style={isFullScreen ? {gridColumnStart:1, gridColumnEnd:4} : {}}>
+            <div
+                className={styles.chartSection}
+                style={
+                    isFullScreen ? { gridColumnStart: 1, gridColumnEnd: 4 } : {}
+                }
+            >
                 <Divider count={2} />
                 <Trade futaActiveTab={activeTab} />
             </div>

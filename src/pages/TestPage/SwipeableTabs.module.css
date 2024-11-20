@@ -2,15 +2,15 @@
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
-  }
-  
-  .tabLabels {
+}
+
+.tabLabels {
     display: flex;
     justify-content: space-around;
     margin-bottom: 16px;
-  }
-  
-  .tabLabel {
+}
+
+.tabLabel {
     padding: 8px 16px;
     cursor: pointer;
     border: none;
@@ -18,23 +18,22 @@
     font-size: 16px;
     color: #666;
     transition: color 0.3s ease;
-  }
-  
-  .tabLabel:hover {
+}
+
+.tabLabel:hover {
     color: #333;
-  }
-  
-  .active {
+}
+
+.active {
     color: #007bff;
     border-bottom: 2px solid #007bff;
-  }
-  
-  .tabContent {
+}
+
+.tabContent {
     padding: 16px;
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: transparent;
     min-height: 200px;
     overflow: hidden;
-  }
-  
+}

@@ -56,10 +56,9 @@ export interface UserAvatarDataIF {
     avatarCompressed: string;
 }
 
-
-export interface TutorialStepExternalComponent{
+export interface TutorialStepExternalComponent {
     component: JSX.Element;
-    placement?: 'nav-end'|'nav-before'|'nav-after' 
+    placement?: 'nav-end' | 'nav-before' | 'nav-after';
 }
 
 export interface TutorialIF {
@@ -79,7 +78,7 @@ export interface TutorialStepIF {
     assignment?: string;
     actionTrigger?: string;
     actionOnComplete?: string;
-    component? : JSX.Element;
+    component?: JSX.Element;
     navigate?: { label: string; path: string };
 }
 

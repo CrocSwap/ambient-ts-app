@@ -1,5 +1,4 @@
-
-.circleContainer{
+.circleContainer {
     position: relative;
     width: 20px;
     height: 20px;
@@ -12,13 +11,13 @@
     padding: none;
 }
 
-.circleContainerFuta{
+.circleContainerFuta {
     width: 16.66px;
     height: 16.66px;
     background-color: var(--accent1);
     border-radius: 0;
 }
-.circleButton{
+.circleButton {
     outline: none;
     padding: none;
     border: none;
@@ -53,8 +52,6 @@
     cursor: pointer;
     user-select: none;
 }
-
-
 
 .activityIndicatorDiv span {
     background: var(--title-gradient);

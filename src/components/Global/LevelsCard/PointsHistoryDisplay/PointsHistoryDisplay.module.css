@@ -1,15 +1,12 @@
-.point_history_container{
-    
+.point_history_container {
     padding: 8px;
     display: flex;
     flex-direction: column;
-    gap:8px;
+    gap: 8px;
 
-width: 100%;
-  
-
+    width: 100%;
 }
-.points_history_content{
+.points_history_content {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     border: 1px solid var(--dark3);
@@ -19,17 +16,15 @@ width: 100%;
     padding: 0 8px;
 }
 
-
-
-.points_history_header{
+.points_history_header {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     padding: 0 8px;
 }
-.hide_scroll{
+.hide_scroll {
     overflow-y: hidden;
 }
-.view_more_link{
+.view_more_link {
     background: var(--dark2);
     border: none;
     outline: none;
@@ -40,7 +35,7 @@ width: 100%;
     padding: 1px 12px;
     text-decoration: none;
     border-radius: 6.25rem;
-    cursor: pointer;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+    cursor: pointer;
     font-size: 11px;
     color: var(--text2);
 

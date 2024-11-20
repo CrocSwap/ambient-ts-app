@@ -1,15 +1,11 @@
-
-
-
-.logoContainer{
-  
-max-width: 400px;
-display: flex;
-justify-content: center;
-align-items: center;
+.logoContainer {
+    max-width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.logoContainer img{
+.logoContainer img {
     max-width: 100%;
     max-height: 100%;
 }
@@ -17,19 +13,17 @@ align-items: center;
 .flashingSvgtext {
     margin-top: 20px;
     font-family: 'Roboto Mono', monospace;
-    color: #62EBF1;
-   font-size: 18px;
+    color: #62ebf1;
+    font-size: 18px;
 
     text-align: center;
-    text-shadow: 0px 0px 27.833px #62EBF1, 0px 0px 7.952px #62EBF1;
+    text-shadow:
+        0px 0px 27.833px #62ebf1,
+        0px 0px 7.952px #62ebf1;
     opacity: 0;
     transition: opacity 0.1s;
     z-index: 5;
-
-    
 }
-
-
 
 .flashingSvgFlash {
     animation: flash 1s infinite;
@@ -40,10 +34,13 @@ align-items: center;
 }
 
 @keyframes flash {
-    0%, 50%, 100% {
+    0%,
+    50%,
+    100% {
         opacity: 1;
     }
-    25%, 75% {
+    25%,
+    75% {
         opacity: 0;
     }
 }
@@ -57,68 +54,58 @@ align-items: center;
     }
 }
 @media (max-width: 1280px) {
-
-    .terminalTextContainer{
-    padding: 0 8px;
+    .terminalTextContainer {
+        padding: 0 8px;
     }
-    .terminalContainer, .output {
-        padding: 2px !important; 
-        font-size: 15px !important; 
-      
+    .terminalContainer,
+    .output {
+        padding: 2px !important;
+        font-size: 15px !important;
+
         max-width: 100%;
         max-height: 100%;
-    
     }
 
     .flashingSvgtext {
-max-width: 50%;
+        max-width: 50%;
     }
 
-    .logoContainer{
+    .logoContainer {
         max-width: 350px;
     }
-  
 }
 
 @media (max-width: 760px) {
-
-    .actionButtonContent{
+    .actionButtonContent {
         flex-direction: row;
     }
 
-    .terminalContainer, .output {
-       
-        font-size: 12px !important; 
-      
-     
-    
+    .terminalContainer,
+    .output {
+        font-size: 12px !important;
     }
-.terminalStyle{
-   
-  
-    position: absolute;
-    top: 100px;
-}
-    .logoContainer{
+    .terminalStyle {
+        position: absolute;
+        top: 100px;
+    }
+    .logoContainer {
         width: 200px;
     }
 
-    .flashingSvgtext{
+    .flashingSvgtext {
         font-size: 12px;
     }
-  
 }
 
 @media (max-width: 500px) {
-.terminalContainer{
-   margin-top: 100px;
-}
+    .terminalContainer {
+        margin-top: 100px;
+    }
 }
 
 /* ---------EXPLORE AND LEARN BUTTON---------- */
 
 .actionButtonContent {
-  
     z-index: 2;
 
     display: flex;
@@ -128,10 +115,10 @@ max-width: 50%;
     align-items: center;
     width: 100%;
     padding: 2rem 0;
-  
 }
 
-.actionButtonContent a, .actionButtonContent button {
+.actionButtonContent a,
+.actionButtonContent button {
     display: flex;
     width: 180px !important;
     height: 57px !important;
@@ -140,7 +127,7 @@ max-width: 50%;
     flex-shrink: 0;
     border: 1px solid transparent;
 
-    font-family: "Roboto Mono";
+    font-family: 'Roboto Mono';
     font-style: normal;
     line-height: normal;
     font-weight: 400;
@@ -154,14 +141,9 @@ max-width: 50%;
     cursor: pointer;
 }
 
-
-
-
-
-
 .exploreButton {
-    background: var(--accent1, #0CCDFF);
-    color: var(--dark1, #06060C);
+    background: var(--accent1, #0ccdff);
+    color: var(--dark1, #06060c);
 }
 
 .exploreButton:hover {
@@ -172,12 +154,10 @@ max-width: 50%;
 
 .learnButton {
     background: var(--accent2, #073749);
-    color: var(--accent1, #0CCDFF);
+    color: var(--accent1, #0ccdff);
 }
 
 .learnButton:hover {
     background: transparent;
     border: 1px solid var(--accent1);
 }
-
-

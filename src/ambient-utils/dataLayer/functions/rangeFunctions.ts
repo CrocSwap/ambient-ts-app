@@ -70,19 +70,19 @@ export function getPinnedPriceValuesFromTicks(
         lowPriceDisplay < 0.0001
             ? lowPriceDisplay.toExponential(2)
             : lowPriceDisplay < 2
-            ? lowPriceDisplay > 0.1
-                ? truncateDecimals(lowPriceDisplay, 4)
-                : truncateDecimals(lowPriceDisplay, 6)
-            : truncateDecimals(lowPriceDisplay, 2);
+              ? lowPriceDisplay > 0.1
+                  ? truncateDecimals(lowPriceDisplay, 4)
+                  : truncateDecimals(lowPriceDisplay, 6)
+              : truncateDecimals(lowPriceDisplay, 2);
 
     const highPriceDisplayTruncated =
         highPriceDisplay < 0.0001
             ? highPriceDisplay.toExponential(2)
             : highPriceDisplay < 2
-            ? highPriceDisplay > 0.1
-                ? truncateDecimals(highPriceDisplay, 4)
-                : truncateDecimals(highPriceDisplay, 6)
-            : truncateDecimals(highPriceDisplay, 2);
+              ? highPriceDisplay > 0.1
+                  ? truncateDecimals(highPriceDisplay, 4)
+                  : truncateDecimals(highPriceDisplay, 6)
+              : truncateDecimals(highPriceDisplay, 2);
 
     const lowPriceDisplayTruncatedWithCommas = getFormattedNumber({
         value: lowPriceDisplay,
@@ -235,18 +235,18 @@ export function getPinnedPriceValuesFromDisplayPrices(
         pinnedMinPriceDisplay < 0.0001
             ? pinnedMinPriceDisplay.toExponential(2)
             : pinnedMinPriceDisplay < 2
-            ? pinnedMinPriceDisplay > 0.1
-                ? truncateDecimals(pinnedMinPriceDisplay, 4).toString()
-                : truncateDecimals(pinnedMinPriceDisplay, 6).toString()
-            : truncateDecimals(pinnedMinPriceDisplay, 2).toString();
+              ? pinnedMinPriceDisplay > 0.1
+                  ? truncateDecimals(pinnedMinPriceDisplay, 4).toString()
+                  : truncateDecimals(pinnedMinPriceDisplay, 6).toString()
+              : truncateDecimals(pinnedMinPriceDisplay, 2).toString();
     const pinnedMaxPriceDisplayTruncated =
         pinnedMaxPriceDisplay < 0.0001
             ? pinnedMaxPriceDisplay.toExponential(2)
             : pinnedMaxPriceDisplay < 2
-            ? pinnedMinPriceDisplay > 0.1
-                ? truncateDecimals(pinnedMaxPriceDisplay, 4).toString()
-                : truncateDecimals(pinnedMaxPriceDisplay, 6).toString()
-            : truncateDecimals(pinnedMaxPriceDisplay, 2).toString();
+              ? pinnedMinPriceDisplay > 0.1
+                  ? truncateDecimals(pinnedMaxPriceDisplay, 4).toString()
+                  : truncateDecimals(pinnedMaxPriceDisplay, 6).toString()
+              : truncateDecimals(pinnedMaxPriceDisplay, 2).toString();
 
     return {
         pinnedMinPriceDisplay: pinnedMinPriceDisplay.toString(),

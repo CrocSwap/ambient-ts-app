@@ -46,7 +46,6 @@ export default function VaultRow(props: propsIF) {
     const { sessionReceipts } = useContext(ReceiptContext);
     const { closeBottomSheet } = useBottomSheet();
 
-
     // const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
 
     const {
@@ -195,8 +194,8 @@ export default function VaultRow(props: propsIF) {
     }
 
     function handleModalClose() {
-        closeModal()
-        closeBottomSheet()
+        closeModal();
+        closeBottomSheet();
     }
 
     const modalToOpen =
@@ -271,16 +270,15 @@ export default function VaultRow(props: propsIF) {
                                 Deposit
                             </button>
 
-                            {isUserConnected &&
+                            {isUserConnected && (
                                 // !!(vault.balance || crocEnvBal) &&
-                                (
-                                    <button
-                                        className={styles.actionButton}
-                                        onClick={handleOpenWithdrawModal}
-                                    >
-                                        Withdraw
-                                    </button>
-                                )}
+                                <button
+                                    className={styles.actionButton}
+                                    onClick={handleOpenWithdrawModal}
+                                >
+                                    Withdraw
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

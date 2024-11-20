@@ -20,7 +20,9 @@
     border-width: 0.2em;
     border-style: solid;
     z-index: 1;
-    box-shadow: inset 0 0 0 #a7b2b8, 2px 2px 0 rgba(0, 0, 0, 0.08);
+    box-shadow:
+        inset 0 0 0 #a7b2b8,
+        2px 2px 0 rgba(0, 0, 0, 0.08);
     border-color: #edeff1;
     text-shadow: 2px 2px 0 #98a6ad;
     background: linear-gradient(to bottom right, #d1d7da 50%, #c3cbcf 50%);
@@ -44,32 +46,42 @@
     border-width: 0.2em;
     border-style: solid;
     z-index: 1;
-    box-shadow: inset 0 0 0 #a7b2b8, 2px 2px 0 rgba(0, 0, 0, 0.08);
+    box-shadow:
+        inset 0 0 0 #a7b2b8,
+        2px 2px 0 rgba(0, 0, 0, 0.08);
     border-color: var(--dark2);
     text-shadow: 2px 2px 0 #98a6ad;
     background: var(--title-gradient);
 }
 .quiz_medal__circle__gold {
-    box-shadow: inset 0 0 0 #b67d05, 2px 2px 0 rgba(0, 0, 0, 0.08);
+    box-shadow:
+        inset 0 0 0 #b67d05,
+        2px 2px 0 rgba(0, 0, 0, 0.08);
     border-color: #fadd40;
     text-shadow: 0 0 4px #9d6c04;
     background: linear-gradient(to bottom right, #f9ad0e 50%, #e89f06 50%);
 }
 .quiz_medal__circle__silver {
-    box-shadow: inset 0 0 0 #a7b2b8, 2px 2px 0 rgba(0, 0, 0, 0.08);
+    box-shadow:
+        inset 0 0 0 #a7b2b8,
+        2px 2px 0 rgba(0, 0, 0, 0.08);
     border-color: #edeff1;
     text-shadow: 0px 0px 4px #98a6ad;
     background: linear-gradient(to bottom right, #d1d7da 50%, #c3cbcf 50%);
 }
 .quiz_medal__circle__bronze {
-    box-shadow: inset 0 0 0 #955405, 2px 2px 0 rgba(0, 0, 0, 0.08);
+    box-shadow:
+        inset 0 0 0 #955405,
+        2px 2px 0 rgba(0, 0, 0, 0.08);
     border-color: #f7bb23;
     text-shadow: 0 0 4px #7d4604;
     background: linear-gradient(to bottom right, #df7e08 50%, #c67007 50%);
 }
 
 .quiz_medal__circle__simple {
-    box-shadow: inset 0 0 0 #a7b2b8, 2px 2px 0 rgba(0, 0, 0, 0.08);
+    box-shadow:
+        inset 0 0 0 #a7b2b8,
+        2px 2px 0 rgba(0, 0, 0, 0.08);
     border-color: var(--dark2);
     text-shadow: 0px 0px 4px #98a6ad;
     background: linear-gradient(to bottom right, #00070b 50%, #000e14 50%);

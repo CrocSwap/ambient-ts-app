@@ -151,8 +151,14 @@ export const orderRowConstants = (props: propsIF) => {
     );
 
     const hiddenIDColumn = (
-        <RowItem hover data-label='hidden-id' role='button' style={{display: 'none'}} tabIndex={0}>
-             <span>{posHash}</span>
+        <RowItem
+            hover
+            data-label='hidden-id'
+            role='button'
+            style={{ display: 'none' }}
+            tabIndex={0}
+        >
+            <span>{posHash}</span>
         </RowItem>
     );
 
@@ -523,6 +529,6 @@ export const orderRowConstants = (props: propsIF) => {
         sideTypeColumn,
         tokensColumn,
         statusDisplay,
-        hiddenIDColumn
+        hiddenIDColumn,
     };
 };

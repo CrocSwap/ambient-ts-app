@@ -2,7 +2,6 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './PoolRow.module.css';
 
 export default function PoolRowSkeleton() {
-
     const desktopView = useMediaQuery('(min-width: 768px)');
 
     const displayItems = [
@@ -42,7 +41,6 @@ export default function PoolRowSkeleton() {
     ];
 
     return (
-        
         <div className={styles.gridContainer}>
             {displayItems
                 .filter((item) => item !== null) // Filter out null values
