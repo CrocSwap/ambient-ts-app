@@ -64,7 +64,6 @@ export interface GraphDataContextIF {
     transactionsByPool: Changes;
     userPositionsByPool: PositionsByPool;
     positionsByPool: PositionsByPool;
-    leaderboardByPool: PositionsByPool;
     userLimitOrdersByPool: LimitOrdersByPool;
     limitOrdersByPool: LimitOrdersByPool;
     liquidityData: LiquidityDataIF | undefined;
@@ -83,7 +82,6 @@ export interface GraphDataContextIF {
         React.SetStateAction<PositionsByPool>
     >;
     setPositionsByPool: React.Dispatch<React.SetStateAction<PositionsByPool>>;
-    setLeaderboardByPool: React.Dispatch<React.SetStateAction<PositionsByPool>>;
     setUserLimitOrdersByPool: React.Dispatch<
         React.SetStateAction<LimitOrdersByPool>
     >;
@@ -151,12 +149,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         dataReceived: false,
         positions: [],
     });
-    const [leaderboardByPool, setLeaderboardByPool] = useState<PositionsByPool>(
-        {
-            dataReceived: false,
-            positions: [],
-        },
-    );
     const [transactionsByPool, setTransactionsByPool] = useState<Changes>({
         dataReceived: false,
         changes: [],
@@ -215,10 +207,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
             changes: [],
         });
         setPositionsByPool({
-            dataReceived: false,
-            positions: [],
-        });
-        setLeaderboardByPool({
             dataReceived: false,
             positions: [],
         });
@@ -615,9 +603,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         setUserPositionsByPool,
         setUserTransactionsByPool,
         positionsByPool,
-        leaderboardByPool,
         setPositionsByPool,
-        setLeaderboardByPool,
         transactionsByPool,
         setTransactionsByPool,
         userLimitOrdersByPool,
