@@ -461,7 +461,7 @@ export const scrollWeETH: TokenIF = {
         'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
 };
 
-export const scrollScroll: TokenIF = {
+export const scrollSCR: TokenIF = {
     name: 'Scroll',
     address: '0xd29687c813d741e2f938f4ac377128810e217b1b',
     symbol: 'SCR',
@@ -826,7 +826,7 @@ export const defaultTokens: TokenIF[] = [
     scrollWrappedETH,
     scrollWstETH,
     scrollWeETH,
-    scrollScroll,
+    scrollSCR,
     scrollSCROLLY,
     scrollSTG,
     scrollSCRIBES,

@@ -10,7 +10,6 @@ import {
 import Transactions from './Transactions/Transactions';
 import Orders from './Orders/Orders';
 import moment from 'moment';
-import leaderboard from '../../../assets/images/leaderboard.svg';
 import infoSvg from '../../../assets/images/info.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
@@ -18,7 +17,6 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { ChartContext } from '../../../contexts/ChartContext';
@@ -138,12 +136,6 @@ function TradeTabs2(props: propsIF) {
                   showRightSideOption: true,
               },
               {
-                  label: 'Leaderboard',
-                  content: <Leaderboard />,
-                  icon: leaderboard,
-                  showRightSideOption: false,
-              },
-              {
                   label: 'Info',
                   content: <TableInfo />,
                   icon: infoSvg,
@@ -208,7 +200,7 @@ function TradeTabs2(props: propsIF) {
                   content: <Ranges {...rangesProps} />,
                   icon: rangePositionsImage,
                   showRightSideOption: false,
-              }
+              },
           ];
 
     // -------------------------------END OF DATA-----------------------------------------
