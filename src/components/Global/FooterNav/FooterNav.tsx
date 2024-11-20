@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { RiChat3Line } from 'react-icons/ri';
 import { MdOutlineExplore } from 'react-icons/md';
+import { CiVault } from 'react-icons/ci';
 import { HiArrowsRightLeft } from 'react-icons/hi2';
 import { VscAccount } from 'react-icons/vsc';
 
@@ -43,6 +44,7 @@ const FooterNav: React.FC = React.memo(() => {
             icon: HiArrowsRightLeft,
         },
         { title: 'Explore', destination: '/explore', icon: MdOutlineExplore },
+        { title: 'Vaults', destination: '/vaults', icon: CiVault },
         { title: 'Account', destination: '/account/', icon: VscAccount },
         { title: 'Chat', destination: '/chat/', icon: RiChat3Line },
     ];
