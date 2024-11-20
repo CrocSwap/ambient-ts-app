@@ -15,15 +15,29 @@
     background: url(../../../assets/images/backgrounds/detailsCard.png)
         no-repeat;
     background-position: center bottom 40px;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .main_content {
     cursor: default;
-    display: flex;
-    flex-direction: column;
-    /* justify-content: center; */
-
     padding: 1rem 2rem;
+
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 244px auto;
+    gap: 1rem;
+
+    animation: fadeIn ease 1s;
+    -webkit-animation: fadeIn ease 1s;
+    -moz-animation: fadeIn ease 1s;
+    -o-animation: fadeIn ease 1s;
+    -ms-animation: fadeIn ease 1s;
 }
 .control_display_container {
     display: flex;
@@ -62,37 +76,20 @@
     cursor: default;
 }
 
-@media only screen and (min-width: 768px) {
+.outer_container {
+    min-height: 562px;
+    height: auto;
+    width: 1000px;
+
+    display: grid;
+    grid-template-rows: 60px auto;
+    gap: 1rem;
+    padding-top: 1rem;
+}
+
+@media only screen and (max-width: 1200px) {
     .outer_container {
-        min-height: 562px;
-        height: auto;
-        width: 1000px;
-
-        display: grid;
-        grid-template-rows: 60px auto;
-        gap: 1rem;
-        padding-top: 1rem;
-    }
-
-    .main_outer_container {
-        width: 100%;
-        height: 100%;
-
-        display: flex;
-        flex-direction: column;
-    }
-    .main_content {
-        width: 100%;
-        height: 100%;
-        display: grid;
-        grid-template-columns: 244px auto;
-        gap: 1rem;
-
-        animation: fadeIn ease 1s;
-        -webkit-animation: fadeIn ease 1s;
-        -moz-animation: fadeIn ease 1s;
-        -o-animation: fadeIn ease 1s;
-        -ms-animation: fadeIn ease 1s;
+        width: 95vw;
     }
 }
 
