@@ -26,6 +26,7 @@ import { toDisplayQty } from '@crocswap-libs/sdk';
 import TooltipComponent from '../../../../components/Global/TooltipComponent/TooltipComponent';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
 
 interface propsIF {
     idForDOM: string;
@@ -43,6 +44,8 @@ export default function VaultRow(props: propsIF) {
     const { crocEnv } = useContext(CrocEnvContext);
     const { isUserConnected, userAddress } = useContext(UserDataContext);
     const { sessionReceipts } = useContext(ReceiptContext);
+    const { closeBottomSheet } = useBottomSheet();
+
 
     // const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
 
@@ -191,13 +194,18 @@ export default function VaultRow(props: propsIF) {
         openModal();
     }
 
+    function handleModalClose() {
+        closeModal()
+        closeBottomSheet()
+    }
+
     const modalToOpen =
         type === 'Deposit' ? (
             <VaultDeposit
                 mainAsset={mainAsset}
                 secondaryAsset={secondaryAsset}
                 vault={vault}
-                onClose={closeModal}
+                onClose={handleModalClose}
             />
         ) : (
             <VaultWithdraw
@@ -209,7 +217,7 @@ export default function VaultRow(props: propsIF) {
                     undefined
                 }
                 mainAssetBalanceDisplayQty={balDisplay}
-                onClose={closeModal}
+                onClose={handleModalClose}
             />
         );
     function navigateExternal(): void {
@@ -264,7 +272,8 @@ export default function VaultRow(props: propsIF) {
                             </button>
 
                             {isUserConnected &&
-                                !!(vault.balance || crocEnvBal) && (
+                                // !!(vault.balance || crocEnvBal) &&
+                                (
                                     <button
                                         className={styles.actionButton}
                                         onClick={handleOpenWithdrawModal}
