@@ -19,7 +19,7 @@ export interface tokenMethodsIF {
     tokenUniv: TokenIF[];
     getTokenByAddress: (addr: string) => TokenIF | undefined;
     getTokensFromList: (uri: string) => TokenIF[];
-    getTokensByNameOrSymbol: (input: string, exact?: boolean) => TokenIF[];
+    getTokensByNameOrSymbol: (input: string, chn: string, exact?: boolean) => TokenIF[];
 }
 
 // keys for data persisted in local storage
@@ -335,7 +335,7 @@ export const useTokens = (
     // fn to return all tokens where name or symbol matches search input
     // can return just exact matches or exact + partial matches
     const getTokensByNameOrSymbol = useCallback(
-        (input: string, exact = false): TokenIF[] => {
+        (input: string, chn: string, exact = false): TokenIF[] => {
             // search input fixed for casing and with whitespace trimmed
             const cleanedInput: string = input.trim().toLowerCase();
 
@@ -343,6 +343,7 @@ export const useTokens = (
             const searchExact = (): TokenIF[] => {
                 // return tokens where name OR symbol exactly matches search string
                 return tokenUniv
+                    .filter((tkn: TokenIF) => tkn.chainId === parseInt(chn))
                     .filter(
                         (tkn: TokenIF) =>
                             tkn.name.toLowerCase() === cleanedInput ||
@@ -364,7 +365,9 @@ export const useTokens = (
                 const exactMatches: TokenIF[] = [];
                 const partialMatches: TokenIF[] = [];
                 // iterate over tokens to look for matches
-                tokenUniv.forEach((tkn: TokenIF) => {
+                tokenUniv
+                    .filter((tkn: TokenIF) => tkn.chainId === parseInt(chn))
+                    .forEach((tkn: TokenIF) => {
                     if (
                         tkn.name.toLowerCase() === cleanedInput ||
                         tkn.symbol.toLowerCase() === cleanedInput

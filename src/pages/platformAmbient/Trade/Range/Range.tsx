@@ -90,6 +90,7 @@ function Range() {
         setIsLinesSwitched,
     } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
+// console.log(tokens);
     const {
         tokenAAllowance,
         tokenBAllowance,
@@ -122,6 +123,8 @@ function Range() {
         setPrimaryQuantity,
         setIsTokenAPrimary,
     } = useContext(TradeDataContext);
+
+console.log(tokenA, tokenB);
 
     // RangeTokenInput state values
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(

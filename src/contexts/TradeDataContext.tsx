@@ -88,11 +88,11 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     const tokensMatchingA =
         savedTokenASymbol === 'ETH'
             ? [dfltTokenA]
-            : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', true);
+            : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', chainId, true);
     const tokensMatchingB =
         savedTokenBSymbol === 'ETH'
             ? [dfltTokenA]
-            : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', true);
+            : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', chainId, true);
 
     const firstTokenMatchingA = tokensMatchingA[0] || undefined;
     const firstTokenMatchingB = tokensMatchingB[0] || undefined;
@@ -117,6 +117,8 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
               ? dfltTokenB
               : dfltTokenA;
     });
+
+useEffect(() => console.log(tokenA), [tokenA]);
 
     const [tokenB, setTokenB] = useState<TokenIF>(
         firstTokenMatchingB
