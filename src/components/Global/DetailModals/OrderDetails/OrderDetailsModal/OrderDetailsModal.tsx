@@ -71,8 +71,8 @@ export default function OrderDetailsModal(props: propsIF) {
         quoteTokenSymbol,
         baseTokenName,
         quoteTokenName,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
+        baseDisplay,
+        quoteDisplay,
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
@@ -82,6 +82,10 @@ export default function OrderDetailsModal(props: propsIF) {
         truncatedDisplayPriceDenomByMoneyness,
         posHash,
         fillPercentage,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
     } = useProcessOrder(limitOrder, crocEnv, userAddress);
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
@@ -95,9 +99,10 @@ export default function OrderDetailsModal(props: propsIF) {
 
     const [usdValue, setUsdValue] = useState<string>('...');
     const [baseCollateralDisplay, setBaseCollateralDisplay] =
-        useState<string>(baseDisplayFrontend);
+        useState<string>(baseDisplay);
+
     const [quoteCollateralDisplay, setQuoteCollateralDisplay] =
-        useState<string>(quoteDisplayFrontend);
+        useState<string>(quoteDisplay);
 
     const chainId = limitOrder.chainId;
     const user = limitOrder.user;
@@ -165,11 +170,15 @@ export default function OrderDetailsModal(props: propsIF) {
 
                     const liqBaseDisplay = getFormattedNumber({
                         value: liqBaseNum,
+                        removeExtraTrailingZeros: true,
                     });
 
                     const claimableBaseDisplay = getFormattedNumber({
                         value: claimableBaseNum,
+                        removeExtraTrailingZeros: true,
                     });
+
+                    console.log({ claimableBaseDisplay, liqBaseDisplay });
 
                     isOrderFilled
                         ? setBaseCollateralDisplay(
@@ -179,10 +188,12 @@ export default function OrderDetailsModal(props: propsIF) {
 
                     const liqQuoteDisplay = getFormattedNumber({
                         value: liqQuoteNum,
+                        removeExtraTrailingZeros: true,
                     });
 
                     const claimableQuoteDisplay = getFormattedNumber({
                         value: claimableQuoteNum,
+                        removeExtraTrailingZeros: true,
                     });
 
                     isOrderFilled
@@ -246,8 +257,8 @@ export default function OrderDetailsModal(props: propsIF) {
         baseCollateralDisplay: baseCollateralDisplay,
         quoteCollateralDisplay: quoteCollateralDisplay,
         isOrderFilled: isClaimable,
-        baseDisplayFrontend: baseDisplayFrontend,
-        quoteDisplayFrontend: quoteDisplayFrontend,
+        baseDisplay: baseDisplay,
+        quoteDisplay: quoteDisplay,
         quoteTokenLogo: quoteTokenLogo,
         baseTokenLogo: baseTokenLogo,
         baseTokenSymbol: baseTokenSymbol,
@@ -257,6 +268,10 @@ export default function OrderDetailsModal(props: propsIF) {
         isFillStarted: isFillStarted,
         truncatedDisplayPrice: truncatedDisplayPrice,
         isAccountView: isAccountView,
+        originalPositionLiqBase: originalPositionLiqBase,
+        originalPositionLiqQuote: originalPositionLiqQuote,
+        expectedPositionLiqBase: expectedPositionLiqBase,
+        expectedPositionLiqQuote: expectedPositionLiqQuote,
     };
 
     const PriceInfoProps = {
@@ -268,8 +283,8 @@ export default function OrderDetailsModal(props: propsIF) {
         baseCollateralDisplay: baseCollateralDisplay,
         quoteCollateralDisplay: quoteCollateralDisplay,
         isOrderFilled: isClaimable,
-        baseDisplayFrontend: baseDisplayFrontend,
-        quoteDisplayFrontend: quoteDisplayFrontend,
+        baseDisplay: baseDisplay,
+        quoteDisplay: quoteDisplay,
         quoteTokenLogo: quoteTokenLogo,
         baseTokenLogo: baseTokenLogo,
         baseTokenSymbol: baseTokenSymbol,
@@ -285,6 +300,10 @@ export default function OrderDetailsModal(props: propsIF) {
         fillPercentage: fillPercentage,
         isAccountView: isAccountView,
         isBaseTokenMoneynessGreaterOrEqual: isBaseTokenMoneynessGreaterOrEqual,
+        originalPositionLiqBase: originalPositionLiqBase,
+        originalPositionLiqQuote: originalPositionLiqQuote,
+        expectedPositionLiqBase: expectedPositionLiqBase,
+        expectedPositionLiqQuote: expectedPositionLiqQuote,
     };
 
     const GraphProps = {
@@ -302,9 +321,7 @@ export default function OrderDetailsModal(props: propsIF) {
                     <PriceInfo {...PriceInfoProps} />
                 </div>
                 <div className={styles.right_container}>
-                    <TransactionDetailsGraph
-                        {...GraphProps}
-                    />
+                    <TransactionDetailsGraph {...GraphProps} />
                 </div>
             </div>
             <p className={styles.ambi_copyright}>ambient.finance</p>
@@ -325,9 +342,7 @@ export default function OrderDetailsModal(props: propsIF) {
                     <div className={styles.mobile_price_graph_container}>
                         <PriceInfo {...PriceInfoProps} />
                         <div className={styles.graph_section_mobile}>
-                            <TransactionDetailsGraph
-                                {...GraphProps}
-                            />
+                            <TransactionDetailsGraph {...GraphProps} />
                         </div>
                     </div>
                 )}
