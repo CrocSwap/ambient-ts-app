@@ -376,7 +376,7 @@ function Portfolio(props: propsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-    const showActiveMobileComponent = useMediaQuery('(max-width: 768px)');
+    const showActiveMobileComponent = useMediaQuery('(max-width: 1500px)');
 
     const notConnectedContent = (
         <FlexContainer

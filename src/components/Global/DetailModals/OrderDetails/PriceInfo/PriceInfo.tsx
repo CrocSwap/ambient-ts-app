@@ -6,7 +6,6 @@ import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../../contexts/TokenContext';
-import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 
 type ItemIF = {
     slug: string;
@@ -23,8 +22,6 @@ interface propsIF {
     isOrderFilled: boolean;
     isBid: boolean;
     controlItems: ItemIF[];
-    baseDisplayFrontend: string;
-    quoteDisplayFrontend: string;
     quoteTokenLogo: string;
     baseTokenLogo: string;
     baseTokenSymbol: string;
@@ -39,12 +36,14 @@ interface propsIF {
     fillPercentage: number;
     isAccountView: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
+    originalPositionLiqBase: string;
+    originalPositionLiqQuote: string;
+    expectedPositionLiqBase: string;
+    expectedPositionLiqQuote: string;
 }
 
 export default function PriceInfo(props: propsIF) {
-
     const {
-        limitOrder,
         isBid,
         isOrderFilled,
         quoteTokenLogo,
@@ -61,6 +60,10 @@ export default function PriceInfo(props: propsIF) {
         fillPercentage,
         isAccountView,
         isBaseTokenMoneynessGreaterOrEqual,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
     } = props;
 
     const { pathname } = useLocation();
@@ -81,13 +84,7 @@ export default function PriceInfo(props: propsIF) {
         <div className={styles.sell_content}>
             <p>{'Sell:'}</p>
             <p>
-                {isBid
-                    ? getFormattedNumber({
-                          value: limitOrder.originalPositionLiqBaseDecimalCorrected,
-                      })
-                    : getFormattedNumber({
-                          value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
-                      })}
+                {isBid ? originalPositionLiqBase : originalPositionLiqQuote}
                 <TokenIcon
                     token={!isBid ? quoteToken : baseToken}
                     src={!isBid ? quoteTokenLogo : baseTokenLogo}
@@ -102,13 +99,7 @@ export default function PriceInfo(props: propsIF) {
         <div className={styles.buy_content}>
             <p>{'Buy:'}</p>
             <p>
-                {isBid
-                    ? getFormattedNumber({
-                          value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
-                      })
-                    : getFormattedNumber({
-                          value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
-                      })}
+                {isBid ? expectedPositionLiqQuote : expectedPositionLiqBase}
                 <TokenIcon
                     token={isBid ? quoteToken : baseToken}
                     src={isBid ? quoteTokenLogo : baseTokenLogo}

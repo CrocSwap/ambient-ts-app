@@ -17,6 +17,7 @@ type FormatParams = {
     isLevel?: boolean;
     isPercentage?: boolean;
     mantissa?: number;
+    removeExtraTrailingZeros?: boolean;
 };
 
 export function getFormattedNumber({
@@ -36,6 +37,7 @@ export function getFormattedNumber({
     isLevel = false,
     isPercentage = false,
     mantissa = 2,
+    removeExtraTrailingZeros = false,
 }: FormatParams) {
     let valueString = '';
     if (value === 0) {
@@ -122,6 +124,8 @@ export function getFormattedNumber({
     }
 
     if (removeCommas) valueString = valueString.replaceAll(',', '');
+    if (removeExtraTrailingZeros)
+        valueString = removeMoreThanOneTrailingZeros(valueString);
     return `${prefix}${valueString}${suffix}`;
 }
 
@@ -173,3 +177,14 @@ const formatAbbrev = (value: number, isTvl?: boolean, mantissa = 2) => {
         },
     });
 };
+
+export function removeMoreThanOneTrailingZeros(amount: string) {
+    /* 
+    The regex:
+    (\.[0-9]*[1-9]) captures the decimal part with a non-zero digit
+    0+ matches multiple trailing zeros
+    (?=0$) is a positive lookahead that ensures there's still a zero at the end
+    Replaces with just the captured decimal part plus the last zero
+    */
+    return amount.replace(/(\.[0-9]*[1-9])0+(?=0$)/, '$1');
+}
