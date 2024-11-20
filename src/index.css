@@ -76,7 +76,7 @@
     --footer-height: 24px;
 
     /* gradients, shadows */
-    --shimmer-start-color: #141E30;
+    --shimmer-start-color: #141e30;
     --shimmer-end-color: #243b55;
     --shimmer: linear-gradient(
         to right,
@@ -84,7 +84,8 @@
         var(--shimmer-end-color)
     );
     --gradient-box-shadow-color: rgba(115, 113, 252, 0.25);
-    --gradient-box-shadow: 0px 0px 20px 0px var(--gradient-box-shadow-color) inset;
+    --gradient-box-shadow: 0px 0px 20px 0px var(--gradient-box-shadow-color)
+        inset;
 
     --title-gradient: linear-gradient(
         90deg,
@@ -172,8 +173,7 @@
 [data-theme='futa_dark'] {
     /* subtract full height from navbar(56px) and footer(20px on desktop, 64 on mobile) */
     --content-height: calc(100vh - 76px);
-    --content-height-mobile:
-            calc(100svh - 120px);
+    --content-height-mobile: calc(100svh - 120px);
     /* font */
     --title-ts: 0px 0px 150px rgba(242, 153, 74, 0.5),
         0px 0px 100px rgba(242, 153, 74, 0.5),

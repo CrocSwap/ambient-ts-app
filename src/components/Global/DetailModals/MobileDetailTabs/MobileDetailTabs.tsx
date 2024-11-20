@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
-import styles from './MobileDetailTabs.module.css'
-interface PropsIF{
+import styles from './MobileDetailTabs.module.css';
+interface PropsIF {
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
 }
 export default function MobileDetailTabs(props: PropsIF) {
-    const { setShowShareComponent, showShareComponent} = props
+    const { setShowShareComponent, showShareComponent } = props;
 
     return (
         <div
@@ -25,7 +25,5 @@ export default function MobileDetailTabs(props: PropsIF) {
                 Details
             </button>
         </div>
-    )
-    
-
+    );
 }

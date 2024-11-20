@@ -109,8 +109,12 @@ export default function Navbar() {
 
     const { selectedTicker } = useContext(AuctionsContext);
 
-    const { showHomeVideoLocalStorage, setShowHomeVideoLocalStorage, showTutosLocalStorage, bindShowTutosLocalStorage } =
-        useFutaHomeContext();
+    const {
+        showHomeVideoLocalStorage,
+        setShowHomeVideoLocalStorage,
+        showTutosLocalStorage,
+        bindShowTutosLocalStorage,
+    } = useFutaHomeContext();
 
     // set page title
     useEffect(() => {
@@ -166,7 +170,6 @@ export default function Navbar() {
         isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
     const clickLogout = useCallback(async () => {
-        setCrocEnv(undefined);
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -176,6 +179,7 @@ export default function Navbar() {
         resetTokenBalances();
         setShowAllData(true);
         disconnectUser();
+        setCrocEnv(undefined);
     }, []);
 
     // Custom Hooks
@@ -209,7 +213,7 @@ export default function Navbar() {
         },
         {
             label: 'Swap',
-            link: linkGenSwap.getFullURL(swapParams), 
+            link: linkGenSwap.getFullURL(swapParams),
             id: 'navbar_swap',
         },
         {
@@ -273,14 +277,14 @@ export default function Navbar() {
                 Width={36}
                 id='show_home_video_futa_toggle'
                 disabled={false}
-                />
+            />
         </motion.div>
     );
-    
+
     const showTutosToggle = (
         <motion.div
-        variants={dropdownItemVariants}
-        className={styles.skipAnimationContainer}
+            variants={dropdownItemVariants}
+            className={styles.skipAnimationContainer}
         >
             <p>Show Tutorials</p>
             <Toggle
@@ -297,80 +301,82 @@ export default function Navbar() {
 
     return (
         <>
-        <div className={styles.container}>
-            <div className={styles.logoContainer}>
-                <Link to='/'>
-                    <img src={Logo} alt='futa logo' />
-                </Link>
-                {desktopScreen && linksDisplay}
-            </div>
-            <div className={styles.rightContainer}>
-                {!desktopScreen && <NetworkSelector customBR={'50%'} />}
-                {!isUserConnected && connectWagmiButton}
-                <NotificationCenter />
-                <div className={styles.moreContainer} ref={dropdownRef}>
-                    <FiMoreHorizontal
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    />
-                    {/* <AnimatePresence> */}
-                    {isDropdownOpen && (
-                        <motion.div
-                            className={styles.dropdownMenu}
-                            initial='hidden'
-                            animate='visible'
-                            exit='exit'
-                            variants={dropdownVariants}
-                        >
-                            {dropdownData.map((item, idx) => (
-                                <motion.div
-                                    key={idx}
-                                    variants={dropdownItemVariants}
-                                    className={styles.linkContainer}
-                                    onClick={() => {
-                                        openInNewTab(item.link);
+            <div className={styles.container}>
+                <div className={styles.logoContainer}>
+                    <Link to='/'>
+                        <img src={Logo} alt='futa logo' />
+                    </Link>
+                    {desktopScreen && linksDisplay}
+                </div>
+                <div className={styles.rightContainer}>
+                    {!desktopScreen && <NetworkSelector customBR={'50%'} />}
+                    {!isUserConnected && connectWagmiButton}
+                    <NotificationCenter />
+                    <div className={styles.moreContainer} ref={dropdownRef}>
+                        <FiMoreHorizontal
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        />
+                        {/* <AnimatePresence> */}
+                        {isDropdownOpen && (
+                            <motion.div
+                                className={styles.dropdownMenu}
+                                initial='hidden'
+                                animate='visible'
+                                exit='exit'
+                                variants={dropdownVariants}
+                            >
+                                {dropdownData.map((item, idx) => (
+                                    <motion.div
+                                        key={idx}
+                                        variants={dropdownItemVariants}
+                                        className={styles.linkContainer}
+                                        onClick={() => {
+                                            openInNewTab(item.link);
 
-                                        setIsDropdownOpen(false);
-                                    }}
+                                            setIsDropdownOpen(false);
+                                        }}
+                                    >
+                                        <div style={{ cursor: 'pointer' }}>
+                                            {item.label}
+                                        </div>
+                                    </motion.div>
+                                ))}
+                                <motion.p
+                                    className={styles.version}
+                                    variants={dropdownItemVariants}
                                 >
-                                    <div style={{ cursor: 'pointer' }}>
-                                        {item.label}
-                                    </div>
-                                </motion.div>
-                            ))}
-                            <motion.p
-                                className={styles.version}
-                                variants={dropdownItemVariants}
-                            >
-                                {isConnected &&
-                                    `Connected address: ${
-                                        ensName ? ensName : accountAddress
-                                    }`}
-                            </motion.p>
-                            {skipAnimationToggle}
-                            {showTutosToggle}
-                            <motion.p
-                                className={styles.version}
-                                variants={dropdownItemVariants}
-                            >
-                                Version 1.0.0
-                            </motion.p>
-                            <motion.button
-                                className={styles.connectButton}
-                                onClick={
-                                    isUserConnected
-                                        ? clickLogout
-                                        : openWalletModal
-                                }
-                            >
-                                {isUserConnected ? 'LOG OUT' : 'CONNECT WALLET'}
-                            </motion.button>
-                        </motion.div>
-                    )}
-                    {/* </AnimatePresence> */}
+                                    {isConnected &&
+                                        `Connected address: ${
+                                            ensName ? ensName : accountAddress
+                                        }`}
+                                </motion.p>
+                                {skipAnimationToggle}
+                                {showTutosToggle}
+                                <motion.p
+                                    className={styles.version}
+                                    variants={dropdownItemVariants}
+                                >
+                                    Version 1.0.0
+                                </motion.p>
+                                <motion.button
+                                    className={styles.connectButton}
+                                    onClick={
+                                        isUserConnected
+                                            ? clickLogout
+                                            : openWalletModal
+                                    }
+                                >
+                                    {isUserConnected
+                                        ? 'LOG OUT'
+                                        : 'CONNECT WALLET'}
+                                </motion.button>
+                            </motion.div>
+                        )}
+                        {/* </AnimatePresence> */}
+                    </div>
                 </div>
             </div>
-        </div>
-        <TutorialOverlayUrlBased />
+            <TutorialOverlayUrlBased />
         </>
     );
 }

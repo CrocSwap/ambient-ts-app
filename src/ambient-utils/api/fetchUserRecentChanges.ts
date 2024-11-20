@@ -37,7 +37,7 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         cachedQuerySpotPrice,
         cachedTokenDetails,
         cachedEnsResolve,
-        timeBefore
+        timeBefore,
     } = args;
 
     const userRecentChangesCacheEndpoint = GCGO_OVERRIDE_URL
@@ -45,22 +45,22 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         : graphCacheUrl + '/user_txs?';
 
     const poolChanges = fetch(
-        timeBefore ? 
-        userRecentChangesCacheEndpoint +
-            new URLSearchParams({
-                user: user,
-                chainId: chainId,
-                timeBefore: timeBefore.toString(),
-                n: n ? n.toString() : '', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-            }):
-        userRecentChangesCacheEndpoint +
-            new URLSearchParams({
-                user: user,
-                chainId: chainId,
-                n: n ? n.toString() : '', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-            }),
+        timeBefore
+            ? userRecentChangesCacheEndpoint +
+                  new URLSearchParams({
+                      user: user,
+                      chainId: chainId,
+                      timeBefore: timeBefore.toString(),
+                      n: n ? n.toString() : '', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                      // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                  })
+            : userRecentChangesCacheEndpoint +
+                  new URLSearchParams({
+                      user: user,
+                      chainId: chainId,
+                      n: n ? n.toString() : '', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                      // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                  }),
     )
         .then((response) => response?.json())
         .then((json) => {

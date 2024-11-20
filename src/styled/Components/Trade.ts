@@ -27,9 +27,7 @@ export const MainSection = styled.section<{
             if (!isFill) {
                 return `
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 350px; /* Prevents overflowing */
-        margin: 0 auto;
-       
+        grid-template-columns: minmax(0, 1fr) 350px; /* Prevents overflowing */       
       `;
             }
         }}
@@ -115,7 +113,8 @@ export const ChartContainer = styled.div<{
         }
     `}
 
-    ${({ isFuta,fullScreen }) => (isFuta && !fullScreen  ? 'padding-bottom: 30px;' : '')}
+    ${({ isFuta, fullScreen }) =>
+        isFuta && !fullScreen ? 'padding-bottom: 30px;' : ''}
 
     &::-webkit-scrollbar {
         display: none;

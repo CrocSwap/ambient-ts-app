@@ -16,7 +16,7 @@
     width: 30px;
     height: 30px;
     background-color: var(--dark2);
-    border-radius: 4px; 
+    border-radius: 4px;
     padding: 5px;
     transition: var(--transition);
     cursor: pointer;
@@ -40,10 +40,8 @@
 
 @media only screen and (max-width: 768px) {
     .navItemIconButton {
-
-border-radius: 50%;
-width: 35px;
-height: 35px;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
     }
-
 }

@@ -1,4 +1,3 @@
-
 .mainContainer {
     box-sizing: border-box;
     width: 100%;
@@ -16,8 +15,6 @@
     border: 1px solid var(--dark3);
     border-radius: 4px;
 }
-
-
 
 .headerContainer {
     box-sizing: border-box;
@@ -115,8 +112,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
-   
 }
 
 .no_results button {
@@ -144,7 +139,7 @@
     color: var(--text2);
 }
 @media only screen and (min-width: 600px) {
-    .contentContainer{
+    .contentContainer {
         padding-right: 1rem;
         overflow-x: auto;
     }
@@ -153,8 +148,6 @@
         width: 2px;
         right: 18px;
     }
-
-
 }
 
 @media only screen and (min-width: 768px) {
@@ -162,7 +155,6 @@
         border: none;
     }
 
- 
     .no_results {
         height: 70%;
     }
@@ -197,7 +189,6 @@
     .tradeButton,
     .poolName {
         width: 100px;
-       
     }
 }
 @media only screen and (min-width: 1280px) {
@@ -206,6 +197,5 @@
     .tradeButton,
     .poolName {
         width: 133px;
-       
     }
 }

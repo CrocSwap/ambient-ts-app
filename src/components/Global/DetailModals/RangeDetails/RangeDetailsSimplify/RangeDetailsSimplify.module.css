@@ -41,15 +41,13 @@
     gap: 4px;
 }
 @media (max-width: 768px) {
-    .main_container{
-      padding: 0; 
+    .main_container {
+        padding: 0;
     }
 
-    .main_container section{
+    .main_container section {
         overflow-y: auto;
     }
-
-
 }
 
 @media only screen and (min-width: 767px) {

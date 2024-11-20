@@ -1,4 +1,4 @@
-.container{
+.container {
     position: relative;
 }
 
@@ -16,8 +16,7 @@
         z-index: 99999999;
         pointer-events: none;
         background-color: black;
-        
+
         /* display: none; */
     }
 }
-

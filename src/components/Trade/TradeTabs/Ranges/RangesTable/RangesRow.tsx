@@ -5,7 +5,7 @@ import {
     memo,
     Dispatch,
     SetStateAction,
-    MutableRefObject
+    MutableRefObject,
 } from 'react';
 import {
     PositionIF,
@@ -44,7 +44,7 @@ function RangesRow(props: propsIF) {
         openDetailsModal,
         openActionModal,
         setRangeModalAction,
-        observedRowRef
+        observedRowRef,
     } = props;
     const {
         snackbar: { open: openSnackbar },
@@ -234,7 +234,7 @@ function RangesRow(props: propsIF) {
         tokenValues,
         apyDisplay,
         rangeDisplay,
-        hiddenIDColumn
+        hiddenIDColumn,
     } = rangeRowConstants(rangeRowConstantsProps);
 
     return (

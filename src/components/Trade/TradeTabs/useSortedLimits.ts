@@ -21,7 +21,7 @@ export const useSortedLimits = (
     boolean,
     Dispatch<SetStateAction<boolean>>,
     LimitOrderIF[],
-    (data:LimitOrderIF[]) => LimitOrderIF[]
+    (data: LimitOrderIF[]) => LimitOrderIF[],
 ] => {
     // default sort function
     const sortByTime = (unsortedData: LimitOrderIF[]): LimitOrderIF[] =>
@@ -113,5 +113,12 @@ export const useSortedLimits = (
         [sortBy, reverseSort, limitOrders[0]?.limitOrderId, limitOrders.length],
     );
 
-    return [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimitOrders, sortData];
+    return [
+        sortBy,
+        setSortBy,
+        reverseSort,
+        setReverseSort,
+        sortedLimitOrders,
+        sortData,
+    ];
 };

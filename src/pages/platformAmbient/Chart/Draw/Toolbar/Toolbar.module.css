@@ -17,7 +17,6 @@
     overflow-x: hidden;
 }
 
-
 .scrollableDiv::-webkit-scrollbar {
     width: 0;
     display: none;
@@ -218,4 +217,3 @@
     filter: invert(39%) sepia(27%) saturate(240%) hue-rotate(171deg)
         brightness(50%) contrast(82%);
 }
-

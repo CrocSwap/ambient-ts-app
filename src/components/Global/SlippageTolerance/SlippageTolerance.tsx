@@ -20,7 +20,7 @@ export default function SlippageTolerance(props: propsIF) {
     );
 
     // type derived from preset values received in props
-    type presetValues = typeof presets[number];
+    type presetValues = (typeof presets)[number];
 
     return (
         <div className={styles.slippage_tolerance_container}>

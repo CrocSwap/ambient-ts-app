@@ -1,7 +1,10 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { TutorialStepExternalComponent, TutorialStepIF } from '../../Chat/ChatIFs';
+import {
+    TutorialStepExternalComponent,
+    TutorialStepIF,
+} from '../../Chat/ChatIFs';
 import styles from './TutorialComponent.module.css';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -12,13 +15,12 @@ interface propsIF {
     showSteps?: boolean;
     initialStep?: number;
     onComplete?: () => void;
-    externalComponents?: Map<string, TutorialStepExternalComponent>
+    externalComponents?: Map<string, TutorialStepExternalComponent>;
 }
 
 function TutorialComponent(props: propsIF) {
-
     const { steps, tutoKey, initialStep, showSteps, onComplete } = props;
-    console.log(tutoKey, steps)
+    console.log(tutoKey, steps);
 
     const [hasTriggered, setHasTriggered] = useState<boolean>(false);
     const hasTriggeredRef = useRef<boolean>(false);
@@ -29,7 +31,7 @@ function TutorialComponent(props: propsIF) {
 
     const stepIndexRef = useRef<number>();
     stepIndexRef.current = stepIndex;
-    const [step, setStep] = useState<| TutorialStepIF | undefined>(
+    const [step, setStep] = useState<TutorialStepIF | undefined>(
         steps.length > 0 && steps[stepIndex] ? steps[stepIndex] : undefined,
     );
     hasTriggeredRef.current = hasTriggered;
@@ -40,21 +42,22 @@ function TutorialComponent(props: propsIF) {
     const focusOffsetH = 20;
     const tooltipOffsetV = 20;
 
-    
     const isMobile = useMediaQuery('(max-width: 800px)');
-    const [initialTimeoutDone, setInitialTimeoutDone] = useState<boolean>(false);
+    const [initialTimeoutDone, setInitialTimeoutDone] =
+        useState<boolean>(false);
     const [onCompleteActions, setOnCompleteActions] = useState<string[]>([]);
     const onCompleteActionsRef = useRef<string[]>([]);
     onCompleteActionsRef.current = onCompleteActions;
 
-    const [stepExternalComponent, setStepExternalComponent] = useState<TutorialStepExternalComponent>();
+    const [stepExternalComponent, setStepExternalComponent] =
+        useState<TutorialStepExternalComponent>();
 
     useEffect(() => {
         if (hasTriggeredRef.current) return;
         buildOnCompletes();
         if (steps.length > 0) {
             triggerTutorial();
-        }else{
+        } else {
             completeTutorial();
         }
     }, [tutoKey]);
@@ -67,8 +70,7 @@ function TutorialComponent(props: propsIF) {
 
         if (refVal < steps.length - 1) {
             setStepIndex(refVal + 1);
-        }
-        else if (refVal === steps.length -1){
+        } else if (refVal === steps.length - 1) {
             completeTutorial();
         }
     };
@@ -126,16 +128,16 @@ function TutorialComponent(props: propsIF) {
     };
 
     const buildOnCompletes = () => {
-        const completeActions:string[] = [];
+        const completeActions: string[] = [];
 
         steps.forEach((step) => {
-            if(step.actionOnComplete){
+            if (step.actionOnComplete) {
                 completeActions.push(step.actionOnComplete);
             }
-        })
-        
+        });
+
         setOnCompleteActions([...completeActions]);
-    }
+    };
 
     const handleTooltip = () => {
         const targetEl = getTargetEl();
@@ -233,71 +235,81 @@ function TutorialComponent(props: propsIF) {
     }, []);
 
     const handleAssignments = () => {
-        if(step?.assignment){
+        if (step?.assignment) {
             const assignments = step.assignment.split(';');
             assignments.map((assign) => {
                 const selector = assign.split('>')[0];
                 const value = assign.split('>')[1];
                 const el = document.querySelector(selector);
-                if(el && el instanceof HTMLInputElement){
+                if (el && el instanceof HTMLInputElement) {
                     el.value = value;
                 }
-            })
+            });
         }
-    }
+    };
 
-    const handleActionTriggers = () => { 
-        if(step?.actionTrigger){
+    const handleActionTriggers = () => {
+        if (step?.actionTrigger) {
             const el = document.querySelector(step.actionTrigger);
-            if(el && el instanceof HTMLElement){
+            if (el && el instanceof HTMLElement) {
                 el.click();
             }
         }
-    }
+    };
 
     const handleOnCompletes = () => {
-        if(onCompleteActionsRef.current && onCompleteActionsRef.current.length > 0){
+        if (
+            onCompleteActionsRef.current &&
+            onCompleteActionsRef.current.length > 0
+        ) {
             onCompleteActionsRef.current.map((action) => {
                 const el = document.querySelector(action);
-                if(el && el instanceof HTMLElement){
+                if (el && el instanceof HTMLElement) {
                     el.click();
                 }
-            })
-
+            });
         }
-    }
+    };
 
-    
     const navigate = useNavigate();
 
     const handlenNavigate = (url: string) => {
         navigate(url);
-    }
+    };
 
     const renderNavigate = () => {
-        if(step && step.navigate){
+        if (step && step.navigate) {
             const path = step.navigate.path;
             return (
                 <div
-                className={styles.step_btn + ' ' + styles.navigate}
-                onClick={() => handlenNavigate(path)}
-            >
-                {'>>'} {step.navigate.label}
-            </div>
-            )
+                    className={styles.step_btn + ' ' + styles.navigate}
+                    onClick={() => handlenNavigate(path)}
+                >
+                    {'>>'} {step.navigate.label}
+                </div>
+            );
         }
-    }
+    };
 
     useEffect(() => {
-
-        const delay = stepIndex === 0 && props.initialTimeout && !initialTimeoutDone ? props.initialTimeout : 0;
-        if(delay > 0 && focusOverlay.current){
+        const delay =
+            stepIndex === 0 && props.initialTimeout && !initialTimeoutDone
+                ? props.initialTimeout
+                : 0;
+        if (delay > 0 && focusOverlay.current) {
             focusOverlay.current.style.display = 'none';
         }
 
-        if(step && step.element && props.externalComponents && props.externalComponents.get(step.element.toString()) !== undefined){
-            setStepExternalComponent(props.externalComponents.get(step.element.toString()));
-        }else{
+        if (
+            step &&
+            step.element &&
+            props.externalComponents &&
+            props.externalComponents.get(step.element.toString()) !== undefined
+        ) {
+            setStepExternalComponent(
+                props.externalComponents.get(step.element.toString()),
+            );
+        } else {
             setStepExternalComponent(undefined);
         }
 
@@ -306,14 +318,13 @@ function TutorialComponent(props: propsIF) {
             handleTooltip();
             handleAssignments();
             handleActionTriggers();
-            if(delay > 0){
+            if (delay > 0) {
                 setInitialTimeoutDone(true);
-                if(focusOverlay.current){
+                if (focusOverlay.current) {
                     focusOverlay.current.style.display = 'block';
                 }
             }
-        },delay); 
-        
+        }, delay);
     }, [step]);
 
     const triggerTutorial = () => {
@@ -322,47 +333,50 @@ function TutorialComponent(props: propsIF) {
 
     const navButtons = (forTooltip?: boolean) => (
         <>
-            {
-                forTooltip && isMobile ?
-                (<> 
+            {forTooltip && isMobile ? (
+                <>
                     {
-                    <div
-                        className={`${styles.step_btn} ${styles.prev_btn} ${stepIndex == 0 ? styles.disabled : ''}`}
-                        onClick={prevStep}
-                    >
-                        {'<'}
-                    </div>
-                }
-                {stepIndex < steps.length - 1 && (
-                    <div
-                        className={styles.step_btn + ' ' + styles.next_button}
-                        onClick={nextStep}
-                    >
-                        {'>'}
-                    </div>
-                )}
-                </>)
-                :
-                (<>
+                        <div
+                            className={`${styles.step_btn} ${styles.prev_btn} ${stepIndex == 0 ? styles.disabled : ''}`}
+                            onClick={prevStep}
+                        >
+                            {'<'}
+                        </div>
+                    }
+                    {stepIndex < steps.length - 1 && (
+                        <div
+                            className={
+                                styles.step_btn + ' ' + styles.next_button
+                            }
+                            onClick={nextStep}
+                        >
+                            {'>'}
+                        </div>
+                    )}
+                </>
+            ) : (
+                <>
                     {
-                    <div
-                        className={`${styles.step_btn} ${styles.prev_btn} ${stepIndex == 0 ? styles.disabled : ''}`}
-                        onClick={prevStep}
-                    >
-                        {'<'} Prev
-                    </div>
-                }
-                {stepIndex < steps.length - 1 && (
-                    <div
-                        className={styles.step_btn + ' ' + styles.next_button}
-                        onClick={nextStep}
-                    >
-                        Next {'>'}
-                    </div>
-                )}
-                </>)
-            }
-            
+                        <div
+                            className={`${styles.step_btn} ${styles.prev_btn} ${stepIndex == 0 ? styles.disabled : ''}`}
+                            onClick={prevStep}
+                        >
+                            {'<'} Prev
+                        </div>
+                    }
+                    {stepIndex < steps.length - 1 && (
+                        <div
+                            className={
+                                styles.step_btn + ' ' + styles.next_button
+                            }
+                            onClick={nextStep}
+                        >
+                            Next {'>'}
+                        </div>
+                    )}
+                </>
+            )}
+
             {stepIndex == steps.length - 1 && (
                 <div
                     className={styles.step_btn + ' ' + styles.complete_button}
@@ -372,22 +386,28 @@ function TutorialComponent(props: propsIF) {
                 </div>
             )}
 
-            { !forTooltip && !isMobile && (
+            {!forTooltip && !isMobile && (
                 <div
-                className={styles.step_btn + ' ' + styles.dismiss_button}
-                onClick={completeTutorial}
-            >
-                 {'X'} 
-            </div>
+                    className={styles.step_btn + ' ' + styles.dismiss_button}
+                    onClick={completeTutorial}
+                >
+                    {'X'}
+                </div>
             )}
 
-            { forTooltip && !isMobile && (
+            {forTooltip && !isMobile && (
                 <div
-                className={styles.step_btn + ' ' + styles.dismiss_button + ' ' + styles.for_tooltip }
-                onClick={completeTutorial}
-            >
-                 {'X'} 
-            </div>
+                    className={
+                        styles.step_btn +
+                        ' ' +
+                        styles.dismiss_button +
+                        ' ' +
+                        styles.for_tooltip
+                    }
+                    onClick={completeTutorial}
+                >
+                    {'X'}
+                </div>
             )}
         </>
     );
@@ -399,34 +419,38 @@ function TutorialComponent(props: propsIF) {
 
             {step && (
                 <div ref={tooltipWrapper} className={styles.tooltip_wrapper}>
-                   
-                    <div className={styles.tooltip_title}>{step.title}
+                    <div className={styles.tooltip_title}>
+                        {step.title}
 
-
-                    {showSteps && (
-                        <span className={styles.steps_on_tooltip}>
-                            {stepIndex + 1}
-                            <span style={{ opacity: 0.5 }}>/{steps.length}</span>
-                        </span>
-                    )}
-
+                        {showSteps && (
+                            <span className={styles.steps_on_tooltip}>
+                                {stepIndex + 1}
+                                <span style={{ opacity: 0.5 }}>
+                                    /{steps.length}
+                                </span>
+                            </span>
+                        )}
                     </div>
-                    <div className={styles.tooltip_content}>{step.intro}</div>  
+                    <div className={styles.tooltip_content}>{step.intro}</div>
 
-                    {stepExternalComponent && (stepExternalComponent.placement === 'nav-before' || !stepExternalComponent.placement) &&
-                        (<>{stepExternalComponent.component}</>)
-                    }
+                    {stepExternalComponent &&
+                        (stepExternalComponent.placement === 'nav-before' ||
+                            !stepExternalComponent.placement) && (
+                            <>{stepExternalComponent.component}</>
+                        )}
                     <div className={styles.tooltip_buttons_wrapper}>
                         {navButtons(true)}
                         {renderNavigate()}
-                        {stepExternalComponent && stepExternalComponent.placement === 'nav-end' &&
-                            (<>{stepExternalComponent.component}</>)
-                        }
+                        {stepExternalComponent &&
+                            stepExternalComponent.placement === 'nav-end' && (
+                                <>{stepExternalComponent.component}</>
+                            )}
                     </div>
 
-                    {stepExternalComponent && stepExternalComponent.placement === 'nav-after' &&
-                        (<>{stepExternalComponent.component}</>)
-                    }
+                    {stepExternalComponent &&
+                        stepExternalComponent.placement === 'nav-after' && (
+                            <>{stepExternalComponent.component}</>
+                        )}
 
                     <div className={styles.step_dots_wrapper}>
                         {steps.map((_, i) => (

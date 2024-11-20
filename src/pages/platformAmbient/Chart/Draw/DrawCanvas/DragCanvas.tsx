@@ -582,7 +582,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                                 ? valueX > scaleData.xScale.invert(offsetX)
                                 : valueX < scaleData.xScale.invert(offsetX);
 
-                        setCrossHairDataFunc(valueX,offsetX,offsetY);
+                        setCrossHairDataFunc(valueX, offsetX, offsetY);
 
                         if (
                             hoveredDrawnShape &&

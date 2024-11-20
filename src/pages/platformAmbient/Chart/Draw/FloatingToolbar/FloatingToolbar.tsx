@@ -904,7 +904,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             .node() as HTMLDivElement;
         let offsetX = 0;
         let offsetY = 0;
-        
+
         if (floatingDiv && floatingMenuDiv && floatingDivContainer) {
             const floatingDivDrag = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
@@ -1012,7 +1012,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         selectedDrawnShape,
         isSettingsTabActive,
         isNearestWindow,
-        divTop === undefined
+        divTop === undefined,
     ]);
 
     useEffect(() => {

@@ -172,8 +172,6 @@ export default function PoolRow(props: propsIF) {
         },
     ];
 
- 
-
     return (
         <div
             className={styles.gridContainer}

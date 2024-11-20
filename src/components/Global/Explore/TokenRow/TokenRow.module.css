@@ -1,4 +1,4 @@
-.gridContainer{
+.gridContainer {
     box-sizing: border-box;
     width: 100%;
     display: flex;
@@ -6,25 +6,22 @@
     align-items: center;
     min-width: 100%;
     min-height: 40px;
-   
+
     gap: 4px;
-   
-    white-space: nowrap; 
+
+    white-space: nowrap;
     padding-left: 8px;
     cursor: pointer !important;
     /* padding: 0 8px; */
-   
-
-    
 }
 
-.gridContainer:hover{
+.gridContainer:hover {
     background: var(--dark2);
     transition: all var(--animation-speed) ease-in-out;
     border-radius: 4px;
 }
 
-.gridItem{
+.gridItem {
     box-sizing: border-box;
     display: flex;
     flex-grow: 1;
@@ -36,31 +33,23 @@
     font-size: 12px;
     width: 60px;
     justify-content: end;
-    
-    
-   
-   
 }
 
-.tokenIcon{
+.tokenIcon {
     width: 100%;
     display: flex;
     justify-content: flex-start !important;
 }
 
-.tradeButton{
+.tradeButton {
     width: 25px;
-   
 }
 
-
-.poolName{
-   justify-content: flex-start !important;
-  
-  
+.poolName {
+    justify-content: flex-start !important;
 }
 
-.tradeIcon{
+.tradeIcon {
     width: 25px;
     height: 25px;
     background: var(--dark2);
@@ -81,7 +70,7 @@
         background-position: -100% 0;
     }
 }
-.skeletonItem{
+.skeletonItem {
     background: linear-gradient(
         to right,
         var(--dark2) 0%,
@@ -95,39 +84,39 @@
 
     color: transparent;
     pointer-events: none !important;
-   
 }
 /* END OF SKELETON */
 @media only screen and (min-width: 768px) {
-
-    .gridContainer{
+    .gridContainer {
         gap: 8px;
     }
 
-    .gridItem{
+    .gridItem {
         width: 70px;
         justify-content: flex-end;
     }
-    .tradeButton{
-width: 70px;
+    .tradeButton {
+        width: 70px;
+    }
+}
+
+@media only screen and (min-width: 1024px) {
+    .gridItem,
+    .tradeButton,
+    .tradeButton,
+    .poolName {
+        width: 100px;
     }
 
-   
+    .gridItem {
+        font-size: 14px;
     }
-
-    @media only screen and (min-width: 1024px) {
-        .gridItem, .tradeButton, .tradeButton, .poolName{
-            width: 100px;
-        }
-
-        .gridItem{
-            font-size: 14px;
-        }
+}
+@media only screen and (min-width: 1280px) {
+    .gridItem,
+    .tradeButton,
+    .tradeButton,
+    .poolName {
+        width: 133px;
     }
-    @media only screen and (min-width: 1280px) {
-        .gridItem, .tradeButton, .tradeButton, .poolName{
-            width: 133px;
-        }
-
-        
-    }
+}
