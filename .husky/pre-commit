@@ -1,4 +1,6 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+# v10
+# #!/usr/bin/env node
+# const { execSync } = require('child_process')
+# execSync('npx lint-staged')
 
 npx lint-staged
