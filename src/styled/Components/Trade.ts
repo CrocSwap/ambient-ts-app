@@ -27,7 +27,7 @@ export const MainSection = styled.section<{
             if (!isFill) {
                 return `
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 350px; /* Prevents overflowing */
+        grid-template-columns: minmax(0, 1fr) 350px; /* Prevents overflowing */       
       `;
             }
         }}

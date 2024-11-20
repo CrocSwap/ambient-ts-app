@@ -563,10 +563,15 @@ function Orders(props: propsIF) {
 
     // TODO: Use these as media width constants
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
+    const isTabletScreen = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
     const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
-        isSmallScreen || (isAccountView && !isLargeScreen && isSidebarOpen)
+        isSmallScreen ||
+        isTabletScreen ||
+        (isAccountView && !isLargeScreen && isSidebarOpen)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
                 (isAccountView &&

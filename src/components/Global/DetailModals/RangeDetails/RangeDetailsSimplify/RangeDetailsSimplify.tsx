@@ -87,8 +87,8 @@ function RangeDetailsSimplify(props: propsIF) {
         blockExplorer,
         tokenAAddressLowerCase,
         tokenBAddressLowerCase,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
+        baseDisplay,
+        quoteDisplay,
         elapsedTimeString,
         elapsedTimeSinceFirstMintString,
     } = useProcessRange(position, crocEnv, userAddress, isAccountView);
@@ -240,7 +240,7 @@ function RangeDetailsSimplify(props: propsIF) {
 
         {
             title: 'Token 1 Qty ',
-            content: baseDisplayFrontend + ' ' + baseTokenSymbol,
+            content: baseDisplay + ' ' + baseTokenSymbol,
             explanation: 'The quantity of token #1 in the token pair',
         },
 
@@ -258,7 +258,7 @@ function RangeDetailsSimplify(props: propsIF) {
 
         {
             title: 'Token 2 Qty ',
-            content: quoteDisplayFrontend + ' ' + quoteTokenSymbol,
+            content: quoteDisplay + ' ' + quoteTokenSymbol,
             explanation: 'The quantity of token #2 in the token pair',
         },
         {
