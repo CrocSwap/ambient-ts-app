@@ -78,6 +78,8 @@
     .portfolio_container {
         overflow-y: hidden;
         max-height: calc(100svh - 7.5rem);
+
+      
       
     }
 }

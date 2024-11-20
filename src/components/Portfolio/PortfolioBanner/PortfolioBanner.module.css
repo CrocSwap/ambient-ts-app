@@ -2,14 +2,12 @@
     position: relative;
     font-family: var(--font-family);
     width: 100%;
-    height: 100px;
-    margin-top: 4px;
+
 
     background-size: cover;
     justify-content: space-between;
     align-items: flex-end;
 
-    padding: 8px;
    
 
     display: flex;
@@ -77,6 +75,7 @@
 @media only screen and (max-width: 768px) {
     .portfolio_banner_rectangle_content {
         width: 100%;
+       
     }
 }
 
@@ -97,6 +96,7 @@
         padding: 1rem;
         border: none;
         overflow: hidden;
+        
 
       
 
