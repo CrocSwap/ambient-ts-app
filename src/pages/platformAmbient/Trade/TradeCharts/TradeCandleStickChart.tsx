@@ -664,8 +664,10 @@ function TradeCandleStickChart(props: propsIF) {
     }, [candleScale.isFetchFirst200Candle]);
 
     useEffect(() => {
-        setMinPrice(0);
-        setMaxPrice(0);
+        if (!mobileView) { 
+            setMinPrice(0);
+            setMaxPrice(0);
+        }
     }, [tokenPair]);
 
     // Liq Scale
