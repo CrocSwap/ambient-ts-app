@@ -418,7 +418,7 @@ export default function PortfolioTabs(props: propsIF) {
         },
         {
             label: isLessThanDesktopSizeScreen
-                ? 'Exch. Balances'
+                ? 'DEX Balances'
                 : 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
