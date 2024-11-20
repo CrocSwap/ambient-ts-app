@@ -11,6 +11,7 @@ import {
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { useNavigate } from 'react-router-dom';
 
 interface propsIF {
     fieldId: string;
@@ -20,6 +21,7 @@ interface propsIF {
 export default function TradeNowButton(props: propsIF) {
     const { fieldId, inNav } = props;
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const navigate = useNavigate();
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
@@ -35,6 +37,9 @@ export default function TradeNowButton(props: propsIF) {
             tabIndex={0}
             aria-label='Go to trade page button'
             inNav={inNav}
+            onMouseDown={() => {
+                navigate(linkGenMarket.getFullURL(tradeButtonParams));
+            }}
         >
             <FlexContainer
                 fullHeight
