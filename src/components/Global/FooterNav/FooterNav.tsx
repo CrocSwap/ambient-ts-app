@@ -61,14 +61,16 @@ const FooterNav: React.FC = React.memo(() => {
             setActiveIndex(0); // Trade
         } else if (currentPath.includes('/explore')) {
             setActiveIndex(1); // Explore
+        } else if (currentPath.includes('/vaults')) {
+            setActiveIndex(2); // Vaults
         } else if (
             currentPath.includes('/account') ||
             isAddressEns ||
             isAddressHex
         ) {
-            setActiveIndex(2); // Account
+            setActiveIndex(3); // Account
         } else if (currentPath.includes('/chat')) {
-            setActiveIndex(3); // Chat
+            setActiveIndex(4); // Chat
         } else {
             setActiveIndex(-1); // Home
         }
