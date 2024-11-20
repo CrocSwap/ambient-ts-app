@@ -46,6 +46,7 @@ import { filterCandleWithTransaction } from '../../../Chart/ChartUtils/discontin
 import { BrandContext } from '../../../../contexts/BrandContext';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import ChartTooltip from '../../../Chart/ChartTooltip/ChartTooltip';
+import { RangeContext } from '../../../../contexts';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -83,6 +84,10 @@ function TradeCandleStickChart(props: propsIF) {
         activeNetwork: { gridSize, poolIndex, chainId },
         isUserIdle20min,
     } = useContext(AppStateContext);
+
+    const { setMinRangePrice: setMinPrice, setMaxRangePrice: setMaxPrice } =
+        useContext(RangeContext);
+
     const {
         candleData,
         isFetchingCandle,
@@ -657,6 +662,11 @@ function TradeCandleStickChart(props: propsIF) {
             setScaleForChart(unparsedCandleData);
         }
     }, [candleScale.isFetchFirst200Candle]);
+
+    useEffect(() => {
+        setMinPrice(0);
+        setMaxPrice(0);
+    }, [tokenPair]);
 
     // Liq Scale
     useEffect(() => {
