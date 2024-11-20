@@ -1,5 +1,5 @@
 import styles from './PoolCard.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import {
@@ -23,6 +23,8 @@ interface propsIF {
 
 export default function PoolCard(props: propsIF) {
     const { pool, spotPrice } = props;
+
+    const navigate = useNavigate();
 
     const {
         activeNetwork: { chainId },
@@ -144,6 +146,9 @@ export default function PoolCard(props: propsIF) {
             aria-label={ariaDescription}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            onMouseDown={() => {
+                navigate(poolLink);
+            }}
         >
             <div className={styles.main_container}>
                 <div className={styles.row} style={{ padding: '4px' }}>
