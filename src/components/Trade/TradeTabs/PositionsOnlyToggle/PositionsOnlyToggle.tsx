@@ -94,6 +94,9 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     };
 
     const isDesktopScreen = useMediaQuery('(min-width: 600px)');
+    const isTabletScreen = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     return (
         <FlexContainer
@@ -111,20 +114,25 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                     gap={8}
                     margin='0 8px 0 0'
                 >
-                    <Text
-                        fontSize='body'
-                        color='text2'
-                        onClick={() => {
-                            unselectCandle();
-                        }}
-                        style={
-                            isCandleSelected
-                                ? { cursor: 'pointer' }
-                                : { cursor: 'default' }
-                        }
-                    >
-                        {isDesktopScreen ? `My ${props.currentTab}` : 'Mine'}
-                    </Text>
+                    {!isTabletScreen && (
+                        <Text
+                            fontSize='body'
+                            color='text2'
+                            onClick={() => {
+                                unselectCandle();
+                            }}
+                            style={
+                                isCandleSelected
+                                    ? { cursor: 'pointer' }
+                                    : { cursor: 'default' }
+                            }
+                        >
+                            {isDesktopScreen
+                                ? `My ${props.currentTab}`
+                                : 'Mine'}
+                        </Text>
+                    )}
+
                     <DefaultTooltip
                         interactive
                         title={`My ${props.currentTab}`}

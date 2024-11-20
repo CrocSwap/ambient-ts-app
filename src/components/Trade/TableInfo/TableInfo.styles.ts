@@ -8,11 +8,8 @@ interface BoxContainerProps {
 }
 
 const MainSection = styled.section`
-
     height: 100%;
     padding: 8px;
-   
-   
 `;
 
 const BoxContainer = styled.div<BoxContainerProps>`
@@ -24,9 +21,6 @@ const BoxContainer = styled.div<BoxContainerProps>`
         `  backdrop-filter: blur(10px);
         border-radius: 0.25rem;`}
     height: 100%;
-
-    
-    
 `;
 
 const FeaturedBoxInnerContainer = styled.div<BoxContainerProps>`

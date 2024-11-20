@@ -12,7 +12,7 @@ import {
     UserDataContext,
 } from '../../../contexts';
 import { VAULTS_API_URL } from '../../../ambient-utils/constants';
-import { mockAllVaultsData } from './mockVaultData';
+import { placeholderVaultsListData } from './placeholderVaultsData';
 import { Vault } from './Vault';
 
 function Vaults() {
@@ -31,7 +31,7 @@ function Vaults() {
     const vaultHeader = (
         <div className={styles.vaultHeader}>
             <span />
-            <span className={styles.poolName}></span>
+            <span className={styles.poolName} />
             <span className={styles.tvl}>TVL</span>
             <span className={styles.depositContainer}>My Deposit</span>
             <span className={styles.apyDisplay}>APR</span>
@@ -124,8 +124,8 @@ function Vaults() {
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
-                    {(allVaultsData ?? mockAllVaultsData) &&
-                        (allVaultsData ?? mockAllVaultsData)
+                    {(allVaultsData ?? placeholderVaultsListData) &&
+                        (allVaultsData ?? placeholderVaultsListData)
                             .sort(
                                 (
                                     a: VaultIF | AllVaultsServerIF,

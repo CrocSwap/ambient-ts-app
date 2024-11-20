@@ -128,7 +128,9 @@ useEffect(() => console.log(tokenA), [tokenA]);
               : dfltTokenB,
     );
 
-    const [blackListedTimeParams, setBlackListedTimeParams] = useState<Map<string, Set<number>>>(new Map());
+    const [blackListedTimeParams, setBlackListedTimeParams] = useState<
+        Map<string, Set<number>>
+    >(new Map());
 
     useEffect(() => {
         // update tokenA and tokenB when chain changes
@@ -256,10 +258,9 @@ useEffect(() => console.log(tokenA), [tokenA]);
         return defaultWidth;
     }, [baseToken.address + quoteToken.address + chainId]);
 
-
     const addToBlackList = (tokenPair: string, timeParam: number) => {
-        setBlackListedTimeParams(prev => {
-            if(prev.has(tokenPair)){
+        setBlackListedTimeParams((prev) => {
+            if (prev.has(tokenPair)) {
                 prev.get(tokenPair)?.add(timeParam);
             } else {
                 prev.set(tokenPair, new Set([timeParam]));

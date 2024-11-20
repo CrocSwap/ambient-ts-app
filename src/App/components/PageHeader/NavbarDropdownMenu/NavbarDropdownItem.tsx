@@ -17,7 +17,8 @@ export default function NavbarDropdownItem(props: propsIF) {
     );
     if (props.connectButton) {
         return (
-            <button className={styles.connectButton}
+            <button
+                className={styles.connectButton}
                 onClick={() => props.onClick()}
                 tabIndex={0}
                 role='button'

@@ -17,7 +17,7 @@ export default function RangeActionSettings(props: propsIF) {
     );
 
     // union type pf number-literal values in presets array
-    type presetValues = typeof presets[number];
+    type presetValues = (typeof presets)[number];
 
     return (
         <div className={styles.main_container}>

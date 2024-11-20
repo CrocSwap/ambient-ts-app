@@ -71,10 +71,10 @@ export default function RankTable(props: Props) {
                   ),
                   userAddress: connectedUserXp.data.userAddress,
                   points: (selectedXpLeaderboardType === 'Weekly'
-                      ? connectedUserXp.data.weeklyPoints ?? 0
+                      ? (connectedUserXp.data.weeklyPoints ?? 0)
                       : selectedXpLeaderboardType === 'Chain'
-                        ? connectedUserXp.data.chainPoints ?? 0
-                        : connectedUserXp.data.globalPoints ?? 0
+                        ? (connectedUserXp.data.chainPoints ?? 0)
+                        : (connectedUserXp.data.globalPoints ?? 0)
                   ).toLocaleString('en-US', {
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0,

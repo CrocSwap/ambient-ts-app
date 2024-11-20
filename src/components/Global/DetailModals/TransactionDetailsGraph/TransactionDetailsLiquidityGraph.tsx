@@ -10,8 +10,14 @@ import {
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { fetchPoolLiquidity } from '../../../../ambient-utils/api';
-import { CachedDataContext, CachedDataContextIF } from '../../../../contexts/CachedDataContext';
-import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
+import {
+    CachedDataContext,
+    CachedDataContextIF,
+} from '../../../../contexts/CachedDataContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
 import {
     CandleDataIF,
     LiquidityRangeIF,
@@ -29,7 +35,10 @@ import {
 } from '../../../../pages/platformAmbient/Chart/Liquidity/LiquiditySeries/AreaSeries';
 import { createLiquidityLineSeries } from '../../../../pages/platformAmbient/Chart/Liquidity/LiquiditySeries/LineSeries';
 import { ChartThemeIF } from '../../../../contexts/ChartContext';
-import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
 
 interface propsIF {
     tx: TransactionIF;
@@ -51,9 +60,7 @@ type liquidityChartData = {
     liquidityDataBid: LiquidityRangeIF[];
 };
 
-export default function TransactionDetailsLiquidityGraph(
-    props: propsIF,
-) {
+export default function TransactionDetailsLiquidityGraph(props: propsIF) {
     const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
     const { cachedFetchTokenPrice, cachedQuerySpotTick } =
         useContext<CachedDataContextIF>(CachedDataContext);

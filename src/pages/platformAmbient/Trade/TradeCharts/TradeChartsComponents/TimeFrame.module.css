@@ -121,6 +121,6 @@
     box-shadow: var(--glow-light-box-shadow);
 }
 
-.mobile_container{
+.mobile_container {
     display: flex;
 }

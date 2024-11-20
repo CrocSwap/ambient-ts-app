@@ -26,8 +26,6 @@
     border-right: 0.5px solid var(--accent1);
 }
 
-
-
 .chat_body {
     display: flex;
     flex-direction: column;
@@ -93,8 +91,7 @@
     background: var(--dark3);
 }
 
-.scroll_up
-{
+.scroll_up {
     position: absolute;
     right: 1rem;
     top: 5rem;
@@ -122,7 +119,7 @@
     align-self: stretch;
     cursor: default;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,.1) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
     scrollbar-3dlight-color: transparent;
     /* transition: opacity .5s ease-in-out; */
 }
@@ -133,7 +130,6 @@
     }
 }
 
-
 @keyframes opaAnim {
     0% {
         opacity: 0;
@@ -143,58 +139,61 @@
     }
 }
 
-
-.ment_skip_button{
+.ment_skip_button {
     position: absolute;
     display: block;
     width: 1.4rem;
     height: 1.4rem;
     border-radius: 10rem;
     bottom: 45%;
-    z-index: 2;   
+    z-index: 2;
     cursor: pointer;
     opacity: 0;
-    animation: opaAnim .4s ease-in-out forwards;
+    animation: opaAnim 0.4s ease-in-out forwards;
     right: 2rem;
 }
 
-
-.ment_skip_button_down, .ment_skip_button_last{
+.ment_skip_button_down,
+.ment_skip_button_last {
     position: absolute;
     display: block;
     width: 1.4rem;
     height: 1.4rem;
     border-radius: 10rem;
     bottom: 37%;
-    right: 2rem; 
-    z-index: 2;   
+    right: 2rem;
+    z-index: 2;
     cursor: pointer;
     opacity: 0;
-    animation: opaAnim .4s ease-in-out forwards;
+    animation: opaAnim 0.4s ease-in-out forwards;
     -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
 }
 
-.ment_skip_button, .ment_skip_button_down, .ment_skip_button_last{
-    transition: all .2s ease-in-out;
+.ment_skip_button,
+.ment_skip_button_down,
+.ment_skip_button_last {
+    transition: all 0.2s ease-in-out;
     background-color: color-mix(in srgb, var(--accent1) 20%, transparent);
     border: 1px solid var(--accent1);
     color: var(--accent1);
     backdrop-filter: blur(10px);
     /* opacity: .5 !important; */
 }
-.ment_skip_button:hover, .ment_skip_button_down:hover, .ment_skip_button_last:hover{
-/* opacity: 1 !important; */
+.ment_skip_button:hover,
+.ment_skip_button_down:hover,
+.ment_skip_button_last:hover {
+    /* opacity: 1 !important; */
 }
 
-.ment_skip_button_last{
+.ment_skip_button_last {
     bottom: 30%;
     width: auto;
     bottom: 10%;
     text-align: center;
     padding: 0 1rem;
-    font-size: .82rem;
+    font-size: 0.82rem;
     height: auto;
     left: 50%;
     font-weight: 600;
@@ -203,31 +202,34 @@
     border: 1px solid var(--accent1);
 }
 
-.ment_skip_button svg, .ment_skip_button_down svg, .ment_skip_button_last svg{
+.ment_skip_button svg,
+.ment_skip_button_down svg,
+.ment_skip_button_last svg {
     fill: var(--accent1);
 }
 
-.ment_skip_button_last svg{
-
+.ment_skip_button_last svg {
     vertical-align: middle;
     width: 16px;
     height: 16px;
     margin-right: 8px;
 }
 
-.ment_skip_button svg, .ment_skip_button_down svg, .ment_skip_button_last svg{
+.ment_skip_button svg,
+.ment_skip_button_down svg,
+.ment_skip_button_last svg {
     color: black;
 }
 
-
-@keyframes yellowFlash{
-    0% , 100%{
+@keyframes yellowFlash {
+    0%,
+    100% {
         box-shadow: 0px 0px 28px #f3bc4144;
         border: 1px solid #f3bc4188;
         color: #f3bc41cc;
         background: transparent;
     }
-    50%{
+    50% {
         box-shadow: 0px 0px 28px #f3bc4188;
         border: 1px solid #f3bc41aa;
         color: white;
@@ -235,88 +237,84 @@
     }
 }
 
-
-.purple_flashed{
+.purple_flashed {
     animation: purpleFlash 1s 3 ease-in-out !important;
 }
 
-@keyframes purpleFlash{
-    0% , 100%{
-        box-shadow: 0px 0px 28px color-mix(in srgb, var(--accent1) 12%, transparent);
-        background:color-mix(in srgb, var(--accent1) 6%, transparent);
+@keyframes purpleFlash {
+    0%,
+    100% {
+        box-shadow: 0px 0px 28px
+            color-mix(in srgb, var(--accent1) 12%, transparent);
+        background: color-mix(in srgb, var(--accent1) 6%, transparent);
         border: 1px solid color-mix(in srgb, var(--accent1) 20%, transparent);
     }
-    50%{
-        box-shadow: 0px 0px 28px color-mix(in srgb, var(--accent1) 40%, transparent);
-        background:color-mix(in srgb, var(--accent1) 20%, transparent);
+    50% {
+        box-shadow: 0px 0px 28px
+            color-mix(in srgb, var(--accent1) 40%, transparent);
+        background: color-mix(in srgb, var(--accent1) 20%, transparent);
         border: 1px solid color-mix(in srgb, var(--accent1) 10%, transparent);
     }
 }
 
-.verify_button{
-    transition: all .2s ease-in-out;
+.verify_button {
+    transition: all 0.2s ease-in-out;
     display: block;
     text-align: center;
-    background: rgba(0,0,0, .2);
-    border-radius: .4rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 0.4rem;
     position: absolute;
-    top: .5rem;
+    top: 0.5rem;
     right: 2.5rem;
-    font-size: .72rem;
+    font-size: 0.72rem;
     /* color: rgba(255,255,255, .5);
     border: 1px solid rgba(255,255,255, .1); */
     box-shadow: 0px 0px 28px #f3bc4122;
     border: 1px solid #f3bc4188;
     color: #f3bc41cc;
-    padding: 0 .4rem;
+    padding: 0 0.4rem;
 }
 
-
-.verify_button:not(.verified) svg{
+.verify_button:not(.verified) svg {
     color: #f3bc41cc;
     cursor: default !important;
 }
 
-.verify_button:not(.verified):hover{
+.verify_button:not(.verified):hover {
     box-shadow: 0px 0px 28px #f3bc4188;
     border: 1px solid #f3bc41aa;
     color: white;
     background: #f3bc41cc;
 }
 
-
-
-.verify_button.flashed{
-    animation: yellowFlash .5s 3 ease-in-out;
+.verify_button.flashed {
+    animation: yellowFlash 0.5s 3 ease-in-out;
 }
 
-
-
-.verify_button.verified svg{
+.verify_button.verified svg {
     cursor: default !important;
 }
-.verify_button.verified{
+.verify_button.verified {
     border-color: rgba(21, 190, 111, 0.75);
     cursor: default;
     box-shadow: 0px 0px 28px rgba(21, 190, 111, 0.35);
     color: var(--positive);
 }
 
-.not_connected{
+.not_connected {
     color: var(--text3) !important;
     border-color: var(--text3) !important;
     box-shadow: 0px 0px 28px rgb(255 255 255 / 32%);
 }
-.not_connected svg{
+.not_connected svg {
     color: var(--text2);
 }
 
-
-.verify_button_icon{
-    margin: 0 .2rem; 
+.verify_button_icon {
+    margin: 0 0.2rem;
 }
-.verify_button_mod_icon{
-    margin-top: .1rem;
+.verify_button_mod_icon {
+    margin-top: 0.1rem;
 }
 
 /* 
@@ -331,15 +329,21 @@
     background: transparent !important;
 } */
 
-
-@keyframes scaleAnim{
-    from    { transform: scale(0); opacity: 0; }
-    to      { transform: scale(1);  opacity: 1;}
-
+@keyframes scaleAnim {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
-.reaction_picker_wrapper{
-    transition: opacity .2s ease-in-out, max-width .2s ease-in-out;
+.reaction_picker_wrapper {
+    transition:
+        opacity 0.2s ease-in-out,
+        max-width 0.2s ease-in-out;
     display: block;
     position: absolute;
     transform: scale(0);
@@ -348,7 +352,7 @@
     z-index: 1;
     left: auto;
     right: 2%;
-    animation: scaleAnim .3s ease-in-out forwards;
+    animation: scaleAnim 0.3s ease-in-out forwards;
     box-shadow: 0px 0px 40px color-mix(in srgb, var(--accent1) 20%, transparent);
     overflow: hidden;
     border-radius: 100vw;
@@ -358,38 +362,35 @@
     overflow: hidden;
     max-width: 0;
     border: none;
-} 
+}
 
-.reaction_picker_wrapper.active{
+.reaction_picker_wrapper.active {
     max-width: 96%;
     border: 1px solid color-mix(in srgb, var(--accent1) 66%, transparent);
     opacity: 1;
 }
 
-
-
-
-.reaction_picker_close{
+.reaction_picker_close {
     display: block;
     font-size: 1rem;
     color: white;
-    padding: .5rem;
+    padding: 0.5rem;
     margin-right: 1rem;
     float: right;
     cursor: pointer;
     padding-bottom: 0;
-    opacity: .5;
-    margin-top: .2rem;
+    opacity: 0.5;
+    margin-top: 0.2rem;
     cursor: pointer;
-    transition: all .2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
-.reaction_picker_close:hover{
+.reaction_picker_close:hover {
     opacity: 1;
 }
 
-.scroll_to_icon{
-    transition: all .2s ease-in-out;
+.scroll_to_icon {
+    transition: all 0.2s ease-in-out;
     font-size: 1rem;
     border-radius: 10rem;
     background: color-mix(in srgb, var(--accent1) 20%, transparent);
@@ -397,20 +398,20 @@
     backdrop-filter: blur(10px);
 }
 
-.scroll_to_icon:hover{
+.scroll_to_icon:hover {
     background: color-mix(in srgb, var(--accent1) 22%, transparent);
-    
+
     border: 1px solid color-mix(in srgb, var(--accent1) 66%, transparent);
 }
 
-.btn_go_to_chart{
-    transition: all .2s ease-in-out;
-    font-size: .7rem;
+.btn_go_to_chart {
+    transition: all 0.2s ease-in-out;
+    font-size: 0.7rem;
     border: 1px solid color-mix(in srgb, var(--accent1) 20%, transparent);
     background-color: color-mix(in srgb, var(--accent1) 10%, transparent);
     backdrop-filter: blur(10px);
-    border-radius: .4rem;
-    padding: .3rem .7rem;
+    border-radius: 0.4rem;
+    padding: 0.3rem 0.7rem;
     cursor: pointer;
     color: var(--accent1);
     position: absolute;
@@ -419,49 +420,43 @@
     transform: translateX(-50%);
     z-index: 99;
     border-radius: 10rem;
-    font-size: .78rem;
+    font-size: 0.78rem;
 }
 
-.btn_go_to_chart.active{
+.btn_go_to_chart.active {
     top: 5rem;
 }
 
-.btn_go_to_chart:hover{
+.btn_go_to_chart:hover {
     background-color: var(--accent1);
     color: white;
 }
 
-@media only screen and (max-width: 600px){
-
-
+@media only screen and (max-width: 600px) {
     .chat_notification {
-
         position: absolute;
         top: auto;
         left: auto;
         width: auto;
         right: 1.4rem;
         bottom: 6rem;
-
     }
 
-    .ment_skip_button{
+    .ment_skip_button {
         bottom: 50%;
     }
 
-    .ment_skip_button_down{
+    .ment_skip_button_down {
         bottom: 42%;
     }
 
-    .ment_skip_button, .ment_skip_button_down{
+    .ment_skip_button,
+    .ment_skip_button_down {
         right: 1.8rem;
         transform: scale(1.2);
     }
 
-    .ment_skip_button_last{
+    .ment_skip_button_last {
         bottom: 5rem;
     }
-    
 }
-
-    

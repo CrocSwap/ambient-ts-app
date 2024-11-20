@@ -13,7 +13,7 @@ interface argsIF {
     quote: string;
     poolIdx: number;
     chainId: string;
-    user:`0x${string}`;
+    user: `0x${string}`;
     n?: number;
     page?: number;
     period?: number;

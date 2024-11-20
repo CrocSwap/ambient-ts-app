@@ -1,57 +1,46 @@
-
-
 .container {
-  position: relative;
-  overflow-y: auto;
-  /* overscroll-behavior-y: contain;
+    position: relative;
+    overflow-y: auto;
+    /* overscroll-behavior-y: contain;
   scroll-snap-type: y mandatory; */
-  height: 100vh;
-  width: 100vw;
+    height: 100vh;
+    width: 100vw;
 
-  background-attachment: fixed;
+    background-attachment: fixed;
 }
 
 .container::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
 .container {
-  scrollbar-width: none;
+    scrollbar-width: none;
 }
 
 .container {
-  -ms-overflow-style: none;
+    -ms-overflow-style: none;
 }
-
 
 @media (max-height: 715px) {
-.container{
-height: auto;
+    .container {
+        height: auto;
+    }
 }
-}
-
-
 
 @media (max-width: 600px) {
+    .container {
+        overscroll-behavior-y: contain;
+        scroll-snap-type: y mandatory;
+    }
 
-  .container{
-
-    
-    overscroll-behavior-y: contain;
-    scroll-snap-type: y mandatory;
-  }
-
-  .dots{
-    display: none;
-  }
+    .dots {
+        display: none;
+    }
 }
 
-
 @media (min-width: 1600px) {
-  .container {
-
-    overscroll-behavior-y: contain;
-    scroll-snap-type: y mandatory;
-
-  }
+    .container {
+        overscroll-behavior-y: contain;
+        scroll-snap-type: y mandatory;
+    }
 }

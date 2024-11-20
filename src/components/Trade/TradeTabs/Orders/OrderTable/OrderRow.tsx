@@ -220,7 +220,7 @@ function OrderRow(props: propsIF) {
         sideTypeColumn,
         tokensColumn,
         statusDisplay,
-        hiddenIDColumn
+        hiddenIDColumn,
     } = orderRowConstants(orderRowConstantsProps);
 
     const handleKeyPress: React.KeyboardEventHandler<HTMLDivElement> = (

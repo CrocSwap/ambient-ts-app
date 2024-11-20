@@ -205,13 +205,17 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setIsFirstFetch(true);
     }, [isFirstFetch]);
 
-    useEffect(() => {        
-        const isChangeUserConnected = checkUserConnected.current === isUserConnected;
-        isChangeUserConnected && isChartEnabled && isUserOnline && fetchCandles();
+    useEffect(() => {
+        const isChangeUserConnected =
+            checkUserConnected.current === isUserConnected;
+        isChangeUserConnected &&
+            isChartEnabled &&
+            isUserOnline &&
+            fetchCandles();
         if (isManualCandleFetchRequested)
             setIsManualCandleFetchRequested(false);
 
-        checkUserConnected.current = isUserConnected;   
+        checkUserConnected.current = isUserConnected;
     }, [
         isManualCandleFetchRequested,
         isChartEnabled,

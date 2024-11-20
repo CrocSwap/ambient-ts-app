@@ -123,7 +123,9 @@ function Orders(props: propsIF) {
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
 
-    const prevBaseQuoteAddressRef = useRef<string>(selectedBaseAddress + selectedQuoteAddress);
+    const prevBaseQuoteAddressRef = useRef<string>(
+        selectedBaseAddress + selectedQuoteAddress,
+    );
 
     const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(
         !isAccountView && showAllData,
@@ -134,8 +136,10 @@ function Orders(props: propsIF) {
     }, [isAccountView, showAllData]);
 
     useEffect(() => {
-
-        if(prevBaseQuoteAddressRef.current !== selectedBaseAddress + selectedQuoteAddress){
+        if (
+            prevBaseQuoteAddressRef.current !==
+            selectedBaseAddress + selectedQuoteAddress
+        ) {
             setPagesVisible([0, 1]);
             setPageDataCountShouldReset(true);
             setExtraPagesAvailable(0);
@@ -146,8 +150,9 @@ function Orders(props: propsIF) {
             setLastFetchedCount(0);
             setHotTransactions([]);
         }
-        
-        prevBaseQuoteAddressRef.current = selectedBaseAddress + selectedQuoteAddress;
+
+        prevBaseQuoteAddressRef.current =
+            selectedBaseAddress + selectedQuoteAddress;
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     const [pageDataCountShouldReset, setPageDataCountShouldReset] =
@@ -563,10 +568,15 @@ function Orders(props: propsIF) {
 
     // TODO: Use these as media width constants
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
+    const isTabletScreen = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
     const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
-        isSmallScreen || (isAccountView && !isLargeScreen && isSidebarOpen)
+        isSmallScreen ||
+        isTabletScreen ||
+        (isAccountView && !isLargeScreen && isSidebarOpen)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
                 (isAccountView &&

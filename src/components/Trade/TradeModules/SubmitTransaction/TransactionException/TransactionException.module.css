@@ -14,39 +14,34 @@
     color: var(--text2);
 }
 
-.formatted_error{
+.formatted_error {
     word-break: break-all;
     height: 50px;
     overflow-y: scroll;
 }
 
-.formatted_error_container{
-
+.formatted_error_container {
     display: flex;
     flex-direction: column;
     gap: 8px;
-
 }
 
-.copy_error{
+.copy_error {
     width: 80%;
     background: none;
     margin: 0 auto;
     cursor: pointer;
     outline: none;
     display: flex;
-padding: 4px 8px;
-justify-content: space-between;
-align-items: center;
-border-radius: 4px;
-border: 1px solid var(--text2);
-align-self: stretch;
-color: var(--text2);
-
+    padding: 4px 8px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px;
+    border: 1px solid var(--text2);
+    align-self: stretch;
+    color: var(--text2);
 }
-.copy_error:hover{
+.copy_error:hover {
     border: 1px solid var(--accent4);
     color: var(--accent4);
-
-
 }

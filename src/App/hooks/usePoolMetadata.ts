@@ -57,7 +57,6 @@ export function usePoolMetadata() {
         setUserPositionsByPool,
         setUserTransactionsByPool,
         setPositionsByPool,
-        setLeaderboardByPool,
         setTransactionsByPool,
         setLimitOrdersByPool,
         setUserLimitOrdersByPool,
@@ -174,16 +173,11 @@ export function usePoolMetadata() {
         PositionIF[] | undefined
     >([]);
 
-    const [newLeaderboardByPoolData, setNewLeaderboardByPoolData] = useState<
-        PositionIF[] | undefined
-    >([]);
-
     useEffect(() => {
         // reset new data when switching pairs
         setNewTxByPoolData(undefined);
         setNewLimitsByPoolData(undefined);
         setNewRangesByPoolData(undefined);
-        setNewLeaderboardByPoolData(undefined);
     }, [baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
@@ -283,30 +277,6 @@ export function usePoolMetadata() {
     }, [newRangesByPoolData, baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
-        if (newLeaderboardByPoolData) {
-            const filteredNewLeaderboardByPoolData =
-                newLeaderboardByPoolData.filter((position) => {
-                    return (
-                        position.base.toLowerCase() ===
-                            baseTokenAddress.toLowerCase() &&
-                        position.quote.toLowerCase() ===
-                            quoteTokenAddress.toLowerCase()
-                    );
-                });
-            if (filteredNewLeaderboardByPoolData.length > 0) {
-                setLeaderboardByPool({
-                    dataReceived: true,
-                    positions: filteredNewLeaderboardByPoolData,
-                });
-                setDataLoadingStatus({
-                    datasetName: 'isPoolRangeDataLoading',
-                    loadingStatus: false,
-                });
-            }
-        }
-    }, [newLeaderboardByPoolData, baseTokenAddress + quoteTokenAddress]);
-
-    useEffect(() => {
         const currentPoolData = allPoolStats?.find(
             (poolStat: SinglePoolDataIF) =>
                 poolStat.base.toLowerCase() ===
@@ -388,70 +358,6 @@ export function usePoolMetadata() {
                         setDataLoadingStatus({
                             datasetName: 'isPoolRangeDataLoading',
                             loadingStatus: false,
-                        });
-                    }
-                })
-                .catch(console.error);
-
-            // retrieve positions for leaderboard
-            const poolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-                ? GCGO_OVERRIDE_URL + '/pool_position_apy_leaders?'
-                : graphCacheUrl + '/pool_position_apy_leaders?';
-            fetch(
-                poolPositionsCacheEndpoint +
-                    new URLSearchParams({
-                        base: baseTokenAddress.toLowerCase(),
-                        quote: quoteTokenAddress.toLowerCase(),
-                        poolIdx: poolIndex.toString(),
-                        chainId: chainId,
-                        n: '50',
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const leaderboardPositions = json.data;
-                    const skipENSFetch = true;
-
-                    if (leaderboardPositions) {
-                        Promise.all(
-                            leaderboardPositions.map(
-                                (position: PositionServerIF) => {
-                                    return getPositionData(
-                                        position,
-                                        tokens.tokenUniv,
-                                        crocEnv,
-                                        provider,
-                                        chainId,
-                                        cachedFetchTokenPrice,
-                                        cachedQuerySpotPrice,
-                                        cachedTokenDetails,
-                                        cachedEnsResolve,
-                                        skipENSFetch,
-                                    );
-                                },
-                            ),
-                        )
-                            .then((updatedPositions) => {
-                                const top10Positions = updatedPositions
-                                    .filter((updatedPosition: PositionIF) => {
-                                        return (
-                                            updatedPosition.isPositionInRange &&
-                                            updatedPosition.apy !== 0
-                                        );
-                                    })
-                                    .slice(0, 10);
-
-                                if (top10Positions.length > 0) {
-                                    setNewLeaderboardByPoolData(top10Positions);
-                                } else {
-                                    setNewLeaderboardByPoolData(undefined);
-                                }
-                            })
-                            .catch(console.error);
-                    } else {
-                        setLeaderboardByPool({
-                            dataReceived: false,
-                            positions: [],
                         });
                     }
                 })

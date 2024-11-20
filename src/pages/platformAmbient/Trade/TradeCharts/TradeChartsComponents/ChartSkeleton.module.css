@@ -20,7 +20,12 @@
 .topBar {
     background: var(--dark3);
     height: 13px;
-    background: linear-gradient(to right, var(--dark1) 8%, var(--dark2) 18%, var(--dark1) 33%);
+    background: linear-gradient(
+        to right,
+        var(--dark1) 8%,
+        var(--dark2) 18%,
+        var(--dark1) 33%
+    );
     background-size: 1200px 100%;
     animation: shimmer 2.5s infinite ease-in-out; /* Adjust duration */
 }
@@ -44,7 +49,12 @@
     align-items: center;
     gap: 4px;
     align-self: stretch;
-    background: linear-gradient(to right, var(--dark1) 8%, var(--dark2) 18%, var(--dark1) 33%);
+    background: linear-gradient(
+        to right,
+        var(--dark1) 8%,
+        var(--dark2) 18%,
+        var(--dark1) 33%
+    );
     background-size: 1200px 100%;
     animation: shimmer 2.5s infinite ease-in-out; /* Adjust duration */
 }
@@ -65,7 +75,7 @@
     position: relative;
     display: flex;
     justify-content: space-between;
-   align-items: center;
+    align-items: center;
     padding: 8px;
     height: 100%;
     animation: shimmer 2.5s infinite ease-in-out; /* Adjust duration */
@@ -73,10 +83,13 @@
     padding: 1rem 3rem;
 }
 
-
-
 .shimmerBG {
-    background: linear-gradient(to right, var(--dark1) 8%, var(--dark2) 18%, var(--dark1) 33%);
+    background: linear-gradient(
+        to right,
+        var(--dark1) 8%,
+        var(--dark2) 18%,
+        var(--dark1) 33%
+    );
     background-size: 1200px 100%;
     animation: shimmer 2.5s infinite ease-in-out;
 }
@@ -98,7 +111,12 @@
     justify-content: center;
     align-items: center;
     padding: 4px;
-    background: linear-gradient(to right, var(--dark1) 8%, var(--dark2) 18%, var(--dark1) 33%);
+    background: linear-gradient(
+        to right,
+        var(--dark1) 8%,
+        var(--dark2) 18%,
+        var(--dark1) 33%
+    );
     background-size: 1200px 100%;
     animation: shimmer 2.5s infinite ease-in-out;
 }
@@ -109,13 +127,12 @@
     height: 20px;
 }
 
-.loadingText{
+.loadingText {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
-
 }
 
 /* Responsive Design: Smaller Screens */
@@ -161,7 +178,7 @@
         height: auto;
     }
 
-    svg{
+    svg {
         display: none;
     }
 }

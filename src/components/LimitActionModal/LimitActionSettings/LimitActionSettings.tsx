@@ -17,7 +17,7 @@ export default function LimitActionSettings(props: propsIF) {
     // values to generate preset buttons
     const presets: number[] = [0.1, 0.3, 0.5];
     // type derived as number-literal union for defined presets
-    type presetValues = typeof presets[number];
+    type presetValues = (typeof presets)[number];
 
     const slippageValue = 2;
 

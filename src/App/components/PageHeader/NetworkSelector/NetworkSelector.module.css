@@ -1,4 +1,4 @@
-.dropdownMenuContainer{
+.dropdownMenuContainer {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,8 +15,6 @@
     padding: 12px;
     overflow: hidden;
     z-index: 999;
-   
-    
 }
 
 .menuContent ul,
@@ -25,7 +23,7 @@
     list-style-type: none;
 }
 
-.chainNameStatus{
+.chainNameStatus {
     display: flex;
     align-items: center;
     padding: 8px 0;
@@ -63,14 +61,11 @@
     border-radius: var(--border-radius);
 }
 
-
 @media only screen and (min-width: 768px) {
-
-    .dropdownMenuContainer{
+    .dropdownMenuContainer {
         border-radius: var(--border-radius);
         width: auto;
         height: 31px;
-
     }
 
     .menuContent {

@@ -74,7 +74,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
             ? 1 / poolPriceWithoutDenom
-            : poolPriceWithoutDenom ?? 0
+            : (poolPriceWithoutDenom ?? 0)
         : 0;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -589,15 +589,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     }
                 })
                 .on('measure', (event: CustomEvent) => {
-                    liquidityScale.range([
-                        event.detail.width,
-                        0,
-                    ]);
+                    liquidityScale.range([event.detail.width, 0]);
 
-                    liquidityDepthScale.range([
-                        event.detail.width,
-                        0,
-                    ]);
+                    liquidityDepthScale.range([event.detail.width, 0]);
                     scaleData?.yScale.range([event.detail.height, 0]);
 
                     liqBidSeries?.context(ctx);
@@ -994,8 +988,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 ref={d3CanvasLiqHover}
                 style={{
                     position: 'relative',
-                    width: mobileView ? '20%' :'8%',
-                    marginLeft: mobileView ? '80%' :  '92%',
+                    width: mobileView ? '20%' : '8%',
+                    marginLeft: mobileView ? '80%' : '92%',
                 }}
             ></d3fc-canvas>
             <d3fc-canvas
@@ -1003,7 +997,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 style={{
                     position: 'relative',
                     width: mobileView ? '20%' : '8%',
-                    marginLeft:  mobileView ? '80%' : '92%',
+                    marginLeft: mobileView ? '80%' : '92%',
                 }}
             ></d3fc-canvas>
         </>
