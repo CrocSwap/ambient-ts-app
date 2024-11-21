@@ -162,13 +162,13 @@ export const useAppChain = (): {
                                 isPathUserXpOrLeaderboard ||
                                 isPathOnExplore
                             ) {
-                                if (
-                                    activeNetwork.chainId !=
-                                    incomingChainFromWallet
-                                ) {
-                                    alert('reloading 2');
-                                    window.location.reload();
-                                }
+                                // if (
+                                //     activeNetwork.chainId !==
+                                //     incomingChainFromWallet
+                                // ) {
+                                //     alert('reloading 2');
+                                //     // setActiveNetwork(plumeSepolia);
+                                // }
                             } else {
                                 linkGenCurrent.navigate();
                             }
@@ -192,7 +192,7 @@ export const useAppChain = (): {
                                 nextNetwork = scrollSepolia;
                             } else if (incomingChainFromWallet === '0x18230') {
                                 nextNetwork = plumeSepolia;
-                            };
+                            }
                             if (nextNetwork) {
                                 setActiveNetwork(nextNetwork);
                             } else {
