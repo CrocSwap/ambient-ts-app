@@ -272,15 +272,15 @@ export default function VaultRow(props: propsIF) {
                                 Deposit
                             </button>
 
-                            {isUserConnected && (
-                                // !!(vault.balance || crocEnvBal) &&
-                                <button
-                                    className={styles.actionButton}
-                                    onClick={handleOpenWithdrawModal}
-                                >
-                                    Withdraw
-                                </button>
-                            )}
+                            {isUserConnected &&
+                                !!(vault.balance || crocEnvBal) && (
+                                    <button
+                                        className={styles.actionButton}
+                                        onClick={handleOpenWithdrawModal}
+                                    >
+                                        Withdraw
+                                    </button>
+                                )}
                         </div>
                     </div>
                 </div>
