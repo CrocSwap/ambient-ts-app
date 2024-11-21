@@ -171,27 +171,6 @@ export default function VaultWithdraw(props: propsIF) {
         </FlexContainer>
     );
 
-    // const withdrawDropdown = (
-    //     <div className={styles.withdrawDropdownContainer}>
-    //         <h3>Withdraw as</h3>
-
-    //         <div className={styles.dropdownContainer} ref={dropdownRef}>
-    //             <button
-    //                 onClick={() =>
-    //                     setShowWithdrawDropdown(!showWithdrawDropdown)
-    //                 }
-    //             >
-    //                 ETH / USDC <RiArrowDropDownLine />
-    //             </button>
-    //             {showWithdrawDropdown && (
-    //                 <section className={styles.dropdownContent}>
-    //                     i sm dropdown content
-    //                 </section>
-    //             )}
-    //         </div>
-    //     </div>
-    // );
-
     const mainDetailsDisplay = (
         <>
             <div className={styles.pooledContentContainer}>
