@@ -1,5 +1,6 @@
 .container {
-    background: url('../../../assets/futa/images/futaCover.svg') no-repeat center center fixed;
+    background: url('../../../assets/futa/images/futaCover.svg') no-repeat
+        center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -14,29 +15,21 @@
     padding: 8px;
 }
 
-.container h1{
-    font-family: "Roboto Mono";
+.container h1 {
+    font-family: 'Roboto Mono';
     font-size: 56px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
     text-align: center;
     margin-bottom: 20%;
-    text-shadow: 0px 0px 70px rgba(12, 205, 255, 0.60);
-    color: var(--accent1, #0CCDFF);
+    text-shadow: 0px 0px 70px rgba(12, 205, 255, 0.6);
+    color: var(--accent1, #0ccdff);
     text-transform: uppercase;
-    
-    
 }
 
 @media (min-width: 768px) {
-    .container h1{
-        
+    .container h1 {
         font-size: 156px;
-      
-        
-        
     }
-    
-
 }

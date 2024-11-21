@@ -10,6 +10,7 @@ import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { TokenIF, AllVaultsServerIF } from '../../ambient-utils/types';
 
 export function useApprove() {
     const {
@@ -34,11 +35,14 @@ export function useApprove() {
         tokenAddress: string,
         tokenSymbol: string,
         cb?: (b: boolean) => void,
+        tokenQuantity?: bigint,
     ) => {
         if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
+            const tx = await crocEnv
+                .token(tokenAddress)
+                .approve(tokenQuantity || undefined);
             if (tx) addPendingTx(tx?.hash);
             if (tx?.hash)
                 addTransactionByType({
@@ -88,5 +92,69 @@ export function useApprove() {
         }
     };
 
-    return { approve, isApprovalPending };
+    const approveVault = async (
+        vault: AllVaultsServerIF,
+        mainAsset: TokenIF,
+        secondaryAsset: TokenIF,
+        cb?: (b: boolean) => void,
+        tokenQuantity?: bigint,
+    ) => {
+        if (!crocEnv) return;
+        try {
+            setIsApprovalPending(true);
+            const tx = await crocEnv
+                .tempestVault(vault.address, vault.mainAsset)
+                .approve(tokenQuantity || undefined)
+                .catch(console.error);
+
+            if (tx) addPendingTx(tx?.hash);
+            if (tx?.hash)
+                addTransactionByType({
+                    userAddress: userAddress || '',
+                    txHash: tx.hash,
+                    txType: 'Approve',
+                    txDescription: `Approve ${mainAsset.symbol}/${secondaryAsset.symbol}`,
+                });
+
+            let receipt;
+            try {
+                if (tx) receipt = await tx.wait();
+            } catch (e) {
+                const error = e as TransactionError;
+                console.error({ error });
+                // The user used 'speed up' or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    IS_LOCAL_ENV && console.debug('repriced');
+                    removePendingTx(error.hash);
+
+                    const newTransactionHash = error.receipt.hash;
+                    addPendingTx(newTransactionHash);
+
+                    updateTransactionHash(error.hash, error.receipt.hash);
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
+                    receipt = error.receipt;
+                } else if (isTransactionFailedError(error)) {
+                    console.error({ error });
+                    receipt = error.receipt;
+                }
+            }
+            if (receipt) {
+                addReceipt(JSON.stringify(receipt));
+                removePendingTx(receipt.hash);
+            }
+        } catch (error) {
+            if (error.reason === 'sending a transaction requires a signer') {
+                location.reload();
+            }
+            console.error({ error });
+        } finally {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
+            setRecheckTokenBApproval(true);
+            cb && cb(true);
+        }
+    };
+
+    return { approve, approveVault, isApprovalPending };
 }

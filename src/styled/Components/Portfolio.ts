@@ -1,6 +1,5 @@
 import styled from 'styled-components/macro';
 
-
 // export const PortfolioTabsPortfolioTabsContainer = styled.div`
 //     width: 100%;
 //     height: 100%;
@@ -161,7 +160,6 @@ export const MaxButton = styled.button<{ disabled?: boolean; width?: string }>`
 //     width: 100%;
 //     height: 100px;
 //     margin-top: 4px;
- 
 
 //     -webkit-background-size: cover;
 //     -moz-background-size: cover;
@@ -182,8 +180,6 @@ export const MaxButton = styled.button<{ disabled?: boolean; width?: string }>`
 //         height: 150px;
 //         margin-top: 0;
 //     }
-
-
 
 // `;
 
@@ -313,4 +309,3 @@ export const MaxButton = styled.button<{ disabled?: boolean; width?: string }>`
 //         }
 //     }}
 // `;
-

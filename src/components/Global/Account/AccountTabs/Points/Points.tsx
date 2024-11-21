@@ -79,13 +79,13 @@ export default function Points(props: propsIF) {
                                     connectedAccountActive
                                         ? connectedUserBlastXp.dataReceived ===
                                           true
-                                            ? connectedUserBlastXp.data
-                                                  ?.points ?? '0'
+                                            ? (connectedUserBlastXp.data
+                                                  ?.points ?? '0')
                                             : '...'
                                         : resolvedUserBlastXp.dataReceived ===
                                             true
-                                          ? resolvedUserBlastXp.data?.points ??
-                                            '0'
+                                          ? (resolvedUserBlastXp.data?.points ??
+                                            '0')
                                           : '...'
                                 }
                                 logo={blastLogo}
@@ -99,13 +99,13 @@ export default function Points(props: propsIF) {
                                     connectedAccountActive
                                         ? connectedUserBlastXp.dataReceived ===
                                           true
-                                            ? connectedUserBlastXp.data?.gold ??
-                                              '0'
+                                            ? (connectedUserBlastXp.data
+                                                  ?.gold ?? '0')
                                             : '...'
                                         : resolvedUserBlastXp.dataReceived ===
                                             true
-                                          ? resolvedUserBlastXp.data?.gold ??
-                                            '0'
+                                          ? (resolvedUserBlastXp.data?.gold ??
+                                            '0')
                                           : '...'
                                 }
                                 logo={blastLogo}

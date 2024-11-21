@@ -10,7 +10,7 @@ import {
     useContext,
 } from 'react';
 // eslint-disable-next-line
-import { motion, AnimateSharedLayout } from 'framer-motion';
+import { AnimateSharedLayout, motion } from 'framer-motion';
 
 // START: Import Local Files
 import styles from './TabComponent.module.css';
@@ -19,7 +19,6 @@ import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { ChartContext } from '../../../contexts/ChartContext';
-import { FlexContainer } from '../../../styled/Common';
 import { useNavigate } from 'react-router-dom';
 
 type tabData = {
@@ -64,6 +63,9 @@ export default function TabComponent(props: TabPropsIF) {
     const navigate = useNavigate();
 
     const isMobile = useMediaQuery('(max-width: 600px)');
+    const isTabletScreen = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     const { tradeTableState } = useContext(ChartContext);
 
@@ -143,9 +145,13 @@ export default function TabComponent(props: TabPropsIF) {
         if (currentTabData) {
             setSelectedTab(currentTabData);
             if (
-                ['transactions', 'limits', 'liquidity'].includes(
-                    currentTabData.label.toLowerCase(),
-                )
+                [
+                    'transactions',
+                    'limits',
+                    'liquidity',
+                    'wallet balances',
+                    'exchange balances',
+                ].includes(currentTabData.label.toLowerCase())
             ) {
                 setActiveTradeTab(currentTabData.label.toLowerCase());
             }
@@ -212,23 +218,15 @@ export default function TabComponent(props: TabPropsIF) {
         });
 
     const tabsWithRightOption = (
-        <FlexContainer alignItems='center' justifyContent='space-between'>
-            <ul
-                className={`${styles.tab_ul_left}`}
-                aria-label='Navigation Tabs'
-                role='tablist'
-            >
+        <div className={styles.navbar_header_container}>
+            <div className={styles.tabs_header_container}>
                 {data.map((item) => (
-                    <li
+                    <div
                         key={item.label}
                         id={`${item.label
                             .replaceAll(' ', '_')
                             .toLowerCase()}_tab_clickable`}
-                        className={
-                            item.label === selectedTab.label
-                                ? styles.selected
-                                : styles.non_selected
-                        }
+                        className={styles.single_tab}
                         onClick={() => {
                             handleSelectedTab(item);
                         }}
@@ -243,32 +241,37 @@ export default function TabComponent(props: TabPropsIF) {
                             ? handleMobileMenuIcon(item.icon, item.label)
                             : null}
 
-                        {/* {desktopView && ( */}
-                        <button
-                            className={styles.label_button}
+                        <div
                             role='tab'
                             aria-selected={item.label === selectedTab.label}
                             tabIndex={0}
+                            className={
+                                item.label === selectedTab.label
+                                    ? styles.active_label_container
+                                    : styles.nonactive_label_container
+                            }
                         >
                             {item.label}
-                        </button>
-                        {/* )} */}
+                        </div>
+
                         {item.label === selectedTab.label && (
                             <div className={styles.underline} />
                         )}
+
                         {item.label === selectedTab.label ? (
                             <motion.div
                                 className={styles.underline}
                                 layoutId='underline'
                             />
                         ) : null}
-                    </li>
+                    </div>
                 ))}
-            </ul>
+            </div>
+
             <div className={styles.tap_option_right}>
                 {rightTabOptions ? rightOptionWithProps : null}
             </div>
-        </FlexContainer>
+        </div>
     );
 
     // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
@@ -346,8 +349,9 @@ export default function TabComponent(props: TabPropsIF) {
                 {rightTabOptions ? tabsWithRightOption : fullTabs}
                 {/* </AnimateSharedLayout> */}
             </nav>
+
             <div className={styles.main_tab_content}>
-                {isMobile ? (
+                {isMobile || isTabletScreen ? (
                     <div
                         key={selectedTab ? selectedTab.label : 'empty'}
                         role='tabpanel'

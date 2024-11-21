@@ -62,7 +62,7 @@ export default function TableInfo() {
                 className='custom_scroll_ambient'
                 fullWidth
                 fullHeight
-                style={{overflow: 'hidden'}}
+                style={{ overflow: 'hidden' }}
             >
                 <GridContainer
                     numCols={smallScreen ? 1 : 2}

@@ -21,7 +21,6 @@ import {
     setLS,
 } from '../ChatUtils';
 
-
 const host = CHAT_BACKEND_URL;
 
 const useChatApi = () => {
@@ -34,7 +33,7 @@ const useChatApi = () => {
             return await w3provider.getSigner();
         }
         return null;
-    }
+    };
 
     async function getStatus() {
         // Hit the chat /status endpoint to see if it's online
@@ -48,8 +47,6 @@ const useChatApi = () => {
             return false;
         }
     }
-
-  
 
     async function getID() {
         if (userAddress) {
@@ -276,7 +273,6 @@ const useChatApi = () => {
     }
 
     async function verifyWalletService(verificationDate: Date) {
-
         // this assignment will be deleted after backend deployment
         let verificationText =
             'Verify your wallet address in order to access additional chat functionality.\n\nYou can update your avatar on https://ambient.finance/account \n\nBy continuing to use chat you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\n';
@@ -289,29 +285,32 @@ const useChatApi = () => {
         }
 
         const signer = await getSigner();
-        if(signer){
+        if (signer) {
             return new Promise((resolve, reject) => {
                 const message =
                     verificationText + 'Wallet address:\n' + userAddress;
-                    // signer.signMessage(message)
-                    signer.signMessage(message.substring(
-                        0,
-                        message.indexOf('Wallet address:'),
-                    ))
-                        // eslint-disable-next-line
-                        .then(async (signedMessage: any) => {
-                            const resp = await sendVerifyRequest(
-                                signedMessage,
-                                verificationDate,
-                            );
-                            setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
-                            resolve(resp);
-                        })
-                        // eslint-disable-next-line
-                        .catch((error: any) => {
-                            // Handle error
-                            reject(error);
-                        });
+                // signer.signMessage(message)
+                signer
+                    .signMessage(
+                        message.substring(
+                            0,
+                            message.indexOf('Wallet address:'),
+                        ),
+                    )
+                    // eslint-disable-next-line
+                    .then(async (signedMessage: any) => {
+                        const resp = await sendVerifyRequest(
+                            signedMessage,
+                            verificationDate,
+                        );
+                        setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
+                        resolve(resp);
+                    })
+                    // eslint-disable-next-line
+                    .catch((error: any) => {
+                        // Handle error
+                        reject(error);
+                    });
             });
         }
     }

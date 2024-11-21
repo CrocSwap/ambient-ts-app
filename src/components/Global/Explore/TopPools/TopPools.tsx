@@ -163,8 +163,7 @@ function TopPools(props: propsIF) {
 
     const skeletonDisplay = tempItems.map((item, idx) => (
         <PoolRowSkeleton key={idx} />
-    ))
-
+    ));
 
     return (
         <div
@@ -189,7 +188,6 @@ function TopPools(props: propsIF) {
                                 }
                             />
                         ))
-          
                 ) : searchQuery ? (
                     <div className={styles.no_results}>
                         No pools match the search query: {searchQuery}

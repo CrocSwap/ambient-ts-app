@@ -67,7 +67,7 @@ function SelectedRange(props: propsIF) {
                 : 1 / initialPrice
             : isDenomBase && poolPriceDisplay
               ? 1 / poolPriceDisplay
-              : poolPriceDisplay ?? 0;
+              : (poolPriceDisplay ?? 0);
 
     const displayPriceString = displayPriceWithDenom
         ? getFormattedNumber({

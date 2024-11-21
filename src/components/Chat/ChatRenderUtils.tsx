@@ -278,11 +278,11 @@ export const getSingleEmoji = (
                 }
             }}
         >
-            {size && size == -1 ? 
-            (<Emoji unified={unified} />) 
-            : 
-            (<Emoji unified={unified} size={size ? size : 25} />)} 
-            
+            {size && size == -1 ? (
+                <Emoji unified={unified} />
+            ) : (
+                <Emoji unified={unified} size={size ? size : 25} />
+            )}
         </span>
     );
 };
@@ -310,9 +310,12 @@ export const getEmojiPack = (
     );
 };
 
-
-export const getActionTrigger = ( id: string, action: () => void) => {
+export const getActionTrigger = (id: string, action: () => void) => {
     return (
-        <span id={id} onClick={() => action()} style={{display: 'none'}}></span>
+        <span
+            id={id}
+            onClick={() => action()}
+            style={{ display: 'none' }}
+        ></span>
     );
 };

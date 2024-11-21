@@ -105,7 +105,7 @@ function NavbarDropdownMenu(props: propsIF) {
                 className={styles.background_blur}
                 onClick={(event: React.MouseEvent) => {
                     event?.stopPropagation();
-                    closeMenu && closeMenu()
+                    closeMenu && closeMenu();
                 }}
             />
             <div

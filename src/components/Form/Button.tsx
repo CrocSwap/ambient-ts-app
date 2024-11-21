@@ -6,7 +6,7 @@ interface propsIF {
     idForDOM: string;
     disabled?: boolean;
     warning?: boolean;
-    title: string;
+    title: string | React.ReactNode;
     action: () => void;
     flat?: boolean;
     customAriaLabel?: string;

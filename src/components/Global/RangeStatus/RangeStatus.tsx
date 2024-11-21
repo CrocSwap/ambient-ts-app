@@ -74,8 +74,8 @@ export default function RangeStatus(props: propsIF) {
             {isAmbient
                 ? ambientWithTooltip
                 : isEmpty
-                ? emptyWithTooltip
-                : rangeWithTooltip}
+                  ? emptyWithTooltip
+                  : rangeWithTooltip}
         </div>
     );
 
@@ -85,15 +85,15 @@ export default function RangeStatus(props: propsIF) {
                 {isAmbient
                     ? ambientWithTooltip
                     : isEmpty
-                    ? emptyWithTooltip
-                    : rangeWithTooltip}
+                      ? emptyWithTooltip
+                      : rangeWithTooltip}
             </div>
             <p>
                 {isAmbient
                     ? 'Ambient'
                     : isInRange
-                    ? 'In Range'
-                    : fullTextDisplay}
+                      ? 'In Range'
+                      : fullTextDisplay}
             </p>
         </div>
     );

@@ -27,9 +27,9 @@ const NFTBannerAccountContainer = styled.div<{
 
     background: #0d1117;
 
-    z-index: 9999999 ;
+    z-index: 9999999;
 
-     @media (max-width: 768px) {
+    @media (max-width: 768px) {
         border: none;
         position: static;
         transform: none;

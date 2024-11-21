@@ -92,6 +92,7 @@ export default function PortfolioTabs(props: propsIF) {
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
+    const isLessThanDesktopSizeScreen = useMediaQuery('(max-width: 1500px)');
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
@@ -416,7 +417,9 @@ export default function PortfolioTabs(props: propsIF) {
             icon: medal,
         },
         {
-            label: 'Exchange Balances',
+            label: isLessThanDesktopSizeScreen
+                ? 'DEX Balances'
+                : 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
         },

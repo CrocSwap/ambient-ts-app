@@ -389,6 +389,22 @@
             "logoURI": "https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg"
         },
         {
+            "name": "Restaked Swell ETH",
+            "address": "0x89f17aB70cAFB1468D633056161573efEfeA0713",
+            "chainId": 534352,
+            "decimals": 18,
+            "logoURI": "https://etherscan.io/token/images/rsweth_32.png?=v3",
+            "symbol": "rswETH"
+        },
+        {
+            "name": "KelpDao Restaked ETH",
+            "address": "0x65421ba909200b81640d98b979d07487c9781b66",
+            "chainId": 534352,
+            "decimals": 18,
+            "logoURI": "",
+            "symbol": "rsETH"
+        },
+        {
             "name": "StakeStone Ether",
             "address": "0x80137510979822322193fc997d400d5a6c747bf7",
             "symbol": "STONE",
@@ -600,14 +616,6 @@
             "name": "Nest Egg Vault",
             "address": "0x659619AEdf381c3739B0375082C2d61eC1fD8835",
             "symbol": "NEV",
-            "decimals": 6,
-            "chainId": 98864,
-            "logoURI": ""
-        },
-        {
-            "name": "Tether USD",
-            "address": "0x2413b8C79Ce60045882559f63d308aE3DFE0903d",
-            "symbol": "USDT",
             "decimals": 6,
             "chainId": 98864,
             "logoURI": ""

@@ -4,7 +4,7 @@ import {
     mainnetUSDC,
     mainnetWBTC,
     mainnetUSDT,
-    mainnetDAI,
+    mainnetRSWETH,
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
@@ -25,7 +25,7 @@ const chainSpecForWalletConnector = {
     name: 'Ethereum',
     currency: 'ETH',
     rpcUrl: MAINNET_RPC_URL,
-    explorerUrl: 'https://etherscan.io',
+    explorerUrl: 'https://etherscan.io/',
 };
 
 export const ethereumMainnet: NetworkIF = {
@@ -40,11 +40,11 @@ export const ethereumMainnet: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,
     topPools: [
+        new TopPool(mainnetRSWETH, mainnetETH, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetWBTC, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetUSDT, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetUSDT, mainnetUSDC, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetETH, mainnetDAI, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

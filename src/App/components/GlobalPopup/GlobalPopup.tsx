@@ -14,10 +14,10 @@ function GlobalPopup() {
         placement === 'left'
             ? styles.popup_left
             : placement === 'center'
-            ? styles.popup_center
-            : placement === 'right'
-            ? styles.popup_right
-            : styles.popup_right;
+              ? styles.popup_center
+              : placement === 'right'
+                ? styles.popup_right
+                : styles.popup_right;
 
     return (
         <div

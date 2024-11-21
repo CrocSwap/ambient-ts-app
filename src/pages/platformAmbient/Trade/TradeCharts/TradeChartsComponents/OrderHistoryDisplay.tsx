@@ -1,10 +1,5 @@
 import styles from './VolumeTVLFee.module.css';
-import {
-    Dispatch,
-    SetStateAction,
-    memo,
-    useContext,
-} from 'react';
+import { Dispatch, SetStateAction, memo, useContext } from 'react';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { LS_KEY_ORDER_HISTORY_SETTINGS } from '../../../../../ambient-utils/constants';
 import { BrandContext } from '../../../../../contexts/BrandContext';
@@ -39,8 +34,6 @@ function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
             JSON.stringify({ ...newStatus }),
         );
     };
-
-
 
     const mobileView = useMediaQuery('(max-width: 768px)');
 
@@ -86,12 +79,10 @@ function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
 
     function handleCurveDepthClickMobile(action: () => void) {
         action();
-        
     }
 
     const OrderHistoryDisplayMobile = (
-        <div className={styles.dropdown_menu} >
-
+        <div className={styles.dropdown_menu}>
             <div className={styles.mobile_container}>
                 {orderHistoryDisplay.map((button, idx) => (
                     <div className={styles.volume_tvl_container} key={idx}>

@@ -62,7 +62,7 @@ export const ExploreContext = createContext<ExploreContextIF>(
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { activeNetwork } = useContext(AppStateContext);
-    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+    const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
@@ -163,7 +163,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedTokenDetails,
-            cachedQuerySpotPrice,
             tokens.tokenUniv,
         );
 
@@ -175,9 +174,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             quoteTvl: poolStats?.quoteTvl || 0,
             quoteVolume: poolStats?.quoteVolume24hAgo || 0,
             feeRate: poolStats?.feeRate || 0,
-            lastPriceIndic: poolStats?.priceIndic24hAgo || 0,
-            lastPriceLiq: poolStats?.priceLiq24hAgo || 0,
-            lastPriceSwap: poolStats?.priceSwap24hAgo || 0,
+            lastPriceIndic: poolStats?.lastPriceIndic || 0,
+            lastPriceLiq: poolStats?.lastPriceLiq || 0,
+            lastPriceSwap: poolStats?.lastPriceSwap || 0,
             latestTime: poolStats?.latestTime || 0,
             isHistorical: false,
         };
@@ -190,7 +189,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedTokenDetails,
-            cachedQuerySpotPrice,
             tokens.tokenUniv,
         );
 
@@ -200,7 +198,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
         const nowPrice = expandedPoolStatsNow?.lastPriceSwap;
-        const ydayPrice = expandedPoolStats24hAgo?.lastPriceSwap;
+        const ydayPrice = poolStats?.priceSwap24hAgo;
 
         const feesTotalNow = expandedPoolStatsNow?.feesTotalUsd;
         const feesTotal24hAgo = expandedPoolStats24hAgo?.feesTotalUsd;

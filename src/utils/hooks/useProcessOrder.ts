@@ -247,6 +247,13 @@ export const useProcessOrder = (
     const baseQty = getFormattedNumber({
         value: liqBaseNum,
         zeroDisplay: '0',
+        removeExtraTrailingZeros: true,
+    });
+
+    const quoteQty = getFormattedNumber({
+        value: liqQuoteNum,
+        zeroDisplay: '0',
+        removeExtraTrailingZeros: true,
     });
 
     const fillPercentage =
@@ -257,23 +264,22 @@ export const useProcessOrder = (
 
     const originalPositionLiqBase = getFormattedNumber({
         value: limitOrder.originalPositionLiqBaseDecimalCorrected,
+        removeExtraTrailingZeros: true,
     });
 
     const originalPositionLiqQuote = getFormattedNumber({
         value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
+        removeExtraTrailingZeros: true,
     });
 
     const expectedPositionLiqBase = getFormattedNumber({
         value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
+        removeExtraTrailingZeros: true,
     });
 
     const expectedPositionLiqQuote = getFormattedNumber({
         value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
-    });
-
-    const quoteQty = getFormattedNumber({
-        value: liqQuoteNum,
-        zeroDisplay: '0',
+        removeExtraTrailingZeros: true,
     });
 
     const usdValueNum = limitOrder.totalValueUSD;
@@ -287,13 +293,6 @@ export const useProcessOrder = (
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
-    const baseDisplayFrontend = quantitiesAvailable
-        ? `${baseQty || '0.00'}`
-        : '…';
-
-    const quoteDisplayFrontend = quantitiesAvailable
-        ? `${quoteQty || '0.00'}`
-        : '…';
     const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
 
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
@@ -561,8 +560,6 @@ export const useProcessOrder = (
         quoteTokenCharacter,
         quoteTokenLogo,
         baseTokenLogo,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
         originalPositionLiqBase,
         originalPositionLiqQuote,
         expectedPositionLiqBase,

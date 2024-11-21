@@ -42,7 +42,8 @@ import {
     plumeSepoliaETH,
     plumeSepoliaUSD,
     plumeSepoliaNEV,
-    plumeSepoliaUSDT,
+    scrollRsETH,
+    scrollRswETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -121,7 +122,6 @@ export const STABLE_USD_TOKENS = [
     scrollAxlUSDC.address,
     scrollUSDE.address,
     scrollsUSDe.address,
-    plumeSepoliaUSDT.address,
     plumeSepoliaNEV.address,
 ]
     .concat(USDC_TOKENS)
@@ -142,6 +142,8 @@ export const STAKED_ETH_TOKENS = [
     mainnetSTONE.address,
     scrollWstETH.address,
     scrollWrsETH.address,
+    scrollRsETH.address,
+    scrollRswETH.address,
     scrollSTONE.address,
     scrollUniETH.address,
     scrollWeETH.address,

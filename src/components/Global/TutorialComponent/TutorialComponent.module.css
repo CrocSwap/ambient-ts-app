@@ -1,33 +1,37 @@
-.tutorial_overlay{
+.tutorial_overlay {
     position: fixed;
     top: 5rem;
-    left: 0 ;
+    left: 0;
     display: block;
     width: 100vw;
     height: 100vh;
 }
 
-.focus_outline{
-    transition: all .3s ease-in-out;
+.focus_outline {
+    transition: all 0.3s ease-in-out;
     position: fixed;
     z-index: 9999;
-    display: block; 
+    display: block;
     width: 0;
     height: 0;
     left: 50%;
     top: 0;
     background: transparent;
-    box-shadow: 0 0 4px 0px color-mix(in srgb, var(--accent1) 20%, transparent), 0 0 0 9999px color-mix(in srgb, var(--accent1) 5%, transparent);
-    box-shadow: 0 0 3px 0px color-mix(in srgb, var(--accent1) 20%, transparent),0 0 0 9999px rgba(0,0,0, .4 ),  0 0 0 9999px color-mix(in srgb, var(--accent1) 10%,  transparent);
+    box-shadow:
+        0 0 4px 0px color-mix(in srgb, var(--accent1) 20%, transparent),
+        0 0 0 9999px color-mix(in srgb, var(--accent1) 5%, transparent);
+    box-shadow:
+        0 0 3px 0px color-mix(in srgb, var(--accent1) 20%, transparent),
+        0 0 0 9999px rgba(0, 0, 0, 0.4),
+        0 0 0 9999px color-mix(in srgb, var(--accent1) 10%, transparent);
     border: 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);
     overflow: hidden;
 }
 
-
-.focus_outline.animated{
+.focus_outline.animated {
 }
 
-.focus_outline.animated::after{
+.focus_outline.animated::after {
     content: '';
     position: absolute;
     display: block;
@@ -36,12 +40,12 @@
     width: 100vw;
     height: 100vh;
     background: var(--accent1);
-    animation: focusOutlineAnim .3s ease-in-out 2;
-    animation-delay: .5s;
+    animation: focusOutlineAnim 0.3s ease-in-out 2;
+    animation-delay: 0.5s;
     opacity: 0;
 }
 
-.tooltip_wrapper{
+.tooltip_wrapper {
     position: fixed;
     background: var(--dark1);
     z-index: 10000;
@@ -52,52 +56,51 @@
     left: 100vw;
 }
 
-.tooltip_wrapper.animated{
-    animation: tooltipAnim .5s ease-in-out forwards;
+.tooltip_wrapper.animated {
+    animation: tooltipAnim 0.5s ease-in-out forwards;
 }
 
-.tooltip_title{
+.tooltip_title {
     font-size: 1.1rem;
     font-weight: bold;
     text-align: center;
     /* margin-bottom: .5rem; */
-    padding: .3rem 1rem;
+    padding: 0.3rem 1rem;
     width: 100%;
     background-color: color-mix(in srgb, var(--accent1) 5%, transparent);
     border-bottom: 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);
     position: relative;
 }
 
-.tooltip_content{
+.tooltip_content {
     padding: 1rem 1rem;
 }
 
-@keyframes focusOutlineAnim{
-    0%, 100%{
+@keyframes focusOutlineAnim {
+    0%,
+    100% {
         opacity: 0;
     }
-    50%{
-        opacity: .2;
+    50% {
+        opacity: 0.2;
     }
 }
 
-
-@keyframes tooltipAnim{
-    0%{
+@keyframes tooltipAnim {
+    0% {
         opacity: 0;
         transform: scale(1);
     }
-    50%{
+    50% {
         transform: scale(1.1);
     }
-    100%{
+    100% {
         transform: scale(1);
         opacity: 1;
     }
 }
 
-
-.tutorial_steps{
+.tutorial_steps {
     position: fixed;
     z-index: 10000;
     bottom: 2rem;
@@ -106,127 +109,119 @@
     transform: translateX(-70%);
 }
 
-.tooltip_buttons_wrapper{
+.tooltip_buttons_wrapper {
     display: flex;
-    
+
     justify-content: center;
 }
 
-.step_btn{
-    transition: all .2s ease-in-out;
-    padding: .5rem 1rem;
+.step_btn {
+    transition: all 0.2s ease-in-out;
+    padding: 0.5rem 1rem;
     background: var(--dark1);
     cursor: pointer;
-    margin-left: .4rem;
+    margin-left: 0.4rem;
 }
 
-.step_btn.navigate{
+.step_btn.navigate {
     background: var(--accent1);
     color: black;
     font-weight: bold;
-
 }
 
-.step_btn:not(.disabled){
-    
+.step_btn:not(.disabled) {
     /* border: 1px solid color-mix(in srgb, white 30%, transparent); */
 }
 
-.prev_btn{
+.prev_btn {
     border: 1px solid color-mix(in srgb, white 30%, transparent);
 }
 
-.step_btn:not(.disabled):not(.dismiss_button):hover{
+.step_btn:not(.disabled):not(.dismiss_button):hover {
     background: var(--accent1);
     color: black;
 }
 
-.step_btn.dismiss_button:hover{
+.step_btn.dismiss_button:hover {
     opacity: 1;
 }
 
-
-.step_btn.disabled{
-    opacity: .5;
+.step_btn.disabled {
+    opacity: 0.5;
     cursor: default;
 }
 
-.steps_indicator{
+.steps_indicator {
     background: var(--dark1);
-    padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
     border: 1px solid color-mix(in srgb, white 30%, transparent);
 }
 
-.steps_on_tooltip{
+.steps_on_tooltip {
     position: absolute;
     right: 1rem;
-    top: .5rem;
-    font-size: .8rem;
-
+    top: 0.5rem;
+    font-size: 0.8rem;
 }
 
-
-.step_dots_wrapper{
+.step_dots_wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: .5rem;
-    padding-bottom: .5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
 }
 
-.step_dot{
-    transition: all .2s ease-in-out;
+.step_dot {
+    transition: all 0.2s ease-in-out;
     display: inline-block;
-    width: .25rem;
-    height: .25rem;
-    background-color: rgba(255,255,255, .2);
-    margin: .5rem;
+    width: 0.25rem;
+    height: 0.25rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin: 0.5rem;
     border-radius: 100vw;
 }
 
-.step_dot.active{
+.step_dot.active {
     transform: scale(1.5);
     background-color: var(--accent1);
 }
 
-.next_button{
+.next_button {
     border: 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);
     color: var(--accent1);
 }
-.dismiss_button{
-    opacity: .7;
+.dismiss_button {
+    opacity: 0.7;
     border: 1px solid color-mix(in srgb, white 50%, transparent);
     color: white;
 }
 
-.for_tooltip{
+.for_tooltip {
     position: absolute;
     right: -3rem;
     top: 0;
 }
 
-.complete_button{
+.complete_button {
     border: 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);
     color: var(--accent1);
 }
 
-
-
-@media only screen and (max-width: 600px){
-
-    .tooltip_wrapper{
+@media only screen and (max-width: 600px) {
+    .tooltip_wrapper {
         max-width: 80vw;
-    }   
+    }
 
-    .steps_indicator{
+    .steps_indicator {
         white-space: nowrap;
     }
 
-    .step_btn{
+    .step_btn {
         white-space: nowrap;
     }
 
-    .tutorial_steps{
+    .tutorial_steps {
         transform: translateX(-50%);
         bottom: 5rem;
     }
