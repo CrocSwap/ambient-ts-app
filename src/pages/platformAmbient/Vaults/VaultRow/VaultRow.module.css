@@ -80,7 +80,7 @@
     letter-spacing: -0.36px;
 }
 
-.apyDisplay {
+.aprDisplay {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
@@ -155,7 +155,7 @@
     }
 
     .tvlDisplay,
-    .apyDisplay,
+    .aprDisplay,
     .depositContainer {
         font-size: 14px;
     }
@@ -164,7 +164,7 @@
 @media only screen and (max-width: 500px) {
     .mainContent,
     .vaultHeader {
-        grid-template-columns: 100px repeat(2, 1fr) 80px;
+        grid-template-columns: 80px repeat(2, 1fr) 80px;
     }
 
     .tempestDisplay {
@@ -175,7 +175,17 @@
         word-wrap: break-word;
     }
 
-    .apyDisplay {
+    .aprDisplay {
         display: none;
+    }
+
+    /* Hide deposit container when user is not connected */
+    .hideDepositOnMobile {
+        display: none;
+    }
+
+    /* Show APR when deposit is hidden */
+    .showAprOnMobile {
+        display: block;
     }
 }
