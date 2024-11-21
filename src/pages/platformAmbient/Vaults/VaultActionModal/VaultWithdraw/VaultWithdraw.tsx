@@ -32,12 +32,15 @@ import {
 
 import { MdEdit } from 'react-icons/md';
 import useKeyPress from '../../../../../App/hooks/useKeyPress';
+import Toggle from '../../../../../components/Form/Toggle';
 
 interface propsIF {
     mainAsset: TokenIF;
+    secondaryAsset: TokenIF;
     vault: AllVaultsServerIF;
     balanceMainAsset: bigint | undefined;
     mainAssetBalanceDisplayQty: string;
+    secondaryAssetBalanceDisplayQty: string;
     onClose: () => void;
 }
 export default function VaultWithdraw(props: propsIF) {
@@ -45,10 +48,14 @@ export default function VaultWithdraw(props: propsIF) {
         mainAsset,
         onClose,
         mainAssetBalanceDisplayQty,
+        secondaryAssetBalanceDisplayQty,
         vault,
         balanceMainAsset,
+        secondaryAsset,
     } = props;
     const [showSubmitted, setShowSubmitted] = useState(false);
+    const [isZapOn, setIsZapOn] = useState(true);
+
     const [removalPercentage, setRemovalPercentage] = useState(100);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
@@ -143,19 +150,24 @@ export default function VaultWithdraw(props: propsIF) {
             gap={5}
             style={{ flexShrink: 0 }}
         >
-            {/* <TokenIcon
-                token={token0}
-                src={uriToHttp(token0.logoURI)}
-                alt={token0.symbol}
-                size={'xl'}
-            /> */}
+            {!isZapOn && (
+                <TokenIcon
+                    token={secondaryAsset}
+                    src={uriToHttp(secondaryAsset.logoURI)}
+                    alt={secondaryAsset.symbol}
+                    size={'xl'}
+                />
+            )}
             <TokenIcon
                 token={mainAsset}
                 src={uriToHttp(mainAsset.logoURI)}
                 alt={mainAsset.symbol}
                 size={'xl'}
             />
-            <p className={styles.poolName}>{mainAsset.symbol}</p>
+            <p className={styles.poolName}>
+                {!isZapOn && secondaryAsset.symbol + ' / '}
+                {mainAsset.symbol}
+            </p>
         </FlexContainer>
     );
 
@@ -180,8 +192,8 @@ export default function VaultWithdraw(props: propsIF) {
     //     </div>
     // );
 
-    const pooledDisplay = (
-        <section className={styles.pooledContent}>
+    const mainDetailsDisplay = (
+        <>
             <div className={styles.pooledContentContainer}>
                 Deposited {mainAsset.symbol}
                 <div className={styles.alignCenter}>
@@ -211,6 +223,52 @@ export default function VaultWithdraw(props: propsIF) {
                     />
                 </div>
             </div>
+        </>
+    );
+
+    const secondaryDetailsDisplay = (
+        <>
+            <div className={styles.pooledContentContainer}>
+                Deposited {secondaryAsset.symbol}
+                <div className={styles.alignCenter}>
+                    {secondaryAssetBalanceDisplayQty}
+                    <TokenIcon
+                        token={secondaryAsset}
+                        src={uriToHttp(secondaryAsset.logoURI)}
+                        alt={secondaryAsset.symbol}
+                        size={'s'}
+                    />
+                </div>
+            </div>
+            <div className={styles.pooledContentRight}>
+                {secondaryAsset.symbol} Removal Amount
+                <div className={styles.alignCenter}>
+                    {getFormattedNumber({
+                        value:
+                            removalPercentage *
+                            0.01 *
+                            parseFloat(secondaryAssetBalanceDisplayQty),
+                    })}
+                    <TokenIcon
+                        token={secondaryAsset}
+                        src={uriToHttp(secondaryAsset.logoURI)}
+                        alt={secondaryAsset.symbol}
+                        size={'s'}
+                    />
+                </div>
+            </div>
+        </>
+    );
+
+    const pooledDisplay = (
+        <section className={styles.pooledContent}>
+            {mainDetailsDisplay}
+            {!isZapOn && (
+                <div className={styles.seperator}>
+                    <span />
+                </div>
+            )}
+            {!isZapOn && secondaryDetailsDisplay}
         </section>
     );
 
@@ -303,6 +361,17 @@ export default function VaultWithdraw(props: propsIF) {
 
             <div className={styles.withdrawContainer}>
                 {tokensDisplay}
+                <div className={styles.zapContainer}>
+                    <p>Zap Out</p>
+
+                    <Toggle
+                        isOn={isZapOn}
+                        handleToggle={() => setIsZapOn(!isZapOn)}
+                        Width={36}
+                        id='zap_toggle_vault_withdraw'
+                        disabled={false}
+                    />
+                </div>
                 <RemoveRangeWidth
                     removalPercentage={removalPercentage}
                     setRemovalPercentage={setRemovalPercentage}

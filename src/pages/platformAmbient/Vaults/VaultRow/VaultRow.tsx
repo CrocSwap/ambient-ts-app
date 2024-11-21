@@ -209,6 +209,7 @@ export default function VaultRow(props: propsIF) {
         ) : (
             <VaultWithdraw
                 mainAsset={mainAsset}
+                secondaryAsset={secondaryAsset}
                 vault={vault}
                 balanceMainAsset={
                     (vault.balance && BigInt(vault.balance)) ||
@@ -216,7 +217,8 @@ export default function VaultRow(props: propsIF) {
                     undefined
                 }
                 mainAssetBalanceDisplayQty={balDisplay}
-                onClose={handleModalClose}
+                secondaryAssetBalanceDisplayQty={balDisplay}
+                onClose={closeModal}
             />
         );
     function navigateExternal(): void {
