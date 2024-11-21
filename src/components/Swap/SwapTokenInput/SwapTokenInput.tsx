@@ -1,32 +1,32 @@
 import { CrocImpact } from '@crocswap-libs/sdk';
 import {
     Dispatch,
+    memo,
     SetStateAction,
     useContext,
     useEffect,
-    useState,
-    memo,
     useRef,
+    useState,
 } from 'react';
-import { calcImpact } from '../../../App/functions/calcImpact';
-import useDebounce from '../../../App/hooks/useDebounce';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { FlexContainer } from '../../../styled/Common';
 import {
     precisionOfInput,
     truncateDecimals,
 } from '../../../ambient-utils/dataLayer';
+import { calcImpact } from '../../../App/functions/calcImpact';
+import useDebounce from '../../../App/hooks/useDebounce';
+import { AppStateContext } from '../../../contexts';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { FlexContainer } from '../../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { formatTokenInput } from '../../../utils/numbers';
 import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { AppStateContext } from '../../../contexts';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -133,8 +133,18 @@ function SwapTokenInput(props: propsIF) {
     };
 
     useEffect(() => {
-        handleBlockUpdate();
-    }, [lastBlockNumber, contextMatchesParams, isTokenAPrimary]);
+        (async () => {
+            if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
+                handleBlockUpdate();
+            }
+        })();
+    }, [
+        lastBlockNumber,
+        contextMatchesParams,
+        isTokenAPrimary,
+        crocEnv,
+        chainId,
+    ]);
 
     useEffect(() => {
         if (shouldSwapDirectionReverse) {
@@ -348,8 +358,12 @@ function SwapTokenInput(props: propsIF) {
 
     // refresh token data when swap module initializes
     useEffect(() => {
-        refreshTokenData();
-    }, []);
+        (async () => {
+            if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
+                await refreshTokenData();
+            }
+        })();
+    }, [crocEnv, chainId]);
 
     useEffect(() => {
         if (isTokenAPrimary) {

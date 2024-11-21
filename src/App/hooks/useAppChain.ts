@@ -1,13 +1,5 @@
+import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
-import {
-    getDefaultChainId,
-    validateChainId,
-    chainNumToString,
-    checkEoaHexAddress,
-} from '../../ambient-utils/dataLayer';
-import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { NetworkIF } from '../../ambient-utils/types';
 import {
     blast,
     blastSepolia,
@@ -18,6 +10,14 @@ import {
     scrollSepolia,
     supportedNetworks,
 } from '../../ambient-utils/constants';
+import {
+    chainNumToString,
+    checkEoaHexAddress,
+    getDefaultChainId,
+    validateChainId,
+} from '../../ambient-utils/dataLayer';
+import { NetworkIF } from '../../ambient-utils/types';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 export const useAppChain = (): {
     activeNetwork: NetworkIF;
@@ -85,7 +85,6 @@ export const useAppChain = (): {
         if (walletChainId) {
             // chain ID from wallet (current live value, not memoized in the app)
             const incomingChainFromWallet: string | null = getChainFromWallet();
-            console.log('getting new chain: ', incomingChainFromWallet);
             // if a wallet is connected, evaluate action to take
             // if none is connected, nullify memoized record of chain ID from wallet
             if (incomingChainFromWallet) {
@@ -93,7 +92,6 @@ export const useAppChain = (): {
                 if (validateChainId(incomingChainFromWallet)) {
                     // if wallet chain is valid and does not match record in app, update
                     // without this gatekeeping the app refreshes itself endlessly
-                    console.log('yep');
                     if (
                         chainInWalletValidated.current !==
                         incomingChainFromWallet
