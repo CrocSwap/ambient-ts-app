@@ -1,29 +1,30 @@
 import { CrocPoolView } from '@crocswap-libs/sdk';
-import React, {
+import {
     createContext,
+    Dispatch,
+    ReactNode,
+    SetStateAction,
     useContext,
     useEffect,
     useMemo,
     useState,
-    ReactNode,
-    Dispatch,
-    SetStateAction,
 } from 'react';
-import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
-import { usePoolList } from '../App/hooks/usePoolList';
-import { PoolIF, PoolStatIF, TokenIF } from '../ambient-utils/types';
-import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
-import { TradeDataContext } from './TradeDataContext';
+import { ZERO_ADDRESS } from '../ambient-utils/constants';
 import {
     getFormattedNumber,
     isBtcPair,
+    isDefaultDenomTokenExcludedFromUsdConversion,
     isETHPair,
     isStablePair,
     isWbtcToken,
     isWrappedNativeToken,
 } from '../ambient-utils/dataLayer';
-import { ZERO_ADDRESS } from '../ambient-utils/constants';
+import { PoolIF, PoolStatIF, TokenIF } from '../ambient-utils/types';
+import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
+import { usePoolList } from '../App/hooks/usePoolList';
 import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
+import { TradeDataContext } from './TradeDataContext';
 
 export interface PoolContextIF {
     poolList: PoolIF[];
@@ -179,6 +180,12 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
         const isPairEthPair = isETHPair(baseToken.address, quoteToken.address);
         const isPoolBtcPair = isBtcPair(baseToken.address, quoteToken.address);
 
+        const excludeFromUsdConversion =
+            isDefaultDenomTokenExcludedFromUsdConversion(
+                baseToken.address,
+                quoteToken.address,
+            );
+
         const isPairEthWbtc =
             baseToken.address === ZERO_ADDRESS &&
             isWbtcToken(quoteToken.address);
@@ -189,7 +196,8 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
                 isPairStablePair ||
                 isPairEthPair ||
                 isPoolBtcPair ||
-                isPairEthWbtc
+                isPairEthWbtc ||
+                excludeFromUsdConversion
             )
         ) {
             setIsTradeDollarizationEnabled(true);

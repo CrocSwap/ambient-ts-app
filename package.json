@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.10.9",
+    "version": "2.10.10",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -59,12 +59,11 @@
         "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
         "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
         "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
-        "pre-commit": "yarn lint:fix && yarn format && yarn test:nowatch"
+        "prepare": "husky"
     },
     "lint-staged": {
-        "*.{js,jsx,ts,tsx}": [
-            "prettier --write --config ./.prettierrc",
-            "eslint --fix"
+        "*.{js,jsx,ts,tsx,json}": [
+            "prettier --write --config ./.prettierrc"
         ]
     },
     "browserslist": [
@@ -93,7 +92,8 @@
         "eslint-plugin-prettier": "^4.0.0",
         "eslint-plugin-react": "^7.35.0",
         "eslint-plugin-react-hooks": "^4.6.2",
-        "lint-staged": "^15.2.8",
+        "husky": "^9.1.7",
+        "lint-staged": "^15.2.10",
         "playwright": "^1.45.3",
         "prettier": "^3.3.3",
         "superagent": "^10.0.0",
