@@ -265,7 +265,8 @@ export default function VaultRow(props: propsIF) {
                             </button>
 
                             {isUserConnected &&
-                                !!(vault.balance || crocEnvBal) && (
+                                // !!(vault.balance || crocEnvBal) &&
+                                (
                                     <button
                                         className={styles.actionButton}
                                         onClick={handleOpenWithdrawModal}

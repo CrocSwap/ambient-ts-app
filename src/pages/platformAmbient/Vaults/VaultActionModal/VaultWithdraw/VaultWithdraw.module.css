@@ -4,8 +4,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding:  16px;
-    min-height: 500px;
+    padding: 16px;
 }
 .main_content {
     width: 100%;
@@ -61,6 +60,15 @@
     flex-direction: row;
     align-items: center;
     gap: 8px;
+}
+
+.inputWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+    touch-action: none; /* Add this */
 }
 
 .seperator {
@@ -129,13 +137,13 @@
     border-bottom-right-radius: 4px;
 }
 
-.extraDetailsContainer{
+.extraDetailsContainer {
     display: flex;
     flex-direction: column;
     gap: 10px;
     border-radius: 4px;
-border: 1px solid var(--dark3, #1E1E24);
-padding: 8px ;
+    border: 1px solid var(--dark3, #1e1e24);
+    padding: 8px;
 }
 .extraDetailsRow {
     width: 100%;
@@ -153,24 +161,8 @@ padding: 8px ;
     font-weight: 300;
     line-height: normal;
 }
-.gas_row{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
 
-    color: var(--text2, #8B98A5);
-text-align: center;
-font-family: "Lexend Deca";
-font-size: 12px;
-font-style: normal;
-font-weight: 300;
-line-height: normal;
-padding: 0 8px;
-}
-
-.zapContainer{
+.zapContainer {
     background: var(--dark2);
     display: flex;
     flex-direction: row;
@@ -178,91 +170,97 @@ padding: 0 8px;
     justify-content: space-between;
     padding: 8px;
     border-radius: 4px;
-    color: var(--text2)
-}
-.buttonContainer{
-    width: 90%;
-   position: absolute;
-   bottom: 16px;
-   right: 0;
-   left: 0;
-   margin: 0 auto;
-}
-
-.slipContainer{
-    position: relative;
-    display: flex;
-    width: 100%;
-    justify-content: flex-end;
-}
-
-.slipButton{
-    outline: none;
-    border: none;
-    background: transparent;
     color: var(--text2);
-    border: 1px solid var(--text2);
-    padding: 2px 8px;
-    border-radius: 4px;
-
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    
+}
+.gas_row {
     display: flex;
-    justify-content: center;
+    flex-direction: row;
     align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
+    justify-content: flex-end;
+    gap: 8px;
 
+    color: var(--text2, #8b98a5);
+    text-align: center;
+    font-family: 'Lexend Deca';
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    padding: 0 8px;
 }
-.slipButton:hover{
-    color: var(--accent1);
-    border: 1px solid var(--accent1);
-    /* border: 1px solid var(--dark3); */
-}
-.slipDropdown{
-    position: absolute;
-    top: 40px;
-    width: 100%;
-    
-    height: 100px;
-    background: var(--dark3);
-    padding: 8px;
-    border-radius: 4px;
-    transition: all var(--animation-speed) ease-in-out;
-    z-index: 2;
+.inputWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .loading {
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  
-  .dots::after {
-    content: "";
+}
+
+.dots::after {
+    content: '';
     animation: dots 1.5s steps(5, end) infinite;
-  }
-  
-  @keyframes dots {
+}
+
+@keyframes dots {
     0% {
-      content: "";
+        content: '';
     }
     20% {
-      content: ".";
+        content: '.';
     }
     40% {
-      content: "..";
+        content: '..';
     }
     60% {
-      content: "...";
+        content: '...';
     }
     80% {
-      content: "....";
+        content: '....';
     }
     100% {
-      content: "";
+        content: '';
     }
-  }
-  
+}
+
+.slipTolValueContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.slipTolValueContainer input {
+    height: 100%;
+    border: 0px;
+    border-radius: var(--border-radius);
+    background: none;
+    font-size: var(--header-size);
+    width: auto;
+    outline: none;
+    color: var(--text1);
+    text-align: end;
+}
+
+.slipTolValueContainer input::placeholder {
+    color: var(--text2);
+}
+.errorMessage {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    align-items: end;
+    text-align: end;
+    color: var(--other-red);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+
+    height: 13px;
+}
+.inputBorder {
+    border: 1px solid var(--other-red) !important;
+    display: none;
+}
