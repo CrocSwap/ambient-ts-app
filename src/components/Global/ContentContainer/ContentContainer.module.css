@@ -24,17 +24,13 @@
     gap: 1rem;
 }
 
-.swap_route .main_content{
-    background: var(--dark1)
+.swap_route .main_content {
+    background: var(--dark1);
 }
 
 .swap_bg {
     background: var(--dark1);
-    
 }
-
-
-
 
 .main_content:hover,
 .main_content:focus-within {
@@ -47,16 +43,15 @@
         width: 100%;
     }
 
-    .swap_route{
+    .swap_route {
         border: none;
         padding: 0 8px;
-        
     }
 }
 
 @media (min-width: 768px) {
     .swap_route {
-       width: 440px;
+        width: 440px;
     }
 
     .main_content {

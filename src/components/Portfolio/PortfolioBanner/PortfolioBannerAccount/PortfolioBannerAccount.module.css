@@ -1,7 +1,7 @@
 .portfolio_banner_account {
     display: flex;
     flex-direction: column;
-    align-items:flex-start;
+    align-items: flex-start;
     width: 100%;
     gap: 8px;
     background: rgba(18, 18, 26, 0.3);
@@ -15,8 +15,6 @@
     align-items: flex-end;
     z-index: 1;
     gap: 12px;
-
-
 }
 
 .jazzicon {
@@ -33,6 +31,7 @@
     flex-direction: column;
     min-width: 130px;
     gap: 4px;
+    white-space: nowrap;
 }
 
 .address_or_ens {
@@ -86,32 +85,28 @@
     color: var(--text1);
 }
 @media only screen and (max-width: 568px) {
-.user_facing_content{
-   width: 100%;
-   max-width: 100%;
-   display: flex;
-   display: grid;
-   grid-template-columns: 65px 100px auto;
-}
+    .user_facing_content {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        display: grid;
+        grid-template-columns: 65px 100px auto;
+    }
 
-.button_bank{
+    .button_bank {
+        width: 100%;
+        /* max-width: 200px; */
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+    }
 
-    width: 100%;
-   /* max-width: 200px; */
-   display: flex;
-   justify-content: flex-end;
-   align-items: flex-end;
-   
-}
-
-.button_bank button{
-    margin: 0 5px;
-}
+    .button_bank button {
+        margin: 0 5px;
+    }
 }
 
 @media only screen and (max-width: 768px) {
-
-    
     .address_or_ens {
         font-size: var(--body-size);
     }
@@ -122,7 +117,6 @@
         justify-content: space-between;
         width: 100%;
 
-       
         max-width: 250px;
     }
     .portfolio_banner_account {
@@ -139,8 +133,5 @@
 @media only screen and (min-width: 1280px) {
     .portfolio_banner_account {
         width: 380.16px;
-        
     }
-
-   
 }

@@ -6,7 +6,7 @@
 }
 
 .mobile_tabs_container {
-    padding:   1rem;
+    padding: 1rem;
     display: flex;
     grid-template-columns: repeat(4, 1fr);
     align-items: center;

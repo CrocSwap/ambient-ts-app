@@ -1,7 +1,5 @@
-.dom_debugger_wrapper{
-
-
-    transition: all .4s ease-in-out;
+.dom_debugger_wrapper {
+    transition: all 0.4s ease-in-out;
     position: fixed;
     width: 40vw;
     left: 0;
@@ -11,73 +9,68 @@
     background: black;
     color: white;
 
-
     display: block;
-    font-size: .82rem;
+    font-size: 0.82rem;
 
     border: 0;
     top: 0;
-    
+
     backdrop-filter: blur(10px);
-    background-color: rgba(0,0,0, .2);
-    background-color: rgba(0,0,0, .85);
+    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.85);
     padding: 1rem;
     /* border-radius: 0.4rem 0.4rem 0 0; */
     padding-top: 2rem;
     max-height: 0vh;
-    
 }
 
-.dom_debug_clear{
-
-    transition: all .2s ease-in-out;
+.dom_debug_clear {
+    transition: all 0.2s ease-in-out;
     z-index: 3;
     position: absolute;
     top: 0;
     right: 0;
-    padding: .5rem;
+    padding: 0.5rem;
     cursor: pointer;
     color: white;
-    opacity: .5;
-    padding: .2rem 1rem;
-    border: 1px solid rgba(255,255,255,.2);
+    opacity: 0.5;
+    padding: 0.2rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.dom_debug_clear:hover{
+.dom_debug_clear:hover {
     opacity: 1;
 }
 
-.dom_debugger_wrapper.active{
+.dom_debugger_wrapper.active {
     transform: translateY(0);
     max-height: 100vh;
 }
 
-
-.dom_debug_node{
+.dom_debug_node {
     display: block;
-    padding: .1rem;
-    border-bottom: 1px solid rgba(255,255,255,.1);
-
+    padding: 0.1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.dom_debug_node:nth-child(4n){
+.dom_debug_node:nth-child(4n) {
     /* border-right: none; */
 }
 
-.dom_debug_key{
+.dom_debug_key {
     color: white;
-    opacity: .5;
+    opacity: 0.5;
     font-family: 'Consolas';
     width: 8rem;
     display: inline-block;
-    margin-right: .5rem;
+    margin-right: 0.5rem;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-
 @keyframes dom_debugger_val_signal {
-    0%, 100% {
+    0%,
+    100% {
         background-color: transparent;
     }
     50% {
@@ -85,8 +78,8 @@
     }
 }
 
-.dom_debug_value{
-    color: rgba(0,255,2);
+.dom_debug_value {
+    color: rgba(0, 255, 2);
     opacity: 1;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -96,23 +89,21 @@
     max-width: calc(100% - 9rem);
 }
 
-.dom_debug_signal{
-    animation: dom_debugger_val_signal .2s forwards ease-in-out;
+.dom_debug_signal {
+    animation: dom_debugger_val_signal 0.2s forwards ease-in-out;
 }
 
-.dom_debug_nodes_wrapper{
-
+.dom_debug_nodes_wrapper {
 }
 
-.dom_debug_toolbar{
+.dom_debug_toolbar {
     display: block;
     width: 100%;
-    background-color: rgba(255,255,255, .1);
+    background-color: rgba(255, 255, 255, 0.1);
     height: 1.2rem;
     position: absolute;
     top: 0;
     left: 0;
     z-index: 2;
     cursor: move;
-
 }

@@ -101,7 +101,8 @@
     padding: 1rem;
 }
 
-.header, .container header {
+.header,
+.container header {
     height: 41px !important;
     display: flex;
     flex-direction: row;
@@ -112,4 +113,3 @@
     font-weight: 200;
     color: var(--text1);
 }
-

@@ -15,6 +15,7 @@ import {
     ZERO_ADDRESS,
     hiddenTokens,
     supportedNetworks,
+    vaultSupportedNetworkIds,
 } from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
 import { SinglePoolDataIF, TokenIF } from '../ambient-utils/types';
@@ -56,6 +57,7 @@ export interface ChainDataContextIF {
     isActiveNetworkPlume: boolean;
     isActiveNetworkScroll: boolean;
     isActiveNetworkMainnet: boolean;
+    isVaultSupportedOnNetwork: boolean;
     isActiveNetworkL2: boolean;
     nativeTokenUsdPrice: number | undefined;
     allPoolStats: SinglePoolDataIF[] | undefined;
@@ -112,6 +114,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);
     const isActiveNetworkPlume = ['0x18230'].includes(chainId);
+    const isVaultSupportedOnNetwork =
+        vaultSupportedNetworkIds.includes(chainId);
 
     const blockPollingUrl = BLOCK_POLLING_RPC_URL
         ? BLOCK_POLLING_RPC_URL
@@ -203,8 +207,10 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     }
 
     useEffect(() => {
-        updateAllPoolStats();
-    }, [chainId, poolStatsPollingCacheTime]);
+        if (chainId && graphCacheUrl) {
+            updateAllPoolStats();
+        }
+    }, [chainId, graphCacheUrl, poolStatsPollingCacheTime]);
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
@@ -382,7 +388,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 isUserConnected &&
                 userAddress &&
                 chainId &&
-                lastBlockNumber
+                everyFiveMinutes
             ) {
                 try {
                     const combinedBalances: TokenIF[] = [];
@@ -393,7 +399,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                             address: userAddress,
                             chain: chainId,
                             crocEnv: crocEnv,
-                            _refreshTime: lastBlockNumber,
+                            _refreshTime: everyFiveMinutes,
                         });
 
                     combinedBalances.push(...AmbientListWalletBalances);
@@ -404,7 +410,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                         chain: chainId,
                         crocEnv: crocEnv,
                         graphCacheUrl: graphCacheUrl,
-                        _refreshTime: lastBlockNumber,
+                        _refreshTime: everyFiveMinutes,
                     });
 
                     if (dexBalancesFromCache !== undefined) {
@@ -585,6 +591,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isActiveNetworkPlume,
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
+        isVaultSupportedOnNetwork,
         isActiveNetworkL2,
         allPoolStats,
         nativeTokenUsdPrice,

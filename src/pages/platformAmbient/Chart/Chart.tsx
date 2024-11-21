@@ -262,10 +262,6 @@ export default function Chart(props: propsIF) {
         useContext(PoolContext);
     const { advancedMode, setIsLinesSwitched } = useContext(RangeContext);
 
-    const [liqMaxActiveLiq, setLiqMaxActiveLiq] = useState<
-        number | undefined
-    >();
-
     const [isUpdatingShape, setIsUpdatingShape] = useState(false);
 
     const [isDragActive, setIsDragActive] = useState(false);
@@ -455,7 +451,7 @@ export default function Chart(props: propsIF) {
     const [closeOutherChartSetting, setCloseOutherChartSetting] =
         useState<boolean>(false);
 
-    const mobileView = useMediaQuery('(max-width: 1200px)');
+    const mobileView = useMediaQuery('(max-width: 800px)');
     const tabletView = useMediaQuery(
         '(min-width: 768px) and (max-width: 1200px)',
     );
@@ -1535,9 +1531,12 @@ export default function Chart(props: propsIF) {
                             const mousePlacement =
                                 scaleData?.yScale.invert(eventPoint);
 
-                            const isHoverLiquidity = liqMaxActiveLiq
-                                ? liqMaxActiveLiq - eventPointX > 10
-                                : true;
+                            const maxLiqPixelPercent = mobileView
+                                ? 80 / 100
+                                : 92 / 100;
+                            const isHoverLiquidity =
+                                rectCanvas.width * maxLiqPixelPercent >=
+                                eventPointX;
 
                             const limitLineValue = limit;
 
@@ -1599,7 +1598,6 @@ export default function Chart(props: propsIF) {
         period,
         advancedMode,
         isChartZoom,
-        liqMaxActiveLiq,
         zoomBase,
         contextmenu,
     ]);
@@ -2384,7 +2382,6 @@ export default function Chart(props: propsIF) {
         isTokenABase,
         gridSize,
         rescale,
-        liqMaxActiveLiq,
     ]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2394,10 +2391,15 @@ export default function Chart(props: propsIF) {
         if (event.type.includes('touch') && checkMainCanvas) {
             const eventPointX = event.targetTouches[0].clientX - leftPositin;
 
-            const isHoverLiquidity = liqMaxActiveLiq
-                ? liqMaxActiveLiq - eventPointX > 10
-                : true;
+            const canvas = d3
+                .select(d3CanvasMain.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
 
+            const rectCanvas = canvas.getBoundingClientRect();
+            const maxLiqPixelPercent = mobileView ? 9 / 10 : 4 / 5;
+            const isHoverLiquidity =
+                rectCanvas.width * maxLiqPixelPercent >= eventPointX;
             return isHoverLiquidity;
         }
 
@@ -2558,7 +2560,6 @@ export default function Chart(props: propsIF) {
         isTokenABase,
         gridSize,
         rescale,
-        liqMaxActiveLiq,
     ]);
 
     useEffect(() => {
@@ -4453,21 +4454,23 @@ export default function Chart(props: propsIF) {
                 minYBoundary !== undefined
             ) {
                 if (simpleRangeWidth !== 100 || advancedMode) {
-                    ranges[0] = { name: 'Min', value: minPrice };
-                    ranges[1] = { name: 'Max', value: maxPrice };
+                    if (minPrice && maxPrice) {
+                        ranges[0] = { name: 'Min', value: minPrice };
+                        ranges[1] = { name: 'Max', value: maxPrice };
 
-                    const low = Math.min(min, max, minYBoundary, market);
+                        const low = Math.min(min, max, minYBoundary, market);
 
-                    const high = Math.max(min, max, maxYBoundary, market);
+                        const high = Math.max(min, max, maxYBoundary, market);
 
-                    const bufferForRange = Math.abs((low - high) / 6);
+                        const bufferForRange = Math.abs((low - high) / 6);
 
-                    const domain = [
-                        Math.min(low, high) - bufferForRange,
-                        Math.max(low, high) + bufferForRange / 2,
-                    ];
+                        const domain = [
+                            Math.min(low, high) - bufferForRange,
+                            Math.max(low, high) + bufferForRange / 2,
+                        ];
 
-                    setYaxisDomain(domain[0], domain[1]);
+                        setYaxisDomain(domain[0], domain[1]);
+                    }
                 } else {
                     const lowTick =
                         currentPoolPriceTick - simpleRangeWidth * 100;
@@ -6121,7 +6124,7 @@ export default function Chart(props: propsIF) {
                     chartThemeColors={chartThemeColors}
                 />
 
-                {liquidityData && platformName !== 'futa' && (
+                {liquidityScale && liquidityData && platformName !== 'futa' && (
                     <LiquidityChart
                         liqMode={liqMode}
                         liquidityData={liquidityData}
@@ -6136,7 +6139,6 @@ export default function Chart(props: propsIF) {
                         mainCanvasBoundingClientRect={
                             mainCanvasBoundingClientRect
                         }
-                        setLiqMaxActiveLiq={setLiqMaxActiveLiq}
                         chartThemeColors={chartThemeColors}
                         render={render}
                         colorChangeTrigger={colorChangeTrigger}

@@ -127,7 +127,7 @@ export type chartItemStates = {
     liqMode: string;
     showSwap: boolean;
     setShowSwap: React.Dispatch<React.SetStateAction<boolean>>;
-    showLatest:  boolean;
+    showLatest: boolean;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setLatest: React.Dispatch<React.SetStateAction<boolean>>;
     rescale: boolean;

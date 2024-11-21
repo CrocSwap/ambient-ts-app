@@ -19,43 +19,26 @@ import {
 } from '../../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../contexts/CrocEnvContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { trimString } from '../../../ambient-utils/dataLayer';
-import {
-    ChainDataContext,
-    ChainDataContextIF,
-} from '../../../contexts/ChainDataContext';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
-import { TokenContext, TokenContextIF } from '../../../contexts/TokenContext';
-import {
-    CachedDataContext,
-    CachedDataContextIF,
-} from '../../../contexts/CachedDataContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { useSimulatedIsUserConnected } from '../../../App/hooks/useSimulatedIsUserConnected';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
     BlastUserXpDataIF,
     UserDataContext,
-    UserDataContextIF,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import Level from '../Level/Level';
-import {
-    TradeTableContext,
-    TradeTableContextIF,
-} from '../../../contexts/TradeTableContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import styles from './Portfolio.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
 import NFTBannerAccount from '../../../components/Portfolio/PortfolioBanner/PortfolioBannerAccount/NFTBannerAccount';
 import { TokenBalanceContext } from '../../../contexts';
 import ModalHeader from '../../../components/Global/ModalHeader/ModalHeader';
-import { TokenBalanceContextIF } from '../../../contexts/TokenBalanceContext';
 
 interface propsIF {
     isLevelsPage?: boolean;
@@ -70,7 +53,7 @@ function Portfolio(props: propsIF) {
     const {
         walletModal: { open: openModalWallet },
         activeNetwork: { chainId, graphCacheUrl },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
     const {
         userAddress,
         isfetchNftTriggered,
@@ -79,21 +62,19 @@ function Portfolio(props: propsIF) {
         setResolvedAddressInContext,
         ensName,
         setSecondaryEnsInContext,
-    } = useContext<UserDataContextIF>(UserDataContext);
+    } = useContext(UserDataContext);
     const { NFTData, NFTFetchSettings, setNFTFetchSettings } =
-        useContext<TokenBalanceContextIF>(TokenBalanceContext);
+        useContext(TokenBalanceContext);
     const {
         cachedFetchAmbientListWalletBalances,
         cachedFetchDexBalances,
         cachedTokenDetails,
-    } = useContext<CachedDataContextIF>(CachedDataContext);
-    const { crocEnv, mainnetProvider } =
-        useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { isActiveNetworkBlast } =
-        useContext<ChainDataContextIF>(ChainDataContext);
-    const { tokens } = useContext<TokenContextIF>(TokenContext);
+    } = useContext(CachedDataContext);
+    const { crocEnv, mainnetProvider } = useContext(CrocEnvContext);
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
     const { setOutsideControl, setSelectedOutsideTab } =
-        useContext<TradeTableContextIF>(TradeTableContext);
+        useContext(TradeTableContext);
 
     const { address: addressFromParams } = useParams();
 
@@ -129,7 +110,6 @@ function Portfolio(props: propsIF) {
         (async () => {
             if (addressFromParams && isAddressEns && mainnetProvider) {
                 try {
-                    // @emily
                     const newResolvedAddress =
                         await mainnetProvider.resolveName(addressFromParams);
                     setResolvedAddress(newResolvedAddress ?? '');
@@ -148,6 +128,7 @@ function Portfolio(props: propsIF) {
     }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
 
     const [secondaryEnsName, setSecondaryEnsName] = useState('');
+
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
@@ -395,7 +376,7 @@ function Portfolio(props: propsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-    const showActiveMobileComponent = useMediaQuery('(max-width: 768px)');
+    const showActiveMobileComponent = useMediaQuery('(max-width: 1500px)');
 
     const notConnectedContent = (
         <FlexContainer

@@ -1,6 +1,6 @@
-.ment_autocomp_wrapper{
-    transform: all .2s ease-in-out;
-    font-size: .72rem;
+.ment_autocomp_wrapper {
+    transform: all 0.2s ease-in-out;
+    font-size: 0.72rem;
     background: rgb(36 47 63);
     background: transparent;
     width: 100%;
@@ -9,73 +9,70 @@
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
-    padding: 0 .3rem;
-    border-radius: .2rem .2rem 0 0;
+    padding: 0 0.3rem;
+    border-radius: 0.2rem 0.2rem 0 0;
     overflow: hidden;
-    transition: all .2s ease-in-out;
+    transition: all 0.2s ease-in-out;
     max-height: 0vh;
     opacity: 0;
     bottom: 2rem;
-    background: linear-gradient(0deg, rgb(5 10 18) 0%, rgba(0,0,0,0) 100%);
-    padding-bottom: .5rem;
+    background: linear-gradient(0deg, rgb(5 10 18) 0%, rgba(0, 0, 0, 0) 100%);
+    padding-bottom: 0.5rem;
 }
 
-.ment_autocomp_wrapper_active{
+.ment_autocomp_wrapper_active {
     max-height: 360px;
     overflow-y: auto;
     opacity: 1;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,.1) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
     scrollbar-3dlight-color: transparent;
 }
 
-.ment_autocomp_user_wrapper{
-   opacity: 1;
-   transition: all .2s ease-in-out;
-   background: rgb(36 47 63);
-   border-radius: .2rem;
-   width: 50%;
-   margin: .2rem auto;
+.ment_autocomp_user_wrapper {
+    opacity: 1;
+    transition: all 0.2s ease-in-out;
+    background: rgb(36 47 63);
+    border-radius: 0.2rem;
+    width: 50%;
+    margin: 0.2rem auto;
 }
 
-.ment_autocomp_user_wrapper:hover{
+.ment_autocomp_user_wrapper:hover {
     background: rgb(56 77 106);
 }
 
-.ment_autocomp_user_selected{
-   opacity: 1;
-   background: color-mix(in srgb, var(--accent1) 70%, var(--dark1));
-   box-shadow: 0px 0px 2px 0px color-mix(in srgb, var(--accent1) 52%, transparent);
-   transform: scale(1.1);
-   font-weight: bold;
-   /* background: rgb(56 77 106); */
-   
+.ment_autocomp_user_selected {
+    opacity: 1;
+    background: color-mix(in srgb, var(--accent1) 70%, var(--dark1));
+    box-shadow: 0px 0px 2px 0px
+        color-mix(in srgb, var(--accent1) 52%, transparent);
+    transform: scale(1.1);
+    font-weight: bold;
+    /* background: rgb(56 77 106); */
 }
-.ment_autocomp_input{
-   
-    background:transparent;
+.ment_autocomp_input {
+    background: transparent;
     color: white;
     border: none;
-    background-color: rgba(0,0,0, .2);
+    background-color: rgba(0, 0, 0, 0.2);
     outline: none;
     width: 100%;
     margin: 0 auto;
-    padding-left: .4rem;
+    padding-left: 0.4rem;
 }
 
-.ment_autocomp_topbar{
+.ment_autocomp_topbar {
     display: none;
 }
 
-
-@media only screen and (max-width: 600px){
-
-    .ment_autocomp_wrapper{
+@media only screen and (max-width: 600px) {
+    .ment_autocomp_wrapper {
         bottom: 3.2rem;
         max-height: 20vh;
         overflow-y: auto;
         backdrop-filter: blur(10px);
-        box-shadow: inset 0px 0px 50px 0px rgba(0,0,0 .4);
+        box-shadow: inset 0px 0px 50px 0px rgba(0, 0, 0 0.4);
         border-radius: 0;
 
         position: fixed;
@@ -83,47 +80,43 @@
         bottom: 8.7rem;
         z-index: 99999;
     }
-    
-    .ment_autocomp_wrapper_active{
-        
+
+    .ment_autocomp_wrapper_active {
         padding: 1rem 0;
         max-height: 100vh;
     }
 
-    .ment_autocomp_topbar{
+    .ment_autocomp_topbar {
         display: none;
         width: 100vw;
-        
+
         position: fixed;
         top: 0;
         left: 0;
         backdrop-filter: blur(10px);
-        background-color: rgba(0,0,0 .4);
+        background-color: rgba(0, 0, 0 0.4);
         height: 3rem;
         z-index: 109999;
-        
+
         box-shadow: 0px 10px 70px 0px #00000054;
     }
 
-    .ment_autocomp_topbar_active{
+    .ment_autocomp_topbar_active {
         display: block;
     }
 
-
-    .ment_autocomp_close_btn{
+    .ment_autocomp_close_btn {
         position: fixed;
         z-index: 119999;
         right: 2rem;
         top: 1rem;
         font-size: 1.2rem;
     }
-    
 
-.ment_autocomp_user_wrapper{
-    width: 90%;
-    font-size: .9rem;
-    padding: .5rem 0;
-    margin: .4rem auto;
-}
-
+    .ment_autocomp_user_wrapper {
+        width: 90%;
+        font-size: 0.9rem;
+        padding: 0.5rem 0;
+        margin: 0.4rem auto;
+    }
 }

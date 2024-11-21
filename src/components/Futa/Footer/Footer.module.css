@@ -79,27 +79,27 @@
     border-radius: 50%;
 }
 
-.rpc_container{
+.rpc_container {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 4px;
     border-left: 1px solid #424649;
 }
-.rpc_status{
+.rpc_status {
     width: 10px;
     height: 10px;
     border-radius: 50%;
 }
-.active_status{
+.active_status {
     background: var(--green);
     border: 1px solid var(--green);
 }
-.inactive_status{
+.inactive_status {
     background: var(--red);
     border: 1px solid var(--red);
 }
-.unknown_status{
+.unknown_status {
     border: 1px solid var(--text2);
     background-color: transparent;
 }

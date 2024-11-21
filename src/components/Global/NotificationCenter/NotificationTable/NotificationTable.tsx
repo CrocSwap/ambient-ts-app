@@ -92,7 +92,6 @@ const NotificationTable = (props: NotificationTableProps) => {
     );
     const modalVersion = (
         <div className={styles.container}>
-
             <Modal
                 usingCustomHeader
                 onClose={() => setShowNotificationTable(false)}
@@ -107,8 +106,8 @@ const NotificationTable = (props: NotificationTableProps) => {
     );
 
     if (!showNotificationTable) return null;
-   
-    return  showMobileVersion ? modalVersion : mainContent
+
+    return showMobileVersion ? modalVersion : mainContent;
 };
 
 export default NotificationTable;

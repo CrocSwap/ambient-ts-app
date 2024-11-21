@@ -1,108 +1,103 @@
-
 .deleted_msg_text {
     color: rgba(235, 235, 255, 0.4);
     display: block;
     /* color: var(--other-red); */
-    opacity: .8;
+    opacity: 0.8;
 }
 
-.shown_name{
+.shown_name {
     display: inline-block;
-    margin-left: .5rem;
+    margin-left: 0.5rem;
 }
 
-.avatar_jazzicons{
+.avatar_jazzicons {
     display: inline-block;
 }
 
-.name{
+.name {
     color: var(--accent2);
 }
 
-.current_user_name{
+.current_user_name {
     color: var(--accent1);
 }
 
-.message_tooltip_wrapper{
+.message_tooltip_wrapper {
     background: #12171f;
-    padding: .5rem 1rem;
-    box-shadow: 0px 0px 20px 0px rgba(115,113,252,.2);
-    border-radius: .2rem;
+    padding: 0.5rem 1rem;
+    box-shadow: 0px 0px 20px 0px rgba(115, 113, 252, 0.2);
+    border-radius: 0.2rem;
     max-width: 14rem;
     min-width: 10rem;
 }
 
-
-.tooltip_top_info{
+.tooltip_top_info {
     width: 100%;
     display: block;
 }
 
-.message_content{
+.message_content {
     display: inline-block;
-    margin-top: .5rem;
+    margin-top: 0.5rem;
     max-width: 90%;
 }
 
-.reply_panel_close_icon{
+.reply_panel_close_icon {
     position: absolute;
     right: 1rem;
     top: 1rem;
 }
 
-.reply_panel_close_icon path{
+.reply_panel_close_icon path {
     stroke: white;
-    opacity: .2;
+    opacity: 0.2;
 }
 
-.reply_box{
-    box-shadow: 0px 0px 9px 0px rgba(115,113,252,0.5);
+.reply_box {
+    box-shadow: 0px 0px 9px 0px rgba(115, 113, 252, 0.5);
     width: 100%;
     display: block;
-    font-size: .82rem;
+    font-size: 0.82rem;
     padding: 0.5rem 1rem;
     border-radius: 0.2rem;
     margin-bottom: 1rem;
     border: 1px solid var(--accent1);
 }
 
-.reply_box .avatar_jazzicons{
+.reply_box .avatar_jazzicons {
     transform: scale(1.4);
-    margin-right: .2rem;
+    margin-right: 0.2rem;
 }
 
-.reply_box_time{
+.reply_box_time {
     position: absolute;
     right: 3rem;
     top: 1rem;
-    font-size: .7rem;
-    opacity: .3;
+    font-size: 0.7rem;
+    opacity: 0.3;
 }
 
-
-
-.tooltip_message_content{
+.tooltip_message_content {
     display: block;
 }
 
-.tooltip_message_time{
+.tooltip_message_time {
     float: right;
-    right: .5rem;
-    top: .5rem;
+    right: 0.5rem;
+    top: 0.5rem;
     color: white;
-    opacity: .3;
+    opacity: 0.3;
 }
 
-.replied_message_box{
+.replied_message_box {
     min-width: 10rem;
     cursor: pointer;
 }
 
-.replied_message_box .time_text{
-    
+.replied_message_box .time_text {
 }
 
-.verified_icon{
+.verified_icon {
     display: inline-block;
-    margin-left: .2rem;
+    margin-left: 0.2rem;
 }

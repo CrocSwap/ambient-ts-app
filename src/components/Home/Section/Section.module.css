@@ -6,14 +6,9 @@
     align-items: center; */
     scroll-snap-align: center;
     position: relative;
-  }
-  
+}
 
-
-  
-
-  
-  .section .downarrow {
+.section .downarrow {
     position: absolute;
     bottom: 20px;
     left: 0;
@@ -25,13 +20,10 @@
     width: 40px;
     height: 40px;
     z-index: 2;
-  }
-  
+}
 
-  @media (max-height: 715px) {
+@media (max-height: 715px) {
     .section {
-      height: auto;
-    
-    
-      }
-  }
+        height: auto;
+    }
+}

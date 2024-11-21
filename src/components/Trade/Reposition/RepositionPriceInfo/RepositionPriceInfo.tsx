@@ -192,8 +192,8 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                         isCurrentPositionEmpty
                             ? '...'
                             : rangeWidthPercentage === 100
-                            ? '0'
-                            : minPriceDisplay
+                              ? '0'
+                              : minPriceDisplay
                     }
                 />
                 <RowDisplay
@@ -203,8 +203,8 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                         isCurrentPositionEmpty
                             ? '...'
                             : rangeWidthPercentage === 100
-                            ? '∞'
-                            : maxPriceDisplay
+                              ? '∞'
+                              : maxPriceDisplay
                     }
                 />
                 <aside className={styles.divider} />

@@ -8,7 +8,6 @@
     max-width: 400px;
     height: calc(100svh - 420px);
     z-index: 99 !important;
-   
 }
 
 .create_token_top {
@@ -119,7 +118,7 @@
     background: var(--accent1, #0ccdff);
     color: var(--dark1);
     border: none;
-    transition: all var(--animation-speed) ease-in-out
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .create_button_disabled {
@@ -127,11 +126,10 @@
     text-transform: uppercase;
     font-size: 24px;
     border: 1px solid transparent;
-    color: var(--text2)
+    color: var(--text2);
 }
 
-
-.create_button:hover{
+.create_button:hover {
     background: var(--accent2);
     color: var(--dark1);
 }
@@ -142,8 +140,7 @@
     gap: 8px;
 }
 
-
-.justifyRow{
+.justifyRow {
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -151,22 +148,18 @@
 }
 
 @media only screen and (min-width: 1080px) {
-    .mainContainer{
-      
+    .mainContainer {
         height: calc(100vh - 155px);
         transition: all var(--animation-speed) ease-in-out;
         overflow: hidden;
-       
     }
-   
-        .create_token {
-            margin-top: 5rem;
-            min-height: 500px;
-            max-height: 600px;
-            border: 1px solid var(--border);
-            background: var(--dark1);
-            padding: 16px;
 
-            
+    .create_token {
+        margin-top: 5rem;
+        min-height: 500px;
+        max-height: 600px;
+        border: 1px solid var(--border);
+        background: var(--dark1);
+        padding: 16px;
     }
 }

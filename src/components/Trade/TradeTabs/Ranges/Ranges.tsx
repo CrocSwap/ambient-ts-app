@@ -103,7 +103,8 @@ function Ranges(props: propsIF) {
 
     const { transactionsByType } = useContext(ReceiptContext);
 
-    const { baseToken, quoteToken } = useContext(TradeDataContext);
+    const { baseToken, quoteToken, blackListedTimeParams, addToBlackList } =
+        useContext(TradeDataContext);
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
@@ -152,6 +153,12 @@ function Ranges(props: propsIF) {
     const infiniteScrollLockRef = useRef<boolean>();
     infiniteScrollLockRef.current = infiniteScrollLock;
 
+    const [requestedOldestTimes, setRequestedOldestTimes] = useState<number[]>(
+        [],
+    );
+    const requestedOldestTimesRef = useRef<number[]>(requestedOldestTimes);
+    requestedOldestTimesRef.current = requestedOldestTimes;
+
     const fetchedTransactionsRef = useRef<PositionsByPool>();
     fetchedTransactionsRef.current = fetchedTransactions;
 
@@ -175,12 +182,20 @@ function Ranges(props: propsIF) {
     const moreDataAvailableRef = useRef<boolean>();
     moreDataAvailableRef.current = moreDataAvailable;
 
+    const [unindexedUpdatedPositions, setUnindexedUpdatedPositions] = useState<
+        PositionIF[]
+    >([]);
+
     const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
 
     const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
 
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
+
+    const prevBaseQuoteAddressRef = useRef<string>(
+        selectedBaseAddress + selectedQuoteAddress,
+    );
 
     const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(
         !isAccountView && showAllData,
@@ -190,10 +205,6 @@ function Ranges(props: propsIF) {
         setShowInfiniteScroll(!isAccountView && showAllData);
     }, [isAccountView, showAllData]);
 
-    const elIDRef = useRef<string>(
-        Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15),
-    );
     const controllerRef = useRef<AbortController>(new AbortController());
 
     const isAliveRef = useRef<boolean>(true);
@@ -207,22 +218,32 @@ function Ranges(props: propsIF) {
     }, []);
 
     useEffect(() => {
-        setPagesVisible([0, 1]);
-        setPageDataCountShouldReset(true);
-        setExtraPagesAvailable(0);
-        setMoreDataAvailable(true);
-        setTimeout(() => {
+        if (
+            prevBaseQuoteAddressRef.current !==
+            selectedBaseAddress + selectedQuoteAddress
+        ) {
+            setPagesVisible([0, 1]);
+            setPageDataCountShouldReset(true);
+            setExtraPagesAvailable(0);
             setMoreDataAvailable(true);
-        }, 1000);
-        setLastFetchedCount(0);
-        setHotTransactions([]);
-        setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
-        setInfiniteScrollLock(true);
+            setTimeout(() => {
+                setMoreDataAvailable(true);
+            }, 1000);
+            setLastFetchedCount(0);
+            setHotTransactions([]);
+            setExtraRequestCredit(EXTRA_REQUEST_CREDIT_COUNT);
+            setInfiniteScrollLock(true);
+            setLastOldestTimeParam(-1);
+            setRequestedOldestTimes([]);
+        }
+        prevBaseQuoteAddressRef.current =
+            selectedBaseAddress + selectedQuoteAddress;
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     const [pageDataCountShouldReset, setPageDataCountShouldReset] =
         useState(false);
     const PAGE_COUNT_DIVIDE_THRESHOLD = 20;
+    const INITIAL_EXTRA_REQUEST_THRESHOLD = 20;
 
     const getUniqueSortedPositions = (
         positions: PositionIF[],
@@ -405,64 +426,26 @@ function Ranges(props: propsIF) {
                 ),
             ); // Adjust if using a different unique identifier
 
-            const uniqueChanges = positionsByPool.positions.filter(
+            const newPositions = positionsByPool.positions.filter(
                 (change) =>
                     !existingChanges.has(change.positionId) &&
                     change.positionLiq !== 0,
             );
 
-            if (uniqueChanges.length > 0) {
-                if (pagesVisible[0] === 0) {
-                    setFetchedTransactions((prev) => {
-                        return {
-                            dataReceived: true,
-                            positions: [...uniqueChanges, ...prev.positions],
-                        };
-                    });
-                } else {
-                    updateHotTransactions(uniqueChanges);
-                }
-            }
+            if (pagesVisible[0] === 0) {
+                setFetchedTransactions({
+                    dataReceived: true,
+                    positions: [...newPositions, ...positionsByPool.positions],
+                });
 
-            if (
-                pageDataCount.counts[0] == 0 &&
-                positionsByPool.positions.length > 0
-            ) {
-                setPageDataCount(getInitialDataPageCounts());
+                if (positionsByPool.positions.length > 0) {
+                    setPageDataCount(getInitialDataPageCounts());
+                }
+            } else if (newPositions.length > 0) {
+                updateHotTransactions(newPositions);
             }
         }
     }, [positionsByPool]);
-
-    useEffect(() => {
-        if (
-            pageDataCountShouldReset &&
-            pageDataCountRef.current?.pair !== getCurrentDataPair() &&
-            fetchedTransactions.positions.length > 0
-        ) {
-            setPagesVisible([0, 1]);
-            setPageDataCount(getInitialDataPageCounts());
-            setPageDataCountShouldReset(false);
-            setInfiniteScrollLock(true);
-        }
-        if (
-            fetchedTransactionsRef.current &&
-            fetchedTransactionsRef.current.positions.length < 40
-        ) {
-            if (infiniteScrollLockRef.current) {
-                addMoreData(true);
-            }
-        }
-
-        if (
-            pageDataCountRef.current?.counts[0] == 0 &&
-            fetchedTransactionsRef.current &&
-            fetchedTransactionsRef.current.positions.length > 0
-        ) {
-            setPageDataCount(getInitialDataPageCounts());
-        } else {
-            setInfiniteScrollLock(false);
-        }
-    }, [fetchedTransactions]);
 
     // const fetchNewData = async(OLDEST_TIME:number, signal: AbortSignal):Promise<PositionIF[]> => {
     const fetchNewData = async (OLDEST_TIME: number): Promise<PositionIF[]> => {
@@ -534,16 +517,38 @@ function Ranges(props: propsIF) {
             }
 
             if (lastOldestTimeParamRef.current === oldestTimeParam) {
-                console.log(
-                    elIDRef.current +
-                        ' >>> [ALREADY FETCHED] already fetched with this ts',
-                );
                 setMoreDataLoading(false);
                 setTimeout(() => {
-                    setMoreDataAvailable(false);
-                }, 2000);
-                return;
+                    setMoreDataLoading(false);
+                }, 1000);
+                break;
             }
+
+            if (requestedOldestTimesRef.current.includes(oldestTimeParam)) {
+                setMoreDataLoading(false);
+                setTimeout(() => {
+                    setMoreDataLoading(false);
+                }, 1000);
+                break;
+            }
+
+            if (
+                blackListedTimeParams.has(
+                    selectedBaseAddress + selectedQuoteAddress,
+                ) &&
+                blackListedTimeParams
+                    .get(selectedBaseAddress + selectedQuoteAddress)
+                    ?.has(oldestTimeParam)
+            ) {
+                setMoreDataLoading(false);
+                setTimeout(() => {
+                    setMoreDataLoading(false);
+                }, 1000);
+                break;
+            }
+
+            setRequestedOldestTimes((prev) => [...prev, oldestTimeParam]);
+
             // fetch data
             // let dirtyData = await fetchNewData(oldestTimeParam, controllerRef.current.signal);
             let dirtyData = await fetchNewData(oldestTimeParam);
@@ -557,6 +562,10 @@ function Ranges(props: propsIF) {
             dirtyData = dirtyData.filter((e) => e.positionLiq !== 0);
 
             if (dirtyData.length == 0) {
+                addToBlackList(
+                    selectedBaseAddress + selectedQuoteAddress,
+                    oldestTimeParam,
+                );
                 const creditVal =
                     extraRequestCreditRef.current !== undefined
                         ? extraRequestCreditRef.current
@@ -624,7 +633,7 @@ function Ranges(props: propsIF) {
             isAccountView,
             activeAccountPositionData,
             activeUserPositionsByPool,
-            fetchedTransactions.positions, // infinite scroll
+            fetchedTransactions, // infinite scroll
         ],
     );
 
@@ -640,6 +649,40 @@ function Ranges(props: propsIF) {
                 : 0,
         [rangeData],
     );
+
+    useEffect(() => {
+        if (
+            pageDataCountShouldReset &&
+            pageDataCountRef.current?.pair !== getCurrentDataPair() &&
+            fetchedTransactions.positions.length > 0
+        ) {
+            setPagesVisible([0, 1]);
+            setPageDataCount(getInitialDataPageCounts());
+            setPageDataCountShouldReset(false);
+            setInfiniteScrollLock(true);
+        }
+        if (
+            fetchedTransactionsRef.current &&
+            fetchedTransactionsRef.current.positions.length <
+                INITIAL_EXTRA_REQUEST_THRESHOLD &&
+            oldestTxTime > 0
+        ) {
+            if (infiniteScrollLockRef.current) {
+                addMoreData(true);
+            }
+        }
+
+        if (
+            pageDataCountRef.current?.counts[0] == 0 &&
+            fetchedTransactionsRef.current &&
+            fetchedTransactionsRef.current.positions.length > 0
+        ) {
+            setPageDataCount(getInitialDataPageCounts());
+        } else {
+            setInfiniteScrollLock(false);
+        }
+    }, [oldestTxTime]);
+
     // ------------------------------------------------------------------------------------------------------------------------------
 
     const isLoading = useMemo(
@@ -672,8 +715,16 @@ function Ranges(props: propsIF) {
     ] = useSortedPositions('time', rangeData);
 
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
-    const sortedLimitDataToDisplay = useMemo<PositionIF[]>(() => {
-        const uniqueSortedPositions = getUniqueSortedPositions(sortedPositions);
+    const sortedPositionDataToDisplay = useMemo<PositionIF[]>(() => {
+        const uniqueSortedPositions = getUniqueSortedPositions(
+            sortedPositions.filter(
+                (e) =>
+                    e.positionLiq !== 0 &&
+                    !unindexedUpdatedPositions.some(
+                        (p) => p.positionId === e.positionId,
+                    ),
+            ),
+        );
 
         return isAccountView
             ? uniqueSortedPositions
@@ -681,17 +732,26 @@ function Ranges(props: propsIF) {
                   getIndexForPages(true),
                   getIndexForPages(false),
               );
-    }, [sortedPositions, pagesVisible, isAccountView]);
+    }, [
+        sortedPositions,
+        pagesVisible,
+        isAccountView,
+        unindexedUpdatedPositions,
+    ]);
 
     // -----------------------------------------------------------------------------------------------------------------------------
 
     // TODO: Use these as media width constants
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
+    const isTabletScreen = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
     const isLargeScreen = useMediaQuery('(min-width: 2000px)');
     const isLargeScreenAccount = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
         isSmallScreen ||
+        isTabletScreen ||
         (isAccountView &&
             connectedAccountActive &&
             !isLargeScreenAccount &&
@@ -936,9 +996,21 @@ function Ranges(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
-    const [unindexedUpdatedPositions, setUnindexedUpdatedPositions] = useState<
-        PositionIF[]
-    >([]);
+    type RecentlyUpdatedPosition = {
+        posHash: string;
+        timestamp: number;
+    };
+
+    // list of recently updated positions
+    const [listOfRecentlyUpdatedPositions, setListOfRecentlyUpdatedPositions] =
+        useState<RecentlyUpdatedPosition[]>([]);
+
+    const addPositionHash = (posHash: string) => {
+        setListOfRecentlyUpdatedPositions((prevList) => [
+            ...prevList,
+            { posHash, timestamp: Math.floor(Date.now() / 1000) },
+        ]);
+    };
 
     useEffect(() => {
         (async () => {
@@ -959,6 +1031,7 @@ function Ranges(props: propsIF) {
                 pendingPositionUpdates.map(async (pendingPositionUpdate) => {
                     if (!crocEnv || !pendingPositionUpdate.txDetails)
                         return {} as PositionIF;
+
                     const pos = crocEnv.positions(
                         pendingPositionUpdate.txDetails.baseAddress,
                         pendingPositionUpdate.txDetails.quoteAddress,
@@ -979,6 +1052,7 @@ function Ranges(props: propsIF) {
                               pendingPositionUpdate.txDetails.lowTick || 0,
                               pendingPositionUpdate.txDetails.highTick || 0,
                           );
+
                     const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
 
                     let positionLiqBase, positionLiqQuote;
@@ -1023,8 +1097,6 @@ function Ranges(props: propsIF) {
                         );
                     }
 
-                    const currentTime = Math.floor(Date.now() / 1000);
-
                     const posHash = getPositionHash(undefined, {
                         isPositionTypeAmbient:
                             pendingPositionUpdate.txDetails.isAmbient || false,
@@ -1037,6 +1109,19 @@ function Ranges(props: propsIF) {
                         bidTick: pendingPositionUpdate.txDetails.lowTick || 0,
                         askTick: pendingPositionUpdate.txDetails.highTick || 0,
                     });
+
+                    const matchingExistingPosition =
+                        activeUserPositionsByPool.find(
+                            (position) => position.positionId === posHash,
+                        );
+
+                    const onChainLiqDifferentThanMatchingPositionLiq =
+                        liqBigInt >
+                        BigInt(matchingExistingPosition?.positionLiq || 0);
+
+                    if (onChainLiqDifferentThanMatchingPositionLiq) {
+                        addPositionHash(posHash);
+                    }
 
                     const mockServerPosition: PositionServerIF = {
                         positionId: posHash,
@@ -1057,7 +1142,7 @@ function Ranges(props: propsIF) {
                         positionType: pendingPositionUpdate.txDetails.isAmbient
                             ? 'ambient'
                             : 'concentrated',
-                        timeFirstMint: currentTime, // unknown
+                        timeFirstMint: 0, // unknown
                         lastMintTx: '', // unknown
                         firstMintTx: '', // unknown
                         aprEst: 0, // unknown
@@ -1076,6 +1161,7 @@ function Ranges(props: propsIF) {
                         cachedEnsResolve,
                         skipENSFetch,
                     );
+
                     const onChainPosition: PositionIF = {
                         chainId: chainId,
                         base: pendingPositionUpdate.txDetails.baseAddress,
@@ -1085,8 +1171,8 @@ function Ranges(props: propsIF) {
                         askTick: pendingPositionUpdate.txDetails.highTick,
                         isBid: pendingPositionUpdate.txDetails.isBid,
                         user: pendingPositionUpdate.userAddress,
-                        timeFirstMint: Number(position.timestamp), // from on-chain call (not updated for removes?)
-                        latestUpdateTime: Number(position.timestamp), // from on-chain call (not updated for removes?)
+                        timeFirstMint: 0, // unknown
+                        latestUpdateTime: 0,
                         lastMintTx: '', // unknown
                         firstMintTx: '', // unknown
                         positionType: pendingPositionUpdate.txDetails.isAmbient
@@ -1099,7 +1185,7 @@ function Ranges(props: propsIF) {
                             ? liqNum
                             : 0,
                         rewardLiq: 0, // unknown
-                        liqRefreshTime: currentTime, // unknown
+                        liqRefreshTime: 0,
                         aprDuration: 0, // unknown
                         aprPostLiq: 0,
                         aprContributedLiq: 0,
@@ -1177,8 +1263,9 @@ function Ranges(props: propsIF) {
                 newlyUpdatedPositions.filter(
                     (position) => position !== undefined,
                 ) as PositionIF[];
-            if (definedUpdatedPositions.length)
+            if (definedUpdatedPositions.length) {
                 setUnindexedUpdatedPositions(definedUpdatedPositions);
+            }
         })();
     }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
 
@@ -1208,9 +1295,15 @@ function Ranges(props: propsIF) {
                 },
             );
             const matchingPositionUpdatedInLastMinute =
-                (matchingPosition?.liqRefreshTime || 0) -
-                    (matchingPosition?.latestUpdateTime || 0) <
-                60;
+                !!matchingPosition &&
+                listOfRecentlyUpdatedPositions.some(
+                    (recentlyUpdatedPosition) =>
+                        recentlyUpdatedPosition.posHash ===
+                            matchingPosition.positionId &&
+                        recentlyUpdatedPosition.timestamp >
+                            Date.now() / 1000 - 60,
+                );
+
             // identify completed adds when update time in last minute (does not work for removes)
             return (
                 !unindexedUpdatedPositionHashes.includes(pendingPosHash) ||
@@ -1294,7 +1387,9 @@ function Ranges(props: propsIF) {
                 {showInfiniteScroll ? (
                     <TableRowsInfiniteScroll
                         type='Range'
-                        data={sortedLimitDataToDisplay}
+                        data={unindexedUpdatedPositions.concat(
+                            sortedPositionDataToDisplay,
+                        )}
                         tableView={tableView}
                         isAccountView={isAccountView}
                         fetcherFunction={addMoreData}
@@ -1390,9 +1485,8 @@ function Ranges(props: propsIF) {
                         rangeDataOrNull
                     )}
                 </div>
-                {/* {footerDisplay} */}
+                {isAccountView && footerDisplay}
             </FlexContainer>
-            {footerDisplay}
         </>
     );
 }

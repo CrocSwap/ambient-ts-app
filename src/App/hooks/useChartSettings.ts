@@ -49,7 +49,10 @@ export interface chartSettingsMethodsIF {
 
 // hook to manage user preferences for chart settings
 export const useChartSettings = (
-    numCandlesFetched: {candleCount: number | undefined, switchPeriodFlag:boolean} ,
+    numCandlesFetched: {
+        candleCount: number | undefined;
+        switchPeriodFlag: boolean;
+    },
     currentPoolString: string,
 ): chartSettingsMethodsIF => {
     // fn to get user preference for overlay to display on the chart by module
@@ -221,32 +224,32 @@ export const useChartSettings = (
                       { readable: '1d', seconds: 86400 },
                   ]
                 : maxDuration === 14400
-                ? [
-                      { readable: '1m', seconds: 60 },
-                      { readable: '5m', seconds: 300 },
-                      { readable: '15m', seconds: 900 },
-                      { readable: '1h', seconds: 3600 },
-                      { readable: '4h', seconds: 14400 },
-                  ]
-                : maxDuration === 3600
-                ? [
-                      { readable: '1m', seconds: 60 },
-                      { readable: '5m', seconds: 300 },
-                      { readable: '15m', seconds: 900 },
-                      { readable: '1h', seconds: 3600 },
-                  ]
-                : maxDuration === 900
-                ? [
-                      { readable: '1m', seconds: 60 },
-                      { readable: '5m', seconds: 300 },
-                      { readable: '15m', seconds: 900 },
-                  ]
-                : maxDuration === 300
-                ? [
-                      { readable: '1m', seconds: 60 },
-                      { readable: '5m', seconds: 300 },
-                  ]
-                : [{ readable: '1m', seconds: 60 }];
+                  ? [
+                        { readable: '1m', seconds: 60 },
+                        { readable: '5m', seconds: 300 },
+                        { readable: '15m', seconds: 900 },
+                        { readable: '1h', seconds: 3600 },
+                        { readable: '4h', seconds: 14400 },
+                    ]
+                  : maxDuration === 3600
+                    ? [
+                          { readable: '1m', seconds: 60 },
+                          { readable: '5m', seconds: 300 },
+                          { readable: '15m', seconds: 900 },
+                          { readable: '1h', seconds: 3600 },
+                      ]
+                    : maxDuration === 900
+                      ? [
+                            { readable: '1m', seconds: 60 },
+                            { readable: '5m', seconds: 300 },
+                            { readable: '15m', seconds: 900 },
+                        ]
+                      : maxDuration === 300
+                        ? [
+                              { readable: '1m', seconds: 60 },
+                              { readable: '5m', seconds: 300 },
+                          ]
+                        : [{ readable: '1m', seconds: 60 }];
         readableTime =
             this.defaults.find(
                 (pair: DefaultTimeIF) => pair.seconds === this.time,

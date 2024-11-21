@@ -144,10 +144,7 @@ export default function VolumeBarCanvas(props: propsIF) {
                     barSeries(volumeData);
                 })
                 .on('measure', (event: CustomEvent) => {
-                    scaleData?.volumeScale.range([
-                        event.detail.height,
-                        0,
-                    ]);
+                    scaleData?.volumeScale.range([event.detail.height, 0]);
                     barSeries.context(ctx);
                 });
         }
@@ -158,8 +155,8 @@ export default function VolumeBarCanvas(props: propsIF) {
             ref={d3CanvasBar}
             className='volume-canvas'
             style={{
-              gridRowStart:2,
-              gridRowEnd:3,
+                gridRowStart: 2,
+                gridRowEnd: 3,
             }}
         ></d3fc-canvas>
     );

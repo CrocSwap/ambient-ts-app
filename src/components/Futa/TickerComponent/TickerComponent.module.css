@@ -9,7 +9,6 @@
     line-height: normal;
 }
 
-
 .content {
     height: 100%;
     display: flex;
@@ -21,7 +20,7 @@
     scrollbar-color: var(--dark2) var(--dark2);
 }
 
-.scrolling{
+.scrolling {
     scrollbar-color: var(--accent1) var(--dark2);
 }
 .justifyBetween {
@@ -37,10 +36,6 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-  
-
-
-   
 }
 
 .openBidContainer,

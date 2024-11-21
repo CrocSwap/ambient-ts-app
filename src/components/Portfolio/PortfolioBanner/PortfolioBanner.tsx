@@ -101,7 +101,7 @@ export default function PortfolioBanner(props: propsIF) {
     // ... gets a new address for programmatic generation
     const noisyLines = useMemo<JSX.Element | null>(() => {
         // early return if address is not available (first render)
-        if (!addressOfAccountDisplayed ) return null;
+        if (!addressOfAccountDisplayed) return null;
         // locate rendered parent element in DOM by element ID
         // const parentElem: HTMLElement | null =
         //     document.getElementById(BANNER_ID);
@@ -119,7 +119,7 @@ export default function PortfolioBanner(props: propsIF) {
 
     return (
         <div
-            className={styles.portfolio_banner_rectangle_container} 
+            className={styles.portfolio_banner_rectangle_container}
             id={BANNER_ID}
         >
             {noisyLines}

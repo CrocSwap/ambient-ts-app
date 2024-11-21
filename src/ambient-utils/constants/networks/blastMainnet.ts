@@ -19,7 +19,7 @@ const chainSpecForWalletConnector = {
     name: 'Blast',
     currency: 'ETH',
     rpcUrl: BLAST_RPC_URL,
-    explorerUrl: 'https://blastscan.io',
+    explorerUrl: 'https://blastscan.io/',
 };
 
 export const blast: NetworkIF = {
@@ -37,6 +37,7 @@ export const blast: NetworkIF = {
         new TopPool(blastETH, blastUSDB, chainSpecFromSDK.poolIndex),
         new TopPool(blastBLAST, blastETH, chainSpecFromSDK.poolIndex),
         new TopPool(blastEzETH, blastUSDB, chainSpecFromSDK.poolIndex),
+        new TopPool(blastBLAST, blastUSDB, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

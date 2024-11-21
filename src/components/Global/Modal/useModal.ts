@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import useKeyPress from '../../../App/hooks/useKeyPress';
+// import useKeyPress from '../../../App/hooks/useKeyPress';
 import { GLOBAL_MODAL_COMPONENT_ID } from '../../../ambient-utils/constants';
 
 export const useModal = (
@@ -33,8 +33,7 @@ export const useModal = (
             window.removeEventListener('closeModalEvent', modalCloseCustom);
     }, [modalCloseCustom]);
 
-    useKeyPress('Escape', closeModal);
-
+    // useKeyPress('Escape', closeModal);
 
     // return all data and functions needed for local use
     return [isModalOpen, openModal, closeModal];

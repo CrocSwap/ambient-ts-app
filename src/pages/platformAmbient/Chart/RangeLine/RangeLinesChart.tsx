@@ -279,14 +279,22 @@ export default function RangeLinesChart(props: propsIF) {
 
     useEffect(() => {
         displayHorizontalLines();
-    }, [simpleRangeWidth, advancedMode, location]);
+    }, [
+        simpleRangeWidth,
+        advancedMode,
+        location,
+        !(ranges[0].value === 0 && ranges[1].value === 0),
+    ]);
 
     const displayHorizontalLines = () => {
         if (
             location.pathname.includes('reposition') ||
             location.pathname.includes('pool')
         ) {
-            if (advancedMode || simpleRangeWidth !== 100) {
+            if (
+                (advancedMode || simpleRangeWidth !== 100) &&
+                !(ranges[0].value === 0 && ranges[1].value === 0)
+            ) {
                 d3.select(d3CanvasRangeLine.current)
                     .select('canvas')
                     .style('display', 'inline');

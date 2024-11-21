@@ -1,4 +1,3 @@
-
 .mainContainer {
     box-sizing: border-box;
     width: 100%;
@@ -139,7 +138,7 @@
 }
 
 @media only screen and (min-width: 600px) {
-    .contentContainer{
+    .contentContainer {
         padding-right: 1rem;
         overflow-x: auto;
     }
@@ -148,15 +147,11 @@
         width: 2px;
         right: 18px;
     }
-
-
 }
 
 @media only screen and (min-width: 768px) {
     .mainContainer {
         border: none;
-      
-        
     }
     .no_results {
         height: 70%;

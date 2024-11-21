@@ -10,7 +10,6 @@ interface ApyProps {
 }
 
 export default function Apy(props: ApyProps) {
-    
     const { amount, fs, lh, center, showTitle, fw } = props;
 
     const amountString = amount

@@ -1,6 +1,6 @@
-.mainContainer{
+.mainContainer {
     z-index: 15;
-    
+
     border-radius: var(--border-radius);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
@@ -8,17 +8,16 @@
     min-height: 400px;
 }
 
-.container{
+.container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     width: 100%;
     z-index: 10;
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    
 }
 
-.header{
+.header {
     display: none;
     color: var(--text1);
     padding: 1rem;
@@ -27,7 +26,7 @@
     height: 50px;
     font-size: 16px;
 }
-.content{
+.content {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -65,33 +64,28 @@
 }
 
 @media only screen and (min-width: 768px) {
-    
-    .mainContainer{
+    .mainContainer {
         width: 380px;
         height: calc(100vh - 9rem);
         position: absolute;
         right: 0;
         top: 60px;
-    ;
     }
-    
-    .containerFuta{
+
+    .containerFuta {
         width: 95%;
         right: 2.2rem;
     }
-    .container{
+    .container {
         width: 100%;
         border: 1px solid var(--accent1);
         height: 400px;
         position: absolute;
         box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
         border-radius: var(--border-radius);
-        background: var(--dark1)
-        
-}
-.header{
-display: flex;
-}
-
-
+        background: var(--dark1);
+    }
+    .header {
+        display: flex;
+    }
 }

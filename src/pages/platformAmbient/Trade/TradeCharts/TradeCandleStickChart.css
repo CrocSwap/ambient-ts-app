@@ -117,12 +117,13 @@ background-size: cover; */
     max-height: 100%;
 }
 
-
 .skeleton {
-    background: linear-gradient(90deg,
-            rgba(7, 7, 7, 0.1) 25%,
-            rgba(52, 45, 45, 0.2) 50%,
-            rgba(55, 53, 53, 0.1) 75%);
+    background: linear-gradient(
+        90deg,
+        rgba(7, 7, 7, 0.1) 25%,
+        rgba(52, 45, 45, 0.2) 50%,
+        rgba(55, 53, 53, 0.1) 75%
+    );
     background-size: 200% 100%;
     animation: loading 1.5s infinite;
     border-radius: 4px;

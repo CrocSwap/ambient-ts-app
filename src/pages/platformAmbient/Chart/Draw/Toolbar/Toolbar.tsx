@@ -83,7 +83,7 @@ function ChartToolbar() {
     } = useContext(ChartContext);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-    const { chartThemeColors,isFullScreen } = useContext(ChartContext);
+    const { chartThemeColors, isFullScreen } = useContext(ChartContext);
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
     const [isHoveredDown, setIsHoveredDown] = useState(false);
@@ -507,9 +507,7 @@ function ChartToolbar() {
 
                             <IconCard>
                                 <IconActiveContainer
-                                    onClick={() =>
-                                        handleDeleteAll()
-                                    }
+                                    onClick={() => handleDeleteAll()}
                                     onMouseEnter={() => {
                                         handleOnMouseEnter('Delete All');
                                     }}

@@ -1,14 +1,20 @@
 // START: Import React and Dongles
-import { forwardRef, memo, SyntheticEvent, useContext, useEffect, useRef } from 'react';
+import {
+    forwardRef,
+    memo,
+    SyntheticEvent,
+    useContext,
+    useEffect,
+    useRef,
+} from 'react';
 import { Snackbar } from '@material-ui/core';
 import { Alert, AlertProps } from '@mui/material';
 import { motion } from 'framer-motion';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { IoMdClose } from 'react-icons/io';
-import styles from './SnackbarComponent.module.css'
+import styles from './SnackbarComponent.module.css';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-
 
 const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
     function SnackbarAlert(props, ref) {
@@ -67,16 +73,16 @@ function SnackbarComponent() {
 
     if (isSmallScreen)
         return (
-            <div className={styles.mainContainer} ref={mobileRef}
-                style={{display: isSnackbarOpen ? 'flex' : 'none'}}>
-            
+            <div
+                className={styles.mainContainer}
+                ref={mobileRef}
+                style={{ display: isSnackbarOpen ? 'flex' : 'none' }}
+            >
                 <button className={styles.closeButton} onClick={handleClose}>
-                    
-                    <IoMdClose size={25}  />
-               </button>
+                    <IoMdClose size={25} />
+                </button>
                 <div className={styles.mainContent}>{content}</div>
-
-             </div>
+            </div>
         );
 
     return (
