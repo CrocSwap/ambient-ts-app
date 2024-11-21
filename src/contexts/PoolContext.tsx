@@ -13,6 +13,7 @@ import { ZERO_ADDRESS } from '../ambient-utils/constants';
 import {
     getFormattedNumber,
     isBtcPair,
+    isDefaultDenomTokenExcludedFromUsdConversion,
     isETHPair,
     isStablePair,
     isWbtcToken,
@@ -179,6 +180,12 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
         const isPairEthPair = isETHPair(baseToken.address, quoteToken.address);
         const isPoolBtcPair = isBtcPair(baseToken.address, quoteToken.address);
 
+        const excludeFromUsdConversion =
+            isDefaultDenomTokenExcludedFromUsdConversion(
+                baseToken.address,
+                quoteToken.address,
+            );
+
         const isPairEthWbtc =
             baseToken.address === ZERO_ADDRESS &&
             isWbtcToken(quoteToken.address);
@@ -189,7 +196,8 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
                 isPairStablePair ||
                 isPairEthPair ||
                 isPoolBtcPair ||
-                isPairEthWbtc
+                isPairEthWbtc ||
+                excludeFromUsdConversion
             )
         ) {
             setIsTradeDollarizationEnabled(true);

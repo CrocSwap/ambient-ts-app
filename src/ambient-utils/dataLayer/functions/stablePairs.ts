@@ -3,47 +3,49 @@
 // NOTE: Definition of what constitutes a "stable pair" is arbitrary and just based
 //       on the devs discretion. Users should not assume that true/false implies
 
+import { getMoneynessRankByAddr } from '.';
 import { ZERO_ADDRESS } from '../../constants';
 import {
-    mainnetDAI,
-    mainnetUSDC,
-    blastUSDB,
-    blastSepoliaUSDB,
-    mainnetUSDT,
-    scrollAxlUSDC,
-    sepoliaUSDC,
-    scrollSepoliaUSDC,
-    scrollUSDC,
-    scrollUSDT,
-    mainnetWBTC,
-    scrollWBTC,
-    mainnetWstETH,
-    scrollWstETH,
+    blastBLAST,
     blastEzETH,
-    mainnetSWETH,
-    mainnetRSWETH,
-    scrollWrsETH,
-    blastWrsETH,
+    blastSepoliaUSDB,
+    blastUSDB,
     blastUSDPLUS,
+    blastWEETH,
+    blastWrsETH,
+    mainnetDAI,
     mainnetLUSD,
-    scrollSTONE,
-    scrollUniETH,
+    mainnetRSWETH,
+    mainnetSTONE,
+    mainnetSWELL,
+    mainnetSWETH,
+    mainnetUSDC,
+    mainnetUSDT,
+    mainnetWBTC,
+    mainnetWstETH,
+    plumeSepoliaETH,
+    plumeSepoliaNEV,
+    plumeSepoliaUSD,
+    scrollAxlUSDC,
     scrollDAI,
+    scrollPufETH,
     scrollPxETH,
     scrollRocketPoolETH,
-    scrollPufETH,
-    blastWEETH,
-    blastBLAST,
-    scrollUSDE,
-    scrollWeETH,
-    scrollsUSDe,
-    scrollSOLVBTC,
-    mainnetSTONE,
-    plumeSepoliaETH,
-    plumeSepoliaUSD,
-    plumeSepoliaNEV,
     scrollRsETH,
     scrollRswETH,
+    scrollSOLVBTC,
+    scrollSTONE,
+    scrollSepoliaUSDC,
+    scrollUSDC,
+    scrollUSDE,
+    scrollUSDT,
+    scrollUniETH,
+    scrollWBTC,
+    scrollWeETH,
+    scrollWrsETH,
+    scrollWstETH,
+    scrollsUSDe,
+    sepoliaUSDC,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -86,6 +88,22 @@ export function isBtcPair(addr1: string, addr2: string): boolean {
 
 export function isWbtcToken(addr: string): boolean {
     return WBTC_TOKENS.includes(addr.toLowerCase());
+}
+
+// added so rswETH / SWELL would be denominated in SWELL by default
+export function isDefaultDenomTokenExcludedFromUsdConversion(
+    baseToken: string,
+    quoteToken: string,
+): boolean {
+    const isBaseTokenMoneynessGreaterOrEqual =
+        getMoneynessRankByAddr(baseToken) -
+            getMoneynessRankByAddr(quoteToken) >=
+        0;
+    return USD_EXCLUDED_TOKENS.includes(
+        isBaseTokenMoneynessGreaterOrEqual
+            ? baseToken.toLowerCase()
+            : quoteToken.toLowerCase(),
+    );
 }
 
 // @return true if the token is a WETH or wrapped native token asset
@@ -155,6 +173,10 @@ export const STAKED_ETH_TOKENS = [
     blastWEETH.address,
     plumeSepoliaETH.address,
 ].map((x) => x.toLowerCase());
+
+export const USD_EXCLUDED_TOKENS = [mainnetSWELL.address].map((x) =>
+    x.toLowerCase(),
+);
 
 export const STAKED_BTC_TOKENS = [scrollSOLVBTC.address].map((x) =>
     x.toLowerCase(),
