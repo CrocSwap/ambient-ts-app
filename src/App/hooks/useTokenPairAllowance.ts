@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
 import {
     ChainDataContext,
     CrocEnvContext,
     UserDataContext,
 } from '../../contexts';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export function useTokenPairAllowance() {
     const { tokenA, tokenB } = useContext(TradeDataContext);
@@ -26,7 +26,12 @@ export function useTokenPairAllowance() {
     // useEffect to check if user has approved CrocSwap to sell the token A
     useEffect(() => {
         (async () => {
-            if (crocEnv && userAddress && tokenA.address) {
+            if (
+                crocEnv &&
+                userAddress &&
+                tokenA.address &&
+                Number((await crocEnv.context).chain.chainId) === tokenA.chainId
+            ) {
                 try {
                     const allowance = await crocEnv
                         .token(tokenA.address)

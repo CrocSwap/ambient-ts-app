@@ -300,10 +300,6 @@ export default function Chart(props: propsIF) {
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
 
-    // useEffect(() => {
-    console.log({ tokenA, tokenB });
-    // }, [tokenA, tokenB]);
-
     const [isChartZoom, setIsChartZoom] = useState(false);
     const [cursorStyleTrigger, setCursorStyleTrigger] = useState(false);
 

@@ -1,12 +1,12 @@
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { CACHE_UPDATE_FREQ_IN_MS, GCGO_OVERRIDE_URL } from '../constants';
+import { SpotPriceFn } from '../dataLayer';
 import {
-    CandlesByPoolAndDurationIF,
     CandleDataIF,
     CandleDataServerIF,
+    CandlesByPoolAndDurationIF,
 } from '../types/candleData';
 import { TokenPriceFn } from './fetchTokenPrice';
-import { SpotPriceFn } from '../dataLayer';
 
 export async function fetchCandleSeriesHybrid(
     isFetchEnabled: boolean,
@@ -172,7 +172,7 @@ async function expandPoolStats(
     const baseUsdPrice = (await basePricePromise)?.usdPrice;
     const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
 
-    if ((await crocEnv.context).chain.chainId !== chainId) return [];
+    if ((await crocEnv.context).chain.chainId !== chainId) return []; // ! ben
 
     const spotPrice = await cachedQuerySpotPrice(
         crocEnv,
