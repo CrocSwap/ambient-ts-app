@@ -162,13 +162,8 @@ export const useAppChain = (): {
                                 isPathUserXpOrLeaderboard ||
                                 isPathOnExplore
                             ) {
-                                // if (
-                                //     activeNetwork.chainId !==
-                                //     incomingChainFromWallet
-                                // ) {
-                                //     alert('reloading 2');
-                                //     // setActiveNetwork(plumeSepolia);
-                                // }
+                                // escape the `else` block at the end
+                                null;
                             } else {
                                 linkGenCurrent.navigate();
                             }
