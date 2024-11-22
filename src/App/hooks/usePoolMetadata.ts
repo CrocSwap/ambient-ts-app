@@ -710,7 +710,7 @@ export function usePoolMetadata() {
         totalPositionLiq,
         crocEnv,
         chainId,
-        baseTokenAddress !== '' && quoteTokenAddress !== '',
+        baseTokenAddress + quoteTokenAddress,
     ]);
     return {
         contextMatchesParams,

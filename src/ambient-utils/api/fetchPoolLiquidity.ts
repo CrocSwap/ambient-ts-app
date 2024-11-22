@@ -1,7 +1,7 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { GCGO_OVERRIDE_URL } from '../constants';
-import { TokenPriceFn } from './fetchTokenPrice';
 import { SpotPriceFn } from '../dataLayer';
+import { TokenPriceFn } from './fetchTokenPrice';
 
 export const fetchPoolLiquidity = async (
     chainId: string,
