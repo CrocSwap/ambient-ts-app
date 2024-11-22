@@ -233,7 +233,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 isChartEnabled && isUserOnline && fetchCandles();
             }
         })();
-    }, [candleScale?.isFetchForTimeframe]);
+    }, [candleScale?.isFetchForTimeframe, crocEnv, chainId]);
 
     useEffect(() => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
