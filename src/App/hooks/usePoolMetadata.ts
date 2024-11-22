@@ -652,36 +652,6 @@ export function usePoolMetadata() {
         sessionReceipts.length,
     ]);
 
-    const updateLiquidity = () => {
-        // Reset existing liquidity data until the fetch completes, because it's a new pool
-        const request = {
-            baseAddress: baseTokenAddress,
-            quoteAddress: quoteTokenAddress,
-            chainId: chainId,
-            poolIndex: poolIndex,
-        };
-
-        if (crocEnv && baseTokenAddress && quoteTokenAddress) {
-            fetchPoolLiquidity(
-                chainId,
-                baseTokenAddress.toLowerCase(),
-                quoteTokenAddress.toLowerCase(),
-                poolIndex,
-                crocEnv,
-                graphCacheUrl,
-                cachedFetchTokenPrice,
-                cachedQuerySpotTick,
-                currentPoolPriceTick,
-            )
-                .then((liqCurve) => {
-                    if (liqCurve) {
-                        setLiquidity(liqCurve, request);
-                    }
-                })
-                .catch(console.error);
-        }
-    };
-
     const totalPositionLiq = useMemo(
         () =>
             positionsByPool.positions.reduce((sum, position) => {
@@ -696,13 +666,39 @@ export function usePoolMetadata() {
     useEffect(() => {
         (async () => {
             if (
+                baseTokenAddress &&
+                quoteTokenAddress &&
                 crocEnv &&
                 currentPoolPriceTick &&
                 totalPositionLiq &&
                 Math.abs(currentPoolPriceTick) !== Infinity &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
-                updateLiquidity();
+                // Reset existing liquidity data until the fetch completes, because it's a new pool
+                const request = {
+                    baseAddress: baseTokenAddress,
+                    quoteAddress: quoteTokenAddress,
+                    chainId: chainId,
+                    poolIndex: poolIndex,
+                };
+
+                fetchPoolLiquidity(
+                    chainId,
+                    baseTokenAddress.toLowerCase(),
+                    quoteTokenAddress.toLowerCase(),
+                    poolIndex,
+                    crocEnv,
+                    graphCacheUrl,
+                    cachedFetchTokenPrice,
+                    cachedQuerySpotTick,
+                    currentPoolPriceTick,
+                )
+                    .then((liqCurve) => {
+                        if (liqCurve) {
+                            setLiquidity(liqCurve, request);
+                        }
+                    })
+                    .catch(console.error);
             }
         })();
     }, [
@@ -710,7 +706,8 @@ export function usePoolMetadata() {
         totalPositionLiq,
         crocEnv,
         chainId,
-        baseTokenAddress + quoteTokenAddress,
+        baseTokenAddress,
+        quoteTokenAddress,
     ]);
     return {
         contextMatchesParams,

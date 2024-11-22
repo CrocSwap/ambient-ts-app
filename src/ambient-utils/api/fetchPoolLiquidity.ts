@@ -89,7 +89,7 @@ async function expandLiquidityData(
     );
 
     return {
-        currentTick: await curveTick,
+        currentTick: curveTick,
         ranges: ranges,
         curveState: {
             base: base,
