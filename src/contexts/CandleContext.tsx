@@ -226,7 +226,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
         isPoolInitialized,
-        crocEnv !== undefined,
+        crocEnv,
         chainId,
     ]);
 
@@ -517,7 +517,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 }
             }
         })();
-    }, [numDurationsNeeded, minTimeMemo, crocEnv !== undefined, chainId]);
+    }, [numDurationsNeeded, minTimeMemo, crocEnv, chainId]);
 
     useEffect(() => {
         if (abortController.abortController && isZoomRequestCanceled.value) {
