@@ -16,37 +16,37 @@ import {
     diffHashSigLiquidity,
     getPinnedPriceValuesFromTicks,
 } from '../../../../ambient-utils/dataLayer';
-import { CandleContext } from '../../../../contexts/CandleContext';
-import { PoolContext } from '../../../../contexts/PoolContext';
-import { ChartContext } from '../../../../contexts/ChartContext';
-import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import Spinner from '../../../../components/Global/Spinner/Spinner';
-import { LiquidityDataLocal } from './TradeCharts';
 import {
     CandleDataIF,
     CandleDomainIF,
     CandleScaleIF,
     TransactionIF,
 } from '../../../../ambient-utils/types';
+import Spinner from '../../../../components/Global/Spinner/Spinner';
+import { RangeContext } from '../../../../contexts';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
+import { CandleContext } from '../../../../contexts/CandleContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { updatesIF } from '../../../../utils/hooks/useUrlParams';
+import ChartTooltip from '../../../Chart/ChartTooltip/ChartTooltip';
+import { filterCandleWithTransaction } from '../../../Chart/ChartUtils/discontinuityScaleUtils';
+import {
+    maxRequestCountForCondensed,
+    xAxisBuffer,
+} from '../../Chart/ChartUtils/chartConstants';
 import {
     chartItemStates,
     getInitialDisplayCandleCount,
     liquidityChartData,
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { updatesIF } from '../../../../utils/hooks/useUrlParams';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import {
-    maxRequestCountForCondensed,
-    xAxisBuffer,
-} from '../../Chart/ChartUtils/chartConstants';
-import { filterCandleWithTransaction } from '../../../Chart/ChartUtils/discontinuityScaleUtils';
-import { BrandContext } from '../../../../contexts/BrandContext';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import ChartTooltip from '../../../Chart/ChartTooltip/ChartTooltip';
-import { RangeContext } from '../../../../contexts';
+import { LiquidityDataLocal } from './TradeCharts';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -136,7 +136,7 @@ function TradeCandleStickChart(props: propsIF) {
         }
 
         return undefined;
-    }, [period, location.pathname]);
+    }, [period, location.pathname, chartSettings]);
 
     const unparsedCandleData = candleData?.candles;
 
