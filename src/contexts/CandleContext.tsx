@@ -213,7 +213,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 isChangeUserConnected &&
                     isChartEnabled &&
                     isUserOnline &&
-                    fetchCandles();
+                    fetchCandles(true);
                 if (isManualCandleFetchRequested)
                     setIsManualCandleFetchRequested(false);
 
@@ -236,7 +236,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 isChartEnabled && isUserOnline && fetchCandles();
             }
         })();
-    }, [candleScale?.isFetchForTimeframe, crocEnv, chainId]);
+    }, [candleScale?.isFetchForTimeframe]);
 
     useEffect(() => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
