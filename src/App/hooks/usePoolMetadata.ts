@@ -676,8 +676,8 @@ export function usePoolMetadata() {
             ) {
                 // Reset existing liquidity data until the fetch completes, because it's a new pool
                 const request = {
-                    baseAddress: baseTokenAddress,
-                    quoteAddress: quoteTokenAddress,
+                    baseAddress: baseTokenAddress.toLowerCase(),
+                    quoteAddress: quoteTokenAddress.toLowerCase(),
                     chainId: chainId,
                     poolIndex: poolIndex,
                 };
@@ -685,7 +685,9 @@ export function usePoolMetadata() {
                 fetchPoolLiquidity(
                     chainId,
                     baseTokenAddress.toLowerCase(),
+                    baseTokenDecimals,
                     quoteTokenAddress.toLowerCase(),
+                    quoteTokenDecimals,
                     poolIndex,
                     crocEnv,
                     graphCacheUrl,
@@ -708,6 +710,8 @@ export function usePoolMetadata() {
         chainId,
         baseTokenAddress,
         quoteTokenAddress,
+        baseTokenDecimals,
+        quoteTokenDecimals,
     ]);
     return {
         contextMatchesParams,
