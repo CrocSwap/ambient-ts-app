@@ -36,6 +36,7 @@ interface propsIF {
 import { motion } from 'framer-motion';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
+import { CrocEnvContext } from '../../../../contexts';
 
 interface NetworkSelectorListItemIF {
     id: string;
@@ -56,6 +57,7 @@ export default function NetworkSelector(props: propsIF) {
     } = useContext(AppStateContext);
     const { networks, platformName, includeCanto } =
         useContext<BrandContextIF>(BrandContext);
+    const { setCrocEnv } = useContext(CrocEnvContext);
     const { closeBottomSheet } = useBottomSheet();
     const { switchNetwork } = useSwitchNetwork();
     const smallScreen: boolean = useMediaQuery('(max-width: 600px)');
@@ -77,6 +79,7 @@ export default function NetworkSelector(props: propsIF) {
     // click handler for network switching (does not handle Canto link)
     async function handleClick(chn: ChainSpec): Promise<void> {
         if (isConnected) {
+            setCrocEnv(undefined);
             await switchNetwork(parseInt(chn.chainId));
             if (chainParam || networkParam) {
                 // navigate to index page only if chain/network search param present
