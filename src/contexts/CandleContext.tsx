@@ -191,12 +191,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        setCandleData(undefined);
-        setTimeOfEndCandle(undefined);
-        setIsCondensedModeEnabled(true);
-    }, [baseTokenAddress + quoteTokenAddress]);
-
-    useEffect(() => {
         if (isFirstFetch) {
             const controller = new AbortController();
             abortController.abortController = controller;
@@ -208,6 +202,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     useEffect(() => {
         (async () => {
             if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
+                setCandleData(undefined);
+                setTimeOfEndCandle(undefined);
+                setIsCondensedModeEnabled(true);
                 const isChangeUserConnected =
                     checkUserConnected.current === isUserConnected;
                 isChangeUserConnected &&
