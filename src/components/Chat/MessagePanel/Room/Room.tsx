@@ -256,8 +256,8 @@ export default function Room(props: propsIF) {
             const foundBase =
                 room.base === 'ETH'
                     ? [tokens.getTokenByAddress(ZERO_ADDRESS) || dfltTokenA]
-                    : tokens.getTokensByNameOrSymbol(room.base, true);
-            const foundQuote = tokens.getTokensByNameOrSymbol(room.quote, true);
+                    : tokens.getTokensByNameOrSymbol(room.base, chainId, true);
+            const foundQuote = tokens.getTokensByNameOrSymbol(room.quote, chainId, true);
 
             if (foundBase.length > 0 && foundQuote.length > 0) {
                 const base = foundBase[0];

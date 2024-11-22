@@ -1,16 +1,16 @@
-import PoolCard from '../../Global/PoolCard/PoolCard';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { Link } from 'react-router-dom';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { AppStateContext } from '../../../contexts';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
     HomeContent,
     HomeTitle,
     TopPoolContainer,
     TopPoolViewMore,
 } from '../../../styled/Components/Home';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { AppStateContext } from '../../../contexts';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import PoolCard from '../../Global/PoolCard/PoolCard';
 
 interface TopPoolsPropsIF {
     noTitle?: boolean;
@@ -103,7 +103,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
             <HomeTitle tabIndex={0} aria-label='Top Pools'>
                 Top Pools
             </HomeTitle>
-            <HomeContent>
+            <HomeContent minHeight='120px'>
                 {poolData.map((pool, idx) => (
                     <PoolCard
                         key={idx}
