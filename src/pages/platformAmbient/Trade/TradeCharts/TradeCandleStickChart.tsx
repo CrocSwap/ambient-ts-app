@@ -641,7 +641,21 @@ function TradeCandleStickChart(props: propsIF) {
         } else {
             return undefined;
         }
-    }, [liqBoundary, baseTokenAddress + quoteTokenAddress, sumActiveLiq]);
+    }, [
+        liqBoundary,
+        unparsedLiquidityData,
+        poolPriceDisplay,
+        currentPoolPriceTick,
+        baseTokenAddress,
+        quoteTokenAddress,
+        sumActiveLiq,
+        chainId,
+        poolIndex,
+        isDenomBase,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        gridSize,
+    ]);
 
     useEffect(() => {
         if (unparsedCandleData) {

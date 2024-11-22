@@ -668,9 +668,12 @@ export function usePoolMetadata() {
             if (
                 baseTokenAddress &&
                 quoteTokenAddress &&
+                baseTokenDecimals &&
+                quoteTokenDecimals &&
                 crocEnv &&
                 currentPoolPriceTick &&
                 totalPositionLiq &&
+                graphCacheUrl &&
                 Math.abs(currentPoolPriceTick) !== Infinity &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
@@ -712,6 +715,8 @@ export function usePoolMetadata() {
         quoteTokenAddress,
         baseTokenDecimals,
         quoteTokenDecimals,
+        poolIndex,
+        graphCacheUrl,
     ]);
     return {
         contextMatchesParams,

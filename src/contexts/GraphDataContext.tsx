@@ -69,7 +69,6 @@ export interface GraphDataContextIF {
     liquidityData: LiquidityDataIF | undefined;
     liquidityFee: number;
 
-    setLiquidityPending: (params: PoolRequestParams) => void;
     setLiquidity: (
         liqData: LiquidityDataIF,
         request: PoolRequestParams | undefined,
@@ -242,10 +241,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                 chainId,
             );
         }
-    };
-
-    const setLiquidityPending = () => {
-        setLiquidityData(undefined);
     };
 
     const [sessionTransactionHashes, setSessionTransactionHashes] = useState<
@@ -613,7 +608,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         setLimitOrdersByPool,
         liquidityData,
         setLiquidity,
-        setLiquidityPending,
         liquidityFee,
         setLiquidityFee,
     };

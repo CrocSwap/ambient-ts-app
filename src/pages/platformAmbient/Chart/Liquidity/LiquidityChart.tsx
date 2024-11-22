@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import {
     MouseEvent,
     useContext,
@@ -6,12 +7,15 @@ import {
     useRef,
     useState,
 } from 'react';
-import * as d3 from 'd3';
 import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../../ambient-utils/dataLayer';
+import { ChartThemeIF } from '../../../../contexts/ChartContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { formatAmountWithoutDigit } from '../../../../utils/numbers';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import {
@@ -31,10 +35,6 @@ import {
     createLineSeries,
     decorateForLiquidityLine,
 } from './LiquiditySeries/LineSeries';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { RangeContext } from '../../../../contexts/RangeContext';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface liquidityPropsIF {
     liqMode: string;
@@ -66,8 +66,11 @@ type nearestLiquidity = {
 export default function LiquidityChart(props: liquidityPropsIF) {
     const d3CanvasLiq = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasLiqHover = useRef<HTMLCanvasElement | null>(null);
-    const { pool: pool, poolPriceDisplay: poolPriceWithoutDenom } =
-        useContext(PoolContext);
+    const {
+        pool: pool,
+        poolPriceDisplay: poolPriceWithoutDenom,
+        isTradeDollarizationEnabled,
+    } = useContext(PoolContext);
     const { advancedMode } = useContext(RangeContext);
     const { isDenomBase, poolPriceNonDisplay } = useContext(TradeDataContext);
 
@@ -368,9 +371,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liquidityScale,
         pool,
         liquidityDepthScale,
-        liquidityScale === undefined,
-        liquidityDepthScale === undefined,
         isDenomBase,
+        isTradeDollarizationEnabled,
     ]);
 
     useEffect(() => {
@@ -417,8 +419,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         renderCanvasArray([d3CanvasLiq]);
     }, [
         liqMode,
-        liquidityData?.liqTransitionPointforCurve,
-        liquidityData?.liqTransitionPointforDepth,
+        liquidityData,
         liqAskSeries,
         liqBidSeries,
         liqDepthAskSeries,
@@ -427,6 +428,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         lineLiqDepthAskSeries,
         lineLiqDepthBidSeries,
         colorChangeTrigger,
+        chartThemeColors,
     ]);
 
     const clipCanvas = (
