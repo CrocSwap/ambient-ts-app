@@ -11,6 +11,7 @@ import './index.css';
 import {
     brand,
     GLOBAL_MODAL_PORTAL_ID,
+    LS_KEY_CHAIN_ID,
     supportedNetworks,
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
@@ -21,6 +22,7 @@ import { GlobalContexts } from './contexts/GlobalContexts';
 // import plumeLogo from './assets/images/networks/plume_mainnet_logo.webp';
 import sepoliaLogo from './assets/images/networks/sepolia_logo.webp';
 // import plumeSepoliaLogo from './assets/images/networks/plume_sepolia_network_logo.webp';
+import { getLocalStorageItem } from './ambient-utils/dataLayer';
 import blastSepoliaLogo from './assets/images/networks/blast_sepolia_logo.webp';
 import plumeSepoliaLogo from './assets/images/networks/plume_mainnet_logo_small.webp';
 import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia_logo.webp';
@@ -93,19 +95,56 @@ const modal = createWeb3Modal({
     ],
 });
 
-modal.subscribeEvents((event) => {
+modal.subscribeEvents(async (event) => {
     const networkIds = Object.values(supportedNetworks).map(
         (network) => network.chainSpecForWalletConnector.chainId,
     );
+
+    if (event.data.event === 'CONNECT_SUCCESS') {
+        const currentChainId = modal.getState().selectedNetworkId as number;
+        const desiredChainId = parseInt(
+            getLocalStorageItem(LS_KEY_CHAIN_ID) || '534352',
+        );
+
+        if (currentChainId !== desiredChainId) {
+            try {
+                await modal.switchNetwork(desiredChainId); // Pass the number directly
+
+                // Wait for the switch to complete
+                await new Promise((resolve) => setTimeout(resolve, 2000));
+
+                const newChainId = modal.getState().selectedNetworkId as number;
+
+                if (newChainId !== desiredChainId) {
+                    try {
+                        await modal.switchNetwork(desiredChainId);
+                        await new Promise((resolve) =>
+                            setTimeout(resolve, 1000),
+                        );
+                        const finalChainId = modal.getState()
+                            .selectedNetworkId as number;
+                        if (finalChainId !== desiredChainId) {
+                            modal.disconnect();
+                        }
+                    } catch (retryError) {
+                        console.error('Retry failed:', retryError);
+                        modal.disconnect();
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to switch network:', error);
+                modal.disconnect();
+            }
+        }
+    }
+
     if (
         event.data.event === 'MODAL_CLOSE' &&
         event.data.properties.connected === true
     ) {
-        if (networkIds.includes(modal.getState().selectedNetworkId as number)) {
-            // prevents the 'unknown account #0' bug
-            window.location.reload();
-        } else {
-            // prevents user's wallet from remaining connected to an unsupported network
+        if (
+            !networkIds.includes(modal.getState().selectedNetworkId as number)
+        ) {
             modal.disconnect();
         }
     }

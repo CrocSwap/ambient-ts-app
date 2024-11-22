@@ -1,12 +1,12 @@
 import { brand } from './networks';
-export * from './networks';
 export * from './blacklist';
 export * from './defaultTokens';
+export * from './gasEstimates';
 export * from './gcgo';
+export * from './networks';
 export * from './slippage';
 export * from './tokenListURIs';
 export * from './tokenUnicodeCharMap';
-export * from './gasEstimates';
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 // allow a local environment variable to be defined in [app_repo]/.env.local to set a name for dev environment
@@ -99,6 +99,7 @@ export const OVERRIDE_CANDLE_POOL_ID = 36000;
 export const LS_KEY_CHART_SETTINGS = 'chart_settings';
 export const LS_KEY_SUBCHART_SETTINGS = 'subchart_settings';
 export const LS_KEY_ORDER_HISTORY_SETTINGS = 'order_history_settings';
+export const LS_KEY_CHAIN_ID = 'CHAIN_ID';
 export const LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT =
     'hide_empty_positions_on_account';
 
