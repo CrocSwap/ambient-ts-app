@@ -694,16 +694,22 @@ export function usePoolMetadata() {
     );
 
     useEffect(() => {
-        if (
-            currentPoolPriceTick &&
-            totalPositionLiq &&
-            Math.abs(currentPoolPriceTick) !== Infinity
-        )
-            updateLiquidity();
+        (async () => {
+            if (
+                crocEnv &&
+                currentPoolPriceTick &&
+                totalPositionLiq &&
+                Math.abs(currentPoolPriceTick) !== Infinity &&
+                (await crocEnv.context).chain.chainId === chainId
+            ) {
+                updateLiquidity();
+            }
+        })();
     }, [
         currentPoolPriceTick,
         totalPositionLiq,
-        crocEnv === undefined,
+        crocEnv,
+        chainId,
         baseTokenAddress !== '' && quoteTokenAddress !== '',
     ]);
     return {
