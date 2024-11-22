@@ -213,7 +213,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 isChangeUserConnected &&
                     isChartEnabled &&
                     isUserOnline &&
-                    fetchCandles();
+                    fetchCandles(true);
                 if (isManualCandleFetchRequested)
                     setIsManualCandleFetchRequested(false);
 
@@ -226,7 +226,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
         isPoolInitialized,
-        crocEnv,
+        crocEnv !== undefined,
         chainId,
     ]);
 
@@ -236,7 +236,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 isChartEnabled && isUserOnline && fetchCandles();
             }
         })();
-    }, [candleScale?.isFetchForTimeframe, crocEnv, chainId]);
+    }, [candleScale?.isFetchForTimeframe]);
 
     useEffect(() => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
@@ -517,7 +517,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 }
             }
         })();
-    }, [numDurationsNeeded, minTimeMemo, crocEnv, chainId]);
+    }, [numDurationsNeeded, minTimeMemo, crocEnv !== undefined, chainId]);
 
     useEffect(() => {
         if (abortController.abortController && isZoomRequestCanceled.value) {
