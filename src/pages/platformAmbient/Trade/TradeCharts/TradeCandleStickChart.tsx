@@ -154,9 +154,7 @@ function TradeCandleStickChart(props: propsIF) {
     const [isCompletedFetchData, setIsCompletedFetchData] = useState(true);
 
     const [fetchCountForEnoughData, setFetchCountForEnoughData] = useState(1);
-    const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
-        undefined,
-    );
+
     const [prevCandleCount, setPrevCandleCount] = useState<number>(0);
 
     const [showTooltip, setShowTooltip] = useState(false);
@@ -254,10 +252,6 @@ function TradeCandleStickChart(props: propsIF) {
         }
     }, [isFetchingEnoughData]);
 
-    useEffect(() => {
-        setLiqBoundary(poolPriceDisplay);
-    }, [poolPriceDisplay]);
-
     const sumActiveLiq = unparsedLiquidityData
         ? unparsedLiquidityData.ranges.reduce((sum, range) => {
               return sum + (range.activeLiq || 0);
@@ -267,10 +261,8 @@ function TradeCandleStickChart(props: propsIF) {
     // Parse liquidity data
     const liquidityData: liquidityChartData | undefined = useMemo(() => {
         if (
-            liqBoundary &&
+            poolPriceDisplay &&
             unparsedLiquidityData &&
-            poolPriceDisplay !== undefined &&
-            poolPriceDisplay > 0 &&
             unparsedLiquidityData.curveState.base ===
                 baseTokenAddress.toLowerCase() &&
             unparsedLiquidityData.curveState.quote ===
@@ -373,9 +365,6 @@ function TradeCandleStickChart(props: propsIF) {
                 ])
                 .range([30, 550]);
 
-            let liqBoundaryDepth = liqBoundary;
-            false && console.log({ liqBoundaryDepth });
-
             unparsedLiquidityData.ranges.map((data: any) => {
                 const liqUpperPrices = isDenomBase
                     ? data.upperBoundInvPriceDecimalCorrected
@@ -386,8 +375,8 @@ function TradeCandleStickChart(props: propsIF) {
                     : data.upperBoundPriceDecimalCorrected;
 
                 if (
-                    liqUpperPrices >= liqBoundary &&
-                    liqUpperPrices < liqBoundary * 10
+                    liqUpperPrices >= poolPriceDisplay &&
+                    liqUpperPrices < poolPriceDisplay * 10
                 ) {
                     liqBidData.push({
                         activeLiq: liquidityScale(data.activeLiq),
@@ -407,7 +396,7 @@ function TradeCandleStickChart(props: propsIF) {
                 } else {
                     if (
                         liqLowerPrices <= limitBoundary &&
-                        liqLowerPrices > liqBoundary / 10
+                        liqLowerPrices > poolPriceDisplay / 10
                     ) {
                         liqAskData.push({
                             activeLiq: liquidityScale(data.activeLiq),
@@ -433,7 +422,7 @@ function TradeCandleStickChart(props: propsIF) {
                         data.cumAskLiq !== '0' &&
                         liqUpperPrices !== '+inf' &&
                         !Number.isNaN(depthLiquidityScale(data.cumAskLiq)) &&
-                        liqUpperPrices < liqBoundary * 10
+                        liqUpperPrices < poolPriceDisplay * 10
                     ) {
                         depthLiqBidData.push({
                             activeLiq: depthLiquidityScale(data.cumAskLiq),
@@ -446,13 +435,12 @@ function TradeCandleStickChart(props: propsIF) {
                                     : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
-                        liqBoundaryDepth = depthLiqBidData[0].liqPrices;
                     }
 
                     if (
                         data.cumBidLiq !== undefined &&
                         !Number.isNaN(depthLiquidityScale(data.cumBidLiq)) &&
-                        liqLowerPrices > liqBoundary / 10
+                        liqLowerPrices > poolPriceDisplay / 10
                     ) {
                         depthLiqAskData.push({
                             activeLiq: depthLiquidityScale(data.cumBidLiq),
@@ -465,15 +453,13 @@ function TradeCandleStickChart(props: propsIF) {
                                     : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
-
-                        liqBoundaryDepth = liqLowerPrices;
                     }
                 } else {
                     if (
                         data.cumBidLiq !== undefined &&
                         data.cumBidLiq !== '0' &&
                         liqUpperPrices !== '+inf' &&
-                        liqUpperPrices < liqBoundary * 10 &&
+                        liqUpperPrices < poolPriceDisplay * 10 &&
                         !Number.isNaN(depthLiquidityScale(data.cumBidLiq))
                     ) {
                         depthLiqBidData.push({
@@ -487,7 +473,6 @@ function TradeCandleStickChart(props: propsIF) {
                                     : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
-                        liqBoundaryDepth = liqUpperPrices;
                     }
 
                     if (
@@ -495,7 +480,7 @@ function TradeCandleStickChart(props: propsIF) {
                         data.cumAskLiq !== '0' &&
                         !Number.isNaN(depthLiquidityScale(data.cumAskLiq)) &&
                         liqUpperPrices <= limitBoundary &&
-                        liqUpperPrices > liqBoundary / 10
+                        liqUpperPrices > poolPriceDisplay / 10
                     ) {
                         depthLiqAskData.push({
                             activeLiq: depthLiquidityScale(data.cumAskLiq),
@@ -508,7 +493,6 @@ function TradeCandleStickChart(props: propsIF) {
                                     : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
-                        liqBoundaryDepth = depthLiqAskData[0].liqPrices;
                     }
                 }
             });
@@ -585,7 +569,6 @@ function TradeCandleStickChart(props: propsIF) {
             return undefined;
         }
     }, [
-        liqBoundary,
         unparsedLiquidityData,
         poolPriceDisplay,
         currentPoolPriceTick,
@@ -629,7 +612,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     // Liq Scale
     useEffect(() => {
-        console.log({ liquidityData });
         if (liquidityData !== undefined) {
             if (liquidityScale === undefined) {
                 setScaleForChartLiquidity(liquidityData);
