@@ -652,36 +652,6 @@ export function usePoolMetadata() {
         sessionReceipts.length,
     ]);
 
-    const updateLiquidity = () => {
-        // Reset existing liquidity data until the fetch completes, because it's a new pool
-        const request = {
-            baseAddress: baseTokenAddress,
-            quoteAddress: quoteTokenAddress,
-            chainId: chainId,
-            poolIndex: poolIndex,
-        };
-
-        if (crocEnv && baseTokenAddress && quoteTokenAddress) {
-            fetchPoolLiquidity(
-                chainId,
-                baseTokenAddress.toLowerCase(),
-                quoteTokenAddress.toLowerCase(),
-                poolIndex,
-                crocEnv,
-                graphCacheUrl,
-                cachedFetchTokenPrice,
-                cachedQuerySpotTick,
-                currentPoolPriceTick,
-            )
-                .then((liqCurve) => {
-                    if (liqCurve) {
-                        setLiquidity(liqCurve, request);
-                    }
-                })
-                .catch(console.error);
-        }
-    };
-
     const totalPositionLiq = useMemo(
         () =>
             positionsByPool.positions.reduce((sum, position) => {
@@ -694,17 +664,59 @@ export function usePoolMetadata() {
     );
 
     useEffect(() => {
-        if (
-            currentPoolPriceTick &&
-            totalPositionLiq &&
-            Math.abs(currentPoolPriceTick) !== Infinity
-        )
-            updateLiquidity();
+        (async () => {
+            if (
+                baseTokenAddress &&
+                quoteTokenAddress &&
+                baseTokenDecimals &&
+                quoteTokenDecimals &&
+                crocEnv &&
+                currentPoolPriceTick &&
+                totalPositionLiq &&
+                graphCacheUrl &&
+                Math.abs(currentPoolPriceTick) !== Infinity &&
+                (await crocEnv.context).chain.chainId === chainId
+            ) {
+                // Reset existing liquidity data until the fetch completes, because it's a new pool
+                const request = {
+                    baseAddress: baseTokenAddress.toLowerCase(),
+                    quoteAddress: quoteTokenAddress.toLowerCase(),
+                    chainId: chainId,
+                    poolIndex: poolIndex,
+                };
+
+                fetchPoolLiquidity(
+                    chainId,
+                    baseTokenAddress.toLowerCase(),
+                    baseTokenDecimals,
+                    quoteTokenAddress.toLowerCase(),
+                    quoteTokenDecimals,
+                    poolIndex,
+                    crocEnv,
+                    graphCacheUrl,
+                    cachedFetchTokenPrice,
+                    cachedQuerySpotTick,
+                    currentPoolPriceTick,
+                )
+                    .then((liqCurve) => {
+                        if (liqCurve) {
+                            setLiquidity(liqCurve, request);
+                        }
+                    })
+                    .catch(console.error);
+            }
+        })();
     }, [
         currentPoolPriceTick,
         totalPositionLiq,
-        crocEnv === undefined,
-        baseTokenAddress !== '' && quoteTokenAddress !== '',
+        crocEnv,
+        chainId,
+        baseTokenAddress,
+        quoteTokenAddress,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        poolIndex,
+        graphCacheUrl,
     ]);
     return {
         contextMatchesParams,
