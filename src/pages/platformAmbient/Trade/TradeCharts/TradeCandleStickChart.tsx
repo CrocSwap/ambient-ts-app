@@ -428,6 +428,7 @@ function TradeCandleStickChart(props: propsIF) {
                 .range([30, 550]);
 
             let liqBoundaryDepth = liqBoundary;
+            false && console.log({ liqBoundaryDepth });
 
             unparsedLiquidityData.ranges.map((data: any) => {
                 const liqUpperPrices = isDenomBase
@@ -631,12 +632,8 @@ function TradeCandleStickChart(props: propsIF) {
                 depthLiqAskData: depthLiqAskData,
                 topBoundary: topBoundary,
                 lowBoundary: lowBoundary,
-                liqTransitionPointforCurve: liqBoundary
-                    ? liqBoundary
-                    : poolPriceDisplay,
-                liqTransitionPointforDepth: liqBoundaryDepth
-                    ? liqBoundaryDepth
-                    : poolPriceDisplay,
+                liqTransitionPointforCurve: poolPriceDisplay,
+                liqTransitionPointforDepth: poolPriceDisplay,
             };
         } else {
             return undefined;
