@@ -15,6 +15,8 @@ import {
     plumeSepoliaBrandAssets,
 } from '../../../assets/branding';
 import { plumeSepolia } from './plumeSepolia';
+import { swellSepoliaBrandAssets } from '../../../assets/branding/swellSepoliaBrandAssets';
+import { swellSepolia } from './swellSepolia';
 
 export const brand: string | undefined =
     import.meta.env.VITE_BRAND_ASSET_SET ?? '';
@@ -27,6 +29,7 @@ const networks: NetworkIF[] = [
     blastSepolia,
     blast,
     plumeSepolia,
+    swellSepolia,
 ];
 
 function getNetworks(chns: (string | chainIds)[]): {
@@ -58,7 +61,9 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
                 ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
                 : brand === 'plumeSepolia'
                   ? getNetworks(Object.keys(plumeSepoliaBrandAssets.networks))
-                  : getNetworks(Object.keys(defaultBrandAssets.networks));
+                  : brand === 'swellSepolia'
+                    ? getNetworks(Object.keys(swellSepoliaBrandAssets.networks))
+                    : getNetworks(Object.keys(defaultBrandAssets.networks));
 
 export const vaultSupportedNetworkIds = ['0x1', '0x82750'];
 export const vaultSupportedNetworks = getNetworks(vaultSupportedNetworkIds);
@@ -85,4 +90,5 @@ export { scrollMainnet };
 export { scrollSepolia };
 export { blastSepolia };
 export { plumeSepolia };
+export { swellSepolia };
 export { blast };

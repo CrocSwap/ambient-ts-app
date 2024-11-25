@@ -30,7 +30,9 @@ export const fetchTokenPrice = async (
                       ? 'blast'
                       : chain === '0x18230'
                         ? 'plume'
-                        : 'ethereum',
+                        : chain === '0x784'
+                          ? 'swell'
+                          : 'ethereum',
             token_address: address,
         };
 

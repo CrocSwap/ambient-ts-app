@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "dependencies": {
-        "@crocswap-libs/sdk": "^1.0.12",
+        "@crocswap-libs/sdk": "^1.0.13",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",

@@ -26,6 +26,7 @@ import { getLocalStorageItem } from './ambient-utils/dataLayer';
 import blastSepoliaLogo from './assets/images/networks/blast_sepolia_logo.webp';
 import plumeSepoliaLogo from './assets/images/networks/plume_mainnet_logo_small.webp';
 import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia_logo.webp';
+import swellSepoliaLogo from './assets/images/networks/swell_network_logo_with_margin.webp';
 
 // /* Perform a single forcible reload when the page first loads. Without this, there
 //  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
@@ -84,6 +85,7 @@ const modal = createWeb3Modal({
         534352: scrollLogo,
         11155111: sepoliaLogo,
         98864: plumeSepoliaLogo,
+        1924: swellSepoliaLogo,
     },
     termsConditionsUrl: '/terms',
     privacyPolicyUrl: '/privacy',
