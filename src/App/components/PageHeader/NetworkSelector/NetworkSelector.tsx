@@ -16,6 +16,7 @@ import {
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 // import plumeMainnetLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
 import plumeSepoliaLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
+import swellSepoliaLogo from '../../../../assets/images/networks/swell_network_small_logo.svg';
 // import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_network_logo.webp';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
@@ -194,6 +195,17 @@ export default function NetworkSelector(props: propsIF) {
             testnet: true,
             link: '',
             condition: chainMap.has('0x18230'),
+        },
+        {
+            id: 'swell_sepolia_network_selector',
+            chainId: '0x784',
+            name: 'Swell',
+            logo: swellSepoliaLogo,
+            custom: 2,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x784'),
         },
         {
             id: 'scroll_sepolia_network_selector',

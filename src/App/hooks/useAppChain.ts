@@ -18,6 +18,7 @@ import {
 } from '../../ambient-utils/dataLayer';
 import { NetworkIF } from '../../ambient-utils/types';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import { swellSepolia } from '../../ambient-utils/constants/networks/swellSepolia';
 
 export const useAppChain = (): {
     activeNetwork: NetworkIF;
@@ -185,6 +186,8 @@ export const useAppChain = (): {
                                 nextNetwork = scrollSepolia;
                             } else if (incomingChainFromWallet === '0x18230') {
                                 nextNetwork = plumeSepolia;
+                            } else if (incomingChainFromWallet === '0x784') {
+                                nextNetwork = swellSepolia;
                             }
                             if (nextNetwork) {
                                 setActiveNetwork(nextNetwork);
