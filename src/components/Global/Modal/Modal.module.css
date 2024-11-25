@@ -46,9 +46,9 @@
     border-radius: var(--border-radius);
     overflow: hidden;
     position: relative;
-    /* max-height: 80vh; */
+    
     color: var(--text1);
-    /* min-height: 80vh; */
+   
 }
 
 .no_background_modal {
