@@ -5,7 +5,7 @@ import ColorToggle from './ColorToggle';
 import { skins } from '../../../App/hooks/useSkin';
 import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 
-export type colorFormats = 'text'|'background'|'border';
+export type colorFormats = 'text' | 'background' | 'border';
 
 export interface cssColorIF {
     name: string;
@@ -63,32 +63,29 @@ export default function CSSDebug(props: propsIF) {
 
     return (
         <>
-            {<select onChange={(e) => skin.set(e.target.value as skins)}>
-                    {
-                        skin.available.map((s: skins) => {
-                            const makeReadable = (str: string): string => {
-                                switch (str) {
-                                    case 'purple_dark':
-                                        return 'Purple Dark';
-                                    case 'purple_light':
-                                        return 'Purple Light';
-                                    case 'futa_dark':
-                                        return 'FUTA Dark';
-                                    default:
-                                        return str;
-                                }
+            {
+                <select onChange={(e) => skin.set(e.target.value as skins)}>
+                    {skin.available.map((s: skins) => {
+                        const makeReadable = (str: string): string => {
+                            switch (str) {
+                                case 'purple_dark':
+                                    return 'Purple Dark';
+                                case 'purple_light':
+                                    return 'Purple Light';
+                                case 'futa_dark':
+                                    return 'FUTA Dark';
+                                default:
+                                    return str;
                             }
-                            return (
-                                <option
-                                    key={s}
-                                    value={s}
-                                >
-                                    {makeReadable(s)}
-                                </option>
-                            )
-                        })
-                    }
-                </select>}
+                        };
+                        return (
+                            <option key={s} value={s}>
+                                {makeReadable(s)}
+                            </option>
+                        );
+                    })}
+                </select>
+            }
             <label htmlFor='sample_text_changer'>Sample text:</label>
             <input
                 type='text'
@@ -97,42 +94,30 @@ export default function CSSDebug(props: propsIF) {
                 onChange={(e) => setSampleText(e.target.value)}
             />
             <section className={styles.css_debug}>
-                {
-                    textColors.map(
-                        (c: cssColorIF) => (
-                            <ColorToggle
-                                key={JSON.stringify(c)}
-                                cssProperty={c}
-                                sampleText={sampleText}
-                                allColors={allColors}
-                            />
-                        )
-                    )
-                }
-                {
-                    backgroundColors.map(
-                        (c: cssColorIF) => (
-                            <ColorToggle
-                                key={JSON.stringify(c)}
-                                cssProperty={c}
-                                sampleText={sampleText}
-                                allColors={allColors}
-                            />
-                        )
-                    )
-                }
-                {
-                    borderColors.map(
-                        (c: cssColorIF) => (
-                            <ColorToggle
-                                key={JSON.stringify(c)}
-                                cssProperty={c}
-                                sampleText={sampleText}
-                                allColors={allColors}
-                            />
-                        )
-                    )
-                }
+                {textColors.map((c: cssColorIF) => (
+                    <ColorToggle
+                        key={JSON.stringify(c)}
+                        cssProperty={c}
+                        sampleText={sampleText}
+                        allColors={allColors}
+                    />
+                ))}
+                {backgroundColors.map((c: cssColorIF) => (
+                    <ColorToggle
+                        key={JSON.stringify(c)}
+                        cssProperty={c}
+                        sampleText={sampleText}
+                        allColors={allColors}
+                    />
+                ))}
+                {borderColors.map((c: cssColorIF) => (
+                    <ColorToggle
+                        key={JSON.stringify(c)}
+                        cssProperty={c}
+                        sampleText={sampleText}
+                        allColors={allColors}
+                    />
+                ))}
             </section>
             {noSwap || <Swap />}
         </>

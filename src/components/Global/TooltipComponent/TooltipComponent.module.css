@@ -11,15 +11,13 @@
     justify-content: center;
 }
 
-.mobilePopupContainer{
+.mobilePopupContainer {
     background: var(--dark2);
     position: absolute;
     bottom: 0;
-    height:55%;
+    height: 55%;
     width: 100%;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     padding-right: 8px;
-   
-   
 }

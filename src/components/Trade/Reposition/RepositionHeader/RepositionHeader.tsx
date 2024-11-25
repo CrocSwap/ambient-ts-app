@@ -44,8 +44,6 @@ function RepositionHeader(props: propsIF) {
     return (
         <>
             <header className={styles.main_container}>
-
-            
                 <img
                     className={styles.settings_icon}
                     src={settingsIcon}

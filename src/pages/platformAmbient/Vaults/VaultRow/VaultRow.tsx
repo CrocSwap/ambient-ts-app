@@ -1,32 +1,32 @@
 import styles from './VaultRow.module.css';
 import tempestLogoColor from './tempestLogoColor.svg';
 // import tempestLogo from './tempestLogo.svg';
-import { FlexContainer } from '../../../../styled/Common';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { RiExternalLinkLine } from 'react-icons/ri';
 import {
     getFormattedNumber,
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
-import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { useModal } from '../../../../components/Global/Modal/useModal';
 import { VaultIF } from '../../../../ambient-utils/types';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { useModal } from '../../../../components/Global/Modal/useModal';
+import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
+import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
+import TooltipComponent from '../../../../components/Global/TooltipComponent/TooltipComponent';
 import {
     AppStateContext,
-    UserDataContext,
-    TokenContext,
     CrocEnvContext,
     ReceiptContext,
+    TokenContext,
+    UserDataContext,
 } from '../../../../contexts';
+import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
+import { FlexContainer } from '../../../../styled/Common';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { formatDollarAmount } from '../../../../utils/numbers';
 import VaultDeposit from '../VaultActionModal/VaultDeposit/VaultDeposit';
 import VaultWithdraw from '../VaultActionModal/VaultWithdraw/VaultWithdraw';
-import { RiExternalLinkLine } from 'react-icons/ri';
-import { toDisplayQty } from '@crocswap-libs/sdk';
-import TooltipComponent from '../../../../components/Global/TooltipComponent/TooltipComponent';
-import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
-import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
-import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
 
 interface propsIF {
     idForDOM: string;
@@ -46,7 +46,6 @@ export default function VaultRow(props: propsIF) {
     const { sessionReceipts } = useContext(ReceiptContext);
     const { closeBottomSheet } = useBottomSheet();
 
-
     // const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
 
     const {
@@ -61,6 +60,7 @@ export default function VaultRow(props: propsIF) {
     const secondaryAsset = tokens.getTokenByAddress(secondaryAssetAddress);
 
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
+    const showPhoneVersion = useMediaQuery('(max-width: 500px)');
 
     const [crocEnvBal, setCrocEnvBal] = useState<bigint>();
 
@@ -154,7 +154,6 @@ export default function VaultRow(props: propsIF) {
             justifyContent='flex-end'
             gap={5}
             style={{ flexShrink: 0 }}
-            className={styles.depositContainer}
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                 {balDisplay}
@@ -166,6 +165,7 @@ export default function VaultRow(props: propsIF) {
                             alt={mainAsset.symbol}
                             size={'m'}
                         />
+
                         <TooltipComponent
                             placement='top'
                             title='Vault positions can hold both tokens in a pair. Displayed position values represent estimated redeemable token positions for the primary token on withdrawal.'
@@ -195,8 +195,8 @@ export default function VaultRow(props: propsIF) {
     }
 
     function handleModalClose() {
-        closeModal()
-        closeBottomSheet()
+        closeModal();
+        closeBottomSheet();
     }
 
     const modalToOpen =
@@ -252,16 +252,23 @@ export default function VaultRow(props: propsIF) {
                         <p className={styles.tvlDisplay}>
                             {formatDollarAmount(parseFloat(vault.tvlUsd))}
                         </p>
-                        {depositsDisplay}
                         <p
-                            className={styles.apyDisplay}
+                            className={`${styles.depositContainer} ${!isUserConnected && styles.hideDepositOnMobile}`}
+                        >
+                            {depositsDisplay}
+                        </p>
+
+                        <p
+                            className={`${styles.aprDisplay} ${!isUserConnected && styles.showAprOnMobile}`}
                             style={{ color: 'var(--other-green' }}
                         >
                             {formattedAPR}
-                            <TooltipComponent
-                                placement='top-end'
-                                title='APR estimates provided by vault provider.'
-                            />
+                            {(isUserConnected || !showPhoneVersion) && (
+                                <TooltipComponent
+                                    placement='top-end'
+                                    title='APR estimates provided by vault provider.'
+                                />
+                            )}
                         </p>
                         <div className={styles.actionButtonContainer}>
                             <button
@@ -272,8 +279,7 @@ export default function VaultRow(props: propsIF) {
                             </button>
 
                             {isUserConnected &&
-                                // !!(vault.balance || crocEnvBal) &&
-                                (
+                                !!(vault.balance || crocEnvBal) && (
                                     <button
                                         className={styles.actionButton}
                                         onClick={handleOpenWithdrawModal}

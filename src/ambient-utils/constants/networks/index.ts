@@ -84,4 +84,5 @@ export { ethereumMainnet };
 export { scrollMainnet };
 export { scrollSepolia };
 export { blastSepolia };
+export { plumeSepolia };
 export { blast };

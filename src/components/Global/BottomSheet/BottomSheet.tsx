@@ -28,7 +28,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
 
     const controls = useAnimation();
     const isMobile = useMediaQuery('(max-width: 500px)');
-        // eslint-disable-next-line 
+    // eslint-disable-next-line
     const [isDragging, setIsDragging] = useState(false);
 
     const variants = {
@@ -93,9 +93,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
             )}
             <motion.div
                 className={styles.bottom_sheet}
-                initial="hidden"
+                initial='hidden'
                 animate={controls}
-                exit="hidden"
+                exit='hidden'
                 variants={variants}
                 transition={{
                     duration: 0.5,

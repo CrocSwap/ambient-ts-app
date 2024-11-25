@@ -31,7 +31,7 @@ function RangeExtraInfo(props: propsIF) {
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
-            : poolPriceDisplay ?? 0;
+            : (poolPriceDisplay ?? 0);
 
     const displayPriceString = displayPriceWithDenom
         ? getFormattedNumber({

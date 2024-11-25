@@ -1,20 +1,20 @@
 /* Typewriter.module.css */
 .typewriterContainer {
     display: inline;
-   
-    font-size: 1.5rem; 
+
+    font-size: 1.5rem;
     text-align: center;
-  }
-  
-  .typewriterText {
+}
+
+.typewriterText {
     display: inline;
-  }
-  
-  .cursor {
+}
+
+.cursor {
     display: inline;
-    background-color: currentColor; 
-    width: 2px; 
-    height: 1em; 
-    margin-left: 5px; 
+    background-color: currentColor;
+    width: 2px;
+    height: 1em;
+    margin-left: 5px;
     /* vertical-align: text-bottom;  */
-  }
+}

@@ -1,10 +1,10 @@
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { blastETH, blastUSDB, blastBLAST, blastEzETH } from '../defaultTokens';
-import { NetworkIF } from '../../types/NetworkIF';
-import { TopPool } from './TopPool';
-import { Provider } from 'ethers';
-import { GCGO_BLAST_URL } from '../gcgo';
 import { bigIntToFloat } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Provider } from 'ethers';
+import { NetworkIF } from '../../types/NetworkIF';
+import { blastBLAST, blastETH, blastEzETH, blastUSDB } from '../defaultTokens';
+import { GCGO_BLAST_URL } from '../gcgo';
+import { TopPool } from './TopPool';
 
 export const BLAST_RPC_URL =
     import.meta.env.VITE_BLAST_RPC_URL !== undefined
@@ -37,7 +37,6 @@ export const blast: NetworkIF = {
         new TopPool(blastETH, blastUSDB, chainSpecFromSDK.poolIndex),
         new TopPool(blastBLAST, blastETH, chainSpecFromSDK.poolIndex),
         new TopPool(blastEzETH, blastUSDB, chainSpecFromSDK.poolIndex),
-        new TopPool(blastBLAST, blastUSDB, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

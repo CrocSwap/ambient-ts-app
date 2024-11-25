@@ -1,16 +1,17 @@
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Provider } from 'ethers';
+import { NetworkIF } from '../../types/NetworkIF';
 import {
     mainnetETH,
-    mainnetUSDC,
-    mainnetWBTC,
-    mainnetUSDT,
     mainnetRSWETH,
+    mainnetTBTC,
+    mainnetUSDC,
+    mainnetUSDT,
+    mainnetWBTC,
 } from '../defaultTokens';
-import { NetworkIF } from '../../types/NetworkIF';
-import { TopPool } from './TopPool';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
-import { Provider } from 'ethers';
-import { bigIntToFloat } from '@crocswap-libs/sdk';
+import { TopPool } from './TopPool';
 
 export const MAINNET_RPC_URL =
     import.meta.env.VITE_MAINNET_RPC_URL !== undefined
@@ -40,11 +41,11 @@ export const ethereumMainnet: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,
     topPools: [
-        new TopPool(mainnetRSWETH, mainnetETH, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetTBTC, mainnetETH, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetRSWETH, mainnetETH, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetWBTC, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetUSDT, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetUSDT, mainnetUSDC, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

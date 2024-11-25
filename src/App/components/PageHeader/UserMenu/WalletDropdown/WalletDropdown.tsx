@@ -94,7 +94,7 @@ export default function WalletDropdown(props: propsIF) {
                 <div className={styles.logoName}>
                     <img
                         src={processLogoSrc({
-                            token: tokens.getTokensByNameOrSymbol(symbol)[0],
+                            token: tokens.getTokensByNameOrSymbol(symbol, chainId)[0],
                             symbol: symbol,
                             sourceURI: logoUri,
                         })}

@@ -99,11 +99,11 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         const tokensMatchingA: TokenIF[] =
             savedTokenASymbol === 'ETH'
                 ? [dfltTokenA]
-                : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', true);
+                : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', chainId,  true);
         const tokensMatchingB: TokenIF[] =
             savedTokenBSymbol === 'ETH'
                 ? [dfltTokenA]
-                : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', true);
+                : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', chainId, true);
 
         const firstTokenMatchingA = tokensMatchingA[0] || undefined;
         const firstTokenMatchingB = tokensMatchingB[0] || undefined;

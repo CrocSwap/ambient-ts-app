@@ -218,12 +218,8 @@ export default function TabComponent(props: TabPropsIF) {
         });
 
     const tabsWithRightOption = (
-        <div
-            className={styles.navbar_header_container}
-        >
-            <div
-                className={styles.tabs_header_container}
-            >
+        <div className={styles.navbar_header_container}>
+            <div className={styles.tabs_header_container}>
                 {data.map((item) => (
                     <div
                         key={item.label}

@@ -8,27 +8,23 @@
     gap: 16px;
 }
 
-.mobile_container{
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 0 auto;
-  padding: 0 8px;
-  /* height: calc(100dvh - 112px); */
-  /* overflow-y: hidden !important; */
+.mobile_container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0 auto;
+    padding: 0 8px;
+    /* height: calc(100dvh - 112px); */
+    /* overflow-y: hidden !important; */
 
-  display: grid;
-  grid-template-rows: 100px 1fr ;
-  
-  gap: 8px;
-  height: 70dvh;
-  margin-bottom: 56px;
-overflow: hidden !important;
+    display: grid;
+    grid-template-rows: 100px 1fr;
 
-
-  
+    gap: 8px;
+    height: 70dvh;
+    margin-bottom: 56px;
+    overflow: hidden !important;
 }
-
 
 .portfolio_tabs_container {
     width: 100%;
@@ -36,11 +32,9 @@ overflow: hidden !important;
     transition: var(--transition);
     overflow: hidden;
     flex: 1;
-  }
-  
+}
 
-
-  .mobile_data_toggle_container{
+.mobile_data_toggle_container {
     background: var(--dark2);
     display: flex;
     justify-content: center;
@@ -48,12 +42,9 @@ overflow: hidden !important;
     border-radius: 4px;
     outline: 1px solid var(--dark3);
     margin: 10px auto;
+}
 
-   
-
-  }
-
-  .mobile_button {
+.mobile_button {
     font-size: var(--body-size);
     line-height: var(--body-lh);
     padding: 4px 1.5rem;
@@ -62,71 +53,66 @@ overflow: hidden !important;
     border: none;
     outline: none;
     width: 50%;
-  }
-  
-  .mobile_button:hover {
+}
+
+.mobile_button:hover {
     color: var(--text1);
-  }
-  
-  .mobile_button.active {
+}
+
+.mobile_button.active {
     color: black;
     background: var(--accent1);
-  }
-  
-  .mobile_button.inactive {
+}
+
+.mobile_button.inactive {
     color: var(--text1);
     background: transparent;
-  }
-  
-  .mobile_layout{
+}
+
+.mobile_layout {
     width: 100vw;
-    
 
     display: grid;
-    grid-template-rows: 105px 1fr ;
+    grid-template-rows: 105px 1fr;
     gap: 4px;
     overflow: hidden;
-   
- 
-    
 }
 
-  @media (min-width: 400px) {
-    .mobile_layout{
-      padding: 0 1rem
-  }
+@media (min-width: 400px) {
+    .mobile_layout {
+        padding: 0 1rem;
+    }
 }
-  @media (min-width: 1200px) {
+@media (min-width: 1200px) {
     .portfolio_tabs_container.fullLayoutContainer {
-      grid-template-columns: auto 36px;
-      column-gap: 16px;
+        grid-template-columns: auto 36px;
+        column-gap: 16px;
     }
-  
+
     .portfolio_tabs_container:not(.fullLayoutContainer) {
-      grid-template-columns: auto 380px;
-      gap: 1rem;
+        grid-template-columns: auto 380px;
+        gap: 1rem;
     }
-  
+
     .portfolio_tabs_container:not(.active) {
-      grid-template-columns: auto;
-      column-gap: 16px;
+        grid-template-columns: auto;
+        column-gap: 16px;
     }
-  
+
     .portfolio_tabs_container.active.fullLayoutContainer {
-      grid-template-columns: auto 36px;
-      column-gap: 16px;
+        grid-template-columns: auto 36px;
+        column-gap: 16px;
     }
-  
+
     .portfolio_tabs_container.active:not(.fullLayoutContainer) {
-      grid-template-columns: auto 380px;
-      gap: 1rem;
+        grid-template-columns: auto 380px;
+        gap: 1rem;
     }
-  }
-  
+}
+
 @media only screen and (max-width: 600px) {
     .portfolio_container {
         overflow-y: hidden;
         max-height: calc(100svh - 7.5rem);
-      
     }
 }

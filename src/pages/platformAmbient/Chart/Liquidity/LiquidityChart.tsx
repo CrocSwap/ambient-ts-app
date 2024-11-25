@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import {
     MouseEvent,
     useContext,
@@ -6,12 +7,15 @@ import {
     useRef,
     useState,
 } from 'react';
-import * as d3 from 'd3';
 import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../../ambient-utils/dataLayer';
+import { ChartThemeIF } from '../../../../contexts/ChartContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { formatAmountWithoutDigit } from '../../../../utils/numbers';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import {
@@ -31,10 +35,6 @@ import {
     createLineSeries,
     decorateForLiquidityLine,
 } from './LiquiditySeries/LineSeries';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { RangeContext } from '../../../../contexts/RangeContext';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface liquidityPropsIF {
     liqMode: string;
@@ -66,15 +66,18 @@ type nearestLiquidity = {
 export default function LiquidityChart(props: liquidityPropsIF) {
     const d3CanvasLiq = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasLiqHover = useRef<HTMLCanvasElement | null>(null);
-    const { pool: pool, poolPriceDisplay: poolPriceWithoutDenom } =
-        useContext(PoolContext);
+    const {
+        pool: pool,
+        poolPriceDisplay: poolPriceWithoutDenom,
+        isTradeDollarizationEnabled,
+    } = useContext(PoolContext);
     const { advancedMode } = useContext(RangeContext);
     const { isDenomBase, poolPriceNonDisplay } = useContext(TradeDataContext);
 
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
             ? 1 / poolPriceWithoutDenom
-            : poolPriceWithoutDenom ?? 0
+            : (poolPriceWithoutDenom ?? 0)
         : 0;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -82,7 +85,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqBidSeries, setLiqBidSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [lineLiqSeries, setLineLiqSeries] = useState<any>();
+    const [lineLiqAskSeries, setLineLiqAskSeries] = useState<any>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [lineLiqBidSeries, setLineLiqBidSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineLiqDepthBidSeries, setLineLiqDepthBidSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -345,7 +350,14 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 scaleData?.yScale,
                 d3.curveBasis,
             );
-            setLineLiqSeries(() => d3CanvasLiqChartLine);
+            setLineLiqAskSeries(() => d3CanvasLiqChartLine);
+
+            const d3CanvasLiqBidChartLine = createLineSeries(
+                liquidityScale,
+                scaleData?.yScale,
+                d3.curveBasis,
+            );
+            setLineLiqBidSeries(() => d3CanvasLiqBidChartLine);
 
             const d3CanvasLiqBidChartDepthLine = createLineSeries(
                 liquidityDepthScale,
@@ -368,25 +380,19 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liquidityScale,
         pool,
         liquidityDepthScale,
-        liquidityScale === undefined,
-        liquidityDepthScale === undefined,
         isDenomBase,
+        isTradeDollarizationEnabled,
     ]);
 
     useEffect(() => {
-        const thresholdCurve = liquidityData?.liqTransitionPointforCurve;
-        const thresholdDepth = liquidityData?.liqTransitionPointforDepth;
-
         if (liqBidSeries && chartThemeColors && liqAskSeries) {
             decorateForLiquidityArea(liqBidSeries, chartThemeColors, true);
 
             decorateForLiquidityArea(liqAskSeries, chartThemeColors, false);
 
-            decorateForLiquidityLine(
-                lineLiqSeries,
-                thresholdCurve,
-                chartThemeColors,
-            );
+            decorateForLiquidityLine(lineLiqBidSeries, chartThemeColors, 'bid');
+
+            decorateForLiquidityLine(lineLiqAskSeries, chartThemeColors, 'ask');
         }
 
         if (liqDepthAskSeries && chartThemeColors) {
@@ -397,8 +403,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             );
             decorateForLiquidityLine(
                 lineLiqDepthAskSeries,
-                thresholdDepth,
                 chartThemeColors,
+                'ask',
             );
         }
 
@@ -406,8 +412,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             decorateForLiquidityArea(liqDepthBidSeries, chartThemeColors, true);
             decorateForLiquidityLine(
                 lineLiqDepthBidSeries,
-                thresholdDepth,
                 chartThemeColors,
+                'bid',
             );
         }
 
@@ -417,16 +423,17 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         renderCanvasArray([d3CanvasLiq]);
     }, [
         liqMode,
-        liquidityData?.liqTransitionPointforCurve,
-        liquidityData?.liqTransitionPointforDepth,
+        liquidityData,
         liqAskSeries,
         liqBidSeries,
         liqDepthAskSeries,
         liqDepthBidSeries,
-        lineLiqSeries,
+        lineLiqAskSeries,
+        lineLiqBidSeries,
         lineLiqDepthAskSeries,
         lineLiqDepthBidSeries,
         colorChangeTrigger,
+        chartThemeColors,
     ]);
 
     const clipCanvas = (
@@ -471,8 +478,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             location.pathname.includes('reposition');
         if (isRange) {
             clipHighlightedLines(canvas);
-            lineLiqSeries(liqDataAsk);
-            lineLiqSeries(liqDataBid);
+            lineLiqAskSeries(liqDataAsk);
+            lineLiqBidSeries(liqDataBid);
         }
     };
 
@@ -589,15 +596,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     }
                 })
                 .on('measure', (event: CustomEvent) => {
-                    liquidityScale.range([
-                        event.detail.width,
-                        0,
-                    ]);
+                    liquidityScale.range([event.detail.width, 0]);
 
-                    liquidityDepthScale.range([
-                        event.detail.width,
-                        0,
-                    ]);
+                    liquidityDepthScale.range([event.detail.width, 0]);
                     scaleData?.yScale.range([event.detail.height, 0]);
 
                     liqBidSeries?.context(ctx);
@@ -606,8 +607,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     liqDepthAskSeries?.context(ctx);
                     lineLiqDepthAskSeries?.context(ctx);
                     lineLiqDepthBidSeries?.context(ctx);
-
-                    lineLiqSeries?.context(ctx);
+                    lineLiqAskSeries?.context(ctx);
+                    lineLiqBidSeries?.context(ctx);
                 });
 
             renderChart();
@@ -629,7 +630,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         ranges,
         lineLiqDepthAskSeries,
         lineLiqDepthBidSeries,
-        lineLiqSeries,
+        lineLiqAskSeries,
+        lineLiqBidSeries,
     ]);
 
     useEffect(() => {
@@ -994,8 +996,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 ref={d3CanvasLiqHover}
                 style={{
                     position: 'relative',
-                    width: mobileView ? '20%' :'8%',
-                    marginLeft: mobileView ? '80%' :  '92%',
+                    width: mobileView ? '20%' : '8%',
+                    marginLeft: mobileView ? '80%' : '92%',
                 }}
             ></d3fc-canvas>
             <d3fc-canvas
@@ -1003,7 +1005,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 style={{
                     position: 'relative',
                     width: mobileView ? '20%' : '8%',
-                    marginLeft:  mobileView ? '80%' : '92%',
+                    marginLeft: mobileView ? '80%' : '92%',
                 }}
             ></d3fc-canvas>
         </>

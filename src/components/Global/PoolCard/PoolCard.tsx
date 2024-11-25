@@ -1,20 +1,21 @@
-import styles from './PoolCard.module.css';
+import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
-import TokenIcon from '../TokenIcon/TokenIcon';
 import {
     getFormattedNumber,
-    isETHPair,
     isBtcPair,
+    isDefaultDenomTokenExcludedFromUsdConversion,
+    isETHPair,
     isUsdStableToken,
     isWbtcToken,
     uriToHttp,
 } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { useContext, useState } from 'react';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import { AppStateContext } from '../../../contexts';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import TokenIcon from '../TokenIcon/TokenIcon';
+import styles from './PoolCard.module.css';
 
 interface propsIF {
     pool: PoolIF;
@@ -55,6 +56,12 @@ export default function PoolCard(props: propsIF) {
         ? isWbtcToken(pool.quote.address)
         : isWbtcToken(pool.base.address);
 
+    const excludeFromUsdConversion =
+        isDefaultDenomTokenExcludedFromUsdConversion(
+            pool.base.address,
+            pool.quote.address,
+        );
+
     const isEthStakedEthPair = isETHPair(pool.base.address, pool.quote.address);
     const isPoolBtcPair = isBtcPair(pool.base.address, pool.quote.address);
 
@@ -70,7 +77,10 @@ export default function PoolCard(props: propsIF) {
             {poolPrice === undefined || spotPrice === undefined
                 ? '…'
                 : isHovered || denomTokenIsUsdStableToken
-                  ? denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
+                  ? denomTokenIsWBTCToken ||
+                    isEthStakedEthPair ||
+                    isPoolBtcPair ||
+                    excludeFromUsdConversion
                       ? `${
                             usdPrice
                                 ? getFormattedNumber({
@@ -80,7 +90,10 @@ export default function PoolCard(props: propsIF) {
                                 : '…'
                         }`
                       : poolPrice
-                  : denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
+                  : denomTokenIsWBTCToken ||
+                      isEthStakedEthPair ||
+                      isPoolBtcPair ||
+                      excludeFromUsdConversion
                     ? poolPrice
                     : `${
                           usdPrice

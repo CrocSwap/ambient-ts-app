@@ -1,4 +1,8 @@
-import { AllVaultsServerIF, UserVaultsServerIF, VaultIF } from '../../../ambient-utils/types';
+import {
+    AllVaultsServerIF,
+    UserVaultsServerIF,
+    VaultIF,
+} from '../../../ambient-utils/types';
 
 export class Vault implements VaultIF {
     id: string;
@@ -39,12 +43,12 @@ export class Vault implements VaultIF {
     aprRebaseUnitToken: string;
     tvlUsd: string;
     apr: string;
-    balance: string|undefined;
-    balanceAmount: string|undefined;
-    balanceUsd: string|undefined;
+    balance: string | undefined;
+    balanceAmount: string | undefined;
+    balanceUsd: string | undefined;
     constructor(
-        v: VaultIF|AllVaultsServerIF,
-        userVault: UserVaultsServerIF | null | undefined
+        v: VaultIF | AllVaultsServerIF,
+        userVault: UserVaultsServerIF | null | undefined,
     ) {
         this.id = v.id;
         this.createdAt = v.createdAt;
@@ -84,20 +88,24 @@ export class Vault implements VaultIF {
         this.aprRebaseUnitToken = v.aprRebaseUnitToken;
         this.tvlUsd = v.tvlUsd;
         this.apr = v.apr;
-        
-        type entryTuple = [string, string|undefined];
+
+        type entryTuple = [string, string | undefined];
 
         const entries: entryTuple[] = Object.entries(v);
-        const findVal = (k: 'balance'|'balanceAmount'|'balanceUsd'): string|undefined => {
-            const tuple: entryTuple|undefined = entries.find((e) => e[0] === k);
-            let output: string|undefined;
+        const findVal = (
+            k: 'balance' | 'balanceAmount' | 'balanceUsd',
+        ): string | undefined => {
+            const tuple: entryTuple | undefined = entries.find(
+                (e) => e[0] === k,
+            );
+            let output: string | undefined;
             if (userVault) {
                 output = userVault[k];
             } else if (tuple) {
                 output = tuple[1];
             }
             return output;
-        }
+        };
 
         this.balance = findVal('balance');
         this.balanceAmount = findVal('balanceAmount');

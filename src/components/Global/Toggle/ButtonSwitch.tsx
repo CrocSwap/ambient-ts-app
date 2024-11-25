@@ -95,7 +95,9 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
                     left: 10px;
                     right: 50%;
                     background: var(--dark2);
-                    transition: left 0.5s, right 0.4s 0.2s;
+                    transition:
+                        left 0.5s,
+                        right 0.4s 0.2s;
                 }
             }
             input:not(:checked) {
@@ -113,7 +115,9 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
                     left: 50%;
                     right: 10px;
                     background: var(--accent1);
-                    transition: left 0.4s 0.2s, right 0.5s,
+                    transition:
+                        left 0.4s 0.2s,
+                        right 0.5s,
                         background 0.35s -0.1s;
                 }
             }

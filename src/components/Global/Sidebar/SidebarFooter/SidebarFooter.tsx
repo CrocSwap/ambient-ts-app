@@ -15,17 +15,15 @@ function SidebarFooter() {
 
     const currentLocation = location.pathname;
 
-
-
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market/'
         : location.pathname.includes('trade/limit')
-        ? '/trade/limit/'
-        : location.pathname.includes('trade/pool')
-        ? '/trade/pool/'
-        : location.pathname.includes('trade/edit')
-        ? '/trade/edit/'
-        : '/trade/market/';
+          ? '/trade/limit/'
+          : location.pathname.includes('trade/pool')
+            ? '/trade/pool/'
+            : location.pathname.includes('trade/edit')
+              ? '/trade/edit/'
+              : '/trade/market/';
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
 

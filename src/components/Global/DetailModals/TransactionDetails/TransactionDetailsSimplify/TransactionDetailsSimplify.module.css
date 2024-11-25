@@ -8,9 +8,6 @@
     -o-animation: fadeIn ease 1s;
     -ms-animation: fadeIn ease 1s;
     border: none;
-   
-   
-  
 }
 
 .info_content {
@@ -22,7 +19,6 @@
     padding: 1rem;
 }
 
-
 .link_row {
     display: flex;
     flex-direction: row;
@@ -31,20 +27,18 @@
     cursor: default;
 }
 @media (max-width: 768px) {
-    .tx_details_container{
+    .tx_details_container {
         border: 1px solid var(--dark3);
         min-height: 60vh;
     }
-.info_content{
-    padding: 0;
-    border: none;
-}
+    .info_content {
+        padding: 0;
+        border: none;
+    }
 
-
-.info_content > div:nth-child(even) {
-    background-color: var(--dark2)
-}
-
+    .info_content > div:nth-child(even) {
+        background-color: var(--dark2);
+    }
 }
 
 @keyframes fadeIn {

@@ -169,8 +169,6 @@
     }
 
     .container {
-      
         height: calc(100svh - 280px);
-       
     }
 }

@@ -150,10 +150,10 @@
     transition: var(--transition);
 }
 
-.other_room_icon{
-    margin-right: .5rem;
-    margin-left: .5rem;
-    opacity: .5;
+.other_room_icon {
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+    opacity: 0.5;
 }
 
 /* .chat_scrollable{
@@ -244,14 +244,15 @@
     }
 }
 
-@keyframes yellowFlash{
-    0% , 100%{
+@keyframes yellowFlash {
+    0%,
+    100% {
         box-shadow: 0px 0px 28px #f3bc4144;
         border: 1px solid #f3bc4188;
         color: #f3bc41cc;
         background: transparent;
     }
-    50%{
+    50% {
         box-shadow: 0px 0px 28px #f3bc4188;
         border: 1px solid #f3bc41aa;
         color: white;
@@ -259,11 +260,11 @@
     }
 }
 
-.verify_button{
-    transition: all .2s ease-in-out;
+.verify_button {
+    transition: all 0.2s ease-in-out;
     display: block;
     text-align: center;
-    background: rgba(0,0,0, .2);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 0.4rem;
     position: absolute;
     top: 1.1rem;
@@ -276,52 +277,45 @@
     z-index: 3;
 }
 
-
-.verify_button:not(.verified) svg{
+.verify_button:not(.verified) svg {
     color: #f3bc41cc;
 }
 
-.verify_button:not(.verified):hover{
+.verify_button:not(.verified):hover {
     box-shadow: 0px 0px 28px #f3bc4188;
     border: 1px solid #f3bc41aa;
     color: white;
     background: #f3bc41cc;
 }
 
-
-
-.verify_button.flashed{
-    animation: yellowFlash .5s 3 ease-in-out;
+.verify_button.flashed {
+    animation: yellowFlash 0.5s 3 ease-in-out;
 }
 
-
-
-.verify_button.verified{
+.verify_button.verified {
     border-color: rgba(21, 190, 111, 0.75);
     cursor: default;
     box-shadow: 0px 0px 28px rgba(21, 190, 111, 0.35);
     color: var(--positive);
 }
 
-
-.verify_button_icon{
-    margin: 0 .2rem; 
+.verify_button_icon {
+    margin: 0 0.2rem;
 }
-.verify_button_mod_icon{
-    margin-top: .1rem;
+.verify_button_mod_icon {
+    margin-top: 0.1rem;
 }
 
-@keyframes emojiPickerAnim{
-    0%{
+@keyframes emojiPickerAnim {
+    0% {
         transform: scale(0);
     }
-    100%{
+    100% {
         transform: scale(1);
     }
 }
 
-
-@media only screen and (max-width: 600px){
+@media only screen and (max-width: 600px) {
     .main_container {
         padding: 0;
         position: relative;
@@ -332,65 +326,57 @@
         padding: 0;
     }
 
-    
-    
-.channel_dropdown_items_containers,
-.active_channel_dropdown_items_containers {
-    background: #242f3f;
-    z-index: 10;
-    margin-top: .6rem;
-}
+    .channel_dropdown_items_containers,
+    .active_channel_dropdown_items_containers {
+        background: #242f3f;
+        z-index: 10;
+        margin-top: 0.6rem;
+    }
 
-    .reaction_picker_close{
+    .reaction_picker_close {
         display: block;
         font-size: 1rem;
         color: white;
-        padding: .5rem;
+        padding: 0.5rem;
         margin-right: 1rem;
         float: right;
         cursor: pointer;
         padding-bottom: 0;
-        opacity: .5;
+        opacity: 0.5;
         cursor: pointer;
-        transition: all .2s ease-in-out;
+        transition: all 0.2s ease-in-out;
     }
-    
-    .reaction_picker_close:hover{
+
+    .reaction_picker_close:hover {
         opacity: 1;
     }
 
-.reaction_picker_wrapper{
-    position: fixed;
-    bottom: 7rem;
-    left:  5%;
-    width: 90%;
-    animation: emojiPickerAnim .2s ease-in-out forwards;
-    
-    box-shadow: 0px 0px 40px #7371fc55;
-    /* border: 1px solid #7371fcaa; */
-    overflow: hidden;
-    border-radius: .5rem;
-    z-index: 99;
+    .reaction_picker_wrapper {
+        position: fixed;
+        bottom: 7rem;
+        left: 5%;
+        width: 90%;
+        animation: emojiPickerAnim 0.2s ease-in-out forwards;
 
+        box-shadow: 0px 0px 40px #7371fc55;
+        /* border: 1px solid #7371fcaa; */
+        overflow: hidden;
+        border-radius: 0.5rem;
+        z-index: 99;
+    }
+
+    .reaction_picker_wrapper ul li button img {
+        margin: 0.4rem !important;
+        height: 2rem !important;
+        width: 2rem !important;
+    }
 }
 
-
-.reaction_picker_wrapper ul li button img{
-    margin: 0.4rem !important;
-    height: 2rem !important;
-    width: 2rem !important;
-}
-
-}
-
-.dropdown_icon{
+.dropdown_icon {
     display: inline-block;
-    margin-left: .5rem;
-    opacity: .5;
+    margin-left: 0.5rem;
+    opacity: 0.5;
 }
-.dropdown_icon svg{
+.dropdown_icon svg {
     vertical-align: middle;
 }
-
-
-

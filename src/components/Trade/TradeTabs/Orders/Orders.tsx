@@ -123,7 +123,9 @@ function Orders(props: propsIF) {
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
 
-    const prevBaseQuoteAddressRef = useRef<string>(selectedBaseAddress + selectedQuoteAddress);
+    const prevBaseQuoteAddressRef = useRef<string>(
+        selectedBaseAddress + selectedQuoteAddress,
+    );
 
     const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(
         !isAccountView && showAllData,
@@ -134,8 +136,10 @@ function Orders(props: propsIF) {
     }, [isAccountView, showAllData]);
 
     useEffect(() => {
-
-        if(prevBaseQuoteAddressRef.current !== selectedBaseAddress + selectedQuoteAddress){
+        if (
+            prevBaseQuoteAddressRef.current !==
+            selectedBaseAddress + selectedQuoteAddress
+        ) {
             setPagesVisible([0, 1]);
             setPageDataCountShouldReset(true);
             setExtraPagesAvailable(0);
@@ -146,8 +150,9 @@ function Orders(props: propsIF) {
             setLastFetchedCount(0);
             setHotTransactions([]);
         }
-        
-        prevBaseQuoteAddressRef.current = selectedBaseAddress + selectedQuoteAddress;
+
+        prevBaseQuoteAddressRef.current =
+            selectedBaseAddress + selectedQuoteAddress;
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     const [pageDataCountShouldReset, setPageDataCountShouldReset] =
