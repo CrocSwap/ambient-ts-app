@@ -122,7 +122,10 @@ export default function PoolRow(props: propsIF) {
     const buttonDisplay = (
         <div
             className={styles.tradeIcon}
-            onClick={() => goToMarket(pool.base.address, pool.quote.address)}
+            onClick={(event: React.MouseEvent) => {
+                goToMarket(pool.base.address, pool.quote.address);
+                event?.stopPropagation();
+            }}
         >
             <GrLineChart size={18} />
         </div>
