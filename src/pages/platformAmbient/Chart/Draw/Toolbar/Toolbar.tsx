@@ -74,7 +74,7 @@ function ChartToolbar() {
             undoStack,
             drawActionStack,
             actionKey,
-            drawnShapeHistory,
+            currentPoolDrawnShapes,
         },
         activeDrawingType,
         setActiveDrawingType,
@@ -539,7 +539,7 @@ function ChartToolbar() {
                                 >
                                     <DeleteSvg
                                         stroke={
-                                            drawnShapeHistory.length > 0
+                                            currentPoolDrawnShapes.length > 0
                                                 ? '#f0f0f8'
                                                 : '#61646f'
                                         }

@@ -27,6 +27,10 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
         drawDataHistory[]
     >([]);
 
+    const [currentPoolDrawnShapes, setCurrentPoolDrawnShapes] = useState<
+        drawDataHistory[]
+    >([]);
+
     const {
         activeNetwork: { poolIndex },
     } = useContext(AppStateContext);
@@ -115,6 +119,26 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
             return true;
         });
     }, [initialData, isLocalStorageFetched]);
+
+    useEffect(() => {
+        const filteredDrawnShapeHistory = drawnShapeHistory.filter(
+            (element) => {
+                const isShapeInCurrentPool =
+                    currentPool.tokenA.address ===
+                        (isTokenABase === element.pool.isTokenABase
+                            ? element.pool.tokenA
+                            : element.pool.tokenB) &&
+                    currentPool.tokenB.address ===
+                        (isTokenABase === element.pool.isTokenABase
+                            ? element.pool.tokenB
+                            : element.pool.tokenA);
+
+                return isShapeInCurrentPool;
+            },
+        );
+
+        setCurrentPoolDrawnShapes(filteredDrawnShapeHistory);
+    }, [drawnShapeHistory]);
 
     const actionKey = useMemo(() => {
         const newActionKey = {
@@ -514,5 +538,6 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
         addDrawActionStack,
         undoStack,
         deleteAllShapes,
+        currentPoolDrawnShapes,
     };
 }

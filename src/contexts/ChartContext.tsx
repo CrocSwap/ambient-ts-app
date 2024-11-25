@@ -84,6 +84,7 @@ export interface ChartContextIF {
         ) => void;
         undoStack: Map<actionKeyIF, actionStackIF[]>;
         deleteAllShapes: () => void;
+        currentPoolDrawnShapes: drawDataHistory[];
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     toolbarRef: React.MutableRefObject<any>;
