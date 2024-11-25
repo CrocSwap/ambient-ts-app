@@ -787,9 +787,9 @@ export const swellSepoliaETH: TokenIF = {
 
 export const swellSepoliaUSDC: TokenIF = {
     name: 'Ambient USDC',
-    address: '0x4D65fB724CEd0CFC6ABFD03231C9CDC2C36A587B',
+    address: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
     symbol: 'USDC',
-    decimals: 18,
+    decimals: 6,
     chainId: 1924,
     logoURI: '',
 };
