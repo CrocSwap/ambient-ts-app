@@ -29,25 +29,23 @@ export function createLineSeries(
 export function decorateForLiquidityLine(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     series: any,
-    threshold: number,
     chartThemeColors: ChartThemeIF,
+    liqType: 'bid' | 'ask',
 ) {
     const d3BidColor = chartThemeColors.liqBidColor;
     const d3AskColor = chartThemeColors.liqAskColor;
 
-    series.decorate(
-        (context: CanvasRenderingContext2D, d: LiquidityDataLocal[]) => {
-            if (d[0]?.liqPrices > threshold) {
-                context.strokeStyle = d3BidColor
-                    ? d3BidColor.toString()
-                    : lineSellColor;
-            } else {
-                context.strokeStyle = d3AskColor
-                    ? d3AskColor.toString()
-                    : lineBuyColor;
-            }
-        },
-    );
+    series.decorate((context: CanvasRenderingContext2D) => {
+        if (liqType === 'bid') {
+            context.strokeStyle = d3BidColor
+                ? d3BidColor.toString()
+                : lineSellColor;
+        } else {
+            context.strokeStyle = d3AskColor
+                ? d3AskColor.toString()
+                : lineBuyColor;
+        }
+    });
 }
 
 export function createLiquidityLineSeries(
