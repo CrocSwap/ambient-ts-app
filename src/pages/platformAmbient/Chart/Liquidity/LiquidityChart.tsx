@@ -85,7 +85,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqBidSeries, setLiqBidSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [lineLiqSeries, setLineLiqSeries] = useState<any>();
+    const [lineLiqAskSeries, setLineLiqAskSeries] = useState<any>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [lineLiqBidSeries, setLineLiqBidSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineLiqDepthBidSeries, setLineLiqDepthBidSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -348,7 +350,14 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 scaleData?.yScale,
                 d3.curveBasis,
             );
-            setLineLiqSeries(() => d3CanvasLiqChartLine);
+            setLineLiqAskSeries(() => d3CanvasLiqChartLine);
+
+            const d3CanvasLiqBidChartLine = createLineSeries(
+                liquidityScale,
+                scaleData?.yScale,
+                d3.curveBasis,
+            );
+            setLineLiqBidSeries(() => d3CanvasLiqBidChartLine);
 
             const d3CanvasLiqBidChartDepthLine = createLineSeries(
                 liquidityDepthScale,
@@ -376,19 +385,14 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     ]);
 
     useEffect(() => {
-        const thresholdCurve = liquidityData?.liqTransitionPointforCurve;
-        const thresholdDepth = liquidityData?.liqTransitionPointforDepth;
-
         if (liqBidSeries && chartThemeColors && liqAskSeries) {
             decorateForLiquidityArea(liqBidSeries, chartThemeColors, true);
 
             decorateForLiquidityArea(liqAskSeries, chartThemeColors, false);
 
-            decorateForLiquidityLine(
-                lineLiqSeries,
-                thresholdCurve,
-                chartThemeColors,
-            );
+            decorateForLiquidityLine(lineLiqBidSeries, chartThemeColors, 'bid');
+
+            decorateForLiquidityLine(lineLiqAskSeries, chartThemeColors, 'ask');
         }
 
         if (liqDepthAskSeries && chartThemeColors) {
@@ -399,8 +403,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             );
             decorateForLiquidityLine(
                 lineLiqDepthAskSeries,
-                thresholdDepth,
                 chartThemeColors,
+                'ask',
             );
         }
 
@@ -408,8 +412,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             decorateForLiquidityArea(liqDepthBidSeries, chartThemeColors, true);
             decorateForLiquidityLine(
                 lineLiqDepthBidSeries,
-                thresholdDepth,
                 chartThemeColors,
+                'bid',
             );
         }
 
@@ -424,7 +428,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liqBidSeries,
         liqDepthAskSeries,
         liqDepthBidSeries,
-        lineLiqSeries,
+        lineLiqAskSeries,
+        lineLiqBidSeries,
         lineLiqDepthAskSeries,
         lineLiqDepthBidSeries,
         colorChangeTrigger,
@@ -473,8 +478,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             location.pathname.includes('reposition');
         if (isRange) {
             clipHighlightedLines(canvas);
-            lineLiqSeries(liqDataAsk);
-            lineLiqSeries(liqDataBid);
+            lineLiqAskSeries(liqDataAsk);
+            lineLiqBidSeries(liqDataBid);
         }
     };
 
@@ -602,8 +607,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     liqDepthAskSeries?.context(ctx);
                     lineLiqDepthAskSeries?.context(ctx);
                     lineLiqDepthBidSeries?.context(ctx);
-
-                    lineLiqSeries?.context(ctx);
+                    lineLiqAskSeries?.context(ctx);
+                    lineLiqBidSeries?.context(ctx);
                 });
 
             renderChart();
@@ -625,7 +630,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         ranges,
         lineLiqDepthAskSeries,
         lineLiqDepthBidSeries,
-        lineLiqSeries,
+        lineLiqAskSeries,
+        lineLiqBidSeries,
     ]);
 
     useEffect(() => {

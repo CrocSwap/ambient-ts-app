@@ -85,6 +85,15 @@ export const mainnetLIDO: TokenIF = {
     symbol: 'LDO',
 };
 
+export const mainnetTBTC: TokenIF = {
+    address: '0x18084fbA666a33d37592fA2633fD49a74DD93a88',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/26133.png',
+    name: 'tBTC v2',
+    symbol: 'tBTC',
+};
+
 export const mainnetLUSD: TokenIF = {
     address: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
     chainId: 1,
@@ -786,6 +795,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetMKR,
     mainnetLIDO,
     mainnetLUSD,
+    mainnetTBTC,
     mainnetETHFI,
     blastETH,
     blastWrsETH,
