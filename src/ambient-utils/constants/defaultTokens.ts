@@ -794,6 +794,15 @@ export const swellSepoliaUSDC: TokenIF = {
     logoURI: '',
 };
 
+export const swellSepoliaUSDT: TokenIF = {
+    name: 'Ambient USDT',
+    address: '0x60bBA138A74C5e7326885De5090700626950d509',
+    symbol: 'USDT',
+    decimals: 6,
+    chainId: 1924,
+    logoURI: '',
+};
+
 export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,
@@ -876,4 +885,7 @@ export const defaultTokens: TokenIF[] = [
     plumeSepoliaETH,
     plumeSepoliaUSD,
     plumeSepoliaNEV,
+    swellSepoliaETH,
+    swellSepoliaUSDC,
+    swellSepoliaUSDT,
 ];

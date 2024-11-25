@@ -1,5 +1,9 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { swellSepoliaETH, swellSepoliaUSDC } from '../defaultTokens';
+import {
+    swellSepoliaETH,
+    swellSepoliaUSDC,
+    swellSepoliaUSDT,
+} from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from 'ethers';
@@ -38,6 +42,11 @@ export const swellSepolia: NetworkIF = {
         new TopPool(
             swellSepoliaETH,
             swellSepoliaUSDC,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            swellSepoliaETH,
+            swellSepoliaUSDT,
             chainSpecFromSDK.poolIndex,
         ),
     ],
