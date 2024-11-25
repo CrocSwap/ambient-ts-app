@@ -77,6 +77,7 @@ const modal = createWeb3Modal({
         534352: scrollLogo,
         11155111: sepoliaLogo,
         98864: plumeSepoliaLogo,
+        1924: scrollSepoliaLogo,
     },
     termsConditionsUrl: '/terms',
     privacyPolicyUrl: '/privacy',

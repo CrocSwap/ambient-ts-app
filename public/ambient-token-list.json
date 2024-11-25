@@ -619,6 +619,22 @@
             "decimals": 6,
             "chainId": 98864,
             "logoURI": ""
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 1924,
+            "logoURI": ""
+        },
+        {
+            "name": "Ambient USDC",
+            "address": "0x4D65fB724CEd0CFC6ABFD03231C9CDC2C36A587B",
+            "symbol": "USDC",
+            "decimals": 18,
+            "chainId": 1924,
+            "logoURI": ""
         }
     ]
 }

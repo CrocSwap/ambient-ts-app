@@ -55,6 +55,7 @@ export interface ChainDataContextIF {
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
     isActiveNetworkPlume: boolean;
+    isActiveNetworkSwell: boolean;
     isActiveNetworkScroll: boolean;
     isActiveNetworkMainnet: boolean;
     isVaultSupportedOnNetwork: boolean;
@@ -114,6 +115,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);
     const isActiveNetworkPlume = ['0x18230'].includes(chainId);
+    const isActiveNetworkSwell = ['0x784'].includes(chainId);
     const isVaultSupportedOnNetwork =
         vaultSupportedNetworkIds.includes(chainId);
 
@@ -590,6 +592,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         setGasPriceinGwei,
         isActiveNetworkBlast,
         isActiveNetworkPlume,
+        isActiveNetworkSwell,
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
         isVaultSupportedOnNetwork,

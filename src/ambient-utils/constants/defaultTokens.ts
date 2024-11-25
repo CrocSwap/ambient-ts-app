@@ -775,6 +775,25 @@ export const plumeSepoliaNEV: TokenIF = {
     logoURI: '',
 };
 
+export const swellSepoliaETH: TokenIF = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 1924,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const swellSepoliaUSDC: TokenIF = {
+    name: 'Ambient USDC',
+    address: '0x4D65fB724CEd0CFC6ABFD03231C9CDC2C36A587B',
+    symbol: 'USDC',
+    decimals: 18,
+    chainId: 1924,
+    logoURI: '',
+};
+
 export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,

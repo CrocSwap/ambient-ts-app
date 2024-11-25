@@ -16,6 +16,7 @@ import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 // import plumeMainnetLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
 import plumeSepoliaLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
+import swellSepoliaLogo from '../../../../assets/images/networks/swell_network_small_logo.svg';
 // import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_network_logo.webp';
 import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
 import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
@@ -194,6 +195,17 @@ export default function NetworkSelector(props: propsIF) {
             testnet: true,
             link: '',
             condition: chainMap.has('0x18230'),
+        },
+        {
+            id: 'swell_sepolia_network_selector',
+            chainId: '0x784',
+            name: 'Swell',
+            logo: swellSepoliaLogo,
+            custom: 2,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x784'),
         },
         {
             id: 'scroll_sepolia_network_selector',
