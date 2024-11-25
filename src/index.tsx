@@ -55,9 +55,16 @@ const metadata = {
     ],
 };
 
+const defaultSupportedNetworkKey = Object.keys(supportedNetworks)[0];
+
+const defaultChainIdInteger = supportedNetworks[defaultSupportedNetworkKey]
+    .chainId
+    ? parseInt(supportedNetworks[defaultSupportedNetworkKey].chainId)
+    : 534352;
+
 const ethersConfig = defaultConfig({
     metadata,
-    defaultChainId: 534352,
+    defaultChainId: defaultChainIdInteger,
     enableEmail: false,
     rpcUrl: ' ',
     enableCoinbase: true,
@@ -102,9 +109,14 @@ modal.subscribeEvents(async (event) => {
 
     if (event.data.event === 'CONNECT_SUCCESS') {
         const currentChainId = modal.getState().selectedNetworkId as number;
-        const desiredChainId = parseInt(
-            getLocalStorageItem(LS_KEY_CHAIN_ID) || '534352',
-        );
+
+        const lastUsedNetworkIdString = getLocalStorageItem(
+            LS_KEY_CHAIN_ID,
+        ) as string;
+
+        const desiredChainId = lastUsedNetworkIdString
+            ? parseInt(lastUsedNetworkIdString)
+            : defaultChainIdInteger;
 
         if (currentChainId !== desiredChainId) {
             try {
