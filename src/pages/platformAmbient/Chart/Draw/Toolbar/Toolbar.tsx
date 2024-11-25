@@ -59,6 +59,7 @@ function ChartToolbar() {
 
     const { platformName } = useContext(BrandContext);
     const isFuta = ['futa'].includes(platformName);
+    const [isTouchActive, setIsTouchActive] = useState(false);
 
     const {
         toolbarRef,
@@ -357,9 +358,13 @@ function ChartToolbar() {
                             {drawIconList.map((item, index) => (
                                 <IconCard key={index}>
                                     <IconActiveContainer
-                                        onClick={() =>
-                                            handleDrawModeChange(item)
-                                        }
+                                        onClick={() => {
+                                            if (isTouchActive) {
+                                                setIsTouchActive(false);
+                                                return;
+                                            }
+                                            handleDrawModeChange(item);
+                                        }}
                                         onMouseEnter={() => {
                                             handleOnMouseEnter(
                                                 item.description,
@@ -401,10 +406,13 @@ function ChartToolbar() {
                                                       .toString()
                                                 : 'var(--accent1)'
                                         }
-                                        onClick={() =>
-                                            !mobileView &&
-                                            handleActivateIndicator(item)
-                                        }
+                                        onClick={() => {
+                                            if (isTouchActive) {
+                                                setIsTouchActive(false);
+                                                return;
+                                            }
+                                            handleActivateIndicator(item);
+                                        }}
                                         onMouseEnter={() => {
                                             handleOnMouseEnter(
                                                 item.description,
@@ -413,9 +421,10 @@ function ChartToolbar() {
                                         onMouseLeave={() =>
                                             setHoveredTool(() => undefined)
                                         }
-                                        onTouchStart={() =>
-                                            handleActivateIndicator(item)
-                                        }
+                                        onTouchStart={() => {
+                                            setIsTouchActive(true);
+                                            handleActivateIndicator(item);
+                                        }}
                                     >
                                         {item.icon}
                                     </IconFillContainer>
@@ -443,23 +452,26 @@ function ChartToolbar() {
                                             ) > 0
                                         }
                                         onClick={() => {
-                                            if (!mobileView) {
-                                                if (
-                                                    item.stack.has(actionKey) &&
-                                                    Number(
-                                                        item.stack.get(
-                                                            actionKey,
-                                                        )?.length,
-                                                    ) > 0
-                                                ) {
-                                                    setSelectedDrawnShape(
-                                                        undefined,
-                                                    );
-                                                    item.operation();
-                                                }
+                                            if (isTouchActive) {
+                                                setIsTouchActive(false);
+                                                return;
+                                            }
+                                            if (
+                                                item.stack.has(actionKey) &&
+                                                Number(
+                                                    item.stack.get(actionKey)
+                                                        ?.length,
+                                                ) > 0
+                                            ) {
+                                                setSelectedDrawnShape(
+                                                    undefined,
+                                                );
+                                                item.operation();
                                             }
                                         }}
                                         onTouchStart={() => {
+                                            setIsTouchActive(true);
+
                                             if (
                                                 item.stack.has(actionKey) &&
                                                 Number(
@@ -507,14 +519,23 @@ function ChartToolbar() {
 
                             <IconCard>
                                 <IconActiveContainer
-                                    onClick={() => handleDeleteAll()}
+                                    onClick={() => {
+                                        if (isTouchActive) {
+                                            setIsTouchActive(false);
+                                            return;
+                                        }
+                                        handleDeleteAll();
+                                    }}
                                     onMouseEnter={() => {
                                         handleOnMouseEnter('Delete All');
                                     }}
                                     onMouseLeave={() =>
                                         setHoveredTool(() => undefined)
                                     }
-                                    onTouchStart={() => handleDeleteAll()}
+                                    onTouchStart={() => {
+                                        setIsTouchActive(true);
+                                        handleDeleteAll();
+                                    }}
                                 >
                                     <DeleteSvg
                                         stroke={
@@ -545,13 +566,17 @@ function ChartToolbar() {
                 <Divider />
                 <DividerButton
                     isActive={isToolbarOpen}
-                    onClick={() =>
-                        !mobileView &&
-                        setIsToolbarOpen((prev: boolean) => !prev)
-                    }
-                    onTouchStart={() =>
-                        setIsToolbarOpen((prev: boolean) => !prev)
-                    }
+                    onClick={() => {
+                        if (isTouchActive) {
+                            setIsTouchActive(false);
+                            return;
+                        }
+                        setIsToolbarOpen((prev: boolean) => !prev);
+                    }}
+                    onTouchStart={() => {
+                        setIsTouchActive(true);
+                        setIsToolbarOpen((prev: boolean) => !prev);
+                    }}
                 >
                     <ArrowRight
                         isActive={isToolbarOpen}
