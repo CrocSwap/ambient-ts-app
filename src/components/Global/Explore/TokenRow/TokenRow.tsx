@@ -1,16 +1,16 @@
 // import styles from './TokenRow.module.css';
-import TokenIcon from '../../TokenIcon/TokenIcon';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
+import TokenIcon from '../../TokenIcon/TokenIcon';
 
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { GrLineChart } from 'react-icons/gr';
 import {
     GCServerPoolIF,
     PoolIF,
     TokenIF,
 } from '../../../../ambient-utils/types';
-import { GrLineChart } from 'react-icons/gr';
-import styles from './TokenRow.module.css';
 import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useTokenStats';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import styles from './TokenRow.module.css';
 interface propsIF {
     token: dexTokenData;
     tokenMeta: TokenIF;

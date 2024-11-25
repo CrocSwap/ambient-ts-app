@@ -1,13 +1,13 @@
+import { trimString } from '../../../../ambient-utils/dataLayer';
 import Divider from '../../../../components/Global/Divider/Divider';
+import Spinner from '../../../../components/Global/Spinner/Spinner';
+import { UserXpDataIF } from '../../../../contexts/UserDataContext';
 import { XpLeadersDataIF } from '../../../../contexts/XpLeadersContext';
 import RankHeader from './RankHeader';
 import RankRow from './RankRow';
 import styles from './RankTable.module.css';
-import { trimString } from '../../../../ambient-utils/dataLayer';
-import Spinner from '../../../../components/Global/Spinner/Spinner';
-import { UserXpDataIF } from '../../../../contexts/UserDataContext';
-// import { useContext } from 'react';
-// import { UserDataContext } from '../../../contexts/UserDataContext';
+// import{ useContext } from 'react';
+// import{ UserDataContext } from '../../../contexts/UserDataContext';
 
 interface Props {
     xpLeaders: XpLeadersDataIF;

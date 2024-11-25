@@ -1,31 +1,31 @@
 import { Dispatch, SetStateAction, useContext, useRef } from 'react';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { useParams } from 'react-router-dom';
-import styles from './TickerComponent.module.css';
-import Divider from '../Divider/FutaDivider';
 import { FaEye } from 'react-icons/fa';
-import {
-    AuctionStatusDataIF,
-    AuctionsContext,
-} from '../../../contexts/AuctionsContext';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import { useParams } from 'react-router-dom';
+import { supportedNetworks } from '../../../ambient-utils/constants';
 import {
     AuctionDataIF,
     getFormattedNumber,
     getTimeDifference,
 } from '../../../ambient-utils/dataLayer';
-import { supportedNetworks } from '../../../ambient-utils/constants';
+import {
+    AuctionStatusDataIF,
+    AuctionsContext,
+} from '../../../contexts/AuctionsContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import Divider from '../Divider/FutaDivider';
+import styles from './TickerComponent.module.css';
 
-import { CurrencySelector } from '../../Form/CurrencySelector';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import { LuChevronDown } from 'react-icons/lu';
-import TooltipLabel from '../TooltipLabel/TooltipLabel';
-import ProgressBar from '../ProgressBar/ProgressBar';
+import { AppStateContext } from '../../../contexts';
 import {
     MARKET_CAP_MULTIPLIER_BIG_INT,
     maxMarketCapWeiValues,
 } from '../../../pages/platformFuta/mockAuctionData';
-import { toDisplayQty } from '@crocswap-libs/sdk';
-import { AppStateContext } from '../../../contexts';
+import { CurrencySelector } from '../../Form/CurrencySelector';
+import ProgressBar from '../ProgressBar/ProgressBar';
+import TooltipLabel from '../TooltipLabel/TooltipLabel';
 
 // Props interface
 export interface PropsIF {

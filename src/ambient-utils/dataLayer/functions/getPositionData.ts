@@ -7,14 +7,14 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import { PositionIF, PositionServerIF, TokenIF } from '../../types';
-import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
-import { SpotPriceFn } from './querySpotPrice';
-import { getFormattedNumber } from './getFormattedNumber';
 import { Provider } from 'ethers';
-import { getPositionHash } from './getPositionHash';
+import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
+import { PositionIF, PositionServerIF, TokenIF } from '../../types';
+import { getFormattedNumber } from './getFormattedNumber';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
+import { getPositionHash } from './getPositionHash';
+import { SpotPriceFn } from './querySpotPrice';
 
 export const getPositionData = async (
     position: PositionServerIF,

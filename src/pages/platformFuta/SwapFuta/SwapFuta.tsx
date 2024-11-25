@@ -1,15 +1,15 @@
 import { useContext, useState } from 'react';
+import Comments from '../../../components/Futa/Comments/Comments';
 import Divider from '../../../components/Futa/Divider/FutaDivider';
 import Separator from '../../../components/Futa/Separator/Separator';
-import Comments from '../../../components/Futa/Comments/Comments';
 import Swap from '../../platformAmbient/Trade/Swap/Swap';
 
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Trade from '../../platformAmbient/Trade/Trade';
 import styles from './SwapFuta.module.css';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
-import { ChartContext } from '../../../contexts/ChartContext';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
+import { ChartContext } from '../../../contexts/ChartContext';
 
 // import logo from '../../../assets/futa/logos/homeLogo.svg';
 

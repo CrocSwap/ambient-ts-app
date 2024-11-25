@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './Home.module.css';
 
+import DotAnimation from '../../../components/Home/CarouselControl/DotAnimation';
 import Section from '../../../components/Home/Section/Section';
+import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
 import FutaLanding1 from './FutaLandings/FutaLanding1';
 import FutaLanding2 from './FutaLandings/FutaLanding2';
 import FutaLanding3 from './FutaLandings/FutaLanding3';
 import FutaLanding4 from './FutaLandings/FutaLanding4';
 import Hero from './Hero/Hero';
-import DotAnimation from '../../../components/Home/CarouselControl/DotAnimation';
-import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
 
 function Home() {
     const {

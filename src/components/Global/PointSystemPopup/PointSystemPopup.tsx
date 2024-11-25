@@ -1,15 +1,15 @@
-import { FlexContainer } from '../../../styled/Common';
-0;
-import styles from './PointSystemPopup.module.css';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import { VscClose } from 'react-icons/vsc';
 import { Link, useLocation } from 'react-router-dom';
-import { useCallback, useContext, useEffect, useRef } from 'react';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { UserDataContext } from '../../../contexts/UserDataContext';
 import ambientXblastLogo from '../../../assets/images/logos/ambientXBlast.svg';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { FlexContainer } from '../../../styled/Common';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import styles from './PointSystemPopup.module.css';
+0;
 
 interface PropsIF {
     dismissPointSystemPopup(ctaDismissal: { ctaId: string }): void;

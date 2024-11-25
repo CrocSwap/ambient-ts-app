@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useContext, useState, useMemo, ReactNode } from 'react';
+import { ReactNode, useContext, useMemo, useState } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -10,21 +10,21 @@ import {
     LPButton,
 } from '../../../styled/Components/TradeModules';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
+import Button from '../../Form/Button';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
 import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
-import Button from '../../Form/Button';
 
-import TradeLinks from './TradeLinks';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import {
     brand,
     excludedTokenAddressesLowercase,
 } from '../../../ambient-utils/constants';
-import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
 import { openInNewTab } from '../../../ambient-utils/dataLayer';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
+import TradeLinks from './TradeLinks';
 
 interface PropsIF {
     chainId: string;

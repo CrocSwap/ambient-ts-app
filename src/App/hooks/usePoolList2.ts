@@ -1,12 +1,12 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
-import { GCServerPoolIF } from '../../ambient-utils/types';
 import { fetchPoolList } from '../../ambient-utils/api';
-import { TokenContext, TokenContextIF } from '../../contexts/TokenContext';
+import { GCServerPoolIF } from '../../ambient-utils/types';
 import {
     AppStateContext,
     AppStateContextIF,
 } from '../../contexts/AppStateContext';
+import { TokenContext, TokenContextIF } from '../../contexts/TokenContext';
 
 // this file exists because we need to be able to access the full list of pools
 // ... on-chain and existing logic removes pools where either token is unknown

@@ -1,23 +1,23 @@
 import blocktower from '../../../assets/images/investors/blocktower.svg';
-import jane from '../../../assets/images/investors/jane.svg';
 import circle from '../../../assets/images/investors/circle.svg';
-import tensai from '../../../assets/images/investors/tensai.png';
-import naval from '../../../assets/images/investors/naval.svg';
-import yunt from '../../../assets/images/investors/yunt.svg';
-import susa from '../../../assets/images/investors/susa.svg';
-import quantstamp from '../../../assets/images/investors/quantstamp.svg';
 import hypotenuse from '../../../assets/images/investors/hypotenuse.svg';
-import PositiveSum from '../../../assets/images/investors/positivesum.svg';
+import jane from '../../../assets/images/investors/jane.svg';
 import motivate from '../../../assets/images/investors/motivate.svg';
+import naval from '../../../assets/images/investors/naval.svg';
+import PositiveSum from '../../../assets/images/investors/positivesum.svg';
+import quantstamp from '../../../assets/images/investors/quantstamp.svg';
+import susa from '../../../assets/images/investors/susa.svg';
+import tensai from '../../../assets/images/investors/tensai.png';
+import yunt from '../../../assets/images/investors/yunt.svg';
 
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { FlexContainer, GridContainer, Text } from '../../../styled/Common';
 import {
+    InvestorRow,
     InvestorsContainer,
     InvestorsContent,
     MobileContainer,
-    InvestorRow,
 } from '../../../styled/Components/Home';
-import { FlexContainer, GridContainer, Text } from '../../../styled/Common';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 export default function Investors() {
     const row1 = (
         <InvestorRow row={1}>

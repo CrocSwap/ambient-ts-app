@@ -1,26 +1,26 @@
-import { PoolIF } from '../../../ambient-utils/types';
-import { getMoneynessRank, uriToHttp } from '../../../ambient-utils/dataLayer';
-import { Link, useLocation } from 'react-router-dom';
 import { useContext, useMemo } from 'react';
-import {
-    useLinkGen,
-    linkGenMethodsIF,
-    pageNames,
-} from '../../../utils/hooks/useLinkGen';
+import { Link, useLocation } from 'react-router-dom';
+import { getMoneynessRank, uriToHttp } from '../../../ambient-utils/dataLayer';
+import { PoolIF } from '../../../ambient-utils/types';
+import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
+import { AppStateContext } from '../../../contexts';
+import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { FlexContainer, Text } from '../../../styled/Common';
 import {
     ItemContainer,
     MainItemContainer,
 } from '../../../styled/Components/Sidebar';
-import { FlexContainer, Text } from '../../../styled/Common';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
-import TokenIcon from '../TokenIcon/TokenIcon';
-import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import FavButton from './FavButton';
+import {
+    linkGenMethodsIF,
+    pageNames,
+    useLinkGen,
+} from '../../../utils/hooks/useLinkGen';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { SidebarContext } from '../../../contexts/SidebarContext';
-import { BrandContextIF, BrandContext } from '../../../contexts/BrandContext';
-import { AppStateContext } from '../../../contexts';
+import TokenIcon from '../TokenIcon/TokenIcon';
+import FavButton from './FavButton';
 
 interface propsIF {
     pool: PoolIF;

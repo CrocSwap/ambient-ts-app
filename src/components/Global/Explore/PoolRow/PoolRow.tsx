@@ -1,17 +1,17 @@
-import TokenIcon from '../../TokenIcon/TokenIcon';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
-import { PoolDataIF } from '../../../../contexts/ExploreContext';
 import { TokenIF } from '../../../../ambient-utils/types';
+import { PoolDataIF } from '../../../../contexts/ExploreContext';
+import TokenIcon from '../../TokenIcon/TokenIcon';
 
+import { useMemo } from 'react';
+import { GrLineChart } from 'react-icons/gr';
 import { FlexContainer } from '../../../../styled/Common';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { useMemo } from 'react';
 import styles from './PoolRow.module.css';
-import { GrLineChart } from 'react-icons/gr';
 interface propsIF {
     pool: PoolDataIF;
     goToMarket: (tknA: string, tknB: string) => void;

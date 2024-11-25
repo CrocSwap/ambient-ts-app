@@ -1,39 +1,39 @@
+import { ethers } from 'ethers';
 import {
-    useEffect,
-    useMemo,
-    useState,
+    ChangeEvent,
     Dispatch,
     SetStateAction,
     useContext,
-    ChangeEvent,
+    useEffect,
+    useMemo,
+    useState,
 } from 'react';
-import { TokenIF } from '../../../ambient-utils/types';
-import TokenSelect from '../TokenSelect/TokenSelect';
-import styles from './SoloTokenSelectModal.module.css';
-import SoloTokenImport from './SoloTokenImport';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../contexts/CrocEnvContext';
-import { ethers } from 'ethers';
-import { TokenContext, TokenContextIF } from '../../../contexts/TokenContext';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+    isWrappedNativeToken,
+    removeWrappedNative,
+} from '../../../ambient-utils/dataLayer';
+import { TokenIF } from '../../../ambient-utils/types';
+import { AppStateContext } from '../../../contexts';
 import {
     CachedDataContext,
     CachedDataContextIF,
 } from '../../../contexts/CachedDataContext';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
-import Modal from '../Modal/Modal';
 import {
-    removeWrappedNative,
-    isWrappedNativeToken,
-} from '../../../ambient-utils/dataLayer';
-import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../contexts/CrocEnvContext';
+import { TokenContext, TokenContextIF } from '../../../contexts/TokenContext';
 import {
     TradeDataContext,
     TradeDataContextIF,
 } from '../../../contexts/TradeDataContext';
-import { AppStateContext } from '../../../contexts';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import Modal from '../Modal/Modal';
+import TokenSelect from '../TokenSelect/TokenSelect';
+import SoloTokenImport from './SoloTokenImport';
+import styles from './SoloTokenSelectModal.module.css';
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;

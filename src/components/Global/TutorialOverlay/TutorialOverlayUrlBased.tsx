@@ -2,6 +2,7 @@ import { Step } from 'intro.js-react';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { futaAuctionsSteps } from '../../../utils/tutorial/Futa/AuctionsSteps';
@@ -11,8 +12,7 @@ import { TutorialIF, TutorialStepExternalComponent } from '../../Chat/ChatIFs';
 import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
 import styles from './TutorialOverlayUrlBased.module.css';
-import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
-// import { MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
+// import{ MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
     checkStepHash?: boolean;

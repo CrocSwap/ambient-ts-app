@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction, memo, useContext } from 'react';
-import { PoolContext } from '../../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
+import { GraphDataContext } from '../../../../../contexts/GraphDataContext';
+import { PoolContext } from '../../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import { SelectedRangeContainer } from '../../../../../styled/Components/TradeModules';
-import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
-import { GraphDataContext } from '../../../../../contexts/GraphDataContext';
 
 interface propsIF {
     isTokenABase: boolean;

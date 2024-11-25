@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    tokenListURIs,
     defaultTokens,
     hiddenTokens,
+    tokenListURIs,
 } from '../../ambient-utils/constants';
-import { TokenIF, TokenListIF } from '../../ambient-utils/types';
 import {
     chainNumToString,
-    uriToHttp,
     serializeBigInt,
+    uriToHttp,
 } from '../../ambient-utils/dataLayer';
+import { TokenIF, TokenListIF } from '../../ambient-utils/types';
 
 export interface tokenMethodsIF {
     allDefaultTokens: TokenIF[];
@@ -19,7 +19,11 @@ export interface tokenMethodsIF {
     tokenUniv: TokenIF[];
     getTokenByAddress: (addr: string) => TokenIF | undefined;
     getTokensFromList: (uri: string) => TokenIF[];
-    getTokensByNameOrSymbol: (input: string, chn: string, exact?: boolean) => TokenIF[];
+    getTokensByNameOrSymbol: (
+        input: string,
+        chn: string,
+        exact?: boolean,
+    ) => TokenIF[];
 }
 
 // keys for data persisted in local storage
@@ -368,20 +372,20 @@ export const useTokens = (
                 tokenUniv
                     .filter((tkn: TokenIF) => tkn.chainId === parseInt(chn))
                     .forEach((tkn: TokenIF) => {
-                    if (
-                        tkn.name.toLowerCase() === cleanedInput ||
-                        tkn.symbol.toLowerCase() === cleanedInput
-                    ) {
-                        // push exact matches to the appropriate array
-                        exactMatches.push(tkn);
-                    } else if (
-                        tkn.name.toLowerCase().includes(cleanedInput) ||
-                        tkn.symbol.toLowerCase().includes(cleanedInput)
-                    ) {
-                        // push partial matches to the appropriate array
-                        partialMatches.push(tkn);
-                    }
-                });
+                        if (
+                            tkn.name.toLowerCase() === cleanedInput ||
+                            tkn.symbol.toLowerCase() === cleanedInput
+                        ) {
+                            // push exact matches to the appropriate array
+                            exactMatches.push(tkn);
+                        } else if (
+                            tkn.name.toLowerCase().includes(cleanedInput) ||
+                            tkn.symbol.toLowerCase().includes(cleanedInput)
+                        ) {
+                            // push partial matches to the appropriate array
+                            partialMatches.push(tkn);
+                        }
+                    });
                 return exactMatches.concat(partialMatches).filter((t) => {
                     // Then check if token is in exclusion list
                     return !hiddenTokens.some(

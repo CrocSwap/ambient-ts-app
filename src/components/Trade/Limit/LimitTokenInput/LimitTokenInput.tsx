@@ -1,26 +1,26 @@
-import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
+import { fromDisplayQty } from '@crocswap-libs/sdk';
+import { Dispatch, memo, SetStateAction, useContext, useEffect } from 'react';
 import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
-import { PoolContext } from '../../../../contexts/PoolContext';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import { FlexContainer } from '../../../../styled/Common';
 import {
     precisionOfInput,
     truncateDecimals,
 } from '../../../../ambient-utils/dataLayer';
+import { AppStateContext } from '../../../../contexts';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { FlexContainer } from '../../../../styled/Common';
 import {
     limitParamsIF,
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
 import { formatTokenInput } from '../../../../utils/numbers';
-import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
+import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { fromDisplayQty } from '@crocswap-libs/sdk';
-import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };

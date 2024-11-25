@@ -1,13 +1,22 @@
-import React, { useContext, useRef, useState } from 'react';
-import { ChartContext } from '../../../../../contexts/ChartContext';
-import undoIcon from '../../../../../assets/images/icons/draw/undo.svg';
-import redoIcon from '../../../../../assets/images/icons/draw/redo.svg';
-import { ArrowContainer } from '../../../../../styled/Components/Chart';
 import { useMediaQuery } from '@material-ui/core';
-import { actionKeyIF, actionStackIF } from '../../ChartUtils/useUndoRedo';
-import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
-import HoveredTooltip from './HoveredTooltip';
+import { useContext, useRef, useState } from 'react';
+import DeleteSvg from '../../../../../assets/images/icons/draw/DeleteSvg';
+import DpRangeSvg from '../../../../../assets/images/icons/draw/DpRangeSvg';
 import DrawCross from '../../../../../assets/images/icons/draw/DrawCrossSvg';
+import DrawLineSvg from '../../../../../assets/images/icons/draw/DrawLineSvg';
+import FibRetracementSvg from '../../../../../assets/images/icons/draw/FibRetracementSvg';
+import HorizontalRaySvg from '../../../../../assets/images/icons/draw/HorizontalRaySvg';
+import RectSvg from '../../../../../assets/images/icons/draw/RectSvg';
+import redoIcon from '../../../../../assets/images/icons/draw/redo.svg';
+import SnapSvg from '../../../../../assets/images/icons/draw/SnapSvg';
+import undoIcon from '../../../../../assets/images/icons/draw/undo.svg';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { BrandContext } from '../../../../../contexts/BrandContext';
+import { ChartContext } from '../../../../../contexts/ChartContext';
+import { ArrowContainer } from '../../../../../styled/Components/Chart';
+import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
+import { actionKeyIF, actionStackIF } from '../../ChartUtils/useUndoRedo';
+import HoveredTooltip from './HoveredTooltip';
 import {
     ArrowContainerContainer,
     ArrowRight,
@@ -23,15 +32,6 @@ import {
     UndoButtonSvg,
     UndoRedoButtonActive,
 } from './ToolbarCss';
-import SnapSvg from '../../../../../assets/images/icons/draw/SnapSvg';
-import DrawLineSvg from '../../../../../assets/images/icons/draw/DrawLineSvg';
-import HorizontalRaySvg from '../../../../../assets/images/icons/draw/HorizontalRaySvg';
-import RectSvg from '../../../../../assets/images/icons/draw/RectSvg';
-import FibRetracementSvg from '../../../../../assets/images/icons/draw/FibRetracementSvg';
-import DpRangeSvg from '../../../../../assets/images/icons/draw/DpRangeSvg';
-import DeleteSvg from '../../../../../assets/images/icons/draw/DeleteSvg';
-import { BrandContext } from '../../../../../contexts/BrandContext';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 /* interface ToolbarProps {
   

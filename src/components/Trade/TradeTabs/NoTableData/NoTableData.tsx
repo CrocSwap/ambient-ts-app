@@ -1,9 +1,9 @@
 import styles from './NoTableData.module.css';
-// import { AiFillFolderOpen } from 'react-icons/ai';
+// import{ AiFillFolderOpen } from 'react-icons/ai';
 import { Dispatch, memo, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { useNavigate } from 'react-router-dom';
 
 interface NoTableDataPropsIF {
     type: string;

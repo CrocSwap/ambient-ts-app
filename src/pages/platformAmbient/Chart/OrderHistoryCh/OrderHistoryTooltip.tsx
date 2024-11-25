@@ -1,5 +1,16 @@
-import { TransactionIF } from '../../../../ambient-utils/types';
+import { useContext, useState } from 'react';
+import { RiExternalLinkLine } from 'react-icons/ri';
 import { CSSTransition } from 'react-transition-group';
+import {
+    getFormattedNumber,
+    trimString,
+    uriToHttp,
+} from '../../../../ambient-utils/dataLayer';
+import { TransactionIF } from '../../../../ambient-utils/types';
+import { AppStateContext } from '../../../../contexts';
+import { BrandContext } from '../../../../contexts/BrandContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import HoveredTooltip from '../Draw/Toolbar/HoveredTooltip';
 import {
     OrderHistoryBody,
     OrderHistoryContainer,
@@ -8,17 +19,6 @@ import {
     StyledHeader,
     StyledLink,
 } from './OrderHistoryTooltipCss';
-import {
-    getFormattedNumber,
-    trimString,
-    uriToHttp,
-} from '../../../../ambient-utils/dataLayer';
-import { RiExternalLinkLine } from 'react-icons/ri';
-import { useContext, useState } from 'react';
-import HoveredTooltip from '../Draw/Toolbar/HoveredTooltip';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { BrandContext } from '../../../../contexts/BrandContext';
-import { AppStateContext } from '../../../../contexts';
 
 export default function OrderHistoryTooltip(props: {
     hoveredOrderHistory: TransactionIF;

@@ -1,7 +1,7 @@
-import { Steps, Hints } from 'intro.js-react';
+import { Hints, Steps } from 'intro.js-react';
 import 'intro.js/introjs.css';
-import { SetStateAction, Dispatch } from 'react';
-// import { MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
+import { Dispatch, SetStateAction } from 'react';
+// import{ MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
     isTutorialEnabled: boolean;

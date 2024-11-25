@@ -1,16 +1,16 @@
-import { PoolQueryFn } from '../../../ambient-utils/dataLayer';
 import { useContext, useEffect, useState } from 'react';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import PoolsListItem from './PoolsListItem';
-import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useLocation } from 'react-router-dom';
+import { PoolQueryFn } from '../../../ambient-utils/dataLayer';
+import { AppStateContext } from '../../../contexts';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { FlexContainer } from '../../../styled/Common';
 import {
     ItemHeaderContainer,
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../styled/Components/Sidebar';
-import { AppStateContext } from '../../../contexts';
+import { useLinkGen } from '../../../utils/hooks/useLinkGen';
+import PoolsListItem from './PoolsListItem';
 
 interface propsIF {
     cachedQuerySpotPrice: PoolQueryFn;

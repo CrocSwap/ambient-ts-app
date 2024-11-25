@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import React, {
     createContext,
     Dispatch,
@@ -7,7 +8,6 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import * as d3 from 'd3';
 import { useLocation } from 'react-router-dom';
 import {
     chartSettingsMethodsIF,
@@ -19,17 +19,17 @@ import {
     LS_KEY_CHART_CONTEXT_SETTINGS,
 } from '../pages/platformAmbient/Chart/ChartUtils/chartConstants';
 import {
+    drawDataHistory,
+    getCssVariable,
+    selectedDrawnData,
+} from '../pages/platformAmbient/Chart/ChartUtils/chartUtils';
+import {
     actionKeyIF,
     actionStackIF,
     useUndoRedo,
 } from '../pages/platformAmbient/Chart/ChartUtils/useUndoRedo';
-import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
 import { BrandContext } from './BrandContext';
-import {
-    drawDataHistory,
-    selectedDrawnData,
-    getCssVariable,
-} from '../pages/platformAmbient/Chart/ChartUtils/chartUtils';
+import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 

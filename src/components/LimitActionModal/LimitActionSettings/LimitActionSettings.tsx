@@ -1,8 +1,8 @@
-import { Dispatch, SetStateAction } from 'react';
-import styles from './LimitActionSettings.module.css';
-import { BsArrowLeft } from 'react-icons/bs';
 import { Button } from '@material-ui/core';
+import { Dispatch, SetStateAction } from 'react';
+import { BsArrowLeft } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
+import styles from './LimitActionSettings.module.css';
 
 interface propsIF {
     showSettings: boolean;

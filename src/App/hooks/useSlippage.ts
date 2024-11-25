@@ -3,8 +3,8 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     DEFAULT_SLIPPAGE_VALUES,
     slippageDefaultsIF,
-    slippagePresetsType,
     slippageDefaultTypes,
+    slippagePresetsType,
 } from '../../ambient-utils/constants';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 

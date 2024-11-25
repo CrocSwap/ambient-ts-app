@@ -1,9 +1,9 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import { LiquidityRangeIF } from '../../../../../ambient-utils/types';
-import { getActiveLiqDepth } from './AreaSeries';
 import { ChartThemeIF } from '../../../../../contexts/ChartContext';
+import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
+import { getActiveLiqDepth } from './AreaSeries';
 const lineSellColor = 'rgba(115, 113, 252)';
 const lineBuyColor = 'rgba(205, 193, 255)';
 

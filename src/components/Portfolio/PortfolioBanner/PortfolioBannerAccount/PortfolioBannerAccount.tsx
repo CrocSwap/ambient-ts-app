@@ -23,11 +23,11 @@ import {
 } from '../../../../contexts/UserDataContext';
 import styles from './PortfolioBannerAccount.module.css';
 
+import { useNavigate } from 'react-router-dom';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
-import { useNavigate } from 'react-router-dom';
 
 interface propsIF {
     ensName: string;

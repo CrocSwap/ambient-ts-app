@@ -1,23 +1,26 @@
+import * as d3 from 'd3';
+import * as d3fc from 'd3fc';
 import {
-    useEffect,
-    useRef,
-    useState,
     MouseEvent,
     memo,
     useContext,
+    useEffect,
+    useRef,
+    useState,
 } from 'react';
-import * as d3 from 'd3';
-import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
-import {
-    formatAmountChartData,
-    formatPoolPriceAxis,
-} from '../../../../../utils/numbers';
-import { createRectLabel } from './YaxisUtils';
 import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../../../ambient-utils/dataLayer';
+import { BrandContext } from '../../../../../contexts/BrandContext';
+import { PoolContext } from '../../../../../contexts/PoolContext';
+import { RangeContext } from '../../../../../contexts/RangeContext';
+import {
+    formatAmountChartData,
+    formatPoolPriceAxis,
+} from '../../../../../utils/numbers';
+import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import {
     crosshair,
     fillLiqAdvanced,
@@ -31,11 +34,8 @@ import {
     setCanvasResolution,
     standardDeviation,
 } from '../../ChartUtils/chartUtils';
-import { RangeContext } from '../../../../../contexts/RangeContext';
-import { PoolContext } from '../../../../../contexts/PoolContext';
 import useDollarPrice from '../../ChartUtils/getDollarPrice';
-import { BrandContext } from '../../../../../contexts/BrandContext';
-import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
+import { createRectLabel } from './YaxisUtils';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;

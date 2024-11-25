@@ -1,9 +1,9 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { TokenIF, TransactionIF, TransactionServerIF } from '../../types';
-import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
-import { SpotPriceFn } from './querySpotPrice';
 import { Provider } from 'ethers';
+import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
+import { TokenIF, TransactionIF, TransactionServerIF } from '../../types';
+import { SpotPriceFn } from './querySpotPrice';
 
 export const getTransactionData = async (
     tx: TransactionServerIF,

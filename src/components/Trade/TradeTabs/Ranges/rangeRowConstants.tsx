@@ -1,27 +1,27 @@
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { PositionIF, TokenIF } from '../../../../ambient-utils/types';
-import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
-import Medal from '../../../Global/Medal/Medal';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
-import {
-    useLinkGen,
-    linkGenMethodsIF,
-    poolParamsIF,
-} from '../../../../utils/hooks/useLinkGen';
-import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import { useContext } from 'react';
-import { TokenContext } from '../../../../contexts/TokenContext';
-import { RowItem } from '../../../../styled/Components/TransactionTable';
-import { FlexContainer, Text } from '../../../../styled/Common';
 import moment from 'moment';
+import { useContext } from 'react';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
-import { PoolContext } from '../../../../contexts/PoolContext';
+import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
+import { PositionIF, TokenIF } from '../../../../ambient-utils/types';
 import { maxWidth } from '../../../../ambient-utils/types/mediaQueries';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { RangeContext } from '../../../../contexts/RangeContext';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import { RowItem } from '../../../../styled/Components/TransactionTable';
+import {
+    linkGenMethodsIF,
+    poolParamsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import Medal from '../../../Global/Medal/Medal';
+import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
+import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 
 interface propsIF {
     posHashTruncated: string;

@@ -1,21 +1,21 @@
-import { NetworkIF, TokenIF, chainIds } from '../../types';
-import { ethereumSepolia } from './ethereumSepolia';
-import { ethereumMainnet } from './ethereumMainnet';
-import { scrollMainnet } from './scrollMainnet';
-import { scrollSepolia } from './scrollSepolia';
-import { blastSepolia } from './blastSepolia';
-import { blast } from './blastMainnet';
 import {
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
-    defaultBrandAssets,
     blastBrandAssets,
-    scrollBrandAssets,
+    defaultBrandAssets,
     futaBrandAssets,
     plumeSepoliaBrandAssets,
+    scrollBrandAssets,
 } from '../../../assets/branding';
-import { plumeSepolia } from './plumeSepolia';
 import { swellSepoliaBrandAssets } from '../../../assets/branding/swellSepoliaBrandAssets';
+import { NetworkIF, TokenIF, chainIds } from '../../types';
+import { blast } from './blastMainnet';
+import { blastSepolia } from './blastSepolia';
+import { ethereumMainnet } from './ethereumMainnet';
+import { ethereumSepolia } from './ethereumSepolia';
+import { plumeSepolia } from './plumeSepolia';
+import { scrollMainnet } from './scrollMainnet';
+import { scrollSepolia } from './scrollSepolia';
 import { swellSepolia } from './swellSepolia';
 
 export const brand: string | undefined =
@@ -84,11 +84,13 @@ export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
     }
 }
 
-export { ethereumSepolia };
-export { ethereumMainnet };
-export { scrollMainnet };
-export { scrollSepolia };
-export { blastSepolia };
-export { plumeSepolia };
-export { swellSepolia };
-export { blast };
+export {
+    blast,
+    blastSepolia,
+    ethereumMainnet,
+    ethereumSepolia,
+    plumeSepolia,
+    scrollMainnet,
+    scrollSepolia,
+    swellSepolia,
+};

@@ -1,10 +1,9 @@
 import { useContext, useRef, useState } from 'react';
-import styles from './CommentInput.module.css';
 import { AiOutlineSend } from 'react-icons/ai';
+import styles from './CommentInput.module.css';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
-import CircularProgressBarForComments from '../../../Global/OpenOrderStatus/CircularProgressBarForComments';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import CircularProgressBarForComments from '../../../Global/OpenOrderStatus/CircularProgressBarForComments';
 
 interface CommentInputProps {
     commentInputDispatch: (message: string) => void;
