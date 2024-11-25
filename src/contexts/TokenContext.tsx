@@ -1,13 +1,13 @@
 import { createContext, useContext } from 'react';
+import { TokenIF } from '../ambient-utils/types';
 import {
     getRecentTokensParamsIF,
     useRecentTokens,
 } from '../App/hooks/useRecentTokens';
 import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 import { useTokenSearch } from '../App/hooks/useTokenSearch';
-import { TokenIF } from '../ambient-utils/types';
-import { TokenBalanceContext } from './TokenBalanceContext';
 import { AppStateContext } from './AppStateContext';
+import { TokenBalanceContext } from './TokenBalanceContext';
 
 export interface TokenContextIF {
     tokens: tokenMethodsIF;

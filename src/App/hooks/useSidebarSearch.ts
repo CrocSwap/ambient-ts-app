@@ -6,28 +6,28 @@ import {
     useMemo,
     useState,
 } from 'react';
-import {
-    LimitOrderIF,
-    PositionIF,
-    PoolIF,
-    TokenIF,
-    TransactionIF,
-} from '../../ambient-utils/types';
-import matchSearchInput from '../functions/matchSearchInput';
-import { tokenMethodsIF } from './useTokens';
+import { fetchEnsAddress } from '../../ambient-utils/api';
 import {
     GCGO_OVERRIDE_URL,
     IS_LOCAL_ENV,
     ZERO_ADDRESS,
     tokenListURIs,
 } from '../../ambient-utils/constants';
-import { PoolContext } from '../../contexts/PoolContext';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { fetchEnsAddress } from '../../ambient-utils/api';
+import {
+    LimitOrderIF,
+    PoolIF,
+    PositionIF,
+    TokenIF,
+    TransactionIF,
+} from '../../ambient-utils/types';
 import {
     AppStateContext,
     AppStateContextIF,
 } from '../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { PoolContext } from '../../contexts/PoolContext';
+import matchSearchInput from '../functions/matchSearchInput';
+import { tokenMethodsIF } from './useTokens';
 
 // types specifying which results set should render in the dom
 // `standard` ⮕ standard sidebar content

@@ -1,11 +1,11 @@
-import { TransactionIF } from '../../../../ambient-utils/types';
 import {
-    getFormattedNumber,
     EntityType,
+    getFormattedNumber,
     getTxType,
 } from '../../../../ambient-utils/dataLayer';
-import { ItemContainer } from '../../../../styled/Components/Sidebar';
+import { TransactionIF } from '../../../../ambient-utils/types';
 import { FlexContainer } from '../../../../styled/Common';
+import { ItemContainer } from '../../../../styled/Components/Sidebar';
 
 interface propsIF {
     tx: TransactionIF;

@@ -1,5 +1,5 @@
-import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import React from 'react';
 import { GoChevronDown, GoChevronUp } from 'react-icons/go';
 import styles from './DotAnimation.module.css';
 

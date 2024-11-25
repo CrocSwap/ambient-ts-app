@@ -1,5 +1,5 @@
-import { checkBlacklist } from '../../ambient-utils/constants';
 import { useContext, useEffect } from 'react';
+import { checkBlacklist } from '../../ambient-utils/constants';
 import { UserDataContext } from '../../contexts/UserDataContext';
 
 export function useBlacklist(account: `0x${string}` | undefined): void {

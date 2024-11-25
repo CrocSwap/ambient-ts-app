@@ -1,30 +1,30 @@
-import { useContext, useEffect, useState } from 'react';
-import styles from './Create.module.css';
-import useDebounce from '../../../App/hooks/useDebounce';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
-import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
-import {
-    checkTickerPattern,
-    checkTickerValidity,
-    createAuction,
-    AuctionTxResponseIF,
-    getFormattedNumber,
-} from '../../../ambient-utils/dataLayer';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     CURRENT_AUCTION_VERSION,
     GAS_DROPS_ESTIMATE_AUCTION_CREATE,
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants';
-import SynthwaveGrid from '../Home/Animations/SynthwaveGrid';
+import {
+    AuctionTxResponseIF,
+    checkTickerPattern,
+    checkTickerValidity,
+    createAuction,
+    getFormattedNumber,
+} from '../../../ambient-utils/dataLayer';
+import useDebounce from '../../../App/hooks/useDebounce';
 import { getActionTrigger } from '../../../components/Chat/ChatRenderUtils';
+import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
+import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import SynthwaveGrid from '../Home/Animations/SynthwaveGrid';
+import styles from './Create.module.css';
 
 export default function Create() {
     const desktopScreen = useMediaQuery('(min-width: 1080px)');

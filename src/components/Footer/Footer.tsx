@@ -1,10 +1,10 @@
 import { useMediaQuery } from '@mui/material';
-import styles from './Footer.module.css';
-import { BsGithub, BsTwitter, BsMedium } from 'react-icons/bs';
+import { BsGithub, BsMedium, BsTwitter } from 'react-icons/bs';
 import { FaDiscord } from 'react-icons/fa';
 import { IoDocumentTextSharp } from 'react-icons/io5';
 import { RiSpyFill } from 'react-icons/ri';
 import { SiGitbook } from 'react-icons/si';
+import styles from './Footer.module.css';
 
 import { Link } from 'react-router-dom';
 import {

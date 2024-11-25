@@ -1,27 +1,26 @@
+import { CrocEnv } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useMemo, useState } from 'react';
+import { Fade } from 'react-reveal';
+import {
+    GCGO_BLAST_URL,
+    GCGO_ETHEREUM_URL,
+    GCGO_SCROLL_URL,
+} from '../../../ambient-utils/constants';
 import {
     getChainStats,
     getFormattedNumber,
 } from '../../../ambient-utils/dataLayer';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { Fade } from 'react-reveal';
+import { TokenContext } from '../../../contexts/TokenContext';
 import {
     HomeContent,
     HomeTitle,
-    StatContainer,
     StatCardContainer,
+    StatContainer,
     StatValue,
 } from '../../../styled/Components/Home';
-import {
-    GCGO_BLAST_URL,
-    GCGO_ETHEREUM_URL,
-    GCGO_SCROLL_URL,
-    // IS_LOCAL_ENV,
-} from '../../../ambient-utils/constants';
-import { CrocEnv } from '@crocswap-libs/sdk';
-import { TokenContext } from '../../../contexts/TokenContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface StatCardProps {
     title: string;

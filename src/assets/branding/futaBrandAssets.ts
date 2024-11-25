@@ -1,5 +1,5 @@
-import { brandIF } from './types';
 import large from '../images/logos/large.svg';
+import { brandIF } from './types';
 
 export const futaBrandAssets: brandIF = {
     networks: {

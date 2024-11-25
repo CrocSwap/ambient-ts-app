@@ -1,21 +1,21 @@
-import { PoolIF } from '../../../../../ambient-utils/types';
-import PoolSearchResult from './PoolSearchResult';
 import { useContext, useEffect, useState } from 'react';
+import { PoolIF } from '../../../../../ambient-utils/types';
+import { AppStateContext } from '../../../../../contexts';
+import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import {
-    useLinkGen,
-    linkGenMethodsIF,
-} from '../../../../../utils/hooks/useLinkGen';
-import checkPoolForWETH from '../../../../functions/checkPoolForWETH';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import {
     FlexContainer,
     GridContainer,
     Text,
 } from '../../../../../styled/Common';
 import { ResultsContainer } from '../../../../../styled/Components/Sidebar';
-import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
-import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-import { AppStateContext } from '../../../../../contexts';
+import {
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../../utils/hooks/useLinkGen';
+import checkPoolForWETH from '../../../../functions/checkPoolForWETH';
+import PoolSearchResult from './PoolSearchResult';
 
 interface propsIF {
     searchedPools: PoolIF[];

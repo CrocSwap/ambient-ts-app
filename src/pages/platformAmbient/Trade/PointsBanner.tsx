@@ -1,13 +1,13 @@
 import { useContext } from 'react';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import styles from './PointsBanner.module.css';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { Link, useNavigate } from 'react-router-dom';
 import { MdClose } from 'react-icons/md';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { Link, useNavigate } from 'react-router-dom';
 import blastLogo from '../../../assets/images/logos/blast_logo.svg';
-import { FlexContainer, Text } from '../../../styled/Common';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { FlexContainer, Text } from '../../../styled/Common';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import styles from './PointsBanner.module.css';
 interface propsIF {
     dismissElem: () => void;
     smallCard?: boolean;

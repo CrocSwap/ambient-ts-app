@@ -1,29 +1,29 @@
 import {
-    useContext,
-    useState,
-    useEffect,
     ChangeEvent,
-    memo,
-    useRef,
     Dispatch,
+    memo,
     SetStateAction,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
+import { Link, useLocation } from 'react-router-dom';
 import { getFormattedNumber, uriToHttp } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
+import { AppStateContext } from '../../contexts';
+import { BrandContext, BrandContextIF } from '../../contexts/BrandContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import { useModal } from '../Global/Modal/useModal';
 import Spinner from '../Global/Spinner/Spinner';
 import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import TokenIcon from '../Global/TokenIcon/TokenIcon';
-import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSelectModal';
-import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import { Link, useLocation } from 'react-router-dom';
-import { useModal } from '../Global/Modal/useModal';
-import styles from './TokenInputQuantity.module.css';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
-import { BrandContext, BrandContextIF } from '../../contexts/BrandContext';
-import { AppStateContext } from '../../contexts';
+import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSelectModal';
+import styles from './TokenInputQuantity.module.css';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;

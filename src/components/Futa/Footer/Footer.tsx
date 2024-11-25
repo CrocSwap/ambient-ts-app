@@ -1,15 +1,15 @@
-import { MdOutlineExplore, MdOutlineSwapVerticalCircle } from 'react-icons/md';
-import styles from './Footer.module.css';
-import { RiAccountCircleLine } from 'react-icons/ri';
-import { FiPlusCircle } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import DesktopFooter from './DesktopFooter';
 import { useContext } from 'react';
+import { FiPlusCircle } from 'react-icons/fi';
+import { MdOutlineExplore, MdOutlineSwapVerticalCircle } from 'react-icons/md';
+import { RiAccountCircleLine } from 'react-icons/ri';
+import { Link } from 'react-router-dom';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { chainNumToString } from '../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import DesktopFooter from './DesktopFooter';
+import styles from './Footer.module.css';
 
 const containerVariants = {
     hidden: { opacity: 0 },

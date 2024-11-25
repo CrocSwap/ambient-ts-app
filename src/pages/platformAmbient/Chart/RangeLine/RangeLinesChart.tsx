@@ -1,19 +1,19 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
-import { TokenIF } from '../../../../ambient-utils/types';
 import { getPinnedPriceValuesFromTicks } from '../../../../ambient-utils/dataLayer';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { TokenIF } from '../../../../ambient-utils/types';
 import { RangeContext } from '../../../../contexts/RangeContext';
-import { createTriangle } from '../ChartUtils/triangle';
 import {
     lineValue,
     renderCanvasArray,
     scaleData,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
+import { createTriangle } from '../ChartUtils/triangle';
 
 interface propsIF {
     scaleData: scaleData | undefined;

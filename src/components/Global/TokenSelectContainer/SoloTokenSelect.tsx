@@ -1,29 +1,29 @@
+import { ethers } from 'ethers';
 import {
-    useEffect,
-    useMemo,
-    useState,
     Dispatch,
     SetStateAction,
     useContext,
+    useEffect,
+    useMemo,
+    useState,
 } from 'react';
-import { TokenIF } from '../../../ambient-utils/types';
-import TokenSelect from '../TokenSelect/TokenSelect';
-import styles from './SoloTokenSelect.module.css';
-import SoloTokenImport from './SoloTokenImport';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { ethers } from 'ethers';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { IoIosArrowBack } from 'react-icons/io';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import {
-    removeWrappedNative,
     isWrappedNativeToken,
+    removeWrappedNative,
 } from '../../../ambient-utils/dataLayer';
-import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
-import { IoIosArrowBack } from 'react-icons/io';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { TokenIF } from '../../../ambient-utils/types';
 import { AppStateContext } from '../../../contexts';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import TokenSelect from '../TokenSelect/TokenSelect';
+import SoloTokenImport from './SoloTokenImport';
+import styles from './SoloTokenSelect.module.css';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;

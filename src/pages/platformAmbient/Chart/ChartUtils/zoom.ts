@@ -1,7 +1,7 @@
-import { Dispatch, SetStateAction } from 'react';
-import { findSnapTime, scaleData } from './chartUtils';
 import * as d3 from 'd3';
+import { Dispatch, SetStateAction } from 'react';
 import { CandleDomainIF } from '../../../../ambient-utils/types';
+import { findSnapTime, scaleData } from './chartUtils';
 
 const maxNumCandlesForZoom = 2000;
 

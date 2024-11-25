@@ -1,13 +1,13 @@
 /* eslint-disable camelcase */
-import {
-    memoizePromiseFn,
-    translateToken,
-    querySpotPrice,
-    truncateDecimals,
-    isUsdStableToken,
-} from '../dataLayer/functions';
-import { supportedNetworks } from '../constants/networks';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { supportedNetworks } from '../constants/networks';
+import {
+    isUsdStableToken,
+    memoizePromiseFn,
+    querySpotPrice,
+    translateToken,
+    truncateDecimals,
+} from '../dataLayer/functions';
 import { fetchBatch } from './fetchBatch';
 
 const randomNum = Math.random();

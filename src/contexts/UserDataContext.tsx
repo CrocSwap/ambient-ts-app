@@ -1,3 +1,4 @@
+import { useDisconnect, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import React, {
     Dispatch,
     SetStateAction,
@@ -5,10 +6,9 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import { useWeb3ModalAccount, useDisconnect } from '@web3modal/ethers/react';
+import { fetchEnsAddress } from '../ambient-utils/api';
 import { checkBlacklist } from '../ambient-utils/constants';
 import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
-import { fetchEnsAddress } from '../ambient-utils/api';
 import { UserAvatarDataIF } from '../components/Chat/ChatIFs';
 import { getAvatarRest } from '../components/Chat/ChatUtilsHelper';
 

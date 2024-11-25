@@ -4,13 +4,13 @@ import {
     mockAuctionDetailsServerResponseGenerator,
     mockGlobalAuctionData,
 } from '../../../pages/platformFuta/mockAuctionData';
-// import { GCGO_OVERRIDE_URL } from '../../constants';
+// import{ GCGO_OVERRIDE_URL } from '../../constants';
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { CURRENT_AUCTION_VERSION } from '../../constants';
 import {
     //  memoizeCrocEnvFn,
     memoizeCacheQueryFn,
 } from './memoizePromiseFn';
-import { CURRENT_AUCTION_VERSION } from '../../constants';
 
 export interface PriceImpactIF {
     ticker: string;

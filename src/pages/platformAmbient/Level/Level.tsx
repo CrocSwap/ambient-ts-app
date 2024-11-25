@@ -9,7 +9,7 @@ import {
 import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './Level.module.css';
 import RankTable from './RankTable/RankTable';
-// import { FiRefreshCcw } from 'react-icons/fi';
+// import{ FiRefreshCcw } from 'react-icons/fi';
 import {
     getLeaderboardSelectionFromLocalStorage,
     saveLeaderboardSelectionToLocalStorage,

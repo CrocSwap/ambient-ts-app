@@ -63,12 +63,12 @@ import { TransactionRow as TransactionRowStyled } from '../../../../styled/Compo
 import Spinner from '../../../Global/Spinner/Spinner';
 import NoTableData from '../NoTableData/NoTableData';
 // import TableRows from '../TableRows';
+import { fetchPoolUserChanges } from '../../../../ambient-utils/api/fetchPoolUserChanges';
+import { UserDataContext } from '../../../../contexts';
 import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 import { useSortedTxs } from '../useSortedTxs';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
-import { fetchPoolUserChanges } from '../../../../ambient-utils/api/fetchPoolUserChanges';
-import { UserDataContext } from '../../../../contexts';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;

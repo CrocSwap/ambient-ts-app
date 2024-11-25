@@ -1,9 +1,9 @@
-import styles from './TransactionSubmitted.module.css';
-import Animation from '../../../../Global/Animation/Animation';
-import completed from '../../../../../assets/animations/completed.json';
-import { FiExternalLink } from 'react-icons/fi';
 import { useContext } from 'react';
+import { FiExternalLink } from 'react-icons/fi';
+import completed from '../../../../../assets/animations/completed.json';
 import { AppStateContext } from '../../../../../contexts';
+import Animation from '../../../../Global/Animation/Animation';
+import styles from './TransactionSubmitted.module.css';
 
 interface PropsIF {
     hash: string;

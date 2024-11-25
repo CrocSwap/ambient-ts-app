@@ -7,19 +7,31 @@ import {
     useEffect,
     useState,
 } from 'react';
-import { HiPlus, HiMinus } from 'react-icons/hi';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { HiMinus, HiPlus } from 'react-icons/hi';
+import { removeLeadingZeros } from '../../../../ambient-utils/dataLayer';
+import {
+    pinTickToTickLower,
+    pinTickToTickUpper,
+} from '../../../../ambient-utils/dataLayer/functions/pinTick';
+import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
 import {
     CrocEnvContext,
     CrocEnvContextIF,
 } from '../../../../contexts/CrocEnvContext';
 import { PoolContext, PoolContextIF } from '../../../../contexts/PoolContext';
 import {
+    TradeDataContext,
+    TradeDataContextIF,
+} from '../../../../contexts/TradeDataContext';
+import {
     TradeTableContext,
     TradeTableContextIF,
 } from '../../../../contexts/TradeTableContext';
-import { removeLeadingZeros } from '../../../../ambient-utils/dataLayer';
-import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
-import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../../styled/Common';
 import {
     LimitRateButton,
@@ -27,24 +39,12 @@ import {
     TokenQuantityInput,
 } from '../../../../styled/Components/TradeModules';
 import {
-    TradeDataContext,
-    TradeDataContextIF,
-} from '../../../../contexts/TradeDataContext';
-import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import {
-    pinTickToTickLower,
-    pinTickToTickUpper,
-} from '../../../../ambient-utils/dataLayer/functions/pinTick';
-import { ExplanationButton } from '../../../Form/Icons/Icons.styles';
-import { AiOutlineInfoCircle } from 'react-icons/ai';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
+import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 import { Chip } from '../../../Form/Chip';
+import { ExplanationButton } from '../../../Form/Icons/Icons.styles';
 
 interface propsIF {
     previousDisplayPrice: string;

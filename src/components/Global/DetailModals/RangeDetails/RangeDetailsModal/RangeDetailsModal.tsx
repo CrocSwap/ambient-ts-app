@@ -1,32 +1,3 @@
-import PriceInfo from '../PriceInfo/PriceInfo';
-import styles from '../../TransactionDetailsModal.module.css';
-import { memo, useContext, useEffect, useRef, useState } from 'react';
-import {
-    PositionIF,
-    BlastRewardsDataIF,
-    PositionServerIF,
-} from '../../../../../ambient-utils/types';
-import RangeDetailsSimplify from '../RangeDetailsSimplify/RangeDetailsSimplify';
-import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    GCGO_OVERRIDE_URL,
-} from '../../../../../ambient-utils/constants';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
-import {
-    getPositionData,
-    getFormattedNumber,
-    printDomToImage,
-} from '../../../../../ambient-utils/dataLayer';
-import { TokenContext } from '../../../../../contexts/TokenContext';
-import modalBackground from '../../../../../assets/images/backgrounds/background.png';
-import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-import Modal from '../../../Modal/Modal';
-import { UserDataContext } from '../../../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import {
     baseTokenForConcLiq,
     bigIntToFloat,
@@ -34,12 +5,41 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { fetchPositionRewardsData } from '../../../../../ambient-utils/api/fetchPositionRewards';
-import DetailsHeader from '../../DetailsHeader/DetailsHeader';
-import TransactionDetailsGraph from '../../TransactionDetailsGraph/TransactionDetailsGraph';
-import ModalHeader from '../../../ModalHeader/ModalHeader';
-import MobileDetailTabs from '../../MobileDetailTabs/MobileDetailTabs';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    GCGO_OVERRIDE_URL,
+} from '../../../../../ambient-utils/constants';
+import {
+    getFormattedNumber,
+    getPositionData,
+    printDomToImage,
+} from '../../../../../ambient-utils/dataLayer';
+import {
+    BlastRewardsDataIF,
+    PositionIF,
+    PositionServerIF,
+} from '../../../../../ambient-utils/types';
+import modalBackground from '../../../../../assets/images/backgrounds/background.png';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
+import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
+import Modal from '../../../Modal/Modal';
+import ModalHeader from '../../../ModalHeader/ModalHeader';
+import DetailsHeader from '../../DetailsHeader/DetailsHeader';
+import MobileDetailTabs from '../../MobileDetailTabs/MobileDetailTabs';
+import TransactionDetailsGraph from '../../TransactionDetailsGraph/TransactionDetailsGraph';
+import styles from '../../TransactionDetailsModal.module.css';
+import PriceInfo from '../PriceInfo/PriceInfo';
+import RangeDetailsSimplify from '../RangeDetailsSimplify/RangeDetailsSimplify';
 
 interface propsIF {
     position: PositionIF;

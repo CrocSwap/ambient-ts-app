@@ -1,9 +1,9 @@
-import React, { useState, useEffect, CSSProperties } from 'react';
-import styles from './Animations.module.css';
-import logo from '../../../../assets/futa/logos/homeLogo.svg';
 import { AnimatePresence, motion } from 'framer-motion';
+import { CSSProperties, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import logo from '../../../../assets/futa/logos/homeLogo.svg';
 import { useFutaHomeContext } from '../../../../contexts/Futa/FutaHomeContext';
+import styles from './Animations.module.css';
 
 interface Props {
     customWidth?: string;

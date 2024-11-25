@@ -1,9 +1,10 @@
+import { TransactionReceipt } from 'ethers';
 import {
     ReactNode,
     createContext,
+    useContext,
     useEffect,
     useMemo,
-    useContext,
     useState,
 } from 'react';
 import {
@@ -13,10 +14,9 @@ import {
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { AppStateContext } from './AppStateContext';
 import { ReceiptContext } from './ReceiptContext';
-import { TransactionReceipt } from 'ethers';
-import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 export interface SidebarContextIF {
     recentPools: recentPoolsMethodsIF;

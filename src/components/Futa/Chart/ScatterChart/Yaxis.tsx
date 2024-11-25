@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { renderCanvasArray } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
+import { useEffect, useRef } from 'react';
 import { diffHashSig } from '../../../../ambient-utils/dataLayer';
+import { renderCanvasArray } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 
 interface AxisIF {
     data: number[];

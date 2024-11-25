@@ -1,12 +1,12 @@
 import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
 
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import { TokenIF } from '../../../ambient-utils/types';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './LimitActionTokenHeader.module.css';
-import { TokenIF } from '../../../ambient-utils/types';
-import { uriToHttp } from '../../../ambient-utils/dataLayer';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     isOrderFilled: boolean;
