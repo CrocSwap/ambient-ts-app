@@ -32,7 +32,7 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import styles from './PageHeader.module.css';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
-import { BrandContext, ChainDataContext } from '../../../contexts';
+import { BrandContext } from '../../../contexts';
 
 const PageHeader = function () {
     const {
@@ -48,7 +48,6 @@ const PageHeader = function () {
         useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData, activeTradeTab } = useContext(TradeTableContext);
-    const { isVaultSupportedOnNetwork } = useContext(ChainDataContext);
     const {
         baseToken: {
             setBalance: setBaseTokenBalance,
@@ -301,7 +300,7 @@ const PageHeader = function () {
         {
             title: 'Vaults',
             destination: '/vaults',
-            shouldDisplay: isVaultSupportedOnNetwork,
+            shouldDisplay: true,
         },
         {
             title: 'Account',
