@@ -585,13 +585,35 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     if (liqMode === 'curve') {
-                        liqAskSeries(liqDataAsk);
-                        liqBidSeries(liqDataBid);
-                        // clipCanvas(
-                        //     scaleData?.yScale(liqDataAsk[0].liqPrices),
-                        //     scaleData?.yScale(poolPriceDisplay),
-                        //     canvas,
-                        // );
+                        console.log(
+                            'liqDataBid.concat(liqDataAsk)',
+                            liqDataBid.concat(liqDataAsk),
+                        );
+
+                        console.log(
+                            'liqDataBid[0].liqPricesAsk',
+                            liqDataAsk[0].liqPrices,
+                        );
+
+                        clipCanvas(
+                            scaleData?.yScale(poolPriceDisplay),
+                            scaleData?.yScale(liqDataBid[0].liqPrices),
+                            canvas,
+                        );
+
+                        liqBidSeries(liqDataBid.concat(liqDataAsk));
+
+                        ctx?.restore();
+
+                        clipCanvas(
+                            scaleData?.yScale(poolPriceDisplay),
+                            scaleData?.yScale(0),
+                            canvas,
+                        );
+
+                        liqAskSeries(liqDataBid.concat(liqDataAsk));
+                        ctx?.restore();
+
                         drawCurveLines(canvas);
                     }
                     if (liqMode === 'depth') {
