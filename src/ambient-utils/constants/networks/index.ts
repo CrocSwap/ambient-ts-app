@@ -9,7 +9,7 @@ import {
 } from '../../../assets/branding';
 import { swellSepoliaBrandAssets } from '../../../assets/branding/swellSepoliaBrandAssets';
 import { NetworkIF, TokenIF, chainIds } from '../../types';
-import { blast } from './blastMainnet';
+import { blastMainnet } from './blastMainnet';
 import { blastSepolia } from './blastSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
 import { ethereumSepolia } from './ethereumSepolia';
@@ -27,7 +27,7 @@ const networks: NetworkIF[] = [
     scrollMainnet,
     scrollSepolia,
     blastSepolia,
-    blast,
+    blastMainnet,
     plumeSepolia,
     swellSepolia,
 ];
@@ -85,7 +85,7 @@ export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
 }
 
 export {
-    blast,
+    blastMainnet,
     blastSepolia,
     ethereumMainnet,
     ethereumSepolia,

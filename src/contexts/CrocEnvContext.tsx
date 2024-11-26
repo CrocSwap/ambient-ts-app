@@ -10,13 +10,12 @@ import {
     useState,
 } from 'react';
 import {
+    blastMainnet,
     ethereumMainnet,
     getDefaultPairForChain,
     mainnetETH,
+    scrollMainnet,
 } from '../ambient-utils/constants';
-import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastMainnet';
-import { MAINNET_RPC_URL } from '../ambient-utils/constants/networks/ethereumMainnet';
-import { SCROLL_RPC_URL } from '../ambient-utils/constants/networks/scrollMainnet';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { PoolIF, TokenIF } from '../ambient-utils/types';
 import { useBlacklist } from '../App/hooks/useBlacklist';
@@ -56,16 +55,28 @@ export interface CrocEnvContextIF {
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
     {} as CrocEnvContextIF,
 );
-const mainnetProvider = new BatchedJsonRpcProvider(MAINNET_RPC_URL, 1, {
-    staticNetwork: true,
-});
+const mainnetProvider = new BatchedJsonRpcProvider(
+    ethereumMainnet.evmRpcUrl,
+    parseInt(ethereumMainnet.chainId),
+    {
+        staticNetwork: true,
+    },
+);
 
-const scrollProvider = new BatchedJsonRpcProvider(SCROLL_RPC_URL, 534352, {
-    staticNetwork: true,
-});
-const blastProvider = new BatchedJsonRpcProvider(BLAST_RPC_URL, 81457, {
-    staticNetwork: true,
-});
+const scrollProvider = new BatchedJsonRpcProvider(
+    scrollMainnet.evmRpcUrl,
+    parseInt(scrollMainnet.chainId),
+    {
+        staticNetwork: true,
+    },
+);
+const blastProvider = new BatchedJsonRpcProvider(
+    blastMainnet.evmRpcUrl,
+    parseInt(blastMainnet.chainId),
+    {
+        staticNetwork: true,
+    },
+);
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);

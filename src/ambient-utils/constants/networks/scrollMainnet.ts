@@ -12,10 +12,12 @@ import {
 import { GCGO_SCROLL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const SCROLL_RPC_URL =
+export const PUBLIC_RPC_URL = 'https://rpc.scroll.io';
+
+export const RESTRICTED_RPC_URL =
     import.meta.env.VITE_SCROLL_RPC_URL !== undefined
         ? import.meta.env.VITE_SCROLL_RPC_URL
-        : 'https://rpc.scroll.io';
+        : PUBLIC_RPC_URL;
 
 const chainIdHex = '0x82750';
 const chainSpecFromSDK = lookupChain(chainIdHex);
@@ -24,7 +26,7 @@ const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
     name: 'Scroll',
     currency: 'ETH',
-    rpcUrl: SCROLL_RPC_URL,
+    rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://scrollscan.com/',
 };
 
@@ -32,7 +34,7 @@ export const scrollMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     graphCacheUrl: GCGO_SCROLL_URL,
-    evmRpcUrl: SCROLL_RPC_URL,
+    evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [scrollETH, scrollUSDC],
     poolIndex: chainSpecFromSDK.poolIndex,
