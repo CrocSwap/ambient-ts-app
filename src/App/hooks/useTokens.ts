@@ -185,7 +185,7 @@ export const useTokens = (
                     deepCopyToken(tkn, tkn.fromList ?? tokenListURIs.ambient),
                 );
         }
-    }, [tokenMap.size, tokenBalances]);
+    }, [tokenMap, tokenBalances]);
 
     // fn to make a deep copy of a token data object
     // without this we overrwrite token data in local storage in post-processing
