@@ -293,8 +293,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             quoteTokenAddress &&
             crocEnv
         ) {
-            console.log('isChange böle mi');
-
             setIsZoomRequestCanceled({ value: true });
 
             const candleTime = candleScale.isShowLatestCandle
