@@ -1,7 +1,7 @@
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-    blast,
+    blastMainnet,
     blastSepolia,
     ethereumMainnet,
     ethereumSepolia,
@@ -10,6 +10,7 @@ import {
     scrollSepolia,
     supportedNetworks,
 } from '../../ambient-utils/constants';
+import { swellSepolia } from '../../ambient-utils/constants/networks/swellSepolia';
 import {
     chainNumToString,
     checkEoaHexAddress,
@@ -18,7 +19,6 @@ import {
 } from '../../ambient-utils/dataLayer';
 import { NetworkIF } from '../../ambient-utils/types';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import { swellSepolia } from '../../ambient-utils/constants/networks/swellSepolia';
 
 export const useAppChain = (): {
     activeNetwork: NetworkIF;
@@ -173,7 +173,7 @@ export const useAppChain = (): {
                             if (incomingChainFromWallet === '0x1') {
                                 nextNetwork = ethereumMainnet;
                             } else if (incomingChainFromWallet === '0x13e31') {
-                                nextNetwork = blast;
+                                nextNetwork = blastMainnet;
                             } else if (
                                 incomingChainFromWallet === '0xa0c71fd'
                             ) {
