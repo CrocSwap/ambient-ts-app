@@ -201,21 +201,23 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         (async () => {
-            if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
+            const isChangeUserConnected =
+                checkUserConnected.current === isUserConnected;
+
+            if (
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId &&
+                isChangeUserConnected
+            ) {
                 setCandleData(undefined);
                 setTimeOfEndCandle(undefined);
                 setIsCondensedModeEnabled(true);
-                const isChangeUserConnected =
-                    checkUserConnected.current === isUserConnected;
-                isChangeUserConnected &&
-                    isChartEnabled &&
-                    isUserOnline &&
-                    fetchCandles(true);
+
+                isChartEnabled && isUserOnline && fetchCandles(true);
                 if (isManualCandleFetchRequested)
                     setIsManualCandleFetchRequested(false);
-
-                checkUserConnected.current = isUserConnected;
             }
+            checkUserConnected.current = isUserConnected;
         })();
     }, [
         isManualCandleFetchRequested,
@@ -227,13 +229,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         chainId,
     ]);
 
+    // only works when the period changes
     useEffect(() => {
-        (async () => {
-            if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
-                isChartEnabled && isUserOnline && fetchCandles();
-            }
-        })();
-    }, [candleScale?.isFetchForTimeframe, crocEnv, chainId]);
+        isChartEnabled && isUserOnline && fetchCandles();
+    }, [candleScale?.isFetchForTimeframe]);
 
     useEffect(() => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
@@ -294,6 +293,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             quoteTokenAddress &&
             crocEnv
         ) {
+            console.log('isChange böle mi');
+
             setIsZoomRequestCanceled({ value: true });
 
             const candleTime = candleScale.isShowLatestCandle
