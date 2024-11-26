@@ -8,7 +8,7 @@ import {
     scrollBrandAssets,
 } from '../../../assets/branding';
 import { swellSepoliaBrandAssets } from '../../../assets/branding/swellSepoliaBrandAssets';
-import { NetworkIF, TokenIF, chainIds } from '../../types';
+import { NetworkIF, TokenIF, chainHexIds } from '../../types';
 import { blastMainnet } from './blastMainnet';
 import { blastSepolia } from './blastSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
@@ -32,7 +32,7 @@ const networks: NetworkIF[] = [
     swellSepolia,
 ];
 
-function getNetworks(chns: (string | chainIds)[]): {
+function getNetworks(chns: (string | chainHexIds)[]): {
     [x: string]: NetworkIF;
 } {
     const networksToShow: NetworkIF[] = chns
