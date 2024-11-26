@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
+import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
+import styled from 'styled-components';
+import { GraphDataContext } from '../../../../../contexts/GraphDataContext';
+import { PoolContext } from '../../../../../contexts/PoolContext';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import { textColors } from '../../../../../styled/Common/Types';
-import styled from 'styled-components';
-import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
-import { PoolContext } from '../../../../../contexts/PoolContext';
-import { GraphDataContext } from '../../../../../contexts/GraphDataContext';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 interface PairDataItemIF {
     label: string;

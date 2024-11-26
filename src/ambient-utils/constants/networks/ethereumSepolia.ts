@@ -1,10 +1,10 @@
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { sepoliaETH, sepoliaUSDC, sepoliaWBTC } from '../defaultTokens';
-import { NetworkIF } from '../../types/NetworkIF';
-import { TopPool } from './TopPool';
-import { GCGO_TESTNET_URL } from '../gcgo';
-import { Provider } from 'ethers';
 import { bigIntToFloat } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Provider } from 'ethers';
+import { NetworkIF } from '../../types/NetworkIF';
+import { sepoliaETH, sepoliaUSDC, sepoliaWBTC } from '../defaultTokens';
+import { GCGO_TESTNET_URL } from '../gcgo';
+import { TopPool } from './TopPool';
 
 export const SEPOLIA_RPC_URL =
     import.meta.env.VITE_SEPOLIA_RPC_URL !== undefined

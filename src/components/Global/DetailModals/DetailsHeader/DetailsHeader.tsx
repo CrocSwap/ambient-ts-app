@@ -1,13 +1,13 @@
 import { Dispatch, SetStateAction } from 'react';
 import { CgClose } from 'react-icons/cg';
-import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
-import styles from './DetailsHeader.module.css';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { LuCopy, LuShare2 } from 'react-icons/lu';
+import { RiScreenshot2Fill } from 'react-icons/ri';
+import { TbListDetails } from 'react-icons/tb';
 import logo from '../../../../assets/images/logos/logo_mark.svg';
 import logoText from '../../../../assets/images/logos/logo_text.png';
-import { RiScreenshot2Fill } from 'react-icons/ri';
-import { LuCopy, LuShare2 } from 'react-icons/lu';
-import { TbListDetails } from 'react-icons/tb';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
+import styles from './DetailsHeader.module.css';
 interface DetailsHeaderPropsIF {
     onClose: () => void;
     handleCopyAction: () => void; // e.g., copy position ID, transaction hash, etc.

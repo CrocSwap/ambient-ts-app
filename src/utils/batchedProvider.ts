@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { JsonRpcProvider, Contract } from 'ethers';
+import { Contract, JsonRpcProvider } from 'ethers';
 
 export const MULTICALL_ABI = [
     {

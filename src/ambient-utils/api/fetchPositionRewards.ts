@@ -1,12 +1,12 @@
-// import { USE_MOCK_POSITION_REWARDS_DATA } from '../constants';
-// import { getFormattedNumber } from '../dataLayer';
+// import{ USE_MOCK_POSITION_REWARDS_DATA } from '../constants';
+// import{ getFormattedNumber } from '../dataLayer';
 import { IS_LOCAL_ENV } from '../constants';
 
 import {
-    PositionIF,
-    BlastPositionPointsServerIF,
     BlastPositionGoldServerIF,
+    BlastPositionPointsServerIF,
     BlastRewardsDataIF,
+    PositionIF,
 } from '../types';
 
 interface argsIF {

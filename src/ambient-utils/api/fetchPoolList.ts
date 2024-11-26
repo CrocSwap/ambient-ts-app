@@ -1,7 +1,7 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
-import { GCServerPoolIF } from '../types';
 import { memoizeCacheQueryFn } from '../dataLayer';
+import { GCServerPoolIF } from '../types';
 
 export async function fetchPoolList(
     crocEnv: CrocEnv,

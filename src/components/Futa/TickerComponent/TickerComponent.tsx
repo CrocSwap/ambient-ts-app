@@ -1,19 +1,11 @@
+import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useRef, useState } from 'react';
-import styles from './TickerComponent.module.css';
-import {
-    AuctionsContext,
-    AuctionsContextIF,
-} from '../../../contexts/AuctionsContext';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { useParams } from 'react-router-dom';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
-    DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
     DEPOSIT_BUFFER_MULTIPLIER_L2,
+    DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
     GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
     GAS_DROPS_ESTIMATE_RANGE_HARVEST,
     NUM_GWEI_IN_ETH,
@@ -33,19 +25,27 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import {
+    AuctionsContext,
+    AuctionsContextIF,
+} from '../../../contexts/AuctionsContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import styles from './TickerComponent.module.css';
 
-import BreadCrumb from '../Breadcrumb/Breadcrumb';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import Comments from '../Comments/Comments';
-import { tickerDisplayElements } from './tickerDisplayElements';
 import moment from 'moment';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
     getFreshAuctionDetailsForAccount,
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import BreadCrumb from '../Breadcrumb/Breadcrumb';
+import Comments from '../Comments/Comments';
+import { tickerDisplayElements } from './tickerDisplayElements';
 interface PropsIF {
     isAuctionPage?: boolean;
     placeholderTicker?: boolean;

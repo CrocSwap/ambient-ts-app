@@ -5,19 +5,19 @@ import {
     useEffect,
     useState,
 } from 'react';
-import styles from './ProfileSettings.module.css';
 import { BiArrowBack } from 'react-icons/bi';
-import ProfileSettingsTheme from './ProfileSettingsTheme/ProfileSettingsTheme';
+import styles from './ProfileSettings.module.css';
 import ProfileSettingsSkin from './ProfileSettingsSkin/ProfileSettingsSkin';
+import ProfileSettingsTheme from './ProfileSettingsTheme/ProfileSettingsTheme';
 
-import useChatApi from '../../Chat/Service/ChatApi';
 import {
     CHAT_BACKEND_URL,
     IS_LOCAL_ENV,
 } from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { ProfileSettingsMotionContainer } from './ProfileSettings.styles';
 import { FlexContainer, Text } from '../../../styled/Common';
+import useChatApi from '../../Chat/Service/ChatApi';
+import { ProfileSettingsMotionContainer } from './ProfileSettings.styles';
 
 const pageVariant3D = {
     initial: {

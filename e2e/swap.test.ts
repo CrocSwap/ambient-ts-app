@@ -1,17 +1,15 @@
-import { chromium, Page, BrowserContext, Browser } from 'playwright';
-import { test, expect } from 'playwright/test';
+import { BrowserContext, Page } from 'playwright';
+import { test } from 'playwright/test';
 
 import {
-    click,
     checkAndClick,
-    fill,
+    checkForWalletConnection,
+    click,
     clickmmask,
+    fill,
     initWallet,
-    checkAndClickMMask,
-    fillmmask,
     prepareBrowser,
     waiter,
-    checkForWalletConnection,
 } from './helpers/utils';
 
 let browser: BrowserContext;

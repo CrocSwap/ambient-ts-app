@@ -21,7 +21,7 @@ The returned values include:
 <!-- This hook works with GlobalPopup.tsx, which is being rendered in App.tsx -->
 
 Example Usage:
-import { useGlobalPopup } from './useGlobalPopup';
+import{ useGlobalPopup } from './useGlobalPopup';
 
     function MyComponent() {
         const [

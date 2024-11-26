@@ -1,17 +1,17 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 
+import { tickToPrice } from '@crocswap-libs/sdk';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
+import { useLocation } from 'react-router-dom';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import {
     renderCanvasArray,
     scaleData,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
 import { createTriangle } from '../ChartUtils/triangle';
-import { useLocation } from 'react-router-dom';
-import { tickToPrice } from '@crocswap-libs/sdk';
-import { PoolContext } from '../../../../contexts/PoolContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     scaleData: scaleData | undefined;

@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, useAnimation, PanInfo } from 'framer-motion';
+import { motion, PanInfo, useAnimation } from 'framer-motion';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RiCloseFill } from 'react-icons/ri';
-import styles from './BottomSheet.module.css';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import { useBottomSheet } from '../../../contexts/BottomSheetContext';
+import styles from './BottomSheet.module.css';
 
 interface BottomSheetProps {
     title?: string;

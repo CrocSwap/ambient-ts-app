@@ -1,28 +1,28 @@
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { FiMoreHorizontal } from 'react-icons/fi';
+import { MdAccountBalanceWallet } from 'react-icons/md';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
-import { MdAccountBalanceWallet } from 'react-icons/md';
 
-import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-import WalletDropdown from './WalletDropdown/WalletDropdown';
-import useKeyPress from '../../../hooks/useKeyPress';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 import {
     getFormattedNumber,
     trimString,
 } from '../../../../ambient-utils/dataLayer';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
+import useKeyPress from '../../../hooks/useKeyPress';
 import { ExchangeBalanceDropdown } from '../ExchangeBalanceDropdown/ExchangeBalanceDropdown';
+import WalletDropdown from './WalletDropdown/WalletDropdown';
 
-import { FlexContainer } from '../../../../styled/Common';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import LevelDropdown from './LevelDropdown/LevelDropdown';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import NotificationCenter from '../../../../components/Global/NotificationCenter/NotificationCenter';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import Modal from '../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../components/Global/ModalHeader/ModalHeader';
+import NotificationCenter from '../../../../components/Global/NotificationCenter/NotificationCenter';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { FlexContainer } from '../../../../styled/Common';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import LevelDropdown from './LevelDropdown/LevelDropdown';
 import styles from './UserMenu.module.css';
 // TODO: use user context instead of UseAccount
 interface propsIF {

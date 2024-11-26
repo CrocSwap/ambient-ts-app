@@ -1,5 +1,4 @@
-import styles from './Game.module.css';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import daiImage from '../../../assets/images/memory-game/dai.png';
 import ethereumImage from '../../../assets/images/memory-game/ethereum.png';
 import shibaImage from '../../../assets/images/memory-game/shiba.png';
@@ -7,6 +6,7 @@ import tetherImage from '../../../assets/images/memory-game/tether.png';
 import usdcImage from '../../../assets/images/memory-game/usdc.png';
 import wbtcImage from '../../../assets/images/memory-game/wbtc.png';
 import GameCard from '../GameCard/GameCard';
+import styles from './Game.module.css';
 
 type gameItem = {
     src: string;

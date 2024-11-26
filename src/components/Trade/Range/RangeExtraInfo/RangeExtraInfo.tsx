@@ -1,8 +1,8 @@
 import { memo, useContext } from 'react';
-import { ExtraInfo } from '../../TradeModules/ExtraInfo/ExtraInfo';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ExtraInfo } from '../../TradeModules/ExtraInfo/ExtraInfo';
 interface propsIF {
     poolPriceDisplay: string;
     slippageTolerance: number;

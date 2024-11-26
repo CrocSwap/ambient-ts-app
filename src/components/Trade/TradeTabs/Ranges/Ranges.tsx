@@ -1,54 +1,54 @@
 // START: Import React and Dongles
-import { useEffect, useState, useContext, memo, useRef, useMemo } from 'react';
+import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 // START: Import Local Files
-import { useSortedPositions } from '../useSortedPositions';
-import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import RangeHeader from './RangesTable/RangeHeader';
-import NoTableData from '../NoTableData/NoTableData';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import Spinner from '../../../Global/Spinner/Spinner';
-import { useLocation } from 'react-router-dom';
-import { RangeContext } from '../../../../contexts/RangeContext';
-import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
-    HideEmptyPositionContainer,
-    RangeRow as RangeRowStyled,
-} from '../../../../styled/Components/TransactionTable';
-import { FlexContainer } from '../../../../styled/Common';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
+    baseTokenForConcLiq,
+    bigIntToFloat,
+    priceToTick,
+    quoteTokenForConcLiq,
+    tickToPrice,
+} from '@crocswap-libs/sdk';
+import { useLocation } from 'react-router-dom';
+import { fetchPoolPositions } from '../../../../ambient-utils/api/fetchPoolPositions';
+import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-utils/constants';
+import { getPositionData } from '../../../../ambient-utils/dataLayer';
+import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
+import { AppStateContext } from '../../../../contexts';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import {
     GraphDataContext,
     PositionsByPool,
 } from '../../../../contexts/GraphDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import TableRows from '../TableRows';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
 import {
-    bigIntToFloat,
-    baseTokenForConcLiq,
-    tickToPrice,
-    quoteTokenForConcLiq,
-    priceToTick,
-} from '@crocswap-libs/sdk';
-import { getPositionData } from '../../../../ambient-utils/dataLayer';
-import {
-    TokenContextIF,
     TokenContext,
+    TokenContextIF,
 } from '../../../../contexts/TokenContext';
-import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-utils/constants';
-import Toggle from '../../../Form/Toggle';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { FlexContainer } from '../../../../styled/Common';
+import {
+    HideEmptyPositionContainer,
+    RangeRow as RangeRowStyled,
+} from '../../../../styled/Components/TransactionTable';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { PageDataCountIF } from '../../../Chat/ChatIFs';
-import { fetchPoolPositions } from '../../../../ambient-utils/api/fetchPoolPositions';
+import Toggle from '../../../Form/Toggle';
+import Spinner from '../../../Global/Spinner/Spinner';
+import NoTableData from '../NoTableData/NoTableData';
+import TableRows from '../TableRows';
 import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
-import { AppStateContext } from '../../../../contexts';
+import { useSortedPositions } from '../useSortedPositions';
+import RangeHeader from './RangesTable/RangeHeader';
+import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
 
 // interface for props
 interface propsIF {

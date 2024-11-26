@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
+import { diffHashSig } from '../../ambient-utils/dataLayer';
+import { ChartThemeIF } from '../../contexts/ChartContext';
+import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/platformAmbient/Chart/ChartUtils/chartConstants';
 import {
     drawnShapeDefaultDash,
     drawnShapeDefaultLineWidth,
     fibDefaultLevels,
     fibonacciDefaultDash,
 } from '../../pages/platformAmbient/Chart/ChartUtils/drawConstants';
-import { diffHashSig } from '../../ambient-utils/dataLayer';
-import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/platformAmbient/Chart/ChartUtils/chartConstants';
-import { ChartThemeIF } from '../../contexts/ChartContext';
 
 export const useDrawSettings = (chartThemeColors: ChartThemeIF | undefined) => {
     const drawnShapeDefaultColor =

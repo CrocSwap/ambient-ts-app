@@ -1,16 +1,16 @@
-import Hero from '../../../components/Home/Landing/Hero';
-import LandingSections from '../../../components/Home/Landing/LandingSections';
-import Stats from '../../../components/Home/Stats/AmbientStats';
-import TopPoolsHome from '../../../components/Home/TopPoolsHome/TopPoolsHome';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import MobileLandingSections from '../../../components/Home/Landing/MobileLandingSections';
-import { Link } from 'react-router-dom';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useContext } from 'react';
-import { Text } from '../../../styled/Common';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { BrandContext } from '../../../contexts/BrandContext';
 import { minWidth } from '../../../ambient-utils/types/mediaQueries';
+import Hero from '../../../components/Home/Landing/Hero';
+import LandingSections from '../../../components/Home/Landing/LandingSections';
+import MobileLandingSections from '../../../components/Home/Landing/MobileLandingSections';
+import Stats from '../../../components/Home/Stats/AmbientStats';
+import TopPoolsHome from '../../../components/Home/TopPoolsHome/TopPoolsHome';
+import { BrandContext } from '../../../contexts/BrandContext';
+import { Text } from '../../../styled/Common';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');

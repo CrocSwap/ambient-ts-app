@@ -1,8 +1,8 @@
 import { Dispatch, memo, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../ambient-utils/constants';
-import { RangeSortType } from '../../useSortedPositions';
 import { FlexContainer, Text } from '../../../../../styled/Common';
+import { RangeSortType } from '../../useSortedPositions';
 
 interface propsIF {
     header: {

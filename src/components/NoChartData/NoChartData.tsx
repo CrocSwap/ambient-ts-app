@@ -1,13 +1,13 @@
+import { useContext, useState } from 'react';
+import { FiRefreshCcw } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { uriToHttp } from '../../ambient-utils/dataLayer';
-import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { TokenIF } from '../../ambient-utils/types';
-import TokenIcon from '../Global/TokenIcon/TokenIcon';
-import styles from './NoChartData.module.css';
-import { FiRefreshCcw } from 'react-icons/fi';
-import { useContext, useState } from 'react';
 import { CandleContext } from '../../contexts/CandleContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import TokenIcon from '../Global/TokenIcon/TokenIcon';
+import styles from './NoChartData.module.css';
 
 interface PropsIF {
     chainId: string;

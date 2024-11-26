@@ -1,4 +1,3 @@
-import { TokenIF } from '../../../../ambient-utils/types';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
     Dispatch,
@@ -8,42 +7,43 @@ import {
     useMemo,
     useState,
 } from 'react';
+import { TokenIF } from '../../../../ambient-utils/types';
 
+import { FaGasPump } from 'react-icons/fa';
+import {
+    DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
+    DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
+    DEPOSIT_BUFFER_MULTIPLIER_L2,
+    DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
+    IS_LOCAL_ENV,
+    NUM_GWEI_IN_ETH,
+    NUM_WEI_IN_GWEI,
+    ZERO_ADDRESS,
+} from '../../../../ambient-utils/constants';
+import {
+    GAS_DROPS_ESTIMATE_DEPOSIT_ERC20,
+    GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
+    NUM_GWEI_IN_WEI,
+} from '../../../../ambient-utils/constants/';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { useApprove } from '../../../../App/functions/approve';
+import useDebounce from '../../../../App/hooks/useDebounce';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import {
+    MaxButton,
+    SVGContainer,
+} from '../../../../styled/Components/Portfolio';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
 } from '../../../../utils/TransactionError';
-import {
-    DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
-    DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
-    IS_LOCAL_ENV,
-    NUM_WEI_IN_GWEI,
-    DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
-    DEPOSIT_BUFFER_MULTIPLIER_L2,
-    ZERO_ADDRESS,
-    NUM_GWEI_IN_ETH,
-} from '../../../../ambient-utils/constants';
-import { FaGasPump } from 'react-icons/fa';
-import useDebounce from '../../../../App/hooks/useDebounce';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
-import { FlexContainer, Text } from '../../../../styled/Common';
 import Button from '../../../Form/Button';
 import CurrencySelector from '../../../Form/CurrencySelector';
-import {
-    SVGContainer,
-    MaxButton,
-} from '../../../../styled/Components/Portfolio';
-import { useApprove } from '../../../../App/functions/approve';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import {
-    NUM_GWEI_IN_WEI,
-    GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
-    GAS_DROPS_ESTIMATE_DEPOSIT_ERC20,
-} from '../../../../ambient-utils/constants/';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {

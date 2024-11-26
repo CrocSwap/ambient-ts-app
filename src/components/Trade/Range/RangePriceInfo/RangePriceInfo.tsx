@@ -1,13 +1,13 @@
 // START: Import Local Files
-import styles from './RangePriceInfo.module.css';
 import { memo, useContext, useEffect, useState } from 'react';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import styles from './RangePriceInfo.module.css';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 // interface for component props
 interface propsIF {

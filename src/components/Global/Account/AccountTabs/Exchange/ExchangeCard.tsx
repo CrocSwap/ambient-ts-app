@@ -1,19 +1,19 @@
-import styles from './ExchangeCard.module.css';
-import { TokenIF } from '../../../../../ambient-utils/types';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
-import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
-import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
-import { TokenContext } from '../../../../../contexts/TokenContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenPriceFn } from '../../../../../ambient-utils/api';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import {
     getFormattedNumber,
     uriToHttp,
 } from '../../../../../ambient-utils/dataLayer';
-import TokenIcon from '../../../TokenIcon/TokenIcon';
-import { toDisplayQty } from '@crocswap-libs/sdk';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { TokenIF } from '../../../../../ambient-utils/types';
 import { AppStateContext } from '../../../../../contexts';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../../../contexts/TokenContext';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
+import TokenIcon from '../../../TokenIcon/TokenIcon';
+import styles from './ExchangeCard.module.css';
 
 interface propsIF {
     token: TokenIF;

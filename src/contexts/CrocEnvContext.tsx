@@ -1,4 +1,6 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { Provider, ethers } from 'ethers';
 import {
     ReactNode,
     createContext,
@@ -7,11 +9,17 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import {
+    blastMainnet,
+    ethereumMainnet,
+    getDefaultPairForChain,
+    mainnetETH,
+    scrollMainnet,
+} from '../ambient-utils/constants';
+import { translateTokenSymbol } from '../ambient-utils/dataLayer';
+import { PoolIF, TokenIF } from '../ambient-utils/types';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
-import { CachedDataContext } from './CachedDataContext';
-import { Provider, ethers } from 'ethers';
 import { BatchedJsonRpcProvider } from '../utils/batchedProvider';
 import {
     limitParamsIF,
@@ -20,19 +28,10 @@ import {
     swapParamsIF,
     useLinkGen,
 } from '../utils/hooks/useLinkGen';
-import { PoolIF, TokenIF } from '../ambient-utils/types';
-import {
-    ethereumMainnet,
-    mainnetETH,
-    getDefaultPairForChain,
-} from '../ambient-utils/constants';
-import { UserDataContext } from './UserDataContext';
-import { translateTokenSymbol } from '../ambient-utils/dataLayer';
-import { TokenContext } from './TokenContext';
 import { AppStateContext } from './AppStateContext';
-import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastMainnet';
-import { MAINNET_RPC_URL } from '../ambient-utils/constants/networks/ethereumMainnet';
-import { SCROLL_RPC_URL } from '../ambient-utils/constants/networks/scrollMainnet';
+import { CachedDataContext } from './CachedDataContext';
+import { TokenContext } from './TokenContext';
+import { UserDataContext } from './UserDataContext';
 
 interface UrlRoutesTemplateIF {
     swap: string;
@@ -56,16 +55,28 @@ export interface CrocEnvContextIF {
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
     {} as CrocEnvContextIF,
 );
-const mainnetProvider = new BatchedJsonRpcProvider(MAINNET_RPC_URL, 1, {
-    staticNetwork: true,
-});
+const mainnetProvider = new BatchedJsonRpcProvider(
+    ethereumMainnet.evmRpcUrl,
+    parseInt(ethereumMainnet.chainId),
+    {
+        staticNetwork: true,
+    },
+);
 
-const scrollProvider = new BatchedJsonRpcProvider(SCROLL_RPC_URL, 534352, {
-    staticNetwork: true,
-});
-const blastProvider = new BatchedJsonRpcProvider(BLAST_RPC_URL, 81457, {
-    staticNetwork: true,
-});
+const scrollProvider = new BatchedJsonRpcProvider(
+    scrollMainnet.evmRpcUrl,
+    parseInt(scrollMainnet.chainId),
+    {
+        staticNetwork: true,
+    },
+);
+const blastProvider = new BatchedJsonRpcProvider(
+    blastMainnet.evmRpcUrl,
+    parseInt(blastMainnet.chainId),
+    {
+        staticNetwork: true,
+    },
+);
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -99,11 +110,19 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         const tokensMatchingA: TokenIF[] =
             savedTokenASymbol === 'ETH'
                 ? [dfltTokenA]
-                : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', true);
+                : tokens.getTokensByNameOrSymbol(
+                      savedTokenASymbol || '',
+                      chainId,
+                      true,
+                  );
         const tokensMatchingB: TokenIF[] =
             savedTokenBSymbol === 'ETH'
                 ? [dfltTokenA]
-                : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', true);
+                : tokens.getTokensByNameOrSymbol(
+                      savedTokenBSymbol || '',
+                      chainId,
+                      true,
+                  );
 
         const firstTokenMatchingA = tokensMatchingA[0] || undefined;
         const firstTokenMatchingB = tokensMatchingB[0] || undefined;

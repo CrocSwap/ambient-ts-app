@@ -20,10 +20,10 @@ import {
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
 import TableRows from './TableRows';
-import { TxSortType } from './useSortedTxs';
+import styles from './TableRowsInfiniteScroll.module.css';
 import { LimitSortType } from './useSortedLimits';
 import { RangeSortType } from './useSortedPositions';
-import styles from './TableRowsInfiniteScroll.module.css';
+import { TxSortType } from './useSortedTxs';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';

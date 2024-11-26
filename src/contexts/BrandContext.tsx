@@ -1,19 +1,19 @@
 import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
-import { skins } from '../App/hooks/useSkin';
-import { brandIF, fontSets, heroItem } from '../assets/branding/types';
 import { chainIds } from '../ambient-utils/types';
+import { skins } from '../App/hooks/useSkin';
 import {
-    blastBrandAssets,
-    scrollBrandAssets,
-    defaultBrandAssets,
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
+    blastBrandAssets,
+    defaultBrandAssets,
     futaBrandAssets,
-    sampleBrandAssets,
     plumeSepoliaBrandAssets,
+    scrollBrandAssets,
 } from '../assets/branding';
-import { UserDataContext } from './UserDataContext';
+import { swellSepoliaBrandAssets } from '../assets/branding/swellSepoliaBrandAssets';
+import { brandIF, fontSets, heroItem } from '../assets/branding/types';
 import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { UserDataContext } from './UserDataContext';
 
 const PREMIUM_THEMES_IN_ENV = {
     theme1: 'VITE_THEME_1_ACCOUNTS',
@@ -71,7 +71,6 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     const brand: string = import.meta.env.VITE_BRAND_ASSET_SET ?? '';
     const brandAssets = useMemo<brandIF>(() => {
         // make the linter happy for sample file
-        false && sampleBrandAssets;
         switch (brand) {
             case 'blast':
                 return blastBrandAssets;
@@ -85,6 +84,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return ambientTestnetBrandAssets;
             case 'plumeSepolia':
                 return plumeSepoliaBrandAssets;
+            case 'swellSepolia':
+                return swellSepoliaBrandAssets;
             default:
                 return defaultBrandAssets;
         }

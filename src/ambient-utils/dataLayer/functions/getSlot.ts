@@ -1,4 +1,4 @@
-import { ethers, BytesLike } from 'ethers';
+import { BytesLike, ethers } from 'ethers';
 
 /* Determines the EVM storage slot for a given ambient liquidity postion. Can be used
  * to uniquely identify LP positions.
