@@ -1,38 +1,38 @@
-import { useEffect, useState, memo, useContext, useCallback } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { AnimateSharedLayout, motion } from 'framer-motion';
-import UserMenu from './UserMenu/UserMenu';
-import NetworkSelector from './NetworkSelector/NetworkSelector';
-import logo from '../../../assets/images/logos/logo_mark.svg';
-import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { SidebarContext } from '../../../contexts/SidebarContext';
-import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { memo, useCallback, useContext, useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
-    getFormattedNumber,
     chainNumToString,
-    trimString,
     checkEoaHexAddress,
+    getFormattedNumber,
+    trimString,
 } from '../../../ambient-utils/dataLayer';
+import logo from '../../../assets/images/logos/logo_mark.svg';
+import Button from '../../../components/Form/Button';
+import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
+import { BrandContext } from '../../../contexts';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { FlexContainer } from '../../../styled/Common';
 import {
     linkGenMethodsIF,
     swapParamsIF,
     useLinkGen,
 } from '../../../utils/hooks/useLinkGen';
-import { FlexContainer } from '../../../styled/Common';
-import Button from '../../../components/Form/Button';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import NetworkSelector from './NetworkSelector/NetworkSelector';
 import styles from './PageHeader.module.css';
-import { useBottomSheet } from '../../../contexts/BottomSheetContext';
-import { BrandContext, ChainDataContext } from '../../../contexts';
+import UserMenu from './UserMenu/UserMenu';
 
 const PageHeader = function () {
     const {
@@ -48,7 +48,6 @@ const PageHeader = function () {
         useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData, activeTradeTab } = useContext(TradeTableContext);
-    const { isVaultSupportedOnNetwork } = useContext(ChainDataContext);
     const {
         baseToken: {
             setBalance: setBaseTokenBalance,
@@ -301,7 +300,7 @@ const PageHeader = function () {
         {
             title: 'Vaults',
             destination: '/vaults',
-            shouldDisplay: isVaultSupportedOnNetwork,
+            shouldDisplay: true,
         },
         {
             title: 'Account',

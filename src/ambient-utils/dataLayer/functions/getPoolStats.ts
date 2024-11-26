@@ -1,4 +1,6 @@
 import { CrocEnv, bigIntToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
+import { isETHorStakedEthToken } from '..';
+import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import {
     GCGO_OVERRIDE_URL,
     ZERO_ADDRESS,
@@ -6,10 +8,8 @@ import {
     excludedTokenAddressesLowercase,
     mainnetETH,
 } from '../../constants';
-import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
-import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { SinglePoolDataIF, TokenIF } from '../../types';
-import { isETHorStakedEthToken } from '..';
+import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 const getLiquidityFee = async (
     base: string,

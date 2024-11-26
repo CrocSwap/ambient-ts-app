@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import FlashingSvg from '../Animations/FlashingSvg';
-import TerminalAnimation from '../Animations/TerminalAnimation';
-import SynthwaveGrid from '../Animations/SynthwaveGrid';
-import styles from './Hero.module.css';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { BsSkipForward } from 'react-icons/bs';
 import { IoMdClose } from 'react-icons/io';
 import { useFutaHomeContext } from '../../../../contexts/Futa/FutaHomeContext';
+import FlashingSvg from '../Animations/FlashingSvg';
+import SynthwaveGrid from '../Animations/SynthwaveGrid';
+import TerminalAnimation from '../Animations/TerminalAnimation';
+import styles from './Hero.module.css';
 
 interface PropsIF {
     onLearnClick: () => void;

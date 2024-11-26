@@ -1,8 +1,8 @@
+import { useContext } from 'react';
 import { PoolIF } from '../../../../../ambient-utils/types';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { Results } from '../../../../../styled/Components/Sidebar';
 import useFetchPoolStats from '../../../../hooks/useFetchPoolStats';
-import { SidebarContext } from '../../../../../contexts/SidebarContext';
-import { useContext } from 'react';
 
 interface propsIF {
     pool: PoolIF;

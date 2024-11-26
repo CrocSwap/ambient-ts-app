@@ -1,16 +1,16 @@
 import { useContext, useState } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import { AllVaultsServerIF, TokenIF } from '../../ambient-utils/types';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
-import { TradeTokenContext } from '../../contexts/TradeTokenContext';
-import { ReceiptContext } from '../../contexts/ReceiptContext';
-import { UserDataContext } from '../../contexts/UserDataContext';
-import { TokenIF, AllVaultsServerIF } from '../../ambient-utils/types';
 
 export function useApprove() {
     const {

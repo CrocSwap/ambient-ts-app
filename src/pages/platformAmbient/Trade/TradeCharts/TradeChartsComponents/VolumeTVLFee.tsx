@@ -1,6 +1,6 @@
-import styles from './VolumeTVLFee.module.css';
 import { Dispatch, SetStateAction, memo } from 'react';
 import { LS_KEY_SUBCHART_SETTINGS } from '../../../../../ambient-utils/constants';
+import styles from './VolumeTVLFee.module.css';
 
 interface VolumeTVLFeePropsIF {
     setShowVolume: Dispatch<SetStateAction<boolean>>;

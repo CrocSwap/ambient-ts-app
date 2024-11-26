@@ -1,9 +1,9 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import { LiquidityRangeIF } from '../../../../../ambient-utils/types';
-import { getActiveLiqDepth } from './AreaSeries';
 import { ChartThemeIF } from '../../../../../contexts/ChartContext';
+import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
+import { getActiveLiqDepth } from './AreaSeries';
 const lineSellColor = 'rgba(115, 113, 252)';
 const lineBuyColor = 'rgba(205, 193, 255)';
 
@@ -29,25 +29,23 @@ export function createLineSeries(
 export function decorateForLiquidityLine(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     series: any,
-    threshold: number,
     chartThemeColors: ChartThemeIF,
+    liqType: 'bid' | 'ask',
 ) {
     const d3BidColor = chartThemeColors.liqBidColor;
     const d3AskColor = chartThemeColors.liqAskColor;
 
-    series.decorate(
-        (context: CanvasRenderingContext2D, d: LiquidityDataLocal[]) => {
-            if (d[0]?.liqPrices > threshold) {
-                context.strokeStyle = d3BidColor
-                    ? d3BidColor.toString()
-                    : lineSellColor;
-            } else {
-                context.strokeStyle = d3AskColor
-                    ? d3AskColor.toString()
-                    : lineBuyColor;
-            }
-        },
-    );
+    series.decorate((context: CanvasRenderingContext2D) => {
+        if (liqType === 'bid') {
+            context.strokeStyle = d3BidColor
+                ? d3BidColor.toString()
+                : lineSellColor;
+        } else {
+            context.strokeStyle = d3AskColor
+                ? d3AskColor.toString()
+                : lineBuyColor;
+        }
+    });
 }
 
 export function createLiquidityLineSeries(

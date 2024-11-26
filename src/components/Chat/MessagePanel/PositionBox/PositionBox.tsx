@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { motion } from 'framer-motion';
 import {
     Dispatch,
     SetStateAction,
@@ -9,18 +10,15 @@ import {
 } from 'react';
 import { HiOutlineExternalLink } from 'react-icons/hi';
 import {
-    trimString,
     getFormattedNumber,
     getUnicodeCharacter,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getChainExplorer,
+    trimString,
 } from '../../../../ambient-utils/dataLayer';
 import { PositionIF, TransactionIF } from '../../../../ambient-utils/types';
-import styles from './PositionBox.module.css';
-import { motion } from 'framer-motion';
+import { AppStateContext } from '../../../../contexts';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { AppStateContext } from '../../../../contexts';
+import styles from './PositionBox.module.css';
 
 interface propsIF {
     message: string;

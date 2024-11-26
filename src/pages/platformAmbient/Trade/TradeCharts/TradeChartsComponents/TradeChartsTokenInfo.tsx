@@ -1,15 +1,15 @@
-import React, { memo, useContext } from 'react';
+import { memo, useContext } from 'react';
 
-import { PoolContext } from '../../../../../contexts/PoolContext';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
 } from '../../../../../ambient-utils/dataLayer';
-import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import DropdownSearch from '../../../../../components/Global/DropdownSearch/DropdownSearch';
+import { PoolContext } from '../../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import PoolData from './PoolData';
 import styles from './TradeChartsTokenInfo.module.css';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 function TradeChartsTokenInfo() {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);

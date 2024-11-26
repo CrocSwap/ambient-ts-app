@@ -1,6 +1,5 @@
 import { memo, useContext, useEffect, useState } from 'react';
-import styles from './Vaults.module.css';
-import VaultRow from './VaultRow/VaultRow';
+import { VAULTS_API_URL } from '../../../ambient-utils/constants';
 import {
     AllVaultsServerIF,
     UserVaultsServerIF,
@@ -11,9 +10,10 @@ import {
     ReceiptContext,
     UserDataContext,
 } from '../../../contexts';
-import { VAULTS_API_URL } from '../../../ambient-utils/constants';
 import { placeholderVaultsListData } from './placeholderVaultsData';
 import { Vault } from './Vault';
+import VaultRow from './VaultRow/VaultRow';
+import styles from './Vaults.module.css';
 
 function Vaults() {
     // !important:  once we have mock data, change the type on this
@@ -26,15 +26,23 @@ function Vaults() {
     } = useContext(AppStateContext);
     const { sessionReceipts } = useContext(ReceiptContext);
 
-    const { userAddress } = useContext(UserDataContext);
+    const { userAddress, isUserConnected } = useContext(UserDataContext);
 
     const vaultHeader = (
         <div className={styles.vaultHeader}>
             <span />
             <span className={styles.poolName} />
             <span className={styles.tvl}>TVL</span>
-            <span className={styles.depositContainer}>My Deposit</span>
-            <span className={styles.apyDisplay}>APR</span>
+            <span
+                className={`${styles.depositContainer} ${!isUserConnected && styles.hideDepositOnMobile}`}
+            >
+                My Deposit
+            </span>
+            <span
+                className={`${styles.aprDisplay} ${!isUserConnected && styles.showAprOnMobile}`}
+            >
+                APR
+            </span>
             <span className={styles.actionButtonContainer} />
         </div>
     );

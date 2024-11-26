@@ -53,6 +53,11 @@ export function lookupChainId(
         case '0x18230':
             chainIdHex = '0x18230';
             break;
+        case 'swellsepolia':
+        case '1924':
+        case '0x784':
+            chainIdHex = '0x784';
+            break;
     }
     // output variable
     let output: string | number | undefined;

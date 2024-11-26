@@ -1,11 +1,11 @@
+import { AnimatePresence, motion, useAnimation } from 'framer-motion';
 import React, {
-    useEffect,
-    useRef,
     Dispatch,
     SetStateAction,
     useContext,
+    useEffect,
+    useRef,
 } from 'react';
-import { AnimatePresence, useAnimation, motion } from 'framer-motion';
 import styles from './ActivityIndicator.module.css';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';

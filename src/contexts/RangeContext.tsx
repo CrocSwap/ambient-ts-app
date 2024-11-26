@@ -1,9 +1,9 @@
 import {
     createContext,
-    SetStateAction,
     Dispatch,
-    useState,
     ReactNode,
+    SetStateAction,
+    useState,
 } from 'react';
 
 export interface RangeContextIF {

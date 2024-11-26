@@ -56,6 +56,7 @@ import NURI from './NURI.svg';
 import PUSD from './PUSD.svg';
 import SWELL from './SWELL.png';
 import RSWETH from './RSWETH.svg';
+import TBTC from './TBTC.svg';
 import UNI from './UNI.webp';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
@@ -118,5 +119,6 @@ export {
     PUSD,
     SWELL,
     RSWETH,
+    TBTC,
     UNI,
 };

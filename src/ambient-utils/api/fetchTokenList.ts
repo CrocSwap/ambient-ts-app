@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
-import { uriToHttp } from '../dataLayer/functions/uriToHttp';
-import { TokenListIF } from '../types/token/TokenListIF';
 import ambientTokenList from '../constants/ambient-token-list.json';
 import testnetTokenList from '../constants/testnet-token-list.json';
+import { uriToHttp } from '../dataLayer/functions/uriToHttp';
+import { TokenListIF } from '../types/token/TokenListIF';
 
 // !important:  abstraction is at this point largely unnecessary, but at
 // !important:  ... some point in the future we'll likely support users

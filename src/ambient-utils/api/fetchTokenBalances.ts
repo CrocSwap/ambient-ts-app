@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CrocEnv } from '@crocswap-libs/sdk';
+import ambientTokenList from '../constants/ambient-token-list.json';
+import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
 import { TokenIF } from '../types/token/TokenIF';
 import {
     fetchDepositBalances,
     IDexTokenBalances,
 } from './fetchDepositBalances';
-import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
-import ambientTokenList from '../constants/ambient-token-list.json';
 
 export interface IDepositedTokenBalance {
     token: string;

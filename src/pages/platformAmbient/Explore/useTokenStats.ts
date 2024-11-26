@@ -1,10 +1,15 @@
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { ethers } from 'ethers';
 import { useContext, useEffect, useState } from 'react';
 import {
     FetchContractDetailsFn,
     TokenPriceFn,
     TokenPriceFnReturn,
 } from '../../../ambient-utils/api';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    getDefaultPairForChain,
+} from '../../../ambient-utils/constants';
 import {
     DexTokenAggServerIF,
     getChainStats,
@@ -13,11 +18,6 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
-import { ethers } from 'ethers';
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    getDefaultPairForChain,
-} from '../../../ambient-utils/constants';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 interface dexDataGeneric {
@@ -56,8 +56,17 @@ export const useTokenStats = (
     const defaultTokensForChain: [TokenIF, TokenIF] =
         getDefaultPairForChain(chainId);
 
+    // redecorate token data when token lists are pulled for the first time
+    useEffect(() => {
+        (async () => {
+            if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
+                setDexTokens([]);
+                await fetchData();
+            }
+        })();
+    }, [crocEnv, chainId]);
+
     async function fetchData(): Promise<void> {
-        dexTokens.length && setDexTokens([]);
         if (crocEnv) {
             try {
                 const tokenStats = await getChainStats(
@@ -202,13 +211,11 @@ export const useTokenStats = (
         };
     };
 
-    // redecorate token data when token lists are pulled for the first time
-    useEffect(() => {
-        fetchData();
-    }, [tokenMethods.tokenUniv.length, crocEnv]);
-
     return {
         data: dexTokens,
-        update: () => fetchData(),
+        update: () => {
+            setDexTokens([]);
+            return fetchData();
+        },
     };
 };

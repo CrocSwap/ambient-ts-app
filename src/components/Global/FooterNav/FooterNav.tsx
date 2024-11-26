@@ -1,18 +1,18 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { RiChat3Line } from 'react-icons/ri';
-import { MdOutlineExplore } from 'react-icons/md';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { CiVault } from 'react-icons/ci';
 import { HiArrowsRightLeft } from 'react-icons/hi2';
+import { MdOutlineExplore } from 'react-icons/md';
+import { RiChat3Line } from 'react-icons/ri';
 import { VscAccount } from 'react-icons/vsc';
+import { Link, useLocation } from 'react-router-dom';
 
-import styles from './FooterNav.module.css';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import {
     chainNumToString,
     checkEoaHexAddress,
 } from '../../../ambient-utils/dataLayer';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import styles from './FooterNav.module.css';
 
 // Memoize the FooterNav component
 const FooterNav: React.FC = React.memo(() => {

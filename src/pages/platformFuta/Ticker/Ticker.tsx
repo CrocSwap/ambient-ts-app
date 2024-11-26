@@ -1,12 +1,12 @@
-// import { useEffect, useState } from 'react';
+// import{ useEffect, useState } from 'react';
 import styles from './Ticker.module.css';
 
-import Auctions from '../Auctions/Auctions';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-// import { useParams } from 'react-router-dom';
+import Auctions from '../Auctions/Auctions';
+// import{ useParams } from 'react-router-dom';
 
 import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
-// import { AuctionDataIF } from '../../../contexts/AuctionsContext';
+// import{ AuctionDataIF } from '../../../contexts/AuctionsContext';
 
 export default function Ticker() {
     // // setState for auction details

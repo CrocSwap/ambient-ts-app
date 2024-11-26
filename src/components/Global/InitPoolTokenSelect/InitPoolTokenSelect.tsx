@@ -1,9 +1,9 @@
-import { useState, useEffect, memo, Dispatch, SetStateAction } from 'react';
-import styled from 'styled-components';
-import TokenIcon from '../TokenIcon/TokenIcon';
-import { TokenIF } from '../../../ambient-utils/types';
-import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import { Dispatch, memo, SetStateAction, useEffect, useState } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
+import styled from 'styled-components';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import { TokenIF } from '../../../ambient-utils/types';
+import TokenIcon from '../TokenIcon/TokenIcon';
 
 import { useModal } from '../Modal/useModal';
 import { SoloTokenSelect } from '../TokenSelectContainer/SoloTokenSelect';

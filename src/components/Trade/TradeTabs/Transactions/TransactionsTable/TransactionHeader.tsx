@@ -1,8 +1,8 @@
 import { Dispatch, memo, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../ambient-utils/constants';
-import { TxSortType } from '../../useSortedTxs';
 import { FlexContainer, Text } from '../../../../../styled/Common';
+import { TxSortType } from '../../useSortedTxs';
 
 interface TransactionHeaderPropsIF {
     header: {

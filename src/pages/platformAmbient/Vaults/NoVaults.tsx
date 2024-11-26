@@ -1,10 +1,10 @@
+import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useContext } from 'react';
-import styles from './NoVaults.module.css';
+import { vaultSupportedNetworks } from '../../../ambient-utils/constants';
+import { NetworkIF } from '../../../ambient-utils/types';
 import Button from '../../../components/Form/Button';
 import { AppStateContext } from '../../../contexts';
-import { vaultSupportedNetworks } from '../../../ambient-utils/constants';
-import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { NetworkIF } from '../../../ambient-utils/types';
+import styles from './NoVaults.module.css';
 
 export default function NoVaults() {
     const { chooseNetwork } = useContext(AppStateContext);

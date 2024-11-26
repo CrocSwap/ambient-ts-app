@@ -2,39 +2,39 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
-import './TransactionDetailsGraph.css';
+import { toDisplayPrice } from '@crocswap-libs/sdk';
+import { useMediaQuery } from '@material-ui/core';
+import moment from 'moment';
+import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
-import Spinner from '../../Spinner/Spinner';
-import {
-    formatAmountChartData,
-    formatPoolPriceAxis,
-} from '../../../../utils/numbers';
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
 import {
     CachedDataContext,
     CachedDataContextIF,
 } from '../../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
-import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
-import moment from 'moment';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import {
     lineValue,
     renderCanvasArray,
     setCanvasResolution,
 } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { useMediaQuery } from '@material-ui/core';
-import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
-import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
-import { toDisplayPrice } from '@crocswap-libs/sdk';
-import { ChartContext } from '../../../../contexts/ChartContext';
 import { FlexContainer } from '../../../../styled/Common';
 import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
+    formatAmountChartData,
+    formatPoolPriceAxis,
+} from '../../../../utils/numbers';
+import Spinner from '../../Spinner/Spinner';
+import './TransactionDetailsGraph.css';
+import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {

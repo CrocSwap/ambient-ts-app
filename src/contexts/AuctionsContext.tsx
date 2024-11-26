@@ -7,15 +7,15 @@ import React, {
     useEffect,
     useState,
 } from 'react';
+import { CURRENT_AUCTION_VERSION } from '../ambient-utils/constants';
+import { AuctionDataIF } from '../ambient-utils/dataLayer/functions/getAuctionData';
 import {
     tickerWatchlistIF,
     useTickerWatchlist,
 } from '../pages/platformFuta/useTickerWatchlist';
-import { UserDataContext } from './UserDataContext';
-import { AuctionDataIF } from '../ambient-utils/dataLayer/functions/getAuctionData';
-import { CachedDataContext } from './CachedDataContext';
-import { CURRENT_AUCTION_VERSION } from '../ambient-utils/constants';
 import { AppStateContext } from './AppStateContext';
+import { CachedDataContext } from './CachedDataContext';
+import { UserDataContext } from './UserDataContext';
 
 export interface AuctionsContextIF {
     globalAuctionList: AuctionsDataIF;
