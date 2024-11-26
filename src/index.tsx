@@ -28,21 +28,21 @@ import plumeSepoliaLogo from './assets/images/networks/plume_mainnet_logo_small.
 import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia_logo.webp';
 import swellSepoliaLogo from './assets/images/networks/swell_network_logo_with_margin.webp';
 
-// /* Perform a single forcible reload when the page first loads. Without this, there
-//  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
-//  * cost of higher load times, especially when pre-loading isn't happening. See:
-//  * https://community.metamask.io/t/google-chrome-page-preload-causes-weirdness-with-metamask/24042
-//  *
-//  * Still happening as of May 2024 using Metamask v11.15.4 on Chrome 124. */
-// const doReload =
-//     JSON.parse(localStorage.getItem('ambiAppReloadTrigger') || 'true') &&
-//     navigator.userAgent.includes('Chrome');
-// if (doReload) {
-//     localStorage.setItem('ambiAppReloadTrigger', 'false');
-//     location.reload();
-// } else {
-//     localStorage.setItem('ambiAppReloadTrigger', 'true');
-// }
+/* Perform a single forcible reload when the page first loads. Without this, there
+ * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
+ * cost of higher load times, especially when pre-loading isn't happening. See:
+ * https://community.metamask.io/t/google-chrome-page-preload-causes-weirdness-with-metamask/24042
+ *
+ * Still happening as of May 2024 using Metamask v11.15.4 on Chrome 124. */
+const doReload =
+    JSON.parse(localStorage.getItem('ambiAppReloadTrigger') || 'true') &&
+    navigator.userAgent.includes('Chrome');
+if (doReload) {
+    localStorage.setItem('ambiAppReloadTrigger', 'false');
+    location.reload();
+} else {
+    localStorage.setItem('ambiAppReloadTrigger', 'true');
+}
 
 const metadata = {
     name: 'Ambient Finance',
