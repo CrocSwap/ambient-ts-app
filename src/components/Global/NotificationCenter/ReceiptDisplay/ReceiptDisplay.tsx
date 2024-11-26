@@ -1,18 +1,18 @@
-import styles from './ReceiptDisplay.module.css';
+import { useContext, useEffect, useState } from 'react';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { MdErrorOutline } from 'react-icons/md';
-import {
-    trimString,
-    getChainExplorer,
-} from '../../../../ambient-utils/dataLayer';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { VscClose } from 'react-icons/vsc';
-import { useContext, useEffect, useState } from 'react';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import Spinner from '../../Spinner/Spinner';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import {
+    getChainExplorer,
+    trimString,
+} from '../../../../ambient-utils/dataLayer';
 import { AppStateContext } from '../../../../contexts';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import Spinner from '../../Spinner/Spinner';
+import styles from './ReceiptDisplay.module.css';
 
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';

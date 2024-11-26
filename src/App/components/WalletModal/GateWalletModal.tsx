@@ -2,15 +2,15 @@
 import { useContext } from 'react';
 
 // START: Import Local Files
-import styles from './GateWalletModal.module.css';
-import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Form/Button';
+import Modal from '../../../components/Global/Modal/Modal';
+import styles from './GateWalletModal.module.css';
 
-import { useTermsAgreed } from '../../hooks/useTermsAgreed';
-import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useWeb3Modal } from '@web3modal/ethers/react';
-import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import { VIEW_ONLY } from '../../../ambient-utils/constants';
+import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { useTermsAgreed } from '../../hooks/useTermsAgreed';
 
 export default function GateWalletModal() {
     const {

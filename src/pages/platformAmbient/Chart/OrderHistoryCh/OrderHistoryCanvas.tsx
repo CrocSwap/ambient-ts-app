@@ -1,4 +1,8 @@
+import * as d3 from 'd3';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { diffHashSig } from '../../../../ambient-utils/dataLayer';
+import { TransactionIF } from '../../../../ambient-utils/types';
+import { BrandContext } from '../../../../contexts/BrandContext';
 import {
     lineData,
     renderCanvasArray,
@@ -6,12 +10,8 @@ import {
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
 import { createCircle } from '../ChartUtils/circle';
-import { createLinearLineSeries } from '../Draw/DrawCanvas/LinearLineSeries';
-import * as d3 from 'd3';
 import { createBandArea } from '../Draw/DrawCanvas/BandArea';
-import { diffHashSig } from '../../../../ambient-utils/dataLayer';
-import { TransactionIF } from '../../../../ambient-utils/types';
-import { BrandContext } from '../../../../contexts/BrandContext';
+import { createLinearLineSeries } from '../Draw/DrawCanvas/LinearLineSeries';
 
 interface OrderHistoryCanvasProps {
     scaleData: scaleData;

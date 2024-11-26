@@ -26,6 +26,7 @@ import { getLocalStorageItem } from './ambient-utils/dataLayer';
 import blastSepoliaLogo from './assets/images/networks/blast_sepolia_logo.webp';
 import plumeSepoliaLogo from './assets/images/networks/plume_mainnet_logo_small.webp';
 import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia_logo.webp';
+import swellSepoliaLogo from './assets/images/networks/swell_network_logo_with_margin.webp';
 
 // /* Perform a single forcible reload when the page first loads. Without this, there
 //  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
@@ -55,9 +56,16 @@ const metadata = {
     ],
 };
 
+const defaultSupportedNetworkKey = Object.keys(supportedNetworks)[0];
+
+const defaultChainIdInteger = supportedNetworks[defaultSupportedNetworkKey]
+    .chainId
+    ? parseInt(supportedNetworks[defaultSupportedNetworkKey].chainId)
+    : 534352;
+
 const ethersConfig = defaultConfig({
     metadata,
-    defaultChainId: 534352,
+    defaultChainId: defaultChainIdInteger,
     enableEmail: false,
     rpcUrl: ' ',
     enableCoinbase: true,
@@ -77,6 +85,7 @@ const modal = createWeb3Modal({
         534352: scrollLogo,
         11155111: sepoliaLogo,
         98864: plumeSepoliaLogo,
+        1924: swellSepoliaLogo,
     },
     termsConditionsUrl: '/terms',
     privacyPolicyUrl: '/privacy',
@@ -102,9 +111,14 @@ modal.subscribeEvents(async (event) => {
 
     if (event.data.event === 'CONNECT_SUCCESS') {
         const currentChainId = modal.getState().selectedNetworkId as number;
-        const desiredChainId = parseInt(
-            getLocalStorageItem(LS_KEY_CHAIN_ID) || '534352',
-        );
+
+        const lastUsedNetworkIdString = getLocalStorageItem(
+            LS_KEY_CHAIN_ID,
+        ) as string;
+
+        const desiredChainId = lastUsedNetworkIdString
+            ? parseInt(lastUsedNetworkIdString)
+            : defaultChainIdInteger;
 
         if (currentChainId !== desiredChainId) {
             try {

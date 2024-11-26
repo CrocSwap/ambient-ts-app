@@ -1,18 +1,18 @@
 import { AnimateSharedLayout } from 'framer-motion';
 import {
+    useCallback,
+    useContext,
     useEffect,
+    useMemo,
     useRef,
     useState,
-    useMemo,
-    useContext,
-    useCallback,
 } from 'react';
-import NotificationTable from './NotificationTable/NotificationTable';
-import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
 import { getReceiptTxHashes } from '../../../ambient-utils/dataLayer';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
+import NotificationTable from './NotificationTable/NotificationTable';
 
 const NotificationCenter = () => {
     const [showNotificationTable, setShowNotificationTable] =

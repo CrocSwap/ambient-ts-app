@@ -1,18 +1,18 @@
 import { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
-import {
-    ambiLogo,
-    blastLogo,
-} from '../../../DetailModals/RangeDetails/PriceInfo/PriceInfo';
-import PointsRow from './PointsRow';
 import {
     BlastUserXpDataIF,
     UserDataContext,
     UserXpDataIF,
 } from '../../../../../contexts/UserDataContext';
-import { ViewMoreButton } from '../../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../../styled/Common';
-import { Link } from 'react-router-dom';
+import { ViewMoreButton } from '../../../../../styled/Components/TransactionTable';
+import {
+    ambiLogo,
+    blastLogo,
+} from '../../../DetailModals/RangeDetails/PriceInfo/PriceInfo';
+import PointsRow from './PointsRow';
 
 interface propsIF {
     resolvedUserXp: UserXpDataIF;

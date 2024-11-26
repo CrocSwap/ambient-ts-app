@@ -1,13 +1,13 @@
-import styles from './TransactionSubmitted.module.css';
-import Animation from '../../../../Global/Animation/Animation';
-import completed from '../../../../../assets/animations/completed.json';
-import addTokenToWallet from './addTokenToWallet';
-import Button from '../../../../Form/Button';
+import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
-import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
-import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 import { brand } from '../../../../../ambient-utils/constants';
+import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
+import completed from '../../../../../assets/animations/completed.json';
+import Button from '../../../../Form/Button';
+import Animation from '../../../../Global/Animation/Animation';
+import addTokenToWallet from './addTokenToWallet';
+import styles from './TransactionSubmitted.module.css';
 
 interface PropsIF {
     type:

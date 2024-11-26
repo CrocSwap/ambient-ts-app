@@ -1,6 +1,6 @@
 import { useOutletContext } from 'react-router-dom';
-import { updatesIF, validParamsType } from '../../utils/hooks/useUrlParams';
 import { TradeDataContextIF } from '../../contexts/TradeDataContext';
+import { updatesIF, validParamsType } from '../../utils/hooks/useUrlParams';
 
 type ContextType = {
     tradeData: TradeDataContextIF;

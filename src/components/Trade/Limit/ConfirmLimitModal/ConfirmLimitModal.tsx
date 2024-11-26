@@ -1,9 +1,9 @@
 import { useContext } from 'react';
-import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
-import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
-import { FlexContainer, Text } from '../../../../styled/Common';
+import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 
 interface propsIF {
     initiateLimitOrderMethod: () => Promise<void>;

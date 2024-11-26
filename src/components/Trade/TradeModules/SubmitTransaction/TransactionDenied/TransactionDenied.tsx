@@ -1,5 +1,5 @@
-import styles from './TransactionDenied.module.css';
 import { CircleLoaderFailed } from '../../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
+import styles from './TransactionDenied.module.css';
 
 interface PropsIF {
     noAnimation?: boolean;

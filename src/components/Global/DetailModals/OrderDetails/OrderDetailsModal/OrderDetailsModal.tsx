@@ -1,37 +1,37 @@
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
-import styles from '../../TransactionDetailsModal.module.css';
-import PriceInfo from '../PriceInfo/PriceInfo';
-import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
-import {
-    LimitOrderIF,
-    LimitOrderServerIF,
-} from '../../../../../ambient-utils/types';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
-import TransactionDetailsGraph from '../../TransactionDetailsGraph/TransactionDetailsGraph';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
     IS_LOCAL_ENV,
 } from '../../../../../ambient-utils/constants';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import {
-    getLimitOrderData,
     getFormattedNumber,
+    getLimitOrderData,
     printDomToImage,
 } from '../../../../../ambient-utils/dataLayer';
-import { TokenContext } from '../../../../../contexts/TokenContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import {
+    LimitOrderIF,
+    LimitOrderServerIF,
+} from '../../../../../ambient-utils/types';
 import modalBackground from '../../../../../assets/images/backgrounds/background.png';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-import Modal from '../../../../Global/Modal/Modal';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../../../contexts/TokenContext';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
-import DetailsHeader from '../../DetailsHeader/DetailsHeader';
-import ModalHeader from '../../../ModalHeader/ModalHeader';
-import MobileDetailTabs from '../../MobileDetailTabs/MobileDetailTabs';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
+import Modal from '../../../../Global/Modal/Modal';
+import ModalHeader from '../../../ModalHeader/ModalHeader';
+import DetailsHeader from '../../DetailsHeader/DetailsHeader';
+import MobileDetailTabs from '../../MobileDetailTabs/MobileDetailTabs';
+import TransactionDetailsGraph from '../../TransactionDetailsGraph/TransactionDetailsGraph';
+import styles from '../../TransactionDetailsModal.module.css';
+import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
+import PriceInfo from '../PriceInfo/PriceInfo';
 
 interface propsIF {
     limitOrder: LimitOrderIF;

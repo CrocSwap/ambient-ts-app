@@ -1,11 +1,11 @@
 import { useContext } from 'react';
-import Row from '../../Global/Row/Row';
-import styles from './LimitActionInfo.module.css';
-import { TokenContext } from '../../../contexts/TokenContext';
-import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import { AppStateContext } from '../../../contexts';
+import { TokenContext } from '../../../contexts/TokenContext';
+import Row from '../../Global/Row/Row';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import styles from './LimitActionInfo.module.css';
 
 interface ILimitActionInfoProps {
     type: 'Remove' | 'Claim';

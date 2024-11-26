@@ -1,6 +1,6 @@
-import { useEffect, useRef /* useState */ } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
+import { useEffect, useRef /* useState */ } from 'react';
 import { renderCanvasArray } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 
 interface AxisIF {

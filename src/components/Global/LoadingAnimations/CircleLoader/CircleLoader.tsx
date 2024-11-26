@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
-import styles from './CircleLoader.module.css';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { IoCheckmarkCircleOutline } from 'react-icons/io5';
+import styles from './CircleLoader.module.css';
 const spinTransition = {
     loop: Infinity,
     ease: 'linear',

@@ -1,3 +1,4 @@
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
     ChangeEvent,
     useContext,
@@ -6,7 +7,24 @@ import {
     useRef,
     useState,
 } from 'react';
+import { FaGasPump } from 'react-icons/fa';
+import {
+    GAS_DROPS_ESTIMATE_VAULT_DEPOSIT,
+    NUM_GWEI_IN_WEI,
+} from '../../../../../ambient-utils/constants';
+import {
+    getFormattedNumber,
+    precisionOfInput,
+    uriToHttp,
+} from '../../../../../ambient-utils/dataLayer';
 import { TokenIF, VaultIF } from '../../../../../ambient-utils/types';
+import { useApprove } from '../../../../../App/functions/approve';
+import Button from '../../../../../components/Form/Button';
+import WalletBalanceSubinfo from '../../../../../components/Form/WalletBalanceSubinfo';
+import Modal from '../../../../../components/Global/Modal/Modal';
+import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
+import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/StyledTooltip';
+import TokenIcon from '../../../../../components/Global/TokenIcon/TokenIcon';
 import {
     AppStateContext,
     CachedDataContext,
@@ -15,30 +33,12 @@ import {
     ReceiptContext,
     UserDataContext,
 } from '../../../../../contexts';
-import styles from './VaultDeposit.module.css';
-import WalletBalanceSubinfo from '../../../../../components/Form/WalletBalanceSubinfo';
-import {
-    getFormattedNumber,
-    precisionOfInput,
-    uriToHttp,
-} from '../../../../../ambient-utils/dataLayer';
-import TokenIcon from '../../../../../components/Global/TokenIcon/TokenIcon';
-import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/StyledTooltip';
-import Button from '../../../../../components/Form/Button';
-import Modal from '../../../../../components/Global/Modal/Modal';
-import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
-import { FaGasPump } from 'react-icons/fa';
-import {
-    NUM_GWEI_IN_WEI,
-    GAS_DROPS_ESTIMATE_VAULT_DEPOSIT,
-} from '../../../../../ambient-utils/constants';
-import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
     TransactionError,
-    isTransactionReplacedError,
     isTransactionFailedError,
+    isTransactionReplacedError,
 } from '../../../../../utils/TransactionError';
-import { useApprove } from '../../../../../App/functions/approve';
+import styles from './VaultDeposit.module.css';
 
 interface Props {
     mainAsset: TokenIF;

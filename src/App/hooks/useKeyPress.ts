@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 // Taken and refactored from here: https://usehooks.com/useKeyPress/
 
 // Hook

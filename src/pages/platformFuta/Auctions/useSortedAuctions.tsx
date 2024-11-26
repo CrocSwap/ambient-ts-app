@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
 import { toDisplayQty } from '@crocswap-libs/sdk';
+import { useMemo, useState } from 'react';
 import { AuctionDataIF } from '../../../ambient-utils/dataLayer';
 
 export type auctionSorts =

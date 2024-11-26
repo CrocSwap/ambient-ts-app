@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import {
-    useLinkGen,
     linkGenMethodsIF,
     poolParamsIF,
+    useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
 
 export const useRepoExitPath = (): string => {

@@ -1,5 +1,5 @@
-import { brandIF } from './types';
 import pageHeaderTestBanner from '../../assets/images/Temporary/pageHeaderTestBanner.png';
+import { brandIF } from './types';
 
 export const sampleBrandAssets: brandIF = {
     networks: {
