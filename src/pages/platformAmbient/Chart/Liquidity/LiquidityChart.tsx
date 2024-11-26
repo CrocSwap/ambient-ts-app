@@ -587,6 +587,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     if (liqMode === 'curve') {
                         liqAskSeries(liqDataAsk);
                         liqBidSeries(liqDataBid);
+                        // clipCanvas(
+                        //     scaleData?.yScale(liqDataAsk[0].liqPrices),
+                        //     scaleData?.yScale(poolPriceDisplay),
+                        //     canvas,
+                        // );
                         drawCurveLines(canvas);
                     }
                     if (liqMode === 'depth') {

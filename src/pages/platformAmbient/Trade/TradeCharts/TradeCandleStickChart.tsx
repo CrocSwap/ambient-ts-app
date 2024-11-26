@@ -44,6 +44,7 @@ import {
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
 import { LiquidityDataLocal } from './TradeCharts';
+import { pinTickLower, pinTickUpper, tickToPrice } from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -290,9 +291,18 @@ function TradeCandleStickChart(props: propsIF) {
                 gridSize,
             );
 
+            const _lowTick = pinTickLower(poolPriceDisplay, gridSize);
+            const _highTick = pinTickUpper(poolPriceDisplay, gridSize);
+
+            const lowTickPrice = tickToPrice(_lowTick);
+
+            const hightickPrice = tickToPrice(_highTick);
+
             const limitBoundary = parseFloat(
                 rangeBoundary.pinnedMaxPriceDisplay,
             );
+
+            console.log({ rangeBoundary });
 
             const barThreshold =
                 poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
@@ -375,7 +385,7 @@ function TradeCandleStickChart(props: propsIF) {
                     : data.upperBoundPriceDecimalCorrected;
 
                 if (
-                    liqUpperPrices >= poolPriceDisplay &&
+                    liqUpperPrices >= lowTickPrice &&
                     liqUpperPrices < poolPriceDisplay * 10
                 ) {
                     liqBidData.push({
@@ -395,7 +405,7 @@ function TradeCandleStickChart(props: propsIF) {
                     });
                 } else {
                     if (
-                        liqLowerPrices <= limitBoundary &&
+                        liqLowerPrices <= hightickPrice &&
                         liqLowerPrices > poolPriceDisplay / 10
                     ) {
                         liqAskData.push({
