@@ -56,11 +56,10 @@ const metadata = {
     ],
 };
 
-const defaultSupportedNetworkKey = Object.keys(supportedNetworks)[0];
+const defaultSupportedNetworkHexId = Object.keys(supportedNetworks)[0];
 
-const defaultChainIdInteger = supportedNetworks[defaultSupportedNetworkKey]
-    .chainId
-    ? parseInt(supportedNetworks[defaultSupportedNetworkKey].chainId)
+const defaultChainIdInteger = defaultSupportedNetworkHexId
+    ? parseInt(defaultSupportedNetworkHexId)
     : 534352;
 
 const ethersConfig = defaultConfig({
