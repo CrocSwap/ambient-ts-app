@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
-import { chainIds } from '../ambient-utils/types';
+import { chainHexIds } from '../ambient-utils/types';
 import { skins } from '../App/hooks/useSkin';
 import {
     ambientProductionBrandAssets,
@@ -31,7 +31,7 @@ export interface BrandContextIF {
     fontSet: fontSets;
     colorAndFont: string;
     platformName: string;
-    networks: chainIds[];
+    networks: chainHexIds[];
     headerImage: string;
     showPoints: boolean;
     showDexStats: boolean;
@@ -102,7 +102,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     const [skin, setSkin] = useState<skins>(getDefaultSkin());
 
     function getAvailableSkins(): skins[] {
-        const networkSettings = brandAssets.networks[chainId as chainIds];
+        const networkSettings = brandAssets.networks[chainId as chainHexIds];
         const available: skins[] = networkSettings?.color ?? ['purple_dark'];
         const premium: skins[] = networkSettings?.premiumColor ?? [];
         const hasPremium = !!(
@@ -117,7 +117,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     }
 
     function getHero(): heroItem[] {
-        const networkPrefs = brandAssets.networks[chainId as chainIds];
+        const networkPrefs = brandAssets.networks[chainId as chainHexIds];
         return networkPrefs
             ? networkPrefs.hero
             : [{ content: 'ambient', processAs: 'separator' }];
@@ -133,7 +133,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         fontSet: brandAssets.fontSet,
         colorAndFont: getDefaultSkin() + '+' + brandAssets.fontSet,
         platformName: brandAssets.platformName,
-        networks: Object.keys(brandAssets.networks) as chainIds[],
+        networks: Object.keys(brandAssets.networks) as chainHexIds[],
         headerImage: brandAssets.headerImage,
         showPoints: brandAssets.showPoints,
         showDexStats: brandAssets.showDexStats,
