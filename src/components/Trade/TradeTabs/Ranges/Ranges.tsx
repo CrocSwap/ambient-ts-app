@@ -412,41 +412,6 @@ function Ranges(props: propsIF) {
         }
     }, [pagesVisible[0]]);
 
-    useEffect(() => {
-        // clear fetched transactions when switching pools
-        if (positionsByPool.positions.length === 0) {
-            setFetchedTransactions({
-                dataReceived: true,
-                positions: [],
-            });
-        } else {
-            const existingChanges = new Set(
-                fetchedTransactions.positions.map(
-                    (change) => change.positionId,
-                ),
-            ); // Adjust if using a different unique identifier
-
-            const newPositions = positionsByPool.positions.filter(
-                (change) =>
-                    !existingChanges.has(change.positionId) &&
-                    change.positionLiq !== 0,
-            );
-
-            if (pagesVisible[0] === 0) {
-                setFetchedTransactions({
-                    dataReceived: true,
-                    positions: [...newPositions, ...positionsByPool.positions],
-                });
-
-                if (positionsByPool.positions.length > 0) {
-                    setPageDataCount(getInitialDataPageCounts());
-                }
-            } else if (newPositions.length > 0) {
-                updateHotTransactions(newPositions);
-            }
-        }
-    }, [positionsByPool]);
-
     // const fetchNewData = async(OLDEST_TIME:number, signal: AbortSignal):Promise<PositionIF[]> => {
     const fetchNewData = async (OLDEST_TIME: number): Promise<PositionIF[]> => {
         return new Promise((resolve) => {
@@ -657,6 +622,7 @@ function Ranges(props: propsIF) {
             fetchedTransactions.positions.length > 0
         ) {
             setPagesVisible([0, 1]);
+            // update page data counts once token pair changes
             setPageDataCount(getInitialDataPageCounts());
             setPageDataCountShouldReset(false);
             setInfiniteScrollLock(true);
@@ -677,6 +643,7 @@ function Ranges(props: propsIF) {
             fetchedTransactionsRef.current &&
             fetchedTransactionsRef.current.positions.length > 0
         ) {
+            // update page data counts once position data has filled and current data count vals are 0
             setPageDataCount(getInitialDataPageCounts());
         } else {
             setInfiniteScrollLock(false);
@@ -738,6 +705,47 @@ function Ranges(props: propsIF) {
         isAccountView,
         unindexedUpdatedPositions,
     ]);
+
+    useEffect(() => {
+        // clear fetched transactions when switching pools
+        if (positionsByPool.positions.length === 0) {
+            setFetchedTransactions({
+                dataReceived: true,
+                positions: [],
+            });
+        } else {
+            const existingChanges = new Set(
+                fetchedTransactions.positions.map(
+                    (change) => change.positionId,
+                ),
+            ); // Adjust if using a different unique identifier
+
+            const newPositions = positionsByPool.positions.filter(
+                (change) =>
+                    !existingChanges.has(change.positionId) &&
+                    change.positionLiq !== 0,
+            );
+
+            if (pagesVisible[0] === 0) {
+                const currentPositions = getUniqueSortedPositions(
+                    sortedPositions.filter((e) => e.positionLiq !== 0),
+                );
+                setFetchedTransactions({
+                    dataReceived: true,
+                    positions: [...newPositions, ...currentPositions],
+                });
+
+                if (currentPositions.length > 0) {
+                    // set page data counts once position data has filled and counts are on initial state (counts.len == 2)
+                    if (pageDataCountRef.current?.counts.length === 2) {
+                        setPageDataCount(getInitialDataPageCounts());
+                    }
+                }
+            } else if (newPositions.length > 0) {
+                updateHotTransactions(newPositions);
+            }
+        }
+    }, [positionsByPool]);
 
     // -----------------------------------------------------------------------------------------------------------------------------
 
