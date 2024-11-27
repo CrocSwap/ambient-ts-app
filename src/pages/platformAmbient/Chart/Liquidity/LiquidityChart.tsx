@@ -612,8 +612,26 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                         drawCurveLines(canvas);
                     }
                     if (liqMode === 'depth') {
-                        liqDepthBidSeries(liqDataDepthBid);
+                        clipCanvas(
+                            scaleData?.yScale(poolPriceDisplay),
+                            0,
+                            canvas,
+                        );
+
+                        liqDepthBidSeries(allData.slice().reverse());
+
+                        ctx?.restore();
+
+                        clipCanvas(
+                            scaleData?.yScale(0),
+                            scaleData?.yScale(poolPriceDisplay),
+                            canvas,
+                        );
+
                         liqDepthAskSeries(liqDataDepthAsk);
+
+                        ctx?.restore();
+
                         drawDepthLines(canvas);
                     }
                 })
@@ -694,8 +712,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                                 highlightedAskAreaCurveSeries(allData);
                             }
                             if (liqMode === 'depth') {
-                                highlightedAreaAskSeries(liqDataDepthAsk);
+                                highlightedAreaAskSeries(allData);
                             }
+                            ctx?.restore();
                         }
                         if (liquidityMouseMoveActive === 'bid') {
                             clipCanvas(
@@ -710,8 +729,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                             }
 
                             if (liqMode === 'depth') {
-                                highlightedAreaBidSeries(liqDataDepthBid);
+                                highlightedAreaBidSeries(
+                                    allData.slice().reverse(),
+                                );
                             }
+                            ctx?.restore();
                         }
                     }
                 })
