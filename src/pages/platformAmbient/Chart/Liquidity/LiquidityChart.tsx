@@ -449,7 +449,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         ctx.clip();
     };
 
-    const clipHighlightedLines = (canvas: HTMLCanvasElement) => {
+    const clipHighlightedLines = (
+        canvas: HTMLCanvasElement,
+        liqType: 'bid' | 'ask',
+    ) => {
         const _low = ranges.filter(
             (target: lineValue) => target.name === 'Min',
         )[0].value;
@@ -460,8 +463,14 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         const low = _low > _high ? _high : _low;
         const high = _low > _high ? _low : _high;
 
+        const lastLow = liqType === 'bid' ? poolPriceDisplay : low;
+        const lastHigh = liqType === 'bid' ? high : poolPriceDisplay;
         if (scaleData) {
-            clipCanvas(scaleData?.yScale(low), scaleData?.yScale(high), canvas);
+            clipCanvas(
+                scaleData?.yScale(lastLow),
+                scaleData?.yScale(lastHigh),
+                canvas,
+            );
         }
     };
 
@@ -473,24 +482,45 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     }, [liqBidSeries, liqAskSeries, liqDepthBidSeries, liqDepthAskSeries]);
 
     const drawCurveLines = (canvas: HTMLCanvasElement) => {
+        const ctx = canvas.getContext('2d');
+
         const isRange =
             location.pathname.includes('pool') ||
             location.pathname.includes('reposition');
+
+        const allData =
+            liqMode === 'curve'
+                ? liqDataBid.concat(liqDataAsk)
+                : liqDataDepthBid.concat(liqDataDepthAsk);
+
         if (isRange) {
-            clipHighlightedLines(canvas);
-            lineLiqAskSeries(liqDataAsk);
-            lineLiqBidSeries(liqDataBid);
+            clipHighlightedLines(canvas, 'bid');
+            lineLiqBidSeries(allData.slice().reverse());
+            ctx?.restore();
+            clipHighlightedLines(canvas, 'ask');
+            lineLiqAskSeries(allData);
+            ctx?.restore();
         }
     };
 
     const drawDepthLines = (canvas: HTMLCanvasElement) => {
+        const ctx = canvas.getContext('2d');
+
+        const allData =
+            liqMode === 'curve'
+                ? liqDataBid.concat(liqDataAsk)
+                : liqDataDepthBid.concat(liqDataDepthAsk);
+
         const isRange =
             location.pathname.includes('pool') ||
             location.pathname.includes('reposition');
         if (isRange) {
-            clipHighlightedLines(canvas);
-            lineLiqDepthAskSeries(liqDataDepthAsk);
-            lineLiqDepthBidSeries(liqDataDepthBid);
+            clipHighlightedLines(canvas, 'ask');
+            lineLiqDepthAskSeries(allData);
+            ctx?.restore();
+            clipHighlightedLines(canvas, 'bid');
+            lineLiqDepthBidSeries(allData.slice().reverse());
+            ctx?.restore();
         }
     };
 
