@@ -85,6 +85,15 @@ export const mainnetLIDO: TokenIF = {
     symbol: 'LDO',
 };
 
+export const mainnetTBTC: TokenIF = {
+    address: '0x18084fbA666a33d37592fA2633fD49a74DD93a88',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/26133.png',
+    name: 'tBTC v2',
+    symbol: 'tBTC',
+};
+
 export const mainnetLUSD: TokenIF = {
     address: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
     chainId: 1,
@@ -766,6 +775,34 @@ export const plumeSepoliaNEV: TokenIF = {
     logoURI: '',
 };
 
+export const swellSepoliaETH: TokenIF = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 1924,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const swellSepoliaUSDC: TokenIF = {
+    name: 'Ambient USDC',
+    address: '0xfEfD8bCB0034A2B0E3CC22e2f5A59279FAe67128',
+    symbol: 'USDC',
+    decimals: 6,
+    chainId: 1924,
+    logoURI: '',
+};
+
+export const swellSepoliaUSDT: TokenIF = {
+    name: 'Ambient USDT',
+    address: '0x60bBA138A74C5e7326885De5090700626950d509',
+    symbol: 'USDT',
+    decimals: 6,
+    chainId: 1924,
+    logoURI: '',
+};
+
 export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,
@@ -786,6 +823,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetMKR,
     mainnetLIDO,
     mainnetLUSD,
+    mainnetTBTC,
     mainnetETHFI,
     blastETH,
     blastWrsETH,
@@ -847,4 +885,7 @@ export const defaultTokens: TokenIF[] = [
     plumeSepoliaETH,
     plumeSepoliaUSD,
     plumeSepoliaNEV,
+    swellSepoliaETH,
+    swellSepoliaUSDC,
+    swellSepoliaUSDT,
 ];

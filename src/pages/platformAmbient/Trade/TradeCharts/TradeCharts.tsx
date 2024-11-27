@@ -1,47 +1,47 @@
 // START: Import React and Dongles
 import {
     Dispatch,
-    useState,
-    useEffect,
-    useContext,
     memo,
+    useContext,
+    useEffect,
     useMemo,
+    useState,
 } from 'react';
 
 // START: Import Local Files
 import { useLocation } from 'react-router-dom';
-import TutorialOverlay from '../../../../components/Global/TutorialOverlay/TutorialOverlay';
-import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { ChartContext } from '../../../../contexts/ChartContext';
 import {
     LS_KEY_ORDER_HISTORY_SETTINGS,
     LS_KEY_SUBCHART_SETTINGS,
 } from '../../../../ambient-utils/constants';
 import { getLocalStorageItem } from '../../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../../ambient-utils/types';
-import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
-import { updatesIF } from '../../../../utils/hooks/useUrlParams';
+import DollarizationModalControl from '../../../../components/Global/DollarizationModalControl/DollarizationModalControl';
+import Modal from '../../../../components/Global/Modal/Modal';
+import Spinner from '../../../../components/Global/Spinner/Spinner';
+import TutorialOverlay from '../../../../components/Global/TutorialOverlay/TutorialOverlay';
+import { CandleContext, PoolContext } from '../../../../contexts';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import { MainContainer } from '../../../../styled/Components/Chart';
 import { TutorialButton } from '../../../../styled/Components/Tutorial';
-import OrderHistoryDisplay from './TradeChartsComponents/OrderHistoryDisplay';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import styles from './TradeCharts.module.css';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
-import { BrandContext } from '../../../../contexts/BrandContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { updatesIF } from '../../../../utils/hooks/useUrlParams';
+import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
+import { ColorObjIF } from '../../../Chart/ChartSettings/ChartSettings';
+import ChartSettingsContent from '../../../Chart/ChartSettings/ChartSettingsContent';
 import TradeCandleStickChart from './TradeCandleStickChart';
+import styles from './TradeCharts.module.css';
 import CurveDepth from './TradeChartsComponents/CurveDepth';
+import OrderHistoryDisplay from './TradeChartsComponents/OrderHistoryDisplay';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
-import Modal from '../../../../components/Global/Modal/Modal';
-import DollarizationModalControl from '../../../../components/Global/DollarizationModalControl/DollarizationModalControl';
-import { CandleContext, PoolContext } from '../../../../contexts';
-import ChartSettingsContent from '../../../Chart/ChartSettings/ChartSettingsContent';
-import { ColorObjIF } from '../../../Chart/ChartSettings/ChartSettings';
-import Spinner from '../../../../components/Global/Spinner/Spinner';
-// import { LabelSettingsArrow } from '../../Chart/Draw/FloatingToolbar/FloatingToolbarSettingsCss';
+import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
+// import{ LabelSettingsArrow } from '../../Chart/Draw/FloatingToolbar/FloatingToolbarSettingsCss';
 // import Divider from '../../../../components/Global/Divider/Divider';
 import { LuSettings } from 'react-icons/lu';
 // interface for React functional component props

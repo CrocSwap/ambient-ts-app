@@ -1,11 +1,11 @@
-import styles from './OrderDetailsSimplify.module.css';
-import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
-import { RiExternalLinkLine } from 'react-icons/ri';
-import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
+import { useMediaQuery } from '@material-ui/core';
 import moment from 'moment';
-import { FiCopy } from 'react-icons/fi';
 import { memo, useContext } from 'react';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { FiCopy } from 'react-icons/fi';
+import { RiExternalLinkLine } from 'react-icons/ri';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
+import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
+import { LimitOrderIF } from '../../../../../ambient-utils/types';
 import {
     AppStateContext,
     AppStateContextIF,
@@ -14,14 +14,14 @@ import {
     CrocEnvContext,
     CrocEnvContextIF,
 } from '../../../../../contexts/CrocEnvContext';
-import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
-import { useMediaQuery } from '@material-ui/core';
 import {
     UserDataContext,
     UserDataContextIF,
 } from '../../../../../contexts/UserDataContext';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import InfoRow from '../../../InfoRow';
-import { LimitOrderIF } from '../../../../../ambient-utils/types';
+import styles from './OrderDetailsSimplify.module.css';
 
 interface propsIF {
     limitOrder: LimitOrderIF;

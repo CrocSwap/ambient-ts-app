@@ -1,4 +1,4 @@
-import { useEffect, useState, Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { LS_KEY_CHART_SETTINGS } from '../../ambient-utils/constants';
 import { getLocalStorageItem } from '../../ambient-utils/dataLayer';
 

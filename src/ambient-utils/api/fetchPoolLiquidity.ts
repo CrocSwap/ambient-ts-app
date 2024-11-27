@@ -1,12 +1,14 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { GCGO_OVERRIDE_URL } from '../constants';
-import { TokenPriceFn } from './fetchTokenPrice';
 import { SpotPriceFn } from '../dataLayer';
+import { TokenPriceFn } from './fetchTokenPrice';
 
 export const fetchPoolLiquidity = async (
     chainId: string,
     base: string,
+    baseTokenDecimals: number,
     quote: string,
+    quoteTokenDecimals: number,
     poolIdx: number,
     crocEnv: CrocEnv,
     graphCacheUrl: string,
@@ -35,7 +37,9 @@ export const fetchPoolLiquidity = async (
             return await expandLiquidityData(
                 bumps,
                 base,
+                baseTokenDecimals,
                 quote,
+                quoteTokenDecimals,
                 poolIdx,
                 chainId,
                 crocEnv,
@@ -49,7 +53,9 @@ export const fetchPoolLiquidity = async (
 async function expandLiquidityData(
     liq: LiquidityCurveServerIF,
     base: string,
+    baseTokenDecimals: number,
     quote: string,
+    quoteTokenDecimals: number,
     poolIdx: number,
     chainId: string,
     crocEnv: CrocEnv,
@@ -57,7 +63,7 @@ async function expandLiquidityData(
     cachedQuerySpotTick: SpotPriceFn,
     currentPoolPriceTick?: number | undefined,
 ): Promise<LiquidityDataIF> {
-    const pool = crocEnv.pool(base, quote);
+    // const pool = crocEnv.pool(base, quote);
     const everyOneMinute = Math.floor(Date.now() / 60000);
 
     let curveTick: number;
@@ -82,14 +88,14 @@ async function expandLiquidityData(
     const ranges = bumpsToRanges(
         liq,
         curveTick,
-        await pool.baseDecimals,
-        await pool.quoteDecimals,
+        baseTokenDecimals,
+        quoteTokenDecimals,
         basePrice,
         quotePrice,
     );
 
     return {
-        currentTick: await curveTick,
+        currentTick: curveTick,
         ranges: ranges,
         curveState: {
             base: base,

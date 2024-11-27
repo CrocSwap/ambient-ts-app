@@ -1,29 +1,29 @@
 import {
     createContext,
+    ReactNode,
     useContext,
     useEffect,
     useMemo,
     useState,
-    ReactNode,
 } from 'react';
-import { fetchUserRecentChanges, fetchRecords } from '../ambient-utils/api';
+import { fetchRecords, fetchUserRecentChanges } from '../ambient-utils/api';
+import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
 import {
-    TokenIF,
-    PositionIF,
     LimitOrderIF,
-    TransactionIF,
     LiquidityDataIF,
+    PositionIF,
     RecordType,
+    TokenIF,
+    TransactionIF,
 } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
-import { TokenContext } from './TokenContext';
-import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
 import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
-import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
+import { TokenContext } from './TokenContext';
 import { TradeDataContext } from './TradeDataContext';
+import { UserDataContext } from './UserDataContext';
 
 export interface Changes {
     dataReceived: boolean;
@@ -69,7 +69,6 @@ export interface GraphDataContextIF {
     liquidityData: LiquidityDataIF | undefined;
     liquidityFee: number;
 
-    setLiquidityPending: (params: PoolRequestParams) => void;
     setLiquidity: (
         liqData: LiquidityDataIF,
         request: PoolRequestParams | undefined,
@@ -242,10 +241,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                 chainId,
             );
         }
-    };
-
-    const setLiquidityPending = () => {
-        setLiquidityData(undefined);
     };
 
     const [sessionTransactionHashes, setSessionTransactionHashes] = useState<
@@ -443,7 +438,8 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                 !crocEnv ||
                 !provider ||
                 !tokens.tokenUniv.length ||
-                !chainId
+                !chainId ||
+                (await crocEnv.context).chain.chainId !== chainId
             ) {
                 return;
             }
@@ -583,8 +579,8 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         isUserIdle
             ? Math.floor(Date.now() / (onAccountRoute ? 60000 : 120000))
             : Math.floor(Date.now() / (onAccountRoute ? 15000 : 60000)), // cache every 15 seconds while viewing portfolio, otherwise 1 minute
-        !!crocEnv,
-        !!provider,
+        crocEnv,
+        provider,
         userDataByPoolLength,
         allReceipts.length,
     ]);
@@ -612,7 +608,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         setLimitOrdersByPool,
         liquidityData,
         setLiquidity,
-        setLiquidityPending,
         liquidityFee,
         setLiquidityFee,
     };

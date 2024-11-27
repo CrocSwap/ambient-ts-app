@@ -10,12 +10,13 @@ import {
     RiArrowUpDoubleLine,
 } from 'react-icons/ri';
 import { trimString } from '../../ambient-utils/dataLayer';
-import NotFound from '../../pages/common/NotFound/NotFound';
 import { PoolIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import NotFound from '../../pages/common/NotFound/NotFound';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
 import { ALLOW_AUTH, ALLOW_MENTIONS } from './ChatConstants/ChatConstants';
@@ -23,8 +24,10 @@ import { ChatVerificationTypes } from './ChatEnums';
 import { ChatGoToChatParamsIF } from './ChatIFs';
 import ChatNotificationBubble from './ChatNotification/ChatNotificationBubble';
 import styles from './ChatPanel.module.css';
+import { getEmojiPack } from './ChatRenderUtils';
 import ChatToaster from './ChatToaster/ChatToaster';
 import DomDebugger from './DomDebugger/DomDebugger';
+import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import FullChat from './FullChat/FullChat';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
@@ -34,9 +37,6 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
-import { domDebug } from './DomDebugger/DomDebuggerUtils';
-import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
-import { getEmojiPack } from './ChatRenderUtils';
 
 interface propsIF {
     isFullScreen: boolean;

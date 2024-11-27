@@ -5,12 +5,12 @@ import { MainSection } from './TableInfo.styles';
 
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { DetailedBox } from './DetailedBox';
 import { FeaturedBox } from './FeaturedBox';
-import { PoolContext } from '../../../contexts/PoolContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
 
 export default function TableInfo() {
     const { baseToken, quoteToken } = useContext(TradeDataContext);

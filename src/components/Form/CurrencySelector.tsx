@@ -1,6 +1,6 @@
-import { TokenIF } from '../../ambient-utils/types';
-import { Dispatch, memo, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
+import { Dispatch, memo, SetStateAction } from 'react';
+import { TokenIF } from '../../ambient-utils/types';
 import TokenInputQuantity from './TokenInputQuantity';
 
 interface propsIF {

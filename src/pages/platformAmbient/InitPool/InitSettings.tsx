@@ -1,6 +1,6 @@
+import { Dispatch, SetStateAction } from 'react';
 import styled from 'styled-components/macro';
 import Button from '../../../components/Form/Button';
-import { Dispatch, SetStateAction } from 'react';
 
 const Wrapper = styled.div`
     border-radius: 8px;

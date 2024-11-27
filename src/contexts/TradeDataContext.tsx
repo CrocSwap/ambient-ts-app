@@ -1,3 +1,4 @@
+import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import {
     createContext,
     Dispatch,
@@ -8,8 +9,6 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { TokenIF } from '../ambient-utils/types';
-import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { getDefaultPairForChain, mainnetETH } from '../ambient-utils/constants';
 import {
     isBtcPair,
@@ -17,8 +16,9 @@ import {
     isStablePair,
     translateTokenSymbol,
 } from '../ambient-utils/dataLayer';
-import { TokenContext } from './TokenContext';
+import { TokenIF } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
+import { TokenContext } from './TokenContext';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -88,11 +88,19 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     const tokensMatchingA =
         savedTokenASymbol === 'ETH'
             ? [dfltTokenA]
-            : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', true);
+            : tokens.getTokensByNameOrSymbol(
+                  savedTokenASymbol || '',
+                  chainId,
+                  true,
+              );
     const tokensMatchingB =
         savedTokenBSymbol === 'ETH'
             ? [dfltTokenA]
-            : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', true);
+            : tokens.getTokensByNameOrSymbol(
+                  savedTokenBSymbol || '',
+                  chainId,
+                  true,
+              );
 
     const firstTokenMatchingA = tokensMatchingA[0] || undefined;
     const firstTokenMatchingB = tokensMatchingB[0] || undefined;

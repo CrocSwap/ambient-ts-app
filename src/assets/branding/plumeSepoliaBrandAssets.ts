@@ -1,6 +1,6 @@
-import { brandIF } from './types';
-import large from '../images/logos/large.svg';
 import plumeLogo from '../../assets/images/logos/plume_brand_logo.svg';
+import large from '../images/logos/large.svg';
+import { brandIF } from './types';
 
 export const plumeSepoliaBrandAssets: brandIF = {
     networks: {

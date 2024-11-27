@@ -1,31 +1,31 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect, useContext } from 'react';
-import { FiExternalLink } from 'react-icons/fi';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { CiCircleMore } from 'react-icons/ci';
+import { FiExternalLink } from 'react-icons/fi';
 // START: Import JSX Functional Components
 
 // START: Import Local Files
-import styles from './TableMenus.module.css';
-import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import {
     LimitModalAction,
     LimitOrderIF,
 } from '../../../../../ambient-utils/types';
-import { SidebarContext } from '../../../../../contexts/SidebarContext';
-import {
-    useLinkGen,
-    linkGenMethodsIF,
-    limitParamsIF,
-} from '../../../../../utils/hooks/useLinkGen';
-import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { Chip } from '../../../../Form/Chip';
-import { FlexContainer } from '../../../../../styled/Common';
-import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import {
     AppStateContext,
     AppStateContextIF,
 } from '../../../../../contexts/AppStateContext';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { FlexContainer } from '../../../../../styled/Common';
+import {
+    limitParamsIF,
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../../utils/hooks/useLinkGen';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
+import { Chip } from '../../../../Form/Chip';
+import styles from './TableMenus.module.css';
 
 // interface for React functional component props
 interface propsIF {

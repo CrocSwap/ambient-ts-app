@@ -1,14 +1,14 @@
 import { memo, MutableRefObject, useContext, useEffect, useRef } from 'react';
-import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
-import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { TransactionIF } from '../../../../../ambient-utils/types';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { txRowConstants } from '../txRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { TransactionRow as TransactionRowStyled } from '../../../../../styled/Components/TransactionTable';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { TransactionRow as TransactionRowStyled } from '../../../../../styled/Components/TransactionTable';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
+import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
+import { txRowConstants } from '../txRowConstants';
 
 interface propsIF {
     idForDOM: string;

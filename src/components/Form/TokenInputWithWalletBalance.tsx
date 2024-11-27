@@ -1,16 +1,13 @@
+import { fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
+import { memo } from 'react';
+import { FiRefreshCw } from 'react-icons/fi';
 import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
-import {
-    memo,
-    // useContext
-} from 'react';
+import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
+import { RefreshButton } from '../../styled/Components/TradeModules';
 import { formatTokenInput, stringToBigInt } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
-import { RefreshButton } from '../../styled/Components/TradeModules';
-import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
-import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
-import { fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';

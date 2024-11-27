@@ -1,12 +1,12 @@
-import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
-import PositionsSearchResults from './PositionsSearchResults';
-import OrdersSearchResults from './OrdersSearchResults';
-import TxSearchResults from './TxSearchResults/TxSearchResults';
-import { sidebarSearchIF } from '../../../hooks/useSidebarSearch';
-import { SearchResultsContainer } from '../../../../styled/Components/Sidebar';
-import { Text } from '../../../../styled/Common';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { Text } from '../../../../styled/Common';
+import { SearchResultsContainer } from '../../../../styled/Components/Sidebar';
+import { sidebarSearchIF } from '../../../hooks/useSidebarSearch';
+import OrdersSearchResults from './OrdersSearchResults';
+import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
+import PositionsSearchResults from './PositionsSearchResults';
+import TxSearchResults from './TxSearchResults/TxSearchResults';
 import WalletSearchResults from './WalletSearchResults';
 
 interface propsIF {

@@ -1,5 +1,7 @@
-import { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { VscClose } from 'react-icons/vsc';
+import { ChartThemeIF } from '../../../contexts/ChartContext';
 import {
     ChartSettingsContainer,
     CloseButton,
@@ -7,13 +9,11 @@ import {
     ContextMenuHeader,
     ContextMenuHeaderText,
 } from './ChartSettingsCss';
-import { VscClose } from 'react-icons/vsc';
-import { ChartThemeIF } from '../../../contexts/ChartContext';
 
 import { BrandContext } from '../../../contexts/BrandContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { chartItemStates } from '../../platformAmbient/Chart/ChartUtils/chartUtils';
 import ChartSettingsContent from './ChartSettingsContent';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface ContextMenuIF {
     contextMenuPlacement?: { top: number; left: number; isReversed: boolean };

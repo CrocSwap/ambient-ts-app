@@ -1,25 +1,25 @@
-import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
+import { Dispatch, memo, SetStateAction, useContext, useEffect } from 'react';
+import { FaPlus } from 'react-icons/fa6';
 import {
-    getFormattedNumber,
     calculateSecondaryDepositQty,
+    getFormattedNumber,
 } from '../../../../ambient-utils/dataLayer';
+import { AppStateContext } from '../../../../contexts';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import { InputDisabledText } from '../../../../styled/Components/TradeModules';
 import {
     linkGenMethodsIF,
     poolParamsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import { formatTokenInput } from '../../../../utils/numbers';
-import { FlexContainer, Text } from '../../../../styled/Common';
-import { InputDisabledText } from '../../../../styled/Components/TradeModules';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { RangeContext } from '../../../../contexts/RangeContext';
-import { PoolContext } from '../../../../contexts/PoolContext';
-import { FaPlus } from 'react-icons/fa6';
-import { AppStateContext } from '../../../../contexts';
+import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 
 interface propsIF {
     hidePlus?: boolean;

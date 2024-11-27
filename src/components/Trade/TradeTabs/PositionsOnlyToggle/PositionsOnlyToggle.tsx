@@ -1,13 +1,13 @@
 import { Dispatch, SetStateAction, useContext } from 'react';
-import Toggle from '../../../Form/Toggle';
-import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { CandleContext } from '../../../../contexts/CandleContext';
+import { MdCloseFullscreen, MdExpand } from 'react-icons/md';
 import { CandleDataIF } from '../../../../ambient-utils/types';
+import { CandleContext } from '../../../../contexts/CandleContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import { FlexContainer, Text } from '../../../../styled/Common';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { FlexContainer, Text } from '../../../../styled/Common';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import Toggle from '../../../Form/Toggle';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 
 interface PositionsOnlyToggleProps {

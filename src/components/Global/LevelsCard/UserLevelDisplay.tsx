@@ -1,12 +1,12 @@
-import { Link } from 'react-router-dom';
-import { FlexContainer, Text } from '../../../styled/Common';
-import LevelLine from '../LevelLine/LevelLine';
-import styles from './LevelsCard.module.css';
-import { AlignItems } from '../../../styled/Common/Types';
-import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { progressToNextLevel } from '../../../ambient-utils/api';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { FlexContainer, Text } from '../../../styled/Common';
+import { AlignItems } from '../../../styled/Common/Types';
+import LevelLine from '../LevelLine/LevelLine';
+import styles from './LevelsCard.module.css';
 
 interface propsIF {
     currentLevel: number | undefined;

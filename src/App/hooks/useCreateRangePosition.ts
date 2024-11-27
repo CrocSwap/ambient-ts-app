@@ -2,23 +2,23 @@ import { MutableRefObject, useContext } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 import {
+    DISABLE_WORKAROUNDS,
+    IS_LOCAL_ENV,
+    ZERO_ADDRESS,
+} from '../../ambient-utils/constants';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { createRangePositionTx } from '../../ambient-utils/dataLayer/transactions/range';
+import { AppStateContext } from '../../contexts';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import {
     isTransactionDeniedError,
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import {
-    DISABLE_WORKAROUNDS,
-    IS_LOCAL_ENV,
-    ZERO_ADDRESS,
-} from '../../ambient-utils/constants';
-import { TradeTokenContext } from '../../contexts/TradeTokenContext';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { createRangePositionTx } from '../../ambient-utils/dataLayer/transactions/range';
-import { ReceiptContext } from '../../contexts/ReceiptContext';
-import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
-import { UserDataContext } from '../../contexts/UserDataContext';
-import { AppStateContext } from '../../contexts';
 
 export function useCreateRangePosition() {
     const { crocEnv } = useContext(CrocEnvContext);

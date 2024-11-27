@@ -3,10 +3,10 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { getAvatarComponent } from '../../../../components/Chat/ChatRenderUtils';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import styles from './UserProfileCard.module.css';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface propsIF {
     ensName: string;

@@ -1,19 +1,19 @@
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { Dispatch, MutableRefObject, SetStateAction, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import styles from './SearchableTicker.module.css';
-import styles2 from './TickerItem.module.css';
 import {
     AuctionDataIF,
     getFormattedNumber,
     getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
-import { Dispatch, MutableRefObject, SetStateAction, useContext } from 'react';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     getRetrievedAuctionDetailsForAccount,
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
-import { toDisplayQty } from '@crocswap-libs/sdk';
+import styles from './SearchableTicker.module.css';
+import styles2 from './TickerItem.module.css';
 
 interface PropsIF {
     auction: AuctionDataIF;

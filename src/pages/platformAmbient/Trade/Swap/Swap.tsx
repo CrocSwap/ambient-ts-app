@@ -4,13 +4,13 @@ import {
     fromDisplayQty,
     toDisplayQty,
 } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, memo, useRef, useMemo } from 'react';
+import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     getFormattedNumber,
     getPriceImpactString,
-    isStablePair,
     getTxReceipt,
+    isStablePair,
     performSwap,
 } from '../../../../ambient-utils/dataLayer';
 import Button from '../../../../components/Form/Button';
@@ -33,34 +33,34 @@ import { FlexContainer } from '../../../../styled/Common';
 import { WarningContainer } from '../../../../styled/Components/TradeModules';
 
 import {
-    TransactionError,
-    isTransactionReplacedError,
-    isTransactionFailedError,
-} from '../../../../utils/TransactionError';
-import { swapTutorialSteps } from '../../../../utils/tutorial/Swap';
-import { useApprove } from '../../../../App/functions/approve';
-import { useUrlParams } from '../../../../utils/hooks/useUrlParams';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import {
     GAS_DROPS_ESTIMATE_SWAP_FROM_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET,
     GAS_DROPS_ESTIMATE_SWAP_NATIVE,
     GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX,
-    NUM_GWEI_IN_WEI,
-    SWAP_BUFFER_MULTIPLIER_MAINNET,
-    SWAP_BUFFER_MULTIPLIER_L2,
     IS_LOCAL_ENV,
-    NUM_GWEI_IN_ETH,
-    NUM_WEI_IN_GWEI,
-    ZERO_ADDRESS,
     L1_GAS_CALC_ENABLED,
+    NUM_GWEI_IN_ETH,
+    NUM_GWEI_IN_WEI,
+    NUM_WEI_IN_GWEI,
+    SWAP_BUFFER_MULTIPLIER_L2,
+    SWAP_BUFFER_MULTIPLIER_MAINNET,
+    ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { useApprove } from '../../../../App/functions/approve';
 import { calcL1Gas } from '../../../../App/functions/calcL1Gas';
 import { AppStateContext } from '../../../../contexts';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { useUrlParams } from '../../../../utils/hooks/useUrlParams';
+import {
+    TransactionError,
+    isTransactionFailedError,
+    isTransactionReplacedError,
+} from '../../../../utils/TransactionError';
+import { swapTutorialSteps } from '../../../../utils/tutorial/Swap';
 
 interface propsIF {
     isOnTradeRoute?: boolean;

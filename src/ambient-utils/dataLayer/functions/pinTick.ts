@@ -1,4 +1,4 @@
-import { MIN_TICK, MAX_TICK } from '@crocswap-libs/sdk';
+import { MAX_TICK, MIN_TICK } from '@crocswap-libs/sdk';
 
 export const pinTickToTickLower = (poolPriceTick: number, gridSize: number) => {
     const tickGrid = Math.floor(poolPriceTick / gridSize) * gridSize;

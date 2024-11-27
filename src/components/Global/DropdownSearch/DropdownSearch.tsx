@@ -1,4 +1,6 @@
-import React, {
+import { useMediaQuery } from '@material-ui/core';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
     ChangeEvent,
     KeyboardEvent,
     useContext,
@@ -6,40 +8,38 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import styles from './DropdownSearch.module.css';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import TopPools from '../Sidebar/TopPools';
-import FavoritePools from '../Sidebar/FavoritePools';
-import RecentPools from '../Sidebar/RecentPools';
-import { FlexContainer } from '../../../styled/Common';
-import {
-    SearchContainer,
-    SearchInput,
-} from '../../../styled/Components/Sidebar';
+import { AiOutlineFire } from 'react-icons/ai';
 import { BiSearch } from 'react-icons/bi';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { MdClose } from 'react-icons/md';
+import { TokenIF } from '../../../ambient-utils/types';
+import SidebarSearchResults from '../../../App/components/Sidebar/SidebarSearchResults/SidebarSearchResults';
+import useKeyPress from '../../../App/hooks/useKeyPress';
 import {
     sidebarSearchIF,
     useSidebarSearch,
 } from '../../../App/hooks/useSidebarSearch';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { MdClose } from 'react-icons/md';
-import SidebarSearchResults from '../../../App/components/Sidebar/SidebarSearchResults/SidebarSearchResults';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import { AnimatePresence, motion } from 'framer-motion';
-import { AiOutlineFire } from 'react-icons/ai';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { TokenIF } from '../../../ambient-utils/types';
-import { useMediaQuery } from '@material-ui/core';
-import { HeaderButtons, HeaderText } from '../../../styled/Components/Chart';
-import TokenIcon from '../TokenIcon/TokenIcon';
-import { SidebarContext } from '../../../contexts/SidebarContext';
-import useKeyPress from '../../../App/hooks/useKeyPress';
 import {
     AppStateContext,
     AppStateContextIF,
 } from '../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { FlexContainer } from '../../../styled/Common';
+import { HeaderButtons, HeaderText } from '../../../styled/Components/Chart';
+import {
+    SearchContainer,
+    SearchInput,
+} from '../../../styled/Components/Sidebar';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import FavoritePools from '../Sidebar/FavoritePools';
+import RecentPools from '../Sidebar/RecentPools';
+import TopPools from '../Sidebar/TopPools';
+import TokenIcon from '../TokenIcon/TokenIcon';
+import styles from './DropdownSearch.module.css';
 
 interface optionItem {
     id: number;
