@@ -572,6 +572,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             .select('canvas')
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
+
+        const allData =
+            liqMode === 'curve'
+                ? liqDataBid.concat(liqDataAsk)
+                : liqDataDepthBid.concat(liqDataDepthAsk);
         if (
             liqBidSeries &&
             liqAskSeries &&
@@ -585,33 +590,23 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     if (liqMode === 'curve') {
-                        console.log(
-                            'liqDataBid.concat(liqDataAsk)',
-                            liqDataBid.concat(liqDataAsk),
-                        );
-
-                        console.log(
-                            'liqDataBid[0].liqPricesAsk',
-                            liqDataAsk[0].liqPrices,
-                        );
-
                         clipCanvas(
                             scaleData?.yScale(poolPriceDisplay),
-                            scaleData?.yScale(liqDataBid[0].liqPrices),
+                            0,
                             canvas,
                         );
 
-                        liqBidSeries(liqDataBid.concat(liqDataAsk));
+                        liqBidSeries(allData.slice().reverse());
 
                         ctx?.restore();
 
                         clipCanvas(
-                            scaleData?.yScale(poolPriceDisplay),
                             scaleData?.yScale(0),
+                            scaleData?.yScale(poolPriceDisplay),
                             canvas,
                         );
 
-                        liqAskSeries(liqDataBid.concat(liqDataAsk));
+                        liqAskSeries(allData);
                         ctx?.restore();
 
                         drawCurveLines(canvas);
@@ -666,6 +661,12 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             liqMode === 'curve'
                 ? liquidityData?.liqTransitionPointforCurve
                 : liquidityData?.liqTransitionPointforDepth;
+
+        const allData =
+            liqMode === 'curve'
+                ? liqDataBid.concat(liqDataAsk)
+                : liqDataDepthBid.concat(liqDataDepthAsk);
+
         const canvas = d3
             .select(d3CanvasLiqHover.current)
             .select('canvas')
@@ -690,7 +691,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                             );
 
                             if (liqMode === 'curve') {
-                                highlightedAskAreaCurveSeries(liqDataAsk);
+                                highlightedAskAreaCurveSeries(allData);
                             }
                             if (liqMode === 'depth') {
                                 highlightedAreaAskSeries(liqDataDepthAsk);
@@ -703,7 +704,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                                 canvas,
                             );
                             if (liqMode === 'curve') {
-                                highlightedBidAreaCurveSeries(liqDataBid);
+                                highlightedBidAreaCurveSeries(
+                                    allData.slice().reverse(),
+                                );
                             }
 
                             if (liqMode === 'depth') {
