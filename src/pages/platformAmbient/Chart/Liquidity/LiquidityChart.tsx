@@ -466,11 +466,19 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         const lastLow = liqType === 'bid' ? poolPriceDisplay : low;
         const lastHigh = liqType === 'bid' ? high : poolPriceDisplay;
         if (scaleData) {
-            clipCanvas(
-                scaleData?.yScale(lastLow),
-                scaleData?.yScale(lastHigh),
-                canvas,
-            );
+            if (lastLow && lastHigh) {
+                clipCanvas(
+                    scaleData?.yScale(lastLow),
+                    scaleData?.yScale(lastHigh),
+                    canvas,
+                );
+            } else {
+                clipCanvas(
+                    scaleData?.yScale(low),
+                    scaleData?.yScale(high),
+                    canvas,
+                );
+            }
         }
     };
 
