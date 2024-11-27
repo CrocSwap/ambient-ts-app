@@ -370,11 +370,7 @@ function SwapTokenInput(props: propsIF) {
     // refresh token data when swap module initializes
     useEffect(() => {
         (async () => {
-            if (
-                isUserOnline &&
-                crocEnv &&
-                (await crocEnv.context).chain.chainId === chainId
-            ) {
+            if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
                 await refreshTokenData();
             }
         })();
