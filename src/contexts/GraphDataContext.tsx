@@ -249,12 +249,16 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     >([]);
 
     useEffect(() => {
-        resetUserGraphData();
-    }, [isUserConnected, userAddress]);
+        if (isUserOnline) {
+            resetUserGraphData();
+        }
+    }, [isUserOnline, isUserConnected, userAddress]);
 
     useEffect(() => {
-        resetPoolGraphData();
-    }, [baseToken.address + quoteToken.address]);
+        if (isUserOnline) {
+            resetPoolGraphData();
+        }
+    }, [isUserOnline, baseToken.address + quoteToken.address]);
 
     useEffect(() => {
         setUserPositionsByPool({
