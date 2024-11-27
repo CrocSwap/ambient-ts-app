@@ -37,6 +37,7 @@ import {
     GAS_DROPS_ESTIMATE_TRANSFER_NATIVE,
     NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants/';
+import { AppStateContext } from '../../../../contexts';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import CurrencySelector from '../../../Form/CurrencySelector';
@@ -67,6 +68,7 @@ export default function Transfer(props: propsIF) {
     const { crocEnv, ethMainnetUsdPrice, provider } =
         useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
+    const { isUserOnline } = useContext(AppStateContext);
 
     const { gasPriceInGwei, isActiveNetworkScroll, isActiveNetworkBlast } =
         useContext(ChainDataContext);
@@ -157,7 +159,10 @@ export default function Transfer(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     useEffect(() => {
-        if (isTransferPending) {
+        if (!isUserOnline) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Currently Offline');
+        } else if (isTransferPending) {
             setIsButtonDisabled(true);
             setIsAddressFieldDisabled(true);
             setIsCurrencyFieldDisabled(true);
@@ -192,6 +197,7 @@ export default function Transfer(props: propsIF) {
             setButtonMessage('Transfer');
         }
     }, [
+        isUserOnline,
         transferQtyNonDisplay,
         isTransferPending,
         isDexBalanceSufficient,

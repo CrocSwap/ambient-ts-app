@@ -28,6 +28,7 @@ import {
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { useApprove } from '../../../../App/functions/approve';
 import useDebounce from '../../../../App/hooks/useDebounce';
+import { AppStateContext } from '../../../../contexts';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
@@ -67,6 +68,7 @@ export default function Deposit(props: propsIF) {
         setTokenModalOpen = () => null,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { isUserOnline } = useContext(AppStateContext);
     const {
         gasPriceInGwei,
         isActiveNetworkL2,
@@ -201,7 +203,10 @@ export default function Deposit(props: propsIF) {
     const [isDepositPending, setIsDepositPending] = useState(false);
 
     useEffect(() => {
-        if (isDepositPending) {
+        if (!isUserOnline) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Currently Offline');
+        } else if (isDepositPending) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Deposit Pending`);
@@ -241,6 +246,7 @@ export default function Deposit(props: propsIF) {
             setButtonMessage('Deposit');
         }
     }, [
+        isUserOnline,
         depositQtyNonDisplay,
         isApprovalPending,
         isDepositPending,

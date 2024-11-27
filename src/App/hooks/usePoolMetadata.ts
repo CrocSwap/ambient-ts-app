@@ -45,6 +45,7 @@ export function usePoolMetadata() {
     const { userAddress } = useContext(UserDataContext);
     const {
         isUserIdle,
+        isUserOnline,
         activeNetwork: { chainId, poolIndex, graphCacheUrl },
     } = useContext(AppStateContext);
     const {
@@ -292,6 +293,7 @@ export function usePoolMetadata() {
     useEffect(() => {
         (async () => {
             if (
+                isUserOnline &&
                 contextMatchesParams &&
                 crocEnv &&
                 provider &&
@@ -639,6 +641,7 @@ export function usePoolMetadata() {
             }
         })();
     }, [
+        isUserOnline,
         userAddress,
         contextMatchesParams,
         crocEnv,

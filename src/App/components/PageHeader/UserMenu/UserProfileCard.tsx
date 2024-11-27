@@ -25,7 +25,7 @@ export default function UserProfileCard(props: propsIF) {
         accountAddressFull,
         isMobileDropdown,
     } = props;
-    const { activeNetwork } = useContext(AppStateContext);
+    const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { userAddress, resolvedAddressFromContext, userAvatarData } =
         useContext(UserDataContext);
     const link = resolvedAddressFromContext
@@ -37,7 +37,8 @@ export default function UserProfileCard(props: propsIF) {
             className={`${styles.nameDisplayContainer} ${isMobileDropdown && styles.mobileDropdown}`}
         >
             <Link to={link}>
-                {userAddress &&
+                {isUserOnline &&
+                    userAddress &&
                     userAvatarData &&
                     getAvatarComponent(userAddress, userAvatarData, 50)}
             </Link>
