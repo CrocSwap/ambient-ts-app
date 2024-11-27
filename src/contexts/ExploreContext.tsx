@@ -61,7 +61,7 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { activeNetwork } = useContext(AppStateContext);
+    const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
@@ -117,6 +117,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     useEffect(() => {
         (async () => {
             if (
+                isUserOnline &&
                 crocEnv !== undefined &&
                 poolList.length > 0 &&
                 (await crocEnv.context).chain.chainId === activeNetwork.chainId
@@ -124,7 +125,12 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 getAllPools();
             }
         })();
-    }, [JSON.stringify(poolList)]);
+    }, [
+        isUserOnline,
+        JSON.stringify(poolList),
+        crocEnv,
+        activeNetwork.chainId,
+    ]);
 
     // fn to get data on a single pool
     async function getPoolData(

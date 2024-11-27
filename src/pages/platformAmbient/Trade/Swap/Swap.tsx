@@ -330,12 +330,12 @@ function Swap(props: propsIF) {
     }, [isTokenAPrimary]);
 
     useEffect(() => {
-        if (tokenABalance === '') return;
         if (!isUserOnline) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Currently Offline');
             return;
         }
+        if (tokenABalance === '') return;
         if (
             (sellQtyNoExponentString === '' && buyQtyNoExponentString === '') ||
             (isTokenAPrimary &&

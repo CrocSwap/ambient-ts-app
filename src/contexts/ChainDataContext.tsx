@@ -172,6 +172,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     }
 
     useEffect(() => {
+        if (!isUserOnline) return;
         // Grab block right away, then poll on periodic basis; useful for initial load
         pollBlockNum();
 
@@ -186,7 +187,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
         // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(interval);
-    }, [chainId, BLOCK_NUM_POLL_MS]);
+    }, [isUserOnline, chainId, BLOCK_NUM_POLL_MS]);
 
     const [allPoolStats, setAllPoolStats] = useState<
         SinglePoolDataIF[] | undefined

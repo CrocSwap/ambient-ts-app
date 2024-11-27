@@ -83,6 +83,7 @@ function SwapTokenInput(props: propsIF) {
     } = useContext(AppStateContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
+    const { isUserOnline } = useContext(AppStateContext);
     const {
         tokenABalance,
         tokenBBalance,
@@ -134,11 +135,16 @@ function SwapTokenInput(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
+            if (
+                isUserOnline &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId
+            ) {
                 handleBlockUpdate();
             }
         })();
     }, [
+        isUserOnline,
         lastBlockNumber,
         contextMatchesParams,
         isTokenAPrimary,
@@ -154,12 +160,12 @@ function SwapTokenInput(props: propsIF) {
     }, [shouldSwapDirectionReverse]);
 
     useEffect(() => {
-        if (debouncedLastInput !== undefined) {
+        if (isUserOnline && debouncedLastInput !== undefined) {
             isTokenAPrimary
                 ? handleTokenAChangeEvent(debouncedLastInput)
                 : handleTokenBChangeEvent(debouncedLastInput);
         }
-    }, [debouncedLastInput]);
+    }, [debouncedLastInput, isUserOnline]);
 
     const lastQuery = useRef({ isAutoUpdate: false, inputValue: '' });
 
@@ -359,11 +365,15 @@ function SwapTokenInput(props: propsIF) {
     // refresh token data when swap module initializes
     useEffect(() => {
         (async () => {
-            if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
+            if (
+                isUserOnline &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId
+            ) {
                 await refreshTokenData();
             }
         })();
-    }, [crocEnv, chainId]);
+    }, [crocEnv, chainId, isUserOnline]);
 
     useEffect(() => {
         if (isTokenAPrimary) {

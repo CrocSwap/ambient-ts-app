@@ -285,7 +285,7 @@ export const AppStateContextProvider = (props: {
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
-        if (CHAT_ENABLED) {
+        if (CHAT_ENABLED && isUserOnline) {
             const interval = setInterval(() => {
                 getStatus().then((isChatUp) => {
                     setIsChatEnabled(isChatUp);
@@ -293,7 +293,7 @@ export const AppStateContextProvider = (props: {
             }, CACHE_UPDATE_FREQ_IN_MS);
             return () => clearInterval(interval);
         }
-    }, [isChatEnabled, CHAT_ENABLED]);
+    }, [isUserOnline, isChatEnabled, CHAT_ENABLED]);
 
     const { activeNetwork, chooseNetwork } = useAppChain();
 
