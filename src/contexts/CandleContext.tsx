@@ -59,9 +59,11 @@ export const CandleContext = createContext<CandleContextIF>(
 
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
-        server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+        server: { isEnabled: isServerEnabled },
+        isUserOnline,
         isUserIdle,
     } = useContext(AppStateContext);
+
     const {
         chartSettings,
         isEnabled: isChartEnabled,
@@ -206,6 +208,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
             if (
                 crocEnv &&
+                isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
                 isChangeUserConnected
             ) {
@@ -231,7 +234,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     // only works when the period changes
     useEffect(() => {
-        isChartEnabled && isUserOnline && fetchCandles();
+        fetchCandles();
     }, [candleScale?.isFetchForTimeframe]);
 
     useEffect(() => {
@@ -250,7 +253,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [
         isChartEnabled,
         isUserOnline,
-
         isUserIdle
             ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
             : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
@@ -287,6 +289,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const fetchCandles = (bypassSpinner = false) => {
         if (
+            isChartEnabled &&
             isServerEnabled &&
             isUserOnline &&
             baseTokenAddress &&

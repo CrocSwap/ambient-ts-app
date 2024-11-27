@@ -72,6 +72,7 @@ function Swap(props: propsIF) {
         useContext(CrocEnvContext);
     const {
         activeNetwork: { chainId, poolIndex },
+        isUserOnline,
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const {
@@ -330,6 +331,11 @@ function Swap(props: propsIF) {
 
     useEffect(() => {
         if (tokenABalance === '') return;
+        if (!isUserOnline) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Currently Offline');
+            return;
+        }
         if (
             (sellQtyNoExponentString === '' && buyQtyNoExponentString === '') ||
             (isTokenAPrimary &&
@@ -421,6 +427,7 @@ function Swap(props: propsIF) {
             }
         }
     }, [
+        isUserOnline,
         crocEnv,
         isPoolInitialized,
         isPoolInitialized === undefined, // Needed to distinguish false from undefined

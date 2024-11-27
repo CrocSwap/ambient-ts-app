@@ -82,6 +82,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         activeNetwork: { chainId, evmRpcUrl },
+        isUserOnline,
     } = useContext(AppStateContext);
 
     const { userAddress } = useContext(UserDataContext);
@@ -184,7 +185,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             new BatchedJsonRpcProvider(evmRpcUrl, parseInt(chainId), {
                 staticNetwork: true,
             }),
-        [chainId],
+        [chainId, evmRpcUrl],
     );
 
     useBlacklist(userAddress);
@@ -207,11 +208,11 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         }
     };
     useEffect(() => {
-        setNewCrocEnv();
-    }, [provider, walletProvider]);
+        if (isUserOnline) setNewCrocEnv();
+    }, [provider, walletProvider, isUserOnline]);
 
     useEffect(() => {
-        if (provider && crocEnv) {
+        if (provider && crocEnv && isUserOnline) {
             (async () => {
                 const mainnetEthPrice = await cachedFetchTokenPrice(
                     mainnetETH.address,
@@ -222,7 +223,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 usdPrice !== Infinity && setEthMainnetUsdPrice(usdPrice);
             })();
         }
-    }, [crocEnv, provider]);
+    }, [crocEnv, provider, isUserOnline]);
+
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainId));
     }, [chainId]);

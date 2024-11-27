@@ -41,7 +41,8 @@ export interface AppStateContextIF {
         isEnabled: boolean;
         setIsEnabled: (val: boolean) => void;
     };
-    server: { isEnabled: boolean; isUserOnline: boolean };
+    server: { isEnabled: boolean };
+    isUserOnline: boolean;
     subscriptions: { isEnabled: boolean };
     walletModal: {
         isOpen: boolean;
@@ -322,7 +323,8 @@ export const AppStateContextProvider = (props: {
                 isEnabled: isChatEnabled,
                 setIsEnabled: setIsChatEnabled,
             },
-            server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+            server: { isEnabled: isServerEnabled },
+            isUserOnline,
             isUserIdle,
             isUserIdle20min,
             subscriptions: { isEnabled: areSubscriptionsEnabled },
