@@ -104,6 +104,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         activeNetwork: { graphCacheUrl, chainId },
         server: { isEnabled: isServerEnabled },
         isUserIdle,
+        isUserOnline,
     } = useContext(AppStateContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
     const { pendingTransactions, allReceipts, sessionPositionUpdates } =
@@ -248,11 +249,15 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     >([]);
 
     useEffect(() => {
-        resetUserGraphData();
-    }, [isUserConnected, userAddress]);
+        if (isUserOnline) {
+            resetUserGraphData();
+        }
+    }, [userAddress]);
 
     useEffect(() => {
-        resetPoolGraphData();
+        if (isUserOnline) {
+            resetPoolGraphData();
+        }
     }, [baseToken.address + quoteToken.address]);
 
     useEffect(() => {
@@ -432,6 +437,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
             // This useEffect controls a series of other dispatches that fetch data on update of the user object
             // user Postions, limit orders, and recent changes are all governed here
             if (
+                !isUserOnline ||
                 !isServerEnabled ||
                 !isUserConnected ||
                 !userAddress ||
@@ -571,6 +577,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         };
         fetchData();
     }, [
+        isUserOnline,
         isServerEnabled,
         tokens.tokenUniv.length,
         isUserConnected,
