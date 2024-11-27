@@ -127,6 +127,8 @@ export type chartItemStates = {
     liqMode: string;
     showSwap: boolean;
     setShowSwap: React.Dispatch<React.SetStateAction<boolean>>;
+    showHistorical: boolean;
+    setShowHistorical: React.Dispatch<React.SetStateAction<boolean>>;
     showLatest: boolean;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setLatest: React.Dispatch<React.SetStateAction<boolean>>;
@@ -135,7 +137,6 @@ export type chartItemStates = {
     reset: boolean;
     setReset: React.Dispatch<React.SetStateAction<boolean>>;
     showLiquidity: boolean;
-    showHistorical: boolean;
 };
 
 export type lineValue = {

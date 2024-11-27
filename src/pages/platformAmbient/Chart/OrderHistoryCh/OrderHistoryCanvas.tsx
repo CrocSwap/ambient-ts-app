@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import {
+    bandLineData,
     lineData,
     renderCanvasArray,
     scaleData,
@@ -12,6 +13,7 @@ import { createBandArea } from '../Draw/DrawCanvas/BandArea';
 import { diffHashSig } from '../../../../ambient-utils/dataLayer';
 import { TransactionIF } from '../../../../ambient-utils/types';
 import { BrandContext } from '../../../../contexts/BrandContext';
+import { GraphDataContext } from '../../../../contexts';
 
 interface OrderHistoryCanvasProps {
     scaleData: scaleData;
@@ -55,6 +57,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [circleSeries, setCircleSeries] = useState<any>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [limitCircleSeries, setLimitCircleSeries] = useState<any>();
     const [circleSeriesHighlighted, setCircleSeriesHighlighted] =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useState<any>();
@@ -81,48 +85,72 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         return newXScale;
     }
 
+    const { userLimitOrdersByPool, userPositionsByPool } =
+        useContext(GraphDataContext);
+
     useEffect(() => {
-        if (userTransactionData && circleScale) {
+        if (userTransactionData && circleScale && scaleData) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const circleSerieArray: any[] = [];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const limitCircleSerieArray: any[] = [];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const bandAreaArray: any[] = [];
+            if (showHistorical) {
+                userLimitOrdersByPool.limitOrders.forEach((limitOrder) => {
+                    if (limitOrder.claimableLiq > 0) {
+                        const circleSerie = createCircle(
+                            scaleData?.xScale,
+                            scaleData?.yScale,
+                            circleScale(limitOrder.totalValueUSD),
+                            1,
+                            denomInBase,
+                            false,
+                            false,
+                            (denomInBase && !limitOrder.isBid) ||
+                                (!denomInBase && limitOrder.isBid),
+                            '--accent2',
+                            ['futa'].includes(platformName)
+                                ? '--negative'
+                                : '--accent4',
+                        );
 
-            userTransactionData.forEach((order) => {
-                const circleSerie = createCircle(
-                    scaleData?.xScale,
-                    scaleData?.yScale,
-                    circleScale(order.totalValueUSD),
-                    1,
-                    denomInBase,
-                    false,
-                    false,
-                    (denomInBase && !order.isBuy) ||
-                        (!denomInBase && order.isBuy),
-                    '--accent1',
-                    ['futa'].includes(platformName)
-                        ? '--negative'
-                        : '--accent5',
-                );
+                        limitCircleSerieArray.push(circleSerie);
+                    }
+                });
 
-                circleSerieArray.push(circleSerie);
-            });
+                setLimitCircleSeries(() => {
+                    return limitCircleSerieArray;
+                });
+            }
 
-            setCircleSeries(() => {
-                return circleSerieArray;
-            });
+            if (showSwap) {
+                userTransactionData.forEach((order) => {
+                    const circleSerie = createCircle(
+                        scaleData?.xScale,
+                        scaleData?.yScale,
+                        circleScale(order.totalValueUSD),
+                        1,
+                        denomInBase,
+                        false,
+                        false,
+                        (denomInBase && !order.isBuy) ||
+                            (!denomInBase && order.isBuy),
+                        '--accent1',
+                        ['futa'].includes(platformName)
+                            ? '--negative'
+                            : '--accent5',
+                    );
 
-            setCircleSeriesHighlighted(() => {
-                return circleSerieArray;
-            });
-        }
-    }, [userTransactionData, circleScale]);
+                    circleSerieArray.push(circleSerie);
+                });
+            }
 
-    useEffect(() => {
-        if (userTransactionData && scaleData) {
-            userTransactionData.forEach((order) => {
-                if (order.entityType === 'liqchange') {
+            if (showLiquidity) {
+                userPositionsByPool.positions.forEach((order) => {
                     const newBandScale = createScaleForBandArea(
-                        order?.txTime * 1000,
-                        order?.txTime * 1000,
+                        order?.timeFirstMint * 1000,
+                        order?.latestUpdateTime * 1000,
                     );
 
                     const bandArea = createBandArea(
@@ -132,13 +160,30 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         { background: { color: 'rgba(95, 255, 242, 0.15)' } },
                     );
 
-                    setBandArea(() => {
-                        return bandArea;
-                    });
-                }
+                    bandAreaArray.push(bandArea);
+                });
+            }
+
+            setCircleSeries(() => {
+                return circleSerieArray;
+            });
+
+            setCircleSeriesHighlighted(() => {
+                return circleSerieArray;
+            });
+
+            setBandArea(() => {
+                return bandAreaArray;
             });
         }
-    }, [diffHashSig(userTransactionData)]);
+    }, [
+        userTransactionData,
+        circleScale,
+        showHistorical,
+        showSwap,
+        showLiquidity,
+        scaleData,
+    ]);
 
     // useEffect(() => {
     //     if (
@@ -172,7 +217,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
-        if (userTransactionData && scaleData) {
+        if (scaleData) {
             d3.select(d3OrderCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
@@ -255,38 +300,80 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     //     }
                     // }
 
-                    userTransactionData.forEach((order, index) => {
-                        if (
-                            showSwap &&
-                            circleSeries &&
-                            circleSeries.length > 0 &&
-                            order.entityType === 'swap'
-                        ) {
-                            const circleData = [
-                                {
-                                    x: order.txTime * 1000,
-                                    y: denomInBase
-                                        ? order.swapInvPriceDecimalCorrected
-                                        : order.swapPriceDecimalCorrected,
-                                    denomInBase: denomInBase,
-                                },
-                            ];
+                    if (showHistorical && userLimitOrdersByPool) {
+                        userLimitOrdersByPool.limitOrders.forEach(
+                            (limitOrder, index) => {
+                                if (
+                                    limitOrder.claimableLiq > 0 &&
+                                    limitCircleSeries &&
+                                    limitCircleSeries.length > 0
+                                ) {
+                                    const circleData = [
+                                        {
+                                            x: limitOrder.crossTime * 1000,
+                                            y: denomInBase
+                                                ? limitOrder.invLimitPriceDecimalCorrected
+                                                : limitOrder.limitPriceDecimalCorrected,
+                                            denomInBase: denomInBase,
+                                        },
+                                    ];
 
-                            circleSeries[index](circleData);
+                                    if (
+                                        limitCircleSeries[index] !== undefined
+                                    ) {
+                                        limitCircleSeries[index](circleData);
+                                    }
+                                }
 
+                                if (limitOrder.claimableLiq === 0) {
+                                    const lineData: lineData[] = [];
+
+                                    lineData.push({
+                                        x: limitOrder.timeFirstMint * 1000,
+                                        y: denomInBase
+                                            ? limitOrder.invLimitPriceDecimalCorrected
+                                            : limitOrder.limitPriceDecimalCorrected,
+                                        denomInBase: denomInBase,
+                                    });
+                                    lineData.push({
+                                        x:
+                                            new Date().getTime() +
+                                            5 * 86400 * 1000,
+                                        y: denomInBase
+                                            ? limitOrder.invLimitPriceDecimalCorrected
+                                            : limitOrder.limitPriceDecimalCorrected,
+                                        denomInBase: denomInBase,
+                                    });
+
+                                    lineSeries.decorate(
+                                        (context: CanvasRenderingContext2D) => {
+                                            context.setLineDash([4, 2]);
+                                            context.strokeStyle =
+                                                (denomInBase &&
+                                                    !limitOrder.isBid) ||
+                                                (!denomInBase &&
+                                                    limitOrder.isBid)
+                                                    ? 'rgba(115, 113, 252)'
+                                                    : 'rgba(205, 193, 255)';
+                                        },
+                                    );
+
+                                    lineSeries(lineData);
+                                }
+                            },
+                        );
+                    }
+
+                    if (showSwap && userTransactionData) {
+                        userTransactionData.forEach((order, index) => {
                             if (
-                                hoveredOrderHistory &&
-                                isHoveredOrderHistory &&
-                                circleSeriesHighlighted.length > 0 &&
-                                hoveredOrderHistory.entityType === 'swap' &&
-                                hoveredOrderHistory.txId === order.txId &&
-                                (selectedOrderHistory === undefined ||
-                                    hoveredOrderHistory.txId !==
-                                        selectedOrderHistory.txId)
+                                circleSeries &&
+                                circleSeries.length > 0 &&
+                                order.entityType === 'swap'
                             ) {
-                                const circleDataHg = [
+                                const circleData = [
                                     {
-                                        x: hoveredOrderHistory.txTime * 1000,
+                                        x: order.txTime * 1000,
                                         y: denomInBase
                                             ? order.swapInvPriceDecimalCorrected
                                             : order.swapPriceDecimalCorrected,
@@ -294,144 +381,141 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                     },
                                 ];
 
-                                circleSeriesHighlighted[index](circleDataHg);
-                            }
+                                circleSeries[index](circleData);
 
-                            if (
-                                selectedOrderHistory &&
-                                isSelectedOrderHistory &&
-                                circleSeriesHighlighted.length > 0 &&
-                                selectedOrderHistory.entityType === 'swap' &&
-                                selectedOrderHistory.txId === order.txId
-                            ) {
-                                const circleDataHg = [
-                                    {
-                                        x: selectedOrderHistory.txTime * 1000,
-                                        y: denomInBase
-                                            ? order.swapInvPriceDecimalCorrected
-                                            : order.swapPriceDecimalCorrected,
+                                if (
+                                    hoveredOrderHistory &&
+                                    isHoveredOrderHistory &&
+                                    circleSeriesHighlighted.length > 0 &&
+                                    hoveredOrderHistory.entityType === 'swap' &&
+                                    hoveredOrderHistory.txId === order.txId &&
+                                    (selectedOrderHistory === undefined ||
+                                        hoveredOrderHistory.txId !==
+                                            selectedOrderHistory.txId)
+                                ) {
+                                    const circleDataHg = [
+                                        {
+                                            x:
+                                                hoveredOrderHistory.txTime *
+                                                1000,
+                                            y: denomInBase
+                                                ? order.swapInvPriceDecimalCorrected
+                                                : order.swapPriceDecimalCorrected,
+                                            denomInBase: denomInBase,
+                                        },
+                                    ];
+
+                                    circleSeriesHighlighted[index](
+                                        circleDataHg,
+                                    );
+                                }
+
+                                if (
+                                    selectedOrderHistory &&
+                                    isSelectedOrderHistory &&
+                                    circleSeriesHighlighted.length > 0 &&
+                                    selectedOrderHistory.entityType ===
+                                        'swap' &&
+                                    selectedOrderHistory.txId === order.txId
+                                ) {
+                                    const circleDataHg = [
+                                        {
+                                            x:
+                                                selectedOrderHistory.txTime *
+                                                1000,
+                                            y: denomInBase
+                                                ? order.swapInvPriceDecimalCorrected
+                                                : order.swapPriceDecimalCorrected,
+                                            denomInBase: denomInBase,
+                                        },
+                                    ];
+
+                                    circleSeriesHighlighted[index](
+                                        circleDataHg,
+                                    );
+                                }
+                            }
+                        });
+                    }
+
+                    if (userPositionsByPool && showLiquidity) {
+                        userPositionsByPool.positions.forEach(
+                            (order, index) => {
+                                if (bandArea && lineSeries) {
+                                    const range = [
+                                        scaleData?.xScale(
+                                            order?.timeFirstMint * 1000,
+                                        ),
+                                        scaleData.xScale(
+                                            order?.latestUpdateTime * 1000,
+                                        ),
+                                    ];
+
+                                    bandArea[index].xScale().range(range);
+
+                                    const bandData = {
+                                        fromValue: denomInBase
+                                            ? order.bidTickInvPriceDecimalCorrected
+                                            : order.bidTickPriceDecimalCorrected,
+                                        toValue: denomInBase
+                                            ? order.askTickInvPriceDecimalCorrected
+                                            : order.askTickPriceDecimalCorrected,
                                         denomInBase: denomInBase,
-                                    },
-                                ];
+                                    } as bandLineData;
 
-                                circleSeriesHighlighted[index](circleDataHg);
-                            }
-                        }
+                                    lineSeries;
 
-                        if (
-                            showHistorical &&
-                            order.entityType === 'limitOrder' &&
-                            lineSeries
-                        ) {
-                            if (
-                                order.changeType === 'mint' ||
-                                order.changeType === 'recover'
-                            ) {
-                                const lineData: lineData[] = [];
+                                    bandArea[index]([bandData]);
 
-                                lineData.push({
-                                    x: order.txTime * 1000,
-                                    y: denomInBase
-                                        ? order.invLimitPriceDecimalCorrected
-                                        : order.invLimitPriceDecimalCorrected,
-                                    denomInBase: denomInBase,
-                                });
-                                lineData.push({
-                                    x:
-                                        order.changeType === 'mint' ||
-                                        order.changeType === 'recover'
-                                            ? new Date().getTime()
-                                            : (order.txTime + 3600 * 2) * 1000,
-                                    y: denomInBase
-                                        ? order.invLimitPriceDecimalCorrected
-                                        : order.invLimitPriceDecimalCorrected,
-                                    denomInBase: denomInBase,
-                                });
+                                    const lineData: lineData[][] = [];
 
-                                lineSeries.decorate(
-                                    (context: CanvasRenderingContext2D) => {
-                                        context.strokeStyle =
-                                            (denomInBase && !order.isBuy) ||
-                                            (!denomInBase && order.isBuy)
-                                                ? 'rgba(115, 113, 252)'
-                                                : 'rgba(205, 193, 255)';
-                                    },
-                                );
+                                    lineData.push([
+                                        {
+                                            x: order.timeFirstMint * 1000,
+                                            y: denomInBase
+                                                ? order.askTickInvPriceDecimalCorrected
+                                                : order.askTickPriceDecimalCorrected,
+                                            denomInBase: denomInBase,
+                                        },
+                                        {
+                                            x:
+                                                (order.latestUpdateTime +
+                                                    3600 * 4) *
+                                                1000,
+                                            y: denomInBase
+                                                ? order.askTickInvPriceDecimalCorrected
+                                                : order.askTickPriceDecimalCorrected,
+                                            denomInBase: denomInBase,
+                                        },
+                                    ]);
 
-                                lineSeries(lineData);
-                            }
-                        }
+                                    lineData.push([
+                                        {
+                                            x: order.timeFirstMint * 1000,
+                                            y: denomInBase
+                                                ? order.bidTickInvPriceDecimalCorrected
+                                                : order.bidTickPriceDecimalCorrected,
+                                            denomInBase: denomInBase,
+                                        },
+                                        {
+                                            x:
+                                                (order.latestUpdateTime +
+                                                    3600 * 4) *
+                                                1000,
+                                            y: denomInBase
+                                                ? order.bidTickInvPriceDecimalCorrected
+                                                : order.bidTickPriceDecimalCorrected,
+                                            denomInBase: denomInBase,
+                                        },
+                                    ]);
 
-                        // if (
-                        //     showLiquidity &&
-                        //     order.entityType === 'liqchange' &&
-                        //     bandArea &&
-                        //     lineSeries
-                        // ) {
-                        //     const range = [
-                        //         scaleData?.xScale(order?.txTime * 1000),
-                        //         scaleData.xScale(
-                        //             (order?.txTime + 3600 * 4) * 1000,
-                        //         ),
-                        //     ];
-
-                        //     bandArea.xScale().range(range);
-
-                        //     const bandData = {
-                        //         fromValue: denomInBase
-                        //             ? order.bidTickInvPriceDecimalCorrected
-                        //             : order.bidTickPriceDecimalCorrected,
-                        //         toValue: denomInBase
-                        //             ? order.askTickInvPriceDecimalCorrected
-                        //             : order.askTickPriceDecimalCorrected,
-                        //         denomInBase: denomInBase,
-                        //     } as bandLineData;
-
-                        //     lineSeries;
-
-                        //     bandArea([bandData]);
-
-                        //     const lineData: lineData[][] = [];
-
-                        //     lineData.push([
-                        //         {
-                        //             x: order.txTime * 1000,
-                        //             y: denomInBase
-                        //                 ? order.askTickInvPriceDecimalCorrected
-                        //                 : order.askTickPriceDecimalCorrected,
-                        //             denomInBase: denomInBase,
-                        //         },
-                        //         {
-                        //             x: (order.txTime + 3600 * 4) * 1000,
-                        //             y: denomInBase
-                        //                 ? order.askTickInvPriceDecimalCorrected
-                        //                 : order.askTickPriceDecimalCorrected,
-                        //             denomInBase: denomInBase,
-                        //         },
-                        //     ]);
-
-                        //     lineData.push([
-                        //         {
-                        //             x: order.txTime * 1000,
-                        //             y: denomInBase
-                        //                 ? order.bidTickInvPriceDecimalCorrected
-                        //                 : order.bidTickPriceDecimalCorrected,
-                        //             denomInBase: denomInBase,
-                        //         },
-                        //         {
-                        //             x: (order.txTime + 3600 * 4) * 1000,
-                        //             y: denomInBase
-                        //                 ? order.bidTickInvPriceDecimalCorrected
-                        //                 : order.bidTickPriceDecimalCorrected,
-                        //             denomInBase: denomInBase,
-                        //         },
-                        //     ]);
-
-                        //     lineData.forEach((line) => {
-                        //         liquidityLineSeries(line);
-                        //     });
-                        // }
-                    });
+                                    lineData.forEach((line) => {
+                                        liquidityLineSeries(line);
+                                    });
+                                }
+                            },
+                        );
+                    }
                 })
                 .on('measure', () => {
                     if (lineSeries !== undefined) lineSeries.context(ctx);
@@ -444,6 +528,15 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         });
                     }
                     if (
+                        limitCircleSeries !== undefined &&
+                        limitCircleSeries.length > 0
+                    ) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        limitCircleSeries.forEach((element: any) => {
+                            element.context(ctx);
+                        });
+                    }
+                    if (
                         circleSeriesHighlighted !== undefined &&
                         circleSeriesHighlighted.length > 0
                     ) {
@@ -452,7 +545,12 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             element.context(ctx);
                         });
                     }
-                    if (bandArea !== undefined) bandArea.context(ctx);
+                    if (bandArea !== undefined && bandArea.length > 0) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        bandArea.forEach((element: any) => {
+                            element.context(ctx);
+                        });
+                    }
                     // if (bandAreaHighlighted !== undefined) {
                     //     bandAreaHighlighted.context(ctx);
                     // }
@@ -462,14 +560,17 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         renderCanvasArray([d3OrderCanvas]);
     }, [
         diffHashSig(userTransactionData),
+        diffHashSig(userPositionsByPool),
         lineSeries,
         denomInBase,
         bandArea,
         circleSeries,
+        limitCircleSeries,
         showHistorical,
         showLiquidity,
         showSwap,
         liquidityLineSeries,
+        scaleData,
         // bandAreaHighlighted,
     ]);
 

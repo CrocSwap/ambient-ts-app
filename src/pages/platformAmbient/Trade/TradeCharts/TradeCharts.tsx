@@ -174,7 +174,7 @@ function TradeCharts(props: propsIF) {
         false, // orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
     );
     const [showHistorical, setShowHistorical] = useState(
-        false, // orderHistoryState?.isHistoricalOrderHistoryEnabled ?? false,
+        orderHistoryState?.isHistoricalOrderHistoryEnabled ?? false,
     );
 
     const chartItemStates = useMemo(() => {
@@ -188,6 +188,7 @@ function TradeCharts(props: propsIF) {
             liqMode: chartSettings.poolOverlay.overlay,
             showSwap,
             setShowSwap,
+            setShowHistorical,
             showLiquidity,
             showHistorical,
             showLatest,
@@ -219,6 +220,12 @@ function TradeCharts(props: propsIF) {
             setShowHistorical(false);
         } else {
             setShowSwap(orderHistoryState?.isSwapOrderHistoryEnabled ?? true);
+            setShowHistorical(
+                orderHistoryState?.isHistoricalOrderHistoryEnabled ?? true,
+            );
+            setShowLiquidity(
+                orderHistoryState?.isLiquidityOrderHistoryEnabled ?? true,
+            );
         }
     }, [isUserConnected]);
 

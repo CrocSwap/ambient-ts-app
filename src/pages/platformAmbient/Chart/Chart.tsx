@@ -4591,6 +4591,7 @@ export default function Chart(props: propsIF) {
         period,
         currentPool,
         showSwap,
+        showHistorical,
         isCondensedModeEnabled,
     ]);
 
@@ -4680,7 +4681,7 @@ export default function Chart(props: propsIF) {
                 }
 
                 let isOrderHistorySelected = undefined;
-                if (showSwap) {
+                if (showSwap || showHistorical || showLiquidity) {
                     isOrderHistorySelected = orderHistoryHoverStatus(
                         event.offsetX,
                         event.offsetY,
@@ -4830,6 +4831,8 @@ export default function Chart(props: propsIF) {
         isSelectedOrderHistory,
         selectedOrderHistory,
         showSwap,
+        showHistorical,
+        showLiquidity,
     ]);
 
     function checkLineLocation(
