@@ -8,7 +8,7 @@ import {
     scrollBrandAssets,
 } from '../../../assets/branding';
 import { swellSepoliaBrandAssets } from '../../../assets/branding/swellSepoliaBrandAssets';
-import { NetworkIF, TokenIF, chainIds } from '../../types';
+import { NetworkIF, TokenIF, chainHexIds } from '../../types';
 import { blastMainnet } from './blastMainnet';
 import { blastSepolia } from './blastSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
@@ -32,7 +32,7 @@ const networks: NetworkIF[] = [
     swellSepolia,
 ];
 
-function getNetworks(chns: (string | chainIds)[]): {
+function getNetworks(chns: (string | chainHexIds)[]): {
     [x: string]: NetworkIF;
 } {
     const networksToShow: NetworkIF[] = chns
@@ -49,16 +49,16 @@ function getNetworks(chns: (string | chainIds)[]): {
 }
 
 export const supportedNetworks: { [x: string]: NetworkIF } =
-    brand === 'blast'
-        ? getNetworks(Object.keys(blastBrandAssets.networks))
-        : brand === 'scroll'
-          ? getNetworks(Object.keys(scrollBrandAssets.networks))
-          : brand === 'futa'
-            ? getNetworks(Object.keys(futaBrandAssets.networks))
-            : brand === 'ambientProduction'
-              ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
-              : brand === 'ambientTestnet'
-                ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
+    brand === 'ambientProduction'
+        ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
+        : brand === 'ambientTestnet'
+          ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
+          : brand === 'scroll'
+            ? getNetworks(Object.keys(scrollBrandAssets.networks))
+            : brand === 'blast'
+              ? getNetworks(Object.keys(blastBrandAssets.networks))
+              : brand === 'futa'
+                ? getNetworks(Object.keys(futaBrandAssets.networks))
                 : brand === 'plumeSepolia'
                   ? getNetworks(Object.keys(plumeSepoliaBrandAssets.networks))
                   : brand === 'swellSepolia'

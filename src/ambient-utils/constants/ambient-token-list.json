@@ -638,7 +638,7 @@
         },
         {
             "name": "Ambient USDC",
-            "address": "0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328",
+            "address": "0xfEfD8bCB0034A2B0E3CC22e2f5A59279FAe67128",
             "symbol": "USDC",
             "decimals": 6,
             "chainId": 1924,
