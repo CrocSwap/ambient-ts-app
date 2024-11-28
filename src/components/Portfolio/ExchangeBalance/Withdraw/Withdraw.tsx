@@ -35,6 +35,7 @@ import {
     GAS_DROPS_ESTIMATE_WITHDRAWAL_NATIVE,
     NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants/';
+import { AppStateContext } from '../../../../contexts';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import Button from '../../../Form/Button';
@@ -67,6 +68,7 @@ export default function Withdraw(props: propsIF) {
     } = props;
     const { crocEnv, ethMainnetUsdPrice, provider } =
         useContext(CrocEnvContext);
+    const { isUserOnline } = useContext(AppStateContext);
     const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
 
@@ -162,7 +164,10 @@ export default function Withdraw(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     useEffect(() => {
-        if (isWithdrawPending) {
+        if (!isUserOnline) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Currently Offline');
+        } else if (isWithdrawPending) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Withdrawal Pending`);
@@ -191,6 +196,7 @@ export default function Withdraw(props: propsIF) {
             setButtonMessage('Withdraw');
         }
     }, [
+        isUserOnline,
         withdrawQtyNonDisplay,
         isWithdrawPending,
         isDexBalanceSufficient,

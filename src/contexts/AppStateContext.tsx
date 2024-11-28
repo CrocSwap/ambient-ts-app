@@ -41,7 +41,8 @@ export interface AppStateContextIF {
         isEnabled: boolean;
         setIsEnabled: (val: boolean) => void;
     };
-    server: { isEnabled: boolean; isUserOnline: boolean };
+    server: { isEnabled: boolean };
+    isUserOnline: boolean;
     subscriptions: { isEnabled: boolean };
     walletModal: {
         isOpen: boolean;
@@ -284,7 +285,7 @@ export const AppStateContextProvider = (props: {
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
-        if (CHAT_ENABLED) {
+        if (CHAT_ENABLED && isUserOnline) {
             const interval = setInterval(() => {
                 getStatus().then((isChatUp) => {
                     setIsChatEnabled(isChatUp);
@@ -292,7 +293,7 @@ export const AppStateContextProvider = (props: {
             }, CACHE_UPDATE_FREQ_IN_MS);
             return () => clearInterval(interval);
         }
-    }, [isChatEnabled, CHAT_ENABLED]);
+    }, [isUserOnline, isChatEnabled, CHAT_ENABLED]);
 
     const { activeNetwork, chooseNetwork } = useAppChain();
 
@@ -322,7 +323,8 @@ export const AppStateContextProvider = (props: {
                 isEnabled: isChatEnabled,
                 setIsEnabled: setIsChatEnabled,
             },
-            server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+            server: { isEnabled: isServerEnabled },
+            isUserOnline,
             isUserIdle,
             isUserIdle20min,
             subscriptions: { isEnabled: areSubscriptionsEnabled },

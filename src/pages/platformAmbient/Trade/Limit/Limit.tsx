@@ -62,6 +62,7 @@ export default function Limit() {
 
     const {
         activeNetwork: { chainId, gridSize, poolIndex },
+        isUserOnline,
     } = useContext(AppStateContext);
     const {
         gasPriceInGwei,
@@ -531,6 +532,7 @@ export default function Limit() {
             ),
         );
     }, [
+        isUserOnline,
         isOrderValid,
         tokenAInputQtyNoExponentString,
         isPoolInitialized,
@@ -808,7 +810,10 @@ export default function Limit() {
     };
 
     const handleLimitButtonMessage = (tokenAAmount: bigint) => {
-        if (!isPoolInitialized) {
+        if (!isUserOnline) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage('Currently Offline');
+        } else if (!isPoolInitialized) {
             setLimitAllowed(false);
             if (isPoolInitialized === undefined)
                 setLimitButtonErrorMessage('...');

@@ -59,9 +59,11 @@ export const CandleContext = createContext<CandleContextIF>(
 
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
-        server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+        server: { isEnabled: isServerEnabled },
+        isUserOnline,
         isUserIdle,
     } = useContext(AppStateContext);
+
     const {
         chartSettings,
         isEnabled: isChartEnabled,
@@ -200,19 +202,22 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [isFirstFetch]);
 
     useEffect(() => {
+        setCandleData(undefined);
+        setTimeOfEndCandle(undefined);
+        setIsCondensedModeEnabled(true);
+    }, [baseTokenAddress + quoteTokenAddress]);
+
+    useEffect(() => {
         (async () => {
             const isChangeUserConnected =
                 checkUserConnected.current === isUserConnected;
 
             if (
                 crocEnv &&
+                isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
                 isChangeUserConnected
             ) {
-                setCandleData(undefined);
-                setTimeOfEndCandle(undefined);
-                setIsCondensedModeEnabled(true);
-
                 isChartEnabled && isUserOnline && fetchCandles(true);
                 if (isManualCandleFetchRequested)
                     setIsManualCandleFetchRequested(false);
@@ -222,16 +227,16 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [
         isManualCandleFetchRequested,
         isChartEnabled,
+        crocEnv,
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
         isPoolInitialized,
-        crocEnv,
         chainId,
     ]);
 
     // only works when the period changes
     useEffect(() => {
-        isChartEnabled && isUserOnline && fetchCandles();
+        fetchCandles();
     }, [candleScale?.isFetchForTimeframe]);
 
     useEffect(() => {
@@ -250,7 +255,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [
         isChartEnabled,
         isUserOnline,
-
         isUserIdle
             ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
             : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
@@ -287,6 +291,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const fetchCandles = (bypassSpinner = false) => {
         if (
+            isChartEnabled &&
             isServerEnabled &&
             isUserOnline &&
             baseTokenAddress &&

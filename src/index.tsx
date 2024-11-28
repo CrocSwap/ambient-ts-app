@@ -128,7 +128,7 @@ modal.subscribeEvents(async (event) => {
 
                 const newChainId = modal.getState().selectedNetworkId as number;
 
-                if (newChainId !== desiredChainId) {
+                if (newChainId !== desiredChainId && !modal.getState().open) {
                     try {
                         await modal.switchNetwork(desiredChainId);
                         await new Promise((resolve) =>
@@ -155,6 +155,7 @@ modal.subscribeEvents(async (event) => {
         event.data.event === 'MODAL_CLOSE' &&
         event.data.properties.connected === true
     ) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         if (
             !networkIds.includes(modal.getState().selectedNetworkId as number)
         ) {
