@@ -1,3 +1,4 @@
+import * as d3fc from 'd3fc';
 import { useContext, useEffect, useRef, useState } from 'react';
 import {
     bandLineData,
@@ -77,6 +78,17 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         { color: 'rgba(95, 255, 242, 0.7)', lineWidth: 1.5, dash: [0, 0] },
     );
 
+    const triangleLimit = d3fc
+        .seriesCanvasPoint()
+        .xScale(scaleData.xScale)
+        .yScale(scaleData.yScale)
+        /* eslint-disable @typescript-eslint/no-explicit-any */
+        .crossValue((d: any) => d.x)
+        /* eslint-disable @typescript-eslint/no-explicit-any */
+        .mainValue((d: any) => d.y)
+        .size(90)
+        .type(d3.symbolTriangle);
+
     function createScaleForBandArea(x: number, x2: number) {
         const newXScale = scaleData?.xScale.copy();
 
@@ -97,27 +109,32 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const bandAreaArray: any[] = [];
             if (showHistorical) {
-                userLimitOrdersByPool.limitOrders.forEach((limitOrder) => {
-                    if (limitOrder.claimableLiq > 0) {
-                        const circleSerie = createCircle(
-                            scaleData?.xScale,
-                            scaleData?.yScale,
-                            circleScale(limitOrder.totalValueUSD),
-                            1,
-                            denomInBase,
-                            false,
-                            false,
-                            (denomInBase && !limitOrder.isBid) ||
-                                (!denomInBase && limitOrder.isBid),
-                            '--accent2',
-                            ['futa'].includes(platformName)
-                                ? '--negative'
-                                : '--accent4',
-                        );
+                userLimitOrdersByPool.limitOrders.forEach(
+                    (limitOrder, index) => {
+                        if (limitOrder.claimableLiq > 0) {
+                            const circleSerie = createCircle(
+                                scaleData?.xScale,
+                                scaleData?.yScale,
+                                circleScale(limitOrder.totalValueUSD),
+                                1,
+                                denomInBase,
+                                false,
+                                false,
+                                (denomInBase && !limitOrder.isBid) ||
+                                    (!denomInBase && limitOrder.isBid),
+                                '--accent2',
+                                ['futa'].includes(platformName)
+                                    ? '--negative'
+                                    : '--accent4',
+                            );
 
-                        limitCircleSerieArray.push(circleSerie);
-                    }
-                });
+                            limitCircleSerieArray.push({
+                                serie: circleSerie,
+                                index: index,
+                            });
+                        }
+                    },
+                );
 
                 setLimitCircleSeries(() => {
                     return limitCircleSerieArray;
@@ -144,9 +161,17 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
                     circleSerieArray.push(circleSerie);
                 });
+
+                setCircleSeries(() => {
+                    return circleSerieArray;
+                });
+
+                setCircleSeriesHighlighted(() => {
+                    return circleSerieArray;
+                });
             }
 
-            if (showLiquidity) {
+            if (showLiquidity && userPositionsByPool) {
                 userPositionsByPool.positions.forEach((order) => {
                     const newBandScale = createScaleForBandArea(
                         order?.timeFirstMint * 1000,
@@ -162,22 +187,16 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
                     bandAreaArray.push(bandArea);
                 });
+
+                setBandArea(() => {
+                    return bandAreaArray;
+                });
             }
-
-            setCircleSeries(() => {
-                return circleSerieArray;
-            });
-
-            setCircleSeriesHighlighted(() => {
-                return circleSerieArray;
-            });
-
-            setBandArea(() => {
-                return bandAreaArray;
-            });
         }
     }, [
         userTransactionData,
+        userPositionsByPool,
+        userLimitOrdersByPool,
         circleScale,
         showHistorical,
         showSwap,
@@ -318,11 +337,11 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                         },
                                     ];
 
-                                    if (
-                                        limitCircleSeries[index] !== undefined
-                                    ) {
-                                        limitCircleSeries[index](circleData);
-                                    }
+                                    limitCircleSeries.find((serie: any) => {
+                                        if (serie.index === index) {
+                                            serie.serie(circleData);
+                                        }
+                                    });
                                 }
 
                                 if (limitOrder.claimableLiq === 0) {
@@ -359,6 +378,52 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                     );
 
                                     lineSeries(lineData);
+
+                                    if (ctx) ctx.setLineDash([0, 0]);
+
+                                    ctx?.restore();
+
+                                    if (triangleLimit) {
+                                        triangleLimit.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                // context.setLineDash([0, 0]);
+                                                const rotateDegree = 90;
+                                                context.rotate(
+                                                    (rotateDegree * Math.PI) /
+                                                        180,
+                                                );
+
+                                                context.strokeStyle =
+                                                    (denomInBase &&
+                                                        !limitOrder.isBid) ||
+                                                    (!denomInBase &&
+                                                        limitOrder.isBid)
+                                                        ? 'rgba(115, 113, 252)'
+                                                        : 'rgba(205, 193, 255)';
+
+                                                context.fillStyle =
+                                                    (denomInBase &&
+                                                        !limitOrder.isBid) ||
+                                                    (!denomInBase &&
+                                                        limitOrder.isBid)
+                                                        ? 'rgba(115, 113, 252)'
+                                                        : 'rgba(205, 193, 255)';
+                                            },
+                                        );
+
+                                        triangleLimit([
+                                            {
+                                                x:
+                                                    limitOrder.timeFirstMint *
+                                                    1000,
+                                                y: denomInBase
+                                                    ? limitOrder.invLimitPriceDecimalCorrected
+                                                    : limitOrder.limitPriceDecimalCorrected,
+                                            },
+                                        ]);
+                                    }
                                 }
                             },
                         );
@@ -441,7 +506,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     if (userPositionsByPool && showLiquidity) {
                         userPositionsByPool.positions.forEach(
                             (order, index) => {
-                                if (bandArea && lineSeries) {
+                                if (bandArea && liquidityLineSeries) {
                                     const range = [
                                         scaleData?.xScale(
                                             order?.timeFirstMint * 1000,
@@ -451,7 +516,9 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                         ),
                                     ];
 
-                                    bandArea[index].xScale().range(range);
+                                    if (bandArea[index] !== undefined) {
+                                        bandArea[index].xScale().range(range);
+                                    }
 
                                     const bandData = {
                                         fromValue: denomInBase
@@ -462,8 +529,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                             : order.askTickPriceDecimalCorrected,
                                         denomInBase: denomInBase,
                                     } as bandLineData;
-
-                                    lineSeries;
 
                                     bandArea[index]([bandData]);
 
@@ -519,6 +584,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 })
                 .on('measure', () => {
                     if (lineSeries !== undefined) lineSeries.context(ctx);
+                    if (triangleLimit !== undefined) triangleLimit.context(ctx);
                     if (liquidityLineSeries !== undefined)
                         liquidityLineSeries.context(ctx);
                     if (circleSeries !== undefined && circleSeries.length > 0) {
@@ -533,7 +599,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     ) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         limitCircleSeries.forEach((element: any) => {
-                            element.context(ctx);
+                            element.serie.context(ctx);
                         });
                     }
                     if (
@@ -561,7 +627,9 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
     }, [
         diffHashSig(userTransactionData),
         diffHashSig(userPositionsByPool),
+        diffHashSig(userLimitOrdersByPool),
         lineSeries,
+        triangleLimit,
         denomInBase,
         bandArea,
         circleSeries,
