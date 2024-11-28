@@ -117,6 +117,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);
     const isActiveNetworkPlume = ['0x18230'].includes(chainId);
     const isActiveNetworkSwell = ['0x784'].includes(chainId);
+    const isActiveNetworkBase = ['0x14a34'].includes(chainId);
     const isVaultSupportedOnNetwork =
         vaultSupportedNetworkIds.includes(chainId);
 
@@ -599,6 +600,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isActiveNetworkBlast,
         isActiveNetworkPlume,
         isActiveNetworkSwell,
+        isActiveNetworkBase,
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
         isVaultSupportedOnNetwork,

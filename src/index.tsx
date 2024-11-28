@@ -23,6 +23,7 @@ import { GlobalContexts } from './contexts/GlobalContexts';
 import sepoliaLogo from './assets/images/networks/sepolia_logo.webp';
 // import plumeSepoliaLogo from './assets/images/networks/plume_sepolia_network_logo.webp';
 import { getLocalStorageItem } from './ambient-utils/dataLayer';
+import baseSepoliaLogo from './assets/images/networks/base_network_logo_with_margin.webp';
 import blastSepoliaLogo from './assets/images/networks/blast_sepolia_logo.webp';
 import plumeSepoliaLogo from './assets/images/networks/plume_mainnet_logo_small.webp';
 import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia_logo.webp';
@@ -85,6 +86,7 @@ const modal = createWeb3Modal({
         11155111: sepoliaLogo,
         98864: plumeSepoliaLogo,
         1924: swellSepoliaLogo,
+        84532: baseSepoliaLogo,
     },
     termsConditionsUrl: '/terms',
     privacyPolicyUrl: '/privacy',

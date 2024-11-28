@@ -68,6 +68,11 @@ export function lookupChainId(
         case '0x8274f':
             chainIdHex = '0x8274f';
             break;
+        case 'basesepolia':
+        case '84532':
+        case '0x14a34':
+            chainIdHex = '0x14a34';
+            break;
     }
     // output variable
     let output: string | number | undefined;
