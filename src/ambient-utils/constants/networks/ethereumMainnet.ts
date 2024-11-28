@@ -5,9 +5,9 @@ import { NetworkIF } from '../../types/NetworkIF';
 import {
     mainnetETH,
     mainnetRSWETH,
+    mainnetSWELL,
     mainnetTBTC,
     mainnetUSDC,
-    mainnetUSDT,
     mainnetWBTC,
 } from '../defaultTokens';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
@@ -47,7 +47,7 @@ export const ethereumMainnet: NetworkIF = {
         new TopPool(mainnetTBTC, mainnetETH, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetRSWETH, mainnetETH, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetWBTC, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetUSDT, mainnetUSDC, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetRSWETH, mainnetSWELL, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
