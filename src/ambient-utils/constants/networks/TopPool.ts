@@ -1,7 +1,7 @@
-import { TokenIF, PoolIF } from '../../types';
-import { sortTokens } from '../../dataLayer/functions/sortTokens';
 import { chainNumToString } from '../../dataLayer/functions/chainNumToString';
 import { getMoneynessRank } from '../../dataLayer/functions/getMoneynessRank';
+import { sortTokens } from '../../dataLayer/functions/sortTokens';
+import { PoolIF, TokenIF } from '../../types';
 
 export class TopPool implements PoolIF {
     name: string;

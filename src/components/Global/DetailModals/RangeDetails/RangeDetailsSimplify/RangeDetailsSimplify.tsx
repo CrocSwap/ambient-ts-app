@@ -1,33 +1,33 @@
-import styles from './RangeDetailsSimplify.module.css';
+import { useMediaQuery } from '@material-ui/core';
+import moment from 'moment';
+import { memo, useContext } from 'react';
+import { FiCopy } from 'react-icons/fi';
+import { RiExternalLinkLine } from 'react-icons/ri';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import {
     BlastRewardsDataIF,
     PositionIF,
 } from '../../../../../ambient-utils/types';
-import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
-import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
-import { RiExternalLinkLine } from 'react-icons/ri';
-import moment from 'moment';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { memo, useContext } from 'react';
-import { FiCopy } from 'react-icons/fi';
 import {
     AppStateContext,
     AppStateContextIF,
 } from '../../../../../contexts/AppStateContext';
 import {
+    ChainDataContext,
+    ChainDataContextIF,
+} from '../../../../../contexts/ChainDataContext';
+import {
     CrocEnvContext,
     CrocEnvContextIF,
 } from '../../../../../contexts/CrocEnvContext';
-import { useMediaQuery } from '@material-ui/core';
 import {
     UserDataContext,
     UserDataContextIF,
 } from '../../../../../contexts/UserDataContext';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import InfoRow from '../../../InfoRow';
-import {
-    ChainDataContext,
-    ChainDataContextIF,
-} from '../../../../../contexts/ChainDataContext';
+import styles from './RangeDetailsSimplify.module.css';
 
 interface propsIF {
     position: PositionIF;

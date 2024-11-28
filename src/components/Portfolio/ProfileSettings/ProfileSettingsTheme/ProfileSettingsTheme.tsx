@@ -1,8 +1,8 @@
-import styles from './ProfileSettingsTheme.module.css';
-import { useState } from 'react';
 import { motion, Variants } from 'framer-motion';
+import { useState } from 'react';
 import { BsCheckCircle } from 'react-icons/bs';
 import { FiCircle } from 'react-icons/fi';
+import styles from './ProfileSettingsTheme.module.css';
 // import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 
 // const itemVariants: Variants = {

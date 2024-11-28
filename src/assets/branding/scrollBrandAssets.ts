@@ -1,6 +1,6 @@
-import { brandIF } from './types';
-import large from '../images/logos/large.svg';
 import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
+import large from '../images/logos/large.svg';
+import { brandIF } from './types';
 
 export const scrollBrandAssets: brandIF = {
     networks: {

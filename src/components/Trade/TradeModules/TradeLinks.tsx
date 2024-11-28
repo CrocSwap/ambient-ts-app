@@ -1,15 +1,15 @@
-import {
-    linkGenMethodsIF,
-    useLinkGen,
-    marketParamsIF,
-    limitParamsIF,
-    poolParamsIF,
-    baseURLs,
-} from '../../../utils/hooks/useLinkGen';
-import { TokenIF } from '../../../ambient-utils/types';
 import { Link } from 'react-router-dom';
-import styles from './TradeLinks.module.css';
 import { brand } from '../../../ambient-utils/constants';
+import { TokenIF } from '../../../ambient-utils/types';
+import {
+    baseURLs,
+    limitParamsIF,
+    linkGenMethodsIF,
+    marketParamsIF,
+    poolParamsIF,
+    useLinkGen,
+} from '../../../utils/hooks/useLinkGen';
+import styles from './TradeLinks.module.css';
 
 interface propsIF {
     chainId: string;

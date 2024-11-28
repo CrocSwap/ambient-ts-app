@@ -1,9 +1,9 @@
-import { drawDataHistory, drawnShapeEditAttributes } from './chartUtils';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { fibDefaultLevels } from './drawConstants';
-import { LS_KEY_CHART_ANNOTATIONS } from './chartConstants';
 import { AppStateContext } from '../../../../contexts';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { LS_KEY_CHART_ANNOTATIONS } from './chartConstants';
+import { drawDataHistory, drawnShapeEditAttributes } from './chartUtils';
+import { fibDefaultLevels } from './drawConstants';
 
 export interface actionKeyIF {
     poolIndex: number;
@@ -24,6 +24,10 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
         : [];
 
     const [drawnShapeHistory, setDrawnShapeHistory] = useState<
+        drawDataHistory[]
+    >([]);
+
+    const [currentPoolDrawnShapes, setCurrentPoolDrawnShapes] = useState<
         drawDataHistory[]
     >([]);
 
@@ -115,6 +119,26 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
             return true;
         });
     }, [initialData, isLocalStorageFetched]);
+
+    useEffect(() => {
+        const filteredDrawnShapeHistory = drawnShapeHistory.filter(
+            (element) => {
+                const isShapeInCurrentPool =
+                    currentPool.tokenA.address ===
+                        (isTokenABase === element.pool.isTokenABase
+                            ? element.pool.tokenA
+                            : element.pool.tokenB) &&
+                    currentPool.tokenB.address ===
+                        (isTokenABase === element.pool.isTokenABase
+                            ? element.pool.tokenB
+                            : element.pool.tokenA);
+
+                return isShapeInCurrentPool;
+            },
+        );
+
+        setCurrentPoolDrawnShapes(filteredDrawnShapeHistory);
+    }, [drawnShapeHistory]);
 
     const actionKey = useMemo(() => {
         const newActionKey = {
@@ -514,5 +538,6 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
         addDrawActionStack,
         undoStack,
         deleteAllShapes,
+        currentPoolDrawnShapes,
     };
 }

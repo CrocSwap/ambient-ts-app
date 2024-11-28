@@ -2,22 +2,22 @@ import {
     getFormattedNumber,
     uriToHttp,
 } from '../../../../../ambient-utils/dataLayer';
+import Button from '../../../../../components/Form/Button';
 import TokenIcon from '../../../../../components/Global/TokenIcon/TokenIcon';
 import RemoveRangeWidth from '../../../../../components/RangeActionModal/RemoveRangeWidth/RemoveRangeWidth';
 import { FlexContainer } from '../../../../../styled/Common';
 import styles from './VaultWithdraw.module.css';
-import Button from '../../../../../components/Form/Button';
 
-import { TokenIF, AllVaultsServerIF } from '../../../../../ambient-utils/types';
-import Modal from '../../../../../components/Global/Modal/Modal';
-import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import {
-    NUM_GWEI_IN_WEI,
     GAS_DROPS_ESTIMATE_VAULT_WITHDRAWAL,
     IS_LOCAL_ENV,
+    NUM_GWEI_IN_WEI,
 } from '../../../../../ambient-utils/constants';
+import { AllVaultsServerIF, TokenIF } from '../../../../../ambient-utils/types';
+import Modal from '../../../../../components/Global/Modal/Modal';
+import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
 import {
     ChainDataContext,
     CrocEnvContext,
@@ -26,8 +26,8 @@ import {
 } from '../../../../../contexts';
 import {
     TransactionError,
-    isTransactionReplacedError,
     isTransactionFailedError,
+    isTransactionReplacedError,
 } from '../../../../../utils/TransactionError';
 
 import { MdEdit } from 'react-icons/md';

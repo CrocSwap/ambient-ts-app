@@ -1,19 +1,19 @@
 import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
+import { chainHexIds } from '../ambient-utils/types';
 import { skins } from '../App/hooks/useSkin';
-import { brandIF, fontSets, heroItem } from '../assets/branding/types';
-import { chainIds } from '../ambient-utils/types';
 import {
-    blastBrandAssets,
-    scrollBrandAssets,
-    defaultBrandAssets,
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
+    blastBrandAssets,
+    defaultBrandAssets,
     futaBrandAssets,
-    sampleBrandAssets,
     plumeSepoliaBrandAssets,
+    scrollBrandAssets,
 } from '../assets/branding';
-import { UserDataContext } from './UserDataContext';
+import { swellSepoliaBrandAssets } from '../assets/branding/swellSepoliaBrandAssets';
+import { brandIF, fontSets, heroItem } from '../assets/branding/types';
 import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { UserDataContext } from './UserDataContext';
 
 const PREMIUM_THEMES_IN_ENV = {
     theme1: 'VITE_THEME_1_ACCOUNTS',
@@ -31,7 +31,7 @@ export interface BrandContextIF {
     fontSet: fontSets;
     colorAndFont: string;
     platformName: string;
-    networks: chainIds[];
+    networks: chainHexIds[];
     headerImage: string;
     showPoints: boolean;
     showDexStats: boolean;
@@ -71,7 +71,6 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     const brand: string = import.meta.env.VITE_BRAND_ASSET_SET ?? '';
     const brandAssets = useMemo<brandIF>(() => {
         // make the linter happy for sample file
-        false && sampleBrandAssets;
         switch (brand) {
             case 'blast':
                 return blastBrandAssets;
@@ -85,6 +84,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return ambientTestnetBrandAssets;
             case 'plumeSepolia':
                 return plumeSepoliaBrandAssets;
+            case 'swellSepolia':
+                return swellSepoliaBrandAssets;
             default:
                 return defaultBrandAssets;
         }
@@ -101,7 +102,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     const [skin, setSkin] = useState<skins>(getDefaultSkin());
 
     function getAvailableSkins(): skins[] {
-        const networkSettings = brandAssets.networks[chainId as chainIds];
+        const networkSettings = brandAssets.networks[chainId as chainHexIds];
         const available: skins[] = networkSettings?.color ?? ['purple_dark'];
         const premium: skins[] = networkSettings?.premiumColor ?? [];
         const hasPremium = !!(
@@ -116,7 +117,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     }
 
     function getHero(): heroItem[] {
-        const networkPrefs = brandAssets.networks[chainId as chainIds];
+        const networkPrefs = brandAssets.networks[chainId as chainHexIds];
         return networkPrefs
             ? networkPrefs.hero
             : [{ content: 'ambient', processAs: 'separator' }];
@@ -132,7 +133,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         fontSet: brandAssets.fontSet,
         colorAndFont: getDefaultSkin() + '+' + brandAssets.fontSet,
         platformName: brandAssets.platformName,
-        networks: Object.keys(brandAssets.networks) as chainIds[],
+        networks: Object.keys(brandAssets.networks) as chainHexIds[],
         headerImage: brandAssets.headerImage,
         showPoints: brandAssets.showPoints,
         showDexStats: brandAssets.showDexStats,

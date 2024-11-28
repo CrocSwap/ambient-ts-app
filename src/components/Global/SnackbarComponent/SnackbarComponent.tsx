@@ -1,4 +1,7 @@
 // START: Import React and Dongles
+import { Snackbar } from '@material-ui/core';
+import { Alert, AlertProps } from '@mui/material';
+import { motion } from 'framer-motion';
 import {
     forwardRef,
     memo,
@@ -7,14 +10,11 @@ import {
     useEffect,
     useRef,
 } from 'react';
-import { Snackbar } from '@material-ui/core';
-import { Alert, AlertProps } from '@mui/material';
-import { motion } from 'framer-motion';
+import { IoMdClose } from 'react-icons/io';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { IoMdClose } from 'react-icons/io';
-import styles from './SnackbarComponent.module.css';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import styles from './SnackbarComponent.module.css';
 
 const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
     function SnackbarAlert(props, ref) {

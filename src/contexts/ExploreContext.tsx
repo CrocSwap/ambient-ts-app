@@ -1,3 +1,5 @@
+import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     Dispatch,
     ReactNode,
@@ -7,24 +9,22 @@ import {
     useEffect,
     useState,
 } from 'react';
-import { CachedDataContext } from './CachedDataContext';
-import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import {
+    expandPoolStats,
+    getFormattedNumber,
+    getMoneynessRank,
+} from '../ambient-utils/dataLayer';
 import { PoolIF, SinglePoolDataIF } from '../ambient-utils/types';
 import {
-    getMoneynessRank,
-    getFormattedNumber,
-    expandPoolStats,
-} from '../ambient-utils/dataLayer';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+    useTokenStats,
+    useTokenStatsIF,
+} from '../pages/platformAmbient/Explore/useTokenStats';
+import { AppStateContext } from './AppStateContext';
+import { CachedDataContext } from './CachedDataContext';
+import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { PoolContext } from './PoolContext';
-import {
-    useTokenStatsIF,
-    useTokenStats,
-} from '../pages/platformAmbient/Explore/useTokenStats';
 import { TokenContext } from './TokenContext';
-import { ChainDataContext } from './ChainDataContext';
-import { AppStateContext } from './AppStateContext';
 
 export interface ExploreContextIF {
     pools: {
@@ -61,7 +61,7 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { activeNetwork } = useContext(AppStateContext);
+    const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
@@ -78,6 +78,11 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             localStorage.getItem('isExploreDollarizationEnabled') === 'true',
         );
 
+    // reset pool data when switching networks
+    useEffect(() => {
+        setIntermediaryPoolData([]);
+    }, [activeNetwork.chainId]);
+
     // used to prevent displaying data for a previous network after switching networks
     useEffect(() => {
         if (intermediaryPoolData.length) {
@@ -87,7 +92,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         } else {
             setAllPools([]);
         }
-    }, [activeNetwork.chainId, intermediaryPoolData]);
+    }, [intermediaryPoolData]);
 
     useEffect(() => {
         const savedDollarizationPreference =
@@ -110,11 +115,22 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     // get expanded pool metadata
     useEffect(() => {
-        if (crocEnv !== undefined && poolList.length > 0) {
-            setIntermediaryPoolData([]);
-            getAllPools();
-        }
-    }, [JSON.stringify(poolList)]);
+        (async () => {
+            if (
+                isUserOnline &&
+                crocEnv !== undefined &&
+                poolList.length > 0 &&
+                (await crocEnv.context).chain.chainId === activeNetwork.chainId
+            ) {
+                getAllPools();
+            }
+        })();
+    }, [
+        isUserOnline,
+        JSON.stringify(poolList),
+        crocEnv,
+        activeNetwork.chainId,
+    ]);
 
     // fn to get data on a single pool
     async function getPoolData(

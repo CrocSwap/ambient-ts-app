@@ -1,14 +1,14 @@
 import { useContext } from 'react';
-import styles from './Footer.module.css';
-import {
-    ChainDataContext,
-    ChainDataContextIF,
-} from '../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import {
     AppStateContext,
     AppStateContextIF,
 } from '../../../contexts/AppStateContext';
+import {
+    ChainDataContext,
+    ChainDataContextIF,
+} from '../../../contexts/ChainDataContext';
+import styles from './Footer.module.css';
 
 export default function DesktopFooter() {
     const {

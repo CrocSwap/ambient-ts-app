@@ -1,11 +1,11 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { Provider } from 'ethers';
 import { GCGO_OVERRIDE_URL } from '../constants';
+import { getLimitOrderData, SpotPriceFn } from '../dataLayer/functions';
 import { LimitOrderServerIF, TokenIF } from '../types';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
-import { getLimitOrderData, SpotPriceFn } from '../dataLayer/functions';
-import { Provider } from 'ethers';
 
 interface argsIF {
     tokenList: TokenIF[];

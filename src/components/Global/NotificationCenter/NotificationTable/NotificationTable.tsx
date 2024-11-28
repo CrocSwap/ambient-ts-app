@@ -1,13 +1,13 @@
 import { Dispatch, RefObject, SetStateAction, useContext } from 'react';
 import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
 
-import styles from './NotificationTable.module.css';
-import { FlexContainer } from '../../../../styled/Common';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { FlexContainer } from '../../../../styled/Common';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import Modal from '../../Modal/Modal';
 import ModalHeader from '../../ModalHeader/ModalHeader';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import styles from './NotificationTable.module.css';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;

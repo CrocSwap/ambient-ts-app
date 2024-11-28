@@ -1,32 +1,32 @@
 import {
     createContext,
-    SetStateAction,
     Dispatch,
+    SetStateAction,
+    useContext,
     useEffect,
     useMemo,
-    useState,
-    useContext,
     useRef,
+    useState,
 } from 'react';
 import { fetchCandleSeriesHybrid } from '../ambient-utils/api';
-import {
-    CandleDataIF,
-    CandleDomainIF,
-    CandleScaleIF,
-    CandlesByPoolAndDurationIF,
-} from '../ambient-utils/types';
-import { AppStateContext, AppStateContextIF } from './AppStateContext';
-import { CachedDataContext } from './CachedDataContext';
-import { ChartContext } from './ChartContext';
-import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
-import { TradeTokenContext } from './TradeTokenContext';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     LS_KEY_CHART_SETTINGS,
 } from '../ambient-utils/constants';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
+import {
+    CandleDataIF,
+    CandleDomainIF,
+    CandlesByPoolAndDurationIF,
+    CandleScaleIF,
+} from '../ambient-utils/types';
 import { chartSettingsIF } from '../App/hooks/useChartSettings';
 import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
+import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { CachedDataContext } from './CachedDataContext';
+import { ChartContext } from './ChartContext';
+import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
+import { TradeTokenContext } from './TradeTokenContext';
 import { UserDataContext } from './UserDataContext';
 
 export interface CandleContextIF {
@@ -59,9 +59,11 @@ export const CandleContext = createContext<CandleContextIF>(
 
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
-        server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+        server: { isEnabled: isServerEnabled },
+        isUserOnline,
         isUserIdle,
     } = useContext(AppStateContext);
+
     const {
         chartSettings,
         isEnabled: isChartEnabled,
@@ -191,12 +193,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        setCandleData(undefined);
-        setTimeOfEndCandle(undefined);
-        setIsCondensedModeEnabled(true);
-    }, [baseTokenAddress + quoteTokenAddress]);
-
-    useEffect(() => {
         if (isFirstFetch) {
             const controller = new AbortController();
             abortController.abortController = controller;
@@ -206,27 +202,41 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [isFirstFetch]);
 
     useEffect(() => {
-        const isChangeUserConnected =
-            checkUserConnected.current === isUserConnected;
-        isChangeUserConnected &&
-            isChartEnabled &&
-            isUserOnline &&
-            fetchCandles();
-        if (isManualCandleFetchRequested)
-            setIsManualCandleFetchRequested(false);
+        setCandleData(undefined);
+        setTimeOfEndCandle(undefined);
+        setIsCondensedModeEnabled(true);
+    }, [baseTokenAddress + quoteTokenAddress]);
 
-        checkUserConnected.current = isUserConnected;
+    useEffect(() => {
+        (async () => {
+            const isChangeUserConnected =
+                checkUserConnected.current === isUserConnected;
+
+            if (
+                crocEnv &&
+                isUserOnline &&
+                (await crocEnv.context).chain.chainId === chainId &&
+                isChangeUserConnected
+            ) {
+                isChartEnabled && isUserOnline && fetchCandles(true);
+                if (isManualCandleFetchRequested)
+                    setIsManualCandleFetchRequested(false);
+            }
+            checkUserConnected.current = isUserConnected;
+        })();
     }, [
         isManualCandleFetchRequested,
         isChartEnabled,
+        crocEnv,
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
         isPoolInitialized,
-        crocEnv !== undefined,
+        chainId,
     ]);
 
+    // only works when the period changes
     useEffect(() => {
-        isChartEnabled && isUserOnline && fetchCandles();
+        fetchCandles();
     }, [candleScale?.isFetchForTimeframe]);
 
     useEffect(() => {
@@ -245,7 +255,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [
         isChartEnabled,
         isUserOnline,
-
         isUserIdle
             ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
             : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
@@ -282,6 +291,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const fetchCandles = (bypassSpinner = false) => {
         if (
+            isChartEnabled &&
             isServerEnabled &&
             isUserOnline &&
             baseTokenAddress &&
@@ -493,12 +503,23 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        if (!numDurationsNeeded) return;
-        if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
-            minTimeMemo &&
-                fetchCandlesByNumDurations(numDurationsNeeded, minTimeMemo);
-        }
-    }, [numDurationsNeeded, minTimeMemo]);
+        (async () => {
+            if (
+                numDurationsNeeded &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId
+            ) {
+                if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
+                    minTimeMemo &&
+                        fetchCandlesByNumDurations(
+                            numDurationsNeeded,
+                            minTimeMemo,
+                        );
+                }
+            }
+        })();
+    }, [numDurationsNeeded, minTimeMemo, crocEnv, chainId]);
+
     useEffect(() => {
         if (abortController.abortController && isZoomRequestCanceled.value) {
             abortController.abortController.abort();

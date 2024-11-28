@@ -1,15 +1,15 @@
-import styles from './Auctions.module.css';
-import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import Divider from '../../../components/Futa/Divider/FutaDivider';
 import { useContext, useEffect, useState } from 'react';
-import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
+import Divider from '../../../components/Futa/Divider/FutaDivider';
+import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import styles from './Auctions.module.css';
+import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
 
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import Separator from '../../../components/Futa/Separator/Separator';
-import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 interface propsIF {
     hideTicker?: boolean;
     placeholderTicker?: boolean;

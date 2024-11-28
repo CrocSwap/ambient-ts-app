@@ -1,20 +1,22 @@
 import { memo, useContext } from 'react';
 import { AiOutlineShareAlt } from 'react-icons/ai';
+import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import ShareModal from '../../Global/ShareModal/ShareModal';
 import TransactionSettingsModal, {
     TransactionModuleType,
 } from '../../Global/TransactionSettingsModal/TransactionSettingsModal';
-import ShareModal from '../../Global/ShareModal/ShareModal';
-import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
-import { useModal } from '../../Global/Modal/useModal';
-import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { LuSettings, LuSettings2 } from 'react-icons/lu';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
+import { AppStateContext } from '../../../contexts';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useModal } from '../../Global/Modal/useModal';
 import TradeLinks from './TradeLinks';
 import styles from './TradeModuleHeader.module.css';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 interface propsIF {
     slippage: SlippageMethodsIF;
     dexBalSwap?: dexBalanceMethodsIF;
@@ -22,8 +24,6 @@ interface propsIF {
     settingsTitle: TransactionModuleType;
     isSwapPage?: boolean;
 }
-import { LuSettings, LuSettings2 } from 'react-icons/lu';
-import { AppStateContext } from '../../../contexts';
 
 function TradeModuleHeader(props: propsIF) {
     const { slippage, dexBalSwap, bypassConfirm, settingsTitle, isSwapPage } =

@@ -1,27 +1,27 @@
 import { useContext, useRef } from 'react';
-import { AiOutlineDollarCircle, AiOutlineAreaChart } from 'react-icons/ai';
+import { AiOutlineAreaChart, AiOutlineDollarCircle } from 'react-icons/ai';
+import { BsFullscreen } from 'react-icons/bs';
+import { IoSettingsOutline } from 'react-icons/io5';
+import { RiScreenshot2Fill } from 'react-icons/ri';
+import { printDomToImage } from '../../../../../ambient-utils/dataLayer';
+import { useSimulatedIsPoolInitialized } from '../../../../../App/hooks/useSimulatedIsPoolInitialized';
 import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { BrandContext } from '../../../../../contexts/BrandContext';
+import { CandleContext } from '../../../../../contexts/CandleContext';
 import { ChartContext } from '../../../../../contexts/ChartContext';
-import { printDomToImage } from '../../../../../ambient-utils/dataLayer';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
-import { useSimulatedIsPoolInitialized } from '../../../../../App/hooks/useSimulatedIsPoolInitialized';
+import { PoolContext } from '../../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { FlexContainer } from '../../../../../styled/Common';
 import {
     FutaHeaderButton,
     HeaderButtons,
 } from '../../../../../styled/Components/Chart';
-import { PoolContext } from '../../../../../contexts/PoolContext';
-import { CandleContext } from '../../../../../contexts/CandleContext';
-import { BsFullscreen } from 'react-icons/bs';
-import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
-import { IoSettingsOutline } from 'react-icons/io5';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { BrandContext } from '../../../../../contexts/BrandContext';
-import { RiScreenshot2Fill } from 'react-icons/ri';
-// import { IoSettingsOutline } from 'react-icons/io5';
+import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
+// import{ IoSettingsOutline } from 'react-icons/io5';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {

@@ -14,6 +14,7 @@ fullWidth */
     border-right: 4px solid transparent;
     transition: 0.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
     z-index: 999;
+    
 }
 
 .menuItem {
@@ -26,6 +27,7 @@ fullWidth */
     width: 100%;
     display: flex;
     flex-direction: column;
+   
 }
 .iconContainer {
     display: flex;
@@ -35,10 +37,11 @@ fullWidth */
 .iconContainer img {
     margin-right: 0.5em;
 }
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 769px) {
     .menuContainer {
         position: absolute;
         z-index: 999;
+       
     }
 }
 

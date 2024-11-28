@@ -1,16 +1,18 @@
+import { useDisconnect, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import React, {
     Dispatch,
     SetStateAction,
     createContext,
+    useContext,
     useEffect,
     useState,
 } from 'react';
-import { useWeb3ModalAccount, useDisconnect } from '@web3modal/ethers/react';
+import { fetchEnsAddress } from '../ambient-utils/api';
 import { checkBlacklist } from '../ambient-utils/constants';
 import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
-import { fetchEnsAddress } from '../ambient-utils/api';
 import { UserAvatarDataIF } from '../components/Chat/ChatIFs';
 import { getAvatarRest } from '../components/Chat/ChatUtilsHelper';
+import { AppStateContext } from './AppStateContext';
 
 export interface UserDataContextIF {
     isUserConnected: boolean | undefined;
@@ -71,6 +73,9 @@ export const UserDataContextProvider = (props: {
         isConnected: isUserConnected,
         chainId: walletChain,
     } = useWeb3ModalAccount();
+
+    const { isUserOnline } = useContext(AppStateContext);
+
     const { disconnect: disconnectUser } = useDisconnect();
     const isBlacklisted = userAddress ? checkBlacklist(userAddress) : false;
     if (isBlacklisted) disconnectUser();
@@ -101,25 +106,27 @@ export const UserDataContextProvider = (props: {
 
     // check for ENS name account changes
     useEffect(() => {
-        (async () => {
-            if (userAddress) {
-                try {
-                    const ensResult = await fetchEnsAddress(userAddress);
-                    if (ensResult) setEnsName(ensResult);
-                    else setEnsName('');
-                } catch (error) {
-                    setEnsName('');
-                    console.error({ error });
+        if (isUserOnline) {
+            (async () => {
+                if (userAddress) {
+                    try {
+                        const ensResult = await fetchEnsAddress(userAddress);
+                        if (ensResult) setEnsName(ensResult);
+                        else setEnsName('');
+                    } catch (error) {
+                        setEnsName('');
+                        console.error({ error });
+                    }
                 }
-            }
 
-            // fetch user avatar
-            if (userAddress) {
-                const resp = await getAvatarRest(userAddress);
-                setUserAvatarData(resp);
-            }
-        })();
-    }, [userAddress]);
+                // fetch user avatar
+                if (userAddress) {
+                    const resp = await getAvatarRest(userAddress);
+                    setUserAvatarData(resp);
+                }
+            })();
+        }
+    }, [userAddress, isUserOnline]);
 
     const updateUserAvatarData = (
         walletID: string,

@@ -1,14 +1,14 @@
-import { useState, useRef, ReactNode, useContext, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { FaAngleDown } from 'react-icons/fa';
-import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
-import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { AppStateContext } from '../../../contexts/AppStateContext';
 import useKeyPress from '../../../App/hooks/useKeyPress';
 import { brand } from '../../../ambient-utils/constants';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
 import Modal from '../Modal/Modal';
 import styles from './DropdownMenu2.module.css';
-import { motion } from 'framer-motion';
 // Interface for React functional components
 interface propsIF {
     title: string;

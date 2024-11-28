@@ -1,16 +1,16 @@
-import ambientLogo from '../../assets/images/icons/ambient_icon.png';
-import walletIcon from '../../assets/images/icons/wallet.svg';
-import walletEnabledIcon from '../../assets/images/icons/wallet-enabled.svg';
 import { useContext } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { getFormattedNumber } from '../../ambient-utils/dataLayer';
+import ambientLogo from '../../assets/images/icons/ambient_icon.png';
+import walletEnabledIcon from '../../assets/images/icons/wallet-enabled.svg';
+import walletIcon from '../../assets/images/icons/wallet.svg';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { FlexContainer } from '../../styled/Common';
+import { MaxButton } from '../../styled/Components/Portfolio';
 import IconWithTooltip from '../Global/IconWithTooltip/IconWithTooltip';
 import ExchangeBalanceExplanation from '../Global/Informational/ExchangeBalanceExplanation';
 import WalletBalanceExplanation from '../Global/Informational/WalletBalanceExplanation';
 import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
-import { FlexContainer } from '../../styled/Common';
-import { MaxButton } from '../../styled/Components/Portfolio';
-import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 interface PropsIF {
     usdValueForDom: string;
     showWallet: boolean | undefined;

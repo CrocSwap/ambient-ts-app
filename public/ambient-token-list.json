@@ -83,6 +83,14 @@
             "symbol": "SYN"
         },
         {
+            "name": "tBTC v2",
+            "address": "0x18084fbA666a33d37592fA2633fD49a74DD93a88",
+            "chainId": 1,
+            "decimals": 18,
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/26133.png",
+            "symbol": "tBTC"
+        },
+        {
             "name": "Rocket Pool",
             "address": "0xd33526068d116ce69f19a9ee46f0bd304f21a51f",
             "chainId": 1,
@@ -618,6 +626,30 @@
             "symbol": "NEV",
             "decimals": 6,
             "chainId": 98864,
+            "logoURI": ""
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 1924,
+            "logoURI": ""
+        },
+        {
+            "name": "Ambient USDC",
+            "address": "0xfEfD8bCB0034A2B0E3CC22e2f5A59279FAe67128",
+            "symbol": "USDC",
+            "decimals": 6,
+            "chainId": 1924,
+            "logoURI": ""
+        },
+        {
+            "name": "Ambient USDT",
+            "address": "0x60bBA138A74C5e7326885De5090700626950d509",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 1924,
             "logoURI": ""
         }
     ]

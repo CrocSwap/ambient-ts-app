@@ -46,6 +46,9 @@ import {
     scrollWstETH,
     scrollsUSDe,
     sepoliaUSDC,
+    sepoliaWBTC,
+    swellSepoliaUSDC,
+    swellSepoliaUSDT,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -127,6 +130,7 @@ export const USDC_TOKENS = [
     scrollUSDC.address,
     plumeSepoliaUSD.address,
     plumeSepoliaNEV.address,
+    swellSepoliaUSDC.address,
 ].map((x) => x.toLowerCase());
 
 // No need to specify chain ID because token address is unique even across chains
@@ -141,6 +145,7 @@ export const STABLE_USD_TOKENS = [
     scrollUSDE.address,
     scrollsUSDe.address,
     plumeSepoliaNEV.address,
+    swellSepoliaUSDT.address,
 ]
     .concat(USDC_TOKENS)
     .map((x) => x.toLowerCase());
@@ -149,9 +154,11 @@ export const BLAST_REWARD_TOKENS = [blastBLAST.address].map((x) =>
     x.toLowerCase(),
 );
 
-export const WBTC_TOKENS = [mainnetWBTC.address, scrollWBTC.address].map((x) =>
-    x.toLowerCase(),
-);
+export const WBTC_TOKENS = [
+    mainnetWBTC.address,
+    scrollWBTC.address,
+    sepoliaWBTC.address,
+].map((x) => x.toLowerCase());
 
 export const STAKED_ETH_TOKENS = [
     mainnetWstETH.address,

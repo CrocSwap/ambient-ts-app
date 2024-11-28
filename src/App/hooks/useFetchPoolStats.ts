@@ -1,26 +1,26 @@
-import { useEffect, useState, useContext, useMemo } from 'react';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 import {
-    getUnicodeCharacter,
-    getMoneynessRank,
-    getFormattedNumber,
     expandPoolStats,
+    getFormattedNumber,
+    getMoneynessRank,
+    getUnicodeCharacter,
     isETHorStakedEthToken,
 } from '../../ambient-utils/dataLayer';
-// import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
+// import{ estimateFrom24HrRangeApr } from '../../ambient-utils/api';
 import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import {
     PoolIF,
     PoolStatIF,
     SinglePoolDataIF,
 } from '../../ambient-utils/types';
-// import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+// import{ CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
@@ -257,15 +257,19 @@ const useFetchPoolStats = (
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (crocEnv && poolPriceDisplayNum) {
-            const fetchTokenPrice = async () => {
-                if ((await crocEnv.context).chain.chainId !== chainId) return;
+        (async () => {
+            if (
+                crocEnv &&
+                poolPriceDisplayNum &&
+                (await crocEnv.context).chain.chainId === chainId
+            ) {
                 const baseTokenPrice =
                     (await cachedFetchTokenPrice(baseAddr, chainId, crocEnv))
                         ?.usdPrice || 0.0;
                 const quoteTokenPrice =
                     (await cachedFetchTokenPrice(quoteAddr, chainId, crocEnv))
                         ?.usdPrice || 0.0;
+
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
                 } else if (
@@ -296,10 +300,8 @@ const useFetchPoolStats = (
                 } else {
                     setQuotePrice(undefined);
                 }
-            };
-
-            fetchTokenPrice();
-        }
+            }
+        })();
     }, [
         baseAddr,
         quoteAddr,

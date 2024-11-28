@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo, useContext } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     getChainExplorer,
-    getUnicodeCharacter,
-    trimString,
-    getMoneynessRank,
     getElapsedTime,
     getFormattedNumber,
+    getMoneynessRank,
+    getUnicodeCharacter,
+    trimString,
     uriToHttp,
 } from '../../ambient-utils/dataLayer';
 import { LimitOrderIF } from '../../ambient-utils/types';
@@ -18,13 +18,13 @@ import {
 } from '@crocswap-libs/sdk';
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import moment from 'moment';
 import { getAddress } from 'ethers';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { useFetchBatch } from '../../App/hooks/useFetchBatch';
-import { UserDataContext } from '../../contexts/UserDataContext';
+import moment from 'moment';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,

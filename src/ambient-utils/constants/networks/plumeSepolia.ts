@@ -1,14 +1,14 @@
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Provider } from 'ethers';
+import { NetworkIF } from '../../types/NetworkIF';
 import {
     plumeSepoliaETH,
-    plumeSepoliaUSD,
     plumeSepoliaNEV,
+    plumeSepoliaUSD,
 } from '../defaultTokens';
-import { NetworkIF } from '../../types/NetworkIF';
-import { TopPool } from './TopPool';
-import { Provider } from 'ethers';
 import { GCGO_TESTNET_URL } from '../gcgo';
-import { bigIntToFloat } from '@crocswap-libs/sdk';
+import { TopPool } from './TopPool';
 
 export const PLUME_SEPOLIA_RPC_URL =
     import.meta.env.VITE_PLUME_SEPOLIA_RPC_URL !== undefined
