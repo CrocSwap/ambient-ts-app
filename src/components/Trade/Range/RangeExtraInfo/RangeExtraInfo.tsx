@@ -10,6 +10,7 @@ interface propsIF {
     rangeGasPriceinDollars: string | undefined;
     isTokenABase: boolean;
     showExtraInfoDropdown: boolean;
+    estRangeApr: number;
 }
 
 function RangeExtraInfo(props: propsIF) {
@@ -18,6 +19,7 @@ function RangeExtraInfo(props: propsIF) {
         slippageTolerance,
         liquidityFee,
         showExtraInfoDropdown,
+        estRangeApr,
     } = props;
 
     const { isDenomBase, baseToken, quoteToken } = useContext(TradeDataContext);
@@ -27,6 +29,15 @@ function RangeExtraInfo(props: propsIF) {
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
+
+    const estRangeAprString = estRangeApr
+        ? getFormattedNumber({
+              value: estRangeApr,
+              isPercentage: true,
+              minFracDigits: 1,
+              maxFracDigits: 1,
+          }) + ' %'
+        : '…';
 
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
@@ -64,6 +75,15 @@ function RangeExtraInfo(props: propsIF) {
                 isDenomBase ? quoteTokenSymbol : baseTokenSymbol
             } liquidity providers.`,
             data: liquidityProviderFeeString,
+        },
+        {
+            title: 'Estimated APR',
+            tooltipTitle: `Estimated APR is based on selected range width, historical volume, fee rate, and pool
+                liquidity. This value is only a historical estimate, and does not account
+                for divergence loss from large price swings. 
+                Very concentrated or unbalanced ranges are more likely to go out of range and not earn fees while out of range.
+                Returns not guaranteed.`,
+            data: estRangeAprString,
         },
     ];
 

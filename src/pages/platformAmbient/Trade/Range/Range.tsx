@@ -38,6 +38,10 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { rangeTutorialSteps } from '../../../../utils/tutorial/Range';
 
 import {
+    estimateBalancedRangeAprFromPoolApr,
+    estimateUnbalancedRangeAprFromPoolApr,
+} from '../../../../ambient-utils/api';
+import {
     GAS_DROPS_ESTIMATE_POOL,
     IS_LOCAL_ENV,
     NUM_GWEI_IN_ETH,
@@ -68,7 +72,11 @@ function Range() {
         isActiveNetworkScroll,
         isActiveNetworkPlume,
     } = useContext(ChainDataContext);
-    const { poolPriceDisplay, dailyVol } = useContext(PoolContext);
+    const {
+        poolPriceDisplay,
+        dailyVol,
+        poolData: { poolAmbientAprEstimate },
+    } = useContext(PoolContext);
     const {
         advancedHighTick,
         advancedLowTick,
@@ -330,7 +338,7 @@ function Range() {
     const depositSkew = useMemo(
         () =>
             concDepositSkew(
-                poolPriceNonDisplay ?? 0,
+                poolPriceNonDisplay,
                 rangeLowBoundNonDisplayPrice,
                 rangeHighBoundNonDisplayPrice,
             ),
@@ -1020,6 +1028,24 @@ function Range() {
         needConfirmTokenB && tokens.acknowledge(tokenB);
     };
 
+    const estRangeApr = poolAmbientAprEstimate
+        ? !advancedMode && rangeWidthPercentage
+            ? estimateBalancedRangeAprFromPoolApr(
+                  poolAmbientAprEstimate,
+                  rangeWidthPercentage / 100,
+              )
+            : poolPriceNonDisplay &&
+                rangeLowBoundNonDisplayPrice &&
+                rangeHighBoundNonDisplayPrice
+              ? estimateUnbalancedRangeAprFromPoolApr(
+                    poolAmbientAprEstimate,
+                    poolPriceNonDisplay,
+                    rangeLowBoundNonDisplayPrice,
+                    rangeHighBoundNonDisplayPrice,
+                )
+              : 0
+        : 0;
+
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
@@ -1074,6 +1100,7 @@ function Range() {
         showExtraInfoDropdown: showExtraInfoDropdown,
         isBalancedMode: !advancedMode,
         // aprPercentage: aprPercentage,
+        estRangeApr: estRangeApr,
         daysInRange: daysInRange,
     };
 

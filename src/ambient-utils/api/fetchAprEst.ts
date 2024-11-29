@@ -34,6 +34,32 @@ export async function estimateFrom24HrAmbientApr(
     return periodGrowth / timeYears;
 }
 
+export function estimateBalancedRangeAprFromPoolApr(
+    poolApr: number,
+    rangePercent: number,
+): number {
+    const concFactor = capitalConcFactor(
+        1.0,
+        1.0 - rangePercent,
+        1.0 + rangePercent,
+    );
+    return rangePercent < 1 ? poolApr * concFactor : poolApr;
+}
+
+export function estimateUnbalancedRangeAprFromPoolApr(
+    poolApr: number,
+    currentPoolPriceNonDisplayNum: number,
+    lowPriceNonDisplayNum: number,
+    highPriceNonDisplayNum: number,
+): number {
+    const concFactor = capitalConcFactor(
+        currentPoolPriceNonDisplayNum,
+        lowPriceNonDisplayNum,
+        highPriceNonDisplayNum,
+    );
+    return poolApr * concFactor;
+}
+
 export async function estimateFrom24HrRangeApr(
     rangePercent: number,
     base: string,
