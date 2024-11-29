@@ -1,4 +1,5 @@
 import { memo, useContext } from 'react';
+import { estimateRangeAprFromPoolApr } from '../../../../ambient-utils/api';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
@@ -10,6 +11,8 @@ interface propsIF {
     rangeGasPriceinDollars: string | undefined;
     isTokenABase: boolean;
     showExtraInfoDropdown: boolean;
+    poolApr: string | undefined;
+    rangeWidthPercentage: number;
 }
 
 function RangeExtraInfo(props: propsIF) {
@@ -18,6 +21,8 @@ function RangeExtraInfo(props: propsIF) {
         slippageTolerance,
         liquidityFee,
         showExtraInfoDropdown,
+        poolApr,
+        rangeWidthPercentage,
     } = props;
 
     const { isDenomBase, baseToken, quoteToken } = useContext(TradeDataContext);
@@ -27,6 +32,20 @@ function RangeExtraInfo(props: propsIF) {
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
+
+    const estRangeApr =
+        poolApr && rangeWidthPercentage
+            ? estimateRangeAprFromPoolApr(
+                  rangeWidthPercentage / 100,
+                  parseFloat(poolApr),
+              )
+            : 0;
+
+    const estRangeAprString = estRangeApr
+        ? getFormattedNumber({
+              value: estRangeApr,
+          }) + ' %'
+        : '…';
 
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
@@ -64,6 +83,14 @@ function RangeExtraInfo(props: propsIF) {
                 isDenomBase ? quoteTokenSymbol : baseTokenSymbol
             } liquidity providers.`,
             data: liquidityProviderFeeString,
+        },
+        {
+            title: 'Estimated APR',
+            tooltipTitle: `Estimated APR is based on selected range width, historical volume, fee rate, and pool
+                liquidity. This value is only a historical estimate, and does not account
+                for divergence loss from large price swings. Returns not
+                guaranteed.`,
+            data: estRangeAprString,
         },
     ];
 

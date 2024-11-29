@@ -34,6 +34,18 @@ export async function estimateFrom24HrAmbientApr(
     return periodGrowth / timeYears;
 }
 
+export function estimateRangeAprFromPoolApr(
+    rangePercent: number,
+    poolApr: number,
+): number {
+    const concFactor = capitalConcFactor(
+        1.0,
+        1.0 - rangePercent,
+        1.0 + rangePercent,
+    );
+    return poolApr * concFactor;
+}
+
 export async function estimateFrom24HrRangeApr(
     rangePercent: number,
     base: string,

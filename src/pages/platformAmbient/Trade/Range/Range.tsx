@@ -68,7 +68,11 @@ function Range() {
         isActiveNetworkScroll,
         isActiveNetworkPlume,
     } = useContext(ChainDataContext);
-    const { poolPriceDisplay, dailyVol } = useContext(PoolContext);
+    const {
+        poolPriceDisplay,
+        dailyVol,
+        poolData: { apr },
+    } = useContext(PoolContext);
     const {
         advancedHighTick,
         advancedLowTick,
@@ -1074,6 +1078,8 @@ function Range() {
         showExtraInfoDropdown: showExtraInfoDropdown,
         isBalancedMode: !advancedMode,
         // aprPercentage: aprPercentage,
+        poolApr: apr,
+        rangeWidthPercentage: rangeWidthPercentage,
         daysInRange: daysInRange,
     };
 
