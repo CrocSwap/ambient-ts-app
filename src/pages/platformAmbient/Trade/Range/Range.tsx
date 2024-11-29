@@ -75,7 +75,7 @@ function Range() {
     const {
         poolPriceDisplay,
         dailyVol,
-        poolData: { apr: poolApr },
+        poolData: { poolAmbientAprEstimate },
     } = useContext(PoolContext);
     const {
         advancedHighTick,
@@ -1028,17 +1028,17 @@ function Range() {
         needConfirmTokenB && tokens.acknowledge(tokenB);
     };
 
-    const estRangeApr = poolApr
+    const estRangeApr = poolAmbientAprEstimate
         ? !advancedMode && rangeWidthPercentage
             ? estimateBalancedRangeAprFromPoolApr(
-                  parseFloat(poolApr),
+                  poolAmbientAprEstimate,
                   rangeWidthPercentage / 100,
               )
             : poolPriceNonDisplay &&
                 rangeLowBoundNonDisplayPrice &&
                 rangeHighBoundNonDisplayPrice
               ? estimateUnbalancedRangeAprFromPoolApr(
-                    parseFloat(poolApr),
+                    poolAmbientAprEstimate,
                     poolPriceNonDisplay,
                     rangeLowBoundNonDisplayPrice,
                     rangeHighBoundNonDisplayPrice,

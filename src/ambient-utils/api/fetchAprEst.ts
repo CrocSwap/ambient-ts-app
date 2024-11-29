@@ -43,7 +43,7 @@ export function estimateBalancedRangeAprFromPoolApr(
         1.0 - rangePercent,
         1.0 + rangePercent,
     );
-    return poolApr * concFactor;
+    return rangePercent < 1 ? poolApr * concFactor : poolApr;
 }
 
 export function estimateUnbalancedRangeAprFromPoolApr(
