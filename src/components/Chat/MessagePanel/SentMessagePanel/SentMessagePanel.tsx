@@ -305,6 +305,7 @@ function SentMessagePanel(props: SentMessageProps) {
         if (!hasFound) {
             setHasUserReacted(false);
         }
+        console.log('messages in sentmessGEPANEL:', props.message);
     }, [props.message]);
 
     useEffect(() => {
@@ -821,7 +822,8 @@ function SentMessagePanel(props: SentMessageProps) {
                                         {/* {myJazzicon} */}
                                         {!BASIC_CHAT_MODE &&
                                             props.message &&
-                                            props.message.chainId && (
+                                            props.message.chainId &&
+                                            props.room === 'Admins' && (
                                                 <img
                                                     className={`${styles.chain_logo} ${isChainNameTestnet(lookupChain(props.message.chainId).displayName) ? styles.testnet : ' '} `}
                                                     src={
@@ -846,6 +848,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                                     }
                                                 ></img>
                                             )}
+
                                         {getAvatarForChat(
                                             props.message.walletID,
                                             props.userMap?.get(

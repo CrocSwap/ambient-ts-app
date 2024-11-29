@@ -35,6 +35,7 @@ import {
 import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
 import { emojiMeta } from '../../EmojiMeta';
 import { getSingleEmoji } from '../../ChatRenderUtils';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface MessageInputProps {
     currentUser: string;
@@ -100,6 +101,7 @@ export default function MessageInput(props: MessageInputProps) {
     const roomId = props.room;
 
     const { showEmojiPicker, setShowEmojiPicker } = props;
+    const showMobileVersion = useMediaQuery('(max-width: 800px)');
 
     const isRoomAdmins = roomId === 'Admins';
 
@@ -879,14 +881,18 @@ export default function MessageInput(props: MessageInputProps) {
                                     style={{ cursor: 'pointer' }}
                                 />
                             </span>
-                            <span
-                                id='chat-info-button'
-                                className={styles.emoji_close_button}
-                                onClick={() => setIsInfoPressed(!isInfoPressed)}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <RiInformationLine title='Info' />
-                            </span>
+                            {!showMobileVersion && (
+                                <span
+                                    id='chat-info-button'
+                                    className={styles.emoji_close_button}
+                                    onClick={() =>
+                                        setIsInfoPressed(!isInfoPressed)
+                                    }
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <RiInformationLine title='Info' />
+                                </span>
+                            )}
                             {isInfoPressed ? (
                                 <ul>
                                     <h5>Keyboard Shortcuts</h5>

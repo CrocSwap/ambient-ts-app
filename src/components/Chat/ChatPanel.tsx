@@ -377,6 +377,7 @@ function ChatPanel(props: propsIF) {
         if (room == undefined) {
             return;
         }
+        console.log('room in chatpanel:', room);
 
         if (notConnectedUserInterval) {
             clearInterval(notConnectedUserInterval);
