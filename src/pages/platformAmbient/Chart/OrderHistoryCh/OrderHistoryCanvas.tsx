@@ -508,6 +508,159 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
                                     limitCircleSeries.find((serie: any) => {
                                         if (serie.index === index) {
+                                            if (
+                                                hoveredOrderHistory &&
+                                                isHoveredOrderHistory &&
+                                                hoveredOrderHistory.type ===
+                                                    'limitCircle' &&
+                                                hoveredOrderHistory.order
+                                                    .limitOrderId ===
+                                                    limitOrder.limitOrderId
+                                            ) {
+                                                const lineData: lineData[] = [];
+
+                                                lineData.push({
+                                                    x:
+                                                        limitOrder.timeFirstMint *
+                                                        1000,
+                                                    y: denomInBase
+                                                        ? limitOrder.invLimitPriceDecimalCorrected
+                                                        : limitOrder.limitPriceDecimalCorrected,
+                                                    denomInBase: denomInBase,
+                                                });
+                                                lineData.push({
+                                                    x:
+                                                        limitOrder.crossTime *
+                                                        1000,
+                                                    y: denomInBase
+                                                        ? limitOrder.invLimitPriceDecimalCorrected
+                                                        : limitOrder.limitPriceDecimalCorrected,
+                                                    denomInBase: denomInBase,
+                                                });
+
+                                                lineSeries.decorate(
+                                                    (
+                                                        context: CanvasRenderingContext2D,
+                                                    ) => {
+                                                        context.setLineDash([
+                                                            4, 2,
+                                                        ]);
+
+                                                        const colorPalette =
+                                                            calculateCircleColor(
+                                                                context,
+                                                                '--accent1',
+                                                                [
+                                                                    'futa',
+                                                                ].includes(
+                                                                    platformName,
+                                                                )
+                                                                    ? '--negative'
+                                                                    : '--accent5',
+                                                                true,
+                                                            );
+
+                                                        const isBuy =
+                                                            (denomInBase &&
+                                                                !limitOrder.isBid) ||
+                                                            (!denomInBase &&
+                                                                limitOrder.isBid);
+
+                                                        context.strokeStyle =
+                                                            isBuy
+                                                                ? colorPalette.circleBuyStrokeColor
+                                                                : colorPalette.circleStrokeColor;
+
+                                                        context.lineWidth = 1.5;
+                                                    },
+                                                );
+
+                                                lineSeries(lineData);
+
+                                                if (ctx)
+                                                    ctx.setLineDash([0, 0]);
+
+                                                serie.serie.decorate(
+                                                    (
+                                                        context: CanvasRenderingContext2D,
+                                                    ) => {
+                                                        const colorPalette =
+                                                            calculateCircleColor(
+                                                                context,
+                                                                '--accent1',
+                                                                [
+                                                                    'futa',
+                                                                ].includes(
+                                                                    platformName,
+                                                                )
+                                                                    ? '--negative'
+                                                                    : '--accent5',
+                                                                true,
+                                                            );
+
+                                                        const isBuy =
+                                                            (denomInBase &&
+                                                                !limitOrder.isBid) ||
+                                                            (!denomInBase &&
+                                                                limitOrder.isBid);
+
+                                                        context.strokeStyle =
+                                                            isBuy
+                                                                ? colorPalette.circleBuyStrokeColor
+                                                                : colorPalette.circleStrokeColor;
+
+                                                        context.fillStyle =
+                                                            isBuy
+                                                                ? colorPalette.buyFill
+                                                                : colorPalette.sellFill;
+
+                                                        context.lineWidth = 1;
+                                                    },
+                                                );
+
+                                                if (ctx) ctx.restore();
+                                            } else {
+                                                serie.serie.decorate(
+                                                    (
+                                                        context: CanvasRenderingContext2D,
+                                                    ) => {
+                                                        const colorPalette =
+                                                            calculateCircleColor(
+                                                                context,
+                                                                '--accent1',
+                                                                [
+                                                                    'futa',
+                                                                ].includes(
+                                                                    platformName,
+                                                                )
+                                                                    ? '--negative'
+                                                                    : '--accent5',
+                                                                false,
+                                                            );
+
+                                                        const isBuy =
+                                                            (denomInBase &&
+                                                                !limitOrder.isBid) ||
+                                                            (!denomInBase &&
+                                                                limitOrder.isBid);
+
+                                                        context.strokeStyle =
+                                                            isBuy
+                                                                ? colorPalette.circleBuyStrokeColor
+                                                                : colorPalette.circleStrokeColor;
+
+                                                        context.fillStyle =
+                                                            isBuy
+                                                                ? colorPalette.buyFill
+                                                                : colorPalette.sellFill;
+
+                                                        context.lineWidth = 1;
+                                                    },
+                                                );
+
+                                                if (ctx) ctx.restore();
+                                            }
+
                                             serie.serie(circleData);
                                         }
                                     });

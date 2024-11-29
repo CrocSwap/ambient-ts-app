@@ -301,8 +301,8 @@ export default function Chart(props: propsIF) {
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
 
-    // userLimitOrdersByPool,
-    const { userPositionsByPool } = useContext(GraphDataContext);
+    const { userPositionsByPool, userLimitOrdersByPool } =
+        useContext(GraphDataContext);
 
     const [isChartZoom, setIsChartZoom] = useState(false);
     const [cursorStyleTrigger, setCursorStyleTrigger] = useState(false);
@@ -5278,9 +5278,34 @@ export default function Chart(props: propsIF) {
                 });
             }
 
-            // userLimitOrdersByPool.limitOrders.forEach((element) => {
-            //     console.log(element);
-            // });
+            if (userLimitOrdersByPool && showLiquidity) {
+                userLimitOrdersByPool.limitOrders.forEach((limitOrder) => {
+                    if (limitOrder.claimableLiq > 0) {
+                        const swapOrderData = [
+                            {
+                                x: limitOrder.crossTime * 1000,
+                                y: denomInBase
+                                    ? limitOrder.invLimitPriceDecimalCorrected
+                                    : limitOrder.limitPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+                        if (
+                            checkSwapLoation(
+                                swapOrderData,
+                                mouseX,
+                                mouseY,
+                                limitOrder.totalValueUSD,
+                            )
+                        ) {
+                            resElement = {
+                                type: 'limitCircle',
+                                order: limitOrder,
+                            };
+                        }
+                    }
+                });
+            }
 
             if (userTransactionData && showSwap) {
                 userTransactionData.forEach((element) => {
@@ -6049,6 +6074,10 @@ export default function Chart(props: propsIF) {
                 }
 
                 // if(hoveredOrderHistory.type === 'historical') {
+                //     console.log('hata veriyorum enyayiym ben kod')
+                // }
+
+                // if(hoveredOrderHistory.type === 'limitCircle') {
                 //     console.log('hata veriyorum enyayiym ben kod')
                 // }
             }
