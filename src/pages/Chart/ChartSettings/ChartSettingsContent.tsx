@@ -1,12 +1,31 @@
+import Divider from '@material-ui/core/Divider/Divider';
 import * as d3 from 'd3';
+import { MouseEvent, useContext, useEffect, useMemo, useState } from 'react';
 import { SketchPicker } from 'react-color';
+import Spinner from '../../../components/Global/Spinner/Spinner';
+import { BrandContext } from '../../../contexts/BrandContext';
+import {
+    ChartContext,
+    ChartThemeIF,
+    LocalChartSettingsIF,
+} from '../../../contexts/ChartContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../../platformAmbient/Chart/ChartUtils/chartConstants';
+import {
+    chartItemStates,
+    getCssVariable,
+} from '../../platformAmbient/Chart/ChartUtils/chartUtils';
 import { ColorPickerTab } from '../../platformAmbient/Chart/Draw/FloatingToolbar/FloatingToolbarCss';
 import {
-    LabelSettingsArrow,
-    DropDownListContainer,
     DropDownList,
+    DropDownListContainer,
+    LabelSettingsArrow,
     ListItem,
 } from '../../platformAmbient/Chart/Draw/FloatingToolbar/FloatingToolbarSettingsCss';
+import CurveDepth from '../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/CurveDepth';
+import { ColorObjIF } from './ChartSettings';
 import {
     ActionButtonContainer,
     CheckList,
@@ -30,25 +49,6 @@ import {
     StyledCheckbox,
     StyledSelectbox,
 } from './ChartSettingsCss';
-import {
-    ChartContext,
-    ChartThemeIF,
-    LocalChartSettingsIF,
-} from '../../../contexts/ChartContext';
-import {
-    chartItemStates,
-    getCssVariable,
-} from '../../platformAmbient/Chart/ChartUtils/chartUtils';
-import { MouseEvent, useContext, useEffect, useMemo, useState } from 'react';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { ColorObjIF } from './ChartSettings';
-import { BrandContext } from '../../../contexts/BrandContext';
-import Spinner from '../../../components/Global/Spinner/Spinner';
-import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../../platformAmbient/Chart/ChartUtils/chartConstants';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import Divider from '@material-ui/core/Divider/Divider';
-import CurveDepth from '../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/CurveDepth';
 
 interface ContextMenuContentIF {
     chartThemeColors: ChartThemeIF;

@@ -1,18 +1,18 @@
-import { FiCopy } from 'react-icons/fi';
 import { ChangeEvent, useContext, useState } from 'react';
-import { FaDiscord, FaTelegram, FaFacebook } from 'react-icons/fa';
 import { AiFillTwitterCircle } from 'react-icons/ai';
+import { FaDiscord, FaFacebook, FaTelegram } from 'react-icons/fa';
+import { FiCopy } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
-import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { AppStateContext } from '../../../contexts/AppStateContext';
 import { DISCORD_LINK } from '../../../ambient-utils/constants';
-import Modal from '../Modal/Modal';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
     IconButton,
-    ShareUrl,
     ShareItem,
+    ShareUrl,
 } from '../../../styled/Components/TradeModules';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import Modal from '../Modal/Modal';
 
 interface SocialLinkPropsIF {
     // eslint-disable-next-line

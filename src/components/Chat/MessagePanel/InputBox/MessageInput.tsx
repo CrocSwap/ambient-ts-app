@@ -14,9 +14,14 @@ import PositionBox from '../PositionBox/PositionBox';
 import styles from './MessageInput.module.css';
 
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
-// import { AppStateContext } from '../../../../contexts/AppStateContext';
+// import{ AppStateContext } from '../../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import CircularProgressBarForChat from '../../../Global/OpenOrderStatus/CircularProgressBarForChat';
+import {
+    ALLOW_MENTIONS,
+    CUSTOM_EMOJI_BLACKLIST_CHARACTERS,
+} from '../../ChatConstants/ChatConstants';
+import { getSingleEmoji } from '../../ChatRenderUtils';
 import {
     filterMessage,
     formatURL,
@@ -25,6 +30,8 @@ import {
     isLinkInCrocodileLabsLinks,
     isLinkInCrocodileLabsLinksForInput,
 } from '../../ChatUtils';
+import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
+import { emojiMeta } from '../../EmojiMeta';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';

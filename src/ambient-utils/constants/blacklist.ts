@@ -192,6 +192,16 @@ export const hiddenTokens = [
         address: '0x2413b8C79Ce60045882559f63d308aE3DFE0903d',
         chainId: 98864,
     },
+    {
+        // Ambient USDCv1 on Swell Testnet
+        address: '0x4d65fb724ced0cfc6abfd03231c9cdc2c36a587b',
+        chainId: 1924,
+    },
+    {
+        // Ambient USDCv2 on Swell Testnet
+        address: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
+        chainId: 1924,
+    },
 ];
 
 const embargoedTokens = [

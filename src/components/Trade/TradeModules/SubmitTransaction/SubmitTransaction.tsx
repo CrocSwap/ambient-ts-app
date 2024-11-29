@@ -1,27 +1,27 @@
 import { useContext, useEffect, useState } from 'react';
-import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
-import {
-    CircleLoaderFailed,
-    CircleLoaderCompleted,
-} from '../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import Spinner from '../../../Global/Spinner/Spinner';
-import TransactionDenied from './TransactionDenied/TransactionDenied';
-import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
-import TransactionException from './TransactionException/TransactionException';
-import TransactionFailed from './TransactionFailed/TransactionFailed';
-import TransactionSubmitted from './TransactionSubmitted/TransactionSubmitted';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { FlexContainer } from '../../../../styled/Common';
 import {
     SubmitTransactionButton,
     SubmitTransactionExtraButton,
 } from '../../../../styled/Components/TradeModules';
-import { FlexContainer } from '../../../../styled/Common';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import {
     isTransactionDeniedError,
     parseErrorMessage,
 } from '../../../../utils/TransactionError';
+import {
+    CircleLoaderCompleted,
+    CircleLoaderFailed,
+} from '../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
+import Spinner from '../../../Global/Spinner/Spinner';
+import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
+import TransactionDenied from './TransactionDenied/TransactionDenied';
+import TransactionException from './TransactionException/TransactionException';
+import TransactionFailed from './TransactionFailed/TransactionFailed';
+import TransactionSubmitted from './TransactionSubmitted/TransactionSubmitted';
 
 interface propsIF {
     type:

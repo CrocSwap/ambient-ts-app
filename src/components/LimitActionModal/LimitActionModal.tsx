@@ -1,35 +1,35 @@
-import { useState, useEffect, useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import { LimitOrderIF } from '../../ambient-utils/types';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
-import { LimitOrderIF } from '../../ambient-utils/types';
 
 import {
-    TransactionError,
-    isTransactionReplacedError,
-    isTransactionFailedError,
-} from '../../utils/TransactionError';
-import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
-import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
-import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
-import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { getFormattedNumber } from '../../ambient-utils/dataLayer';
-import ModalHeader from '../Global/ModalHeader/ModalHeader';
-import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
-import Modal from '../Global/Modal/Modal';
-import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
-import Button from '../Form/Button';
-import styles from './LimitActionModal.module.css';
-import { UserDataContext } from '../../contexts/UserDataContext';
-import {
+    GAS_DROPS_ESTIMATE_LIMIT_CLAIM,
     GAS_DROPS_ESTIMATE_LIMIT_REMOVAL,
     NUM_GWEI_IN_WEI,
-    GAS_DROPS_ESTIMATE_LIMIT_CLAIM,
 } from '../../ambient-utils/constants/';
-import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
-import SmolRefuelLink from '../Global/SmolRefuelLink/SmolRefuelLink';
 import { AppStateContext } from '../../contexts';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import {
+    TransactionError,
+    isTransactionFailedError,
+    isTransactionReplacedError,
+} from '../../utils/TransactionError';
+import Button from '../Form/Button';
+import Modal from '../Global/Modal/Modal';
+import ModalHeader from '../Global/ModalHeader/ModalHeader';
+import SmolRefuelLink from '../Global/SmolRefuelLink/SmolRefuelLink';
+import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
+import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
+import styles from './LimitActionModal.module.css';
+import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
+import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
 
 interface propsIF {
     limitOrder: LimitOrderIF;

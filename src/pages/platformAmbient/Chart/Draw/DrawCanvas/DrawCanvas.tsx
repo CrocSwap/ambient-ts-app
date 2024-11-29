@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../../ambient-utils/dataLayer';
+import { CandleDataIF } from '../../../../../ambient-utils/types';
+import { AppStateContext } from '../../../../../contexts';
+import { CandleContext } from '../../../../../contexts/CandleContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { formatDollarAmountAxis } from '../../../../../utils/numbers';
 import {
     CandleDataChart,
     bandLineData,
@@ -19,28 +28,19 @@ import {
     selectedDrawnData,
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../../../ambient-utils/dataLayer';
 import { createCircle } from '../../ChartUtils/circle';
-import {
-    createAnnotationLineSeries,
-    createLinearLineSeries,
-} from './LinearLineSeries';
+import { fibDefaultLevels } from '../../ChartUtils/drawConstants';
+import useDollarPrice from '../../ChartUtils/getDollarPrice';
 import {
     createArrowPointsOfDPRangeLine,
     createBandArea,
     createPointsOfBandLine,
     createPointsOfDPRangeLine,
 } from './BandArea';
-import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
-import { fibDefaultLevels } from '../../ChartUtils/drawConstants';
-import { CandleDataIF } from '../../../../../ambient-utils/types';
-import { formatDollarAmountAxis } from '../../../../../utils/numbers';
-import useDollarPrice from '../../ChartUtils/getDollarPrice';
-import { CandleContext } from '../../../../../contexts/CandleContext';
-import { AppStateContext } from '../../../../../contexts';
+import {
+    createAnnotationLineSeries,
+    createLinearLineSeries,
+} from './LinearLineSeries';
 
 interface DrawCanvasProps {
     scaleData: scaleData;

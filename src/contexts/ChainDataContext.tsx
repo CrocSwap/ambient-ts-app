@@ -1,49 +1,49 @@
-import React, {
+import moment from 'moment';
+import {
     createContext,
-    SetStateAction,
     Dispatch,
+    ReactNode,
+    SetStateAction,
+    useContext,
     useEffect,
     useState,
-    useContext,
-    ReactNode,
 } from 'react';
 import useWebSocket from 'react-use-websocket';
 import {
+    expandTokenBalances,
+    fetchBlastUserXpData,
+    fetchBlockNumber,
+    fetchUserXpData,
+    IDexTokenBalances,
+    RpcNodeStatus,
+} from '../ambient-utils/api';
+import { fetchNFT } from '../ambient-utils/api/fetchNft';
+import {
     BLOCK_POLLING_RPC_URL,
+    hiddenTokens,
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
-    ZERO_ADDRESS,
-    hiddenTokens,
     supportedNetworks,
     vaultSupportedNetworkIds,
+    ZERO_ADDRESS,
 } from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
 import { SinglePoolDataIF, TokenIF } from '../ambient-utils/types';
+import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
+import { ReceiptContext } from './ReceiptContext';
+import {
+    NftDataIF,
+    NftListByChain,
+    TokenBalanceContext,
+} from './TokenBalanceContext';
 import { TokenContext } from './TokenContext';
 import {
     BlastUserXpDataIF,
     UserDataContext,
     UserXpDataIF,
 } from './UserDataContext';
-import {
-    NftDataIF,
-    NftListByChain,
-    TokenBalanceContext,
-} from './TokenBalanceContext';
-import {
-    expandTokenBalances,
-    fetchBlastUserXpData,
-    fetchBlockNumber,
-    fetchUserXpData,
-    RpcNodeStatus,
-    IDexTokenBalances,
-} from '../ambient-utils/api';
-import { AppStateContext } from './AppStateContext';
-import moment from 'moment';
-import { fetchNFT } from '../ambient-utils/api/fetchNft';
-import { ReceiptContext } from './ReceiptContext';
 
 export interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -55,6 +55,7 @@ export interface ChainDataContextIF {
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
     isActiveNetworkPlume: boolean;
+    isActiveNetworkSwell: boolean;
     isActiveNetworkScroll: boolean;
     isActiveNetworkMainnet: boolean;
     isVaultSupportedOnNetwork: boolean;
@@ -76,6 +77,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             graphCacheUrl,
         },
         isUserIdle,
+        isUserOnline,
     } = useContext(AppStateContext);
     const {
         setTokenBalances,
@@ -114,6 +116,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);
     const isActiveNetworkPlume = ['0x18230'].includes(chainId);
+    const isActiveNetworkSwell = ['0x784'].includes(chainId);
+    const isActiveNetworkBase = ['0x14a34'].includes(chainId);
     const isVaultSupportedOnNetwork =
         vaultSupportedNetworkIds.includes(chainId);
 
@@ -169,6 +173,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     }
 
     useEffect(() => {
+        if (!isUserOnline) return;
         // Grab block right away, then poll on periodic basis; useful for initial load
         pollBlockNum();
 
@@ -183,7 +188,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
         // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(interval);
-    }, [chainId, BLOCK_NUM_POLL_MS]);
+    }, [isUserOnline, chainId, BLOCK_NUM_POLL_MS]);
 
     const [allPoolStats, setAllPoolStats] = useState<
         SinglePoolDataIF[] | undefined
@@ -207,10 +212,10 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     }
 
     useEffect(() => {
-        if (chainId && graphCacheUrl) {
+        if (chainId && graphCacheUrl && isUserOnline) {
             updateAllPoolStats();
         }
-    }, [chainId, graphCacheUrl, poolStatsPollingCacheTime]);
+    }, [chainId, graphCacheUrl, poolStatsPollingCacheTime, isUserOnline]);
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
@@ -275,10 +280,11 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 7;
 
         if (
-            isfetchNftTriggered ||
-            !nftLocalData ||
-            isOverTimeLimit ||
-            (localNftDataParsed && !localNftDataParsed.has(actionKey))
+            isUserOnline &&
+            (isfetchNftTriggered ||
+                !nftLocalData ||
+                isOverTimeLimit ||
+                (localNftDataParsed && !localNftDataParsed.has(actionKey)))
         ) {
             (async () => {
                 if (crocEnv && isUserConnected && userAddress && chainId) {
@@ -370,6 +376,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             }
         }
     }, [
+        isUserOnline,
         crocEnv,
         isUserConnected,
         userAddress,
@@ -388,7 +395,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 isUserConnected &&
                 userAddress &&
                 chainId &&
-                everyFiveMinutes
+                everyFiveMinutes &&
+                (await crocEnv.context).chain.chainId === chainId
             ) {
                 try {
                     const combinedBalances: TokenIF[] = [];
@@ -529,55 +537,57 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         });
 
     useEffect(() => {
-        if (userAddress) {
-            fetchUserXpData({
-                user: userAddress,
-                chainId: chainId,
-            })
-                .then((data) => {
-                    setConnectedUserXp({
-                        dataReceived: true,
-                        data: data,
-                    });
-                })
-                .catch((error) => {
-                    console.error(error);
-                    setConnectedUserXp({
-                        dataReceived: false,
-                        data: undefined,
-                    });
-                });
-
-            if (isActiveNetworkBlast) {
-                fetchBlastUserXpData({
+        if (isUserOnline) {
+            if (userAddress) {
+                fetchUserXpData({
                     user: userAddress,
                     chainId: chainId,
                 })
                     .then((data) => {
-                        setConnectedUserBlastXp({
+                        setConnectedUserXp({
                             dataReceived: true,
                             data: data,
                         });
                     })
                     .catch((error) => {
                         console.error(error);
-                        setConnectedUserBlastXp({
+                        setConnectedUserXp({
                             dataReceived: false,
                             data: undefined,
                         });
                     });
+
+                if (isActiveNetworkBlast) {
+                    fetchBlastUserXpData({
+                        user: userAddress,
+                        chainId: chainId,
+                    })
+                        .then((data) => {
+                            setConnectedUserBlastXp({
+                                dataReceived: true,
+                                data: data,
+                            });
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                            setConnectedUserBlastXp({
+                                dataReceived: false,
+                                data: undefined,
+                            });
+                        });
+                }
+            } else {
+                setConnectedUserXp({
+                    dataReceived: false,
+                    data: undefined,
+                });
+                setConnectedUserBlastXp({
+                    dataReceived: false,
+                    data: undefined,
+                });
             }
-        } else {
-            setConnectedUserXp({
-                dataReceived: false,
-                data: undefined,
-            });
-            setConnectedUserBlastXp({
-                dataReceived: false,
-                data: undefined,
-            });
         }
-    }, [userAddress, isActiveNetworkBlast]);
+    }, [isUserOnline, userAddress, isActiveNetworkBlast]);
 
     const chainDataContext = {
         lastBlockNumber,
@@ -589,6 +599,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         setGasPriceinGwei,
         isActiveNetworkBlast,
         isActiveNetworkPlume,
+        isActiveNetworkSwell,
+        isActiveNetworkBase,
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
         isVaultSupportedOnNetwork,

@@ -1,33 +1,33 @@
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { CgProfile } from 'react-icons/cg';
 import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenIF } from '../../../../../ambient-utils/types';
-import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
+import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import styles from './WalletDropdown.module.css';
 
 import { toDisplayQty } from '@crocswap-libs/sdk';
+import { Link } from 'react-router-dom';
 import {
     ZERO_ADDRESS,
     supportedNetworks,
 } from '../../../../../ambient-utils/constants';
-import {
-    TokenBalanceContext,
-    TokenBalanceContextIF,
-} from '../../../../../contexts/TokenBalanceContext';
-import UserProfileCard from '../UserProfileCard';
-import {
-    ChainDataContext,
-    ChainDataContextIF,
-} from '../../../../../contexts/ChainDataContext';
-import { Link } from 'react-router-dom';
 import processLogoSrc from '../../../../../components/Global/TokenIcon/processLogoSrc';
 import { TokenContext } from '../../../../../contexts';
 import {
     AppStateContext,
     AppStateContextIF,
 } from '../../../../../contexts/AppStateContext';
+import {
+    ChainDataContext,
+    ChainDataContextIF,
+} from '../../../../../contexts/ChainDataContext';
+import {
+    TokenBalanceContext,
+    TokenBalanceContextIF,
+} from '../../../../../contexts/TokenBalanceContext';
+import UserProfileCard from '../UserProfileCard';
 
 interface propsIF {
     ensName: string;
@@ -94,7 +94,10 @@ export default function WalletDropdown(props: propsIF) {
                 <div className={styles.logoName}>
                     <img
                         src={processLogoSrc({
-                            token: tokens.getTokensByNameOrSymbol(symbol)[0],
+                            token: tokens.getTokensByNameOrSymbol(
+                                symbol,
+                                chainId,
+                            )[0],
                             symbol: symbol,
                             sourceURI: logoUri,
                         })}

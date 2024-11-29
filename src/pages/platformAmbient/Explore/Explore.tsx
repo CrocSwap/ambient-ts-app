@@ -1,22 +1,22 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { ExploreContext } from '../../../contexts/ExploreContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
-import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import { PoolIF } from '../../../ambient-utils/types';
-import styles from './Explore.module.css';
 import { LuRefreshCcw, LuSearch } from 'react-icons/lu';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
-import DexTokens from '../../../components/Global/Explore/DexTokens/DexTokens';
-import { AppStateContext } from '../../../contexts';
 import {
     excludedTokenAddressesLowercase,
     hiddenTokens,
 } from '../../../ambient-utils/constants';
+import { PoolIF } from '../../../ambient-utils/types';
+import DexTokens from '../../../components/Global/Explore/DexTokens/DexTokens';
+import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
+import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
+import { AppStateContext } from '../../../contexts';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { ExploreContext } from '../../../contexts/ExploreContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import styles from './Explore.module.css';
 
 interface ExploreIF {
     view: 'pools' | 'tokens';

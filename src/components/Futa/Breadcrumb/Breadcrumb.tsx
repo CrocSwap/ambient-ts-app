@@ -1,4 +1,4 @@
-import { useLocation, Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './Breadcrumb.module.css';
 export default function BreadCrumb() {
     const location = useLocation();

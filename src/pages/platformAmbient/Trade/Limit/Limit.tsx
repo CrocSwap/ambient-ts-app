@@ -1,13 +1,13 @@
 import {
+    fromDisplayQty,
     pinTickLower,
     pinTickUpper,
-    tickToPrice,
     priceHalfAboveTick,
     priceHalfBelowTick,
-    fromDisplayQty,
+    tickToPrice,
     toDisplayQty,
 } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, useRef, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
     getFormattedNumber,
     getTxReceipt,
@@ -24,44 +24,45 @@ import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitT
 import TradeModuleHeader from '../../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../../components/Trade/TradeModules/TradeModuleSkeleton';
 
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../../contexts/PoolContext';
-import { TokenContext } from '../../../../contexts/TokenContext';
-import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import {
-    TransactionError,
-    isTransactionReplacedError,
-    isTransactionFailedError,
-    isTransactionDeniedError,
-} from '../../../../utils/TransactionError';
-import { limitTutorialSteps } from '../../../../utils/tutorial/Limit';
-import { useApprove } from '../../../../App/functions/approve';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import {
+    DISABLE_WORKAROUNDS,
     GAS_DROPS_ESTIMATE_LIMIT_FROM_DEX,
     GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET,
     GAS_DROPS_ESTIMATE_LIMIT_NATIVE,
-    LIMIT_BUFFER_MULTIPLIER_MAINNET,
-    LIMIT_BUFFER_MULTIPLIER_L2,
-    NUM_GWEI_IN_WEI,
     IS_LOCAL_ENV,
+    LIMIT_BUFFER_MULTIPLIER_L2,
+    LIMIT_BUFFER_MULTIPLIER_MAINNET,
     NUM_GWEI_IN_ETH,
+    NUM_GWEI_IN_WEI,
     ZERO_ADDRESS,
-    DISABLE_WORKAROUNDS,
 } from '../../../../ambient-utils/constants';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { useApprove } from '../../../../App/functions/approve';
 import { AppStateContext } from '../../../../contexts';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import {
+    TransactionError,
+    isTransactionDeniedError,
+    isTransactionFailedError,
+    isTransactionReplacedError,
+} from '../../../../utils/TransactionError';
+import { limitTutorialSteps } from '../../../../utils/tutorial/Limit';
 
 export default function Limit() {
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
     const {
         activeNetwork: { chainId, gridSize, poolIndex },
+        isUserOnline,
     } = useContext(AppStateContext);
     const {
         gasPriceInGwei,
@@ -531,6 +532,7 @@ export default function Limit() {
             ),
         );
     }, [
+        isUserOnline,
         isOrderValid,
         tokenAInputQtyNoExponentString,
         isPoolInitialized,
@@ -808,7 +810,10 @@ export default function Limit() {
     };
 
     const handleLimitButtonMessage = (tokenAAmount: bigint) => {
-        if (!isPoolInitialized) {
+        if (!isUserOnline) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage('Currently Offline');
+        } else if (!isPoolInitialized) {
             setLimitAllowed(false);
             if (isPoolInitialized === undefined)
                 setLimitButtonErrorMessage('...');

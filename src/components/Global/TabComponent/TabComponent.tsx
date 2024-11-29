@@ -1,25 +1,25 @@
 // START: Import React and Dongles
 import {
-    useState,
-    useEffect,
-    Dispatch,
-    SetStateAction,
     cloneElement,
-    ReactNode,
+    Dispatch,
     ReactElement,
+    ReactNode,
+    SetStateAction,
     useContext,
+    useEffect,
+    useState,
 } from 'react';
 // eslint-disable-next-line
 import { AnimateSharedLayout, motion } from 'framer-motion';
 
 // START: Import Local Files
-import styles from './TabComponent.module.css';
-import '../../../App/App.css';
-import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { ChartContext } from '../../../contexts/ChartContext';
 import { useNavigate } from 'react-router-dom';
+import '../../../App/App.css';
+import { ChartContext } from '../../../contexts/ChartContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
+import styles from './TabComponent.module.css';
 
 type tabData = {
     label: string;

@@ -1,13 +1,13 @@
 /* eslint-disable camelcase */
-import {
-    memoizePromiseFn,
-    translateToken,
-    querySpotPrice,
-    truncateDecimals,
-    isUsdStableToken,
-} from '../dataLayer/functions';
-import { supportedNetworks } from '../constants/networks';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { supportedNetworks } from '../constants/networks';
+import {
+    isUsdStableToken,
+    memoizePromiseFn,
+    querySpotPrice,
+    translateToken,
+    truncateDecimals,
+} from '../dataLayer/functions';
 import { fetchBatch } from './fetchBatch';
 
 const randomNum = Math.random();
@@ -30,7 +30,11 @@ export const fetchTokenPrice = async (
                       ? 'blast'
                       : chain === '0x18230'
                         ? 'plume'
-                        : 'ethereum',
+                        : chain === '0x784'
+                          ? 'swell'
+                          : chain === '0x14a34'
+                            ? 'base'
+                            : 'ethereum',
             token_address: address,
         };
 

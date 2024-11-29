@@ -17,6 +17,17 @@ import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitT
 import TradeModuleHeader from '../../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../../components/Trade/TradeModules/TradeModuleSkeleton';
 
+import {
+    getFormattedNumber,
+    getPinnedPriceValuesFromDisplayPrices,
+    getPinnedPriceValuesFromTicks,
+    getUnicodeCharacter,
+    isStablePair,
+    roundDownTick,
+    roundUpTick,
+    truncateDecimals,
+} from '../../../../ambient-utils/dataLayer';
+import { PositionIF } from '../../../../ambient-utils/types';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
@@ -24,33 +35,22 @@ import { RangeContext } from '../../../../contexts/RangeContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import {
-    getFormattedNumber,
-    getUnicodeCharacter,
-    isStablePair,
-    truncateDecimals,
-    getPinnedPriceValuesFromDisplayPrices,
-    getPinnedPriceValuesFromTicks,
-    roundDownTick,
-    roundUpTick,
-} from '../../../../ambient-utils/dataLayer';
-import { PositionIF } from '../../../../ambient-utils/types';
 import { rangeTutorialSteps } from '../../../../utils/tutorial/Range';
 
-import { useApprove } from '../../../../App/functions/approve';
-import { useHandleRangeButtonMessage } from '../../../../App/hooks/useHandleRangeButtonMessage';
-import { useRangeInputDisable } from './useRangeInputDisable';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import {
     GAS_DROPS_ESTIMATE_POOL,
-    NUM_GWEI_IN_WEI,
-    RANGE_BUFFER_MULTIPLIER_MAINNET,
-    RANGE_BUFFER_MULTIPLIER_L2,
     IS_LOCAL_ENV,
     NUM_GWEI_IN_ETH,
+    NUM_GWEI_IN_WEI,
+    RANGE_BUFFER_MULTIPLIER_L2,
+    RANGE_BUFFER_MULTIPLIER_MAINNET,
 } from '../../../../ambient-utils/constants';
+import { useApprove } from '../../../../App/functions/approve';
+import { useHandleRangeButtonMessage } from '../../../../App/hooks/useHandleRangeButtonMessage';
 import { AppStateContext } from '../../../../contexts';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { useRangeInputDisable } from './useRangeInputDisable';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -90,6 +90,7 @@ function Range() {
         setIsLinesSwitched,
     } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
+    // console.log(tokens);
     const {
         tokenAAllowance,
         tokenBAllowance,

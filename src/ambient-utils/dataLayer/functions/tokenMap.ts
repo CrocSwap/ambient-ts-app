@@ -1,10 +1,10 @@
-import { TokenIF } from '../../types';
 import {
     ZERO_ADDRESS,
     mainnetUSDC,
-    sepoliaUSDC,
     scrollSepoliaUSDC,
+    sepoliaUSDC,
 } from '../../constants';
+import { TokenIF } from '../../types';
 
 /* Translates testnet token addresses to their canonical production network
  * representations. Note that chain ID is not required, since token addresses

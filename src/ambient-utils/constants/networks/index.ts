@@ -1,20 +1,24 @@
-import { NetworkIF, TokenIF, chainIds } from '../../types';
-import { ethereumSepolia } from './ethereumSepolia';
-import { ethereumMainnet } from './ethereumMainnet';
-import { scrollMainnet } from './scrollMainnet';
-import { scrollSepolia } from './scrollSepolia';
-import { blastSepolia } from './blastSepolia';
-import { blast } from './blastMainnet';
 import {
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
-    defaultBrandAssets,
+    baseSepoliaBrandAssets,
     blastBrandAssets,
-    scrollBrandAssets,
+    defaultBrandAssets,
     futaBrandAssets,
     plumeSepoliaBrandAssets,
+    scrollBrandAssets,
+    swellSepoliaBrandAssets,
 } from '../../../assets/branding';
+import { NetworkIF, TokenIF, chainHexIds } from '../../types';
+import { baseSepolia } from './baseSepolia';
+import { blastMainnet } from './blastMainnet';
+import { blastSepolia } from './blastSepolia';
+import { ethereumMainnet } from './ethereumMainnet';
+import { ethereumSepolia } from './ethereumSepolia';
 import { plumeSepolia } from './plumeSepolia';
+import { scrollMainnet } from './scrollMainnet';
+import { scrollSepolia } from './scrollSepolia';
+import { swellSepolia } from './swellSepolia';
 
 export const brand: string | undefined =
     import.meta.env.VITE_BRAND_ASSET_SET ?? '';
@@ -25,11 +29,13 @@ const networks: NetworkIF[] = [
     scrollMainnet,
     scrollSepolia,
     blastSepolia,
-    blast,
+    blastMainnet,
     plumeSepolia,
+    swellSepolia,
+    baseSepolia,
 ];
 
-function getNetworks(chns: (string | chainIds)[]): {
+function getNetworks(chns: (string | chainHexIds)[]): {
     [x: string]: NetworkIF;
 } {
     const networksToShow: NetworkIF[] = chns
@@ -46,19 +52,25 @@ function getNetworks(chns: (string | chainIds)[]): {
 }
 
 export const supportedNetworks: { [x: string]: NetworkIF } =
-    brand === 'blast'
-        ? getNetworks(Object.keys(blastBrandAssets.networks))
-        : brand === 'scroll'
-          ? getNetworks(Object.keys(scrollBrandAssets.networks))
-          : brand === 'futa'
-            ? getNetworks(Object.keys(futaBrandAssets.networks))
-            : brand === 'ambientProduction'
-              ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
-              : brand === 'ambientTestnet'
-                ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
+    brand === 'ambientProduction'
+        ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
+        : brand === 'ambientTestnet'
+          ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
+          : brand === 'scroll'
+            ? getNetworks(Object.keys(scrollBrandAssets.networks))
+            : brand === 'blast'
+              ? getNetworks(Object.keys(blastBrandAssets.networks))
+              : brand === 'futa'
+                ? getNetworks(Object.keys(futaBrandAssets.networks))
                 : brand === 'plumeSepolia'
                   ? getNetworks(Object.keys(plumeSepoliaBrandAssets.networks))
-                  : getNetworks(Object.keys(defaultBrandAssets.networks));
+                  : brand === 'swellSepolia'
+                    ? getNetworks(Object.keys(swellSepoliaBrandAssets.networks))
+                    : brand === 'baseSepolia'
+                      ? getNetworks(
+                            Object.keys(baseSepoliaBrandAssets.networks),
+                        )
+                      : getNetworks(Object.keys(defaultBrandAssets.networks));
 
 export const vaultSupportedNetworkIds = ['0x1', '0x82750'];
 export const vaultSupportedNetworks = getNetworks(vaultSupportedNetworkIds);
@@ -79,9 +91,14 @@ export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
     }
 }
 
-export { ethereumSepolia };
-export { ethereumMainnet };
-export { scrollMainnet };
-export { scrollSepolia };
-export { blastSepolia };
-export { blast };
+export {
+    baseSepolia,
+    blastMainnet,
+    blastSepolia,
+    ethereumMainnet,
+    ethereumSepolia,
+    plumeSepolia,
+    scrollMainnet,
+    scrollSepolia,
+    swellSepolia,
+};

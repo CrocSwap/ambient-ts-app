@@ -1,12 +1,12 @@
 /* eslint-disable quotes */
-import { useParams } from 'react-router-dom';
-import styles from './FAQ.module.css';
 import { useContext, useEffect, useRef } from 'react';
-import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { FiLink } from 'react-icons/fi';
+import { useParams } from 'react-router-dom';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import styles from './FAQ.module.css';
 interface questionIF {
     question: string;
     answer: string | string[] | JSX.Element | JSX.Element[];

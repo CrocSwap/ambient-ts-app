@@ -1,3 +1,5 @@
+import * as d3 from 'd3';
+import * as d3fc from 'd3fc';
 import {
     MouseEvent,
     useContext,
@@ -6,21 +8,19 @@ import {
     useRef,
     useState,
 } from 'react';
-import Xaxis from './Xaxis';
-import * as d3 from 'd3';
-import * as d3fc from 'd3fc';
+import { useNavigate } from 'react-router-dom';
+import { diffHashSig } from '../../../../ambient-utils/dataLayer';
+import { AuctionsContext } from '../../../../contexts/AuctionsContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
 import {
     getXandYLocationForChart,
     renderCanvasArray,
     setCanvasResolution,
 } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
-import { diffHashSig } from '../../../../ambient-utils/dataLayer';
-import Yaxis from './Yaxis';
 import ScatterTooltip from './ScatterTooltip';
 import useScatterChartData from './useScatterChartData';
-import { useNavigate } from 'react-router-dom';
-import { AuctionsContext } from '../../../../contexts/AuctionsContext';
-import { ChartContext } from '../../../../contexts/ChartContext';
+import Xaxis from './Xaxis';
+import Yaxis from './Yaxis';
 
 export const axisColor = '#939C9E'; // text2
 export const textColor = '#939C9E'; // text2

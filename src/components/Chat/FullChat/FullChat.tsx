@@ -32,11 +32,11 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import ChatConfirmationPanel from '../ChatConfirmationPanel/ChatConfirmationPanel';
 import { ChatGoToChatParamsIF } from '../ChatIFs';
+import ChatNotificationBubble from '../ChatNotification/ChatNotificationBubble';
 import ChatToaster from '../ChatToaster/ChatToaster';
 import Room from '../MessagePanel/Room/Room';
-import styles from './FullChat.module.css';
-import ChatNotificationBubble from '../ChatNotification/ChatNotificationBubble';
 import { Message } from '../Model/MessageModel';
+import styles from './FullChat.module.css';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -244,7 +244,6 @@ function FullChat(props: FullChatPropsIF) {
         reSwappedReconstructedReadableRoom,
         rooms.length === 0,
     ]);
-
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {

@@ -7,5 +7,9 @@ export interface TokenMethodsIF {
     tokenUniv: TokenIF[];
     getTokenByAddress: (addr: string) => TokenIF | undefined;
     getTokensFromList: (uri: string) => TokenIF[];
-    getTokensByNameOrSymbol: (input: string, exact?: boolean) => TokenIF[];
+    getTokensByNameOrSymbol: (
+        input: string,
+        chn: string,
+        exact?: boolean,
+    ) => TokenIF[];
 }

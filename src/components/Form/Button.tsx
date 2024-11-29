@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from './Button.module.css';
 import { brand } from '../../ambient-utils/constants';
+import styles from './Button.module.css';
 
 interface propsIF {
     idForDOM: string;

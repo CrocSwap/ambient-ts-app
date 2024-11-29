@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    tokenListURIs,
     defaultTokens,
     hiddenTokens,
+    tokenListURIs,
 } from '../../ambient-utils/constants';
-import { TokenIF, TokenListIF } from '../../ambient-utils/types';
 import {
     chainNumToString,
-    uriToHttp,
     serializeBigInt,
+    uriToHttp,
 } from '../../ambient-utils/dataLayer';
+import { TokenIF, TokenListIF } from '../../ambient-utils/types';
 
 export interface tokenMethodsIF {
     allDefaultTokens: TokenIF[];
@@ -19,7 +19,11 @@ export interface tokenMethodsIF {
     tokenUniv: TokenIF[];
     getTokenByAddress: (addr: string) => TokenIF | undefined;
     getTokensFromList: (uri: string) => TokenIF[];
-    getTokensByNameOrSymbol: (input: string, exact?: boolean) => TokenIF[];
+    getTokensByNameOrSymbol: (
+        input: string,
+        chn: string,
+        exact?: boolean,
+    ) => TokenIF[];
 }
 
 // keys for data persisted in local storage
@@ -181,7 +185,7 @@ export const useTokens = (
                     deepCopyToken(tkn, tkn.fromList ?? tokenListURIs.ambient),
                 );
         }
-    }, [tokenMap.size, tokenBalances]);
+    }, [tokenMap, tokenBalances]);
 
     // fn to make a deep copy of a token data object
     // without this we overrwrite token data in local storage in post-processing
@@ -335,7 +339,7 @@ export const useTokens = (
     // fn to return all tokens where name or symbol matches search input
     // can return just exact matches or exact + partial matches
     const getTokensByNameOrSymbol = useCallback(
-        (input: string, exact = false): TokenIF[] => {
+        (input: string, chn: string, exact = false): TokenIF[] => {
             // search input fixed for casing and with whitespace trimmed
             const cleanedInput: string = input.trim().toLowerCase();
 
@@ -343,6 +347,7 @@ export const useTokens = (
             const searchExact = (): TokenIF[] => {
                 // return tokens where name OR symbol exactly matches search string
                 return tokenUniv
+                    .filter((tkn: TokenIF) => tkn.chainId === parseInt(chn))
                     .filter(
                         (tkn: TokenIF) =>
                             tkn.name.toLowerCase() === cleanedInput ||
@@ -364,21 +369,23 @@ export const useTokens = (
                 const exactMatches: TokenIF[] = [];
                 const partialMatches: TokenIF[] = [];
                 // iterate over tokens to look for matches
-                tokenUniv.forEach((tkn: TokenIF) => {
-                    if (
-                        tkn.name.toLowerCase() === cleanedInput ||
-                        tkn.symbol.toLowerCase() === cleanedInput
-                    ) {
-                        // push exact matches to the appropriate array
-                        exactMatches.push(tkn);
-                    } else if (
-                        tkn.name.toLowerCase().includes(cleanedInput) ||
-                        tkn.symbol.toLowerCase().includes(cleanedInput)
-                    ) {
-                        // push partial matches to the appropriate array
-                        partialMatches.push(tkn);
-                    }
-                });
+                tokenUniv
+                    .filter((tkn: TokenIF) => tkn.chainId === parseInt(chn))
+                    .forEach((tkn: TokenIF) => {
+                        if (
+                            tkn.name.toLowerCase() === cleanedInput ||
+                            tkn.symbol.toLowerCase() === cleanedInput
+                        ) {
+                            // push exact matches to the appropriate array
+                            exactMatches.push(tkn);
+                        } else if (
+                            tkn.name.toLowerCase().includes(cleanedInput) ||
+                            tkn.symbol.toLowerCase().includes(cleanedInput)
+                        ) {
+                            // push partial matches to the appropriate array
+                            partialMatches.push(tkn);
+                        }
+                    });
                 return exactMatches.concat(partialMatches).filter((t) => {
                     // Then check if token is in exclusion list
                     return !hiddenTokens.some(
