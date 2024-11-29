@@ -288,13 +288,6 @@ function Swap(props: propsIF) {
         !needConfirmTokenA &&
         !needConfirmTokenB;
 
-    const liquidityProviderFeeString = liquidityFee
-        ? (liquidityFee * 100).toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          })
-        : '...';
-
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     const [
@@ -873,7 +866,7 @@ function Swap(props: propsIF) {
                     priceImpact={priceImpact}
                     effectivePriceWithDenom={effectivePriceWithDenom}
                     slippageTolerance={slippageTolerancePercentage}
-                    liquidityProviderFeeString={liquidityProviderFeeString}
+                    liquidityFee={liquidityFee}
                     swapGasPriceinDollars={swapGasPriceinDollars}
                     showExtraInfoDropdown={
                         primaryQuantity !== '' &&
