@@ -66,12 +66,14 @@ export function usePoolMetadata() {
         positionsByPool,
         limitOrdersByPool,
     } = useContext(GraphDataContext);
+
     const {
         tokenA,
         tokenB,
         defaultRangeWidthForActivePool,
         currentPoolPriceTick,
     } = useContext(TradeDataContext);
+
     const {
         cachedQuerySpotPrice,
         cachedQuerySpotTick,
