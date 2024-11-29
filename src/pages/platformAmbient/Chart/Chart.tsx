@@ -126,6 +126,7 @@ import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
 import RangeLinesChart from './RangeLine/RangeLinesChart';
 import TvlChart from './Tvl/TvlChart';
 import VolumeBarCanvas from './Volume/VolumeBarCanvas';
+import { GraphDataContext } from '../../../contexts';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -300,6 +301,9 @@ export default function Chart(props: propsIF) {
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
 
+    // userLimitOrdersByPool,
+    const { userPositionsByPool } = useContext(GraphDataContext);
+
     const [isChartZoom, setIsChartZoom] = useState(false);
     const [cursorStyleTrigger, setCursorStyleTrigger] = useState(false);
 
@@ -422,8 +426,11 @@ export default function Chart(props: propsIF) {
         selectedDrawnData | undefined
     >(undefined);
 
-    const [hoveredOrderHistory, setHoveredOrderHistory] =
-        useState<TransactionIF>();
+    const [hoveredOrderHistory, setHoveredOrderHistory] = useState<{
+        type: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        order: any;
+    }>();
 
     const [isHoveredOrderHistory, setIsHoveredOrderHistory] =
         useState<boolean>(false);
@@ -5230,30 +5237,76 @@ export default function Chart(props: propsIF) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let resElement: any = undefined;
 
-        if (scaleData && userTransactionData) {
-            userTransactionData.forEach((element) => {
-                if (element.entityType === 'swap' && showSwap) {
-                    const swapOrderData = [
-                        {
-                            x: element.txTime * 1000,
-                            y: denomInBase
-                                ? element.swapInvPriceDecimalCorrected
-                                : element.swapPriceDecimalCorrected,
-                            denomInBase: denomInBase,
-                        },
-                    ];
-                    if (
-                        checkSwapLoation(
-                            swapOrderData,
-                            mouseX,
-                            mouseY,
-                            element.totalValueUSD,
-                        )
-                    ) {
-                        resElement = element;
+        if (scaleData) {
+            if (userPositionsByPool && showHistorical) {
+                userPositionsByPool.positions.forEach((position) => {
+                    if (position.positionLiq === 0) {
+                        const rectLocation = [
+                            {
+                                x: position?.timeFirstMint * 1000,
+                                y: denomInBase
+                                    ? position.bidTickInvPriceDecimalCorrected
+                                    : position.bidTickPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                            {
+                                x: position?.latestUpdateTime * 1000,
+                                y: denomInBase
+                                    ? position.askTickInvPriceDecimalCorrected
+                                    : position.askTickPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkRectLocation(
+                                rectLocation,
+                                mouseX,
+                                mouseY,
+                                denomInBase,
+                            )
+                        ) {
+                            resElement = {
+                                type: 'historical',
+                                order: position,
+                            };
+                        }
                     }
-                }
-            });
+                    // else {
+                    //     console.log('uzun');
+                    // }
+                });
+            }
+
+            // userLimitOrdersByPool.limitOrders.forEach((element) => {
+            //     console.log(element);
+            // });
+
+            if (userTransactionData && showSwap) {
+                userTransactionData.forEach((element) => {
+                    if (element.entityType === 'swap' && showSwap) {
+                        const swapOrderData = [
+                            {
+                                x: element.txTime * 1000,
+                                y: denomInBase
+                                    ? element.swapInvPriceDecimalCorrected
+                                    : element.swapPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+                        if (
+                            checkSwapLoation(
+                                swapOrderData,
+                                mouseX,
+                                mouseY,
+                                element.totalValueUSD,
+                            )
+                        ) {
+                            resElement = { type: 'swap', order: element };
+                        }
+                    }
+                });
+            }
 
             if (resElement && scaleData) {
                 setHoveredOrderHistory(() => {
@@ -5621,7 +5674,7 @@ export default function Chart(props: propsIF) {
 
                 let isOrderHistorySelected = undefined;
                 if (
-                    showSwap &&
+                    (showSwap || showHistorical || showLiquidity) &&
                     !isDragActive &&
                     activeDrawingType === 'Cross'
                 ) {
@@ -5919,64 +5972,85 @@ export default function Chart(props: propsIF) {
             const scale = d3.scaleLinear().range([60, 75]).domain([1000, 3000]);
 
             if (isHoveredOrderHistory && hoveredOrderHistory) {
-                setHoveredOrderTooltipPlacement(() => {
-                    const top = scaleData.yScale(
-                        denomInBase
-                            ? hoveredOrderHistory.swapInvPriceDecimalCorrected
-                            : hoveredOrderHistory.swapPriceDecimalCorrected,
-                    );
+                if (hoveredOrderHistory.type === 'swap') {
+                    setHoveredOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? hoveredOrderHistory.order
+                                      .swapInvPriceDecimalCorrected
+                                : hoveredOrderHistory.order
+                                      .swapPriceDecimalCorrected,
+                        );
 
-                    const tempPlace =
-                        scaleData?.xScale(hoveredOrderHistory.txTime * 1000) +
-                        scale(circleScale(hoveredOrderHistory.totalValueUSD));
+                        const tempPlace =
+                            scaleData?.xScale(
+                                hoveredOrderHistory.order.txTime * 1000,
+                            ) +
+                            scale(
+                                circleScale(
+                                    hoveredOrderHistory.order.totalValueUSD,
+                                ),
+                            );
 
-                    const isOverLeft =
-                        isSelectedOrderHistory &&
-                        selectedOrderTooltipPlacement &&
-                        ((tempPlace + 75 <
-                            selectedOrderTooltipPlacement.left + 75 &&
-                            tempPlace + 75 >
-                                selectedOrderTooltipPlacement.left - 75) ||
-                            (tempPlace - 75 <
+                        const isOverLeft =
+                            isSelectedOrderHistory &&
+                            selectedOrderTooltipPlacement &&
+                            ((tempPlace + 75 <
                                 selectedOrderTooltipPlacement.left + 75 &&
-                                tempPlace - 75 >
-                                    selectedOrderTooltipPlacement.left - 75));
+                                tempPlace + 75 >
+                                    selectedOrderTooltipPlacement.left - 75) ||
+                                (tempPlace - 75 <
+                                    selectedOrderTooltipPlacement.left + 75 &&
+                                    tempPlace - 75 >
+                                        selectedOrderTooltipPlacement.left -
+                                            75));
 
-                    const isOverTop =
-                        isSelectedOrderHistory &&
-                        selectedOrderTooltipPlacement &&
-                        ((selectedOrderTooltipPlacement.top - 35 < top + 35 &&
-                            selectedOrderTooltipPlacement.top - 35 >
-                                top - 35) ||
-                            (selectedOrderTooltipPlacement.top + 35 >
-                                top - 35 &&
-                                selectedOrderTooltipPlacement.top + 35 <
-                                    top + 35));
+                        const isOverTop =
+                            isSelectedOrderHistory &&
+                            selectedOrderTooltipPlacement &&
+                            ((selectedOrderTooltipPlacement.top - 35 <
+                                top + 35 &&
+                                selectedOrderTooltipPlacement.top - 35 >
+                                    top - 35) ||
+                                (selectedOrderTooltipPlacement.top + 35 >
+                                    top - 35 &&
+                                    selectedOrderTooltipPlacement.top + 35 <
+                                        top + 35));
 
-                    const left =
-                        scaleData?.xScale(hoveredOrderHistory.txTime * 1000) +
-                        (isOverLeft && isOverTop
-                            ? -scale(
-                                  circleScale(
-                                      hoveredOrderHistory.totalValueUSD,
-                                  ),
-                              ) +
-                              (circleScale(hoveredOrderHistory.totalValueUSD) <
-                              1500
-                                  ? -105
-                                  : -90)
-                            : +scale(
-                                  circleScale(
-                                      hoveredOrderHistory.totalValueUSD,
-                                  ),
-                              ));
+                        const left =
+                            scaleData?.xScale(
+                                hoveredOrderHistory.order.txTime * 1000,
+                            ) +
+                            (isOverLeft && isOverTop
+                                ? -scale(
+                                      circleScale(
+                                          hoveredOrderHistory.order
+                                              .totalValueUSD,
+                                      ),
+                                  ) +
+                                  (circleScale(
+                                      hoveredOrderHistory.order.totalValueUSD,
+                                  ) < 1500
+                                      ? -105
+                                      : -90)
+                                : +scale(
+                                      circleScale(
+                                          hoveredOrderHistory.order
+                                              .totalValueUSD,
+                                      ),
+                                  ));
 
-                    return {
-                        top,
-                        left,
-                        isOnLeftSide: !!(isOverLeft && isOverTop),
-                    };
-                });
+                        return {
+                            top,
+                            left,
+                            isOnLeftSide: !!(isOverLeft && isOverTop),
+                        };
+                    });
+                }
+
+                // if(hoveredOrderHistory.type === 'historical') {
+                //     console.log('hata veriyorum enyayiym ben kod')
+                // }
             }
 
             if (isSelectedOrderHistory && selectedOrderHistory) {
@@ -6355,7 +6429,7 @@ export default function Chart(props: propsIF) {
             {scaleData &&
                 showSwap &&
                 hoveredOrderHistory &&
-                hoveredOrderHistory.txId !== selectedOrderHistory?.txId &&
+                hoveredOrderHistory.order.txId !== selectedOrderHistory?.txId &&
                 hoveredOrderTooltipPlacement && (
                     <OrderHistoryTooltip
                         hoveredOrderHistory={hoveredOrderHistory}

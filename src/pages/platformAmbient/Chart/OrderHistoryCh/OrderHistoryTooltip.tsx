@@ -21,7 +21,8 @@ import {
 } from './OrderHistoryTooltipCss';
 
 export default function OrderHistoryTooltip(props: {
-    hoveredOrderHistory: TransactionIF;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    hoveredOrderHistory: any;
     isHoveredOrderHistory: boolean;
     denomInBase: boolean;
     hoveredOrderTooltipPlacement: {
@@ -99,7 +100,7 @@ export default function OrderHistoryTooltip(props: {
                                                 ? !prev
                                                 : prev;
 
-                                        return hoveredOrderHistory ===
+                                        return hoveredOrderHistory.order ===
                                             prevSelected
                                             ? undefined
                                             : hoveredOrderHistory;
@@ -118,8 +119,10 @@ export default function OrderHistoryTooltip(props: {
                     <OrderHistoryHeader>
                         <StyledHeader
                             color={
-                                (denomInBase && !hoveredOrderHistory.isBuy) ||
-                                (!denomInBase && hoveredOrderHistory.isBuy)
+                                (denomInBase &&
+                                    !hoveredOrderHistory.order.isBuy) ||
+                                (!denomInBase &&
+                                    hoveredOrderHistory.order.isBuy)
                                     ? ['futa'].includes(platformName)
                                         ? 'var(--negative)'
                                         : 'var(--accent5)'
@@ -127,42 +130,49 @@ export default function OrderHistoryTooltip(props: {
                             }
                             size={'15px'}
                         >
-                            {((denomInBase && !hoveredOrderHistory.isBuy) ||
-                            (!denomInBase && hoveredOrderHistory.isBuy)
+                            {((denomInBase &&
+                                !hoveredOrderHistory.order.isBuy) ||
+                            (!denomInBase && hoveredOrderHistory.order.isBuy)
                                 ? 'Buy'
                                 : 'Sell') + ': '}
                         </StyledHeader>
 
-                        {hoveredOrderHistory.entityType !== 'liquidity' && (
+                        {hoveredOrderHistory.order.entityType !==
+                            'liquidity' && (
                             <StyledHeader color={'white'} size={'15px'}>
                                 {getFormattedNumber({
                                     value: Math.abs(
                                         denomInBase
-                                            ? hoveredOrderHistory.baseFlowDecimalCorrected
-                                            : hoveredOrderHistory.quoteFlowDecimalCorrected,
+                                            ? hoveredOrderHistory.order
+                                                  .baseFlowDecimalCorrected
+                                            : hoveredOrderHistory.order
+                                                  .quoteFlowDecimalCorrected,
                                     ),
                                     abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                                 })}
                             </StyledHeader>
                         )}
 
-                        {hoveredOrderHistory.entityType !== 'liquidity' && (
+                        {hoveredOrderHistory.order.entityType !==
+                            'liquidity' && (
                             <StyledHeader color={'white'} size={'15px'}>
                                 {denomInBase
-                                    ? hoveredOrderHistory.baseSymbol
-                                    : hoveredOrderHistory.quoteSymbol}
+                                    ? hoveredOrderHistory.order.baseSymbol
+                                    : hoveredOrderHistory.order.quoteSymbol}
                             </StyledHeader>
                         )}
                         {(
                             denomInBase
-                                ? hoveredOrderHistory.baseTokenLogoURI
-                                : hoveredOrderHistory.quoteTokenLogoURI
+                                ? hoveredOrderHistory.order.baseTokenLogoURI
+                                : hoveredOrderHistory.order.quoteTokenLogoURI
                         ) ? (
                             <img
                                 src={uriToHttp(
                                     denomInBase
-                                        ? hoveredOrderHistory.baseTokenLogoURI
-                                        : hoveredOrderHistory.quoteTokenLogoURI,
+                                        ? hoveredOrderHistory.order
+                                              .baseTokenLogoURI
+                                        : hoveredOrderHistory.order
+                                              .quoteTokenLogoURI,
                                 )}
                                 alt='base token'
                                 style={{ width: '18px' }}
@@ -171,14 +181,16 @@ export default function OrderHistoryTooltip(props: {
                     </OrderHistoryHeader>
                     <OrderHistoryBody>
                         <StyledHeader color={'#8b98a5'} size={'13px'}>
-                            {hoveredOrderHistory.entityType !== 'liquidity'
+                            {hoveredOrderHistory.order.entityType !==
+                            'liquidity'
                                 ? 'Market'
                                 : ''}
                         </StyledHeader>
                         <StyledHeader color={'#8b98a5'} size={'13px'}>
                             {'$' +
                                 getFormattedNumber({
-                                    value: hoveredOrderHistory.totalValueUSD,
+                                    value: hoveredOrderHistory.order
+                                        .totalValueUSD,
                                     abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                                 })}
                         </StyledHeader>
@@ -189,14 +201,21 @@ export default function OrderHistoryTooltip(props: {
                                 event: React.MouseEvent<HTMLDivElement>,
                             ) => {
                                 event.stopPropagation();
-                                handleOpenExplorer(hoveredOrderHistory.txHash);
+                                handleOpenExplorer(
+                                    hoveredOrderHistory.order.txHash,
+                                );
                             }}
                             onMouseEnter={() => {
-                                setHoveredID(hoveredOrderHistory.txHash);
+                                setHoveredID(hoveredOrderHistory.order.txHash);
                             }}
                             onMouseLeave={() => setHoveredID(() => undefined)}
                         >
-                            {trimString(hoveredOrderHistory.txHash, 6, 4, '…')}
+                            {trimString(
+                                hoveredOrderHistory.order.txHash,
+                                6,
+                                4,
+                                '…',
+                            )}
                             <RiExternalLinkLine />
                         </StyledLink>
                         {hoveredID && (
