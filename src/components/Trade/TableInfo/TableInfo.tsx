@@ -46,13 +46,12 @@ export default function TableInfo() {
         },
     ];
 
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        'en-US',
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
+    const liquidityProviderFeeString = liquidityFee
+        ? (liquidityFee * 100).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : undefined;
 
     const aprString = apr ? (apr === '0.00' ? '< 0.01%' : apr + '%') : '...';
 

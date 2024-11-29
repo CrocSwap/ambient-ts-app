@@ -288,13 +288,12 @@ function Swap(props: propsIF) {
         !needConfirmTokenA &&
         !needConfirmTokenB;
 
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        'en-US',
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
+    const liquidityProviderFeeString = liquidityFee
+        ? (liquidityFee * 100).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : '...';
 
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
