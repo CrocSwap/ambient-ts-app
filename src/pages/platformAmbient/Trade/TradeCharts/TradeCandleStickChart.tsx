@@ -365,6 +365,11 @@ function TradeCandleStickChart(props: propsIF) {
                 ])
                 .range([30, 550]);
 
+            console.log(
+                'unparsedLiquidityData.ranges',
+                unparsedLiquidityData.ranges,
+            );
+
             unparsedLiquidityData.ranges.map((data: any) => {
                 const liqUpperPrices = isDenomBase
                     ? data.upperBoundInvPriceDecimalCorrected

@@ -120,6 +120,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         upperBound: 0,
         lowerBound: 0,
     });
+
+    const [singlePosition, setSinglePosition] = useState<
+        undefined | 'ask' | 'bid'
+    >();
+
     const {
         liqMode,
         liquidityData,
@@ -268,6 +273,27 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liquidityDepthScale === undefined,
         diffHashSig(chartThemeColors),
     ]);
+
+    useEffect(() => {
+        const filteredAsk = liqDataAsk.filter(
+            (i) => i.liqPrices < poolPriceDisplay,
+        );
+
+        const filteredBid = liqDataBid.filter(
+            (i) => i.liqPrices > poolPriceDisplay,
+        );
+
+        if (filteredBid.length === 0) {
+            setSinglePosition('ask');
+        }
+
+        if (filteredAsk.length === 0) {
+            setSinglePosition('bid');
+        }
+        console.log({ liqDataAsk, liqDataBid });
+
+        console.log({ filteredAsk, filteredBid });
+    }, [liqDataAsk, liqDataBid]);
 
     // Auto scale fo liq Curve
     useEffect(() => {
@@ -627,50 +653,79 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             d3.select(d3CanvasLiq.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    if (liqMode === 'curve') {
-                        clipCanvas(
-                            scaleData?.yScale(poolPriceDisplay),
-                            0,
-                            canvas,
-                        );
 
-                        liqBidSeries(allData.slice().reverse());
+                    if (singlePosition === undefined) {
+                        if (liqMode === 'curve') {
+                            clipCanvas(
+                                scaleData?.yScale(poolPriceDisplay),
+                                0,
+                                canvas,
+                            );
 
-                        ctx?.restore();
+                            liqBidSeries(allData.slice().reverse());
 
-                        clipCanvas(
-                            scaleData?.yScale(0),
-                            scaleData?.yScale(poolPriceDisplay),
-                            canvas,
-                        );
+                            ctx?.restore();
 
-                        liqAskSeries(allData);
-                        ctx?.restore();
+                            clipCanvas(
+                                scaleData?.yScale(0),
+                                scaleData?.yScale(poolPriceDisplay),
+                                canvas,
+                            );
 
-                        drawCurveLines(canvas);
-                    }
-                    if (liqMode === 'depth') {
-                        clipCanvas(
-                            scaleData?.yScale(poolPriceDisplay),
-                            0,
-                            canvas,
-                        );
+                            liqAskSeries(allData);
+                            ctx?.restore();
 
-                        liqDepthBidSeries(allData.slice().reverse());
+                            drawCurveLines(canvas);
+                        }
+                        if (liqMode === 'depth') {
+                            clipCanvas(
+                                scaleData?.yScale(poolPriceDisplay),
+                                0,
+                                canvas,
+                            );
 
-                        ctx?.restore();
+                            liqDepthBidSeries(allData.slice().reverse());
 
-                        clipCanvas(
-                            scaleData?.yScale(0),
-                            scaleData?.yScale(poolPriceDisplay),
-                            canvas,
-                        );
+                            ctx?.restore();
 
-                        liqDepthAskSeries(liqDataDepthAsk);
+                            clipCanvas(
+                                scaleData?.yScale(0),
+                                scaleData?.yScale(poolPriceDisplay),
+                                canvas,
+                            );
 
-                        ctx?.restore();
+                            liqDepthAskSeries(liqDataDepthAsk);
 
-                        drawDepthLines(canvas);
+                            ctx?.restore();
+
+                            drawDepthLines(canvas);
+                        }
+                    } else {
+                        if (singlePosition === 'ask') {
+                            liqAskSeries(
+                                [
+                                    ...allData,
+                                    {
+                                        activeLiq: allData[0].activeLiq,
+                                        liqPrices: scaleData.yScale.domain()[1],
+                                    },
+                                ].sort((a, b) => a.liqPrices - b.liqPrices),
+                            );
+                        } else {
+                            liqBidSeries(
+                                [
+                                    ...allData,
+                                    {
+                                        activeLiq: allData[0].activeLiq,
+                                        liqPrices: scaleData.yScale.domain()[1],
+                                    },
+                                    {
+                                        activeLiq: allData[0].activeLiq,
+                                        liqPrices: scaleData.yScale.domain()[0],
+                                    },
+                                ].sort((a, b) => b.liqPrices - a.liqPrices),
+                            );
+                        }
                     }
                 })
                 .on('measure', (event: CustomEvent) => {
@@ -710,6 +765,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         lineLiqDepthBidSeries,
         lineLiqAskSeries,
         lineLiqBidSeries,
+        singlePosition,
     ]);
 
     useEffect(() => {
