@@ -1,5 +1,4 @@
 import { memo, useContext } from 'react';
-import { estimateRangeAprFromPoolApr } from '../../../../ambient-utils/api';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
@@ -11,8 +10,7 @@ interface propsIF {
     rangeGasPriceinDollars: string | undefined;
     isTokenABase: boolean;
     showExtraInfoDropdown: boolean;
-    poolApr: string | undefined;
-    rangeWidthPercentage: number;
+    estRangeApr: number;
 }
 
 function RangeExtraInfo(props: propsIF) {
@@ -21,8 +19,7 @@ function RangeExtraInfo(props: propsIF) {
         slippageTolerance,
         liquidityFee,
         showExtraInfoDropdown,
-        poolApr,
-        rangeWidthPercentage,
+        estRangeApr,
     } = props;
 
     const { isDenomBase, baseToken, quoteToken } = useContext(TradeDataContext);
@@ -33,19 +30,11 @@ function RangeExtraInfo(props: propsIF) {
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
 
-    const estRangeApr =
-        poolApr && rangeWidthPercentage
-            ? estimateRangeAprFromPoolApr(
-                  rangeWidthPercentage / 100,
-                  parseFloat(poolApr),
-              )
-            : 0;
-
     const estRangeAprString = estRangeApr
         ? getFormattedNumber({
               value: estRangeApr,
               isPercentage: true,
-              minFracDigits: 0,
+              minFracDigits: 1,
               maxFracDigits: 1,
           }) + ' %'
         : '…';
@@ -92,7 +81,7 @@ function RangeExtraInfo(props: propsIF) {
             tooltipTitle: `Estimated APR is based on selected range width, historical volume, fee rate, and pool
                 liquidity. This value is only a historical estimate, and does not account
                 for divergence loss from large price swings. 
-                Very concentrated ranges are more likely to go out of range and not earn fees while out of range.
+                Very concentrated or unbalanced ranges are more likely to go out of range and not earn fees while out of range.
                 Returns not guaranteed.`,
             data: estRangeAprString,
         },
