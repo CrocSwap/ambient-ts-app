@@ -8,7 +8,7 @@ import {
     scaleData,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
-import { createCircle } from '../ChartUtils/circle';
+import { calculateCircleColor, createCircle } from '../ChartUtils/circle';
 import { createLinearLineSeries } from '../Draw/DrawCanvas/LinearLineSeries';
 import { createBandArea } from '../Draw/DrawCanvas/BandArea';
 import { diffHashSig } from '../../../../ambient-utils/dataLayer';
@@ -42,8 +42,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         showHistorical,
         hoveredOrderHistory,
         isHoveredOrderHistory,
-        selectedOrderHistory,
-        isSelectedOrderHistory,
+        // selectedOrderHistory,
+        // isSelectedOrderHistory,
         drawSettings,
         userTransactionData,
         circleScale,
@@ -51,22 +51,16 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
     const d3OrderCanvas = useRef<HTMLDivElement | null>(null);
 
+    const { platformName } = useContext(BrandContext);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [bandAreaActive, setBandAreaActive] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [bandAreaHistorical, setBandAreaHistorical] = useState<any>();
-
-    // const [bandAreaHighlighted, setBandAreaHighlighted] = useState<any>();
-
-    const { platformName } = useContext(BrandContext);
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [circleSeries, setCircleSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [limitCircleSeries, setLimitCircleSeries] = useState<any>();
-    const [circleSeriesHighlighted, setCircleSeriesHighlighted] =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        useState<any>();
 
     const lineSeries = createLinearLineSeries(
         scaleData?.xScale,
@@ -192,10 +186,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 });
 
                 setCircleSeries(() => {
-                    return circleSerieArray;
-                });
-
-                setCircleSeriesHighlighted(() => {
                     return circleSerieArray;
                 });
             }
@@ -373,27 +363,9 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                     ];
 
                                     if (
-                                        bandAreaHistorical[index] !== undefined
-                                    ) {
-                                        bandAreaHistorical[index]
-                                            .xScale()
-                                            .range(range);
-
-                                        const bandData = {
-                                            fromValue: denomInBase
-                                                ? order.bidTickInvPriceDecimalCorrected
-                                                : order.bidTickPriceDecimalCorrected,
-                                            toValue: denomInBase
-                                                ? order.askTickInvPriceDecimalCorrected
-                                                : order.askTickPriceDecimalCorrected,
-                                            denomInBase: denomInBase,
-                                        } as bandLineData;
-
-                                        bandAreaHistorical[index]([bandData]);
-                                    }
-
-                                    if (
                                         hoveredOrderHistory &&
+                                        hoveredOrderHistory.type ===
+                                            'historical' &&
                                         hoveredOrderHistory.order.positionId ===
                                             order.positionId
                                     ) {
@@ -490,6 +462,26 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                                 }
                                             },
                                         );
+                                    }
+
+                                    if (
+                                        bandAreaHistorical[index] !== undefined
+                                    ) {
+                                        bandAreaHistorical[index]
+                                            .xScale()
+                                            .range(range);
+
+                                        const bandData = {
+                                            fromValue: denomInBase
+                                                ? order.bidTickInvPriceDecimalCorrected
+                                                : order.bidTickPriceDecimalCorrected,
+                                            toValue: denomInBase
+                                                ? order.askTickInvPriceDecimalCorrected
+                                                : order.askTickPriceDecimalCorrected,
+                                            denomInBase: denomInBase,
+                                        } as bandLineData;
+
+                                        bandAreaHistorical[index]([bandData]);
                                     }
                                 }
                             },
@@ -623,59 +615,79 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                     },
                                 ];
 
-                                circleSeries[index](circleData);
-
                                 if (
                                     hoveredOrderHistory &&
                                     isHoveredOrderHistory &&
-                                    circleSeriesHighlighted.length > 0 &&
-                                    hoveredOrderHistory.entityType === 'swap' &&
-                                    hoveredOrderHistory.txId === order.txId &&
-                                    (selectedOrderHistory === undefined ||
-                                        hoveredOrderHistory.txId !==
-                                            selectedOrderHistory.txId)
+                                    hoveredOrderHistory.type === 'swap' &&
+                                    hoveredOrderHistory.order.txId ===
+                                        order.txId
                                 ) {
-                                    const circleDataHg = [
-                                        {
-                                            x:
-                                                hoveredOrderHistory.txTime *
-                                                1000,
-                                            y: denomInBase
-                                                ? order.swapInvPriceDecimalCorrected
-                                                : order.swapPriceDecimalCorrected,
-                                            denomInBase: denomInBase,
-                                        },
-                                    ];
+                                    circleSeries[index].decorate(
+                                        (context: CanvasRenderingContext2D) => {
+                                            const colorPalette =
+                                                calculateCircleColor(
+                                                    context,
+                                                    '--accent1',
+                                                    ['futa'].includes(
+                                                        platformName,
+                                                    )
+                                                        ? '--negative'
+                                                        : '--accent5',
+                                                    true,
+                                                );
 
-                                    circleSeriesHighlighted[index](
-                                        circleDataHg,
+                                            const isBuy =
+                                                (denomInBase && !order.isBuy) ||
+                                                (!denomInBase && order.isBuy);
+
+                                            context.strokeStyle = isBuy
+                                                ? colorPalette.circleBuyStrokeColor
+                                                : colorPalette.circleStrokeColor;
+
+                                            context.fillStyle = isBuy
+                                                ? colorPalette.buyFill
+                                                : colorPalette.sellFill;
+
+                                            context.lineWidth = 1;
+                                        },
                                     );
+
+                                    if (ctx) ctx.restore();
+                                } else {
+                                    circleSeries[index].decorate(
+                                        (context: CanvasRenderingContext2D) => {
+                                            const colorPalette =
+                                                calculateCircleColor(
+                                                    context,
+                                                    '--accent1',
+                                                    ['futa'].includes(
+                                                        platformName,
+                                                    )
+                                                        ? '--negative'
+                                                        : '--accent5',
+                                                    false,
+                                                );
+
+                                            const isBuy =
+                                                (denomInBase && !order.isBuy) ||
+                                                (!denomInBase && order.isBuy);
+
+                                            context.strokeStyle = isBuy
+                                                ? colorPalette.circleBuyStrokeColor
+                                                : colorPalette.circleStrokeColor;
+
+                                            context.fillStyle = isBuy
+                                                ? colorPalette.buyFill
+                                                : colorPalette.sellFill;
+
+                                            context.lineWidth = 1;
+                                        },
+                                    );
+
+                                    if (ctx) ctx.restore();
                                 }
 
-                                if (
-                                    selectedOrderHistory &&
-                                    isSelectedOrderHistory &&
-                                    circleSeriesHighlighted.length > 0 &&
-                                    selectedOrderHistory.entityType ===
-                                        'swap' &&
-                                    selectedOrderHistory.txId === order.txId
-                                ) {
-                                    const circleDataHg = [
-                                        {
-                                            x:
-                                                selectedOrderHistory.txTime *
-                                                1000,
-                                            y: denomInBase
-                                                ? order.swapInvPriceDecimalCorrected
-                                                : order.swapPriceDecimalCorrected,
-                                            denomInBase: denomInBase,
-                                        },
-                                    ];
-
-                                    circleSeriesHighlighted[index](
-                                        circleDataHg,
-                                    );
-                                }
+                                circleSeries[index](circleData);
                             }
                         });
                     }
@@ -701,15 +713,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         });
                     }
                     if (
-                        circleSeriesHighlighted !== undefined &&
-                        circleSeriesHighlighted.length > 0
-                    ) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        circleSeriesHighlighted.forEach((element: any) => {
-                            element.context(ctx);
-                        });
-                    }
-                    if (
                         bandAreaActive !== undefined &&
                         bandAreaActive.length > 0
                     ) {
@@ -727,9 +730,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             element.context(ctx);
                         });
                     }
-                    // if (bandAreaHighlighted !== undefined) {
-                    //     bandAreaHighlighted.context(ctx);
-                    // }
                 });
         }
 
@@ -750,7 +750,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         showSwap,
         liquidityLineSeries,
         scaleData,
-        // bandAreaHighlighted,
     ]);
 
     return <d3fc-canvas className='d3_order_canvas' ref={d3OrderCanvas} />;
