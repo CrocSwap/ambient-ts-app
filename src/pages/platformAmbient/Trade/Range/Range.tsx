@@ -440,14 +440,6 @@ function Range() {
         ],
     );
 
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        undefined,
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
-
     const isTokenAWalletBalanceSufficient =
         fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=
         tokenAQtyCoveredByWalletBalance;
@@ -1076,7 +1068,7 @@ function Range() {
             value: displayPriceWithDenom,
         }),
         slippageTolerance: slippageTolerancePercentage,
-        liquidityProviderFeeString: liquidityProviderFeeString,
+        liquidityFee: liquidityFee,
         quoteTokenIsBuy: true,
         isTokenABase: isTokenABase,
         showExtraInfoDropdown: showExtraInfoDropdown,

@@ -66,12 +66,14 @@ export function usePoolMetadata() {
         positionsByPool,
         limitOrdersByPool,
     } = useContext(GraphDataContext);
+
     const {
         tokenA,
         tokenB,
         defaultRangeWidthForActivePool,
         currentPoolPriceTick,
     } = useContext(TradeDataContext);
+
     const {
         cachedQuerySpotPrice,
         cachedQuerySpotTick,
@@ -285,9 +287,12 @@ export function usePoolMetadata() {
                 poolStat.quote.toLowerCase() ===
                     quoteTokenAddress.toLowerCase(),
         );
-
-        setLiquidityFee(currentPoolData?.feeRate || 0);
-    }, [allPoolStats]);
+        setLiquidityFee(
+            currentPoolData?.feeRate !== undefined
+                ? currentPoolData.feeRate
+                : undefined,
+        );
+    }, [allPoolStats, baseTokenAddress, quoteTokenAddress]);
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {

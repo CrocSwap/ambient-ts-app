@@ -126,6 +126,7 @@ const useFetchPoolStats = (
                     (await crocEnv.context).chain.chainId !== chainId
                 )
                     return;
+
                 const spotPrice =
                     spotPriceRetrieved !== undefined
                         ? spotPriceRetrieved
@@ -177,10 +178,11 @@ const useFetchPoolStats = (
                     const displayPriceWithFormatting = getFormattedNumber({
                         value: displayPriceWithInversion,
                     });
-
                     setPoolPriceDisplay(displayPriceWithFormatting);
                 } else {
                     setPoolPriceDisplay(undefined);
+                    setLocalPoolPriceNonDisplay(undefined);
+                    setPoolPriceDisplayNum(undefined);
                     setIsPoolInitialized(false);
                 }
             })();

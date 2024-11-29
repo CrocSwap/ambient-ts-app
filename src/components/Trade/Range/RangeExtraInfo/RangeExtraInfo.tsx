@@ -6,7 +6,7 @@ import { ExtraInfo } from '../../TradeModules/ExtraInfo/ExtraInfo';
 interface propsIF {
     poolPriceDisplay: string;
     slippageTolerance: number;
-    liquidityProviderFeeString: string;
+    liquidityFee: number | undefined;
     rangeGasPriceinDollars: string | undefined;
     isTokenABase: boolean;
     showExtraInfoDropdown: boolean;
@@ -16,7 +16,7 @@ function RangeExtraInfo(props: propsIF) {
     const {
         rangeGasPriceinDollars,
         slippageTolerance,
-        liquidityProviderFeeString,
+        liquidityFee,
         showExtraInfoDropdown,
     } = props;
 
@@ -43,11 +43,18 @@ function RangeExtraInfo(props: propsIF) {
         ? getFormattedNumber({ value: usdPrice })
         : '…';
 
+    const liquidityProviderFeeString = liquidityFee
+        ? (liquidityFee * 100).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          }) + ' %'
+        : '...';
+
     const extraInfo = [
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'This can be changed in settings.',
-            data: `${slippageTolerance}%`,
+            data: `${slippageTolerance} %`,
         },
         {
             title: 'Current Provider Fee',
@@ -56,7 +63,7 @@ function RangeExtraInfo(props: propsIF) {
             } / ${
                 isDenomBase ? quoteTokenSymbol : baseTokenSymbol
             } liquidity providers.`,
-            data: `${liquidityProviderFeeString}%`,
+            data: liquidityProviderFeeString,
         },
     ];
 
