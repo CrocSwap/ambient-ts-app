@@ -62,8 +62,8 @@ export default function TransactionDetailsGraph(
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext<CachedDataContextIF>(CachedDataContext);
 
-    const oneHourMiliseconds = 60 * 60 * 1000;
-    const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;
+    const oneHourMilliseconds = 60 * 60 * 1000;
+    const oneWeekMilliseconds = oneHourMilliseconds * 24 * 7;
     const isServerEnabled =
         import.meta.env.VITE_CACHE_SERVER_IS_ENABLED !== undefined
             ? import.meta.env.VITE_CACHE_SERVER_IS_ENABLED === 'true'
@@ -180,6 +180,9 @@ export default function TransactionDetailsGraph(
             if (graphData === undefined) {
                 setIsDataLoading(true);
             }
+
+            const nowTime = Date.now();
+
             const time = () => {
                 switch (transactionType) {
                     case 'swap':
@@ -193,20 +196,22 @@ export default function TransactionDetailsGraph(
                             ? timeFirstMintMemo
                             : tx.txTime;
                     default:
-                        return new Date().getTime();
+                        return nowTime;
                 }
             };
 
-            const minTime = time() * 1000 - oneWeekMiliseconds;
+            const minTimeBeforeOffset =
+                time() !== undefined ? time() * 1000 : nowTime;
 
-            const nowTime = Date.now();
+            const minTime = minTimeBeforeOffset - oneWeekMilliseconds;
+
             let diff = (nowTime - minTime) / 200;
 
             if (
                 timeFirstMintMemo &&
                 tx.txTime &&
                 timeFirstMintMemo !== tx.txTime &&
-                Math.abs(tx.txTime - nowTime) < oneWeekMiliseconds
+                Math.abs(tx.txTime - nowTime) < oneWeekMilliseconds
             ) {
                 diff = (Math.abs(tx.txTime - timeFirstMintMemo) * 1000) / 200;
             }
@@ -214,7 +219,7 @@ export default function TransactionDetailsGraph(
                 Math.floor(diff / 1000),
             );
 
-            if (nowTime - time() * 1000 < oneWeekMiliseconds) {
+            if (nowTime - minTimeBeforeOffset * 1000 < oneWeekMilliseconds) {
                 tempPeriod = 3600;
             }
 
@@ -233,7 +238,7 @@ export default function TransactionDetailsGraph(
                     maxNumCandlesNeeded,
                 );
 
-                const offsetInSeconds = oneHourMiliseconds / 1000;
+                const offsetInSeconds = oneHourMilliseconds / 1000;
 
                 const startBoundary =
                     Math.floor(localMaxTime / 1000) + offsetInSeconds;
@@ -270,10 +275,7 @@ export default function TransactionDetailsGraph(
 
                     setPoolPrice(poolPriceDisplay);
 
-                    console.log({
-                        numCandlesNeeded,
-                        startBoundary,
-                    });
+                    console.log({ numCandlesNeeded, startBoundary });
 
                     const graphData = await fetchCandleSeriesCroc(
                         fetchEnabled,
@@ -1317,7 +1319,9 @@ export default function TransactionDetailsGraph(
                         ) {
                             const time = timeFirstMintMemo
                                 ? timeFirstMintMemo * 1000
-                                : tx.txTime * 1000;
+                                : tx.txTime
+                                  ? tx.txTime * 1000
+                                  : Date.now() - oneWeekMilliseconds;
 
                             const timeEnd =
                                 tx.txTime &&
