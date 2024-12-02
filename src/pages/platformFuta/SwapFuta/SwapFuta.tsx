@@ -11,8 +11,6 @@ import styles from './SwapFuta.module.css';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import { ChartContext } from '../../../contexts/ChartContext';
 
-// import logo from '../../../assets/futa/logos/homeLogo.svg';
-
 function SwapFuta() {
     const tradeWrapperID = 'swapFutaTradeWrapper';
 
