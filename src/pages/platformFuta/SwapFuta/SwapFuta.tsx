@@ -1,13 +1,10 @@
 import { useContext, useState } from 'react';
+import styles from './SwapFuta.module.css';
 import Comments from '../../../components/Futa/Comments/Comments';
 import Divider from '../../../components/Futa/Divider/FutaDivider';
-import Separator from '../../../components/Futa/Separator/Separator';
 import Swap from '../../platformAmbient/Trade/Swap/Swap';
-
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Trade from '../../platformAmbient/Trade/Trade';
-import styles from './SwapFuta.module.css';
-
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import { ChartContext } from '../../../contexts/ChartContext';
 
