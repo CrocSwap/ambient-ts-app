@@ -49,6 +49,15 @@ export const mainnetSWETH: TokenIF = {
     symbol: 'swETH',
 };
 
+export const mainnetRSETH: TokenIF = {
+    address: '0xa1290d69c65a6fe4df752f95823fae25cb99e5a7',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://etherscan.io/token/images/kelprseth_32.png',
+    name: 'Kelp DAO Restaked ETH',
+    symbol: 'rsETH',
+};
+
 export const mainnetRSWETH: TokenIF = {
     address: '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0',
     chainId: 1,
@@ -845,6 +854,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetWstETH,
     mainnetMATIC,
     mainnetSWETH,
+    mainnetRSETH,
     mainnetRSWETH,
     mainnetSWELL,
     mainnetSTONE,
