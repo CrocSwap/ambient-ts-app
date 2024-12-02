@@ -446,7 +446,11 @@ export default function VaultDeposit(props: Props) {
                     mainAsset,
                     secondaryAsset,
                     undefined,
-                    isActiveNetworkPlume ? depositBigint : undefined,
+                    isActiveNetworkPlume
+                        ? depositBigint
+                        : mainAssetBalanceBigint
+                          ? mainAssetBalanceBigint
+                          : undefined,
                 );
             }}
             flat={true}
