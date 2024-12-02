@@ -190,6 +190,15 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
             baseToken.address === ZERO_ADDRESS &&
             isWbtcToken(quoteToken.address);
 
+        console.log({
+            usdPrice,
+            isPairStablePair,
+            isPairEthPair,
+            isPoolBtcPair,
+            isPairEthWbtc,
+            excludeFromUsdConversion,
+        });
+
         if (
             usdPrice !== undefined &&
             !(
@@ -200,8 +209,10 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
                 excludeFromUsdConversion
             )
         ) {
+            console.log('setting dollarization to true');
             setIsTradeDollarizationEnabled(true);
         } else {
+            console.log('setting dollarization to false');
             setIsTradeDollarizationEnabled(false);
         }
     }, [baseToken.address, quoteToken.address, usdPrice !== undefined]);

@@ -278,8 +278,8 @@ function TradeCandleStickChart(props: propsIF) {
             let topBoundary = 0;
             let lowBoundary = 0;
 
-            const lowTick = currentPoolPriceTick - 100 * 101;
-            const highTick = currentPoolPriceTick + 100 * 101;
+            const lowTick = (currentPoolPriceTick || 0) - 100 * 101;
+            const highTick = (currentPoolPriceTick || 0) + 100 * 101;
 
             const rangeBoundary = getPinnedPriceValuesFromTicks(
                 isDenomBase,

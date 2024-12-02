@@ -35,7 +35,7 @@ export interface TradeDataContextIF {
     primaryQuantity: string;
     limitTick: number | undefined;
     poolPriceNonDisplay: number;
-    currentPoolPriceTick: number;
+    currentPoolPriceTick: number | undefined;
     slippageTolerance: number;
 
     setTokenA: Dispatch<SetStateAction<TokenIF>>;
@@ -160,8 +160,8 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         areDefaultTokensUpdatedForChain,
         setAreDefaultTokensUpdatedForChain,
     ] = useState<boolean>(false);
+
     const [isDenomBase, setDenomInBase] = useState<boolean>(true);
-    // TODO: this can likely be refactored out
     const [didUserFlipDenom, setDidUserFlipDenom] = useState<boolean>(false);
 
     const { baseToken, quoteToken, isTokenABase } = useMemo(() => {
@@ -185,6 +185,11 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
             };
         }
     }, [tokenA, tokenB]);
+
+    useEffect(() => {
+        setPoolPriceNonDisplay(0);
+        setDidUserFlipDenom(false);
+    }, [baseToken.address + quoteToken.address]);
 
     const toggleDidUserFlipDenom = () => {
         setDidUserFlipDenom(!didUserFlipDenom);
@@ -226,18 +231,14 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     const [limitTick, setLimitTick] = useState<number | undefined>(undefined);
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
 
-    const currentPoolPriceTick = useMemo(
-        () =>
-            poolPriceNonDisplay === undefined || poolPriceNonDisplay === 0
-                ? 0
-                : Math.log(poolPriceNonDisplay) / Math.log(1.0001),
-        [poolPriceNonDisplay],
-    );
+    const currentPoolPriceTick =
+        poolPriceNonDisplay === undefined || poolPriceNonDisplay === 0
+            ? undefined
+            : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     useEffect(() => {
-        setPoolPriceNonDisplay(0);
-        setDidUserFlipDenom(false);
-    }, [baseToken.address + quoteToken.address]);
+        console.log({ poolPriceNonDisplay, currentPoolPriceTick });
+    }, [poolPriceNonDisplay, currentPoolPriceTick]);
 
     const [slippageTolerance, setSlippageTolerance] = useState<number>(0.5);
 
