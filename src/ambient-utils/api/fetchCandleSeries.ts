@@ -85,6 +85,8 @@ export async function fetchCandleSeriesCroc(
     const startTimeRough = endTime - nCandles * period;
     const startTime = Math.ceil(startTimeRough / period) * period;
 
+    console.log({ nCandles, startTime });
+
     const reqOptions = new URLSearchParams({
         base: baseTokenAddress,
         quote: quoteTokenAddress,

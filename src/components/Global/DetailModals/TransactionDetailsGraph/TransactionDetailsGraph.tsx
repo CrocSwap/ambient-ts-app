@@ -270,6 +270,11 @@ export default function TransactionDetailsGraph(
 
                     setPoolPrice(poolPriceDisplay);
 
+                    console.log({
+                        numCandlesNeeded,
+                        startBoundary,
+                    });
+
                     const graphData = await fetchCandleSeriesCroc(
                         fetchEnabled,
                         chainId,
