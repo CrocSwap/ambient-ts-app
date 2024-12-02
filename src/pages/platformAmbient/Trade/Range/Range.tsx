@@ -299,6 +299,16 @@ function Range() {
         [userPositions, isAmbient, defaultLowTick, defaultHighTick],
     );
 
+    const { isTokenAInputDisabled, isTokenBInputDisabled } =
+        useRangeInputDisable(
+            isAmbient,
+            isTokenABase,
+            currentPoolPriceTick,
+            defaultLowTick,
+            defaultHighTick,
+            isDenomBase,
+        );
+
     const tokenASurplusMinusTokenARemainderNum =
         fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
         fromDisplayQty(tokenAInputQtyNoExponentString || '0', tokenA.decimals);
@@ -306,21 +316,26 @@ function Range() {
         fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) -
         fromDisplayQty(tokenBInputQtyNoExponentString || '0', tokenB.decimals);
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
-        ? tokenASurplusMinusTokenARemainderNum < 0
+        ? tokenASurplusMinusTokenARemainderNum < 0 && !isTokenAInputDisabled
             ? tokenASurplusMinusTokenARemainderNum * -1n
             : 0n
-        : fromDisplayQty(
-              tokenAInputQtyNoExponentString || '0',
-              tokenA.decimals,
-          );
+        : !isTokenAInputDisabled
+          ? fromDisplayQty(
+                tokenAInputQtyNoExponentString || '0',
+                tokenA.decimals,
+            )
+          : 0n;
     const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
-        ? tokenBSurplusMinusTokenBRemainderNum < 0
+        ? tokenBSurplusMinusTokenBRemainderNum < 0 && !isTokenBInputDisabled
             ? tokenBSurplusMinusTokenBRemainderNum * -1n
             : 0n
-        : fromDisplayQty(
-              tokenBInputQtyNoExponentString || '0',
-              tokenB.decimals,
-          );
+        : !isTokenBInputDisabled
+          ? fromDisplayQty(
+                tokenBInputQtyNoExponentString || '0',
+                tokenB.decimals,
+            )
+          : 0n;
+
     const isQtyEntered =
         tokenAInputQtyNoExponentString !== '' &&
         tokenBInputQtyNoExponentString !== '';
@@ -505,16 +520,6 @@ function Range() {
             setCurrentRangeInAdd('');
         }
     }, [isAdd]);
-
-    const { isTokenAInputDisabled, isTokenBInputDisabled } =
-        useRangeInputDisable(
-            isAmbient,
-            isTokenABase,
-            currentPoolPriceTick,
-            defaultLowTick,
-            defaultHighTick,
-            isDenomBase,
-        );
 
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
