@@ -961,7 +961,12 @@ function Swap(props: propsIF) {
                                 undefined,
                                 isActiveNetworkPlume
                                     ? tokenAQtyCoveredByWalletBalance
-                                    : undefined,
+                                    : tokenABalance
+                                      ? fromDisplayQty(
+                                            tokenABalance,
+                                            tokenA.decimals,
+                                        )
+                                      : undefined,
                             );
                         }}
                         flat

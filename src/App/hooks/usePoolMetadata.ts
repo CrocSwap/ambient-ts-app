@@ -149,12 +149,7 @@ export function usePoolMetadata() {
 
     // Token and range housekeeping when switching pairs
     useEffect(() => {
-        if (
-            contextMatchesParams &&
-            crocEnv &&
-            tokenA.address &&
-            tokenB.address
-        ) {
+        if (contextMatchesParams && tokenA.address && tokenB.address) {
             if (!ticksInParams) {
                 setAdvancedLowTick(0);
                 setAdvancedHighTick(0);

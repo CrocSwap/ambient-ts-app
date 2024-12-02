@@ -40,6 +40,8 @@ interface PropsIF {
     tokenAQtyCoveredByWalletBalance: bigint;
     tokenBQtyCoveredByWalletBalance: bigint;
     isTokenAPrimary: boolean;
+    tokenABalance: string;
+    tokenBBalance: string;
 }
 export default function InitButton(props: PropsIF) {
     const {
@@ -73,6 +75,8 @@ export default function InitButton(props: PropsIF) {
         tokenAQtyCoveredByWalletBalance,
         tokenBQtyCoveredByWalletBalance,
         isTokenAPrimary,
+        tokenABalance,
+        tokenBBalance,
     } = props;
 
     const { isActiveNetworkPlume } = useContext(ChainDataContext);
@@ -106,7 +110,9 @@ export default function InitButton(props: PropsIF) {
                             ? tokenAQtyForApproval
                             : // add 1% buffer to avoid rounding errors
                               (tokenAQtyCoveredByWalletBalance * 101n) / 100n
-                        : undefined,
+                        : tokenABalance
+                          ? fromDisplayQty(tokenABalance, tokenA.decimals)
+                          : undefined,
                 );
             }}
             flat={true}
@@ -133,7 +139,9 @@ export default function InitButton(props: PropsIF) {
                             ? tokenBQtyForApproval
                             : // add 1% buffer to avoid rounding errors
                               (tokenBQtyCoveredByWalletBalance * 101n) / 100n
-                        : undefined,
+                        : tokenBBalance
+                          ? fromDisplayQty(tokenBBalance, tokenB.decimals)
+                          : undefined,
                 );
             }}
             flat={true}

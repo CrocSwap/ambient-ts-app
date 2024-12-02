@@ -1292,7 +1292,12 @@ function Range() {
                                           (tokenAQtyCoveredByWalletBalance *
                                               101n) /
                                           100n
-                                    : undefined,
+                                    : tokenABalance
+                                      ? fromDisplayQty(
+                                            tokenABalance,
+                                            tokenA.decimals,
+                                        )
+                                      : undefined,
                             );
                         }}
                         flat={true}
@@ -1322,7 +1327,12 @@ function Range() {
                                           (tokenBQtyCoveredByWalletBalance *
                                               101n) /
                                           100n
-                                    : undefined,
+                                    : tokenBBalance
+                                      ? fromDisplayQty(
+                                            tokenBBalance,
+                                            tokenB.decimals,
+                                        )
+                                      : undefined,
                             );
                         }}
                         flat={true}
