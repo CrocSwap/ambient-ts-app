@@ -105,6 +105,11 @@ function SwapFuta() {
 
     if (showActiveMobileComponent) return mobileSwap;
 
+    // !important:  the top-level component CSS grid and as such, the three
+    // !important:  ... `<div>` elems need to stay in place to preserve
+    // !important:  ... layout, more permanently we should switch to a CSS
+    // !important:  ... flexbox layout or refactor to change grid alignment
+
     return (
         <section className={styles.mainSection}>
             <div
@@ -118,7 +123,11 @@ function SwapFuta() {
             </div>
 
             <div style={{ paddingBottom: '4px' }}>
-                <Separator dots={100} />
+                {
+                    // code below this line no longer needed but wrapper needs to
+                    // ... exist to preserve page layout sans further CSS changes
+                    // <Separator dots={100} />
+                }
             </div>
             <div>
                 <span id={tradeWrapperID}>
