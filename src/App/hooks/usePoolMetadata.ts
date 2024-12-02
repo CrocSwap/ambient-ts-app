@@ -206,10 +206,12 @@ export function usePoolMetadata() {
                         );
                     // Sort and remove the oldest transactions if necessary
                     const prevChangesCopy = [...prev.changes]; // Create a copy to avoid mutating state directly
-                    if (newUniqueTxByPoolData.length > 0) {
-                        prevChangesCopy.sort((a, b) => a.txTime - b.txTime);
-                        prevChangesCopy.splice(0, newUniqueTxByPoolData.length);
-                    }
+
+                    // splite action disabled for infinite scroll, was triggering redundant page skip issue
+                    // if (newUniqueTxByPoolData.length > 0) {
+                    //     prevChangesCopy.sort((a, b) => a.txTime - b.txTime);
+                    //     prevChangesCopy.splice(0, newUniqueTxByPoolData.length);
+                    // }
 
                     const newTxsArray = [
                         ...prevChangesCopy,
