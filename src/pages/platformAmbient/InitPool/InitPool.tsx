@@ -133,6 +133,7 @@ export default function InitPool() {
         quoteToken,
         setIsTokenAPrimary,
         setPrimaryQuantity,
+        isTokenAPrimary,
     } = useContext(TradeDataContext);
 
     useEffect(() => {
@@ -1140,6 +1141,7 @@ export default function InitPool() {
         selectedPoolPriceTick,
         tokenAQtyCoveredByWalletBalance,
         tokenBQtyCoveredByWalletBalance,
+        isTokenAPrimary,
     };
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;

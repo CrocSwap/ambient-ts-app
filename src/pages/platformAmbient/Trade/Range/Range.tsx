@@ -1281,7 +1281,12 @@ function Range() {
                                 tokenA.symbol,
                                 undefined,
                                 isActiveNetworkPlume
-                                    ? tokenAQtyCoveredByWalletBalance
+                                    ? isTokenAPrimary
+                                        ? tokenAQtyCoveredByWalletBalance
+                                        : // add 1% buffer to avoid rounding errors
+                                          (tokenAQtyCoveredByWalletBalance *
+                                              101n) /
+                                          100n
                                     : undefined,
                             );
                         }}
@@ -1306,7 +1311,12 @@ function Range() {
                                 tokenB.symbol,
                                 undefined,
                                 isActiveNetworkPlume
-                                    ? tokenBQtyCoveredByWalletBalance
+                                    ? !isTokenAPrimary
+                                        ? tokenBQtyCoveredByWalletBalance
+                                        : // add 1% buffer to avoid rounding errors
+                                          (tokenBQtyCoveredByWalletBalance *
+                                              101n) /
+                                          100n
                                     : undefined,
                             );
                         }}
