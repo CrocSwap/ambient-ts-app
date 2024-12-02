@@ -8,6 +8,8 @@
     padding: 8px 16px 8px 16px;
     position: relative;
     font-family: 'Roboto Mono';
+
+   
 }
 
 .moreContainer {
@@ -142,9 +144,13 @@
 
 @media (min-width: 768px) {
 
-    .container{
-        position: sticky;
+    .fixedPositioned{
+        position: fixed;
         top: 0;
+    }
+
+    .container{
+        width: 100%;
         z-index: 99;
     }
     .connectButton {
@@ -199,6 +205,7 @@
 
 .navItem {
     display: inline-block;
+   
 }
 
 .navLink {
@@ -218,29 +225,8 @@
     border-radius: 0;
     transition: background 0.3s, color 0.3s;
 }
-/*
-/* Remove skew only on the left side of the first tab */
-.navItem:first-child .navLink  {
-    transform: none; /* Removes slant on the left side */
-    padding-left: 1.5em; /* Adjust padding for alignment */
-    position: relative;
-    
-}
 
-/* Add slant back to the right side of the first tab */
-.navItem:first-child .navLink::after  {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: -2px; /* Adjust to control the slant angle */
-    height: 100%;
-    width: 3px; /* Width to match the slant */
-    background: #5C6F72; /* Match the border color */
-    transform: skewX(25deg); /* Slant effect on the right side */
-    border-top: 2px solid #5C6F72;
-    border-bottom: 2px solid #5C6F72;
-    
-}
+
 .slantedText {
     transform: skewX(-27deg);
     display: inline-block;
@@ -251,6 +237,7 @@
 .navLink:focus {
     background: var(--text1);
     color: var(--dark1);
+    cursor: pointer;
 }
 
 .active {

@@ -81,6 +81,8 @@ const linkItemVariants = {
 export default function Navbar() {
     // States
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const currentLocationIsHome = location.pathname  == '/';
+
 
     // Context
     const { isConnected } = useWeb3ModalAccount();
@@ -308,7 +310,7 @@ export default function Navbar() {
 
     return (
         <>
-            <div className={styles.container}>
+            <div className={`${styles.container} ${currentLocationIsHome && styles.fixedPositioned}`}>
                 <div className={styles.logoContainer}>
                     <Link to='/'>
             
