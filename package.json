@@ -82,7 +82,7 @@
         "@types/react-color": "^3.0.12",
         "@typescript-eslint/eslint-plugin": "^5.22.0",
         "@typescript-eslint/parser": "^7.1.0",
-        "@vitejs/plugin-react": "^4.3.3",
+        "@vitejs/plugin-react": "^4.3.4",
         "adm-zip": "^0.5.10",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^9.1.0",
