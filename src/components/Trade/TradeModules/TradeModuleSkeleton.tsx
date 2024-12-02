@@ -200,7 +200,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     flexDirection='column'
                     gap={8}
                     margin='8px 0 0 0'
-                    padding={isFuta ? '0 16px' : '0 32px'}
+                    padding={isFuta ? '0 16px' : '0 32px 30px 32px'}
                 >
                     {transactionDetails}
                     <SmolRefuelLink />
