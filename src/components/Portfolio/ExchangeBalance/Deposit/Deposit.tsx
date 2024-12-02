@@ -345,8 +345,11 @@ export default function Deposit(props: propsIF) {
             setRecheckTokenAllowance,
             isActiveNetworkPlume
                 ? BigInt(depositQtyNonDisplay)
-                : tokenWalletBalance
-                  ? fromDisplayQty(tokenWalletBalance, selectedToken.decimals)
+                : tokenWalletBalanceDisplay
+                  ? fromDisplayQty(
+                        tokenWalletBalanceDisplay,
+                        selectedToken.decimals,
+                    )
                   : undefined,
         );
     };
