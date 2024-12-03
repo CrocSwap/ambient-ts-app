@@ -157,7 +157,7 @@ export default function VaultRow(props: propsIF) {
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                 {balDisplay}
-                {!!crocEnvBal && !!userAddress && (
+                {!!(vault.balance ?? crocEnvBal) && !!userAddress && (
                     <>
                         <TokenIcon
                             token={mainAsset}
