@@ -1,4 +1,4 @@
-import { toDisplayQty } from '@crocswap-libs/sdk';
+import { fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
 import {
     Dispatch,
     SetStateAction,
@@ -343,7 +343,14 @@ export default function Deposit(props: propsIF) {
             selectedToken.address,
             selectedToken.symbol,
             setRecheckTokenAllowance,
-            isActiveNetworkPlume ? BigInt(depositQtyNonDisplay) : undefined,
+            isActiveNetworkPlume
+                ? BigInt(depositQtyNonDisplay)
+                : tokenWalletBalanceDisplay
+                  ? fromDisplayQty(
+                        tokenWalletBalanceDisplay,
+                        selectedToken.decimals,
+                    )
+                  : undefined,
         );
     };
 

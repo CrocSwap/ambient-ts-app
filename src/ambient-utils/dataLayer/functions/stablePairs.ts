@@ -17,6 +17,7 @@ import {
     blastWrsETH,
     mainnetDAI,
     mainnetLUSD,
+    mainnetRSETH,
     mainnetRSWETH,
     mainnetSTONE,
     mainnetSWELL,
@@ -167,6 +168,7 @@ export const WBTC_TOKENS = [
 export const STAKED_ETH_TOKENS = [
     mainnetWstETH.address,
     mainnetSWETH.address,
+    mainnetRSETH.address,
     mainnetRSWETH.address,
     mainnetSTONE.address,
     scrollWstETH.address,
