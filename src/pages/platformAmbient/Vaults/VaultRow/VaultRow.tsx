@@ -65,17 +65,17 @@ export default function VaultRow(props: propsIF) {
     const [crocEnvBal, setCrocEnvBal] = useState<bigint>();
 
     async function getCrocEnvBalance(): Promise<void> {
-        if (
-            crocEnv &&
-            !vault.balanceAmount &&
-            userAddress &&
-            needsFallbackQuery
-        ) {
-            const tempestVault = crocEnv.tempestVault(
-                vault.address,
-                vault.mainAsset,
-            );
-            setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
+        if (crocEnv && userAddress && needsFallbackQuery) {
+            try {
+                const tempestVault = crocEnv.tempestVault(
+                    vault.address,
+                    vault.mainAsset,
+                );
+                const balance = await tempestVault.balanceToken1(userAddress);
+                setCrocEnvBal(balance);
+            } catch (error) {
+                console.log({ error });
+            }
         }
     }
 

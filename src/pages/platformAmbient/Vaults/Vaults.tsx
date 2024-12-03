@@ -65,7 +65,6 @@ function Vaults() {
                         parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
                 );
                 setAllVaultsData(sorted ?? undefined);
-                setServerErrorReceived(false);
             } catch (error) {
                 console.log({ error });
                 setAllVaultsData(undefined);
@@ -104,7 +103,10 @@ function Vaults() {
                 const response = await fetch(endpoint);
                 const { data } = await response.json();
                 setUserVaultData(data ?? undefined);
-                setServerErrorReceived(false);
+                const dataWithZeroBalancesReceived = data.some(
+                    (d: VaultIF) => d.balance === '0',
+                );
+                setServerErrorReceived(dataWithZeroBalancesReceived);
             } catch (error) {
                 console.log({ error });
                 setUserVaultData(undefined);
