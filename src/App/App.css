@@ -363,16 +363,16 @@ scrollbar-color: transparent;
       } */
 }
 @media only screen and (min-width: 768px) {
-
+/* 
     .futa_routes {
-        background-color: rgb(13, 15, 19); /* CRT-like dark background */
+        background-color: rgba(13, 15, 19, 0.1);
         text-shadow:
             0 0 0.2em currentColor,
-            1px 1px rgba(255, 0, 255, 0.5),
-            -1px -1px rgba(0, 255, 255, 0.4); /* Glowing text shadow */
+            1px 1px rgba(255, 0, 255, 0.1),
+            -1px -1px rgba(0, 255, 255, 0.1); 
         position: relative;
         z-index: 0;
-    }
+    } */
     
     .futa_routes::before,
     .futa_routes::after {
@@ -386,7 +386,7 @@ scrollbar-color: transparent;
         left: 0;
         top: 0;
         z-index: 1;
-        opacity: 0.5;
+        opacity: 0.2;
     }
     
     .futa_routes::before {
