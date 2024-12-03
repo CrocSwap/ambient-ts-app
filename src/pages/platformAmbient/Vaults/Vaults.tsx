@@ -5,6 +5,7 @@ import {
     UserVaultsServerIF,
     VaultIF,
 } from '../../../ambient-utils/types';
+import TokenRowSkeleton from '../../../components/Global/Explore/TokenRow/TokenRowSkeleton';
 import {
     AppStateContext,
     ReceiptContext,
@@ -54,13 +55,34 @@ function Vaults() {
 
     async function getAllVaultsData(): Promise<void> {
         const endpoint = `${VAULTS_API_URL}/vaults`;
-        const response = await fetch(endpoint);
-        const { data } = await response.json();
-        const sorted: AllVaultsServerIF[] = data.vaults.sort(
-            (a: AllVaultsServerIF, b: AllVaultsServerIF) =>
-                parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
-        );
-        setAllVaultsData(sorted);
+
+        const fetchData = async () => {
+            try {
+                const response = await fetch(endpoint);
+                const { data } = await response.json();
+                const sorted: AllVaultsServerIF[] = data.vaults.sort(
+                    (a: AllVaultsServerIF, b: AllVaultsServerIF) =>
+                        parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
+                );
+                setAllVaultsData(sorted ?? undefined);
+                setServerErrorReceived(false);
+            } catch (error) {
+                console.log({ error });
+                setAllVaultsData(undefined);
+                setServerErrorReceived(true);
+                return;
+            }
+        };
+
+        const timeout = new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 2000);
+        });
+
+        await Promise.race([fetchData(), timeout]);
+
+        fetchData();
     }
 
     // hooks to fetch and hold user vault data
@@ -117,6 +139,12 @@ function Vaults() {
         return () => clearInterval(interval);
     }, [sessionReceipts.length, isUserIdle]);
 
+    const tempItems = [1, 2, 3, 4, 5];
+
+    const skeletonDisplay = tempItems.map((item, idx) => (
+        <TokenRowSkeleton key={idx} />
+    ));
+
     return (
         <div data-testid={'vaults'} className={styles.container}>
             <div className={styles.content}>
@@ -132,39 +160,48 @@ function Vaults() {
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
-                    {(allVaultsData ?? placeholderVaultsListData) &&
-                        (allVaultsData ?? placeholderVaultsListData)
-                            .sort(
-                                (
-                                    a: VaultIF | AllVaultsServerIF,
-                                    b: VaultIF | AllVaultsServerIF,
-                                ) =>
-                                    parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
-                            )
-                            .filter(
-                                (vault) =>
-                                    Number(vault.chainId) === Number(chainId),
-                            )
-                            .map((vault: VaultIF | AllVaultsServerIF) => {
-                                const KEY_SLUG = 'vault_row_';
-                                return (
-                                    <VaultRow
-                                        key={KEY_SLUG + vault.address}
-                                        idForDOM={KEY_SLUG + vault.address}
-                                        vault={
-                                            new Vault(
-                                                vault,
-                                                userVaultData?.find(
-                                                    (uV: UserVaultsServerIF) =>
-                                                        uV.vaultAddress.toLowerCase() ===
-                                                        vault.address.toLowerCase(),
-                                                ),
-                                            )
-                                        }
-                                        needsFallbackQuery={serverErrorReceived}
-                                    />
-                                );
-                            })}
+                    {allVaultsData === null
+                        ? skeletonDisplay
+                        : (allVaultsData?.length
+                              ? allVaultsData
+                              : placeholderVaultsListData
+                          )
+                              .sort(
+                                  (
+                                      a: VaultIF | AllVaultsServerIF,
+                                      b: VaultIF | AllVaultsServerIF,
+                                  ) =>
+                                      parseFloat(b.tvlUsd) -
+                                      parseFloat(a.tvlUsd),
+                              )
+                              .filter(
+                                  (vault) =>
+                                      Number(vault.chainId) === Number(chainId),
+                              )
+                              .map((vault: VaultIF | AllVaultsServerIF) => {
+                                  const KEY_SLUG = 'vault_row_';
+                                  return (
+                                      <VaultRow
+                                          key={KEY_SLUG + vault.address}
+                                          idForDOM={KEY_SLUG + vault.address}
+                                          vault={
+                                              new Vault(
+                                                  vault,
+                                                  userVaultData?.find(
+                                                      (
+                                                          uV: UserVaultsServerIF,
+                                                      ) =>
+                                                          uV.vaultAddress.toLowerCase() ===
+                                                          vault.address.toLowerCase(),
+                                                  ),
+                                              )
+                                          }
+                                          needsFallbackQuery={
+                                              serverErrorReceived
+                                          }
+                                      />
+                                  );
+                              })}
                 </div>
             </div>
         </div>

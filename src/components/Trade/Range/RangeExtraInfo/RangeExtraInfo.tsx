@@ -34,8 +34,8 @@ function RangeExtraInfo(props: propsIF) {
         ? getFormattedNumber({
               value: estRangeApr,
               isPercentage: true,
-              minFracDigits: 1,
-              maxFracDigits: 1,
+              minFracDigits: estRangeApr < 0.01 ? 3 : estRangeApr < 0.1 ? 2 : 1,
+              maxFracDigits: estRangeApr < 0.01 ? 3 : estRangeApr < 0.1 ? 2 : 1,
           }) + ' %'
         : '…';
 
