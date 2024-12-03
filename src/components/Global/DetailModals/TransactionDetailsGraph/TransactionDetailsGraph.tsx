@@ -718,8 +718,17 @@ export default function TransactionDetailsGraph(
                     const minimumDifferenceMinMax = 75;
 
                     if (result) {
-                        const minTime = result.min * 1000;
-                        const maxTime = result.max * 1000;
+                        if (result.min === 0) {
+                            result.min =
+                                (Date.now() - oneWeekMilliseconds) / 1000;
+                        }
+
+                        if (result.max === 0) {
+                            result.max = Date.now() / 1000;
+                        }
+
+                        const minTime = Math.min(result.min, result.max) * 1000;
+                        const maxTime = Math.max(result.min, result.max) * 1000;
                         const maxTimePixel = xScale(maxTime);
 
                         const maxDomainPixel = svgWidth;
@@ -1313,7 +1322,8 @@ export default function TransactionDetailsGraph(
 
                         if (
                             transactionType === 'liqchange' &&
-                            tx !== undefined
+                            tx !== undefined &&
+                            timeFirstMintMemo
                         ) {
                             const time = timeFirstMintMemo
                                 ? timeFirstMintMemo * 1000
