@@ -537,9 +537,12 @@ export default function TransactionDetailsGraph(
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((selection: any) => {
-                    const time = timeFirstMintMemo
-                        ? timeFirstMintMemo * 1000
-                        : tx.txTime * 1000;
+                    const time =
+                        timeFirstMintMemo !== undefined
+                            ? timeFirstMintMemo === 0
+                                ? Date.now()
+                                : timeFirstMintMemo * 1000
+                            : tx.txTime * 1000;
                     selection
                         .select('path')
                         .style(
@@ -1322,14 +1325,14 @@ export default function TransactionDetailsGraph(
 
                         if (
                             transactionType === 'liqchange' &&
-                            tx !== undefined &&
-                            timeFirstMintMemo
+                            tx !== undefined
                         ) {
-                            const time = timeFirstMintMemo
-                                ? timeFirstMintMemo * 1000
-                                : tx.txTime
-                                  ? tx.txTime * 1000
-                                  : Date.now() - oneWeekMilliseconds;
+                            const time =
+                                timeFirstMintMemo !== undefined
+                                    ? timeFirstMintMemo * 1000
+                                    : tx.txTime
+                                      ? tx.txTime * 1000
+                                      : Date.now() - oneWeekMilliseconds;
 
                             const timeEnd =
                                 tx.txTime &&
@@ -1365,9 +1368,12 @@ export default function TransactionDetailsGraph(
 
                             horizontalBandData[0] = [bidLine, askLine];
 
-                            const timeStart = timeFirstMintMemo
-                                ? timeFirstMintMemo * 1000
-                                : tx.txTime * 1000;
+                            const timeStart =
+                                timeFirstMintMemo !== undefined
+                                    ? timeFirstMintMemo === 0
+                                        ? Date.now()
+                                        : timeFirstMintMemo * 1000
+                                    : tx.txTime * 1000;
 
                             const rangeLinesDataBid = [
                                 { x: timeStart, y: bidLine },
@@ -1457,7 +1463,12 @@ export default function TransactionDetailsGraph(
                                 }
                             }
                             verticalLineData.push({
-                                name: isSmallRange ? 'Open' : 'Open Position',
+                                name:
+                                    timeFirstMintMemo === 0
+                                        ? 'Update'
+                                        : isSmallRange
+                                          ? 'Open'
+                                          : 'Open Position',
                                 value: timeStart,
                             });
 
