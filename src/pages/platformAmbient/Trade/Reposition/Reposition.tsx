@@ -278,7 +278,7 @@ function Reposition() {
         setNewValueNum(undefined);
         setNewBaseQtyDisplay('...');
         setNewQuoteQtyDisplay('...');
-    }, [position, rangeWidthPercentage]);
+    }, [position?.positionId, rangeWidthPercentage]);
 
     useEffect(() => {
         if (!position) {
