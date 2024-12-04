@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.10.2",
+    "version": "2.10.14-futa",
     "private": true,
     "type": "module",
     "dependencies": {
