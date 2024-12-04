@@ -30,7 +30,7 @@ export const fetchTokenPrice = async (
                       ? 'blast'
                       : chain === '0x18230'
                         ? 'plume'
-                        : chain === '0x784'
+                        : chain === '0x783'
                           ? 'swell'
                           : chain === '0x14a34'
                             ? 'base'

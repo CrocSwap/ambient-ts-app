@@ -154,6 +154,17 @@ export default function NetworkSelector(props: propsIF) {
             condition: chainMap.has('0x82750'),
         },
         {
+            id: 'swell_network_selector',
+            chainId: '0x783',
+            name: 'Swell',
+            logo: swellSepoliaLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: false,
+            link: '',
+            condition: chainMap.has('0x783'),
+        },
+        {
             id: 'blast_network_selector',
             chainId: '0x13e31',
             name: 'Blast',

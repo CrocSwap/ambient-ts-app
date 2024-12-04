@@ -10,6 +10,7 @@ import {
     futaBrandAssets,
     plumeSepoliaBrandAssets,
     scrollBrandAssets,
+    swellBrandAssets,
     swellSepoliaBrandAssets,
 } from '../assets/branding';
 import { brandIF, fontSets, heroItem } from '../assets/branding/types';
@@ -77,6 +78,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return blastBrandAssets;
             case 'scroll':
                 return scrollBrandAssets;
+            case 'swell':
+                return swellBrandAssets;
             case 'futa':
                 return futaBrandAssets;
             case 'ambientProduction':

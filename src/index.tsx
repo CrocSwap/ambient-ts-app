@@ -85,6 +85,7 @@ const modal = createWeb3Modal({
         534352: scrollLogo,
         11155111: sepoliaLogo,
         98864: plumeSepoliaLogo,
+        1923: swellSepoliaLogo,
         1924: swellSepoliaLogo,
         84532: baseSepoliaLogo,
     },

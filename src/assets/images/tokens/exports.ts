@@ -54,6 +54,7 @@ import USDT from './USDT.svg';
 import WBTC from './WBTC.png';
 import WEETH from './WEETH.svg';
 import WRSETH from './WRSETH.png';
+import WTT from './WTT.webp';
 import XMON from './XMON.png';
 import YES from './YES.png';
 import YIELD from './YIELD.jpg';
@@ -117,6 +118,7 @@ export {
     WBTC,
     WEETH,
     WRSETH,
+    WTT,
     XMON,
     YES,
     YIELD,
