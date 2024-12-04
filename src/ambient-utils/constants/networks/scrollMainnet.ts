@@ -1,7 +1,6 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     scrollETH,
-    scrollScroll,
     scrollUSDC,
     scrollUSDT,
     scrollWBTC,
@@ -18,28 +17,34 @@ export const SCROLL_RPC_URL =
         ? import.meta.env.VITE_SCROLL_RPC_URL
         : 'https://rpc.scroll.io';
 
-const chain = {
-    chainId: 534352,
+const chainIdHex = '0x82750';
+const chainSpecFromSDK = lookupChain(chainIdHex);
+
+const chainSpecForWalletConnector = {
+    chainId: Number(chainIdHex),
     name: 'Scroll',
     currency: 'ETH',
-    rpcUrl: 'https://rpc.scroll.io/',
+    rpcUrl: SCROLL_RPC_URL,
     explorerUrl: 'https://scrollscan.com',
 };
 
 export const scrollMainnet: NetworkIF = {
-    chainId: '0x82750',
+    chainId: chainIdHex,
+    chainSpec: chainSpecFromSDK,
     graphCacheUrl: GCGO_SCROLL_URL,
     evmRpcUrl: SCROLL_RPC_URL,
-    chain: chain,
-    shouldPollBlock: true,
-    marketData: '0x82750',
+    chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [scrollETH, scrollUSDC],
+    poolIndex: chainSpecFromSDK.poolIndex,
+    gridSize: chainSpecFromSDK.gridSize,
+    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    displayName: chainSpecForWalletConnector.name,
     topPools: [
-        new TopPool(scrollETH, scrollUSDC, lookupChain('0x82750').poolIndex),
-        new TopPool(scrollScroll, scrollETH, lookupChain('0x82750').poolIndex),
-        new TopPool(scrollETH, scrollWBTC, lookupChain('0x82750').poolIndex),
-        new TopPool(scrollETH, scrollUSDT, lookupChain('0x82750').poolIndex),
-        new TopPool(scrollWrsETH, scrollETH, lookupChain('0x82750').poolIndex),
+        new TopPool(scrollETH, scrollUSDC, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollETH, scrollUSDT, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollUSDT, scrollUSDC, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollWrsETH, scrollETH, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollETH, scrollWBTC, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

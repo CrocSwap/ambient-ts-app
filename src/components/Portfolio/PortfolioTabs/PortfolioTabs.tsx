@@ -3,13 +3,14 @@ import {
     useEffect,
     useState,
     useContext,
+    useMemo,
 } from 'react';
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 // import Tokens from '../Tokens/Tokens';
-import styles from './PortfolioTabs.module.css'
+import styles from './PortfolioTabs.module.css';
 // START: Import Local Files
 import {
     getPositionData,
@@ -36,7 +37,6 @@ import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
-    IS_LOCAL_ENV,
 } from '../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -49,7 +49,10 @@ import {
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import medal from '../../../assets/images/icons/medal.svg';
-import { AppStateContext } from '../../../contexts/AppStateContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../contexts/AppStateContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useLocation } from 'react-router-dom';
 
@@ -84,17 +87,12 @@ export default function PortfolioTabs(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
-    } = useContext(AppStateContext);
+        activeNetwork: { graphCacheUrl, chainId },
+    } = useContext<AppStateContextIF>(AppStateContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
-
-    const {
-        crocEnv,
-        activeNetwork,
-        provider,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
@@ -117,12 +115,12 @@ export default function PortfolioTabs(props: propsIF) {
 
     const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/user_positions?'
-        : activeNetwork.graphCacheUrl + '/user_positions?';
+        : graphCacheUrl + '/user_positions?';
     const userLimitOrdersCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
-        : activeNetwork.graphCacheUrl + '/user_limit_orders?';
+        : graphCacheUrl + '/user_limit_orders?';
 
-    const getLookupUserPositions = async (accountToSearch: string) =>
+    const getLookupUserPositions = async (accountToSearch: string) => {
         fetch(
             userPositionsCacheEndpoint +
                 new URLSearchParams({
@@ -167,8 +165,9 @@ export default function PortfolioTabs(props: propsIF) {
                         });
                 }
             });
+    };
 
-    const getLookupUserLimitOrders = async (accountToSearch: string) =>
+    const getLookupUserLimitOrders = async (accountToSearch: string) => {
         fetch(
             userLimitOrdersCacheEndpoint +
                 new URLSearchParams({
@@ -178,8 +177,6 @@ export default function PortfolioTabs(props: propsIF) {
         )
             .then((response) => response?.json())
             .then((json) => {
-                // temporarily skip ENS fetch
-                const skipENSFetch = true;
                 const userLimitOrderStates = json?.data;
                 if (userLimitOrderStates && crocEnv && provider) {
                     Promise.all(
@@ -195,7 +192,6 @@ export default function PortfolioTabs(props: propsIF) {
                                     cachedQuerySpotPrice,
                                     cachedTokenDetails,
                                     cachedEnsResolve,
-                                    skipENSFetch,
                                 );
                             },
                         ),
@@ -214,15 +210,17 @@ export default function PortfolioTabs(props: propsIF) {
                         });
                 }
             });
+    };
+
     const getLookupUserTransactions = async (accountToSearch: string) => {
         if (crocEnv && provider) {
             fetchUserRecentChanges({
                 tokenList: tokens.tokenUniv,
                 user: accountToSearch,
                 chainId: chainId,
-                n: 200, // fetch last 200 changes,
+                n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
-                graphCacheUrl: activeNetwork.graphCacheUrl,
+                graphCacheUrl: graphCacheUrl,
                 provider,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -246,17 +244,25 @@ export default function PortfolioTabs(props: propsIF) {
     useEffect(() => {
         (async () => {
             if (
-                isServerEnabled &&
                 !connectedAccountActive &&
-                !!tokens.tokenUniv &&
                 resolvedAddress &&
-                !!crocEnv
+                isServerEnabled &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId &&
+                !!tokens.tokenUniv
             ) {
-                IS_LOCAL_ENV &&
-                    console.debug(
-                        'querying user tx/order/positions because address changed',
-                    );
-
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserRangeDataLoading',
+                    loadingStatus: true,
+                });
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserOrderDataLoading',
+                    loadingStatus: true,
+                });
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserTxDataLoading',
+                    loadingStatus: true,
+                });
                 await Promise.all([
                     getLookupUserTransactions(resolvedAddress),
                     getLookupUserLimitOrders(resolvedAddress),
@@ -267,39 +273,77 @@ export default function PortfolioTabs(props: propsIF) {
     }, [
         resolvedAddress,
         connectedAccountActive,
-        isUserIdle
-            ? Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS))
-            : Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         !!tokens.tokenUniv,
-        !!crocEnv,
-        !!provider,
-
+        crocEnv,
+        chainId,
+        provider,
         isServerEnabled,
     ]);
 
-    const activeAccountPositionData = connectedAccountActive
-        ? _positionsByUser
-        : lookupAccountPositionData;
-    // eslint-disable-next-line
-    const activeAccountLimitOrderData = connectedAccountActive
-        ? _limitsByUser
-        : lookupAccountLimitOrderData;
+    // update without loading indicator on an interval
+    useEffect(() => {
+        (async () => {
+            if (
+                !connectedAccountActive &&
+                resolvedAddress &&
+                isServerEnabled &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId &&
+                !!tokens.tokenUniv
+            ) {
+                await Promise.all([
+                    getLookupUserTransactions(resolvedAddress),
+                    getLookupUserLimitOrders(resolvedAddress),
+                    getLookupUserPositions(resolvedAddress),
+                ]);
+            }
+        })();
+    }, [
+        isUserIdle
+            ? Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS))
+            : Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+    ]);
 
-    const activeAccountTransactionData = connectedAccountActive
-        ? _txsByUser?.filter((tx) => {
-              if (tx.changeType !== 'fill' && tx.changeType !== 'cross') {
-                  return true;
-              } else {
-                  return false;
-              }
-          })
-        : lookupAccountTransactionData?.filter((tx) => {
-              if (tx.changeType !== 'fill' && tx.changeType !== 'cross') {
-                  return true;
-              } else {
-                  return false;
-              }
-          });
+    const activeAccountPositionData = useMemo(
+        () =>
+            connectedAccountActive
+                ? _positionsByUser
+                : lookupAccountPositionData,
+        [connectedAccountActive, _positionsByUser, lookupAccountPositionData],
+    );
+    const activeAccountLimitOrderData = useMemo(
+        () =>
+            connectedAccountActive
+                ? _limitsByUser
+                : lookupAccountLimitOrderData,
+        [connectedAccountActive, _limitsByUser, lookupAccountLimitOrderData],
+    );
+
+    const activeAccountTransactionData = useMemo(
+        () =>
+            connectedAccountActive
+                ? _txsByUser?.filter((tx) => {
+                      if (
+                          tx.changeType !== 'fill' &&
+                          tx.changeType !== 'cross'
+                      ) {
+                          return true;
+                      } else {
+                          return false;
+                      }
+                  })
+                : lookupAccountTransactionData?.filter((tx) => {
+                      if (
+                          tx.changeType !== 'fill' &&
+                          tx.changeType !== 'cross'
+                      ) {
+                          return true;
+                      } else {
+                          return false;
+                      }
+                  }),
+        [connectedAccountActive, _txsByUser, lookupAccountTransactionData],
+    );
 
     // props for <Wallet/> React Element
     const walletProps = {
@@ -340,6 +384,7 @@ export default function PortfolioTabs(props: propsIF) {
         changesInSelectedCandle: undefined,
         isAccountView: true,
         fullLayoutActive: fullLayoutActive,
+        accountAddress: resolvedAddress,
     };
 
     // Props for <Orders/> React Element
@@ -416,8 +461,8 @@ export default function PortfolioTabs(props: propsIF) {
     ];
 
     const dataToUse = connectedAccountActive
-    ? accountTabDataWithTokens
-    : accountTabDataWithoutTokens;
+        ? accountTabDataWithTokens
+        : accountTabDataWithoutTokens;
 
     const location = useLocation();
 
@@ -436,8 +481,8 @@ export default function PortfolioTabs(props: propsIF) {
     // TODO:    ... refactor to trigger a nav action and update state responsively
 
     const renderTabContent = (): JSX.Element | null => {
-        const selectedTabData =dataToUse.find(
-            (tab) => tab.label === activeTab
+        const selectedTabData = dataToUse.find(
+            (tab) => tab.label === activeTab,
         );
         return selectedTabData ? selectedTabData.content : null;
     };
@@ -445,27 +490,34 @@ export default function PortfolioTabs(props: propsIF) {
     const mobileTabs: JSX.Element = (
         <div className={styles.mobile_tabs_container}>
             <div className={styles.mobile_tabs_button_container}>
-                {dataToUse.filter((t) => t.label !== 'Points').map((tab) => (
-                    <button
-                        key={tab.label}
-                        onClick={() => setActiveTab(tab.label)}
-                        style={{
-                            color: tab.label === activeTab ? 'var(--accent1)' : 'var(--text2)',
-                            borderBottom: tab.label === activeTab ? '1px solid var(--accent1)' : '1px solid transparent'
-                        }}
-                    >
-                        <span className={styles.tabLabel}>{tab.label}</span>
-                    </button>
-                ))}
+                {dataToUse
+                    .filter((t) => t.label !== 'Points')
+                    .map((tab) => (
+                        <button
+                            key={tab.label}
+                            onClick={() => setActiveTab(tab.label)}
+                            style={{
+                                color:
+                                    tab.label === activeTab
+                                        ? 'var(--accent1)'
+                                        : 'var(--text2)',
+                                borderBottom:
+                                    tab.label === activeTab
+                                        ? '1px solid var(--accent1)'
+                                        : '1px solid transparent',
+                            }}
+                        >
+                            <span className={styles.tabLabel}>{tab.label}</span>
+                        </button>
+                    ))}
             </div>
-            <div className={styles.tabContent} style={{height: '100%'}}>
+            <div className={styles.tabContent} style={{ height: '100%' }}>
                 {renderTabContent()}
             </div>
         </div>
     );
 
-
-    if ( isSmallScreen) return mobileTabs;
+    if (isSmallScreen) return mobileTabs;
     return (
         <div className={styles.portfolio_tabs_container}>
             <TabComponent

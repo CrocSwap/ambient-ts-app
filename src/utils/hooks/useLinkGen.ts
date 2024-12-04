@@ -64,6 +64,7 @@ const BASE_URL_PATHS = {
     tos: '/terms',
     testpage: '/testpage',
     account: '/account',
+    vaults: '/vaults',
     accountPoints: '/account/points',
     privacy: '/privacy',
     faq: '/faq',
@@ -117,18 +118,20 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'initpool';
         } else if (pathname.startsWith(BASE_URL_PATHS.reposition)) {
             pageName = 'reposition';
-        } else if (pathname.startsWith(BASE_URL_PATHS.explore)) {
-            pageName = 'explore';
         } else if (pathname.startsWith(BASE_URL_PATHS.explorePools)) {
             pageName = 'explorePools';
         } else if (pathname.startsWith(BASE_URL_PATHS.exploreTokens)) {
             pageName = 'exploreTokens';
+        } else if (pathname.startsWith(BASE_URL_PATHS.explore)) {
+            pageName = 'explore';
         } else if (pathname.startsWith(BASE_URL_PATHS.tos)) {
             pageName = 'tos';
         } else if (pathname.startsWith(BASE_URL_PATHS.testpage)) {
             pageName = 'testpage';
         } else if (pathname.startsWith(BASE_URL_PATHS.account)) {
             pageName = 'account';
+        } else if (pathname.startsWith(BASE_URL_PATHS.vaults)) {
+            pageName = 'vaults';
         } else if (pathname.startsWith(BASE_URL_PATHS.privacy)) {
             pageName = 'privacy';
         } else if (pathname.startsWith(BASE_URL_PATHS.faqPoints)) {

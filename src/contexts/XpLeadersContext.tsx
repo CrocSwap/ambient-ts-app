@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from 'react';
 import { UserXpIF } from '../ambient-utils/types';
 import { fetchXpLeadersData } from '../ambient-utils/api';
-import { CrocEnvContext } from './CrocEnvContext';
+import { AppStateContext } from './AppStateContext';
 
 interface XpLeadersContextIF {
     xpLeaders: XpLeadersDataIF;
@@ -27,8 +27,8 @@ export const XpLeadersContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const [xpLeadersGlobal, setXpLeadersGlobal] =
         React.useState<XpLeaderboardDataIF>({

@@ -18,12 +18,14 @@ import { createRangePositionTx } from '../../ambient-utils/dataLayer/transaction
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { AppStateContext } from '../../contexts';
 
 export function useCreateRangePosition() {
+    const { crocEnv } = useContext(CrocEnvContext);
+
     const {
-        crocEnv,
-        chainData: { gridSize, poolIndex },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { gridSize, poolIndex },
+    } = useContext(AppStateContext);
 
     const { userAddress } = useContext(UserDataContext);
 

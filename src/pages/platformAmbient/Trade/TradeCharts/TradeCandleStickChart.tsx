@@ -10,7 +10,6 @@ import {
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import {
@@ -18,7 +17,6 @@ import {
     getPinnedPriceValuesFromTicks,
 } from '../../../../ambient-utils/dataLayer';
 import { CandleContext } from '../../../../contexts/CandleContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
@@ -71,8 +69,20 @@ interface propsIF {
 }
 
 function TradeCandleStickChart(props: propsIF) {
-    const { selectedDate, setSelectedDate, updateURL, openMobileSettingsModal } = props;
+    const {
+        chartItemStates,
+        selectedDate,
+        setSelectedDate,
+        updateURL,
+        openMobileSettingsModal,
+    } = props;
 
+    const { liqMode } = chartItemStates;
+
+    const {
+        activeNetwork: { gridSize, poolIndex, chainId },
+        isUserIdle20min,
+    } = useContext(AppStateContext);
     const {
         candleData,
         isFetchingCandle,
@@ -86,18 +96,12 @@ function TradeCandleStickChart(props: propsIF) {
     } = useContext(CandleContext);
     const { chartSettings, isChangeScaleChart, setSelectedDrawnShape } =
         useContext(ChartContext);
-    const { chainData } = useContext(CrocEnvContext);
     const { poolPriceDisplay: poolPriceWithoutDenom, isPoolInitialized } =
         useContext(PoolContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
-
-    const { isUserIdle20min } = useContext(AppStateContext);
-
-    const { liqMode } = props.chartItemStates;
-
     const { platformName } = useContext(BrandContext);
 
     const period = useMemo(
@@ -185,7 +189,7 @@ function TradeCandleStickChart(props: propsIF) {
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
             ? 1 / poolPriceWithoutDenom
-            : poolPriceWithoutDenom ?? 0
+            : (poolPriceWithoutDenom ?? 0)
         : 0;
 
     const _tokenA = tokenPair.dataTokenA;
@@ -320,8 +324,8 @@ function TradeCandleStickChart(props: propsIF) {
                 baseTokenAddress.toLowerCase() &&
             unparsedLiquidityData.curveState.quote ===
                 quoteTokenAddress.toLowerCase() &&
-            unparsedLiquidityData.curveState.poolIdx === chainData.poolIndex &&
-            unparsedLiquidityData.curveState.chainId === chainData.chainId
+            unparsedLiquidityData.curveState.poolIdx === poolIndex &&
+            unparsedLiquidityData.curveState.chainId === chainId
         ) {
             const liqAskData: LiquidityDataLocal[] = [];
             const liqBidData: LiquidityDataLocal[] = [];
@@ -340,7 +344,7 @@ function TradeCandleStickChart(props: propsIF) {
                 quoteTokenDecimals,
                 lowTick,
                 highTick,
-                lookupChain(chainData.chainId).gridSize,
+                gridSize,
             );
 
             const limitBoundary = parseFloat(
@@ -1203,7 +1207,6 @@ function TradeCandleStickChart(props: propsIF) {
                             setChartResetStatus={setChartResetStatus}
                             chartResetStatus={chartResetStatus}
                             openMobileSettingsModal={openMobileSettingsModal}
-
                         />
                     </>
                 )}

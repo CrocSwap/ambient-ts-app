@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChainSpec } from '@crocswap-libs/sdk';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
 import {
     getDefaultChainId,
@@ -13,7 +11,6 @@ import { NetworkIF } from '../../ambient-utils/types';
 import { supportedNetworks } from '../../ambient-utils/constants';
 
 export const useAppChain = (): {
-    chainData: ChainSpec;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
 } => {
@@ -188,7 +185,7 @@ export const useAppChain = (): {
         findNetworkData(
             chainInURLValidated
                 ? chainInURLValidated
-                : localStorage.getItem(CHAIN_LS_KEY) ?? defaultChain,
+                : (localStorage.getItem(CHAIN_LS_KEY) ?? defaultChain),
         ) || findNetworkData(defaultChain),
     );
 
@@ -213,14 +210,16 @@ export const useAppChain = (): {
     // ... else in this file responds to changes in the browser environment
     function chooseNetwork(network: NetworkIF): void {
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
-        const { pathname } = window.location;
-
         setActiveNetwork(network);
+
+        const { pathname } = window.location;
         const isPathENS = pathname.slice(1)?.includes('.eth');
         const isPathHexEoaAddress = checkEoaHexAddress(pathname);
         const isPathUserAddress = isPathENS || isPathHexEoaAddress;
         const isPathUserXpOrLeaderboard = pathname.includes('/xp');
-        const isPathOnExplore = pathname.includes('/explore');
+        const shouldStayOnCurrentExactPath =
+            isPathUserAddress || isPathUserXpOrLeaderboard;
+
         if (
             linkGenCurrent.currentPage === 'initpool' ||
             linkGenCurrent.currentPage === 'reposition'
@@ -230,29 +229,14 @@ export const useAppChain = (): {
             linkGenSwap.navigate(`chain=${network.chainId}`);
         } else if (pathname.includes('chain')) {
             linkGenCurrent.navigate(`chain=${network.chainId}`);
-        } else if (
-            isPathUserAddress ||
-            isPathUserXpOrLeaderboard ||
-            isPathOnExplore
-        ) {
-            window.location.reload();
+        } else if (shouldStayOnCurrentExactPath) {
+            // do not navigate away from current path
         } else {
             linkGenCurrent.navigate();
         }
-        window.location.reload();
     }
 
-    // data from the SDK about the current chain in the connected wallet
-    // chain is validated upstream of this process
-    const chainData = useMemo<ChainSpec>(() => {
-        const output: ChainSpec =
-            lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
-        // return output varibale (chain data)
-        return output;
-    }, [activeNetwork.chainId]);
-
     return {
-        chainData,
         activeNetwork,
         chooseNetwork,
     };

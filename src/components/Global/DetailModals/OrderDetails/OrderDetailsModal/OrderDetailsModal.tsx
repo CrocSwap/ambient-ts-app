@@ -52,6 +52,7 @@ export default function OrderDetailsModal(props: propsIF) {
 
     const [showShareComponent, setShowShareComponent] = useState(true);
     const {
+        activeNetwork,
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
@@ -60,7 +61,7 @@ export default function OrderDetailsModal(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, activeNetwork, provider } = useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
 
     const { userAddress } = useContext(UserDataContext);
@@ -135,8 +136,6 @@ export default function OrderDetailsModal(props: propsIF) {
             )
                 .then((response) => response?.json())
                 .then((json) => {
-                    // temporarily skip ENS fetch
-                    const skipENSFetch = true;
                     const positionPayload = json?.data as LimitOrderServerIF;
                     return getLimitOrderData(
                         positionPayload,
@@ -148,7 +147,6 @@ export default function OrderDetailsModal(props: propsIF) {
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
-                        skipENSFetch,
                     );
                 })
                 .then((positionStats: LimitOrderIF) => {

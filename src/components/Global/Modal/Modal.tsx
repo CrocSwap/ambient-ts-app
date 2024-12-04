@@ -72,6 +72,7 @@ export default function Modal(props: ModalPropsIF) {
         closeBottomSheet();
     };
 
+
     const headerJSX = !usingCustomHeader ? (
         <header className={styles.modal_header}>
             {showBackButton && (

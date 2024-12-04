@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import { FiExternalLink } from 'react-icons/fi';
@@ -16,6 +15,7 @@ import {
 } from '../../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../../styled/Common';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { AppStateContext } from '../../../../../contexts';
 
 interface PropsIF {
     transaction: {
@@ -47,8 +47,8 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
     const { isDenomBase } = useContext(TradeDataContext);
 
     const {
-        chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
+        activeNetwork: { blockExplorer },
+    } = useContext(AppStateContext);
 
     const baseTokenCharacter = transaction?.details?.baseSymbol
         ? getUnicodeCharacter(transaction.details.baseSymbol)
@@ -175,14 +175,15 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                             ? transaction.side === 'Claim'
                                 ? 'Claim'
                                 : transaction.side === 'Remove'
-                                ? 'Remove'
-                                : (!isDenomBase &&
-                                      transaction.details?.isBid === true) ||
-                                  (isDenomBase &&
-                                      transaction.details?.isBid === false)
-                                ? 'Buy' + ` ${sideCharacter}`
-                                : 'Sell' + ` ${sideCharacter}`
-                            : transaction.side ?? '...'}
+                                  ? 'Remove'
+                                  : (!isDenomBase &&
+                                          transaction.details?.isBid ===
+                                              true) ||
+                                      (isDenomBase &&
+                                          transaction.details?.isBid === false)
+                                    ? 'Buy' + ` ${sideCharacter}`
+                                    : 'Sell' + ` ${sideCharacter}`
+                            : (transaction.side ?? '...')}
                     </FlexContainer>
                 )}
                 {tableView === 'large' && (
@@ -204,15 +205,16 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                                 ? transaction.side === 'Claim'
                                     ? 'Claim'
                                     : transaction.side === 'Remove'
-                                    ? 'Remove'
-                                    : (!isDenomBase &&
-                                          transaction.details?.isBid ===
-                                              true) ||
-                                      (isDenomBase &&
-                                          transaction.details?.isBid === false)
-                                    ? 'Buy' + ` ${sideCharacter}`
-                                    : 'Sell' + ` ${sideCharacter}`
-                                : transaction.side ?? '...'}
+                                      ? 'Remove'
+                                      : (!isDenomBase &&
+                                              transaction.details?.isBid ===
+                                                  true) ||
+                                          (isDenomBase &&
+                                              transaction.details?.isBid ===
+                                                  false)
+                                        ? 'Buy' + ` ${sideCharacter}`
+                                        : 'Sell' + ` ${sideCharacter}`
+                                : (transaction.side ?? '...')}
                         </p>
                     </FlexContainer>
                 )}

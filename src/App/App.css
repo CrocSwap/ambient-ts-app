@@ -83,8 +83,6 @@ body {
     /* padding: 0 1rem; */
 }
 
-
-
 h3:focus-visible,
 h2:focus-visible,
 h1:focus-visible,
@@ -224,7 +222,35 @@ input[type='number'] {
     appearance: textfield;
     -moz-appearance: textfield;
 }
-
+.custom_scroll_ambient {
+    overflow-y: auto !important;
+}
+.custom_scroll_ambient::-webkit-scrollbar,
+.content-container::-webkit-scrollbar {
+    width: 8px !important; /* Adjust the width as needed */
+}
+.custom_scroll_ambient::-webkit-scrollbar-thumb,
+.content-container::-webkit-scrollbar-thumb {
+    border: 2px solid transparent !important; /* Space for the border */
+    background-clip: padding-box !important; /* Create space for the border */
+    border-radius: 8px !important; /* Adjust the border radius as needed */
+    background-image: linear-gradient(#06060c, #06060c),
+        linear-gradient(
+            0deg,
+            var(--accent1) 0%,
+            var(--accent5) 49.48%,
+            var(--accent1) 100%
+        ) !important;
+    background-origin: border-box !important;
+    background-clip: content-box, border-box !important; /* Clip the border to show gradient */
+    min-height: 50px !important; /* Set the minimum height for the scrollbar thumb */
+}
+.custom_scroll_ambient::-webkit-scrollbar-track,
+.content-container::-webkit-scrollbar-track {
+    background: #06060c !important; /* Background color of the scrollbar track */
+    border-radius: 8px !important; /* Adjust the border radius as needed */
+    padding: 2px !important; /* Add padding to the track */
+}
 /* -----------------------FUTA------------ */
 
 .futa_main {
@@ -319,25 +345,70 @@ input[type='number'] {
 
     .custom_scroll_ambient::-webkit-scrollbar {
         width: 5px !important;
-      }
-      
- 
-      /* Handle */
-      .custom_scroll_ambient::-webkit-scrollbar-thumb {
-        background: 
-        linear-gradient(
+    }
+
+    /* Handle */
+    .custom_scroll_ambient::-webkit-scrollbar-thumb {
+        background: linear-gradient(
             0deg,
             var(--accent1) 0%,
             var(--accent5) 49.48%,
             var(--accent1) 100%
         ) !important;
-      }
+    }
 
-      /* .custom_scroll_ambient{
+    /* .custom_scroll_ambient{
         scrollbar-width: thin;
 scrollbar-color: transparent;
       } */
-
+}
+@media only screen and (min-width: 768px) {
+/* 
+    .futa_routes {
+        background-color: rgba(13, 15, 19, 0.1);
+        text-shadow:
+            0 0 0.2em currentColor,
+            1px 1px rgba(255, 0, 255, 0.1),
+            -1px -1px rgba(0, 255, 255, 0.1); 
+        position: relative;
+        z-index: 0;
+    } */
+    
+    .futa_routes::before,
+    .futa_routes::after {
+        content: '';
+        transform: translateZ(0); /* Stabilizes 3D rendering */
+        pointer-events: none;
+        mix-blend-mode: overlay;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        left: 0;
+        top: 0;
+        z-index: 1;
+        opacity: 0.2;
+    }
+    
+    .futa_routes::before {
+        background: repeating-linear-gradient(
+            rgb(218, 49, 49) 0px,
+            rgb(112, 159, 115) 2px,
+            rgb(40, 129, 206) 4px
+        );
+    }
+    
+    .futa_routes::after {
+        background: repeating-linear-gradient(
+            90deg,
+            rgba(218, 49, 49, 0.8) 1px,
+            transparent 2px,
+            rgba(112, 159, 115, 0.8) 3px,
+            transparent 4px,
+            rgba(40, 129, 206, 0.8) 5px,
+            transparent 6px
+        );
+    }
+    
 
 }
 
@@ -346,57 +417,11 @@ scrollbar-color: transparent;
         overflow-y: auto;
         overflow-x: hidden;
         height: calc(100vh - 56px);
-        
+
         background: var(--dark1);
-       
     }
     .content-container-trade {
         background: var(--dark1);
     }
 }
 
-
-.futa_routes {  
-    background-color: rgb(13, 15, 19); /* CRT-like dark background */  
-    text-shadow:  
-            0 0 0.2em currentColor,  
-            1px 1px rgba(255, 0, 255, 0.5),  
-            -1px -1px rgba(0, 255, 255, 0.4); /* Glowing text shadow */  
-    position: relative;  
-    z-index: 0;  
-  }  
-    
-  .futa_routes::before,  
-  .futa_routes::after {  
-    content: "";  
-    transform: translateZ(0); /* Stabilizes 3D rendering */  
-    pointer-events: none;  
-    mix-blend-mode: overlay;  
-    position: absolute;  
-    height: 100%;  
-    width: 100%;  
-    left: 0;  
-    top: 0;  
-    z-index: 1;  
-    opacity: 0.5;  
-  }  
-  
-  .futa_routes::before {  
-    background: repeating-linear-gradient(  
-            rgb(218, 49, 49) 0px,  
-            rgb(112, 159, 115) 2px,  
-            rgb(40, 129, 206) 4px  
-    );  
-  }  
-  
-  .futa_routes::after {  
-    background: repeating-linear-gradient(  
-            90deg,  
-            rgba(218, 49, 49, 0.8) 1px,  
-            transparent 2px,  
-            rgba(112, 159, 115, 0.8) 3px,  
-            transparent 4px,  
-            rgba(40, 129, 206, 0.8) 5px,  
-            transparent 6px  
-    );  
-  }

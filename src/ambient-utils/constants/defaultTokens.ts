@@ -58,6 +58,15 @@ export const mainnetRSWETH: TokenIF = {
     symbol: 'rswETH',
 };
 
+export const mainnetSWELL: TokenIF = {
+    address: '0x0a6E7Ba5042B38349e437ec6Db6214AEC7B35676',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/24924.png',
+    name: 'Swell Governance Token',
+    symbol: 'SWELL',
+};
+
 export const mainnetSTONE: TokenIF = {
     name: 'StakeStone Ether',
     address: '0x7122985656e38bdc0302db86685bb972b145bd3c',
@@ -711,6 +720,34 @@ export const scrollSepoliaUSDC: TokenIF = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
 };
 
+export const plumeSepoliaETH: TokenIF = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 98864,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const plumeSepoliaUSD: TokenIF = {
+    name: 'Plume USD',
+    address: '0xe644F07B1316f28a7F134998e021eA9f7135F351',
+    symbol: 'pUSD',
+    decimals: 6,
+    chainId: 98864,
+    logoURI: '',
+};
+
+export const plumeSepoliaNEV: TokenIF = {
+    name: 'Nest Egg Vault',
+    address: '0x659619AEdf381c3739B0375082C2d61eC1fD8835',
+    symbol: 'NEV',
+    decimals: 6,
+    chainId: 98864,
+    logoURI: '',
+};
+
 export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,
@@ -726,6 +763,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetMATIC,
     mainnetSWETH,
     mainnetRSWETH,
+    mainnetSWELL,
     mainnetSTONE,
     mainnetMKR,
     mainnetLIDO,
@@ -786,4 +824,7 @@ export const defaultTokens: TokenIF[] = [
     scrollSepoliaUSDC,
     scrollSepoliaWBTC,
     scrollsUSDe,
+    plumeSepoliaETH,
+    plumeSepoliaUSD,
+    plumeSepoliaNEV,
 ];

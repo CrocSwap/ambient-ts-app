@@ -3,13 +3,19 @@ import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import './TransactionDetailsGraph.css';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
 import Spinner from '../../Spinner/Spinner';
 import {
     formatAmountChartData,
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import {
+    CachedDataContext,
+    CachedDataContextIF,
+} from '../../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
 import moment from 'moment';
@@ -25,6 +31,10 @@ import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
 import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { FlexContainer } from '../../../../styled/Common';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -45,9 +55,12 @@ export default function TransactionDetailsGraph(
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
     } = props;
-    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
+    const {
+        activeNetwork: { graphCacheUrl, chainId, poolIndex },
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
-        useContext(CachedDataContext);
+        useContext<CachedDataContextIF>(CachedDataContext);
 
     const oneHourMiliseconds = 60 * 60 * 1000;
     const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;
@@ -120,7 +133,8 @@ export default function TransactionDetailsGraph(
     };
 
     const fetchEnabled = !!(
-        chainData &&
+        chainId &&
+        poolIndex &&
         isServerEnabled &&
         baseTokenAddress &&
         quoteTokenAddress
@@ -133,7 +147,7 @@ export default function TransactionDetailsGraph(
     const mobileView = useMediaQuery('(min-width: 800px)');
     const [svgWidth, setSvgWidth] = useState(0);
 
-    const { chainId, base, quote, baseDecimals, quoteDecimals } = props.tx;
+    const { base, quote, baseDecimals, quoteDecimals } = props.tx;
 
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
@@ -225,7 +239,10 @@ export default function TransactionDetailsGraph(
                     Math.floor(localMaxTime / 1000) + offsetInSeconds;
 
                 try {
-                    if (!crocEnv) {
+                    if (
+                        !crocEnv ||
+                        (await crocEnv.context).chain.chainId !== chainId
+                    ) {
                         return;
                     }
 
@@ -255,8 +272,9 @@ export default function TransactionDetailsGraph(
 
                     const graphData = await fetchCandleSeriesCroc(
                         fetchEnabled,
-                        chainData,
-                        activeNetwork.graphCacheUrl,
+                        chainId,
+                        poolIndex,
+                        graphCacheUrl,
                         tempPeriod,
                         baseTokenAddress,
                         quoteTokenAddress,
@@ -1486,13 +1504,16 @@ export default function TransactionDetailsGraph(
         ],
     );
 
-    const loadingSpinner =
-        <FlexContainer fullWidth fullHeight justifyContent='center' alignItems='center'
-       
+    const loadingSpinner = (
+        <FlexContainer
+            fullWidth
+            fullHeight
+            justifyContent='center'
+            alignItems='center'
         >
-
-        <Spinner size={100} bg='var(--dark1)' centered />;
+            <Spinner size={100} bg='var(--dark1)' centered />;
         </FlexContainer>
+    );
 
     const placeholderImage = (
         <div className='transaction_details_graph_placeholder' />

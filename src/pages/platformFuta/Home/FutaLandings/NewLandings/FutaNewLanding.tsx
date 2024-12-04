@@ -177,9 +177,8 @@ const scrollToSection = useCallback((index: number) => {
         return <FadingTextGrid />;
     }
 
-    console.log({activeSection})
     return (
-        <div className={`${styles.container}${styles.crt}`}>
+        <div className={styles.container}>
         {sections.map((SectionComponent, index) => (
             <div
             key={index}

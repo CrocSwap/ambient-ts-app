@@ -1,0 +1,8 @@
+.no_vaults {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    gap: 12px;
+}
