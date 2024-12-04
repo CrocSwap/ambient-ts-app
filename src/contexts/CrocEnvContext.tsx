@@ -209,7 +209,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     };
     useEffect(() => {
         if (isUserOnline) setNewCrocEnv();
-    }, [provider, walletProvider, isUserOnline]);
+    }, [provider, walletProvider, isUserOnline, userAddress]);
 
     useEffect(() => {
         if (provider && crocEnv && isUserOnline) {
