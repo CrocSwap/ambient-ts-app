@@ -72,6 +72,7 @@ function Swap(props: propsIF) {
         useContext(CrocEnvContext);
     const {
         activeNetwork: { chainId, poolIndex },
+        isUserOnline,
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const {
@@ -287,14 +288,6 @@ function Swap(props: propsIF) {
         !needConfirmTokenA &&
         !needConfirmTokenB;
 
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        'en-US',
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
-
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     const [
@@ -329,6 +322,11 @@ function Swap(props: propsIF) {
     }, [isTokenAPrimary]);
 
     useEffect(() => {
+        if (!isUserOnline) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Currently Offline');
+            return;
+        }
         if (tokenABalance === '') return;
         if (
             (sellQtyNoExponentString === '' && buyQtyNoExponentString === '') ||
@@ -421,6 +419,7 @@ function Swap(props: propsIF) {
             }
         }
     }, [
+        isUserOnline,
         crocEnv,
         isPoolInitialized,
         isPoolInitialized === undefined, // Needed to distinguish false from undefined
@@ -867,7 +866,7 @@ function Swap(props: propsIF) {
                     priceImpact={priceImpact}
                     effectivePriceWithDenom={effectivePriceWithDenom}
                     slippageTolerance={slippageTolerancePercentage}
-                    liquidityProviderFeeString={liquidityProviderFeeString}
+                    liquidityFee={liquidityFee}
                     swapGasPriceinDollars={swapGasPriceinDollars}
                     showExtraInfoDropdown={
                         primaryQuantity !== '' &&
@@ -962,7 +961,12 @@ function Swap(props: propsIF) {
                                 undefined,
                                 isActiveNetworkPlume
                                     ? tokenAQtyCoveredByWalletBalance
-                                    : undefined,
+                                    : tokenABalance
+                                      ? fromDisplayQty(
+                                            tokenABalance,
+                                            tokenA.decimals,
+                                        )
+                                      : undefined,
                             );
                         }}
                         flat

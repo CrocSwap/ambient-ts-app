@@ -3,52 +3,52 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
 import {
-    swellSepoliaETH,
-    swellSepoliaUSDC,
-    swellSepoliaUSDT,
+    baseSepoliaETH,
+    baseSepoliaUSDC,
+    baseSepoliaUSDT,
 } from '../defaultTokens';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const PUBLIC_RPC_URL = 'https://swell-testnet.alt.technology';
+export const PUBLIC_RPC_URL = 'https://sepolia.base.org';
 
 export const RESTRICTED_RPC_URL =
-    import.meta.env.VITE_SWELL_SEPOLIA_RPC_URL !== undefined
-        ? import.meta.env.VITE_SWELL_SEPOLIA_RPC_URL
+    import.meta.env.VITE_BASE_SEPOLIA_RPC_URL !== undefined
+        ? import.meta.env.VITE_BASE_SEPOLIA_RPC_URL
         : PUBLIC_RPC_URL;
 
-const chainIdHex = '0x784';
+const chainIdHex = '0x14a34';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
 const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
-    name: 'Swell Testnet',
+    name: 'Base Testnet',
     currency: 'ETH',
     rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://swell-testnet-explorer.alt.technology/',
 };
 
-export const swellSepolia: NetworkIF = {
+export const baseSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     graphCacheUrl: GCGO_TESTNET_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [swellSepoliaETH, swellSepoliaUSDC],
-    defaultPairFuta: [swellSepoliaETH, swellSepoliaUSDC],
+    defaultPair: [baseSepoliaETH, baseSepoliaUSDC],
+    defaultPairFuta: [baseSepoliaETH, baseSepoliaUSDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,
     topPools: [
         new TopPool(
-            swellSepoliaETH,
-            swellSepoliaUSDC,
+            baseSepoliaETH,
+            baseSepoliaUSDC,
             chainSpecFromSDK.poolIndex,
         ),
         new TopPool(
-            swellSepoliaETH,
-            swellSepoliaUSDT,
+            baseSepoliaETH,
+            baseSepoliaUSDT,
             chainSpecFromSDK.poolIndex,
         ),
     ],

@@ -27,6 +27,14 @@
             "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
         },
         {
+            "name": "Dai Stablecoin",
+            "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+            "chainId": 1,
+            "decimals": 18,
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png",
+            "symbol": "DAI"
+        },
+        {
             "name": "Wrapped Bitcoin",
             "address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
             "symbol": "WBTC",
@@ -65,6 +73,14 @@
             "decimals": 18,
             "chainId": 1,
             "logoURI": "https://etherscan.io/token/images/stakestone_32.png"
+        },
+        {
+            "name": "Kelp DAO Restaked ETH",
+            "address": "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7",
+            "chainId": 1,
+            "decimals": 18,
+            "logoURI": "https://etherscan.io/token/images/kelprseth_32.png",
+            "symbol": "rsETH"
         },
         {
             "name": "Maker",
@@ -405,11 +421,11 @@
             "symbol": "rswETH"
         },
         {
-            "name": "KelpDao Restaked ETH",
+            "name": "Kelp DAO Restaked ETH",
             "address": "0x65421ba909200b81640d98b979d07487c9781b66",
             "chainId": 534352,
             "decimals": 18,
-            "logoURI": "",
+            "logoURI": "https://etherscan.io/token/images/kelprseth_32.png",
             "symbol": "rsETH"
         },
         {
@@ -650,6 +666,30 @@
             "symbol": "USDT",
             "decimals": 6,
             "chainId": 1924,
+            "logoURI": ""
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 84532,
+            "logoURI": ""
+        },
+        {
+            "name": "Ambient USDC",
+            "address": "0x1B98743bB9297A60FF9e75EA2630A77bf72bc17c",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 84532,
+            "logoURI": ""
+        },
+        {
+            "name": "Ambient USDT",
+            "address": "0x868cFD46ad326354AD214bEA9f08fD8EfBfac3b9",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 84532,
             "logoURI": ""
         }
     ]

@@ -5,6 +5,7 @@ export interface AllVaultsServerIF {
     createdBy: string;
     updatedBy: string;
     protocol: string;
+    feeRecipientAddress: string;
     chainId: string;
     address: `0x${string}`;
     strategy: string;

@@ -6,6 +6,8 @@
 import { getMoneynessRankByAddr } from '.';
 import { ZERO_ADDRESS } from '../../constants';
 import {
+    baseSepoliaUSDC,
+    baseSepoliaUSDT,
     blastBLAST,
     blastEzETH,
     blastSepoliaUSDB,
@@ -15,6 +17,7 @@ import {
     blastWrsETH,
     mainnetDAI,
     mainnetLUSD,
+    mainnetRSETH,
     mainnetRSWETH,
     mainnetSTONE,
     mainnetSWELL,
@@ -131,6 +134,7 @@ export const USDC_TOKENS = [
     plumeSepoliaUSD.address,
     plumeSepoliaNEV.address,
     swellSepoliaUSDC.address,
+    baseSepoliaUSDC.address,
 ].map((x) => x.toLowerCase());
 
 // No need to specify chain ID because token address is unique even across chains
@@ -146,6 +150,7 @@ export const STABLE_USD_TOKENS = [
     scrollsUSDe.address,
     plumeSepoliaNEV.address,
     swellSepoliaUSDT.address,
+    baseSepoliaUSDT.address,
 ]
     .concat(USDC_TOKENS)
     .map((x) => x.toLowerCase());
@@ -163,6 +168,7 @@ export const WBTC_TOKENS = [
 export const STAKED_ETH_TOKENS = [
     mainnetWstETH.address,
     mainnetSWETH.address,
+    mainnetRSETH.address,
     mainnetRSWETH.address,
     mainnetSTONE.address,
     scrollWstETH.address,

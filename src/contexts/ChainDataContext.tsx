@@ -77,6 +77,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             graphCacheUrl,
         },
         isUserIdle,
+        isUserOnline,
     } = useContext(AppStateContext);
     const {
         setTokenBalances,
@@ -116,6 +117,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);
     const isActiveNetworkPlume = ['0x18230'].includes(chainId);
     const isActiveNetworkSwell = ['0x784'].includes(chainId);
+    const isActiveNetworkBase = ['0x14a34'].includes(chainId);
     const isVaultSupportedOnNetwork =
         vaultSupportedNetworkIds.includes(chainId);
 
@@ -171,6 +173,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     }
 
     useEffect(() => {
+        if (!isUserOnline) return;
         // Grab block right away, then poll on periodic basis; useful for initial load
         pollBlockNum();
 
@@ -185,7 +188,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
         // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(interval);
-    }, [chainId, BLOCK_NUM_POLL_MS]);
+    }, [isUserOnline, chainId, BLOCK_NUM_POLL_MS]);
 
     const [allPoolStats, setAllPoolStats] = useState<
         SinglePoolDataIF[] | undefined
@@ -209,10 +212,10 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     }
 
     useEffect(() => {
-        if (chainId && graphCacheUrl) {
+        if (chainId && graphCacheUrl && isUserOnline) {
             updateAllPoolStats();
         }
-    }, [chainId, graphCacheUrl, poolStatsPollingCacheTime]);
+    }, [chainId, graphCacheUrl, poolStatsPollingCacheTime, isUserOnline]);
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
@@ -277,10 +280,11 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 7;
 
         if (
-            isfetchNftTriggered ||
-            !nftLocalData ||
-            isOverTimeLimit ||
-            (localNftDataParsed && !localNftDataParsed.has(actionKey))
+            isUserOnline &&
+            (isfetchNftTriggered ||
+                !nftLocalData ||
+                isOverTimeLimit ||
+                (localNftDataParsed && !localNftDataParsed.has(actionKey)))
         ) {
             (async () => {
                 if (crocEnv && isUserConnected && userAddress && chainId) {
@@ -372,6 +376,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             }
         }
     }, [
+        isUserOnline,
         crocEnv,
         isUserConnected,
         userAddress,
@@ -532,55 +537,57 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         });
 
     useEffect(() => {
-        if (userAddress) {
-            fetchUserXpData({
-                user: userAddress,
-                chainId: chainId,
-            })
-                .then((data) => {
-                    setConnectedUserXp({
-                        dataReceived: true,
-                        data: data,
-                    });
-                })
-                .catch((error) => {
-                    console.error(error);
-                    setConnectedUserXp({
-                        dataReceived: false,
-                        data: undefined,
-                    });
-                });
-
-            if (isActiveNetworkBlast) {
-                fetchBlastUserXpData({
+        if (isUserOnline) {
+            if (userAddress) {
+                fetchUserXpData({
                     user: userAddress,
                     chainId: chainId,
                 })
                     .then((data) => {
-                        setConnectedUserBlastXp({
+                        setConnectedUserXp({
                             dataReceived: true,
                             data: data,
                         });
                     })
                     .catch((error) => {
                         console.error(error);
-                        setConnectedUserBlastXp({
+                        setConnectedUserXp({
                             dataReceived: false,
                             data: undefined,
                         });
                     });
+
+                if (isActiveNetworkBlast) {
+                    fetchBlastUserXpData({
+                        user: userAddress,
+                        chainId: chainId,
+                    })
+                        .then((data) => {
+                            setConnectedUserBlastXp({
+                                dataReceived: true,
+                                data: data,
+                            });
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                            setConnectedUserBlastXp({
+                                dataReceived: false,
+                                data: undefined,
+                            });
+                        });
+                }
+            } else {
+                setConnectedUserXp({
+                    dataReceived: false,
+                    data: undefined,
+                });
+                setConnectedUserBlastXp({
+                    dataReceived: false,
+                    data: undefined,
+                });
             }
-        } else {
-            setConnectedUserXp({
-                dataReceived: false,
-                data: undefined,
-            });
-            setConnectedUserBlastXp({
-                dataReceived: false,
-                data: undefined,
-            });
         }
-    }, [userAddress, isActiveNetworkBlast]);
+    }, [isUserOnline, userAddress, isActiveNetworkBlast]);
 
     const chainDataContext = {
         lastBlockNumber,
@@ -593,6 +600,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isActiveNetworkBlast,
         isActiveNetworkPlume,
         isActiveNetworkSwell,
+        isActiveNetworkBase,
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
         isVaultSupportedOnNetwork,

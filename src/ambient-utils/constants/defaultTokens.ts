@@ -49,6 +49,15 @@ export const mainnetSWETH: TokenIF = {
     symbol: 'swETH',
 };
 
+export const mainnetRSETH: TokenIF = {
+    address: '0xa1290d69c65a6fe4df752f95823fae25cb99e5a7',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://etherscan.io/token/images/kelprseth_32.png',
+    name: 'Kelp DAO Restaked ETH',
+    symbol: 'rsETH',
+};
+
 export const mainnetRSWETH: TokenIF = {
     address: '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0',
     chainId: 1,
@@ -803,6 +812,34 @@ export const swellSepoliaUSDT: TokenIF = {
     logoURI: '',
 };
 
+export const baseSepoliaETH: TokenIF = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 84532,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const baseSepoliaUSDC: TokenIF = {
+    name: 'Ambient USDC',
+    address: '0x1B98743bB9297A60FF9e75EA2630A77bf72bc17c',
+    symbol: 'USDC',
+    decimals: 6,
+    chainId: 84532,
+    logoURI: '',
+};
+
+export const baseSepoliaUSDT: TokenIF = {
+    name: 'Ambient USDT',
+    address: '0x868cFD46ad326354AD214bEA9f08fD8EfBfac3b9',
+    symbol: 'USDT',
+    decimals: 6,
+    chainId: 84532,
+    logoURI: '',
+};
+
 export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,
@@ -817,6 +854,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetWstETH,
     mainnetMATIC,
     mainnetSWETH,
+    mainnetRSETH,
     mainnetRSWETH,
     mainnetSWELL,
     mainnetSTONE,
@@ -888,4 +926,7 @@ export const defaultTokens: TokenIF[] = [
     swellSepoliaETH,
     swellSepoliaUSDC,
     swellSepoliaUSDT,
+    baseSepoliaETH,
+    baseSepoliaUSDC,
+    baseSepoliaUSDT,
 ];

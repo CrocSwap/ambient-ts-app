@@ -119,7 +119,9 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                 {!isInit && (
                     <FeaturedBoxInfoContainer>
                         <InfoHeader>Value</InfoHeader>
-                        <BoxInfoText>${value}</BoxInfoText>
+                        <BoxInfoText>
+                            {`${value ? `$${value}` : '...'}`}
+                        </BoxInfoText>
                     </FeaturedBoxInfoContainer>
                 )}
             </FeaturedBoxInnerContainer>

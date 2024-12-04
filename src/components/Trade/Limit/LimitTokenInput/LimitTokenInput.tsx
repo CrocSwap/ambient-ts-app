@@ -70,6 +70,7 @@ function LimitTokenInput(props: propsIF) {
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const { isUserConnected } = useContext(UserDataContext);
+    const { isUserOnline } = useContext(AppStateContext);
 
     const {
         tokenA,
@@ -111,8 +112,12 @@ function LimitTokenInput(props: propsIF) {
     }, [tokenA.address, tokenB.address]);
 
     useEffect(() => {
-        isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
-    }, [limitTickDisplayPrice]);
+        if (isUserOnline) {
+            isTokenAPrimary
+                ? handleTokenAChangeEvent()
+                : handleTokenBChangeEvent();
+        }
+    }, [limitTickDisplayPrice, isUserOnline]);
 
     useEffect(() => {
         handleLimitButtonMessage(

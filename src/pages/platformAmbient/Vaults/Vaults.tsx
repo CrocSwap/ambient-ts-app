@@ -5,6 +5,7 @@ import {
     UserVaultsServerIF,
     VaultIF,
 } from '../../../ambient-utils/types';
+import TokenRowSkeleton from '../../../components/Global/Explore/TokenRow/TokenRowSkeleton';
 import {
     AppStateContext,
     ReceiptContext,
@@ -54,13 +55,31 @@ function Vaults() {
 
     async function getAllVaultsData(): Promise<void> {
         const endpoint = `${VAULTS_API_URL}/vaults`;
-        const response = await fetch(endpoint);
-        const { data } = await response.json();
-        const sorted: AllVaultsServerIF[] = data.vaults.sort(
-            (a: AllVaultsServerIF, b: AllVaultsServerIF) =>
-                parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
-        );
-        setAllVaultsData(sorted);
+
+        const fetchData = async () => {
+            try {
+                const response = await fetch(endpoint);
+                const { data } = await response.json();
+                const sorted: AllVaultsServerIF[] = data.vaults.sort(
+                    (a: AllVaultsServerIF, b: AllVaultsServerIF) =>
+                        parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
+                );
+                setAllVaultsData(sorted ?? undefined);
+            } catch (error) {
+                console.log({ error });
+                setAllVaultsData(undefined);
+                setServerErrorReceived(true);
+                return;
+            }
+        };
+
+        const timeout = new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 2000);
+        });
+
+        await Promise.race([fetchData(), timeout]);
     }
 
     // hooks to fetch and hold user vault data
@@ -98,13 +117,16 @@ function Vaults() {
         });
 
         await Promise.race([fetchData(), timeout]);
-
-        fetchData();
     }
 
     useEffect(() => {
-        if (userAddress && chainId) getUserVaultData();
-    }, [chainId, userAddress, sessionReceipts.length]);
+        if (userAddress && chainId) {
+            getUserVaultData();
+            const period = isUserIdle ? 600000 : 60000; // 10 minutes while idle, 1 minute while active
+            const interval = setInterval(getUserVaultData, period);
+            return () => clearInterval(interval);
+        }
+    }, [chainId, userAddress, isUserIdle]);
 
     // logic to fetch vault data from API
     useEffect(() => {
@@ -115,7 +137,29 @@ function Vaults() {
         const interval = setInterval(getAllVaultsData, period);
         // clear the interval when this component dismounts
         return () => clearInterval(interval);
-    }, [sessionReceipts.length, isUserIdle]);
+    }, [isUserIdle]);
+
+    useEffect(() => {
+        // also run the user data fetch after a receipt is received
+        if (sessionReceipts.length === 0) return;
+        getUserVaultData();
+        // and repeat after a delay
+        setTimeout(() => {
+            getUserVaultData();
+        }, 5000);
+        setTimeout(() => {
+            getUserVaultData();
+        }, 15000);
+        setTimeout(() => {
+            getUserVaultData();
+        }, 30000);
+    }, [sessionReceipts.length]);
+
+    const tempItems = [1, 2, 3, 4, 5];
+
+    const skeletonDisplay = tempItems.map((item, idx) => (
+        <TokenRowSkeleton key={idx} />
+    ));
 
     return (
         <div data-testid={'vaults'} className={styles.container}>
@@ -132,39 +176,50 @@ function Vaults() {
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
-                    {(allVaultsData ?? placeholderVaultsListData) &&
-                        (allVaultsData ?? placeholderVaultsListData)
-                            .sort(
-                                (
-                                    a: VaultIF | AllVaultsServerIF,
-                                    b: VaultIF | AllVaultsServerIF,
-                                ) =>
-                                    parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
-                            )
-                            .filter(
-                                (vault) =>
-                                    Number(vault.chainId) === Number(chainId),
-                            )
-                            .map((vault: VaultIF | AllVaultsServerIF) => {
-                                const KEY_SLUG = 'vault_row_';
-                                return (
-                                    <VaultRow
-                                        key={KEY_SLUG + vault.address}
-                                        idForDOM={KEY_SLUG + vault.address}
-                                        vault={
-                                            new Vault(
-                                                vault,
-                                                userVaultData?.find(
-                                                    (uV: UserVaultsServerIF) =>
-                                                        uV.vaultAddress.toLowerCase() ===
-                                                        vault.address.toLowerCase(),
-                                                ),
-                                            )
-                                        }
-                                        needsFallbackQuery={serverErrorReceived}
-                                    />
-                                );
-                            })}
+                    {allVaultsData === null
+                        ? skeletonDisplay
+                        : (allVaultsData?.length
+                              ? allVaultsData
+                              : placeholderVaultsListData
+                          )
+                              .sort(
+                                  (
+                                      a: VaultIF | AllVaultsServerIF,
+                                      b: VaultIF | AllVaultsServerIF,
+                                  ) =>
+                                      parseFloat(b.tvlUsd) -
+                                      parseFloat(a.tvlUsd),
+                              )
+                              .filter(
+                                  (vault) =>
+                                      Number(vault.chainId) === Number(chainId),
+                              )
+                              .map((vault: VaultIF | AllVaultsServerIF) => {
+                                  const KEY_SLUG = 'vault_row_';
+                                  return (
+                                      <VaultRow
+                                          key={KEY_SLUG + vault.address}
+                                          idForDOM={KEY_SLUG + vault.address}
+                                          vault={
+                                              new Vault(
+                                                  vault,
+                                                  userVaultData?.find(
+                                                      (
+                                                          uV: UserVaultsServerIF,
+                                                      ) =>
+                                                          uV.vaultAddress.toLowerCase() ===
+                                                              vault.address.toLowerCase() &&
+                                                          uV.chainId ===
+                                                              vault.chainId,
+                                                  ),
+                                              )
+                                          }
+                                          needsFallbackQuery={
+                                              serverErrorReceived
+                                          }
+                                      />
+                                  );
+                              })}
                 </div>
             </div>
         </div>
