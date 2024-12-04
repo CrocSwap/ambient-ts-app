@@ -14,6 +14,7 @@ import {
     GAS_DROPS_ESTIMATE_VAULT_WITHDRAWAL,
     IS_LOCAL_ENV,
     NUM_GWEI_IN_WEI,
+    VAULT_TX_L1_DATA_FEE_ESTIMATE,
 } from '../../../../../ambient-utils/constants';
 import { AllVaultsServerIF, TokenIF } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
@@ -274,7 +275,7 @@ export default function VaultWithdraw(props: propsIF) {
 
             setWithdrawGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + VAULT_TX_L1_DATA_FEE_ESTIMATE,
                     isUSD: true,
                 }),
             );

@@ -11,6 +11,7 @@ import { FaGasPump } from 'react-icons/fa';
 import {
     GAS_DROPS_ESTIMATE_VAULT_DEPOSIT,
     NUM_GWEI_IN_WEI,
+    VAULT_TX_L1_DATA_FEE_ESTIMATE,
 } from '../../../../../ambient-utils/constants';
 import {
     getFormattedNumber,
@@ -176,10 +177,9 @@ export default function VaultDeposit(props: Props) {
                 Number(NUM_GWEI_IN_WEI) *
                 ethMainnetUsdPrice *
                 Number(GAS_DROPS_ESTIMATE_VAULT_DEPOSIT);
-
             setDepositGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + VAULT_TX_L1_DATA_FEE_ESTIMATE,
                     isUSD: true,
                 }),
             );
