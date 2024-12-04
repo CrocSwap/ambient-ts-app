@@ -2,7 +2,11 @@ import { useContext, useState } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
-import { AllVaultsServerIF, TokenIF } from '../../ambient-utils/types';
+import {
+    AllVaultsServerIF,
+    TokenIF,
+    VaultStrategy,
+} from '../../ambient-utils/types';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
@@ -96,6 +100,7 @@ export function useApprove() {
         vault: AllVaultsServerIF,
         mainAsset: TokenIF,
         secondaryAsset: TokenIF,
+        strategy: VaultStrategy,
         cb?: (b: boolean) => void,
         tokenQuantity?: bigint,
     ) => {
@@ -103,7 +108,7 @@ export function useApprove() {
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv
-                .tempestVault(vault.address, vault.mainAsset)
+                .tempestVault(vault.address, vault.mainAsset, strategy)
                 .approve(tokenQuantity || undefined)
                 .catch(console.error);
 

@@ -4,13 +4,14 @@ import { skins } from '../App/hooks/useSkin';
 import {
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
+    baseSepoliaBrandAssets,
     blastBrandAssets,
     defaultBrandAssets,
     futaBrandAssets,
     plumeSepoliaBrandAssets,
     scrollBrandAssets,
+    swellSepoliaBrandAssets,
 } from '../assets/branding';
-import { swellSepoliaBrandAssets } from '../assets/branding/swellSepoliaBrandAssets';
 import { brandIF, fontSets, heroItem } from '../assets/branding/types';
 import { AppStateContext, AppStateContextIF } from './AppStateContext';
 import { UserDataContext } from './UserDataContext';
@@ -86,6 +87,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return plumeSepoliaBrandAssets;
             case 'swellSepolia':
                 return swellSepoliaBrandAssets;
+            case 'baseSepolia':
+                return baseSepoliaBrandAssets;
             default:
                 return defaultBrandAssets;
         }
