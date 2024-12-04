@@ -183,7 +183,9 @@ function DexTokens(props: propsIF) {
                                       !isWrappedNativeToken(p.quote)) ||
                                   (p.quote.toLowerCase() ===
                                       token.tokenAddr.toLowerCase() &&
-                                      !isWrappedNativeToken(p.base)),
+                                      !isWrappedNativeToken(p.base) &&
+                                      parseInt(p.chainId) ===
+                                          token.tokenMeta?.chainId),
                           );
 
                           if (!token.tokenMeta || !matchingPool) return null;
