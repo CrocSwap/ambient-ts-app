@@ -14,9 +14,14 @@ import PositionBox from '../PositionBox/PositionBox';
 import styles from './MessageInput.module.css';
 
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
-// import { AppStateContext } from '../../../../contexts/AppStateContext';
+// import{ AppStateContext } from '../../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import CircularProgressBarForChat from '../../../Global/OpenOrderStatus/CircularProgressBarForChat';
+import {
+    ALLOW_MENTIONS,
+    CUSTOM_EMOJI_BLACKLIST_CHARACTERS,
+} from '../../ChatConstants/ChatConstants';
+import { getSingleEmoji } from '../../ChatRenderUtils';
 import {
     filterMessage,
     formatURL,
@@ -25,16 +30,11 @@ import {
     isLinkInCrocodileLabsLinks,
     isLinkInCrocodileLabsLinksForInput,
 } from '../../ChatUtils';
+import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
+import { emojiMeta } from '../../EmojiMeta';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
-import {
-    ALLOW_MENTIONS,
-    CUSTOM_EMOJI_BLACKLIST_CHARACTERS,
-} from '../../ChatConstants/ChatConstants';
-import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
-import { emojiMeta } from '../../EmojiMeta';
-import { getSingleEmoji } from '../../ChatRenderUtils';
 
 interface MessageInputProps {
     currentUser: string;
@@ -72,8 +72,6 @@ interface MessageInputProps {
     isMobile?: boolean;
     userMap?: Map<string, User>;
 }
-
-
 
 export default function MessageInput(props: MessageInputProps) {
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -578,13 +576,15 @@ export default function MessageInput(props: MessageInputProps) {
         const needToShowCustomEmojiPanel =
             filteredEmojis.length > 0 && message.includes(':');
         setShowCustomEmojiPanel(needToShowCustomEmojiPanel);
-        domDebug('filteredEmojis', filteredEmojis.length)
+        domDebug('filteredEmojis', filteredEmojis.length);
     }, [filteredEmojis]);
 
     useEffect(() => {
         if (message.includes(':')) {
             setTokenForEmojiSearch(
-                message.split(':')[message.split(':').length - 1].toLocaleLowerCase('en-US'),
+                message
+                    .split(':')
+                    [message.split(':').length - 1].toLocaleLowerCase('en-US'),
             );
         } else {
             setTokenForEmojiSearch('');
@@ -597,9 +597,7 @@ export default function MessageInput(props: MessageInputProps) {
     }, [tokenForEmojiSearch]);
 
     useEffect(() => {
-        const emojis = document.querySelectorAll(
-            '#chatCustomEmojiPicker span',
-        );
+        const emojis = document.querySelectorAll('#chatCustomEmojiPicker span');
         emojis.forEach((emoji, index) => {
             if (index == customEmojiPickerSelectedIndex) {
                 emoji.classList.add(styles.focused);
@@ -634,16 +632,12 @@ export default function MessageInput(props: MessageInputProps) {
         );
     }, [customEmojiPickerSelectedIndex, filteredEmojis]);
 
-
     const resetCustomEmojiPickerStates = () => {
         setCustomEmojiPickerSelectedIndex(0);
         setFilteredEmojis([]);
     };
 
-
-
     const filterEmojisForCustomPicker = (word: string) => {
-
         const filteredElements: JSX.Element[] = [];
         let searchToken = word.split(' ')[0];
 
@@ -656,19 +650,25 @@ export default function MessageInput(props: MessageInputProps) {
             return;
         }
 
-
         let foundEmojis = 0;
 
         emojiMeta.forEach((meta) => {
-            if (meta.ariaLabel.includes(searchToken) && foundEmojis < customEmojiPanelLimit) {
+            if (
+                meta.ariaLabel.includes(searchToken) &&
+                foundEmojis < customEmojiPanelLimit
+            ) {
                 foundEmojis++;
-                const emojiEl = getSingleEmoji(meta.unifiedChar, 
-                    () => {  const emoji = getEmojiFromUnifiedCode(meta.unifiedChar);
-                            handleEmojiClick(emoji, true)}, -1);
+                const emojiEl = getSingleEmoji(
+                    meta.unifiedChar,
+                    () => {
+                        const emoji = getEmojiFromUnifiedCode(meta.unifiedChar);
+                        handleEmojiClick(emoji, true);
+                    },
+                    -1,
+                );
                 filteredElements.push(emojiEl);
             }
-        })
-
+        });
 
         domDebug('filtered emojis', filteredElements.length);
         setFilteredEmojis([...filteredElements]);
@@ -692,10 +692,14 @@ export default function MessageInput(props: MessageInputProps) {
         } else if (e.key === 'Enter' || e.key === 'Tab') {
             if (filteredEmojis.length > 0) {
                 const emoji = filteredEmojis[customEmojiPickerSelectedIndex];
-                if (emoji && emoji.props && emoji.props.children && emoji.props.children.props) {
+                if (
+                    emoji &&
+                    emoji.props &&
+                    emoji.props.children &&
+                    emoji.props.children.props
+                ) {
                     const unifiedCode = emoji.props.children.props.unified;
-                    const emojiCharacter =
-                    getEmojiFromUnifiedCode(unifiedCode);
+                    const emojiCharacter = getEmojiFromUnifiedCode(unifiedCode);
                     handleEmojiClick(emojiCharacter, true);
                     resetCustomEmojiPickerStates();
                 }
@@ -891,7 +895,9 @@ export default function MessageInput(props: MessageInputProps) {
                         ref={customEmojiPickerRef}
                         id='chatCustomEmojiPicker'
                         className={`${styles.custom_emoji_picker_wrapper} ${showCustomEmojiPanel ? styles.active : ' '}`}
-                    >{...filteredEmojis}</div>
+                    >
+                        {...filteredEmojis}
+                    </div>
 
                     {props.isChatOpen && ALLOW_MENTIONS && mentionAutoComplete}
                 </div>

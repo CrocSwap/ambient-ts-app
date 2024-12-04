@@ -7,8 +7,8 @@ import {
     ExtraInfoContainer,
 } from '../../../../styled/Components/TradeModules';
 
-import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 
 interface PropsIF {
     extraInfo: {

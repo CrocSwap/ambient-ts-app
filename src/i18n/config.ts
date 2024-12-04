@@ -1,15 +1,15 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { initReactI18next } from 'react-i18next';
 import enCommon from './en/common.json';
-import enValidation from './en/validation.json';
 import enGlossary from './en/glossary.json';
-import zhCommon from './zh/common.json';
-import zhValidation from './zh/validation.json';
-import zhGlossary from './zh/glossary.json';
+import enValidation from './en/validation.json';
 import krCommon from './kr/common.json';
-import krValidation from './kr/validation.json';
 import krGlossary from './kr/glossary.json';
+import krValidation from './kr/validation.json';
+import zhCommon from './zh/common.json';
+import zhGlossary from './zh/glossary.json';
+import zhValidation from './zh/validation.json';
 
 export const resources = {
     en: {

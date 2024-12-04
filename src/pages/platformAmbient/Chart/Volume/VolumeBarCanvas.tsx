@@ -3,9 +3,9 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleDataIF } from '../../../../ambient-utils/types';
-import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
+import { ChartThemeIF } from '../../../../contexts/ChartContext';
+import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
 
 interface propsIF {
     scaleData: scaleData | undefined;
@@ -144,10 +144,7 @@ export default function VolumeBarCanvas(props: propsIF) {
                     barSeries(volumeData);
                 })
                 .on('measure', (event: CustomEvent) => {
-                    scaleData?.volumeScale.range([
-                        event.detail.height,
-                        0,
-                    ]);
+                    scaleData?.volumeScale.range([event.detail.height, 0]);
                     barSeries.context(ctx);
                 });
         }
@@ -158,8 +155,8 @@ export default function VolumeBarCanvas(props: propsIF) {
             ref={d3CanvasBar}
             className='volume-canvas'
             style={{
-              gridRowStart:2,
-              gridRowEnd:3,
+                gridRowStart: 2,
+                gridRowEnd: 3,
             }}
         ></d3fc-canvas>
     );

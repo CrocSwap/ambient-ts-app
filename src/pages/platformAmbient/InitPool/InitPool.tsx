@@ -6,48 +6,48 @@ import InitPoolExtraInfo from '../../../components/InitPool/InitPoolExtraInfo/In
 
 // START: Import Local Files
 
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import InitPoolTokenSelect from '../../../components/Global/InitPoolTokenSelect/InitPoolTokenSelect';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
-import { PoolContext } from '../../../contexts/PoolContext';
-import RangeBounds from '../../../components/Global/RangeBounds/RangeBounds';
-import { LuPencil } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
-import { FlexContainer, Text } from '../../../styled/Common';
-import Toggle from '../../../components/Form/Toggle';
-import { TextOnlyTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import { LuPencil } from 'react-icons/lu';
 import { useSendInit } from '../../../App/hooks/useSendInit';
+import Toggle from '../../../components/Form/Toggle';
+import RangeBounds from '../../../components/Global/RangeBounds/RangeBounds';
+import { TextOnlyTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { FlexContainer, Text } from '../../../styled/Common';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 
-import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import Spinner from '../../../components/Global/Spinner/Spinner';
-import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
-import { WarningBox } from '../../../components/RangeActionModal/WarningBox/WarningBox';
-import InitSkeleton from './InitSkeleton';
-import InitConfirmation from './InitConfirmation';
 import MultiContentComponent from '../../../components/Global/MultiStepTransaction/MultiContentComponent';
+import Spinner from '../../../components/Global/Spinner/Spinner';
+import { WarningBox } from '../../../components/RangeActionModal/WarningBox/WarningBox';
+import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import InitConfirmation from './InitConfirmation';
+import InitSkeleton from './InitSkeleton';
 
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useMediaQuery } from '@material-ui/core';
-import { CurrencyQuantityInput } from '../../../styled/Components/TradeModules';
-import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { useCreateRangePosition } from '../../../App/hooks/useCreateRangePosition';
 import {
-    getFormattedNumber,
     exponentialNumRegEx,
-    getUnicodeCharacter,
+    getFormattedNumber,
     getMoneynessRank,
-    truncateDecimals,
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
+    getUnicodeCharacter,
     roundDownTick,
     roundUpTick,
+    truncateDecimals,
 } from '../../../ambient-utils/dataLayer';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
+import { CurrencyQuantityInput } from '../../../styled/Components/TradeModules';
 import {
     DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
     DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
@@ -60,33 +60,33 @@ import {
 } from '@crocswap-libs/sdk';
 
 import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeButtonMessage';
-import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
-import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
-import InitButton from './InitButton';
-import { UserDataContext } from '../../../contexts/UserDataContext';
 import Button from '../../../components/Form/Button';
+import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
+import InitButton from './InitButton';
 
-import {
-    TransactionError,
-    isTransactionDeniedError,
-    isTransactionFailedError,
-    isTransactionReplacedError,
-} from '../../../utils/TransactionError';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { RangeContext } from '../../../contexts/RangeContext';
 import {
     GAS_DROPS_ESTIMATE_INIT_WITH_POOL,
     GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL,
-    RANGE_BUFFER_MULTIPLIER_MAINNET,
-    RANGE_BUFFER_MULTIPLIER_L2,
     GAS_DROPS_ESTIMATE_POOL,
-    NUM_GWEI_IN_WEI,
     IS_LOCAL_ENV,
+    NUM_GWEI_IN_WEI,
+    RANGE_BUFFER_MULTIPLIER_L2,
+    RANGE_BUFFER_MULTIPLIER_MAINNET,
     ZERO_ADDRESS,
 } from '../../../ambient-utils/constants';
-import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { AppStateContext } from '../../../contexts';
+import { RangeContext } from '../../../contexts/RangeContext';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import {
+    isTransactionDeniedError,
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../../utils/TransactionError';
 // react functional component
 export default function InitPool() {
     const { crocEnv, provider, ethMainnetUsdPrice } =
@@ -133,6 +133,7 @@ export default function InitPool() {
         quoteToken,
         setIsTokenAPrimary,
         setPrimaryQuantity,
+        isTokenAPrimary,
     } = useContext(TradeDataContext);
 
     useEffect(() => {
@@ -864,6 +865,17 @@ export default function InitPool() {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, isMintLiqEnabled]);
 
+    const { isTokenAInputDisabled, isTokenBInputDisabled } =
+        useRangeInputDisable(
+            isAmbient,
+            isTokenABase,
+            selectedPoolPriceTick, // Took place of: selectedPoolPriceTick,
+            defaultLowTick,
+            defaultHighTick,
+            isDenomBase,
+            isMintLiqEnabled,
+        );
+
     const tokenASurplusMinusTokenARemainderNum =
         fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
         fromDisplayQty(tokenACollateral || '0', tokenA.decimals);
@@ -871,29 +883,35 @@ export default function InitPool() {
         fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) -
         fromDisplayQty(tokenBCollateral || '0', tokenB.decimals);
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
-        ? tokenASurplusMinusTokenARemainderNum < 0
+        ? tokenASurplusMinusTokenARemainderNum < 0 && !isTokenAInputDisabled
             ? tokenASurplusMinusTokenARemainderNum * -1n
             : 0n
-        : fromDisplayQty(tokenACollateral || '0', tokenA.decimals);
+        : !isTokenAInputDisabled
+          ? fromDisplayQty(tokenACollateral || '0', tokenA.decimals)
+          : 0n;
+
     const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
-        ? tokenBSurplusMinusTokenBRemainderNum < 0
+        ? tokenBSurplusMinusTokenBRemainderNum < 0 && !isTokenBInputDisabled
             ? tokenBSurplusMinusTokenBRemainderNum * -1n
             : 0n
-        : fromDisplayQty(tokenBCollateral || '0', tokenB.decimals);
+        : !isTokenBInputDisabled
+          ? fromDisplayQty(tokenBCollateral || '0', tokenB.decimals)
+          : 0n;
 
-    // if liquidity miniting is enabled, tthen oken allowance must be greater than the amount of tokens the user is depositing,
+    // if liquidity miniting is enabled, then token allowance must be greater than the amount of tokens the user is depositing,
     // plus a small amount for the initialization transactions
-    // if liquidity minting is disabled, then token allowance must be greater than 0
+    // if liquidity minting is disabled, then token allowance must be greater than 0.1 of the token
     const isTokenAAllowanceSufficient =
         tokenAAllowance === undefined
             ? true
-            : isMintLiqEnabled
+            : isMintLiqEnabled && !isTokenAInputDisabled
               ? tokenAAllowance > tokenAQtyCoveredByWalletBalance
               : tokenAAllowance >= fromDisplayQty('0.1', tokenA.decimals);
+
     const isTokenBAllowanceSufficient =
         tokenBAllowance === undefined
             ? true
-            : isMintLiqEnabled
+            : isMintLiqEnabled && !isTokenBInputDisabled
               ? tokenBAllowance > tokenBQtyCoveredByWalletBalance
               : tokenBAllowance >= fromDisplayQty('0.1', tokenB.decimals);
 
@@ -1020,17 +1038,6 @@ export default function InitPool() {
         resetConfirmation,
     );
 
-    const { isTokenAInputDisabled, isTokenBInputDisabled } =
-        useRangeInputDisable(
-            isAmbient,
-            isTokenABase,
-            selectedPoolPriceTick, // Took place of: selectedPoolPriceTick,
-            defaultLowTick,
-            defaultHighTick,
-            isDenomBase,
-            isMintLiqEnabled,
-        );
-
     useEffect(() => {
         if (isTokenAInputDisabled) setIsTokenAPrimary(false);
         if (isTokenBInputDisabled) setIsTokenAPrimary(true);
@@ -1140,6 +1147,9 @@ export default function InitPool() {
         selectedPoolPriceTick,
         tokenAQtyCoveredByWalletBalance,
         tokenBQtyCoveredByWalletBalance,
+        isTokenAPrimary,
+        tokenABalance,
+        tokenBBalance,
     };
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;

@@ -1,29 +1,29 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { createNetworkSession } from '../constants/networks/createNetworkSession';
-import {
-    SpotPriceFn,
-    getLimitOrderData,
-    getPositionData,
-    querySpotPrice,
-    filterLimitArray,
-} from '../dataLayer';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
 import {
-    TokenPriceFn,
-    FetchContractDetailsFn,
     FetchAddrFn,
-    fetchTokenPrice,
+    FetchContractDetailsFn,
+    TokenPriceFn,
     fetchContractDetails,
     fetchEnsAddress,
+    fetchTokenPrice,
 } from '../api';
+import { createNetworkSession } from '../constants/networks/createNetworkSession';
 import {
-    TokenIF,
-    PositionIF,
-    PositionServerIF,
+    SpotPriceFn,
+    filterLimitArray,
+    getLimitOrderData,
+    getPositionData,
+    querySpotPrice,
+} from '../dataLayer';
+import {
     LimitOrderIF,
     LimitOrderServerIF,
+    PositionIF,
+    PositionServerIF,
     RecordType,
+    TokenIF,
 } from '../types';
 // TODOJG move to types
 interface RecordRequestIF {
@@ -92,7 +92,7 @@ const decorateUserPositions = async ({
     cachedEnsResolve: FetchAddrFn;
 }) => {
     const skipENSFetch = true;
-    const forceOnchainLiqUpdate = true;
+    const forceOnchainLiqUpdate = userPositions.length < 30; // temporary solution to fix batch RPC call failure when user has a lot of positions
     if (recordType == RecordType.LimitOrder) {
         return await Promise.all(
             (userPositions as LimitOrderServerIF[]).map(

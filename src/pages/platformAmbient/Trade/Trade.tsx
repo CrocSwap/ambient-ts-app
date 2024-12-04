@@ -1,45 +1,45 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { Outlet } from 'react-router-dom';
 import { NumberSize } from 're-resizable';
 import {
-    useEffect,
-    useState,
-    useContext,
-    useCallback,
     memo,
+    useCallback,
+    useContext,
+    useEffect,
     useRef,
+    useState,
 } from 'react';
+import { Outlet } from 'react-router-dom';
 
 // START: Import JSX Components
 import TradeTabs2 from '../../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { CandleContext } from '../../../contexts/CandleContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { ChartContext } from '../../../contexts/ChartContext';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { CandleDataIF } from '../../../ambient-utils/types';
+import { Direction } from 're-resizable/lib/resizer';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
 } from '../../../ambient-utils/dataLayer';
-import { NoChartData } from '../../../components/NoChartData/NoChartData';
-import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
+import { NoChartData } from '../../../components/NoChartData/NoChartData';
+import { CandleContext } from '../../../contexts/CandleContext';
+import { ChartContext } from '../../../contexts/ChartContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { FlexContainer } from '../../../styled/Common';
 import {
     ChartContainer,
     MainSection,
     ResizableContainer,
 } from '../../../styled/Components/Trade';
-import { Direction } from 're-resizable/lib/resizer';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { PoolContext } from '../../../contexts/PoolContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
 import PointsBanner from './PointsBanner';
+import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { BrandContext } from '../../../contexts/BrandContext';

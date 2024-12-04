@@ -91,7 +91,6 @@
     pointer-events: none;
     padding-left: 8px;
     padding-right: 1.5rem;
-    
 }
 @keyframes shadow-pulse {
     0% {
@@ -150,7 +149,7 @@
     border: none;
 }
 
-.tokenButton{
+.tokenButton {
     width: 100%;
     display: flex;
     flex-direction: row;

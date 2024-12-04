@@ -25,8 +25,6 @@
     background: var(--dark2, #12121a);
 }
 
-
-
 .rightContainer {
     display: flex;
     flex-direction: row;
@@ -63,7 +61,7 @@
     color: var(--text1);
 }
 
-.skipAnimationContainer{
+.skipAnimationContainer {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -141,11 +139,13 @@
     color: var(--text1);
 }
 
-
 @media (min-width: 768px) {
 
     .fixedPositioned{
         position: fixed;
+
+    .container {
+        position: sticky;
         top: 0;
     }
 
@@ -162,8 +162,6 @@
         left: auto;
         right: 16px;
     }
-
-    
 }
 
 

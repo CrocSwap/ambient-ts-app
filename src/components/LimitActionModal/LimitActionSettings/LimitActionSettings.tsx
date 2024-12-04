@@ -1,8 +1,8 @@
-import { Dispatch, SetStateAction } from 'react';
-import styles from './LimitActionSettings.module.css';
-import { BsArrowLeft } from 'react-icons/bs';
 import { Button } from '@material-ui/core';
+import { Dispatch, SetStateAction } from 'react';
+import { BsArrowLeft } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
+import styles from './LimitActionSettings.module.css';
 
 interface propsIF {
     showSettings: boolean;
@@ -17,7 +17,7 @@ export default function LimitActionSettings(props: propsIF) {
     // values to generate preset buttons
     const presets: number[] = [0.1, 0.3, 0.5];
     // type derived as number-literal union for defined presets
-    type presetValues = typeof presets[number];
+    type presetValues = (typeof presets)[number];
 
     const slippageValue = 2;
 

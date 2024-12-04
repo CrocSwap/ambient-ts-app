@@ -1,6 +1,5 @@
 /* Overlay that covers the whole screen with a blur effect */
 .modal_overlay {
-   
     position: fixed;
     left: 0;
     top: 0;
@@ -10,12 +9,10 @@
     backdrop-filter: blur(3px); /* Blur effect */
     -webkit-backdrop-filter: blur(3px); /* Safari support */
     z-index: 999; /* Make sure it sits behind the modal */
+}
 
-   
-  }
-  
-  /* Bottom Sheet (Modal) */
-  .bottom_sheet {
+/* Bottom Sheet (Modal) */
+.bottom_sheet {
     position: fixed;
     left: 0;
     right: 0;
@@ -29,58 +26,55 @@
     overflow: hidden;
     width: 100%;
     max-width: 100%;
-  
+
     background: var(--dark2);
     border: 1px solid var(--dark3);
-    transition: height 0.3s ease, backdrop-filter 0.3s ease;
+    transition:
+        height 0.3s ease,
+        backdrop-filter 0.3s ease;
+}
 
-   
-  }
-  
-  .sheet_handle {
+.sheet_handle {
     display: flex;
     justify-content: center;
     padding: 10px;
     cursor: pointer;
-  }
-  
-  .drag_handle {
+}
+
+.drag_handle {
     width: 40px;
     height: 5px;
     background-color: var(--accent1);
     border-radius: 2.5px;
+}
 
-    
-  }
-  
-  .sheet_header {
+.sheet_header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 8px 16px;
     border-bottom: 1px solid var(--border-color);
-  }
-  
-  .sheet_title {
+}
+
+.sheet_title {
     font-size: 18px;
     font-weight: 300;
     margin: 0;
-  }
-  
-  .close_button {
+}
+
+.close_button {
     cursor: pointer;
     color: var(--text-color);
-  }
-  
-  .sheet_content {
+}
+
+.sheet_content {
     padding: 16px;
     max-height: 60vh;
     overflow-y: auto;
     pointer-events: all;
-  }
-  
-  .sheet_footer {
+}
+
+.sheet_footer {
     padding: 16px;
     border-top: 1px solid var(--border-color);
-  }
-  
+}

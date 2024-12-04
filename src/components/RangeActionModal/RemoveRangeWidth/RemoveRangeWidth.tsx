@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
-import styles from './RemoveRangeWidth.module.css';
 import RangeSlider from '../../Form/RangeSlider';
+import styles from './RemoveRangeWidth.module.css';
 
 interface propsIF {
     removalPercentage: number;
@@ -13,7 +13,7 @@ export default function RemoveRangeWidth(props: propsIF) {
     // values to generate remove liquidity preset buttons
     const removalPresets: number[] = [10, 25, 50, 100];
     // type annotation as union of number-literals in `removalPresets`
-    type presetValues = typeof removalPresets[number];
+    type presetValues = (typeof removalPresets)[number];
 
     // id attribute for removal slider input (referenced in multiple places)
     const sliderFieldId = 'remove-range-slider';

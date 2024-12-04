@@ -1,6 +1,6 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
 import { ALCHEMY_API_KEY } from '../constants';
+import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
 
 export const fetchNFT = async (
     address: string,

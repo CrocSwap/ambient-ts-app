@@ -1,5 +1,9 @@
-import { MouseEvent, useContext, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
+import { MouseEvent, useContext, useEffect, useRef } from 'react';
+import { diffHashSigScaleData } from '../../../../../ambient-utils/dataLayer';
+import { CandleDataIF } from '../../../../../ambient-utils/types';
+import { ChartContext } from '../../../../../contexts/ChartContext';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import {
     CandleDataChart,
     drawDataHistory,
@@ -8,10 +12,6 @@ import {
     scaleData,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
-import { ChartContext } from '../../../../../contexts/ChartContext';
-import { diffHashSigScaleData } from '../../../../../ambient-utils/dataLayer';
-import { CandleDataIF } from '../../../../../ambient-utils/types';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface DragCanvasProps {
     scaleData: scaleData;
@@ -582,7 +582,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                                 ? valueX > scaleData.xScale.invert(offsetX)
                                 : valueX < scaleData.xScale.invert(offsetX);
 
-                        setCrossHairDataFunc(valueX,offsetX,offsetY);
+                        setCrossHairDataFunc(valueX, offsetX, offsetY);
 
                         if (
                             hoveredDrawnShape &&

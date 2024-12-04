@@ -1,7 +1,7 @@
-import { Dispatch, SetStateAction, KeyboardEvent } from 'react';
+import { Dispatch, KeyboardEvent, SetStateAction } from 'react';
 import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
-import styles from './SlippageTolerance.module.css';
 import { Chip } from '../../Form/Chip';
+import styles from './SlippageTolerance.module.css';
 
 interface propsIF {
     persistedSlippage: number;
@@ -20,7 +20,7 @@ export default function SlippageTolerance(props: propsIF) {
     );
 
     // type derived from preset values received in props
-    type presetValues = typeof presets[number];
+    type presetValues = (typeof presets)[number];
 
     return (
         <div className={styles.slippage_tolerance_container}>

@@ -1,28 +1,27 @@
-import Deposit from './Deposit/Deposit';
-import Withdraw from './Withdraw/Withdraw';
-import Transfer from './Transfer/Transfer';
-import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import styles from './ExchangeBalance.module.css'
-import transferImage from '../../../assets/images/sidebarImages/transfer.svg';
-import withdrawImage from '../../../assets/images/sidebarImages/withdraw.svg';
-import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
-import TabComponent from '../../Global/TabComponent/TabComponent';
 import {
-    SetStateAction,
     Dispatch,
-    useState,
-    useEffect,
+    SetStateAction,
     useContext,
+    useEffect,
+    useState,
 } from 'react';
 import { fetchEnsAddress } from '../../../ambient-utils/api';
-import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
+import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
+import transferImage from '../../../assets/images/sidebarImages/transfer.svg';
+import withdrawImage from '../../../assets/images/sidebarImages/withdraw.svg';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import TabComponent from '../../Global/TabComponent/TabComponent';
+import Deposit from './Deposit/Deposit';
+import styles from './ExchangeBalance.module.css';
+import Transfer from './Transfer/Transfer';
+import Withdraw from './Withdraw/Withdraw';
 
-
-import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     fullLayoutActive: boolean;
@@ -38,7 +37,7 @@ export default function ExchangeBalance(props: propsIF) {
         setFullLayoutActive,
         isModalView = false,
         setTokenModalOpen = () => null,
-        setIsAutoLayout
+        setIsAutoLayout,
     } = props;
 
     const { mainnetProvider } = useContext(CrocEnvContext);
@@ -243,10 +242,11 @@ export default function ExchangeBalance(props: propsIF) {
     ];
     const toggleFullLayoutActive = () => {
         setFullLayoutActive(!fullLayoutActive);
-       setIsAutoLayout && setIsAutoLayout(false); // Mark that the layout is now manually controlled
-      };
+        setIsAutoLayout && setIsAutoLayout(false); // Mark that the layout is now manually controlled
+    };
     const exchangeControl = (
-        <div className={styles.portfolio_control_container}
+        <div
+            className={styles.portfolio_control_container}
             id='portfolio_sidebar_toggle'
             onClick={toggleFullLayoutActive}
         >
@@ -261,14 +261,15 @@ export default function ExchangeBalance(props: propsIF) {
         </div>
     );
 
-
     return (
         <>
-         
             <div className={styles.portfolio_motion_container}>
-                <div className={styles.portfolio_motion_sub_container} id='subcont'>
+                <div
+                    className={styles.portfolio_motion_sub_container}
+                    id='subcont'
+                >
                     <div className={styles.tab_component_container}>
-                        {(!fullLayoutActive  || isModalView) && (
+                        {(!fullLayoutActive || isModalView) && (
                             <TabComponent
                                 data={accountData}
                                 rightTabOptions={false}
@@ -279,15 +280,14 @@ export default function ExchangeBalance(props: propsIF) {
                         {!isModalView && exchangeControl}
                     </div>
                 </div>
-                {(!fullLayoutActive  || isModalView) && (
+                {(!fullLayoutActive || isModalView) && (
                     <p className={styles.portfolio_info_text}>
                         Collateral deposited into the Ambient Finance exchange
                         can be traded at lower gas costs and withdrawn at any
                         time.
                     </p>
                 )}
-                </div>
-           
+            </div>
         </>
     );
 }

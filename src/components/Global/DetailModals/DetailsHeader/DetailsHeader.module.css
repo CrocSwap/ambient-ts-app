@@ -7,15 +7,14 @@
     padding: 1rem;
     cursor: default;
     height: 60px; */
-display: flex;
-align-items: center;
-justify-content: space-between;
-height: 60px;
-padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 1rem;
 }
 
 .logo_container {
-  
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -25,12 +24,10 @@ padding: 0 1rem;
 
 .logo {
     height: 35px;
-   
 }
 
 .logo_text {
     width: 176px;
-   
 }
 
 .settings_control {
@@ -41,16 +38,14 @@ padding: 0 1rem;
     justify-content: center;
 
     gap: 8px;
-  
-   
 }
 
-.settings_control div, .settings_control svg{
+.settings_control div,
+.settings_control svg {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
 
 .info_button {
     cursor: pointer;
@@ -62,24 +57,22 @@ padding: 0 1rem;
     height: 23px;
 }
 
-@media only screen and (max-width: 600px){
-    .container{
+@media only screen and (max-width: 600px) {
+    .container {
         height: 40px;
-       
     }
-    
-.info_button{
-    background: transparent;
-    width: auto;
-    height: auto;
-}
 
+    .info_button {
+        background: transparent;
+        width: auto;
+        height: auto;
+    }
 
-.logo_text, .logo{
-   
-    margin-left: none;
-}
-.logo_text{
-    width: 110px;
-}
+    .logo_text,
+    .logo {
+        margin-left: none;
+    }
+    .logo_text {
+        width: 110px;
+    }
 }

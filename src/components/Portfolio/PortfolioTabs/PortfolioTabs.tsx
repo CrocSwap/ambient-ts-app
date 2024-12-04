@@ -1,60 +1,60 @@
 import {
+    useContext,
     // START: Import React and Dongles
     useEffect,
-    useState,
-    useContext,
     useMemo,
+    useState,
 } from 'react';
 // START: Import JSX Functional Components
-import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
+import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 // import Tokens from '../Tokens/Tokens';
 import styles from './PortfolioTabs.module.css';
 // START: Import Local Files
-import {
-    getPositionData,
-    getLimitOrderData,
-    filterLimitArray,
-} from '../../../ambient-utils/dataLayer';
-import {
-    LimitOrderIF,
-    PositionIF,
-    TokenIF,
-    TransactionIF,
-    PositionServerIF,
-    LimitOrderServerIF,
-} from '../../../ambient-utils/types';
-import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
-import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
-import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
-import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
-import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
+import { useLocation } from 'react-router-dom';
 import { fetchUserRecentChanges } from '../../../ambient-utils/api';
-import Orders from '../../Trade/TradeTabs/Orders/Orders';
-import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
-import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
 } from '../../../ambient-utils/constants';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
-import Points from '../../Global/Account/AccountTabs/Points/Points';
 import {
-    BlastUserXpDataIF,
-    UserXpDataIF,
-} from '../../../contexts/UserDataContext';
+    filterLimitArray,
+    getLimitOrderData,
+    getPositionData,
+} from '../../../ambient-utils/dataLayer';
+import {
+    LimitOrderIF,
+    LimitOrderServerIF,
+    PositionIF,
+    PositionServerIF,
+    TokenIF,
+    TransactionIF,
+} from '../../../ambient-utils/types';
 import medal from '../../../assets/images/icons/medal.svg';
+import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
+import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
+import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
+import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
+import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import {
     AppStateContext,
     AppStateContextIF,
 } from '../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import {
+    BlastUserXpDataIF,
+    UserXpDataIF,
+} from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { useLocation } from 'react-router-dom';
+import Points from '../../Global/Account/AccountTabs/Points/Points';
+import Orders from '../../Trade/TradeTabs/Orders/Orders';
+import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
+import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 
 // interface for React functional component props
 interface propsIF {
@@ -92,6 +92,7 @@ export default function PortfolioTabs(props: propsIF) {
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
+    const isLessThanDesktopSizeScreen = useMediaQuery('(max-width: 1500px)');
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
@@ -416,7 +417,9 @@ export default function PortfolioTabs(props: propsIF) {
             icon: medal,
         },
         {
-            label: 'Exchange Balances',
+            label: isLessThanDesktopSizeScreen
+                ? 'DEX Balances'
+                : 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
         },

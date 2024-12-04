@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo, useContext } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     getChainExplorer,
-    getUnicodeCharacter,
-    trimString,
-    getMoneynessRank,
     getElapsedTime,
     getFormattedNumber,
+    getMoneynessRank,
+    getUnicodeCharacter,
+    trimString,
     uriToHttp,
 } from '../../ambient-utils/dataLayer';
 import { LimitOrderIF } from '../../ambient-utils/types';
@@ -18,13 +18,13 @@ import {
 } from '@crocswap-libs/sdk';
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import moment from 'moment';
 import { getAddress } from 'ethers';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { useFetchBatch } from '../../App/hooks/useFetchBatch';
-import { UserDataContext } from '../../contexts/UserDataContext';
+import moment from 'moment';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -247,6 +247,13 @@ export const useProcessOrder = (
     const baseQty = getFormattedNumber({
         value: liqBaseNum,
         zeroDisplay: '0',
+        removeExtraTrailingZeros: true,
+    });
+
+    const quoteQty = getFormattedNumber({
+        value: liqQuoteNum,
+        zeroDisplay: '0',
+        removeExtraTrailingZeros: true,
     });
 
     const fillPercentage =
@@ -257,23 +264,22 @@ export const useProcessOrder = (
 
     const originalPositionLiqBase = getFormattedNumber({
         value: limitOrder.originalPositionLiqBaseDecimalCorrected,
+        removeExtraTrailingZeros: true,
     });
 
     const originalPositionLiqQuote = getFormattedNumber({
         value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
+        removeExtraTrailingZeros: true,
     });
 
     const expectedPositionLiqBase = getFormattedNumber({
         value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
+        removeExtraTrailingZeros: true,
     });
 
     const expectedPositionLiqQuote = getFormattedNumber({
         value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
-    });
-
-    const quoteQty = getFormattedNumber({
-        value: liqQuoteNum,
-        zeroDisplay: '0',
+        removeExtraTrailingZeros: true,
     });
 
     const usdValueNum = limitOrder.totalValueUSD;
@@ -287,13 +293,6 @@ export const useProcessOrder = (
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
-    const baseDisplayFrontend = quantitiesAvailable
-        ? `${baseQty || '0.00'}`
-        : '…';
-
-    const quoteDisplayFrontend = quantitiesAvailable
-        ? `${quoteQty || '0.00'}`
-        : '…';
     const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
 
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
@@ -561,8 +560,6 @@ export const useProcessOrder = (
         quoteTokenCharacter,
         quoteTokenLogo,
         baseTokenLogo,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
         originalPositionLiqBase,
         originalPositionLiqQuote,
         expectedPositionLiqBase,

@@ -1,4 +1,4 @@
-import { useId, Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useId } from 'react';
 import { useLocation } from 'react-router-dom';
 import Toggle from '../../Form/Toggle';
 import styles from './ConfirmationModalControl.module.css';
@@ -20,14 +20,14 @@ export default function ConfirmationModalControl(props: propsIF) {
     const moduleName = pathname.includes('swap')
         ? 'swaps'
         : pathname.includes('market')
-        ? 'swaps'
-        : pathname.includes('pool')
-        ? 'pool orders'
-        : pathname.includes('reposition')
-        ? 'repositions'
-        : pathname.includes('limit')
-        ? 'limit orders'
-        : 'unhandled';
+          ? 'swaps'
+          : pathname.includes('pool')
+            ? 'pool orders'
+            : pathname.includes('reposition')
+              ? 'repositions'
+              : pathname.includes('limit')
+                ? 'limit orders'
+                : 'unhandled';
 
     const toggleAriaLabel = `${
         tempBypassConfirm ? 'disable skip' : 'skip'

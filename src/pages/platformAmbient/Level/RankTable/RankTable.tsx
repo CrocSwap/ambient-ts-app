@@ -1,13 +1,13 @@
+import { trimString } from '../../../../ambient-utils/dataLayer';
 import Divider from '../../../../components/Global/Divider/Divider';
+import Spinner from '../../../../components/Global/Spinner/Spinner';
+import { UserXpDataIF } from '../../../../contexts/UserDataContext';
 import { XpLeadersDataIF } from '../../../../contexts/XpLeadersContext';
 import RankHeader from './RankHeader';
 import RankRow from './RankRow';
 import styles from './RankTable.module.css';
-import { trimString } from '../../../../ambient-utils/dataLayer';
-import Spinner from '../../../../components/Global/Spinner/Spinner';
-import { UserXpDataIF } from '../../../../contexts/UserDataContext';
-// import { useContext } from 'react';
-// import { UserDataContext } from '../../../contexts/UserDataContext';
+// import{ useContext } from 'react';
+// import{ UserDataContext } from '../../../contexts/UserDataContext';
 
 interface Props {
     xpLeaders: XpLeadersDataIF;
@@ -71,10 +71,10 @@ export default function RankTable(props: Props) {
                   ),
                   userAddress: connectedUserXp.data.userAddress,
                   points: (selectedXpLeaderboardType === 'Weekly'
-                      ? connectedUserXp.data.weeklyPoints ?? 0
+                      ? (connectedUserXp.data.weeklyPoints ?? 0)
                       : selectedXpLeaderboardType === 'Chain'
-                        ? connectedUserXp.data.chainPoints ?? 0
-                        : connectedUserXp.data.globalPoints ?? 0
+                        ? (connectedUserXp.data.chainPoints ?? 0)
+                        : (connectedUserXp.data.globalPoints ?? 0)
                   ).toLocaleString('en-US', {
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0,

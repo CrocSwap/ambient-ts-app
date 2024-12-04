@@ -75,7 +75,8 @@
 
 .container {
     width: 100%;
-    background: linear-gradient(
+    background:
+        linear-gradient(
             180deg,
             #000000 0%,
             rgba(0, 0, 0, 0) 40.39%,

@@ -1,38 +1,42 @@
 import styles from './VaultRow.module.css';
 import tempestLogoColor from './tempestLogoColor.svg';
 // import tempestLogo from './tempestLogo.svg';
-import { FlexContainer } from '../../../../styled/Common';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { RiExternalLinkLine } from 'react-icons/ri';
 import {
     getFormattedNumber,
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
-import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { VaultIF, VaultStrategy } from '../../../../ambient-utils/types';
+import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { VaultIF } from '../../../../ambient-utils/types';
-import { useContext, useEffect, useState } from 'react';
+import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
+import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
+import TooltipComponent from '../../../../components/Global/TooltipComponent/TooltipComponent';
 import {
     AppStateContext,
-    UserDataContext,
-    TokenContext,
     CrocEnvContext,
     ReceiptContext,
+    TokenContext,
+    UserDataContext,
 } from '../../../../contexts';
+import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
+import { FlexContainer } from '../../../../styled/Common';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { formatDollarAmount } from '../../../../utils/numbers';
 import VaultDeposit from '../VaultActionModal/VaultDeposit/VaultDeposit';
 import VaultWithdraw from '../VaultActionModal/VaultWithdraw/VaultWithdraw';
-import { RiExternalLinkLine } from 'react-icons/ri';
-import { toDisplayQty } from '@crocswap-libs/sdk';
-import TooltipComponent from '../../../../components/Global/TooltipComponent/TooltipComponent';
-import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
-import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 
 interface propsIF {
     idForDOM: string;
     vault: VaultIF;
+    needsFallbackQuery: boolean;
 }
+
 export default function VaultRow(props: propsIF) {
-    const { idForDOM, vault } = props;
+    const { idForDOM, vault, needsFallbackQuery } = props;
+
     const [isOpen, openModal, closeModal] = useModal();
     const [type, setType] = useState<'Deposit' | 'Withdraw'>('Deposit');
 
@@ -40,6 +44,9 @@ export default function VaultRow(props: propsIF) {
     const { crocEnv } = useContext(CrocEnvContext);
     const { isUserConnected, userAddress } = useContext(UserDataContext);
     const { sessionReceipts } = useContext(ReceiptContext);
+    const { closeBottomSheet } = useBottomSheet();
+
+    // const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
 
     const {
         activeNetwork: { chainId },
@@ -53,39 +60,55 @@ export default function VaultRow(props: propsIF) {
     const secondaryAsset = tokens.getTokenByAddress(secondaryAssetAddress);
 
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
+    const showPhoneVersion = useMediaQuery('(max-width: 500px)');
 
-    const [balanceMainAsset, setBalanceMainAsset] = useState<
-        bigint | undefined
-    >();
+    const [crocEnvBal, setCrocEnvBal] = useState<bigint>();
+
+    const strategy = vault.strategy as VaultStrategy;
+
+    async function getCrocEnvBalance(): Promise<void> {
+        if (
+            crocEnv &&
+            !vault.balanceAmount &&
+            userAddress &&
+            needsFallbackQuery
+        ) {
+            const tempestVault = crocEnv.tempestVault(
+                vault.address,
+                vault.mainAsset,
+                strategy,
+            );
+            setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
+        }
+    }
 
     // useEffect to check if user has approved Tempest to sell token 1
     useEffect(() => {
-        if (crocEnv && vault) {
-            setBalanceMainAsset(undefined);
-            if (userAddress) {
-                (async () => {
-                    try {
-                        const tempestVault = crocEnv.tempestVault(
-                            vault.address,
-                            vault.mainAsset,
-                        );
-
-                        // const balanceMainAssetResponse =
-                        //     await tempestVault.balanceToken1(
-                        //         '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
-                        //     );
-
-                        const balanceMainAssetResponse =
-                            await tempestVault.balanceToken1(userAddress);
-
-                        setBalanceMainAsset(balanceMainAssetResponse);
-                    } catch (err) {
-                        console.warn(err);
-                    }
-                })();
-            }
+        if (needsFallbackQuery) {
+            getCrocEnvBalance();
+        } else {
+            setCrocEnvBal(undefined);
         }
-    }, [crocEnv, vault, userAddress, sessionReceipts.length]);
+    }, [
+        crocEnv,
+        vault,
+        userAddress,
+        sessionReceipts.length,
+        needsFallbackQuery,
+    ]);
+
+    const balDisplay = useMemo<string>(() => {
+        const rawValue = vault.balance ?? crocEnvBal;
+        const output: string =
+            rawValue && mainAsset && userAddress
+                ? getFormattedNumber({
+                      value: parseFloat(
+                          toDisplayQty(rawValue, mainAsset.decimals),
+                      ),
+                  })
+                : '...';
+        return output;
+    }, [vault.balance, crocEnvBal, mainAsset, userAddress]);
 
     if (
         Number(chainId) !== Number(vault.chainId) ||
@@ -96,7 +119,12 @@ export default function VaultRow(props: propsIF) {
     }
 
     const tokenIconsDisplay = (
-        <FlexContainer alignItems='center' gap={5} style={{ flexShrink: 0 }}>
+        <FlexContainer
+            alignItems='center'
+            gap={5}
+            style={{ flexShrink: 0 }}
+            onClick={() => navigateExternal()}
+        >
             <div className={styles.tempestDisplay}>
                 <DefaultTooltip title={'Tempest Finance'}>
                     <img src={tempestLogoColor} alt='tempest' />
@@ -118,16 +146,9 @@ export default function VaultRow(props: propsIF) {
                     size={showMobileVersion ? 'm' : '2xl'}
                 />{' '}
             </IconWithTooltip>
+            {showMobileVersion && <RiExternalLinkLine size={20} />}
         </FlexContainer>
     );
-
-    const mainAssetBalanceDisplayQty = balanceMainAsset
-        ? getFormattedNumber({
-              value: parseFloat(
-                  toDisplayQty(balanceMainAsset, mainAsset.decimals),
-              ),
-          })
-        : '...';
 
     const depositsDisplay = (
         <FlexContainer
@@ -136,11 +157,10 @@ export default function VaultRow(props: propsIF) {
             justifyContent='flex-end'
             gap={5}
             style={{ flexShrink: 0 }}
-            className={styles.depositContainer}
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
-                {mainAssetBalanceDisplayQty}
-                {!!balanceMainAsset && (
+                {balDisplay}
+                {!!(vault.balance ?? crocEnvBal) && !!userAddress && (
                     <>
                         <TokenIcon
                             token={mainAsset}
@@ -148,6 +168,7 @@ export default function VaultRow(props: propsIF) {
                             alt={mainAsset.symbol}
                             size={'m'}
                         />
+
                         <TooltipComponent
                             placement='top'
                             title='Vault positions can hold both tokens in a pair. Displayed position values represent estimated redeemable token positions for the primary token on withdrawal.'
@@ -164,6 +185,7 @@ export default function VaultRow(props: propsIF) {
         suffix: '%',
         minFracDigits: 2,
         maxFracDigits: 2,
+        isPercentage: true,
     });
 
     function handleOpenWithdrawModal() {
@@ -175,21 +197,32 @@ export default function VaultRow(props: propsIF) {
         openModal();
     }
 
+    function handleModalClose() {
+        closeModal();
+        closeBottomSheet();
+    }
+
     const modalToOpen =
         type === 'Deposit' ? (
             <VaultDeposit
                 mainAsset={mainAsset}
                 secondaryAsset={secondaryAsset}
                 vault={vault}
-                onClose={closeModal}
+                onClose={handleModalClose}
+                strategy={strategy}
             />
         ) : (
             <VaultWithdraw
                 mainAsset={mainAsset}
                 vault={vault}
-                balanceMainAsset={balanceMainAsset}
-                mainAssetBalanceDisplayQty={mainAssetBalanceDisplayQty}
-                onClose={closeModal}
+                balanceMainAsset={
+                    (vault.balance && BigInt(vault.balance)) ||
+                    crocEnvBal ||
+                    undefined
+                }
+                mainAssetBalanceDisplayQty={balDisplay}
+                onClose={handleModalClose}
+                strategy={strategy}
             />
         );
     function navigateExternal(): void {
@@ -224,16 +257,23 @@ export default function VaultRow(props: propsIF) {
                         <p className={styles.tvlDisplay}>
                             {formatDollarAmount(parseFloat(vault.tvlUsd))}
                         </p>
-                        {depositsDisplay}
                         <p
-                            className={styles.apyDisplay}
+                            className={`${styles.depositContainer} ${!isUserConnected && styles.hideDepositOnMobile}`}
+                        >
+                            {depositsDisplay}
+                        </p>
+
+                        <p
+                            className={`${styles.aprDisplay} ${!isUserConnected && styles.showAprOnMobile}`}
                             style={{ color: 'var(--other-green' }}
                         >
                             {formattedAPR}
-                            <TooltipComponent
-                                placement='top-end'
-                                title='APR estimates provided by vault provider.'
-                            />
+                            {(isUserConnected || !showPhoneVersion) && (
+                                <TooltipComponent
+                                    placement='top-end'
+                                    title='APR estimates provided by vault provider.'
+                                />
+                            )}
                         </p>
                         <div className={styles.actionButtonContainer}>
                             <button
@@ -243,14 +283,15 @@ export default function VaultRow(props: propsIF) {
                                 Deposit
                             </button>
 
-                            {isUserConnected && !!balanceMainAsset && (
-                                <button
-                                    className={styles.actionButton}
-                                    onClick={handleOpenWithdrawModal}
-                                >
-                                    Withdraw
-                                </button>
-                            )}
+                            {isUserConnected &&
+                                !!(vault.balance || crocEnvBal) && (
+                                    <button
+                                        className={styles.actionButton}
+                                        onClick={handleOpenWithdrawModal}
+                                    >
+                                        Withdraw
+                                    </button>
+                                )}
                         </div>
                     </div>
                 </div>

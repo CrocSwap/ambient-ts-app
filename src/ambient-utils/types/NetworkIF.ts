@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { Provider, Signer } from 'ethers';
 import { TopPool } from '../constants/networks/TopPool';
 import { TokenIF } from './token/TokenIF';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 export interface ChainSpecForWeb3Modal {
     chainId: number;

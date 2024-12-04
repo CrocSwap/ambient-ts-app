@@ -1,2 +1,4 @@
+export * from './allVaultsServerIF';
+export * from './userVaultsServerIF';
 export * from './vaultIF';
-export * from './vaultServerIF';
+export * from './vaultStrategy';

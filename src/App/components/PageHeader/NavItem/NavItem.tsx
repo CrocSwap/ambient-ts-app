@@ -1,18 +1,18 @@
-import React, {
-    useRef,
+import {
     Children,
-    ReactNode,
-    ReactElement,
-    cloneElement,
     Dispatch,
+    ReactElement,
+    ReactNode,
     SetStateAction,
+    cloneElement,
     memo,
     useContext,
+    useRef,
 } from 'react';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import styles from './NavItem.module.css'
+import styles from './NavItem.module.css';
 interface NavItemPropsIF {
     children: ReactNode;
     icon: ReactNode;
@@ -51,13 +51,14 @@ function NavItem(props: NavItemPropsIF) {
     });
 
     return (
-        <button className={styles.navItemButton}
+        <button
+            className={styles.navItemButton}
             ref={navItemRef}
             tabIndex={0}
             aria-label='Nav item'
         >
-            <div className={styles.navItemIconButton}
-                
+            <div
+                className={styles.navItemIconButton}
                 onClick={() => {
                     setOpen((prevOpen) => {
                         const newOpen = !prevOpen;

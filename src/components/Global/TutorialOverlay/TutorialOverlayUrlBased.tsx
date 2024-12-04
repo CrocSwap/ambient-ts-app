@@ -2,6 +2,7 @@ import { Step } from 'intro.js-react';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { futaAuctionsSteps } from '../../../utils/tutorial/Futa/AuctionsSteps';
@@ -11,8 +12,7 @@ import { TutorialIF, TutorialStepExternalComponent } from '../../Chat/ChatIFs';
 import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
 import styles from './TutorialOverlayUrlBased.module.css';
-import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
-// import { MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
+// import{ MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
     checkStepHash?: boolean;
@@ -34,33 +34,47 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     const [stepsFiltered, setStepsFiltered] = useState<Step[]>([]);
 
     const [replayTutorial, setReplayTutorial] = useState<boolean>(false);
-    
+
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
 
-    const {showTutosLocalStorage} = useFutaHomeContext();
+    const { showTutosLocalStorage } = useFutaHomeContext();
 
-
-    const connectButton =         (<button
-    id='connect_wallet_button_page_header'
-    onClick={openWalletModal}
-    className={styles.connectButton}
->
-    CONNECT WALLET
-</button>)
+    const connectButton = (
+        <button
+            id='connect_wallet_button_page_header'
+            onClick={openWalletModal}
+            className={styles.connectButton}
+        >
+            CONNECT WALLET
+        </button>
+    );
 
     const getTutorialObjectForPage = (page: string) => {
         switch (page) {
             case 'auctions':
                 return { lsKey: 'tuto_auctions', steps: futaAuctionsSteps };
             case 'account':
-                return { lsKey: 'tuto_futa_account', steps: futaAccountSteps, disableDefault: true};
+                return {
+                    lsKey: 'tuto_futa_account',
+                    steps: futaAccountSteps,
+                    disableDefault: true,
+                };
             case 'auctionCreate':
-                return { lsKey: 'tuto_futa_create', 
-                    steps: futaCreateSteps,  
-                    externalComponents: 
-                    new Map<string, TutorialStepExternalComponent>([['#auctions_create_connect_button', {component: connectButton, placement: 'nav-end' }]])};
+                return {
+                    lsKey: 'tuto_futa_create',
+                    steps: futaCreateSteps,
+                    externalComponents: new Map<
+                        string,
+                        TutorialStepExternalComponent
+                    >([
+                        [
+                            '#auctions_create_connect_button',
+                            { component: connectButton, placement: 'nav-end' },
+                        ],
+                    ]),
+                };
             default:
                 return undefined;
         }
@@ -174,7 +188,9 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         stepsFiltered.length > 0 &&
         showTutorial &&
         isTutoBuild &&
-        (selectedTutorialRef.current && !selectedTutorialRef.current.disableDefault && showTutosLocalStorage);
+        selectedTutorialRef.current &&
+        !selectedTutorialRef.current.disableDefault &&
+        showTutosLocalStorage;
 
     return (
         <>
@@ -188,7 +204,9 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
                             showSteps={true}
                             onComplete={handleTutoFinish}
                             initialTimeout={600}
-                            externalComponents={selectedTutorialRef.current.externalComponents}
+                            externalComponents={
+                                selectedTutorialRef.current.externalComponents
+                            }
                         />
                     </>
                 )}

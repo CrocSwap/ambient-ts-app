@@ -1,11 +1,11 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { Provider } from 'ethers';
 import { GCGO_OVERRIDE_URL } from '../constants';
+import { getTransactionData, SpotPriceFn } from '../dataLayer/functions';
 import { TokenIF, TransactionServerIF } from '../types';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
-import { getTransactionData, SpotPriceFn } from '../dataLayer/functions';
-import { Provider } from 'ethers';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -13,7 +13,7 @@ interface argsIF {
     quote: string;
     poolIdx: number;
     chainId: string;
-    user:`0x${string}`;
+    user: `0x${string}`;
     n?: number;
     page?: number;
     period?: number;

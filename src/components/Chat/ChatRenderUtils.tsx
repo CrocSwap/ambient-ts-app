@@ -1,4 +1,4 @@
-// import { ImageMarkerIF } from './ChatIFs';
+// import{ ImageMarkerIF } from './ChatIFs';
 import {
     formatMessageTime,
     getEmojiFromUnifiedCode,
@@ -8,6 +8,7 @@ import {
 import { Message } from './Model/MessageModel';
 import { User } from './Model/UserModel';
 
+import { Emoji } from 'emoji-picker-react';
 import Blockies from 'react-blockies';
 import { FiEdit3 } from 'react-icons/fi';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
@@ -15,7 +16,6 @@ import { AVATAR_TYPES } from './ChatConstants/ChatConstants';
 import { UserAvatarDataIF } from './ChatIFs';
 import styles from './ChatRenderUtils.module.css';
 import { UserSummaryModel } from './Model/UserSummaryModel';
-import { Emoji } from 'emoji-picker-react';
 
 export const getAvatarFromMessage = (message: Message) => {
     return (
@@ -278,11 +278,11 @@ export const getSingleEmoji = (
                 }
             }}
         >
-            {size && size == -1 ? 
-            (<Emoji unified={unified} />) 
-            : 
-            (<Emoji unified={unified} size={size ? size : 25} />)} 
-            
+            {size && size == -1 ? (
+                <Emoji unified={unified} />
+            ) : (
+                <Emoji unified={unified} size={size ? size : 25} />
+            )}
         </span>
     );
 };
@@ -310,9 +310,12 @@ export const getEmojiPack = (
     );
 };
 
-
-export const getActionTrigger = ( id: string, action: () => void) => {
+export const getActionTrigger = (id: string, action: () => void) => {
     return (
-        <span id={id} onClick={() => action()} style={{display: 'none'}}></span>
+        <span
+            id={id}
+            onClick={() => action()}
+            style={{ display: 'none' }}
+        ></span>
     );
 };

@@ -1,6 +1,5 @@
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import TickerItem from './TickerItem';
-import { MdClose } from 'react-icons/md';
+import { NumberSize } from 're-resizable';
+import { Direction } from 're-resizable/lib/resizer';
 import {
     Dispatch,
     SetStateAction,
@@ -11,25 +10,26 @@ import {
     useState,
 } from 'react';
 import { BiSearch } from 'react-icons/bi';
-import styles from './SearchableTicker.module.css';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import Divider from '../Divider/FutaDivider';
+import { FaEye } from 'react-icons/fa';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { MdClose } from 'react-icons/md';
+import { AuctionDataIF, diffHashSig } from '../../../ambient-utils/dataLayer';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
-import AuctionLoader from '../AuctionLoader/AuctionLoader';
+import { FutaSearchableTickerContext } from '../../../contexts/Futa/FutaSearchableTickerContext';
 import {
     auctionSorts,
     sortedAuctionsIF,
 } from '../../../pages/platformFuta/Auctions/useSortedAuctions';
-import { FaEye } from 'react-icons/fa';
-import { AuctionDataIF, diffHashSig } from '../../../ambient-utils/dataLayer';
-import Chart from '../Chart/Chart';
-import { FutaSearchableTickerContext } from '../../../contexts/Futa/FutaSearchableTickerContext';
-import { ResizableContainer } from '../../../styled/Components/Trade';
-import { Direction } from 're-resizable/lib/resizer';
-import { NumberSize } from 're-resizable';
 import { FlexContainer } from '../../../styled/Common';
-import Typewriter from '../TypeWriter/TypeWriter';
+import { ResizableContainer } from '../../../styled/Components/Trade';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import AuctionLoader from '../AuctionLoader/AuctionLoader';
+import Chart from '../Chart/Chart';
+import Divider from '../Divider/FutaDivider';
+import Typewriter from '../TypeWriter/TypeWriter';
+import styles from './SearchableTicker.module.css';
+import TickerItem from './TickerItem';
 
 interface propsIF {
     auctions: sortedAuctionsIF;

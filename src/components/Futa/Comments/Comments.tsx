@@ -6,25 +6,28 @@ import React, {
     useRef,
     useState,
 } from 'react';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { useParams } from 'react-router-dom';
-import styles from './Comments.module.css';
-import useCommentsWS from './useCommentsWS';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import DomDebugger from '../../Chat/DomDebugger/DomDebugger';
+import useChatApi from '../../Chat/Service/ChatApi';
 import CommentCard from './CommentCard/CommentCard';
 import CommentInput from './CommentInput/CommentInput';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import useChatApi from '../../Chat/Service/ChatApi';
-import DomDebugger from '../../Chat/DomDebugger/DomDebugger';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import styles from './Comments.module.css';
+import useCommentsWS from './useCommentsWS';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../contexts/AppStateContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useOnBoundryChange from '../../../utils/hooks/useOnBoundryChange';
 import {
     checkVisibilityWithBottom,
     dropFromCssClasses,
 } from '../../Chat/ChatUtils';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import useOnBoundryChange from '../../../utils/hooks/useOnBoundryChange';
-import { AppStateContext, AppStateContextIF } from '../../../contexts/AppStateContext';
+import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
 
 type ShimmerListProps = {
     count: number;

@@ -1,7 +1,7 @@
 import {
     ChangeEvent,
-    FocusEvent,
     Dispatch,
+    FocusEvent,
     memo,
     SetStateAction,
     useContext,
@@ -11,9 +11,9 @@ import PriceInput from '../PriceInput/PriceInput';
 
 import { IS_LOCAL_ENV } from '../../../../../ambient-utils/constants';
 import { exponentialNumRegEx } from '../../../../../ambient-utils/dataLayer';
-import { FlexContainer, Text } from '../../../../../styled/Common';
-import { RangeContext } from '../../../../../contexts/RangeContext';
 import { AppStateContext } from '../../../../../contexts';
+import { RangeContext } from '../../../../../contexts/RangeContext';
+import { FlexContainer, Text } from '../../../../../styled/Common';
 
 interface propsIF {
     minPricePercentage: number;

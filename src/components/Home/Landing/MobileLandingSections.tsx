@@ -1,30 +1,30 @@
 import styles from './BackgroundImages.module.css';
 
-import Footer from '../../Footer/Footer';
+import { Fade } from 'react-reveal';
 import liquidityImage from '../../../assets/images/home/liquidity.png';
 import orderImage from '../../../assets/images/home/orders.png';
-import { Fade } from 'react-reveal';
 import blastLogo from '../../../assets/images/logos/blast_logo.svg';
 import scrollLogo from '../../../assets/images/logos/scroll_brand_logo.svg';
+import Footer from '../../Footer/Footer';
 
-import Stats from '../Stats/AmbientStats';
-import TradeNowButton from './TradeNowButton/TradeNowButton';
-import TopPools from '../TopPoolsHome/TopPoolsHome';
-import Investors from './Investors';
 import { useContext, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { BrandContext } from '../../../contexts/BrandContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { FlexContainer, Text } from '../../../styled/Common';
 import {
     MobileBg1,
     MobileBg2,
     MobileBg3,
     MobileBg4,
+    MobileCard,
     MobileMainContainer,
     MobileMainLogo,
-    MobileCard,
 } from '../../../styled/Components/Home';
-import { FlexContainer, Text } from '../../../styled/Common';
-import { Link } from 'react-router-dom';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { BrandContext } from '../../../contexts/BrandContext';
+import Stats from '../Stats/AmbientStats';
+import TopPools from '../TopPoolsHome/TopPoolsHome';
+import Investors from './Investors';
+import TradeNowButton from './TradeNowButton/TradeNowButton';
 
 export default function MobileLandingSections() {
     const { isActiveNetworkBlast, isActiveNetworkScroll } =
@@ -36,6 +36,8 @@ export default function MobileLandingSections() {
         const userAgent = window.navigator.userAgent;
         const isiPhone = /iPhone|iOS/i.test(userAgent);
         setIsIPhone(isiPhone);
+        // reset the active tab to the default when returning to the home page
+        localStorage.setItem('activeTradeTabOnMobile', 'Order');
     }, []);
 
     const heroSection = (

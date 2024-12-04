@@ -1,16 +1,16 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
+import {
+    ChainDataContext,
+    CrocEnvContext,
+    UserDataContext,
+} from '../../contexts';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
-interface PoolPricingPropsIF {
-    crocEnv?: CrocEnv;
-    userAddress: `0x${string}` | undefined;
-    lastBlockNumber: number;
-}
-
-export function useTokenPairAllowance(props: PoolPricingPropsIF) {
-    const crocEnv = props.crocEnv;
+export function useTokenPairAllowance() {
     const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
     const [tokenAAllowance, setTokenAAllowance] = useState<
         bigint | undefined
     >();
@@ -26,11 +26,16 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
     // useEffect to check if user has approved CrocSwap to sell the token A
     useEffect(() => {
         (async () => {
-            if (crocEnv && props.userAddress && tokenA.address) {
+            if (
+                crocEnv &&
+                userAddress &&
+                tokenA.address &&
+                Number((await crocEnv.context).chain.chainId) === tokenA.chainId
+            ) {
                 try {
                     const allowance = await crocEnv
                         .token(tokenA.address)
-                        .allowance(props.userAddress);
+                        .allowance(userAddress);
 
                     if (tokenAAllowance !== allowance) {
                         setTokenAAllowance(allowance);
@@ -43,19 +48,19 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
         })();
     }, [
         crocEnv,
-        tokenA.address + tokenA.chainId + props.userAddress,
-        props.lastBlockNumber,
+        tokenA.address + tokenA.chainId + userAddress,
+        lastBlockNumber,
         recheckTokenAApproval,
     ]);
 
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
         (async () => {
-            if (crocEnv && props.userAddress && tokenB.address) {
+            if (crocEnv && userAddress && tokenB.address) {
                 try {
                     const allowance = await crocEnv
                         .token(tokenB.address)
-                        .allowance(props.userAddress);
+                        .allowance(userAddress);
 
                     if (tokenBAllowance !== allowance) {
                         setTokenBAllowance(allowance);
@@ -68,8 +73,8 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
         })();
     }, [
         crocEnv,
-        tokenB.address + tokenB.chainId + props.userAddress,
-        props.lastBlockNumber,
+        tokenB.address + tokenB.chainId + userAddress,
+        lastBlockNumber,
 
         recheckTokenBApproval,
     ]);

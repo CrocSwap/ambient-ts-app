@@ -1,23 +1,23 @@
 // eslint-disable-next-line quotes
+import * as d3 from 'd3';
 import {
     DetailedHTMLProps,
     HTMLAttributes,
     MouseEvent,
     MutableRefObject,
 } from 'react';
-import * as d3 from 'd3';
-import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import {
     CandleDataIF,
     LiquidityRangeIF,
 } from '../../../../ambient-utils/types';
+import { skins } from '../../../../App/hooks/useSkin';
+import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
+import { getBidPriceValue } from '../Liquidity/LiquiditySeries/AreaSeries';
 import {
     LS_KEY_CHART_ANNOTATIONS,
     initialDisplayCandleCount,
     initialDisplayCandleCountForMobile,
 } from './chartConstants';
-import { getBidPriceValue } from '../Liquidity/LiquiditySeries/AreaSeries';
-import { skins } from '../../../../App/hooks/useSkin';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -127,7 +127,7 @@ export type chartItemStates = {
     liqMode: string;
     showSwap: boolean;
     setShowSwap: React.Dispatch<React.SetStateAction<boolean>>;
-    showLatest:  boolean;
+    showLatest: boolean;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setLatest: React.Dispatch<React.SetStateAction<boolean>>;
     rescale: boolean;

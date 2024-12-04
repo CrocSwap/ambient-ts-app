@@ -1,7 +1,4 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { TokenIF } from '../../../../ambient-utils/types';
-import Button from '../../../Form/Button';
-import TransferAddressInput from './TransferAddressInput';
 import {
     Dispatch,
     SetStateAction,
@@ -11,35 +8,39 @@ import {
     useState,
 } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
-import useDebounce from '../../../../App/hooks/useDebounce';
 import {
     IS_LOCAL_ENV,
     ZERO_ADDRESS,
     checkBlacklist,
 } from '../../../../ambient-utils/constants';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { TokenIF } from '../../../../ambient-utils/types';
+import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import {
     GasPump,
-    SVGContainer,
     MaxButton,
+    SVGContainer,
 } from '../../../../styled/Components/Portfolio';
 import {
     TransactionError,
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../../../utils/TransactionError';
+import Button from '../../../Form/Button';
+import TransferAddressInput from './TransferAddressInput';
 
-import CurrencySelector from '../../../Form/CurrencySelector';
 import {
-    NUM_GWEI_IN_WEI,
-    GAS_DROPS_ESTIMATE_TRANSFER_NATIVE,
     GAS_DROPS_ESTIMATE_TRANSFER_ERC20,
+    GAS_DROPS_ESTIMATE_TRANSFER_NATIVE,
+    NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants/';
+import { AppStateContext } from '../../../../contexts';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import CurrencySelector from '../../../Form/CurrencySelector';
 import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
@@ -67,6 +68,7 @@ export default function Transfer(props: propsIF) {
     const { crocEnv, ethMainnetUsdPrice, provider } =
         useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
+    const { isUserOnline } = useContext(AppStateContext);
 
     const { gasPriceInGwei, isActiveNetworkScroll, isActiveNetworkBlast } =
         useContext(ChainDataContext);
@@ -157,7 +159,10 @@ export default function Transfer(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     useEffect(() => {
-        if (isTransferPending) {
+        if (!isUserOnline) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Currently Offline');
+        } else if (isTransferPending) {
             setIsButtonDisabled(true);
             setIsAddressFieldDisabled(true);
             setIsCurrencyFieldDisabled(true);
@@ -192,6 +197,7 @@ export default function Transfer(props: propsIF) {
             setButtonMessage('Transfer');
         }
     }, [
+        isUserOnline,
         transferQtyNonDisplay,
         isTransferPending,
         isDexBalanceSufficient,

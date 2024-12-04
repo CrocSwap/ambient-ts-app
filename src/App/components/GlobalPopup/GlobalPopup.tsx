@@ -1,7 +1,7 @@
-import styles from './GlobalPopup.module.css';
-import { VscClose } from 'react-icons/vsc';
 import { memo, useContext } from 'react';
+import { VscClose } from 'react-icons/vsc';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import styles from './GlobalPopup.module.css';
 
 function GlobalPopup() {
     const {
@@ -14,10 +14,10 @@ function GlobalPopup() {
         placement === 'left'
             ? styles.popup_left
             : placement === 'center'
-            ? styles.popup_center
-            : placement === 'right'
-            ? styles.popup_right
-            : styles.popup_right;
+              ? styles.popup_center
+              : placement === 'right'
+                ? styles.popup_right
+                : styles.popup_right;
 
     return (
         <div

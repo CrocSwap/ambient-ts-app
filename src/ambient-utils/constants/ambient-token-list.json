@@ -27,6 +27,14 @@
             "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
         },
         {
+            "name": "Dai Stablecoin",
+            "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+            "chainId": 1,
+            "decimals": 18,
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png",
+            "symbol": "DAI"
+        },
+        {
             "name": "Wrapped Bitcoin",
             "address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
             "symbol": "WBTC",
@@ -67,6 +75,14 @@
             "logoURI": "https://etherscan.io/token/images/stakestone_32.png"
         },
         {
+            "name": "Kelp DAO Restaked ETH",
+            "address": "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7",
+            "chainId": 1,
+            "decimals": 18,
+            "logoURI": "https://etherscan.io/token/images/kelprseth_32.png",
+            "symbol": "rsETH"
+        },
+        {
             "name": "Maker",
             "address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
             "chainId": 1,
@@ -81,6 +97,14 @@
             "decimals": 18,
             "logoURI": "https://assets.coingecko.com/coins/images/18024/standard/synapse_social_icon.png?1696517540",
             "symbol": "SYN"
+        },
+        {
+            "name": "tBTC v2",
+            "address": "0x18084fbA666a33d37592fA2633fD49a74DD93a88",
+            "chainId": 1,
+            "decimals": 18,
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/26133.png",
+            "symbol": "tBTC"
         },
         {
             "name": "Rocket Pool",
@@ -389,6 +413,22 @@
             "logoURI": "https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg"
         },
         {
+            "name": "Restaked Swell ETH",
+            "address": "0x89f17aB70cAFB1468D633056161573efEfeA0713",
+            "chainId": 534352,
+            "decimals": 18,
+            "logoURI": "https://etherscan.io/token/images/rsweth_32.png?=v3",
+            "symbol": "rswETH"
+        },
+        {
+            "name": "Kelp DAO Restaked ETH",
+            "address": "0x65421ba909200b81640d98b979d07487c9781b66",
+            "chainId": 534352,
+            "decimals": 18,
+            "logoURI": "https://etherscan.io/token/images/kelprseth_32.png",
+            "symbol": "rsETH"
+        },
+        {
             "name": "StakeStone Ether",
             "address": "0x80137510979822322193fc997d400d5a6c747bf7",
             "symbol": "STONE",
@@ -602,6 +642,54 @@
             "symbol": "NEV",
             "decimals": 6,
             "chainId": 98864,
+            "logoURI": ""
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 1924,
+            "logoURI": ""
+        },
+        {
+            "name": "Ambient USDC",
+            "address": "0xfEfD8bCB0034A2B0E3CC22e2f5A59279FAe67128",
+            "symbol": "USDC",
+            "decimals": 6,
+            "chainId": 1924,
+            "logoURI": ""
+        },
+        {
+            "name": "Ambient USDT",
+            "address": "0x60bBA138A74C5e7326885De5090700626950d509",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 1924,
+            "logoURI": ""
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 84532,
+            "logoURI": ""
+        },
+        {
+            "name": "Ambient USDC",
+            "address": "0x1B98743bB9297A60FF9e75EA2630A77bf72bc17c",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 84532,
+            "logoURI": ""
+        },
+        {
+            "name": "Ambient USDT",
+            "address": "0x868cFD46ad326354AD214bEA9f08fD8EfBfac3b9",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 84532,
             "logoURI": ""
         }
     ]

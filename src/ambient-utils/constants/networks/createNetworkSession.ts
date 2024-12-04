@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ethers, Provider } from 'ethers';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { NetworkSessionIF, TokenIF } from '../../types';
+import { ethers, Provider } from 'ethers';
 import { fetchTokenUniverse } from '../../api/fetchTokenUniverse';
+import { NetworkSessionIF, TokenIF } from '../../types';
 import { supportedNetworks } from './index';
 
 // Make a best effort, based off chain ID, to give back several useful chain objects.

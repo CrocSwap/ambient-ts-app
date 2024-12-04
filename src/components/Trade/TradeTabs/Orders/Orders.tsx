@@ -1,39 +1,39 @@
 /* eslint-disable no-irregular-whitespace */
-import { useContext, useRef, memo, useMemo, useState, useEffect } from 'react';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import OrderHeader from './OrderTable/OrderHeader';
-import { useSortedLimits } from '../useSortedLimits';
+import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { LimitOrderIF } from '../../../../ambient-utils/types';
-import NoTableData from '../NoTableData/NoTableData';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import NoTableData from '../NoTableData/NoTableData';
+import { useSortedLimits } from '../useSortedLimits';
+import OrderHeader from './OrderTable/OrderHeader';
 
-import Spinner from '../../../Global/Spinner/Spinner';
-import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
+import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLimitOrders';
+import { AppStateContext } from '../../../../contexts';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import {
     CrocEnvContext,
     CrocEnvContextIF,
 } from '../../../../contexts/CrocEnvContext';
-import { OrderRow as OrderRowStyled } from '../../../../styled/Components/TransactionTable';
-import { FlexContainer } from '../../../../styled/Common';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import {
     GraphDataContext,
     LimitOrdersByPool,
 } from '../../../../contexts/GraphDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import TableRows from '../TableRows';
-import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLimitOrders';
 import {
-    TokenContextIF,
     TokenContext,
+    TokenContextIF,
 } from '../../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { FlexContainer } from '../../../../styled/Common';
+import { OrderRow as OrderRowStyled } from '../../../../styled/Components/TransactionTable';
 import { PageDataCountIF } from '../../../Chat/ChatIFs';
-import { AppStateContext } from '../../../../contexts';
+import Spinner from '../../../Global/Spinner/Spinner';
+import TableRows from '../TableRows';
+import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
+import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
 
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
@@ -123,7 +123,9 @@ function Orders(props: propsIF) {
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
 
-    const prevBaseQuoteAddressRef = useRef<string>(selectedBaseAddress + selectedQuoteAddress);
+    const prevBaseQuoteAddressRef = useRef<string>(
+        selectedBaseAddress + selectedQuoteAddress,
+    );
 
     const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(
         !isAccountView && showAllData,
@@ -134,8 +136,10 @@ function Orders(props: propsIF) {
     }, [isAccountView, showAllData]);
 
     useEffect(() => {
-
-        if(prevBaseQuoteAddressRef.current !== selectedBaseAddress + selectedQuoteAddress){
+        if (
+            prevBaseQuoteAddressRef.current !==
+            selectedBaseAddress + selectedQuoteAddress
+        ) {
             setPagesVisible([0, 1]);
             setPageDataCountShouldReset(true);
             setExtraPagesAvailable(0);
@@ -146,8 +150,9 @@ function Orders(props: propsIF) {
             setLastFetchedCount(0);
             setHotTransactions([]);
         }
-        
-        prevBaseQuoteAddressRef.current = selectedBaseAddress + selectedQuoteAddress;
+
+        prevBaseQuoteAddressRef.current =
+            selectedBaseAddress + selectedQuoteAddress;
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     const [pageDataCountShouldReset, setPageDataCountShouldReset] =
@@ -563,10 +568,15 @@ function Orders(props: propsIF) {
 
     // TODO: Use these as media width constants
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
+    const isTabletScreen = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
     const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
-        isSmallScreen || (isAccountView && !isLargeScreen && isSidebarOpen)
+        isSmallScreen ||
+        isTabletScreen ||
+        (isAccountView && !isLargeScreen && isSidebarOpen)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
                 (isAccountView &&

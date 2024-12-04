@@ -1,13 +1,13 @@
 import { Dispatch, SetStateAction, useContext } from 'react';
-import Toggle from '../../../Form/Toggle';
-import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { CandleContext } from '../../../../contexts/CandleContext';
+import { MdCloseFullscreen, MdExpand } from 'react-icons/md';
 import { CandleDataIF } from '../../../../ambient-utils/types';
+import { CandleContext } from '../../../../contexts/CandleContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import { FlexContainer, Text } from '../../../../styled/Common';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { FlexContainer, Text } from '../../../../styled/Common';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import Toggle from '../../../Form/Toggle';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 
 interface PositionsOnlyToggleProps {
@@ -94,6 +94,9 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     };
 
     const isDesktopScreen = useMediaQuery('(min-width: 600px)');
+    const isTabletScreen = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     return (
         <FlexContainer
@@ -111,20 +114,25 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                     gap={8}
                     margin='0 8px 0 0'
                 >
-                    <Text
-                        fontSize='body'
-                        color='text2'
-                        onClick={() => {
-                            unselectCandle();
-                        }}
-                        style={
-                            isCandleSelected
-                                ? { cursor: 'pointer' }
-                                : { cursor: 'default' }
-                        }
-                    >
-                        {isDesktopScreen ? `My ${props.currentTab}` : 'Mine'}
-                    </Text>
+                    {!isTabletScreen && (
+                        <Text
+                            fontSize='body'
+                            color='text2'
+                            onClick={() => {
+                                unselectCandle();
+                            }}
+                            style={
+                                isCandleSelected
+                                    ? { cursor: 'pointer' }
+                                    : { cursor: 'default' }
+                            }
+                        >
+                            {isDesktopScreen
+                                ? `My ${props.currentTab}`
+                                : 'Mine'}
+                        </Text>
+                    )}
+
                     <DefaultTooltip
                         interactive
                         title={`My ${props.currentTab}`}

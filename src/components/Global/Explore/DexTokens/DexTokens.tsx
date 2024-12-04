@@ -1,25 +1,25 @@
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
-import styles from './DexTokens.module.css';
-import { useSortedDexTokens, sortedDexTokensIF } from '../useSortedDexTokens';
 import { getDefaultPairForChain } from '../../../../ambient-utils/constants';
+import { isWrappedNativeToken } from '../../../../ambient-utils/dataLayer';
 import {
     GCServerPoolIF,
     PoolIF,
     TokenIF,
 } from '../../../../ambient-utils/types';
-import { PoolContext, PoolContextIF } from '../../../../contexts/PoolContext';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { usePoolList2 } from '../../../../App/hooks/usePoolList2';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { isWrappedNativeToken } from '../../../../ambient-utils/dataLayer';
-import AssignSort from '../AssignSort';
-import TooltipComponent from '../../TooltipComponent/TooltipComponent';
+import { PoolContext, PoolContextIF } from '../../../../contexts/PoolContext';
 import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useTokenStats';
+import useIsPWA from '../../../../utils/hooks/useIsPWA';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import TooltipComponent from '../../TooltipComponent/TooltipComponent';
+import AssignSort from '../AssignSort';
 import ExploreToggle from '../ExploreToggle/ExploreToggle';
 import TokenRow from '../TokenRow/TokenRow';
-import useIsPWA from '../../../../utils/hooks/useIsPWA';
 import TokenRowSkeleton from '../TokenRow/TokenRowSkeleton';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { sortedDexTokensIF, useSortedDexTokens } from '../useSortedDexTokens';
+import styles from './DexTokens.module.css';
 
 export type columnSlugs =
     | 'token'

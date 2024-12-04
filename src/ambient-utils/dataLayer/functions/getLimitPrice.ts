@@ -1,6 +1,6 @@
 import { LimitOrderIF, TokenMethodsIF } from '../../types';
-import { getUnicodeCharacter } from './getUnicodeCharacter';
 import { getFormattedNumber } from './getFormattedNumber';
+import { getUnicodeCharacter } from './getUnicodeCharacter';
 
 export const getLimitPriceForSidebar = (
     limitOrder: LimitOrderIF,
@@ -27,9 +27,9 @@ export const getLimitPriceForSidebar = (
                   limitOrder.baseUsdPrice
                 : undefined
             : limitOrder.quoteUsdPrice
-            ? limitOrder.invLimitPriceDecimalCorrected *
-              limitOrder.quoteUsdPrice
-            : undefined;
+              ? limitOrder.invLimitPriceDecimalCorrected *
+                limitOrder.quoteUsdPrice
+              : undefined;
         const truncatedPrice = getFormattedNumber({
             value: nonTruncatedPrice,
             prefix: '$',

@@ -1,19 +1,19 @@
+import { CrocEnv } from '@crocswap-libs/sdk';
+import moment from 'moment';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     getChainExplorer,
+    getFormattedNumber,
+    getMoneynessRank,
     getUnicodeCharacter,
     trimString,
-    getMoneynessRank,
-    getFormattedNumber,
 } from '../../ambient-utils/dataLayer';
-import { PositionIF } from '../../ambient-utils/types';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import moment from 'moment';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { useFetchBatch } from '../../App/hooks/useFetchBatch';
-import { UserDataContext } from '../../contexts/UserDataContext';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { PositionIF } from '../../ambient-utils/types';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -295,14 +295,8 @@ export const useProcessRange = (
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
-    const baseDisplayFrontend = quantitiesAvailable
-        ? `${baseQty || '0.00'}`
-        : '…';
     const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
 
-    const quoteDisplayFrontend = quantitiesAvailable
-        ? `${quoteQty || '0.00'}`
-        : '…';
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
 
     const ensNameOrOwnerTruncated = ensName
@@ -397,8 +391,6 @@ export const useProcessRange = (
         quoteTokenAddressTruncated,
         baseTokenLogo,
         quoteTokenLogo,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenName,

@@ -1,27 +1,27 @@
 import {
-    getChainExplorer,
-    getUnicodeCharacter,
-    trimString,
-    getMoneynessRank,
-    getElapsedTime,
-    getFormattedNumber,
-} from '../../ambient-utils/dataLayer';
-import { TransactionIF } from '../../ambient-utils/types';
-import moment from 'moment';
-import { getAddress } from 'ethers';
-import {
-    toDisplayPrice,
+    CrocEnv,
     priceHalfAboveTick,
     priceHalfBelowTick,
-    CrocEnv,
+    toDisplayPrice,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { getAddress } from 'ethers';
+import moment from 'moment';
 import { useContext, useEffect, useState } from 'react';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { useFetchBatch } from '../../App/hooks/useFetchBatch';
-import { UserDataContext } from '../../contexts/UserDataContext';
-import { CachedDataContext } from '../../contexts/CachedDataContext';
+import {
+    getChainExplorer,
+    getElapsedTime,
+    getFormattedNumber,
+    getMoneynessRank,
+    getUnicodeCharacter,
+    trimString,
+} from '../../ambient-utils/dataLayer';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { TransactionIF } from '../../ambient-utils/types';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
@@ -366,6 +366,7 @@ export const useProcessTransaction = (
         baseFlowDisplay = getFormattedNumber({
             value: baseFlowAbsNum,
             zeroDisplay: '0',
+            removeExtraTrailingZeros: true,
         });
 
         estimatedQuoteFlowDisplay = getFormattedNumber({
@@ -386,6 +387,7 @@ export const useProcessTransaction = (
         quoteFlowDisplay = getFormattedNumber({
             value: quoteFlowAbsNum,
             zeroDisplay: '0',
+            removeExtraTrailingZeros: true,
         });
         estimatedBaseFlowDisplay = getFormattedNumber({
             value: isDenomBase

@@ -6,7 +6,6 @@
     gap: 16px;
     min-height: 348px;
     position: relative;
-    width: 398px;
 }
 
 .content {
@@ -90,101 +89,103 @@
     pointer-events: none;
     padding-left: 8px;
     padding-right: 1.5rem;
-    
 }
 
-.buttonContainer{
+.buttonContainer {
     width: 90%;
-   position: absolute;
-   bottom: 16px;
-   right: 0;
-   left: 0;
-   margin: 0 auto;
+    position: absolute;
+    bottom: 16px;
+    right: 0;
+    left: 0;
+    margin: 0 auto;
 }
 
-.confContainer{
+.confContainer {
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: 8px;
 
-    color: var(--text2, #8B98A5);
-text-align: center;
+    color: var(--text2, #8b98a5);
+    text-align: center;
 
-font-family: "Lexend Deca";
-font-size: 12px;
-font-style: normal;
-font-weight: 300;
-line-height: normal;
+    font-family: 'Lexend Deca';
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
 }
 
-.confDetails{
+.confDetails {
     width: 100%;
     display: flex;
     border-radius: 4px;
-border: 1px solid var(--dark3, #1E1E24);
-padding: 8px;
-flex-direction: column;
-align-items: center;
-gap: 10px;
-align-self: stretch;
+    border: 1px solid var(--dark3, #1e1e24);
+    padding: 8px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
 }
 
-.confRow{
+.confRow {
     width: 100%;
-display: flex;
-flex-direction: row;
-align-items: center;
-justify-content: space-between;
-
-
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.gas_row{
+.gas_row {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
     gap: 8px;
 
-    color: var(--text2, #8B98A5);
-text-align: center;
-font-family: "Lexend Deca";
-font-size: 12px;
-font-style: normal;
-font-weight: 300;
-line-height: normal;
-padding: 0 8px;
+    color: var(--text2, #8b98a5);
+    text-align: center;
+    font-family: 'Lexend Deca';
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    padding: 0 8px;
+}
+
+@media only screen and (min-width: 768px) {
+    .container {
+        width: 398px;
+    }
 }
 .loading {
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  
-  .dots::after {
-    content: "";
+}
+
+.dots::after {
+    content: '';
     animation: dots 1.5s steps(5, end) infinite;
-  }
-  
-  @keyframes dots {
+}
+
+@keyframes dots {
     0% {
-      content: "";
+        content: '';
     }
     20% {
-      content: ".";
+        content: '.';
     }
     40% {
-      content: "..";
+        content: '..';
     }
     60% {
-      content: "...";
+        content: '...';
     }
     80% {
-      content: "....";
+        content: '....';
     }
     100% {
-      content: "";
+        content: '';
     }
-  }
-  
+}

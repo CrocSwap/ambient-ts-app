@@ -1,12 +1,12 @@
-import styles from './TooltipComponent.module.css';
+import { memo, useRef, useState } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import {
     DefaultTooltip,
     TextOnlyTooltip,
 } from '../StyledTooltip/StyledTooltip';
-import { memo, useRef, useState } from 'react';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import styles from './TooltipComponent.module.css';
 
 interface TooltipComponentProps {
     title: string | JSX.Element;

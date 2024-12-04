@@ -1,58 +1,58 @@
 // START: Import React and Dongles
-import { useContext, useEffect, useMemo, useState, memo } from 'react';
-import { useLocation, useParams, Navigate } from 'react-router-dom';
 import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 
 // START: Import JSX Components
+import Button from '../../../../components/Form/Button';
+import ConfirmRepositionModal from '../../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import RepositionHeader from '../../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
-import ConfirmRepositionModal from '../../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
-import Button from '../../../../components/Form/Button';
 // START: Import Other Local Files
-import styles from './Reposition.module.css';
-import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
+import styles from './Reposition.module.css';
 
+import { FiExternalLink } from 'react-icons/fi';
+import useDebounce from '../../../../App/hooks/useDebounce';
+import {
+    GAS_DROPS_ESTIMATE_REPOSITION,
+    GCGO_OVERRIDE_URL,
+    IS_LOCAL_ENV,
+    NUM_GWEI_IN_WEI,
+} from '../../../../ambient-utils/constants';
+import {
+    getFormattedNumber,
+    getPinnedPriceValuesFromTicks,
+    getPositionData,
+    isStablePair,
+    trimString,
+} from '../../../../ambient-utils/dataLayer';
+import RangeWidth from '../../../../components/Form/RangeWidth/RangeWidth';
+import { useModal } from '../../../../components/Global/Modal/useModal';
+import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
 } from '../../../../utils/TransactionError';
-import useDebounce from '../../../../App/hooks/useDebounce';
-import {
-    GCGO_OVERRIDE_URL,
-    IS_LOCAL_ENV,
-    GAS_DROPS_ESTIMATE_REPOSITION,
-    NUM_GWEI_IN_WEI,
-} from '../../../../ambient-utils/constants';
-import { FiExternalLink } from 'react-icons/fi';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import { RangeContext } from '../../../../contexts/RangeContext';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import {
-    getPositionData,
-    getFormattedNumber,
-    getPinnedPriceValuesFromTicks,
-    trimString,
-    isStablePair,
-} from '../../../../ambient-utils/dataLayer';
 import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import { useModal } from '../../../../components/Global/Modal/useModal';
-import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
-import RangeWidth from '../../../../components/Form/RangeWidth/RangeWidth';
 
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { TokenContext } from '../../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
 import SmolRefuelLink from '../../../../components/Global/SmolRefuelLink/SmolRefuelLink';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 function Reposition() {
     // current URL parameter string
@@ -278,7 +278,7 @@ function Reposition() {
         setNewValueNum(undefined);
         setNewBaseQtyDisplay('...');
         setNewQuoteQtyDisplay('...');
-    }, [position, rangeWidthPercentage]);
+    }, [position?.positionId, rangeWidthPercentage]);
 
     useEffect(() => {
         if (!position) {

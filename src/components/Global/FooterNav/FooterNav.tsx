@@ -1,17 +1,18 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { RiChat3Line } from 'react-icons/ri';
-import { MdOutlineExplore } from 'react-icons/md';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { CiVault } from 'react-icons/ci';
 import { HiArrowsRightLeft } from 'react-icons/hi2';
+import { MdOutlineExplore } from 'react-icons/md';
+import { RiChat3Line } from 'react-icons/ri';
 import { VscAccount } from 'react-icons/vsc';
+import { Link, useLocation } from 'react-router-dom';
 
-import styles from './FooterNav.module.css';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import {
     chainNumToString,
     checkEoaHexAddress,
 } from '../../../ambient-utils/dataLayer';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import styles from './FooterNav.module.css';
 
 // Memoize the FooterNav component
 const FooterNav: React.FC = React.memo(() => {
@@ -43,6 +44,7 @@ const FooterNav: React.FC = React.memo(() => {
             icon: HiArrowsRightLeft,
         },
         { title: 'Explore', destination: '/explore', icon: MdOutlineExplore },
+        { title: 'Vaults', destination: '/vaults', icon: CiVault },
         { title: 'Account', destination: '/account/', icon: VscAccount },
         { title: 'Chat', destination: '/chat/', icon: RiChat3Line },
     ];
@@ -59,14 +61,16 @@ const FooterNav: React.FC = React.memo(() => {
             setActiveIndex(0); // Trade
         } else if (currentPath.includes('/explore')) {
             setActiveIndex(1); // Explore
+        } else if (currentPath.includes('/vaults')) {
+            setActiveIndex(2); // Vaults
         } else if (
             currentPath.includes('/account') ||
             isAddressEns ||
             isAddressHex
         ) {
-            setActiveIndex(2); // Account
+            setActiveIndex(3); // Account
         } else if (currentPath.includes('/chat')) {
-            setActiveIndex(3); // Chat
+            setActiveIndex(4); // Chat
         } else {
             setActiveIndex(-1); // Home
         }

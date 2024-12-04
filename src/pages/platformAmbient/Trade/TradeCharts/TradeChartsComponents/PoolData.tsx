@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
+import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
+import styled from 'styled-components';
+import { GraphDataContext } from '../../../../../contexts/GraphDataContext';
+import { PoolContext } from '../../../../../contexts/PoolContext';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import { textColors } from '../../../../../styled/Common/Types';
-import styled from 'styled-components';
-import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
-import { PoolContext } from '../../../../../contexts/PoolContext';
-import { GraphDataContext } from '../../../../../contexts/GraphDataContext';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 interface PairDataItemIF {
     label: string;
@@ -41,13 +41,12 @@ export default function PoolData(props: PoolDataIF) {
     const { liquidityFee } = useContext(GraphDataContext);
 
     const { poolTvl, poolFeesTotal, poolVolume24h } = poolData;
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        'en-US',
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
+    const liquidityProviderFeeString = liquidityFee
+        ? (liquidityFee * 100).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          }) + '%'
+        : '...';
 
     const {
         poolPrice,
@@ -110,7 +109,7 @@ export default function PoolData(props: PoolDataIF) {
         },
         {
             label: 'Fee Rate',
-            value: `${liquidityProviderFeeString?.toString() || '...'}%`,
+            value: `${liquidityProviderFeeString?.toString()}`,
         },
 
         {

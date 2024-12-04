@@ -1,15 +1,15 @@
-import React, { memo, useContext } from 'react';
+import { memo, useContext, useMemo } from 'react';
 
-import { PoolContext } from '../../../../../contexts/PoolContext';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
 } from '../../../../../ambient-utils/dataLayer';
-import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import DropdownSearch from '../../../../../components/Global/DropdownSearch/DropdownSearch';
+import { PoolContext } from '../../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import PoolData from './PoolData';
 import styles from './TradeChartsTokenInfo.module.css';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 function TradeChartsTokenInfo() {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
@@ -21,37 +21,63 @@ function TradeChartsTokenInfo() {
         usdPrice,
         isTradeDollarizationEnabled,
     } = useContext(PoolContext);
+
     const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
 
-    const currencyCharacter = isDenomBase
-        ? // denom in a, return token b character
-          getUnicodeCharacter(quoteToken.symbol)
-        : // denom in b, return token a character
-          getUnicodeCharacter(baseToken.symbol);
+    const currencyCharacter = useMemo(
+        () =>
+            isDenomBase
+                ? // denom in a, return token b character
+                  getUnicodeCharacter(quoteToken.symbol)
+                : // denom in b, return token a character
+                  getUnicodeCharacter(baseToken.symbol),
+        [isDenomBase, baseToken, quoteToken],
+    );
 
-    const poolPriceDisplayWithDenom = poolPriceDisplay
-        ? isDenomBase
-            ? 1 / poolPriceDisplay
-            : poolPriceDisplay
-        : 0;
+    const poolPriceDisplayWithDenom = useMemo(
+        () =>
+            poolPriceDisplay
+                ? isDenomBase
+                    ? 1 / poolPriceDisplay
+                    : poolPriceDisplay
+                : 0,
+        [poolPriceDisplay, isDenomBase],
+    );
 
-    const truncatedPoolPrice = getFormattedNumber({
-        value: poolPriceDisplayWithDenom,
-        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-    });
+    const truncatedPoolPrice = useMemo(
+        () =>
+            getFormattedNumber({
+                value: poolPriceDisplayWithDenom,
+                abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+            }),
+        [poolPriceDisplayWithDenom],
+    );
 
-    const poolPrice = isTradeDollarizationEnabled
-        ? usdPrice
-            ? getFormattedNumber({ value: usdPrice, prefix: '$' })
-            : '…'
-        : poolPriceDisplay === Infinity ||
-            poolPriceDisplay === 0 ||
-            poolPriceDisplay === undefined
-          ? '…'
-          : `${currencyCharacter}${truncatedPoolPrice}`;
+    const poolPrice = useMemo(
+        () =>
+            isTradeDollarizationEnabled
+                ? usdPrice
+                    ? getFormattedNumber({ value: usdPrice, prefix: '$' })
+                    : '…'
+                : poolPriceDisplay === Infinity ||
+                    poolPriceDisplay === 0 ||
+                    poolPriceDisplay === undefined
+                  ? '…'
+                  : `${currencyCharacter}${truncatedPoolPrice}`,
+        [
+            isTradeDollarizationEnabled,
+            usdPrice,
+            poolPriceDisplay,
+            truncatedPoolPrice,
+            currencyCharacter,
+        ],
+    );
 
-    const poolPriceChangeString =
-        poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent;
+    const poolPriceChangeString = useMemo(
+        () =>
+            poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent,
+        [poolPriceChangePercent],
+    );
 
     const poolDataProps = {
         poolPrice,

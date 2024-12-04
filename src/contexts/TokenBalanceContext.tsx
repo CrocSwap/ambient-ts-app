@@ -50,9 +50,9 @@ export const TokenBalanceContext = createContext<TokenBalanceContextIF>(
 export const TokenBalanceContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const [tokenBalances, setTokenBalances] = useState<
-        TokenIF[] | undefined
-    >(undefined);
+    const [tokenBalances, setTokenBalances] = useState<TokenIF[] | undefined>(
+        undefined,
+    );
 
     const [NFTData, setNFTData] = useState<NftListByChain[] | undefined>(
         undefined,

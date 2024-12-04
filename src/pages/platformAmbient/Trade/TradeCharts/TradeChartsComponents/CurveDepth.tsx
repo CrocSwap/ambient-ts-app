@@ -1,7 +1,7 @@
-import styles from './CurveDepth.module.css';
-import {  memo } from 'react';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { memo } from 'react';
 import { overlayIF } from '../../../../../App/hooks/useChartSettings';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import styles from './CurveDepth.module.css';
 
 interface propsIF {
     overlayMethods: overlayIF;
@@ -9,7 +9,6 @@ interface propsIF {
 
 function CurveDepth(props: propsIF) {
     const { overlayMethods } = props;
-
 
     const mobileView = useMediaQuery('(max-width: 768px)');
 
@@ -31,37 +30,31 @@ function CurveDepth(props: propsIF) {
         },
     ];
 
-
- ;
-
     function handleCurveDepthClickMobile(action: () => void) {
         action();
     }
 
     const curveDepthMobile = (
-         
-
-            <div className={styles.mobile_container}>
-                {curveDepthData.map((button, idx) => (
-                    <div className={styles.curve_depth_container} key={idx}>
-                        <button
-                            onClick={() =>
-                                handleCurveDepthClickMobile(button.action)
-                            }
-                            className={
-                                button.name.toLowerCase() ===
-                                overlayMethods.overlay.toLowerCase()
-                                    ? styles.active_selected_button
-                                    : styles.non_active_selected_button
-                            }
-                            aria-label={button.name}
-                        >
-                            {button.name}
-                        </button>
-                    </div>
-                ))}
-            </div>
-       
+        <div className={styles.mobile_container}>
+            {curveDepthData.map((button, idx) => (
+                <div className={styles.curve_depth_container} key={idx}>
+                    <button
+                        onClick={() =>
+                            handleCurveDepthClickMobile(button.action)
+                        }
+                        className={
+                            button.name.toLowerCase() ===
+                            overlayMethods.overlay.toLowerCase()
+                                ? styles.active_selected_button
+                                : styles.non_active_selected_button
+                        }
+                        aria-label={button.name}
+                    >
+                        {button.name}
+                    </button>
+                </div>
+            ))}
+        </div>
     );
     if (mobileView) return curveDepthMobile;
 

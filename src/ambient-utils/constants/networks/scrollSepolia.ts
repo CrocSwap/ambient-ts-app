@@ -1,14 +1,14 @@
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Provider } from 'ethers';
+import { NetworkIF } from '../../types/NetworkIF';
 import {
     scrollSepoliaETH,
     scrollSepoliaUSDC,
     scrollSepoliaWBTC,
 } from '../defaultTokens';
-import { NetworkIF } from '../../types/NetworkIF';
-import { TopPool } from './TopPool';
-import { Provider } from 'ethers';
 import { GCGO_TESTNET_URL } from '../gcgo';
-import { bigIntToFloat } from '@crocswap-libs/sdk';
+import { TopPool } from './TopPool';
 
 const chainIdHex = '0x8274f';
 const chainSpecFromSDK = lookupChain(chainIdHex);
@@ -18,7 +18,7 @@ const chainSpecForWalletConnector = {
     name: 'Scroll Sepolia',
     currency: 'ETH',
     rpcUrl: 'https://sepolia-rpc.scroll.io/',
-    explorerUrl: 'https://sepolia.scrollscan.dev',
+    explorerUrl: 'https://sepolia.scrollscan.dev/',
 };
 
 export const scrollSepolia: NetworkIF = {

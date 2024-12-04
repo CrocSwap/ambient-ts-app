@@ -1,30 +1,30 @@
+import { useWeb3Modal } from '@web3modal/ethers/react';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { useIdleTimer } from 'react-idle-timer';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    CHAT_ENABLED,
+    DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
+    DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
+    VIEW_ONLY,
+} from '../ambient-utils/constants';
+import { NetworkIF } from '../ambient-utils/types';
 import {
     globalPopupMethodsIF,
     useGlobalPopup,
 } from '../App/components/GlobalPopup/useGlobalPopup';
+import {
+    getCtaDismissalsFromLocalStorage,
+    saveCtaDismissalToLocalStorage,
+} from '../App/functions/localStorage';
+import { useAppChain } from '../App/hooks/useAppChain';
+import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import { useModal } from '../components/Global/Modal/useModal';
 import {
     snackbarMethodsIF,
     useSnackbar,
 } from '../components/Global/SnackbarComponent/useSnackbar';
-import {
-    CHAT_ENABLED,
-    CACHE_UPDATE_FREQ_IN_MS,
-    DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
-    DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
-    VIEW_ONLY,
-} from '../ambient-utils/constants';
-import {
-    getCtaDismissalsFromLocalStorage,
-    saveCtaDismissalToLocalStorage,
-} from '../App/functions/localStorage';
-import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
-import { useWeb3Modal } from '@web3modal/ethers/react';
-import { useAppChain } from '../App/hooks/useAppChain';
-import { NetworkIF } from '../ambient-utils/types';
 
 export interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -41,7 +41,8 @@ export interface AppStateContextIF {
         isEnabled: boolean;
         setIsEnabled: (val: boolean) => void;
     };
-    server: { isEnabled: boolean; isUserOnline: boolean };
+    server: { isEnabled: boolean };
+    isUserOnline: boolean;
     subscriptions: { isEnabled: boolean };
     walletModal: {
         isOpen: boolean;
@@ -284,7 +285,7 @@ export const AppStateContextProvider = (props: {
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
-        if (CHAT_ENABLED) {
+        if (CHAT_ENABLED && isUserOnline) {
             const interval = setInterval(() => {
                 getStatus().then((isChatUp) => {
                     setIsChatEnabled(isChatUp);
@@ -292,7 +293,7 @@ export const AppStateContextProvider = (props: {
             }, CACHE_UPDATE_FREQ_IN_MS);
             return () => clearInterval(interval);
         }
-    }, [isChatEnabled, CHAT_ENABLED]);
+    }, [isUserOnline, isChatEnabled, CHAT_ENABLED]);
 
     const { activeNetwork, chooseNetwork } = useAppChain();
 
@@ -322,7 +323,8 @@ export const AppStateContextProvider = (props: {
                 isEnabled: isChatEnabled,
                 setIsEnabled: setIsChatEnabled,
             },
-            server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+            server: { isEnabled: isServerEnabled },
+            isUserOnline,
             isUserIdle,
             isUserIdle20min,
             subscriptions: { isEnabled: areSubscriptionsEnabled },

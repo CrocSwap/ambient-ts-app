@@ -1,19 +1,19 @@
-import liquidityImage from '../../../assets/images/home/liquidity.png';
-import orderImage from '../../../assets/images/home/orders.png';
-import Investors from './Investors';
-import Footer from '../../Footer/Footer';
-import TradeNowButton from './TradeNowButton/TradeNowButton';
 import bg1 from '../../../assets/images/home/home2.png';
 import bg2 from '../../../assets/images/home/home3.png';
 import bg3 from '../../../assets/images/home/home4.png';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import {
-    SlideContainer,
-    RowContainer,
-    FasterSection,
-    BGImage,
-} from '../../../styled/Components/Home';
+import liquidityImage from '../../../assets/images/home/liquidity.png';
+import orderImage from '../../../assets/images/home/orders.png';
 import { Text } from '../../../styled/Common';
+import {
+    BGImage,
+    FasterSection,
+    RowContainer,
+    SlideContainer,
+} from '../../../styled/Components/Home';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import Footer from '../../Footer/Footer';
+import Investors from './Investors';
+import TradeNowButton from './TradeNowButton/TradeNowButton';
 
 export default function LandingSections() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');

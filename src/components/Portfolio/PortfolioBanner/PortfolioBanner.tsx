@@ -7,20 +7,20 @@ import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAcco
 // START: Import Other Local Files
 import { trimString } from '../../../ambient-utils/dataLayer';
 
-import AddressPrint from './AddressPrint';
-import styles from './PortfolioBanner.module.css';
-import { UserXpDataIF } from '../../../contexts/UserDataContext';
 import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
-import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { PoolContext } from '../../../contexts/PoolContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import {
     NftFetchSettingsIF,
     NftListByChain,
 } from '../../../contexts/TokenBalanceContext';
+import { UserXpDataIF } from '../../../contexts/UserDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
+import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
+import AddressPrint from './AddressPrint';
+import styles from './PortfolioBanner.module.css';
 
 interface propsIF {
     ensName: string;
@@ -101,7 +101,7 @@ export default function PortfolioBanner(props: propsIF) {
     // ... gets a new address for programmatic generation
     const noisyLines = useMemo<JSX.Element | null>(() => {
         // early return if address is not available (first render)
-        if (!addressOfAccountDisplayed ) return null;
+        if (!addressOfAccountDisplayed) return null;
         // locate rendered parent element in DOM by element ID
         // const parentElem: HTMLElement | null =
         //     document.getElementById(BANNER_ID);
@@ -119,7 +119,7 @@ export default function PortfolioBanner(props: propsIF) {
 
     return (
         <div
-            className={styles.portfolio_banner_rectangle_container} 
+            className={styles.portfolio_banner_rectangle_container}
             id={BANNER_ID}
         >
             {noisyLines}

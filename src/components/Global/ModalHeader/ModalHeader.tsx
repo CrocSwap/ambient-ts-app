@@ -1,6 +1,6 @@
-import styles from './ModalHeader.module.css';
-import { VscClose } from 'react-icons/vsc';
 import { BiArrowBack } from 'react-icons/bi';
+import { VscClose } from 'react-icons/vsc';
+import styles from './ModalHeader.module.css';
 
 interface SimpleModalHeaderPropsIF {
     title: string;

@@ -2,39 +2,39 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
-import './TransactionDetailsGraph.css';
+import { toDisplayPrice } from '@crocswap-libs/sdk';
+import { useMediaQuery } from '@material-ui/core';
+import moment from 'moment';
+import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
-import Spinner from '../../Spinner/Spinner';
-import {
-    formatAmountChartData,
-    formatPoolPriceAxis,
-} from '../../../../utils/numbers';
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
 import {
     CachedDataContext,
     CachedDataContextIF,
 } from '../../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
-import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
-import moment from 'moment';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import {
     lineValue,
     renderCanvasArray,
     setCanvasResolution,
 } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { useMediaQuery } from '@material-ui/core';
-import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
-import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
-import { toDisplayPrice } from '@crocswap-libs/sdk';
-import { ChartContext } from '../../../../contexts/ChartContext';
 import { FlexContainer } from '../../../../styled/Common';
 import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
+    formatAmountChartData,
+    formatPoolPriceAxis,
+} from '../../../../utils/numbers';
+import Spinner from '../../Spinner/Spinner';
+import './TransactionDetailsGraph.css';
+import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -62,8 +62,8 @@ export default function TransactionDetailsGraph(
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext<CachedDataContextIF>(CachedDataContext);
 
-    const oneHourMiliseconds = 60 * 60 * 1000;
-    const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;
+    const oneHourMilliseconds = 60 * 60 * 1000;
+    const oneWeekMilliseconds = oneHourMilliseconds * 24 * 7;
     const isServerEnabled =
         import.meta.env.VITE_CACHE_SERVER_IS_ENABLED !== undefined
             ? import.meta.env.VITE_CACHE_SERVER_IS_ENABLED === 'true'
@@ -180,6 +180,9 @@ export default function TransactionDetailsGraph(
             if (graphData === undefined) {
                 setIsDataLoading(true);
             }
+
+            const nowTime = Date.now();
+
             const time = () => {
                 switch (transactionType) {
                     case 'swap':
@@ -193,20 +196,22 @@ export default function TransactionDetailsGraph(
                             ? timeFirstMintMemo
                             : tx.txTime;
                     default:
-                        return new Date().getTime();
+                        return nowTime;
                 }
             };
 
-            const minTime = time() * 1000 - oneWeekMiliseconds;
+            const minTimeBeforeOffset =
+                time() !== undefined ? time() * 1000 : nowTime;
 
-            const nowTime = Date.now();
+            const minTime = minTimeBeforeOffset - oneWeekMilliseconds;
+
             let diff = (nowTime - minTime) / 200;
 
             if (
                 timeFirstMintMemo &&
                 tx.txTime &&
                 timeFirstMintMemo !== tx.txTime &&
-                Math.abs(tx.txTime - nowTime) < oneWeekMiliseconds
+                Math.abs(tx.txTime - nowTime) < oneWeekMilliseconds
             ) {
                 diff = (Math.abs(tx.txTime - timeFirstMintMemo) * 1000) / 200;
             }
@@ -214,7 +219,7 @@ export default function TransactionDetailsGraph(
                 Math.floor(diff / 1000),
             );
 
-            if (nowTime - time() * 1000 < oneWeekMiliseconds) {
+            if (nowTime - minTimeBeforeOffset * 1000 < oneWeekMilliseconds) {
                 tempPeriod = 3600;
             }
 
@@ -233,7 +238,7 @@ export default function TransactionDetailsGraph(
                     maxNumCandlesNeeded,
                 );
 
-                const offsetInSeconds = oneHourMiliseconds / 1000;
+                const offsetInSeconds = oneHourMilliseconds / 1000;
 
                 const startBoundary =
                     Math.floor(localMaxTime / 1000) + offsetInSeconds;
@@ -532,9 +537,12 @@ export default function TransactionDetailsGraph(
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((selection: any) => {
-                    const time = timeFirstMintMemo
-                        ? timeFirstMintMemo * 1000
-                        : tx.txTime * 1000;
+                    const time =
+                        timeFirstMintMemo !== undefined
+                            ? timeFirstMintMemo === 0
+                                ? Date.now()
+                                : timeFirstMintMemo * 1000
+                            : tx.txTime * 1000;
                     selection
                         .select('path')
                         .style(
@@ -713,8 +721,17 @@ export default function TransactionDetailsGraph(
                     const minimumDifferenceMinMax = 75;
 
                     if (result) {
-                        const minTime = result.min * 1000;
-                        const maxTime = result.max * 1000;
+                        if (result.min === 0) {
+                            result.min =
+                                (Date.now() - oneWeekMilliseconds) / 1000;
+                        }
+
+                        if (result.max === 0) {
+                            result.max = Date.now() / 1000;
+                        }
+
+                        const minTime = Math.min(result.min, result.max) * 1000;
+                        const maxTime = Math.max(result.min, result.max) * 1000;
                         const maxTimePixel = xScale(maxTime);
 
                         const maxDomainPixel = svgWidth;
@@ -1310,9 +1327,12 @@ export default function TransactionDetailsGraph(
                             transactionType === 'liqchange' &&
                             tx !== undefined
                         ) {
-                            const time = timeFirstMintMemo
-                                ? timeFirstMintMemo * 1000
-                                : tx.txTime * 1000;
+                            const time =
+                                timeFirstMintMemo !== undefined
+                                    ? timeFirstMintMemo * 1000
+                                    : tx.txTime
+                                      ? tx.txTime * 1000
+                                      : Date.now() - oneWeekMilliseconds;
 
                             const timeEnd =
                                 tx.txTime &&
@@ -1348,9 +1368,12 @@ export default function TransactionDetailsGraph(
 
                             horizontalBandData[0] = [bidLine, askLine];
 
-                            const timeStart = timeFirstMintMemo
-                                ? timeFirstMintMemo * 1000
-                                : tx.txTime * 1000;
+                            const timeStart =
+                                timeFirstMintMemo !== undefined
+                                    ? timeFirstMintMemo === 0
+                                        ? Date.now()
+                                        : timeFirstMintMemo * 1000
+                                    : tx.txTime * 1000;
 
                             const rangeLinesDataBid = [
                                 { x: timeStart, y: bidLine },
@@ -1440,7 +1463,12 @@ export default function TransactionDetailsGraph(
                                 }
                             }
                             verticalLineData.push({
-                                name: isSmallRange ? 'Open' : 'Open Position',
+                                name:
+                                    timeFirstMintMemo === 0
+                                        ? 'Update'
+                                        : isSmallRange
+                                          ? 'Open'
+                                          : 'Open Position',
                                 value: timeStart,
                             });
 

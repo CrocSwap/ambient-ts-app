@@ -31,8 +31,6 @@ export default function Footer() {
     const { tokenA, tokenB } = useContext(TradeDataContext);
     const location = useLocation();
 
-    
-
     const paramsSlug = formSlugForPairParams({
         chain: chainNumToString(tokenA.chainId),
         tokenA: tokenA.address,
@@ -52,9 +50,11 @@ export default function Footer() {
         {
             label: 'Swap',
             link: '/swap/' + paramsSlug,
-            icon: <MdOutlineSwapVerticalCircle size={24} color='var(--text1)' />,
+            icon: (
+                <MdOutlineSwapVerticalCircle size={24} color='var(--text1)' />
+            ),
         },
-  
+
         {
             label: 'Account',
             link: '/account',

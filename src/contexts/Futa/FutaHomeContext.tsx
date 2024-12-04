@@ -1,9 +1,9 @@
 import React, {
     createContext,
-    useState,
+    ReactNode,
     useContext,
     useEffect,
-    ReactNode,
+    useState,
 } from 'react';
 import { SHOW_TUTOS_DEFAULT } from '../../ambient-utils/constants';
 
@@ -38,13 +38,12 @@ export const FutaHomeContextProvider = ({
             return saved === null ? true : saved === 'true';
         },
     );
-    const [showTutosLocalStorage, setShowTutosLocalStorage] = useState(
-        () => {
-            
-            const lsValue = localStorage.getItem('showTutosLocalStorage');
-            return lsValue === null ? SHOW_TUTOS_DEFAULT === 'true' : lsValue === 'true';
-        }
-    )
+    const [showTutosLocalStorage, setShowTutosLocalStorage] = useState(() => {
+        const lsValue = localStorage.getItem('showTutosLocalStorage');
+        return lsValue === null
+            ? SHOW_TUTOS_DEFAULT === 'true'
+            : lsValue === 'true';
+    });
 
     useEffect(() => {
         localStorage.setItem(
@@ -52,15 +51,11 @@ export const FutaHomeContextProvider = ({
             showHomeVideoLocalStorage.toString(),
         );
     }, [showHomeVideoLocalStorage]);
-    
-    
-    const bindShowTutosLocalStorage = (value : boolean) => {
-        localStorage.setItem(
-            'showTutosLocalStorage',
-            value.toString(),
-        );
+
+    const bindShowTutosLocalStorage = (value: boolean) => {
+        localStorage.setItem('showTutosLocalStorage', value.toString());
         setShowTutosLocalStorage(value);
-    }
+    };
 
     return (
         <FutaHomeContext.Provider
@@ -74,7 +69,7 @@ export const FutaHomeContextProvider = ({
                 showHomeVideoLocalStorage,
                 setShowHomeVideoLocalStorage,
                 showTutosLocalStorage,
-                bindShowTutosLocalStorage
+                bindShowTutosLocalStorage,
             }}
         >
             {children}

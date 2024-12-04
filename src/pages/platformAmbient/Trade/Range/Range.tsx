@@ -17,6 +17,17 @@ import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitT
 import TradeModuleHeader from '../../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../../components/Trade/TradeModules/TradeModuleSkeleton';
 
+import {
+    getFormattedNumber,
+    getPinnedPriceValuesFromDisplayPrices,
+    getPinnedPriceValuesFromTicks,
+    getUnicodeCharacter,
+    isStablePair,
+    roundDownTick,
+    roundUpTick,
+    truncateDecimals,
+} from '../../../../ambient-utils/dataLayer';
+import { PositionIF } from '../../../../ambient-utils/types';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
@@ -24,33 +35,26 @@ import { RangeContext } from '../../../../contexts/RangeContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import {
-    getFormattedNumber,
-    getUnicodeCharacter,
-    isStablePair,
-    truncateDecimals,
-    getPinnedPriceValuesFromDisplayPrices,
-    getPinnedPriceValuesFromTicks,
-    roundDownTick,
-    roundUpTick,
-} from '../../../../ambient-utils/dataLayer';
-import { PositionIF } from '../../../../ambient-utils/types';
 import { rangeTutorialSteps } from '../../../../utils/tutorial/Range';
 
-import { useApprove } from '../../../../App/functions/approve';
-import { useHandleRangeButtonMessage } from '../../../../App/hooks/useHandleRangeButtonMessage';
-import { useRangeInputDisable } from './useRangeInputDisable';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import {
+    estimateBalancedRangeAprFromPoolApr,
+    estimateUnbalancedRangeAprFromPoolApr,
+} from '../../../../ambient-utils/api';
 import {
     GAS_DROPS_ESTIMATE_POOL,
-    NUM_GWEI_IN_WEI,
-    RANGE_BUFFER_MULTIPLIER_MAINNET,
-    RANGE_BUFFER_MULTIPLIER_L2,
     IS_LOCAL_ENV,
     NUM_GWEI_IN_ETH,
+    NUM_GWEI_IN_WEI,
+    RANGE_BUFFER_MULTIPLIER_L2,
+    RANGE_BUFFER_MULTIPLIER_MAINNET,
 } from '../../../../ambient-utils/constants';
+import { useApprove } from '../../../../App/functions/approve';
+import { useHandleRangeButtonMessage } from '../../../../App/hooks/useHandleRangeButtonMessage';
 import { AppStateContext } from '../../../../contexts';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { useRangeInputDisable } from './useRangeInputDisable';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -68,7 +72,11 @@ function Range() {
         isActiveNetworkScroll,
         isActiveNetworkPlume,
     } = useContext(ChainDataContext);
-    const { poolPriceDisplay, dailyVol } = useContext(PoolContext);
+    const {
+        poolPriceDisplay,
+        dailyVol,
+        poolData: { poolAmbientAprEstimate },
+    } = useContext(PoolContext);
     const {
         advancedHighTick,
         advancedLowTick,
@@ -90,6 +98,7 @@ function Range() {
         setIsLinesSwitched,
     } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
+    // console.log(tokens);
     const {
         tokenAAllowance,
         tokenBAllowance,
@@ -290,6 +299,16 @@ function Range() {
         [userPositions, isAmbient, defaultLowTick, defaultHighTick],
     );
 
+    const { isTokenAInputDisabled, isTokenBInputDisabled } =
+        useRangeInputDisable(
+            isAmbient,
+            isTokenABase,
+            currentPoolPriceTick,
+            defaultLowTick,
+            defaultHighTick,
+            isDenomBase,
+        );
+
     const tokenASurplusMinusTokenARemainderNum =
         fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
         fromDisplayQty(tokenAInputQtyNoExponentString || '0', tokenA.decimals);
@@ -297,21 +316,26 @@ function Range() {
         fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) -
         fromDisplayQty(tokenBInputQtyNoExponentString || '0', tokenB.decimals);
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
-        ? tokenASurplusMinusTokenARemainderNum < 0
+        ? tokenASurplusMinusTokenARemainderNum < 0 && !isTokenAInputDisabled
             ? tokenASurplusMinusTokenARemainderNum * -1n
             : 0n
-        : fromDisplayQty(
-              tokenAInputQtyNoExponentString || '0',
-              tokenA.decimals,
-          );
+        : !isTokenAInputDisabled
+          ? fromDisplayQty(
+                tokenAInputQtyNoExponentString || '0',
+                tokenA.decimals,
+            )
+          : 0n;
     const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
-        ? tokenBSurplusMinusTokenBRemainderNum < 0
+        ? tokenBSurplusMinusTokenBRemainderNum < 0 && !isTokenBInputDisabled
             ? tokenBSurplusMinusTokenBRemainderNum * -1n
             : 0n
-        : fromDisplayQty(
-              tokenBInputQtyNoExponentString || '0',
-              tokenB.decimals,
-          );
+        : !isTokenBInputDisabled
+          ? fromDisplayQty(
+                tokenBInputQtyNoExponentString || '0',
+                tokenB.decimals,
+            )
+          : 0n;
+
     const isQtyEntered =
         tokenAInputQtyNoExponentString !== '' &&
         tokenBInputQtyNoExponentString !== '';
@@ -329,7 +353,7 @@ function Range() {
     const depositSkew = useMemo(
         () =>
             concDepositSkew(
-                poolPriceNonDisplay ?? 0,
+                poolPriceNonDisplay,
                 rangeLowBoundNonDisplayPrice,
                 rangeHighBoundNonDisplayPrice,
             ),
@@ -439,14 +463,6 @@ function Range() {
         ],
     );
 
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        undefined,
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
-
     const isTokenAWalletBalanceSufficient =
         fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=
         tokenAQtyCoveredByWalletBalance;
@@ -504,16 +520,6 @@ function Range() {
             setCurrentRangeInAdd('');
         }
     }, [isAdd]);
-
-    const { isTokenAInputDisabled, isTokenBInputDisabled } =
-        useRangeInputDisable(
-            isAmbient,
-            isTokenABase,
-            currentPoolPriceTick,
-            defaultLowTick,
-            defaultHighTick,
-            isDenomBase,
-        );
 
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
@@ -1027,6 +1033,24 @@ function Range() {
         needConfirmTokenB && tokens.acknowledge(tokenB);
     };
 
+    const estRangeApr = poolAmbientAprEstimate
+        ? !advancedMode && rangeWidthPercentage
+            ? estimateBalancedRangeAprFromPoolApr(
+                  poolAmbientAprEstimate,
+                  rangeWidthPercentage / 100,
+              )
+            : poolPriceNonDisplay &&
+                rangeLowBoundNonDisplayPrice &&
+                rangeHighBoundNonDisplayPrice
+              ? estimateUnbalancedRangeAprFromPoolApr(
+                    poolAmbientAprEstimate,
+                    poolPriceNonDisplay,
+                    rangeLowBoundNonDisplayPrice,
+                    rangeHighBoundNonDisplayPrice,
+                )
+              : 0
+        : 0;
+
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
@@ -1075,12 +1099,13 @@ function Range() {
             value: displayPriceWithDenom,
         }),
         slippageTolerance: slippageTolerancePercentage,
-        liquidityProviderFeeString: liquidityProviderFeeString,
+        liquidityFee: liquidityFee,
         quoteTokenIsBuy: true,
         isTokenABase: isTokenABase,
         showExtraInfoDropdown: showExtraInfoDropdown,
         isBalancedMode: !advancedMode,
         // aprPercentage: aprPercentage,
+        estRangeApr: estRangeApr,
         daysInRange: daysInRange,
     };
 
@@ -1261,8 +1286,18 @@ function Range() {
                                 tokenA.symbol,
                                 undefined,
                                 isActiveNetworkPlume
-                                    ? tokenAQtyCoveredByWalletBalance
-                                    : undefined,
+                                    ? isTokenAPrimary
+                                        ? tokenAQtyCoveredByWalletBalance
+                                        : // add 1% buffer to avoid rounding errors
+                                          (tokenAQtyCoveredByWalletBalance *
+                                              101n) /
+                                          100n
+                                    : tokenABalance
+                                      ? fromDisplayQty(
+                                            tokenABalance,
+                                            tokenA.decimals,
+                                        )
+                                      : undefined,
                             );
                         }}
                         flat={true}
@@ -1286,8 +1321,18 @@ function Range() {
                                 tokenB.symbol,
                                 undefined,
                                 isActiveNetworkPlume
-                                    ? tokenBQtyCoveredByWalletBalance
-                                    : undefined,
+                                    ? !isTokenAPrimary
+                                        ? tokenBQtyCoveredByWalletBalance
+                                        : // add 1% buffer to avoid rounding errors
+                                          (tokenBQtyCoveredByWalletBalance *
+                                              101n) /
+                                          100n
+                                    : tokenBBalance
+                                      ? fromDisplayQty(
+                                            tokenBBalance,
+                                            tokenB.decimals,
+                                        )
+                                      : undefined,
                             );
                         }}
                         flat={true}

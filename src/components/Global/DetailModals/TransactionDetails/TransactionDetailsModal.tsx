@@ -1,44 +1,44 @@
-import styles from '../TransactionDetailsModal.module.css';
-import { useState, useRef, useContext, useEffect, memo } from 'react';
-import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import {
-    TransactionIF,
     PositionServerIF,
+    TransactionIF,
 } from '../../../../ambient-utils/types';
-import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
-import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+import modalBackground from '../../../../assets/images/backgrounds/background.png';
 import {
     AppStateContext,
     AppStateContextIF,
 } from '../../../../contexts/AppStateContext';
-import modalBackground from '../../../../assets/images/backgrounds/background.png';
+import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+import styles from '../TransactionDetailsModal.module.css';
+import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
+import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
 
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
 } from '../../../../ambient-utils/constants';
 import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
-import {
     getPositionData,
     printDomToImage,
 } from '../../../../ambient-utils/dataLayer';
 import {
-    TokenContext,
-    TokenContextIF,
-} from '../../../../contexts/TokenContext';
-import {
     CachedDataContext,
     CachedDataContextIF,
 } from '../../../../contexts/CachedDataContext';
-import Modal from '../../Modal/Modal';
-import DetailsHeader from '../DetailsHeader/DetailsHeader';
-import ModalHeader from '../../ModalHeader/ModalHeader';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
+import {
+    TokenContext,
+    TokenContextIF,
+} from '../../../../contexts/TokenContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import TransactionDetailsGraph from '../TransactionDetailsGraph/TransactionDetailsGraph';
+import Modal from '../../Modal/Modal';
+import ModalHeader from '../../ModalHeader/ModalHeader';
+import DetailsHeader from '../DetailsHeader/DetailsHeader';
 import MobileDetailTabs from '../MobileDetailTabs/MobileDetailTabs';
+import TransactionDetailsGraph from '../TransactionDetailsGraph/TransactionDetailsGraph';
 
 interface propsIF {
     tx: TransactionIF;

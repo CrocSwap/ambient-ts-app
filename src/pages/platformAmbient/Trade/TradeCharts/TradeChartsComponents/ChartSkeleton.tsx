@@ -1,8 +1,8 @@
 import React from 'react';
 import styles from './ChartSkeleton.module.css';
 
-interface PropsIF{
-    periodToReadableTime: string | undefined
+interface PropsIF {
+    periodToReadableTime: string | undefined;
 }
 const ChartSkeleton = (props: PropsIF) => {
     const svg = (
@@ -70,10 +70,9 @@ const ChartSkeleton = (props: PropsIF) => {
     return (
         <section className={`${styles.container} ${styles.shimmerBG}`}>
             <h3 className={styles.loadingText}>
-                
-            Loading {props.periodToReadableTime}
+                Loading {props.periodToReadableTime}
                 Candle Chart...
-                            </h3>
+            </h3>
 
             <span className={styles.topBar}></span>
 
@@ -90,8 +89,7 @@ const ChartSkeleton = (props: PropsIF) => {
                 </div>
 
                 <div className={`${styles.middleSide} ${styles.shimmerBG}`}>
-
-                  {svg}
+                    {svg}
                 </div>
 
                 <div className={styles.rightSide}>
