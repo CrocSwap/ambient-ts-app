@@ -831,6 +831,25 @@ export const baseSepoliaUSDC: TokenIF = {
     logoURI: '',
 };
 
+export const swellETH: TokenIF = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 1923,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const swellWTT: TokenIF = {
+    name: 'Wolski Test Token',
+    address: '0x83CA2E0018cBa6CD1149F2BB059d2Fc6D0fDf456',
+    symbol: 'WTT',
+    decimals: 6,
+    chainId: 1923,
+    logoURI: '',
+};
+
 export const baseSepoliaUSDT: TokenIF = {
     name: 'Ambient USDT',
     address: '0x868cFD46ad326354AD214bEA9f08fD8EfBfac3b9',
@@ -929,4 +948,6 @@ export const defaultTokens: TokenIF[] = [
     baseSepoliaETH,
     baseSepoliaUSDC,
     baseSepoliaUSDT,
+    swellETH,
+    swellWTT,
 ];

@@ -5,7 +5,7 @@ pragma solidity ^0.8.28;
 // import {ERC20} from "@openzeppelin/contracts@5.1.0/token/ERC20/ERC20.sol";
 // import {ERC20Permit} from "@openzeppelin/contracts@5.1.0/token/ERC20/extensions/ERC20Permit.sol";
 
-// contract TEST_TOKEN is ERC20, ERC20Permit {
+// contract WTT is ERC20, ERC20Permit {
 //     constructor() ERC20("Wolski Test Token", "WTT") ERC20Permit("Wolski Test Token") {
 //         uint256 mintAmount = _generateMintAmount();
 //         _mint(msg.sender, mintAmount * 10 ** decimals());
