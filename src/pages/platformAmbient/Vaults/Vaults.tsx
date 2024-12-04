@@ -121,8 +121,13 @@ function Vaults() {
     }
 
     useEffect(() => {
-        if (userAddress && chainId) getUserVaultData();
-    }, [chainId, userAddress, sessionReceipts.length]);
+        if (userAddress && chainId) {
+            getUserVaultData();
+            const period = isUserIdle ? 600000 : 60000; // 10 minutes while idle, 1 minute while active
+            const interval = setInterval(getUserVaultData, period);
+            return () => clearInterval(interval);
+        }
+    }, [chainId, userAddress]);
 
     // logic to fetch vault data from API
     useEffect(() => {
@@ -138,6 +143,8 @@ function Vaults() {
     useEffect(() => {
         // also run the user data fetch after a receipt is received
         if (sessionReceipts.length === 0) return;
+        getUserVaultData();
+        // and repeat after a delay
         setTimeout(() => {
             getUserVaultData();
         }, 5000);
