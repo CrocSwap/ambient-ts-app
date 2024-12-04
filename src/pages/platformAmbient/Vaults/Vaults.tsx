@@ -208,7 +208,9 @@ function Vaults() {
                                                           uV: UserVaultsServerIF,
                                                       ) =>
                                                           uV.vaultAddress.toLowerCase() ===
-                                                          vault.address.toLowerCase(),
+                                                              vault.address.toLowerCase() &&
+                                                          uV.chainId ===
+                                                              vault.chainId,
                                                   ),
                                               )
                                           }

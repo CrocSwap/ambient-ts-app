@@ -12,7 +12,7 @@ import {
 import { GCGO_ETHEREUM_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const PUBLIC_RPC_URL = 'https://eth.llamarpc.com';
+export const PUBLIC_RPC_URL = 'https://ethereum-rpc.publicnode.com';
 
 export const RESTRICTED_RPC_URL =
     import.meta.env.VITE_MAINNET_RPC_URL !== undefined
