@@ -18,7 +18,11 @@ import {
     precisionOfInput,
     uriToHttp,
 } from '../../../../../ambient-utils/dataLayer';
-import { TokenIF, VaultIF } from '../../../../../ambient-utils/types';
+import {
+    TokenIF,
+    VaultIF,
+    vaultStrategy,
+} from '../../../../../ambient-utils/types';
 import { useApprove } from '../../../../../App/functions/approve';
 import Button from '../../../../../components/Form/Button';
 import WalletBalanceSubinfo from '../../../../../components/Form/WalletBalanceSubinfo';
@@ -46,9 +50,10 @@ interface Props {
     secondaryAsset: TokenIF;
     vault: VaultIF;
     onClose: () => void;
+    strategy: vaultStrategy;
 }
 export default function VaultDeposit(props: Props) {
-    const { mainAsset, secondaryAsset, onClose, vault } = props;
+    const { mainAsset, secondaryAsset, onClose, vault, strategy } = props;
     const { approveVault, isApprovalPending } = useApprove();
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showSubmitted, setShowSubmitted] = useState(false);
@@ -151,14 +156,14 @@ export default function VaultDeposit(props: Props) {
                         })
                         .catch(console.error);
                     crocEnv
-                        .tempestVault(vault.address, vault.mainAsset)
+                        .tempestVault(vault.address, vault.mainAsset, strategy)
                         .minDeposit()
                         .then((min: bigint) => {
                             setMinDepositBigint(min);
                         })
                         .catch(console.error);
                     crocEnv
-                        .tempestVault(vault.address, vault.mainAsset)
+                        .tempestVault(vault.address, vault.mainAsset, strategy)
                         .allowance(userAddress)
                         .then((allowance: bigint) => {
                             setMainAssetApprovalBigint(allowance);
@@ -191,7 +196,7 @@ export default function VaultDeposit(props: Props) {
         setShowSubmitted(true);
 
         const tx = await crocEnv
-            .tempestVault(vault.address, vault.mainAsset)
+            .tempestVault(vault.address, vault.mainAsset, strategy)
             .depositZap(depositBigint)
             .catch(console.error);
 
@@ -445,6 +450,7 @@ export default function VaultDeposit(props: Props) {
                     vault,
                     mainAsset,
                     secondaryAsset,
+                    strategy,
                     undefined,
                     isActiveNetworkPlume
                         ? depositBigint

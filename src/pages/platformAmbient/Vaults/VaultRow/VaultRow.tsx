@@ -64,6 +64,8 @@ export default function VaultRow(props: propsIF) {
 
     const [crocEnvBal, setCrocEnvBal] = useState<bigint>();
 
+    const strategy = chainId === '0x1' ? 'rswEth' : 'symetricAmbient';
+
     async function getCrocEnvBalance(): Promise<void> {
         if (
             crocEnv &&
@@ -74,6 +76,7 @@ export default function VaultRow(props: propsIF) {
             const tempestVault = crocEnv.tempestVault(
                 vault.address,
                 vault.mainAsset,
+                strategy,
             );
             setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
         }
@@ -206,6 +209,7 @@ export default function VaultRow(props: propsIF) {
                 secondaryAsset={secondaryAsset}
                 vault={vault}
                 onClose={handleModalClose}
+                strategy={strategy}
             />
         ) : (
             <VaultWithdraw
@@ -218,6 +222,7 @@ export default function VaultRow(props: propsIF) {
                 }
                 mainAssetBalanceDisplayQty={balDisplay}
                 onClose={handleModalClose}
+                strategy={strategy}
             />
         );
     function navigateExternal(): void {
