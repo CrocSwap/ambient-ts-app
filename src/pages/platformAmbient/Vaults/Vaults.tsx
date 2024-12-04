@@ -127,7 +127,7 @@ function Vaults() {
             const interval = setInterval(getUserVaultData, period);
             return () => clearInterval(interval);
         }
-    }, [chainId, userAddress]);
+    }, [chainId, userAddress, isUserIdle]);
 
     // logic to fetch vault data from API
     useEffect(() => {
