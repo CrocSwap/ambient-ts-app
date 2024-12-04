@@ -5,7 +5,7 @@ import { NetworkIF } from '../../types/NetworkIF';
 import {
     mainnetETH,
     mainnetRSWETH,
-    mainnetSWELL,
+    mainnetTBTC,
     mainnetUSDC,
     mainnetUSDT,
 } from '../defaultTokens';
@@ -42,9 +42,9 @@ export const ethereumMainnet: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,
     topPools: [
-        new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetRSWETH, mainnetETH, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetRSWETH, mainnetSWELL, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetTBTC, mainnetETH, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetUSDT, mainnetUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetUSDT, chainSpecFromSDK.poolIndex),
     ],
