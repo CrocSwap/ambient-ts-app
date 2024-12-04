@@ -16,7 +16,7 @@ import {
     isDefaultDenomTokenExcludedFromUsdConversion,
     isETHPair,
     isStablePair,
-    isWbtcToken,
+    isWbtcOrStakedBTCToken,
     isWrappedNativeToken,
 } from '../ambient-utils/dataLayer';
 import { PoolIF, PoolStatIF, TokenIF } from '../ambient-utils/types';
@@ -188,7 +188,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
 
         const isPairEthWbtc =
             baseToken.address === ZERO_ADDRESS &&
-            isWbtcToken(quoteToken.address);
+            isWbtcOrStakedBTCToken(quoteToken.address);
 
         if (
             usdPrice !== undefined &&
