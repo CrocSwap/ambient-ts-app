@@ -30,12 +30,21 @@ function RangeExtraInfo(props: propsIF) {
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
 
+    const aprPrecision =
+        estRangeApr < 0.01
+            ? 3
+            : estRangeApr < 2
+              ? 2
+              : estRangeApr > 100
+                ? 0
+                : 1;
+
     const estRangeAprString = estRangeApr
         ? getFormattedNumber({
               value: estRangeApr,
               isPercentage: true,
-              minFracDigits: 1,
-              maxFracDigits: 1,
+              minFracDigits: aprPrecision,
+              maxFracDigits: aprPrecision,
           }) + ' %'
         : '…';
 

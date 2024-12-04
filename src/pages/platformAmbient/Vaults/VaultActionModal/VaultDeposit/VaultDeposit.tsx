@@ -11,13 +11,18 @@ import { FaGasPump } from 'react-icons/fa';
 import {
     GAS_DROPS_ESTIMATE_VAULT_DEPOSIT,
     NUM_GWEI_IN_WEI,
+    VAULT_TX_L1_DATA_FEE_ESTIMATE,
 } from '../../../../../ambient-utils/constants';
 import {
     getFormattedNumber,
     precisionOfInput,
     uriToHttp,
 } from '../../../../../ambient-utils/dataLayer';
-import { TokenIF, VaultIF } from '../../../../../ambient-utils/types';
+import {
+    TokenIF,
+    VaultIF,
+    VaultStrategy,
+} from '../../../../../ambient-utils/types';
 import { useApprove } from '../../../../../App/functions/approve';
 import Button from '../../../../../components/Form/Button';
 import WalletBalanceSubinfo from '../../../../../components/Form/WalletBalanceSubinfo';
@@ -45,9 +50,10 @@ interface Props {
     secondaryAsset: TokenIF;
     vault: VaultIF;
     onClose: () => void;
+    strategy: VaultStrategy;
 }
 export default function VaultDeposit(props: Props) {
-    const { mainAsset, secondaryAsset, onClose, vault } = props;
+    const { mainAsset, secondaryAsset, onClose, vault, strategy } = props;
     const { approveVault, isApprovalPending } = useApprove();
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showSubmitted, setShowSubmitted] = useState(false);
@@ -150,14 +156,14 @@ export default function VaultDeposit(props: Props) {
                         })
                         .catch(console.error);
                     crocEnv
-                        .tempestVault(vault.address, vault.mainAsset)
+                        .tempestVault(vault.address, vault.mainAsset, strategy)
                         .minDeposit()
                         .then((min: bigint) => {
                             setMinDepositBigint(min);
                         })
                         .catch(console.error);
                     crocEnv
-                        .tempestVault(vault.address, vault.mainAsset)
+                        .tempestVault(vault.address, vault.mainAsset, strategy)
                         .allowance(userAddress)
                         .then((allowance: bigint) => {
                             setMainAssetApprovalBigint(allowance);
@@ -176,10 +182,9 @@ export default function VaultDeposit(props: Props) {
                 Number(NUM_GWEI_IN_WEI) *
                 ethMainnetUsdPrice *
                 Number(GAS_DROPS_ESTIMATE_VAULT_DEPOSIT);
-
             setDepositGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + VAULT_TX_L1_DATA_FEE_ESTIMATE,
                     isUSD: true,
                 }),
             );
@@ -191,7 +196,7 @@ export default function VaultDeposit(props: Props) {
         setShowSubmitted(true);
 
         const tx = await crocEnv
-            .tempestVault(vault.address, vault.mainAsset)
+            .tempestVault(vault.address, vault.mainAsset, strategy)
             .depositZap(depositBigint)
             .catch(console.error);
 
@@ -445,6 +450,7 @@ export default function VaultDeposit(props: Props) {
                     vault,
                     mainAsset,
                     secondaryAsset,
+                    strategy,
                     undefined,
                     isActiveNetworkPlume
                         ? depositBigint

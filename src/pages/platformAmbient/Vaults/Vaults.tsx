@@ -65,7 +65,6 @@ function Vaults() {
                         parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
                 );
                 setAllVaultsData(sorted ?? undefined);
-                setServerErrorReceived(false);
             } catch (error) {
                 console.log({ error });
                 setAllVaultsData(undefined);
@@ -81,8 +80,6 @@ function Vaults() {
         });
 
         await Promise.race([fetchData(), timeout]);
-
-        fetchData();
     }
 
     // hooks to fetch and hold user vault data
@@ -120,13 +117,16 @@ function Vaults() {
         });
 
         await Promise.race([fetchData(), timeout]);
-
-        fetchData();
     }
 
     useEffect(() => {
-        if (userAddress && chainId) getUserVaultData();
-    }, [chainId, userAddress, sessionReceipts.length]);
+        if (userAddress && chainId) {
+            getUserVaultData();
+            const period = isUserIdle ? 600000 : 60000; // 10 minutes while idle, 1 minute while active
+            const interval = setInterval(getUserVaultData, period);
+            return () => clearInterval(interval);
+        }
+    }, [chainId, userAddress, isUserIdle]);
 
     // logic to fetch vault data from API
     useEffect(() => {
@@ -137,7 +137,23 @@ function Vaults() {
         const interval = setInterval(getAllVaultsData, period);
         // clear the interval when this component dismounts
         return () => clearInterval(interval);
-    }, [sessionReceipts.length, isUserIdle]);
+    }, [isUserIdle]);
+
+    useEffect(() => {
+        // also run the user data fetch after a receipt is received
+        if (sessionReceipts.length === 0) return;
+        getUserVaultData();
+        // and repeat after a delay
+        setTimeout(() => {
+            getUserVaultData();
+        }, 5000);
+        setTimeout(() => {
+            getUserVaultData();
+        }, 15000);
+        setTimeout(() => {
+            getUserVaultData();
+        }, 30000);
+    }, [sessionReceipts.length]);
 
     const tempItems = [1, 2, 3, 4, 5];
 
@@ -192,7 +208,9 @@ function Vaults() {
                                                           uV: UserVaultsServerIF,
                                                       ) =>
                                                           uV.vaultAddress.toLowerCase() ===
-                                                          vault.address.toLowerCase(),
+                                                              vault.address.toLowerCase() &&
+                                                          uV.chainId ===
+                                                              vault.chainId,
                                                   ),
                                               )
                                           }

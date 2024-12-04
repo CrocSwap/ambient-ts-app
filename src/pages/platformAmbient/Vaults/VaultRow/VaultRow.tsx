@@ -8,7 +8,7 @@ import {
     getFormattedNumber,
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
-import { VaultIF } from '../../../../ambient-utils/types';
+import { VaultIF, VaultStrategy } from '../../../../ambient-utils/types';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
@@ -64,6 +64,8 @@ export default function VaultRow(props: propsIF) {
 
     const [crocEnvBal, setCrocEnvBal] = useState<bigint>();
 
+    const strategy = vault.strategy as VaultStrategy;
+
     async function getCrocEnvBalance(): Promise<void> {
         if (
             crocEnv &&
@@ -74,6 +76,7 @@ export default function VaultRow(props: propsIF) {
             const tempestVault = crocEnv.tempestVault(
                 vault.address,
                 vault.mainAsset,
+                strategy,
             );
             setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
         }
@@ -206,6 +209,7 @@ export default function VaultRow(props: propsIF) {
                 secondaryAsset={secondaryAsset}
                 vault={vault}
                 onClose={handleModalClose}
+                strategy={strategy}
             />
         ) : (
             <VaultWithdraw
@@ -218,6 +222,7 @@ export default function VaultRow(props: propsIF) {
                 }
                 mainAssetBalanceDisplayQty={balDisplay}
                 onClose={handleModalClose}
+                strategy={strategy}
             />
         );
     function navigateExternal(): void {
