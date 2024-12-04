@@ -14,8 +14,13 @@ import {
     GAS_DROPS_ESTIMATE_VAULT_WITHDRAWAL,
     IS_LOCAL_ENV,
     NUM_GWEI_IN_WEI,
+    VAULT_TX_L1_DATA_FEE_ESTIMATE,
 } from '../../../../../ambient-utils/constants';
-import { AllVaultsServerIF, TokenIF } from '../../../../../ambient-utils/types';
+import {
+    AllVaultsServerIF,
+    TokenIF,
+    VaultStrategy,
+} from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
 import {
@@ -39,6 +44,7 @@ interface propsIF {
     balanceMainAsset: bigint | undefined;
     mainAssetBalanceDisplayQty: string;
     onClose: () => void;
+    strategy: VaultStrategy;
 }
 export default function VaultWithdraw(props: propsIF) {
     const {
@@ -47,6 +53,7 @@ export default function VaultWithdraw(props: propsIF) {
         mainAssetBalanceDisplayQty,
         vault,
         balanceMainAsset,
+        strategy,
     } = props;
     const [showSubmitted, setShowSubmitted] = useState(false);
     const [removalPercentage, setRemovalPercentage] = useState(100);
@@ -80,14 +87,14 @@ export default function VaultWithdraw(props: propsIF) {
             BigInt(10000);
 
         const balanceVault = await crocEnv
-            .tempestVault(vault.address, vault.mainAsset)
+            .tempestVault(vault.address, vault.mainAsset, strategy)
             .balanceVault(userAddress);
 
         const withdrawalQtyVaultBalance =
             (balanceVault * BigInt(removalPercentage)) / BigInt(100);
 
         const tx = await crocEnv
-            .tempestVault(vault.address, vault.mainAsset)
+            .tempestVault(vault.address, vault.mainAsset, strategy)
             .redeemZap(
                 withdrawalQtyVaultBalance,
                 withdrawalQtyMainAssetBigintMinusSlippage,
@@ -274,7 +281,7 @@ export default function VaultWithdraw(props: propsIF) {
 
             setWithdrawGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + VAULT_TX_L1_DATA_FEE_ESTIMATE,
                     isUSD: true,
                 }),
             );

@@ -228,7 +228,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
 
     const currentPoolPriceTick = useMemo(
         () =>
-            poolPriceNonDisplay === undefined
+            poolPriceNonDisplay === undefined || poolPriceNonDisplay === 0
                 ? 0
                 : Math.log(poolPriceNonDisplay) / Math.log(1.0001),
         [poolPriceNonDisplay],

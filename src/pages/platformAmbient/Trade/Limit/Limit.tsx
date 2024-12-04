@@ -165,9 +165,15 @@ export default function Limit() {
         useState('');
     const [txError, setTxError] = useState<Error>();
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
-    const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
-    const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
-    const [middleDisplayPrice, setMiddleDisplayPrice] = useState<number>(0);
+    const [endDisplayPrice, setEndDisplayPrice] = useState<
+        number | undefined
+    >();
+    const [startDisplayPrice, setStartDisplayPrice] = useState<
+        number | undefined
+    >();
+    const [middleDisplayPrice, setMiddleDisplayPrice] = useState<
+        number | undefined
+    >();
     const [orderGasPriceInDollars, setOrderGasPriceInDollars] = useState<
         string | undefined
     >();
@@ -250,21 +256,15 @@ export default function Limit() {
     // value showing if no acknowledgement is necessary
     const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
 
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        'en-US',
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
-
     // TODO: logic to determine start, middle, end display prices should be refactored into an ambient-utils function
     useEffect(() => {
-        if (limitTick === undefined && poolPriceNonDisplay && crocEnv) {
+        if (!poolPriceNonDisplay) {
+            // pool is uninitialized
+            setStartDisplayPrice(undefined);
+            setMiddleDisplayPrice(undefined);
+            setEndDisplayPrice(undefined);
+        } else if (limitTick === undefined && crocEnv) {
             if (!pool) return;
-
-            // if the spot price is 0, the pool is uninitialized and we can't calculate a limit price
-            if (poolPriceNonDisplay === 0) return;
 
             const initialLimitRateNonDisplay =
                 poolPriceNonDisplay * (isSellTokenBase ? 0.985 : 1.015);
@@ -969,7 +969,7 @@ export default function Limit() {
                     }}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                    limitTickDisplayPrice={middleDisplayPrice}
+                    limitTickDisplayPrice={middleDisplayPrice || 0}
                     handleLimitButtonMessage={handleLimitButtonMessage}
                     toggleDexSelection={toggleDexSelection}
                     amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
@@ -995,7 +995,7 @@ export default function Limit() {
                         tokenAInputQty !== '' || tokenBInputQty !== ''
                     }
                     orderGasPriceInDollars={orderGasPriceInDollars}
-                    liquidityProviderFeeString={liquidityProviderFeeString}
+                    liquidityFee={liquidityFee}
                     isTokenABase={isSellTokenBase}
                     startDisplayPrice={startDisplayPrice}
                     middleDisplayPrice={middleDisplayPrice}
@@ -1009,7 +1009,6 @@ export default function Limit() {
                         initiateLimitOrderMethod={sendLimitOrder}
                         tokenAInputQty={tokenAInputQtyNoExponentString}
                         tokenBInputQty={tokenBInputQtyNoExponentString}
-                        insideTickDisplayPrice={endDisplayPrice}
                         newLimitOrderTransactionHash={
                             newLimitOrderTransactionHash
                         }
@@ -1089,7 +1088,12 @@ export default function Limit() {
                                 undefined,
                                 isActiveNetworkPlume
                                     ? tokenAQtyCoveredByWalletBalance
-                                    : undefined,
+                                    : tokenABalance
+                                      ? fromDisplayQty(
+                                            tokenABalance,
+                                            tokenA.decimals,
+                                        )
+                                      : undefined,
                             );
                         }}
                         flat={true}

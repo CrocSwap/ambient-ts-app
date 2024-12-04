@@ -1,14 +1,16 @@
 import {
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
+    baseSepoliaBrandAssets,
     blastBrandAssets,
     defaultBrandAssets,
     futaBrandAssets,
     plumeSepoliaBrandAssets,
     scrollBrandAssets,
+    swellSepoliaBrandAssets,
 } from '../../../assets/branding';
-import { swellSepoliaBrandAssets } from '../../../assets/branding/swellSepoliaBrandAssets';
 import { NetworkIF, TokenIF, chainHexIds } from '../../types';
+import { baseSepolia } from './baseSepolia';
 import { blastMainnet } from './blastMainnet';
 import { blastSepolia } from './blastSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
@@ -30,6 +32,7 @@ const networks: NetworkIF[] = [
     blastMainnet,
     plumeSepolia,
     swellSepolia,
+    baseSepolia,
 ];
 
 function getNetworks(chns: (string | chainHexIds)[]): {
@@ -63,7 +66,11 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
                   ? getNetworks(Object.keys(plumeSepoliaBrandAssets.networks))
                   : brand === 'swellSepolia'
                     ? getNetworks(Object.keys(swellSepoliaBrandAssets.networks))
-                    : getNetworks(Object.keys(defaultBrandAssets.networks));
+                    : brand === 'baseSepolia'
+                      ? getNetworks(
+                            Object.keys(baseSepoliaBrandAssets.networks),
+                        )
+                      : getNetworks(Object.keys(defaultBrandAssets.networks));
 
 export const vaultSupportedNetworkIds = ['0x1', '0x82750'];
 export const vaultSupportedNetworks = getNetworks(vaultSupportedNetworkIds);
@@ -85,6 +92,7 @@ export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
 }
 
 export {
+    baseSepolia,
     blastMainnet,
     blastSepolia,
     ethereumMainnet,

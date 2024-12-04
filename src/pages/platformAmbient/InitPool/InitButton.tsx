@@ -39,6 +39,9 @@ interface PropsIF {
     selectedPoolPriceTick: number;
     tokenAQtyCoveredByWalletBalance: bigint;
     tokenBQtyCoveredByWalletBalance: bigint;
+    isTokenAPrimary: boolean;
+    tokenABalance: string;
+    tokenBBalance: string;
 }
 export default function InitButton(props: PropsIF) {
     const {
@@ -71,6 +74,9 @@ export default function InitButton(props: PropsIF) {
         selectedPoolPriceTick,
         tokenAQtyCoveredByWalletBalance,
         tokenBQtyCoveredByWalletBalance,
+        isTokenAPrimary,
+        tokenABalance,
+        tokenBBalance,
     } = props;
 
     const { isActiveNetworkPlume } = useContext(ChainDataContext);
@@ -99,7 +105,14 @@ export default function InitButton(props: PropsIF) {
                     tokenA.address,
                     tokenA.symbol,
                     undefined,
-                    isActiveNetworkPlume ? tokenAQtyForApproval : undefined,
+                    isActiveNetworkPlume
+                        ? isTokenAPrimary
+                            ? tokenAQtyForApproval
+                            : // add 1% buffer to avoid rounding errors
+                              (tokenAQtyCoveredByWalletBalance * 101n) / 100n
+                        : tokenABalance
+                          ? fromDisplayQty(tokenABalance, tokenA.decimals)
+                          : undefined,
                 );
             }}
             flat={true}
@@ -121,7 +134,14 @@ export default function InitButton(props: PropsIF) {
                     tokenB.address,
                     tokenB.symbol,
                     undefined,
-                    isActiveNetworkPlume ? tokenBQtyForApproval : undefined,
+                    isActiveNetworkPlume
+                        ? !isTokenAPrimary
+                            ? tokenBQtyForApproval
+                            : // add 1% buffer to avoid rounding errors
+                              (tokenBQtyCoveredByWalletBalance * 101n) / 100n
+                        : tokenBBalance
+                          ? fromDisplayQty(tokenBBalance, tokenB.decimals)
+                          : undefined,
                 );
             }}
             flat={true}

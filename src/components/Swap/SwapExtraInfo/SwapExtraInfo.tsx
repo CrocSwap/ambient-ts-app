@@ -11,7 +11,7 @@ import { ExtraInfo } from '../../Trade/TradeModules/ExtraInfo/ExtraInfo';
 interface propsIF {
     priceImpact: CrocImpact | undefined;
     slippageTolerance: number;
-    liquidityProviderFeeString: string;
+    liquidityFee: number | undefined;
     swapGasPriceinDollars: string | undefined;
     isOnTradeRoute?: boolean;
     effectivePriceWithDenom: number | undefined;
@@ -24,7 +24,7 @@ function SwapExtraInfo(props: propsIF) {
         priceImpact,
         effectivePriceWithDenom,
         slippageTolerance,
-        liquidityProviderFeeString,
+        liquidityFee,
         swapGasPriceinDollars,
         showExtraInfoDropdown,
         showWarning,
@@ -37,6 +37,13 @@ function SwapExtraInfo(props: propsIF) {
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
+
+    const liquidityProviderFeeString = liquidityFee
+        ? (liquidityFee * 100).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          }) + ' %'
+        : '...';
 
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
@@ -102,7 +109,9 @@ function SwapExtraInfo(props: propsIF) {
             title: 'Price Impact',
             tooltipTitle:
                 'Difference Between Current (Spot) Price and Final Price',
-            data: `${getPriceImpactString(priceImpactNum)} %`,
+            data: priceImpactNum
+                ? `${getPriceImpactString(priceImpactNum)} %`
+                : '...',
             placement: 'bottom',
         },
         {
@@ -117,7 +126,7 @@ function SwapExtraInfo(props: propsIF) {
             } / ${
                 isDenomBase ? quoteTokenSymbol : baseTokenSymbol
             } liquidity providers.`,
-            data: `${liquidityProviderFeeString} %`,
+            data: liquidityProviderFeeString,
             placement: 'bottom',
         },
     ];

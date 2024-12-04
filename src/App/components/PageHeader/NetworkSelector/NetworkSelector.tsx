@@ -15,6 +15,7 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 // import plumeMainnetLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
+import baseSepoliaLogo from '../../../../assets/images/networks/Base_Network_Logo.svg';
 import plumeSepoliaLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
 import swellSepoliaLogo from '../../../../assets/images/networks/swell_network_small_logo.svg';
 // import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_network_logo.webp';
@@ -206,6 +207,17 @@ export default function NetworkSelector(props: propsIF) {
             testnet: true,
             link: '',
             condition: chainMap.has('0x784'),
+        },
+        {
+            id: 'base_sepolia_network_selector',
+            chainId: '0x14a34',
+            name: 'Base',
+            logo: baseSepoliaLogo,
+            custom: 2,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x14a34'),
         },
         {
             id: 'scroll_sepolia_network_selector',
