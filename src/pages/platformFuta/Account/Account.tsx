@@ -46,16 +46,22 @@ export default function Account() {
         undefined,
     );
 
+    const [tickerSet, setTickerSet] = useState<'bids' | 'created'>('bids');
+    function toggleDisplay(): void {
+        if (tickerSet === 'bids') {
+            setTickerSet('created');
+        } else if (tickerSet === 'created') {
+            setTickerSet('bids');
+        }
+    }
+
     if (addressFromParams && !isAddressEns && !isAddressHex) {
         return <Navigate to='/404' replace />;
     }
 
     const sumUnclaimedAndUnreturned = useMemo(() => {
         if (!accountData.auctions) return BigInt(0);
-        // return { totalUnclaimed: BigInt(0), totalUnreturned: BigInt(0) };
         let sum = BigInt(0);
-        // let totalUnclaimed = BigInt(0);
-        // let totalUnreturned = BigInt(0);
 
         accountData.auctions.forEach((auction: AuctionDataIF) => {
             if (auction.qtyUnclaimedByUserInAuctionedTokenWei) {
@@ -64,16 +70,6 @@ export default function Account() {
             if (auction.qtyUnreturnedToUserInNativeTokenWei) {
                 sum += BigInt(auction.qtyUnreturnedToUserInNativeTokenWei);
             }
-            // if (auction.qtyUnclaimedByUserInAuctionedTokenWei) {
-            //     totalUnclaimed += BigInt(
-            //         auction.qtyUnclaimedByUserInAuctionedTokenWei,
-            //     );
-            // }
-            // if (auction.qtyUnreturnedToUserInNativeTokenWei) {
-            //     totalUnreturned += BigInt(
-            //         auction.qtyUnreturnedToUserInNativeTokenWei,
-            //     );
-            // }
         });
 
         return sum;
@@ -217,6 +213,9 @@ export default function Account() {
     const sorted: sortedAuctionsIF = useSortedAuctions(
         accountData.auctions || [],
     );
+
+    console.log(sorted);
+
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
     if (!isUserConnected && !addressFromParams) {
@@ -230,16 +229,16 @@ export default function Account() {
     const desktopVersionWithClaimAll = (
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
+                <button onClick={() => toggleDisplay()}>Switch View</button>
                 <SearchableTicker
                     auctions={sorted}
-                    title='account'
+                    title='accounttt'
                     isAccount={true}
                 />
             </div>
             <div className={styles.separatorContainer}>
                 <Separator dots={70} />
             </div>
-
             <div className={styles.rightLayout}>
                 <Divider count={2} />
                 {claimAllContainer}
