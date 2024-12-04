@@ -137,7 +137,15 @@ function Vaults() {
         const interval = setInterval(getAllVaultsData, period);
         // clear the interval when this component dismounts
         return () => clearInterval(interval);
-    }, [sessionReceipts.length, isUserIdle]);
+    }, [isUserIdle]);
+
+    useEffect(() => {
+        // also run the user data fetch 15 seconds after a receipt is received
+        if (sessionReceipts.length === 0) return;
+        setTimeout(() => {
+            getUserVaultData();
+        }, 15000);
+    }, [sessionReceipts.length]);
 
     const tempItems = [1, 2, 3, 4, 5];
 
