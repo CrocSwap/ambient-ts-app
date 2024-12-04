@@ -1,15 +1,7 @@
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
-import { getDefaultPairForChain } from '../../../../ambient-utils/constants';
 import { isWrappedNativeToken } from '../../../../ambient-utils/dataLayer';
-import {
-    GCServerPoolIF,
-    PoolIF,
-    TokenIF,
-} from '../../../../ambient-utils/types';
-import { usePoolList2 } from '../../../../App/hooks/usePoolList2';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { PoolContext, PoolContextIF } from '../../../../contexts/PoolContext';
+import { SinglePoolDataIF } from '../../../../ambient-utils/types';
+import { ChainDataContext } from '../../../../contexts';
 import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useTokenStats';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -52,7 +44,6 @@ interface propsIF {
 function DexTokens(props: propsIF) {
     const {
         dexTokens,
-        chainId,
         goToMarket,
         searchQuery,
         setSearchQuery,
@@ -60,13 +51,9 @@ function DexTokens(props: propsIF) {
         handleToggle,
     } = props;
 
-    const { activeNetwork } = useContext(AppStateContext);
+    const { allPoolStats } = useContext(ChainDataContext);
 
-    const { findPool } = useContext<PoolContextIF>(PoolContext);
     const isPWA = useIsPWA();
-
-    const defaultTokensForChain: [TokenIF, TokenIF] =
-        getDefaultPairForChain(chainId);
 
     const sortedTokens: sortedDexTokensIF = useSortedDexTokens(dexTokens);
 
@@ -74,11 +61,6 @@ function DexTokens(props: propsIF) {
     // this logic is here to patch cases where existing logic to identify a token pool fails,
     // ... this is not an optimal location but works as a stopgap that minimizes needing to
     // ... alter existing logic or type annotation in the component tree
-    const { crocEnv } = useContext(CrocEnvContext);
-    const unfilteredPools: GCServerPoolIF[] = usePoolList2(
-        activeNetwork.graphCacheUrl,
-        crocEnv,
-    );
 
     const dexTokensHeaderItems: (HeaderItem | null)[] = [
         // mobileScrenView ? null :
@@ -192,38 +174,26 @@ function DexTokens(props: propsIF) {
 
                 {sortedTokens.data.length
                     ? sortedTokens.data.map((token: dexTokenData) => {
-                          const samplePool: PoolIF | undefined =
-                              findPool(
-                                  token.tokenAddr,
-                                  defaultTokensForChain[0],
-                              ) ??
-                              findPool(
-                                  token.tokenAddr,
-                                  defaultTokensForChain[1],
-                              ) ??
-                              findPool(token.tokenAddr);
+                          const matchingPool: SinglePoolDataIF | undefined = (
+                              allPoolStats || []
+                          ).find(
+                              (p: SinglePoolDataIF) =>
+                                  (p.base.toLowerCase() ===
+                                      token.tokenAddr.toLowerCase() &&
+                                      !isWrappedNativeToken(p.quote)) ||
+                                  (p.quote.toLowerCase() ===
+                                      token.tokenAddr.toLowerCase() &&
+                                      !isWrappedNativeToken(p.base)),
+                          );
 
-                          const backupPool: GCServerPoolIF | undefined =
-                              unfilteredPools.find(
-                                  (p: GCServerPoolIF) =>
-                                      (p.base.toLowerCase() ===
-                                          token.tokenAddr.toLowerCase() &&
-                                          !isWrappedNativeToken(p.quote)) ||
-                                      (p.quote.toLowerCase() ===
-                                          token.tokenAddr.toLowerCase() &&
-                                          !isWrappedNativeToken(p.base)),
-                              );
-
-                          if (!token.tokenMeta || (!samplePool && !backupPool))
-                              return null;
+                          if (!token.tokenMeta || !matchingPool) return null;
 
                           return (
                               <TokenRow
                                   key={token.tokenAddr}
                                   token={token}
                                   tokenMeta={token.tokenMeta}
-                                  samplePool={samplePool}
-                                  backupPool={backupPool}
+                                  matchingPool={matchingPool}
                                   goToMarket={goToMarket}
                               />
                           );
