@@ -537,9 +537,12 @@ export default function TransactionDetailsGraph(
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((selection: any) => {
-                    const time = timeFirstMintMemo
-                        ? timeFirstMintMemo * 1000
-                        : tx.txTime * 1000;
+                    const time =
+                        timeFirstMintMemo !== undefined
+                            ? timeFirstMintMemo === 0
+                                ? Date.now()
+                                : timeFirstMintMemo * 1000
+                            : tx.txTime * 1000;
                     selection
                         .select('path')
                         .style(
@@ -718,8 +721,17 @@ export default function TransactionDetailsGraph(
                     const minimumDifferenceMinMax = 75;
 
                     if (result) {
-                        const minTime = result.min * 1000;
-                        const maxTime = result.max * 1000;
+                        if (result.min === 0) {
+                            result.min =
+                                (Date.now() - oneWeekMilliseconds) / 1000;
+                        }
+
+                        if (result.max === 0) {
+                            result.max = Date.now() / 1000;
+                        }
+
+                        const minTime = Math.min(result.min, result.max) * 1000;
+                        const maxTime = Math.max(result.min, result.max) * 1000;
                         const maxTimePixel = xScale(maxTime);
 
                         const maxDomainPixel = svgWidth;
@@ -1315,11 +1327,12 @@ export default function TransactionDetailsGraph(
                             transactionType === 'liqchange' &&
                             tx !== undefined
                         ) {
-                            const time = timeFirstMintMemo
-                                ? timeFirstMintMemo * 1000
-                                : tx.txTime
-                                  ? tx.txTime * 1000
-                                  : Date.now() - oneWeekMilliseconds;
+                            const time =
+                                timeFirstMintMemo !== undefined
+                                    ? timeFirstMintMemo * 1000
+                                    : tx.txTime
+                                      ? tx.txTime * 1000
+                                      : Date.now() - oneWeekMilliseconds;
 
                             const timeEnd =
                                 tx.txTime &&
@@ -1355,9 +1368,12 @@ export default function TransactionDetailsGraph(
 
                             horizontalBandData[0] = [bidLine, askLine];
 
-                            const timeStart = timeFirstMintMemo
-                                ? timeFirstMintMemo * 1000
-                                : tx.txTime * 1000;
+                            const timeStart =
+                                timeFirstMintMemo !== undefined
+                                    ? timeFirstMintMemo === 0
+                                        ? Date.now()
+                                        : timeFirstMintMemo * 1000
+                                    : tx.txTime * 1000;
 
                             const rangeLinesDataBid = [
                                 { x: timeStart, y: bidLine },
@@ -1447,7 +1463,12 @@ export default function TransactionDetailsGraph(
                                 }
                             }
                             verticalLineData.push({
-                                name: isSmallRange ? 'Open' : 'Open Position',
+                                name:
+                                    timeFirstMintMemo === 0
+                                        ? 'Update'
+                                        : isSmallRange
+                                          ? 'Open'
+                                          : 'Open Position',
                                 value: timeStart,
                             });
 
