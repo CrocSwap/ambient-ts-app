@@ -67,7 +67,7 @@ export default function Auctions(props: propsIF) {
                         <div style={{ height: 'calc(100vh - 80px)' }}>
                             <SearchableTicker
                                 auctions={sorted}
-                                title='AUCTIONS'
+                                title=''
                                 setIsFullLayoutActive={setIsFullLayoutActive}
                                 placeholderTicker={placeholderTicker}
                             />
@@ -76,7 +76,6 @@ export default function Auctions(props: propsIF) {
 
                     <Separator dots={100} />
                     <div className={styles.flexColumn}>
-                        <Divider count={2} />
                         {!hideTicker && (
                             <TickerComponent
                                 isAuctionPage

@@ -299,6 +299,10 @@
         display: grid;
     }
 
+    .mainBorder{
+        border: 2px solid var(--borders, #5C6F72);
+    }
+
     .tickerTableContainer {
         height: 100%;
     }
