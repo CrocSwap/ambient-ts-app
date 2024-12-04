@@ -1,1 +1,1 @@
-export type vaultStrategy = 'rswEth' | 'symetricAmbient';
+export type VaultStrategy = 'rswEth' | 'symetricAmbient';

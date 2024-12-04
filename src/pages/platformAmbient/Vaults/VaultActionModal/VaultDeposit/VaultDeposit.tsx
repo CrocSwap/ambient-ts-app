@@ -21,7 +21,7 @@ import {
 import {
     TokenIF,
     VaultIF,
-    vaultStrategy,
+    VaultStrategy,
 } from '../../../../../ambient-utils/types';
 import { useApprove } from '../../../../../App/functions/approve';
 import Button from '../../../../../components/Form/Button';
@@ -50,7 +50,7 @@ interface Props {
     secondaryAsset: TokenIF;
     vault: VaultIF;
     onClose: () => void;
-    strategy: vaultStrategy;
+    strategy: VaultStrategy;
 }
 export default function VaultDeposit(props: Props) {
     const { mainAsset, secondaryAsset, onClose, vault, strategy } = props;

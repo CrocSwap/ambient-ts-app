@@ -19,7 +19,7 @@ import {
 import {
     AllVaultsServerIF,
     TokenIF,
-    vaultStrategy,
+    VaultStrategy,
 } from '../../../../../ambient-utils/types';
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
@@ -44,7 +44,7 @@ interface propsIF {
     balanceMainAsset: bigint | undefined;
     mainAssetBalanceDisplayQty: string;
     onClose: () => void;
-    strategy: vaultStrategy;
+    strategy: VaultStrategy;
 }
 export default function VaultWithdraw(props: propsIF) {
     const {

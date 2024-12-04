@@ -5,7 +5,7 @@ import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import {
     AllVaultsServerIF,
     TokenIF,
-    vaultStrategy,
+    VaultStrategy,
 } from '../../ambient-utils/types';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
@@ -100,7 +100,7 @@ export function useApprove() {
         vault: AllVaultsServerIF,
         mainAsset: TokenIF,
         secondaryAsset: TokenIF,
-        strategy: vaultStrategy,
+        strategy: VaultStrategy,
         cb?: (b: boolean) => void,
         tokenQuantity?: bigint,
     ) => {

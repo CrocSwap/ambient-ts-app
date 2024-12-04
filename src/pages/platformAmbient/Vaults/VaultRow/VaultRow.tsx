@@ -8,7 +8,7 @@ import {
     getFormattedNumber,
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
-import { VaultIF } from '../../../../ambient-utils/types';
+import { VaultIF, VaultStrategy } from '../../../../ambient-utils/types';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
@@ -64,7 +64,7 @@ export default function VaultRow(props: propsIF) {
 
     const [crocEnvBal, setCrocEnvBal] = useState<bigint>();
 
-    const strategy = chainId === '0x1' ? 'rswEth' : 'symetricAmbient';
+    const strategy = vault.strategy as VaultStrategy;
 
     async function getCrocEnvBalance(): Promise<void> {
         if (
