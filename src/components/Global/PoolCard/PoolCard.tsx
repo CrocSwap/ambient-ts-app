@@ -6,7 +6,7 @@ import {
     isDefaultDenomTokenExcludedFromUsdConversion,
     isETHPair,
     isUsdStableToken,
-    isWbtcToken,
+    isWbtcOrStakedBTCToken,
     uriToHttp,
 } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
@@ -53,8 +53,8 @@ export default function PoolCard(props: propsIF) {
         : isUsdStableToken(pool.base.address);
 
     const denomTokenIsWBTCToken = shouldInvertDisplay
-        ? isWbtcToken(pool.quote.address)
-        : isWbtcToken(pool.base.address);
+        ? isWbtcOrStakedBTCToken(pool.quote.address)
+        : isWbtcOrStakedBTCToken(pool.base.address);
 
     const excludeFromUsdConversion =
         isDefaultDenomTokenExcludedFromUsdConversion(
