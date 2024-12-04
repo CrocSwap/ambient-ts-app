@@ -65,7 +65,6 @@ function Vaults() {
                         parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
                 );
                 setAllVaultsData(sorted ?? undefined);
-                setServerErrorReceived(false);
             } catch (error) {
                 console.log({ error });
                 setAllVaultsData(undefined);
