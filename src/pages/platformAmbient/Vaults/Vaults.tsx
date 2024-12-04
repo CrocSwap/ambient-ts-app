@@ -81,8 +81,6 @@ function Vaults() {
         });
 
         await Promise.race([fetchData(), timeout]);
-
-        fetchData();
     }
 
     // hooks to fetch and hold user vault data
@@ -120,8 +118,6 @@ function Vaults() {
         });
 
         await Promise.race([fetchData(), timeout]);
-
-        fetchData();
     }
 
     useEffect(() => {
@@ -140,11 +136,17 @@ function Vaults() {
     }, [isUserIdle]);
 
     useEffect(() => {
-        // also run the user data fetch 15 seconds after a receipt is received
+        // also run the user data fetch after a receipt is received
         if (sessionReceipts.length === 0) return;
         setTimeout(() => {
             getUserVaultData();
+        }, 5000);
+        setTimeout(() => {
+            getUserVaultData();
         }, 15000);
+        setTimeout(() => {
+            getUserVaultData();
+        }, 30000);
     }, [sessionReceipts.length]);
 
     const tempItems = [1, 2, 3, 4, 5];
