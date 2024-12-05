@@ -18,7 +18,7 @@ export const swellBrandAssets: brandIF = {
     },
     platformName: 'swell',
     fontSet: 'ambient',
-    showPoints: true,
+    showPoints: false,
     showDexStats: true,
     headerImage: large as string,
     includeCanto: false,
