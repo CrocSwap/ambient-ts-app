@@ -13,10 +13,7 @@ import styles from '../TransactionDetailsModal.module.css';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
 import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
 
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    GCGO_OVERRIDE_URL,
-} from '../../../../ambient-utils/constants';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
 import {
     getPositionData,
     printDomToImage,
@@ -53,7 +50,7 @@ function TransactionDetailsModal(props: propsIF) {
     const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView, onClose } =
         props;
     const {
-        activeNetwork: { chainId, graphCacheUrl },
+        activeNetwork: { chainId, GCGO_URL },
         snackbar: { open: openSnackbar },
     } = useContext<AppStateContextIF>(AppStateContext);
 
@@ -75,9 +72,7 @@ function TransactionDetailsModal(props: propsIF) {
     useEffect(() => {
         if (tx.entityType !== 'liqchange') return;
 
-        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
-            ? GCGO_OVERRIDE_URL + '/position_stats?'
-            : graphCacheUrl + '/position_stats?';
+        const positionStatsCacheEndpoint = GCGO_URL + '/position_stats?';
 
         fetch(
             positionStatsCacheEndpoint +

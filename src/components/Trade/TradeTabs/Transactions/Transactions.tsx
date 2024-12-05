@@ -106,7 +106,7 @@ function Transactions(props: propsIF) {
     const { chartSettings } = useContext<ChartContextIF>(ChartContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
-        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+        activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
 
     const { setOutsideControl, showAllData: showAllDataSelection } =
@@ -464,7 +464,7 @@ function Transactions(props: propsIF) {
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
-            graphCacheUrl: graphCacheUrl,
+            GCGO_URL: GCGO_URL,
             provider,
             cachedFetchTokenPrice: cachedFetchTokenPrice,
             cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -714,7 +714,7 @@ function Transactions(props: propsIF) {
                     n: 50,
                     timeBefore: oldestTxTimeRef.current,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -736,7 +736,7 @@ function Transactions(props: propsIF) {
                     n: 50,
                     timeBefore: oldestTxTimeRef.current,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -757,7 +757,7 @@ function Transactions(props: propsIF) {
                     n: 50,
                     timeBefore: oldestTxTimeRef.current,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,

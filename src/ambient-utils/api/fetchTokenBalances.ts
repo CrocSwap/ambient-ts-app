@@ -27,7 +27,7 @@ export interface IDexBalanceQueryProps {
     address: string;
     chain: string;
     crocEnv: CrocEnv | undefined;
-    graphCacheUrl: string;
+    GCGO_URL: string;
     _refreshTime: number;
 }
 
@@ -64,14 +64,14 @@ export const fetchAmbientListWalletBalances = async (
 };
 
 async function fetchDexBalances(props: IDexBalanceQueryProps) {
-    const { address, crocEnv, chain, graphCacheUrl } = props;
+    const { address, crocEnv, chain, GCGO_URL } = props;
 
     if (!crocEnv) return;
 
     const dexBalancesFromCache = await fetchDepositBalances({
         user: address,
         chainId: chain,
-        graphCacheUrl: graphCacheUrl,
+        GCGO_URL: GCGO_URL,
         crocEnv: crocEnv,
     });
     return dexBalancesFromCache;

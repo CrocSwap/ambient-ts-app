@@ -29,7 +29,7 @@ const chainSpecForWalletConnector = {
 export const plumeSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    graphCacheUrl: GCGO_TESTNET_URL,
+    GCGO_URL: GCGO_TESTNET_URL,
     evmRpcUrl: PLUME_SEPOLIA_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [plumeSepoliaETH, plumeSepoliaUSD],

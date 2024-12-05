@@ -369,7 +369,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const dexTokens: useTokenStatsIF = useTokenStats(
         activeNetwork.chainId,
         crocEnv,
-        activeNetwork.graphCacheUrl,
+        activeNetwork.GCGO_URL,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         tokens,

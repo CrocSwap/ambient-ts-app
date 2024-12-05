@@ -78,7 +78,7 @@ function Ranges(props: propsIF) {
     const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
-        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+        activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
 
     const {
@@ -426,7 +426,7 @@ function Ranges(props: propsIF) {
                     n: dataPerPage,
                     timeBefore: OLDEST_TIME,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,

@@ -56,7 +56,7 @@ export default function TransactionDetailsGraph(
         isAccountView,
     } = props;
     const {
-        activeNetwork: { graphCacheUrl, chainId, poolIndex },
+        activeNetwork: { GCGO_URL, chainId, poolIndex },
     } = useContext<AppStateContextIF>(AppStateContext);
     const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
@@ -279,7 +279,7 @@ export default function TransactionDetailsGraph(
                         fetchEnabled,
                         chainId,
                         poolIndex,
-                        graphCacheUrl,
+                        GCGO_URL,
                         tempPeriod,
                         baseTokenAddress,
                         quoteTokenAddress,

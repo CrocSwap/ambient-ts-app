@@ -47,14 +47,14 @@ export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { graphCacheUrl, chainId, poolIndex },
+        activeNetwork: { GCGO_URL, chainId, poolIndex },
     } = useContext<AppStateContextIF>(AppStateContext);
     const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
     const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
 
-    const poolList: PoolIF[] = usePoolList(graphCacheUrl, crocEnv);
+    const poolList: PoolIF[] = usePoolList(GCGO_URL, crocEnv);
 
     const pool = useMemo(
         () => crocEnv?.pool(baseToken.address, quoteToken.address),

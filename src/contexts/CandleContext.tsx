@@ -73,7 +73,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setNumCandlesFetched,
     } = useContext(ChartContext);
     const {
-        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+        activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext<AppStateContextIF>(AppStateContext);
     const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
@@ -323,7 +323,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 true,
                 chainId,
                 poolIndex,
-                graphCacheUrl,
+                GCGO_URL,
                 candleTimeLocal || defaultCandleDuration,
                 baseTokenAddress,
                 quoteTokenAddress,
@@ -436,7 +436,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             true,
             chainId,
             poolIndex,
-            graphCacheUrl,
+            GCGO_URL,
             candleTimeLocal,
             baseTokenAddress,
             quoteTokenAddress,

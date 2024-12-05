@@ -27,7 +27,7 @@ const chainSpecForWalletConnector = {
 export const swellMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    graphCacheUrl: GCGO_SWELL_URL,
+    GCGO_URL: GCGO_SWELL_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [swellETH, swellWTT],
