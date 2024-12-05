@@ -260,7 +260,7 @@ const StyledSelectbox = styled.div`
     align-items: center;
 `;
 
-const ConxtextOptions = styled.div`
+const ContextOptions = styled.div`
     width: 100%;
 
     display: flex;
@@ -269,7 +269,7 @@ const ConxtextOptions = styled.div`
     align-items: start;
 `;
 
-const ConxtextOptionsSection = styled.div`
+const ContextOptionsSection = styled.div`
     width: 100%;
 
     display: grid;
@@ -340,8 +340,8 @@ export {
     ContextMenuFooter,
     ContextMenuHeader,
     ContextMenuHeaderText,
-    ConxtextOptions,
-    ConxtextOptionsSection,
+    ContextOptions,
+    ContextOptionsSection,
     FooterButtons,
     FooterContextText,
     Icon,
