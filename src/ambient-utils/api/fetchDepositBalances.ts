@@ -1,5 +1,4 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GCGO_OVERRIDE_URL } from '../constants';
 import { TokenIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 
@@ -60,11 +59,10 @@ export const expandTokenBalances = async (
 export async function fetchDepositBalances(
     props: IFetchDepositBalancesProps,
 ): Promise<IDexTokenBalances[] | undefined> {
-    const { chainId, user } = props;
+    const { chainId, user, graphCacheUrl } = props;
 
-    const depositBalancesCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_balance_tokens?'
-        : props.graphCacheUrl + '/user_balance_tokens?';
+    const depositBalancesCacheEndpoint =
+        graphCacheUrl + '/user_balance_tokens?';
 
     return fetch(
         depositBalancesCacheEndpoint +

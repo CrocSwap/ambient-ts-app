@@ -7,10 +7,7 @@ import {
 } from '@crocswap-libs/sdk';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { fetchPositionRewardsData } from '../../../../../ambient-utils/api/fetchPositionRewards';
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    GCGO_OVERRIDE_URL,
-} from '../../../../../ambient-utils/constants';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../../ambient-utils/constants';
 import {
     getFormattedNumber,
     getPositionData,
@@ -367,9 +364,7 @@ function RangeDetailsModal(props: propsIF) {
     };
 
     useEffect(() => {
-        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
-            ? GCGO_OVERRIDE_URL + '/position_stats?'
-            : graphCacheUrl + '/position_stats?';
+        const positionStatsCacheEndpoint = graphCacheUrl + '/position_stats?';
 
         updateLiq();
 

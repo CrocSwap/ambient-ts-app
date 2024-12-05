@@ -2,7 +2,6 @@ import { CrocEnv, bigIntToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
 import { isETHorStakedEthToken } from '..';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import {
-    GCGO_OVERRIDE_URL,
     ZERO_ADDRESS,
     ethereumMainnet,
     excludedTokenAddressesLowercase,
@@ -19,9 +18,7 @@ const getLiquidityFee = async (
     graphCacheUrl: string,
     _cacheTimeTag: number | string,
 ): Promise<number | undefined> => {
-    const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/pool_stats?'
-        : graphCacheUrl + '/pool_stats?';
+    const poolStatsFreshEndpoint = graphCacheUrl + '/pool_stats?';
     return fetch(
         poolStatsFreshEndpoint +
             new URLSearchParams({
@@ -54,9 +51,7 @@ const fetchPoolStats = async (
     graphCacheUrl: string,
     histTime?: number,
 ): Promise<PoolStatsServerIF | undefined> => {
-    const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/pool_stats?'
-        : graphCacheUrl + '/pool_stats?';
+    const poolStatsFreshEndpoint = graphCacheUrl + '/pool_stats?';
 
     if (histTime) {
         return fetch(
@@ -106,9 +101,7 @@ const fetchAllPoolStats = async (
     _cacheTimeTag: number | string,
     with24hPrices?: boolean,
 ): Promise<PoolStatsServerIF | undefined> => {
-    const allPoolStatsEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/all_pool_stats?'
-        : graphCacheUrl + '/all_pool_stats?';
+    const allPoolStatsEndpoint = graphCacheUrl + '/all_pool_stats?';
 
     if (with24hPrices) {
         return fetch(
@@ -337,9 +330,7 @@ const get24hChange = async (
     graphCacheUrl: string,
     _cacheTimeTag: number | string,
 ): Promise<number | undefined> => {
-    const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/pool_stats?'
-        : graphCacheUrl + '/pool_stats?';
+    const poolStatsFreshEndpoint = graphCacheUrl + '/pool_stats?';
 
     const nowQuery = fetch(
         poolStatsFreshEndpoint +
@@ -437,9 +428,7 @@ export async function getChainStats(
     tokenCount: number,
     allDefaultTokens?: TokenIF[],
 ): Promise<DexAggStatsIF | DexTokenAggServerIF[] | undefined> {
-    const chainStatsFreshEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/chain_stats?'
-        : graphCacheUrl + '/chain_stats?';
+    const chainStatsFreshEndpoint = graphCacheUrl + '/chain_stats?';
 
     return fetch(
         chainStatsFreshEndpoint +

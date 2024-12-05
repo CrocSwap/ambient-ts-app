@@ -1,16 +1,12 @@
+import { CrocEnv } from '@crocswap-libs/sdk';
 import {
     mockAccountData1,
     mockAccountData2,
     mockAuctionDetailsServerResponseGenerator,
     mockGlobalAuctionData,
 } from '../../../pages/platformFuta/mockAuctionData';
-// import{ GCGO_OVERRIDE_URL } from '../../constants';
-import { CrocEnv } from '@crocswap-libs/sdk';
 import { CURRENT_AUCTION_VERSION } from '../../constants';
-import {
-    //  memoizeCrocEnvFn,
-    memoizeCacheQueryFn,
-} from './memoizePromiseFn';
+import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 export interface PriceImpactIF {
     ticker: string;
@@ -80,9 +76,7 @@ const getGlobalAuctionsList = async (
     // graphCacheUrl: string,
     _cacheTimeTag: number | string,
 ): Promise<AuctionDataIF[]> => {
-    // const auctionsListEndpoint = GCGO_OVERRIDE_URL
-    //     ? GCGO_OVERRIDE_URL + '/auctions?'
-    //     : graphCacheUrl + '/auctions?';
+    // const auctionsListEndpoint =  graphCacheUrl + '/auctions?';
     false && console.log({ chainId });
     return mockGlobalAuctionData.auctionList;
     // return fetch(
@@ -111,9 +105,7 @@ const getUserAuctionsList = async (
     // graphCacheUrl: string,
     _cacheTimeTag: number | string,
 ): Promise<AuctionDataIF[]> => {
-    // const auctionsListEndpoint = GCGO_OVERRIDE_URL
-    //     ? GCGO_OVERRIDE_URL + '/auctions?'
-    //     : graphCacheUrl + '/auctions?';
+    // const auctionsListEndpoint =graphCacheUrl + '/auctions?';
     false && console.log({ userAddress, chainId });
     if (
         userAddress.toLowerCase() ===
@@ -479,9 +471,7 @@ export const fetchFreshAuctionStatusData = async (
     version: number,
     chainId: string,
 ): Promise<AuctionStatusResponseIF> => {
-    // const auctionsStatusEndpoint = GCGO_OVERRIDE_URL
-    //     ? GCGO_OVERRIDE_URL + '/auctionStatus?'
-    //     : graphCacheUrl + '/auctionStatus?';
+    // const auctionsStatusEndpoint = graphCacheUrl + '/auctionStatus?';
     return mockAuctionDetailsServerResponseGenerator(ticker, version, chainId);
     // return fetch(
     //     auctionsStatusEndpoint +

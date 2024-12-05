@@ -5,7 +5,6 @@ import {
     fetchPoolRecentChanges,
 } from '../../ambient-utils/api';
 import { fetchPoolLimitOrders } from '../../ambient-utils/api/fetchPoolLimitOrders';
-import { GCGO_OVERRIDE_URL } from '../../ambient-utils/constants';
 import {
     filterLimitArray,
     getLimitOrderData,
@@ -304,9 +303,8 @@ export function usePoolMetadata() {
                 (await crocEnv.context).chain.chainId === chainId
             ) {
                 // retrieve pool_positions
-                const allPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-                    ? GCGO_OVERRIDE_URL + '/pool_positions?'
-                    : graphCacheUrl + '/pool_positions?';
+                const allPositionsCacheEndpoint =
+                    graphCacheUrl + '/pool_positions?';
                 fetch(
                     allPositionsCacheEndpoint +
                         new URLSearchParams({
@@ -448,9 +446,8 @@ export function usePoolMetadata() {
                     })
                     .catch(console.error);
                 if (userAddress) {
-                    const userPoolTransactionsCacheEndpoint = GCGO_OVERRIDE_URL
-                        ? GCGO_OVERRIDE_URL + '/user_pool_txs?'
-                        : graphCacheUrl + '/user_pool_txs?';
+                    const userPoolTransactionsCacheEndpoint =
+                        graphCacheUrl + '/user_pool_txs?';
                     fetch(
                         userPoolTransactionsCacheEndpoint +
                             new URLSearchParams({
@@ -512,9 +509,8 @@ export function usePoolMetadata() {
                         .catch(console.error);
 
                     // retrieve user_pool_positions
-                    const userPoolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-                        ? GCGO_OVERRIDE_URL + '/user_pool_positions?'
-                        : graphCacheUrl + '/user_pool_positions?';
+                    const userPoolPositionsCacheEndpoint =
+                        graphCacheUrl + '/user_pool_positions?';
                     const forceOnchainLiqUpdate = true;
                     fetch(
                         userPoolPositionsCacheEndpoint +
@@ -578,9 +574,8 @@ export function usePoolMetadata() {
                         .catch(console.error);
 
                     // retrieve user_pool_limit_orders
-                    const userPoolLimitOrdersCacheEndpoint = GCGO_OVERRIDE_URL
-                        ? GCGO_OVERRIDE_URL + '/user_pool_limit_orders?'
-                        : graphCacheUrl + '/user_pool_limit_orders?';
+                    const userPoolLimitOrdersCacheEndpoint =
+                        graphCacheUrl + '/user_pool_limit_orders?';
                     fetch(
                         userPoolLimitOrdersCacheEndpoint +
                             new URLSearchParams({

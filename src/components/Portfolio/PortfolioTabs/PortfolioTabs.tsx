@@ -14,10 +14,7 @@ import styles from './PortfolioTabs.module.css';
 // START: Import Local Files
 import { useLocation } from 'react-router-dom';
 import { fetchUserRecentChanges } from '../../../ambient-utils/api';
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    GCGO_OVERRIDE_URL,
-} from '../../../ambient-utils/constants';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../ambient-utils/constants';
 import {
     filterLimitArray,
     getLimitOrderData,
@@ -114,12 +111,8 @@ export default function PortfolioTabs(props: propsIF) {
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
 
-    const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_positions?'
-        : graphCacheUrl + '/user_positions?';
-    const userLimitOrdersCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
-        : graphCacheUrl + '/user_limit_orders?';
+    const userPositionsCacheEndpoint = graphCacheUrl + '/user_positions?';
+    const userLimitOrdersCacheEndpoint = graphCacheUrl + '/user_limit_orders?';
 
     const getLookupUserPositions = async (accountToSearch: string) => {
         fetch(

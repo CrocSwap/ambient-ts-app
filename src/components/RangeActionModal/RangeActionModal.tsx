@@ -14,7 +14,7 @@ import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
 import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import {
     GAS_DROPS_ESTIMATE_RANGE_HARVEST,
     GAS_DROPS_ESTIMATE_RANGE_REMOVAL,
@@ -126,9 +126,7 @@ function RangeActionModal(props: propsIF) {
         (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
         0;
 
-    const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/position_stats?'
-        : graphCacheUrl + '/position_stats?';
+    const positionStatsCacheEndpoint = graphCacheUrl + '/position_stats?';
 
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined

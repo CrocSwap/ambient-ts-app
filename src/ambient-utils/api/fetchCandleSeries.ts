@@ -1,5 +1,5 @@
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { CACHE_UPDATE_FREQ_IN_MS, GCGO_OVERRIDE_URL } from '../constants';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../constants';
 import { SpotPriceFn } from '../dataLayer';
 import {
     CandleDataIF,
@@ -74,9 +74,7 @@ export async function fetchCandleSeriesCroc(
         return undefined;
     }
 
-    const candleSeriesEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/pool_candles'
-        : graphCacheUrl + '/pool_candles';
+    const candleSeriesEndpoint = graphCacheUrl + '/pool_candles';
 
     if (endTime == 0) {
         endTime = Math.floor(Date.now() / 1000);
