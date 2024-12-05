@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import PlatformAmbientRoutes from './PlatformAmbient';
 import PlatformFutaRoutes from './PlatformFuta';
-// import CommonRoutes from './CommonRoutes';
 
 export const RouteRenderer: React.FC<{ platformName: string }> = ({
     platformName,
@@ -12,12 +11,7 @@ export const RouteRenderer: React.FC<{ platformName: string }> = ({
         } else return <PlatformAmbientRoutes />;
     }, [platformName]);
 
-    return (
-        <>
-            {/* <CommonRoutes /> */}
-            {platformRoutes}
-        </>
-    );
+    return <>{platformRoutes}</>;
 };
 
 // export default getRoutes;

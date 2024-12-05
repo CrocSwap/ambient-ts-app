@@ -17,10 +17,7 @@ import styles from './Comments.module.css';
 import useCommentsWS from './useCommentsWS';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useOnBoundryChange from '../../../utils/hooks/useOnBoundryChange';
 import {
@@ -50,7 +47,7 @@ interface propsIF {
 }
 
 function Comments(props: propsIF) {
-    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
+    const { activeNetwork } = useContext(AppStateContext);
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const { ticker } = useParams();
 

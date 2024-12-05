@@ -1,26 +1,20 @@
-// import styles from './TokenRow.module.css';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../TokenIcon/TokenIcon';
 
 import { GrLineChart } from 'react-icons/gr';
-import {
-    GCServerPoolIF,
-    PoolIF,
-    TokenIF,
-} from '../../../../ambient-utils/types';
+import { SinglePoolDataIF, TokenIF } from '../../../../ambient-utils/types';
 import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useTokenStats';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './TokenRow.module.css';
 interface propsIF {
     token: dexTokenData;
     tokenMeta: TokenIF;
-    samplePool: PoolIF | undefined;
-    backupPool: GCServerPoolIF | undefined;
+    matchingPool: SinglePoolDataIF | undefined;
     goToMarket: (tknA: string, tknB: string) => void;
 }
 
 export default function TokenRow(props: propsIF) {
-    const { token, tokenMeta, samplePool, goToMarket, backupPool } = props;
+    const { token, tokenMeta, matchingPool, goToMarket } = props;
 
     const desktopView = useMediaQuery('(min-width: 768px)');
 
@@ -31,10 +25,8 @@ export default function TokenRow(props: propsIF) {
     ) => {
         // due to gatekeeping in parent, at least one of these pools
         // ... will be a defined value passed through props
-        if (samplePool) {
-            goToMarket(samplePool.base.address, samplePool.quote.address);
-        } else if (backupPool) {
-            goToMarket(backupPool.base, backupPool.quote);
+        if (matchingPool) {
+            goToMarket(matchingPool.base, matchingPool.quote);
         }
         event.stopPropagation();
     };

@@ -21,7 +21,7 @@ export interface TokenContextIF {
     addTokenInfo: (token: TokenIF) => TokenIF;
 }
 
-export const TokenContext = createContext<TokenContextIF>({} as TokenContextIF);
+export const TokenContext = createContext({} as TokenContextIF);
 
 export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     const {

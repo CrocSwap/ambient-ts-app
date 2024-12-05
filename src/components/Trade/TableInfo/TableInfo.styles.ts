@@ -112,17 +112,17 @@ const StyledTabContainer = styled.div`
 `;
 
 export {
-    MainSection,
     BoxContainer,
+    BoxInfoText,
+    DetailedBoxContainer,
     FeaturedBoxInfoContainer,
-    InfoHeader,
     FeaturedBoxInnerContainer,
     FlexCenter,
+    InfoHeader,
+    LinkText,
+    MainSection,
+    StyledTabContainer,
+    TabPlaceholder,
     TokenName,
     TokenSymbol,
-    BoxInfoText,
-    LinkText,
-    TabPlaceholder,
-    DetailedBoxContainer,
-    StyledTabContainer,
 };

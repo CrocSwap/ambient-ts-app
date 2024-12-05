@@ -24,7 +24,7 @@ const chainSpecForWalletConnector = {
 export const scrollSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    graphCacheUrl: GCGO_TESTNET_URL,
+    GCGO_URL: GCGO_TESTNET_URL,
     evmRpcUrl: chainSpecForWalletConnector.rpcUrl,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [scrollSepoliaETH, scrollSepoliaUSDC],

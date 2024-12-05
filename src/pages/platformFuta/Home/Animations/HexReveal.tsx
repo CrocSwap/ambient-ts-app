@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 
 const FADE_INTERVAL = 40; // Time interval between each character reveal in milliseconds
 const HEX_CHARS = 'abcdef0123456789'; // Hexadecimal characters
@@ -20,12 +20,17 @@ interface HexRevealProps {
     interval?: number;
 }
 
-const HexReveal: React.FC<HexRevealProps> = ({ children, interval = FADE_INTERVAL }) => {
+const HexReveal: React.FC<HexRevealProps> = ({
+    children,
+    interval = FADE_INTERVAL,
+}) => {
     const [revealedTexts, setRevealedTexts] = useState<string[]>([]);
 
     useEffect(() => {
         const childTexts = React.Children.map(children, (child) =>
-            typeof child === 'string' ? child : (child as React.ReactElement).props.children
+            typeof child === 'string'
+                ? child
+                : (child as React.ReactElement).props.children,
         ) as string[];
 
         const hexifiedTexts = childTexts.map((text) => hexifyText(text));
@@ -38,12 +43,14 @@ const HexReveal: React.FC<HexRevealProps> = ({ children, interval = FADE_INTERVA
                         return text
                             .split('')
                             .map((char, charIndex) =>
-                                charIndex <= index ? childTexts[textIndex][charIndex] : char
+                                charIndex <= index
+                                    ? childTexts[textIndex][charIndex]
+                                    : char,
                             )
                             .join('');
                     }
                     return text;
-                })
+                }),
             );
         };
 

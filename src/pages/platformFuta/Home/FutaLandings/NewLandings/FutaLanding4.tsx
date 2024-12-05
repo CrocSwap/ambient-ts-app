@@ -1,6 +1,5 @@
-import styles from './FutaLanding4.module.css'
+import styles from './FutaLanding4.module.css';
 export default function FutaLanding4() {
-    
     return (
         <div className={styles.container}>
             <h3>/HOW IT WORKS</h3>
@@ -11,7 +10,9 @@ export default function FutaLanding4() {
                 </div>
                 <div className={styles.list}>
                     <div className={styles.number}>02</div>
-                    <p>Select the max market cap you are willing to bid up to</p>
+                    <p>
+                        Select the max market cap you are willing to bid up to
+                    </p>
                 </div>
                 <div className={styles.list}>
                     <div className={styles.number}>03</div>
@@ -19,13 +20,12 @@ export default function FutaLanding4() {
                 </div>
                 <div className={styles.list}>
                     <div className={styles.number}>04</div>
-                    <p>Claim your tokens from the winning bid after the auction has complete</p>
+                    <p>
+                        Claim your tokens from the winning bid after the auction
+                        has complete
+                    </p>
                 </div>
-
-            
-
-          
             </div>
         </div>
-    )
+    );
 }

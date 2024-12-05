@@ -1,4 +1,3 @@
-// START: Import React and Dongles
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { CiCircleMore } from 'react-icons/ci';
 import { FiExternalLink } from 'react-icons/fi';

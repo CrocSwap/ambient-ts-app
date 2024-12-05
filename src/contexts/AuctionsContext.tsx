@@ -82,9 +82,7 @@ export interface AuctionIF {
     status: string;
 }
 
-export const AuctionsContext = createContext<AuctionsContextIF>(
-    {} as AuctionsContextIF,
-);
+export const AuctionsContext = createContext({} as AuctionsContextIF);
 
 export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     const {

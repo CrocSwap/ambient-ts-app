@@ -1,5 +1,4 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { GCGO_OVERRIDE_URL } from '../constants';
 import { SpotPriceFn } from '../dataLayer';
 import { TokenPriceFn } from './fetchTokenPrice';
 
@@ -11,14 +10,12 @@ export const fetchPoolLiquidity = async (
     quoteTokenDecimals: number,
     poolIdx: number,
     crocEnv: CrocEnv,
-    graphCacheUrl: string,
+    GCGO_URL: string,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotTick: SpotPriceFn,
     currentPoolPriceTick?: number | undefined,
 ): Promise<LiquidityDataIF | undefined> => {
-    const poolLiquidityCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/pool_liq_curve?'
-        : graphCacheUrl + '/pool_liq_curve?';
+    const poolLiquidityCacheEndpoint = GCGO_URL + '/pool_liq_curve?';
     return fetch(
         poolLiquidityCacheEndpoint +
             new URLSearchParams({

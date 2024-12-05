@@ -48,7 +48,7 @@ export const createNetworkSession = async ({
 
     // By the end of the block, we will have all the required dependencies in a non missing state (or error trying)
     infuraUrl = await assertExists(infuraUrl, async () => network.evmRpcUrl);
-    gcUrl = await assertExists(gcUrl, async () => network.graphCacheUrl);
+    gcUrl = await assertExists(gcUrl, async () => network.GCGO_URL);
     tokenUniv = await assertExists(tokenUniv, async () =>
         fetchTokenUniverse(network.chainId),
     );

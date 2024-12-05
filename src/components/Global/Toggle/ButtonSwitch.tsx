@@ -1,5 +1,5 @@
-import React, { KeyboardEventHandler, MouseEventHandler } from 'react';
-import styled, { keyframes, css } from 'styled-components';
+import { KeyboardEventHandler, MouseEventHandler } from 'react';
+import styled, { css, keyframes } from 'styled-components';
 
 const switchAnimation = keyframes`
   0% {
