@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { CSSTransition } from 'react-transition-group';
 import {
@@ -64,10 +64,6 @@ export default function OrderHistoryTooltip(props: {
     }
 
     const [hoveredID, setHoveredID] = useState<string | undefined>();
-
-    useEffect(() => {
-        console.log(hoveredOrderHistory);
-    }, [hoveredOrderHistory]);
 
     const swapHeader = (
         <OrderHistoryHeader>
