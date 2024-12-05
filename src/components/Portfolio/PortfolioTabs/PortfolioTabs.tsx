@@ -34,10 +34,7 @@ import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
@@ -85,7 +82,7 @@ export default function PortfolioTabs(props: propsIF) {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
         activeNetwork: { GCGO_URL, chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const isSmallScreen = useMediaQuery('(max-width: 768px)');

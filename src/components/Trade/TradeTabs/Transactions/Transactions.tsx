@@ -18,46 +18,21 @@ import {
 
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import {
-    CandleContext,
-    CandleContextIF,
-} from '../../../../contexts/CandleContext';
-import {
-    ChartContext,
-    ChartContextIF,
-} from '../../../../contexts/ChartContext';
+import { CandleContext } from '../../../../contexts/CandleContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import {
-    DataLoadingContext,
-    DataLoadingContextIF,
-} from '../../../../contexts/DataLoadingContext';
+import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import {
     Changes,
     GraphDataContext,
-    GraphDataContextIF,
 } from '../../../../contexts/GraphDataContext';
-import {
-    ReceiptContext,
-    ReceiptContextIF,
-} from '../../../../contexts/ReceiptContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
-import {
-    TokenContext,
-    TokenContextIF,
-} from '../../../../contexts/TokenContext';
-import {
-    TradeDataContext,
-    TradeDataContextIF,
-} from '../../../../contexts/TradeDataContext';
-import {
-    TradeTableContext,
-    TradeTableContextIF,
-} from '../../../../contexts/TradeTableContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { FlexContainer } from '../../../../styled/Common';
 import { TransactionRow as TransactionRowStyled } from '../../../../styled/Components/TransactionTable';
 import Spinner from '../../../Global/Spinner/Spinner';
@@ -95,23 +70,23 @@ function Transactions(props: propsIF) {
 
     const {
         server: { isEnabled: isServerEnabled },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { isCandleSelected } = useContext<CandleContextIF>(CandleContext);
+    } = useContext(AppStateContext);
+    const { isCandleSelected } = useContext(CandleContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { chartSettings } = useContext<ChartContextIF>(ChartContext);
+    const { chartSettings } = useContext(ChartContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
         activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
 
     const { setOutsideControl, showAllData: showAllDataSelection } =
-        useContext<TradeTableContextIF>(TradeTableContext);
-    const { tokens } = useContext<TokenContextIF>(TokenContext);
+        useContext(TradeTableContext);
+    const { tokens } = useContext(TokenContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -121,18 +96,16 @@ function Transactions(props: propsIF) {
 
     const candleTime: candleTimeIF = chartSettings.candleTime.global;
 
-    const dataLoadingStatus =
-        useContext<DataLoadingContextIF>(DataLoadingContext);
+    const dataLoadingStatus = useContext(DataLoadingContext);
     const {
         transactionsByUser,
         userTransactionsByPool,
         transactionsByPool,
         unindexedNonFailedSessionTransactionHashes,
-    } = useContext<GraphDataContextIF>(GraphDataContext);
+    } = useContext(GraphDataContext);
 
-    const { transactionsByType } = useContext<ReceiptContextIF>(ReceiptContext);
-    const { baseToken, quoteToken } =
-        useContext<TradeDataContextIF>(TradeDataContext);
+    const { transactionsByType } = useContext(ReceiptContext);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;

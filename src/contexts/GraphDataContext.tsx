@@ -95,9 +95,7 @@ function normalizeAddr(addr: string): string {
     return caseAddr.startsWith('0x') ? caseAddr : '0x' + caseAddr;
 }
 
-export const GraphDataContext = createContext<GraphDataContextIF>(
-    {} as GraphDataContextIF,
-);
+export const GraphDataContext = createContext({} as GraphDataContextIF);
 
 export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const {

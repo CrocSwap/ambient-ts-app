@@ -27,10 +27,7 @@ import {
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
-import {
-    TokenContext,
-    TokenContextIF,
-} from '../../../../contexts/TokenContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
@@ -166,7 +163,7 @@ function Ranges(props: propsIF) {
 
     const {
         tokens: { tokenUniv: tokenList },
-    } = useContext<TokenContextIF>(TokenContext);
+    } = useContext(TokenContext);
 
     const EXTRA_REQUEST_CREDIT_COUNT = 10;
 

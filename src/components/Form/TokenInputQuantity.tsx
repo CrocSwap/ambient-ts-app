@@ -14,7 +14,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { getFormattedNumber, uriToHttp } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts';
-import { BrandContext, BrandContextIF } from '../../contexts/BrandContext';
+import { BrandContext } from '../../contexts/BrandContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { useModal } from '../Global/Modal/useModal';
@@ -72,7 +72,7 @@ function TokenInputQuantity(props: propsIF) {
         percentDiffUsdValue,
     } = props;
 
-    const { platformName } = useContext<BrandContextIF>(BrandContext);
+    const { platformName } = useContext(BrandContext);
 
     const location = useLocation();
 

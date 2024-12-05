@@ -65,9 +65,7 @@ export interface ChainDataContextIF {
     allPoolStats: SinglePoolDataIF[] | undefined;
 }
 
-export const ChainDataContext = createContext<ChainDataContextIF>(
-    {} as ChainDataContextIF,
-);
+export const ChainDataContext = createContext({} as ChainDataContextIF);
 
 export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const {

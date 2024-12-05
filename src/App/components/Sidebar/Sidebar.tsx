@@ -26,19 +26,10 @@ import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
 import { BsChevronContract, BsChevronExpand } from 'react-icons/bs';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
-import {
-    CachedDataContext,
-    CachedDataContextIF,
-} from '../../../contexts/CachedDataContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import {
-    SidebarContext,
-    SidebarContextIF,
-} from '../../../contexts/SidebarContext';
+import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { FlexContainer } from '../../../styled/Common';
 import {
@@ -62,11 +53,9 @@ import {
 function Sidebar() {
     const {
         activeNetwork: { chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { sidebar, hideOnMobile } =
-        useContext<SidebarContextIF>(SidebarContext);
-    const { cachedQuerySpotPrice } =
-        useContext<CachedDataContextIF>(CachedDataContext);
+    } = useContext(AppStateContext);
+    const { sidebar, hideOnMobile } = useContext(SidebarContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);

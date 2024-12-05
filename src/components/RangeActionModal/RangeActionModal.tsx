@@ -26,10 +26,7 @@ import {
     isStablePair,
 } from '../../ambient-utils/dataLayer';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../contexts/AppStateContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -60,7 +57,7 @@ function RangeActionModal(props: propsIF) {
     const { type, position, onClose, isAccountView } = props;
     const {
         activeNetwork: { GCGO_URL, chainId, poolIndex },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const { crocEnv, provider, ethMainnetUsdPrice } =
         useContext(CrocEnvContext);

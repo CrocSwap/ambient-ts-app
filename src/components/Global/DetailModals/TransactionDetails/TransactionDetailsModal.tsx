@@ -4,10 +4,7 @@ import {
     TransactionIF,
 } from '../../../../ambient-utils/types';
 import modalBackground from '../../../../assets/images/backgrounds/background.png';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import styles from '../TransactionDetailsModal.module.css';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
@@ -18,18 +15,9 @@ import {
     getPositionData,
     printDomToImage,
 } from '../../../../ambient-utils/dataLayer';
-import {
-    CachedDataContext,
-    CachedDataContextIF,
-} from '../../../../contexts/CachedDataContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
-import {
-    TokenContext,
-    TokenContextIF,
-} from '../../../../contexts/TokenContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import Modal from '../../Modal/Modal';
 import ModalHeader from '../../ModalHeader/ModalHeader';
@@ -52,18 +40,18 @@ function TransactionDetailsModal(props: propsIF) {
     const {
         activeNetwork: { chainId, GCGO_URL },
         snackbar: { open: openSnackbar },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
 
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
-    } = useContext<CachedDataContextIF>(CachedDataContext);
+    } = useContext(CachedDataContext);
 
-    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
 
-    const { tokens } = useContext<TokenContextIF>(TokenContext);
+    const { tokens } = useContext(TokenContext);
 
     const [updatedPositionApy, setUpdatedPositionApy] = useState<
         number | undefined

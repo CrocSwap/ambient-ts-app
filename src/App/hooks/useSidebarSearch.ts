@@ -19,10 +19,7 @@ import {
     TokenIF,
     TransactionIF,
 } from '../../ambient-utils/types';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../contexts/AppStateContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import matchSearchInput from '../functions/matchSearchInput';
@@ -59,7 +56,7 @@ export const useSidebarSearch = (
     limitOrderList: LimitOrderIF[],
     tokens: tokenMethodsIF,
 ): sidebarSearchIF => {
-    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
+    const { activeNetwork } = useContext(AppStateContext);
     const { poolList } = useContext(PoolContext);
 
     // needed to resolve ENS addresses entered by user

@@ -9,10 +9,7 @@ import {
     LimitModalAction,
     LimitOrderIF,
 } from '../../../../../ambient-utils/types';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
@@ -60,7 +57,7 @@ export default function OrdersMenu(props: propsIF) {
 
     const {
         activeNetwork: { chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
