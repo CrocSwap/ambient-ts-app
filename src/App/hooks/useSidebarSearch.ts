@@ -8,7 +8,6 @@ import {
 } from 'react';
 import { fetchEnsAddress } from '../../ambient-utils/api';
 import {
-    GCGO_OVERRIDE_URL,
     IS_LOCAL_ENV,
     ZERO_ADDRESS,
     tokenListURIs,
@@ -373,8 +372,7 @@ export const useSidebarSearch = (
         // fn to run query when user enters a hex address
         async function fetchWalletByHex(searchStr: string): Promise<void> {
             // construct a queryable endpoint for wallet data
-            let walletEndpoint: string =
-                GCGO_OVERRIDE_URL ?? activeNetwork.graphCacheUrl;
+            let walletEndpoint: string = activeNetwork.GCGO_URL;
             walletEndpoint += '/user_txs?';
             walletEndpoint += new URLSearchParams({
                 user: searchStr,

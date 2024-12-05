@@ -14,10 +14,7 @@ import styles from './PortfolioTabs.module.css';
 // START: Import Local Files
 import { useLocation } from 'react-router-dom';
 import { fetchUserRecentChanges } from '../../../ambient-utils/api';
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    GCGO_OVERRIDE_URL,
-} from '../../../ambient-utils/constants';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../ambient-utils/constants';
 import {
     filterLimitArray,
     getLimitOrderData,
@@ -87,7 +84,7 @@ export default function PortfolioTabs(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
-        activeNetwork: { graphCacheUrl, chainId },
+        activeNetwork: { GCGO_URL, chainId },
     } = useContext<AppStateContextIF>(AppStateContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
@@ -114,12 +111,8 @@ export default function PortfolioTabs(props: propsIF) {
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
 
-    const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_positions?'
-        : graphCacheUrl + '/user_positions?';
-    const userLimitOrdersCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
-        : graphCacheUrl + '/user_limit_orders?';
+    const userPositionsCacheEndpoint = GCGO_URL + '/user_positions?';
+    const userLimitOrdersCacheEndpoint = GCGO_URL + '/user_limit_orders?';
 
     const getLookupUserPositions = async (accountToSearch: string) => {
         fetch(
@@ -221,7 +214,7 @@ export default function PortfolioTabs(props: propsIF) {
                 chainId: chainId,
                 n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
-                graphCacheUrl: graphCacheUrl,
+                GCGO_URL: GCGO_URL,
                 provider,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,

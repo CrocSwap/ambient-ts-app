@@ -167,7 +167,7 @@ export default function TransactionDetailsLiquidityGraph(props: propsIF) {
                 quoteDecimals,
                 poolIdx,
                 crocEnv,
-                activeNetwork.graphCacheUrl,
+                activeNetwork.GCGO_URL,
                 cachedFetchTokenPrice,
                 cachedQuerySpotTick,
                 props.currentPoolPriceTick,
