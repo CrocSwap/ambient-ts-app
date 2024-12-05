@@ -1,15 +1,15 @@
-import { motion } from 'framer-motion';
-import { useContext } from 'react';
-import { FiPlusCircle } from 'react-icons/fi';
 import { MdOutlineExplore, MdOutlineSwapVerticalCircle } from 'react-icons/md';
+import styles from './Footer.module.css';
 import { RiAccountCircleLine } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
+import { FiPlusCircle } from 'react-icons/fi';
+import { Link, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import DesktopFooter from './DesktopFooter';
+import { useContext } from 'react';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { chainNumToString } from '../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import DesktopFooter from './DesktopFooter';
-import styles from './Footer.module.css';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -29,6 +29,7 @@ const itemVariants = {
 
 export default function Footer() {
     const { tokenA, tokenB } = useContext(TradeDataContext);
+    const location = useLocation();
 
     const paramsSlug = formSlugForPairParams({
         chain: chainNumToString(tokenA.chainId),
@@ -63,9 +64,10 @@ export default function Footer() {
 
     const desktopScreen = useMediaQuery('(min-width: 780px)');
 
+
     if (desktopScreen) return <DesktopFooter />;
 
-    return (
+    return location.pathname == '/' ? null :  (
         <motion.footer
             className={styles.container}
             initial='hidden'

@@ -67,11 +67,11 @@
     border-color: #ff9800;
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 1501px) {
     .NFTBannerAccountContainer {
         display: grid;
         box-shadow: 4px 4px 6px #0d1117;
-        /* position: absolute; */
+
         position: absolute;
         top: 160px;
         left: 100px;
@@ -82,6 +82,22 @@
         border-width: 0.5px;
         border-style: solid;
         width: 350px;
+        max-height: 570px;
+        height: auto;
+    }
+}
+
+@media only screen and (max-width: 1500px) {
+    .NFTBannerAccountContainer {
+        display: grid;
+        box-shadow: 4px 4px 6px #0d1117;
+
+        border-color: var(--accent1);
+        background: #0d1117;
+        z-index: 9999999;
+        border-width: 0.5px;
+        border-style: solid;
+        width: auto;
         max-height: 570px;
         height: auto;
     }

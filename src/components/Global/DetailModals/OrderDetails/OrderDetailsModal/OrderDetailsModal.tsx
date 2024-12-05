@@ -178,8 +178,6 @@ export default function OrderDetailsModal(props: propsIF) {
                         removeExtraTrailingZeros: true,
                     });
 
-                    console.log({ claimableBaseDisplay, liqBaseDisplay });
-
                     isOrderFilled
                         ? setBaseCollateralDisplay(
                               claimableBaseDisplay ?? '0.00',
