@@ -31,10 +31,7 @@ import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
 import { CrocEnvContext } from '../../../../contexts';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
-import {
-    BrandContext,
-    BrandContextIF,
-} from '../../../../contexts/BrandContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './NetworkSelector.module.css';
 interface propsIF {
@@ -58,8 +55,7 @@ export default function NetworkSelector(props: propsIF) {
         chooseNetwork,
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const { networks, platformName, includeCanto } =
-        useContext<BrandContextIF>(BrandContext);
+    const { networks, platformName, includeCanto } = useContext(BrandContext);
     const { setCrocEnv } = useContext(CrocEnvContext);
     const { closeBottomSheet } = useBottomSheet();
     const { switchNetwork } = useSwitchNetwork();

@@ -19,9 +19,7 @@ export interface XpLeaderboardDataIF {
     data: Array<UserXpIF> | undefined;
 }
 
-export const XpLeadersContext = createContext<XpLeadersContextIF>(
-    {} as XpLeadersContextIF,
-);
+export const XpLeadersContext = createContext({} as XpLeadersContextIF);
 
 export const XpLeadersContextProvider = (props: {
     children: React.ReactNode;

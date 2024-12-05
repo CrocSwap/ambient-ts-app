@@ -11,20 +11,14 @@ import OrderHeader from './OrderTable/OrderHeader';
 import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLimitOrders';
 import { AppStateContext } from '../../../../contexts';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import {
     GraphDataContext,
     LimitOrdersByPool,
 } from '../../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import {
-    TokenContext,
-    TokenContextIF,
-} from '../../../../contexts/TokenContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
@@ -52,7 +46,7 @@ function Orders(props: propsIF) {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
 
-    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
         activeNetwork: { chainId, poolIndex, GCGO_URL },
@@ -108,7 +102,7 @@ function Orders(props: propsIF) {
 
     const {
         tokens: { tokenUniv: tokenList },
-    } = useContext<TokenContextIF>(TokenContext);
+    } = useContext(TokenContext);
 
     const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
 

@@ -42,7 +42,7 @@ export interface BrandContextIF {
     cobrandingLogo: string | undefined;
 }
 
-export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
+export const BrandContext = createContext({} as BrandContextIF);
 
 export const BrandContextProvider = (props: { children: ReactNode }) => {
     const { userAddress } = useContext(UserDataContext);

@@ -8,19 +8,10 @@ import moment from 'moment';
 import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
-import {
-    CachedDataContext,
-    CachedDataContextIF,
-} from '../../../../contexts/CachedDataContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import {
     lineValue,
@@ -57,10 +48,10 @@ export default function TransactionDetailsGraph(
     } = props;
     const {
         activeNetwork: { GCGO_URL, chainId, poolIndex },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    } = useContext(AppStateContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
-        useContext<CachedDataContextIF>(CachedDataContext);
+        useContext(CachedDataContext);
 
     const oneHourMilliseconds = 60 * 60 * 1000;
     const oneWeekMilliseconds = oneHourMilliseconds * 24 * 7;

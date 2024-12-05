@@ -6,18 +6,9 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { LimitOrderIF } from '../../../../../ambient-utils/types';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../../contexts/AppStateContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../../contexts/CrocEnvContext';
-import {
-    UserDataContext,
-    UserDataContextIF,
-} from '../../../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import InfoRow from '../../../InfoRow';
@@ -73,9 +64,9 @@ function OrderDetailsSimplify(props: propsIF) {
             chainSpec: { addrs },
         },
         snackbar: { open: openSnackbar },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { userAddress } = useContext<UserDataContextIF>(UserDataContext);
+    } = useContext(AppStateContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         ensName,
