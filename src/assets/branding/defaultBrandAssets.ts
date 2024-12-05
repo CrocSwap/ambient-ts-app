@@ -19,6 +19,17 @@ export const defaultBrandAssets: brandIF = {
                 { content: scrollLogo, processAs: 'image' },
             ],
         },
+        // swell mainnet
+        '0x783': {
+            // first value in array is default color scheme
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
+            premiumColor: [],
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: swellLogo, processAs: 'image' },
+            ],
+        },
         // blast mainnet
         '0x13e31': {
             // first value in array is default color scheme
