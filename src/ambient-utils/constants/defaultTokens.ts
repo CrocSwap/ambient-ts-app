@@ -15,7 +15,7 @@ export const mainnetUSDC: TokenIF = {
     chainId: 1,
     decimals: 6,
     logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+        'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
     name: 'USDC',
     symbol: 'USDC',
 };
@@ -427,7 +427,7 @@ export const sepoliaUSDC: TokenIF = {
     decimals: 6,
     chainId: 11155111,
     logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+        'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
 };
 
 export const sepoliaWBTC: TokenIF = {
@@ -753,7 +753,7 @@ export const scrollSepoliaUSDC: TokenIF = {
     decimals: 6,
     chainId: 534351,
     logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+        'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
 };
 
 export const plumeSepoliaETH: TokenIF = {
@@ -772,7 +772,7 @@ export const plumeSepoliaUSD: TokenIF = {
     symbol: 'pUSD',
     decimals: 6,
     chainId: 98864,
-    logoURI: '',
+    logoURI: 'https://img.cryptorank.io/coins/plume_network1716480863760.png',
 };
 
 export const plumeSepoliaNEV: TokenIF = {
@@ -800,7 +800,8 @@ export const swellSepoliaUSDC: TokenIF = {
     symbol: 'USDC',
     decimals: 6,
     chainId: 1924,
-    logoURI: '',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
 };
 
 export const swellSepoliaUSDT: TokenIF = {
@@ -828,7 +829,8 @@ export const baseSepoliaUSDC: TokenIF = {
     symbol: 'USDC',
     decimals: 6,
     chainId: 84532,
-    logoURI: '',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
 };
 
 export const swellETH: TokenIF = {
