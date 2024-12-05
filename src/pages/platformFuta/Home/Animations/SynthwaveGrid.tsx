@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from 'react';
 import p5 from 'p5';
+import { useEffect, useRef } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 interface PropsIF {
     hasVideoPlayedOnce: boolean;

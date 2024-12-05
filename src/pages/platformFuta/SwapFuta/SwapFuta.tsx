@@ -1,12 +1,12 @@
 import { useContext, useState } from 'react';
-import styles from './SwapFuta.module.css';
+import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import Comments from '../../../components/Futa/Comments/Comments';
 import Divider from '../../../components/Futa/Divider/FutaDivider';
-import Swap from '../../platformAmbient/Trade/Swap/Swap';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import Trade from '../../platformAmbient/Trade/Trade';
-import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import { ChartContext } from '../../../contexts/ChartContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import Swap from '../../platformAmbient/Trade/Swap/Swap';
+import Trade from '../../platformAmbient/Trade/Trade';
+import styles from './SwapFuta.module.css';
 
 function SwapFuta() {
     const tradeWrapperID = 'swapFutaTradeWrapper';

@@ -1,4 +1,3 @@
-// import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import {
     Dispatch,
     SetStateAction,

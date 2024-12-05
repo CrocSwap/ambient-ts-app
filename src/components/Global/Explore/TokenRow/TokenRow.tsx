@@ -1,4 +1,3 @@
-// import styles from './TokenRow.module.css';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../TokenIcon/TokenIcon';
 

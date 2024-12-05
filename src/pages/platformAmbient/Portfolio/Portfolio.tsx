@@ -1,14 +1,11 @@
-// START: Import React and Dongles
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 
-// START: Import JSX Components
 import Button from '../../../components/Form/Button';
 import ExchangeBalance from '../../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import PortfolioBanner from '../../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../../components/Portfolio/PortfolioTabs/PortfolioTabs';
 import ProfileSettings from '../../../components/Portfolio/ProfileSettings/ProfileSettings';
 
-// START: Import Other Local Files
 import { Navigate, useParams } from 'react-router-dom';
 import {
     expandTokenBalances,

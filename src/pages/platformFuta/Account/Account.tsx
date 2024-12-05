@@ -10,7 +10,6 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import Divider from '../../../components/Futa/Divider/FutaDivider';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
-// import Separator from '../../../components/Futa/Separator/Separator';
 import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
 import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
 import { AppStateContext } from '../../../contexts/AppStateContext';

@@ -1,4 +1,3 @@
-// START: Import React and Dongles
 import {
     ChangeEvent,
     KeyboardEvent,
@@ -9,7 +8,6 @@ import {
 } from 'react';
 import { BiSearch } from 'react-icons/bi';
 
-// START: Import JSX Elements
 import FavoritePools from '../../../components/Global/Sidebar/FavoritePools';
 import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
 import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
@@ -17,11 +15,9 @@ import SidebarRecentTransactions from '../../../components/Global/Sidebar/Sideba
 import TopPools from '../../../components/Global/Sidebar/TopPools';
 import SidebarAccordion from './SidebarAccordion';
 
-// START: Import Local Files
 import { MdClose } from 'react-icons/md';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 
-// import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
 import { BsChevronContract, BsChevronExpand } from 'react-icons/bs';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools';

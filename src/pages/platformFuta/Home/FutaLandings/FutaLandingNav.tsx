@@ -1,7 +1,7 @@
-import styles from './FutaLandingNav.module.css';
 import { IoIosArrowDown } from 'react-icons/io';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { useNavigate } from 'react-router-dom';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import styles from './FutaLandingNav.module.css';
 
 interface propsIF {
     scrollToSection: ScrollToSectionFn;
@@ -10,7 +10,6 @@ interface propsIF {
 type ScrollToSectionFn = (index: number) => void;
 
 export default function FutaLandingNav(props: propsIF) {
-
     const navigate = useNavigate();
 
     const { scrollToSection, activeSection } = props;
@@ -30,21 +29,28 @@ export default function FutaLandingNav(props: propsIF) {
                 <span className={styles.taText}>TA</span>
             </div>
             <div className={styles.enterButton}>
-                <button onClick={() => navigate('/auctions')} >/ENTER</button>
+                <button onClick={() => navigate('/auctions')}>/ENTER</button>
             </div>
         </div>
     );
 
-
     return (
-        <div className={styles.container} tabIndex={0}  >
+        <div className={styles.container} tabIndex={0}>
             <div className={styles.leftSection}>
                 <div className={styles.verticalText}>
                     FULLY UNIVERSAL TICKER AUCTION
                 </div>
                 <div className={styles.desktopFuta}>{futaText}</div>
             </div>
-            {showMobileVersion ? futaText : <IoIosArrowDown size={120} onClick={handleNextSection} style={{cursor: 'pointer'}} />}
+            {showMobileVersion ? (
+                futaText
+            ) : (
+                <IoIosArrowDown
+                    size={120}
+                    onClick={handleNextSection}
+                    style={{ cursor: 'pointer' }}
+                />
+            )}
 
             <div className={styles.rightSection}>
                 <div className={styles.numberList}>
@@ -53,10 +59,7 @@ export default function FutaLandingNav(props: propsIF) {
                             key={index}
                             onClick={() => scrollToSection(index)}
                             style={{
-                                color:
-                                    index === activeSection
-                                        ? '#AACFD1'
-                                        : '',
+                                color: index === activeSection ? '#AACFD1' : '',
                             }}
                             className={styles.navButton}
                         >

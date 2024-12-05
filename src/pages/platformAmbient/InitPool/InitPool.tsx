@@ -1,10 +1,6 @@
-// START: Import React and Dongles
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-// START: Import JSX Components
 import InitPoolExtraInfo from '../../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
-
-// START: Import Local Files
 
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';

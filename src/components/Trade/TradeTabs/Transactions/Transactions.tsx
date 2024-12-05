@@ -16,8 +16,10 @@ import {
     fetchUserRecentChanges,
 } from '../../../../ambient-utils/api';
 
+import { fetchPoolUserChanges } from '../../../../ambient-utils/api/fetchPoolUserChanges';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
+import { UserDataContext } from '../../../../contexts';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
@@ -37,9 +39,6 @@ import { FlexContainer } from '../../../../styled/Common';
 import { TransactionRow as TransactionRowStyled } from '../../../../styled/Components/TransactionTable';
 import Spinner from '../../../Global/Spinner/Spinner';
 import NoTableData from '../NoTableData/NoTableData';
-// import TableRows from '../TableRows';
-import { fetchPoolUserChanges } from '../../../../ambient-utils/api/fetchPoolUserChanges';
-import { UserDataContext } from '../../../../contexts';
 import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 import { useSortedTxs } from '../useSortedTxs';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
