@@ -153,6 +153,7 @@ export async function expandPoolStats(
     cachedFetchTokenPrice: TokenPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     tokenList: TokenIF[],
+    poolPriceNonDisplay?: number | undefined,
     enableTotalSupply?: boolean,
 ): Promise<PoolStatsIF> {
     const provider = (await crocEnv.context).provider;
@@ -219,7 +220,7 @@ export async function expandPoolStats(
     const lastPriceSwap = payload.lastPriceSwap;
 
     const displayPoolPrice = toDisplayPrice(
-        lastPriceSwap,
+        poolPriceNonDisplay ?? lastPriceSwap,
         baseDecimals,
         quoteDecimals,
     );
