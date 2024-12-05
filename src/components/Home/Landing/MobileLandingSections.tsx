@@ -102,7 +102,12 @@ export default function MobileLandingSections() {
                             >
                                 X
                             </Text>
-                            <img src={l2Image} alt='' width='140px' />
+                            <img
+                                src={l2Image}
+                                alt=''
+                                width='140px'
+                                height='55px'
+                            />
                         </FlexContainer>
                     </MobileMainLogo>
                 ) : (
