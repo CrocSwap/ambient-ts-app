@@ -3,11 +3,6 @@ import styles from './BackgroundImages.module.css';
 import { Fade } from 'react-reveal';
 import liquidityImage from '../../../assets/images/home/liquidity.png';
 import orderImage from '../../../assets/images/home/orders.png';
-import baseLogo from '../../../assets/images/logos/Base_Wordmark_White.svg';
-import blastLogo from '../../../assets/images/logos/blast_logo.svg';
-import plumeLogo from '../../../assets/images/logos/plume_brand_logo.svg';
-import scrollLogo from '../../../assets/images/logos/scroll_brand_logo.svg';
-import swellLogo from '../../../assets/images/logos/swell_dark_theme_logo.svg';
 import Footer from '../../Footer/Footer';
 
 import { useContext, useEffect, useState } from 'react';
@@ -30,15 +25,8 @@ import Investors from './Investors';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 
 export default function MobileLandingSections() {
-    const {
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-        isActiveNetworkPlume,
-        isActiveNetworkSwell,
-        isActiveNetworkBase,
-        isActiveNetworkL2,
-    } = useContext(ChainDataContext);
-    const { showPoints } = useContext(BrandContext);
+    const { isActiveNetworkL2 } = useContext(ChainDataContext);
+    const { showPoints, cobrandingLogo } = useContext(BrandContext);
 
     const [isIPhone, setIsIPhone] = useState(false);
     useEffect(() => {
@@ -48,20 +36,6 @@ export default function MobileLandingSections() {
         // reset the active tab to the default when returning to the home page
         localStorage.setItem('activeTradeTabOnMobile', 'Order');
     }, []);
-
-    const l2Image = isActiveNetworkL2
-        ? isActiveNetworkBlast
-            ? blastLogo
-            : isActiveNetworkScroll
-              ? scrollLogo
-              : isActiveNetworkPlume
-                ? plumeLogo
-                : isActiveNetworkSwell
-                  ? swellLogo
-                  : isActiveNetworkBase
-                    ? baseLogo
-                    : undefined
-        : undefined;
 
     const heroSection = (
         <FlexContainer
@@ -103,7 +77,7 @@ export default function MobileLandingSections() {
                                 X
                             </Text>
                             <img
-                                src={l2Image}
+                                src={cobrandingLogo}
                                 alt=''
                                 width='140px'
                                 height='55px'
