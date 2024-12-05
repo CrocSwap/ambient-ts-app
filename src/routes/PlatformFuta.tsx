@@ -12,12 +12,12 @@ import Account from '../pages/platformFuta/Account/Account';
 import Auctions from '../pages/platformFuta/Auctions/Auctions';
 import Create from '../pages/platformFuta/Create/Create';
 import Explore from '../pages/platformFuta/Explore/Explore';
-import Home from '../pages/platformFuta/Home/Home';
 import Learn from '../pages/platformFuta/Learn/Learn';
 import LimitFuta from '../pages/platformFuta/LimitFuta/LimitFuta';
 import SwapFuta from '../pages/platformFuta/SwapFuta/SwapFuta';
 import Ticker from '../pages/platformFuta/Ticker/Ticker';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
+import FutaNewLanding from '../pages/platformFuta/Home/FutaLandings/NewLandings/FutaNewLanding';
 
 const PlatformFutaRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
@@ -27,7 +27,7 @@ const PlatformFutaRoutes: React.FC = () => {
     return (
         <div style={{ background: 'var(--dark1)' }} className='futa_routes'>
             <Routes>
-                <Route path='/' element={<Home />} />
+                <Route path='/' element={<FutaNewLanding />} />
                 <Route
                     path='/swap'
                     element={<Navigate replace to={defaultUrlParams.swap} />}
