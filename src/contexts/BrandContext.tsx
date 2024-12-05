@@ -122,13 +122,6 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         return defaultSkin[0];
     }
 
-    // function getHero(): heroItem[] {
-    //     const networkPrefs = brandAssets.networks[chainId as chainHexIds];
-    //     return networkPrefs
-    //         ? networkPrefs.hero
-    //         : [{ content: 'ambient', processAs: 'separator' }];
-    // }
-
     // data to be returned to the app
     const brandData: BrandContextIF = {
         skin: {
