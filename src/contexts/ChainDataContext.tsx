@@ -56,6 +56,7 @@ export interface ChainDataContextIF {
     isActiveNetworkBlast: boolean;
     isActiveNetworkPlume: boolean;
     isActiveNetworkSwell: boolean;
+    isActiveNetworkBase: boolean;
     isActiveNetworkScroll: boolean;
     isActiveNetworkMainnet: boolean;
     isVaultSupportedOnNetwork: boolean;
@@ -112,12 +113,12 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
     const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(chainId);
-
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);
     const isActiveNetworkPlume = ['0x18230'].includes(chainId);
     const isActiveNetworkSwell = ['0x784'].includes(chainId);
     const isActiveNetworkBase = ['0x14a34'].includes(chainId);
+
     const isVaultSupportedOnNetwork =
         vaultSupportedNetworkIds.includes(chainId);
 
@@ -126,15 +127,13 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         : nodeUrl;
 
     // array of network IDs for supported L2 networks
-    const L2_NETWORKS: string[] = [
-        '0x13e31',
-        '0xa0c71fd',
-        '0x82750',
-        '0x8274f',
+    const L1_NETWORKS: string[] = [
+        '0x1', // ethereum mainnet
+        '0xaa36a7', // ethereum sepolia
     ];
 
     // boolean representing whether the active network is an L2
-    const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainId);
+    const isActiveNetworkL2 = !L1_NETWORKS.includes(chainId);
 
     const BLOCK_NUM_POLL_MS = isUserIdle ? 30000 : 5000; // poll for new block every 30 seconds when user is idle, every 5 seconds when user is active
 
