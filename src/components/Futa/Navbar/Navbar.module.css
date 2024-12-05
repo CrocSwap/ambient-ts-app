@@ -232,6 +232,32 @@
     display: inline-block;
 }
 
+.navTabs .navItem:first-child .navLink, .navTabs .navItem:first-child .navLink::before{
+    transition: all 0s ease-in-out;
+}
+
+.navTabs .navItem:first-child .navLink{
+    border-left: none;
+}
+
+
+.navTabs .navItem:first-child .navLink::before{
+    position: absolute;
+    left: -6%;
+    top: -2px;
+    width: 10%;
+    height: calc(100% + 4px);
+    transform: skewX(-25deg);
+    content: '';
+    background: transparent;
+    display: block;
+    border: 2px solid #5C6F72;
+    border-right: none;
+}
+.navTabs .navItem:first-child .navLink.active::before, .navTabs .navItem:first-child:hover .navLink::before{
+    background: var(--text1);
+}
+
 
 .navLink:hover,
 .navLink:focus {
