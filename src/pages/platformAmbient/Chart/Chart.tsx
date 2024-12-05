@@ -428,6 +428,7 @@ export default function Chart(props: propsIF) {
 
     const [hoveredOrderHistory, setHoveredOrderHistory] = useState<{
         type: string;
+        id: string;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         order: any;
     }>();
@@ -449,6 +450,9 @@ export default function Chart(props: propsIF) {
         useState<{ top: number; left: number; isOnLeftSide: boolean }>();
 
     const [circleScale, setCircleScale] =
+        useState<d3.ScaleLinear<number, number>>();
+
+    const [circleScaleLimitOrder, setCircleScaleLimitOrder] =
         useState<d3.ScaleLinear<number, number>>();
 
     const [shouldDisableChartSettings, setShouldDisableChartSettings] =
@@ -5214,6 +5218,30 @@ export default function Chart(props: propsIF) {
         }
     }, [userTransactionData, denomInBase]);
 
+    useEffect(() => {
+        if (userTransactionData) {
+            const domainRight = d3.max(
+                userLimitOrdersByPool.limitOrders,
+                (data) => data.totalValueUSD,
+            );
+            const domainLeft = d3.min(
+                userLimitOrdersByPool.limitOrders,
+                (data) => data.totalValueUSD,
+            );
+
+            if (domainRight && domainLeft) {
+                const scale = d3
+                    .scaleLinear()
+                    .range([1000, 3000])
+                    .domain([domainLeft, domainRight]);
+
+                setCircleScaleLimitOrder(() => {
+                    return scale;
+                });
+            }
+        }
+    }, [userTransactionData, denomInBase]);
+
     const handleCardClick = (tx: TransactionIF): void => {
         setSelectedDate(undefined);
         setOutsideControl(true);
@@ -5267,14 +5295,12 @@ export default function Chart(props: propsIF) {
                             )
                         ) {
                             resElement = {
+                                id: position.positionId,
                                 type: 'historical',
                                 order: position,
                             };
                         }
                     }
-                    // else {
-                    //     console.log('uzun');
-                    // }
                 });
             }
 
@@ -5299,6 +5325,7 @@ export default function Chart(props: propsIF) {
                             )
                         ) {
                             resElement = {
+                                id: limitOrder.positionHash,
                                 type: 'limitCircle',
                                 order: limitOrder,
                             };
@@ -5327,7 +5354,11 @@ export default function Chart(props: propsIF) {
                                 element.totalValueUSD,
                             )
                         ) {
-                            resElement = { type: 'swap', order: element };
+                            resElement = {
+                                id: element.txId,
+                                type: 'swap',
+                                order: element,
+                            };
                         }
                     }
                 });
@@ -5993,11 +6024,19 @@ export default function Chart(props: propsIF) {
     };
 
     const calculateOrderHistoryTooltipPlacements = (scaleData: scaleData) => {
-        if (scaleData && circleScale) {
+        if (scaleData) {
             const scale = d3.scaleLinear().range([60, 75]).domain([1000, 3000]);
 
             if (isHoveredOrderHistory && hoveredOrderHistory) {
-                if (hoveredOrderHistory.type === 'swap') {
+                const canvas = d3
+                    .select(d3CanvasMain.current)
+                    .select('canvas')
+                    .node() as HTMLCanvasElement;
+
+                const rectCanvas = canvas.getBoundingClientRect();
+                const right = rectCanvas.right;
+
+                if (hoveredOrderHistory.type === 'swap' && circleScale) {
                     setHoveredOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
@@ -6073,16 +6112,119 @@ export default function Chart(props: propsIF) {
                     });
                 }
 
-                // if(hoveredOrderHistory.type === 'historical') {
-                //     console.log('hata veriyorum enyayiym ben kod')
-                // }
+                if (hoveredOrderHistory.type === 'historical') {
+                    const minPrice = denomInBase
+                        ? hoveredOrderHistory.order
+                              .bidTickInvPriceDecimalCorrected
+                        : hoveredOrderHistory.order
+                              .bidTickPriceDecimalCorrected;
 
-                // if(hoveredOrderHistory.type === 'limitCircle') {
-                //     console.log('hata veriyorum enyayiym ben kod')
-                // }
+                    const maxPrice = denomInBase
+                        ? hoveredOrderHistory.order
+                              .askTickInvPriceDecimalCorrected
+                        : hoveredOrderHistory.order
+                              .askTickPriceDecimalCorrected;
+
+                    const diff = Math.abs(maxPrice - minPrice) / 2;
+
+                    const pricePlacement = minPrice + diff;
+
+                    setHoveredOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(pricePlacement);
+
+                        const left = scaleData?.xScale(
+                            hoveredOrderHistory.order.latestUpdateTime * 1000,
+                        );
+
+                        return {
+                            top: top < 0 ? 10 : top,
+                            left: left > right ? right - 150 : left,
+                            isOnLeftSide: false,
+                        };
+                    });
+                }
+
+                if (
+                    hoveredOrderHistory.type === 'limitCircle' &&
+                    circleScaleLimitOrder
+                ) {
+                    setHoveredOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? hoveredOrderHistory.order
+                                      .invLimitPriceDecimalCorrected
+                                : hoveredOrderHistory.order
+                                      .limitPriceDecimalCorrected,
+                        );
+
+                        const tempPlace =
+                            scaleData?.xScale(
+                                hoveredOrderHistory.order.crossTime * 1000,
+                            ) +
+                            scale(
+                                circleScaleLimitOrder(
+                                    hoveredOrderHistory.order.totalValueUSD,
+                                ),
+                            );
+
+                        const isOverLeft =
+                            isSelectedOrderHistory &&
+                            selectedOrderTooltipPlacement &&
+                            ((tempPlace + 75 <
+                                selectedOrderTooltipPlacement.left + 75 &&
+                                tempPlace + 75 >
+                                    selectedOrderTooltipPlacement.left - 75) ||
+                                (tempPlace - 75 <
+                                    selectedOrderTooltipPlacement.left + 75 &&
+                                    tempPlace - 75 >
+                                        selectedOrderTooltipPlacement.left -
+                                            75));
+
+                        const isOverTop =
+                            isSelectedOrderHistory &&
+                            selectedOrderTooltipPlacement &&
+                            ((selectedOrderTooltipPlacement.top - 35 <
+                                top + 35 &&
+                                selectedOrderTooltipPlacement.top - 35 >
+                                    top - 35) ||
+                                (selectedOrderTooltipPlacement.top + 35 >
+                                    top - 35 &&
+                                    selectedOrderTooltipPlacement.top + 35 <
+                                        top + 35));
+
+                        const left =
+                            scaleData?.xScale(
+                                hoveredOrderHistory.order.crossTime * 1000,
+                            ) +
+                            (isOverLeft && isOverTop
+                                ? -scale(
+                                      circleScaleLimitOrder(
+                                          hoveredOrderHistory.order
+                                              .totalValueUSD,
+                                      ),
+                                  ) +
+                                  (circleScaleLimitOrder(
+                                      hoveredOrderHistory.order.totalValueUSD,
+                                  ) < 1500
+                                      ? -105
+                                      : -90)
+                                : +scale(
+                                      circleScaleLimitOrder(
+                                          hoveredOrderHistory.order
+                                              .totalValueUSD,
+                                      ),
+                                  ));
+
+                        return {
+                            top,
+                            left,
+                            isOnLeftSide: !!(isOverLeft && isOverTop),
+                        };
+                    });
+                }
             }
 
-            if (isSelectedOrderHistory && selectedOrderHistory) {
+            if (isSelectedOrderHistory && selectedOrderHistory && circleScale) {
                 setSelectedOrderTooltipPlacement(() => {
                     const top = scaleData.yScale(
                         denomInBase
@@ -6223,6 +6365,7 @@ export default function Chart(props: propsIF) {
 
                 {(showSwap || showLiquidity || showHistorical) &&
                     circleScale &&
+                    circleScaleLimitOrder &&
                     scaleData && (
                         <OrderHistoryCanvas
                             scaleData={scaleData}
@@ -6235,6 +6378,7 @@ export default function Chart(props: propsIF) {
                             drawSettings={drawSettings}
                             userTransactionData={userTransactionData}
                             circleScale={circleScale}
+                            circleScaleLimitOrder={circleScaleLimitOrder}
                             isSelectedOrderHistory={isSelectedOrderHistory}
                             selectedOrderHistory={selectedOrderHistory}
                         />
@@ -6456,9 +6600,9 @@ export default function Chart(props: propsIF) {
             )}
 
             {scaleData &&
-                showSwap &&
+                (showSwap || showLiquidity || showHistorical) &&
                 hoveredOrderHistory &&
-                hoveredOrderHistory.order.txId !== selectedOrderHistory?.txId &&
+                hoveredOrderHistory.id !== selectedOrderHistory?.txId &&
                 hoveredOrderTooltipPlacement && (
                     <OrderHistoryTooltip
                         hoveredOrderHistory={hoveredOrderHistory}

@@ -22,7 +22,7 @@ const OrderHistoryHover = styled.div<{
 `;
 
 const OrderHistoryContainer = styled.div`
-    background: rgba(36, 47, 63, 0.8);
+    background: var(--dark3);
 
     padding: 3px 8px 3px 8px;
     backdrop-filter: blur(4px);

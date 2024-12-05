@@ -31,6 +31,7 @@ interface OrderHistoryCanvasProps {
     drawSettings: any;
     userTransactionData: TransactionIF[] | undefined;
     circleScale: d3.ScaleLinear<number, number>;
+    circleScaleLimitOrder: d3.ScaleLinear<number, number>;
 }
 
 export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
@@ -47,6 +48,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         drawSettings,
         userTransactionData,
         circleScale,
+        circleScaleLimitOrder,
     } = props;
 
     const d3OrderCanvas = useRef<HTMLDivElement | null>(null);
@@ -115,7 +117,12 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
     );
 
     useEffect(() => {
-        if (userTransactionData && circleScale && scaleData) {
+        if (
+            userTransactionData &&
+            circleScaleLimitOrder &&
+            circleScale &&
+            scaleData
+        ) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const circleSerieArray: any[] = [];
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -138,7 +145,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             const circleSerie = createCircle(
                                 scaleData?.xScale,
                                 scaleData?.yScale,
-                                circleScale(limitOrder.totalValueUSD),
+                                circleScaleLimitOrder(limitOrder.totalValueUSD),
                                 1,
                                 denomInBase,
                                 false,
@@ -366,7 +373,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                         hoveredOrderHistory &&
                                         hoveredOrderHistory.type ===
                                             'historical' &&
-                                        hoveredOrderHistory.order.positionId ===
+                                        hoveredOrderHistory.id ===
                                             order.positionId
                                     ) {
                                         bandAreaHistorical[index].decorate(
@@ -438,30 +445,35 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                             liquidityLineSeries(line);
                                         });
                                     } else {
-                                        bandAreaHistorical[index].decorate(
-                                            (
-                                                context: CanvasRenderingContext2D,
-                                            ) => {
-                                                const style = getComputedStyle(
-                                                    context.canvas,
-                                                );
+                                        if (bandAreaHistorical[index]) {
+                                            bandAreaHistorical[index].decorate(
+                                                (
+                                                    context: CanvasRenderingContext2D,
+                                                ) => {
+                                                    const style =
+                                                        getComputedStyle(
+                                                            context.canvas,
+                                                        );
 
-                                                const accent3RgbaColor =
-                                                    style.getPropertyValue(
-                                                        '--accent3',
-                                                    );
+                                                    const accent3RgbaColor =
+                                                        style.getPropertyValue(
+                                                            '--accent3',
+                                                        );
 
-                                                const highlightedBandColor =
-                                                    d3.color(accent3RgbaColor);
+                                                    const highlightedBandColor =
+                                                        d3.color(
+                                                            accent3RgbaColor,
+                                                        );
 
-                                                if (highlightedBandColor) {
-                                                    highlightedBandColor.opacity = 0.15;
+                                                    if (highlightedBandColor) {
+                                                        highlightedBandColor.opacity = 0.15;
 
-                                                    context.fillStyle =
-                                                        highlightedBandColor.toString();
-                                                }
-                                            },
-                                        );
+                                                        context.fillStyle =
+                                                            highlightedBandColor.toString();
+                                                    }
+                                                },
+                                            );
+                                        }
                                     }
 
                                     if (
@@ -513,9 +525,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                                 isHoveredOrderHistory &&
                                                 hoveredOrderHistory.type ===
                                                     'limitCircle' &&
-                                                hoveredOrderHistory.order
-                                                    .limitOrderId ===
-                                                    limitOrder.limitOrderId
+                                                hoveredOrderHistory.id ===
+                                                    limitOrder.positionHash
                                             ) {
                                                 const lineData: lineData[] = [];
 
@@ -772,8 +783,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                     hoveredOrderHistory &&
                                     isHoveredOrderHistory &&
                                     hoveredOrderHistory.type === 'swap' &&
-                                    hoveredOrderHistory.order.txId ===
-                                        order.txId
+                                    hoveredOrderHistory.id === order.txId
                                 ) {
                                     circleSeries[index].decorate(
                                         (context: CanvasRenderingContext2D) => {
