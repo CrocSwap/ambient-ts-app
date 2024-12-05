@@ -3,7 +3,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
 import { swellETH, swellWTT } from '../defaultTokens';
-import { GCGO_TESTNET_URL } from '../gcgo';
+import { GCGO_SWELL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 export const PUBLIC_RPC_URL = 'https://swell-mainnet.alt.technology';
@@ -27,7 +27,7 @@ const chainSpecForWalletConnector = {
 export const swellMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    graphCacheUrl: GCGO_TESTNET_URL,
+    graphCacheUrl: GCGO_SWELL_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [swellETH, swellWTT],
