@@ -473,7 +473,7 @@ function Reposition() {
     ] = useState<string>(position?.positionLiqQuoteTruncated || '...');
 
     const positionStatsCacheEndpoint =
-        activeNetwork.graphCacheUrl + '/position_stats?';
+        activeNetwork.GCGO_URL + '/position_stats?';
     const poolIndex = position ? lookupChain(position.chainId).poolIndex : 0;
 
     const fetchCurrentCollateral = () => {

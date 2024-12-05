@@ -10,12 +10,12 @@ export const fetchPoolLiquidity = async (
     quoteTokenDecimals: number,
     poolIdx: number,
     crocEnv: CrocEnv,
-    graphCacheUrl: string,
+    GCGO_URL: string,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotTick: SpotPriceFn,
     currentPoolPriceTick?: number | undefined,
 ): Promise<LiquidityDataIF | undefined> => {
-    const poolLiquidityCacheEndpoint = graphCacheUrl + '/pool_liq_curve?';
+    const poolLiquidityCacheEndpoint = GCGO_URL + '/pool_liq_curve?';
     return fetch(
         poolLiquidityCacheEndpoint +
             new URLSearchParams({

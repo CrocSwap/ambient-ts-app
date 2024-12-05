@@ -4,7 +4,7 @@ import { FetchContractDetailsFn } from './fetchContractDetails';
 
 interface IFetchDepositBalancesProps {
     user: string;
-    graphCacheUrl: string;
+    GCGO_URL: string;
     chainId: string;
     crocEnv: CrocEnv;
 }
@@ -59,10 +59,9 @@ export const expandTokenBalances = async (
 export async function fetchDepositBalances(
     props: IFetchDepositBalancesProps,
 ): Promise<IDexTokenBalances[] | undefined> {
-    const { chainId, user, graphCacheUrl } = props;
+    const { chainId, user, GCGO_URL } = props;
 
-    const depositBalancesCacheEndpoint =
-        graphCacheUrl + '/user_balance_tokens?';
+    const depositBalancesCacheEndpoint = GCGO_URL + '/user_balance_tokens?';
 
     return fetch(
         depositBalancesCacheEndpoint +

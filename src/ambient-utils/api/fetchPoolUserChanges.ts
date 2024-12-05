@@ -19,7 +19,7 @@ interface argsIF {
     time?: number;
     timeBefore?: number;
     crocEnv: CrocEnv;
-    graphCacheUrl: string;
+    GCGO_URL: string;
     provider: Provider;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -40,7 +40,7 @@ export const fetchPoolUserChanges = (args: argsIF) => {
         time,
         timeBefore,
         crocEnv,
-        graphCacheUrl,
+        GCGO_URL,
         provider,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
@@ -48,7 +48,7 @@ export const fetchPoolUserChanges = (args: argsIF) => {
         cachedEnsResolve,
     } = args;
 
-    const poolRecentChangesCacheEndpoint = graphCacheUrl + '/user_pool_txs?';
+    const poolRecentChangesCacheEndpoint = GCGO_URL + '/user_pool_txs?';
 
     const poolChanges = fetch(
         period && time

@@ -6,10 +6,7 @@ import { AppStateContext } from '../../contexts';
 import { AppStateContextIF } from '../../contexts/AppStateContext';
 import { TokenContext, TokenContextIF } from '../../contexts/TokenContext';
 
-export const usePoolList = (
-    graphCacheUrl: string,
-    crocEnv?: CrocEnv,
-): PoolIF[] => {
+export const usePoolList = (GCGO_URL: string, crocEnv?: CrocEnv): PoolIF[] => {
     const {
         activeNetwork: { poolIndex },
     } = useContext<AppStateContextIF>(AppStateContext);
@@ -26,7 +23,7 @@ export const usePoolList = (
 
         const pools: Promise<GCServerPoolIF[]> = fetchPoolList(
             crocEnv,
-            graphCacheUrl,
+            GCGO_URL,
         );
         Promise.resolve<GCServerPoolIF[]>(pools)
             .then((res: GCServerPoolIF[]) => {

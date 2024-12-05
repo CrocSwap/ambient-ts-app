@@ -73,10 +73,10 @@ export interface AuctionStatusResponseIF {
 
 const getGlobalAuctionsList = async (
     chainId: string,
-    // graphCacheUrl: string,
+    // GCGO_URL: string,
     _cacheTimeTag: number | string,
 ): Promise<AuctionDataIF[]> => {
-    // const auctionsListEndpoint =  graphCacheUrl + '/auctions?';
+    // const auctionsListEndpoint =  GCGO_URL + '/auctions?';
     false && console.log({ chainId });
     return mockGlobalAuctionData.auctionList;
     // return fetch(
@@ -102,10 +102,10 @@ const getGlobalAuctionsList = async (
 const getUserAuctionsList = async (
     chainId: string,
     userAddress: string,
-    // graphCacheUrl: string,
+    // GCGO_URL: string,
     _cacheTimeTag: number | string,
 ): Promise<AuctionDataIF[]> => {
-    // const auctionsListEndpoint =graphCacheUrl + '/auctions?';
+    // const auctionsListEndpoint =GCGO_URL + '/auctions?';
     false && console.log({ userAddress, chainId });
     if (
         userAddress.toLowerCase() ===
@@ -471,7 +471,7 @@ export const fetchFreshAuctionStatusData = async (
     version: number,
     chainId: string,
 ): Promise<AuctionStatusResponseIF> => {
-    // const auctionsStatusEndpoint = graphCacheUrl + '/auctionStatus?';
+    // const auctionsStatusEndpoint = GCGO_URL + '/auctionStatus?';
     return mockAuctionDetailsServerResponseGenerator(ticker, version, chainId);
     // return fetch(
     //     auctionsStatusEndpoint +
@@ -497,14 +497,14 @@ export const fetchFreshAuctionStatusData = async (
 
 export type GlobalAuctionListQueryFn = (
     chainId: string,
-    // graphCacheUrl: string,
+    // GCGO_URL: string,
     _cacheTimeTag: number | string,
 ) => Promise<AuctionDataIF[] | undefined>;
 
 export type UserAuctionListQueryFn = (
     chainId: string,
     userAddress: string,
-    // graphCacheUrl: string,
+    // GCGO_URL: string,
     _cacheTimeTag: number | string,
 ) => Promise<AuctionDataIF[] | undefined>;
 
@@ -512,7 +512,7 @@ export type AuctionStatusQueryFn = (
     ticker: string,
     version: number,
     chainId: string,
-    // graphCacheUrl: string,
+    // GCGO_URL: string,
     _cacheTimeTag: number | string,
 ) => Promise<AuctionStatusResponseIF | undefined>;
 

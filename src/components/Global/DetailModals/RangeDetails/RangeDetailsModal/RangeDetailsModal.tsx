@@ -86,7 +86,7 @@ function RangeDetailsModal(props: propsIF) {
     >();
 
     const {
-        activeNetwork: { graphCacheUrl, chainId, poolIndex },
+        activeNetwork: { GCGO_URL, chainId, poolIndex },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
@@ -364,7 +364,7 @@ function RangeDetailsModal(props: propsIF) {
     };
 
     useEffect(() => {
-        const positionStatsCacheEndpoint = graphCacheUrl + '/position_stats?';
+        const positionStatsCacheEndpoint = GCGO_URL + '/position_stats?';
 
         updateLiq();
 

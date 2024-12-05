@@ -118,7 +118,7 @@ export default function OrderDetailsModal(props: propsIF) {
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
-            activeNetwork.graphCacheUrl + '/limit_stats?';
+            activeNetwork.GCGO_URL + '/limit_stats?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
         if (positionType && crocEnv && provider) {

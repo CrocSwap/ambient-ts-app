@@ -59,7 +59,7 @@ interface propsIF {
 function RangeActionModal(props: propsIF) {
     const { type, position, onClose, isAccountView } = props;
     const {
-        activeNetwork: { graphCacheUrl, chainId, poolIndex },
+        activeNetwork: { GCGO_URL, chainId, poolIndex },
     } = useContext<AppStateContextIF>(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const { crocEnv, provider, ethMainnetUsdPrice } =
@@ -126,7 +126,7 @@ function RangeActionModal(props: propsIF) {
         (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
         0;
 
-    const positionStatsCacheEndpoint = graphCacheUrl + '/position_stats?';
+    const positionStatsCacheEndpoint = GCGO_URL + '/position_stats?';
 
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined

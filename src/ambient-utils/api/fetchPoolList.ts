@@ -5,10 +5,10 @@ import { GCServerPoolIF } from '../types';
 
 export async function fetchPoolList(
     crocEnv: CrocEnv,
-    graphCacheUrl: string,
+    GCGO_URL: string,
 ): Promise<GCServerPoolIF[]> {
     const ENDPOINT: string =
-        graphCacheUrl +
+        GCGO_URL +
         '/pool_list?' +
         new URLSearchParams({
             chainId: (await crocEnv.context).chain.chainId,

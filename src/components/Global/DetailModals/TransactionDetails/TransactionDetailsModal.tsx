@@ -50,7 +50,7 @@ function TransactionDetailsModal(props: propsIF) {
     const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView, onClose } =
         props;
     const {
-        activeNetwork: { chainId, graphCacheUrl },
+        activeNetwork: { chainId, GCGO_URL },
         snackbar: { open: openSnackbar },
     } = useContext<AppStateContextIF>(AppStateContext);
 
@@ -72,7 +72,7 @@ function TransactionDetailsModal(props: propsIF) {
     useEffect(() => {
         if (tx.entityType !== 'liqchange') return;
 
-        const positionStatsCacheEndpoint = graphCacheUrl + '/position_stats?';
+        const positionStatsCacheEndpoint = GCGO_URL + '/position_stats?';
 
         fetch(
             positionStatsCacheEndpoint +

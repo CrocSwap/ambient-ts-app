@@ -75,7 +75,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             chainId,
             evmRpcUrl: nodeUrl,
             chainSpec: { wsUrl },
-            graphCacheUrl,
+            GCGO_URL,
         },
         isUserIdle,
         isUserOnline,
@@ -197,7 +197,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         try {
             const allPoolStats = await cachedAllPoolStatsFetch(
                 chainId,
-                graphCacheUrl,
+                GCGO_URL,
                 poolStatsPollingCacheTime,
                 true,
             );
@@ -211,10 +211,10 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     }
 
     useEffect(() => {
-        if (chainId && graphCacheUrl && isUserOnline) {
+        if (chainId && GCGO_URL && isUserOnline) {
             updateAllPoolStats();
         }
-    }, [chainId, graphCacheUrl, poolStatsPollingCacheTime, isUserOnline]);
+    }, [chainId, GCGO_URL, poolStatsPollingCacheTime, isUserOnline]);
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
@@ -381,7 +381,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         userAddress,
         chainId,
         // everyFiveMinutes,
-        graphCacheUrl,
+        GCGO_URL,
         isfetchNftTriggered,
     ]);
 
@@ -416,7 +416,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                         address: userAddress,
                         chain: chainId,
                         crocEnv: crocEnv,
-                        graphCacheUrl: graphCacheUrl,
+                        GCGO_URL: GCGO_URL,
                         _refreshTime: everyFiveMinutes,
                     });
 
@@ -503,7 +503,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         userAddress,
         chainId,
         everyFiveMinutes,
-        graphCacheUrl,
+        GCGO_URL,
         sessionReceipts.length,
     ]);
 

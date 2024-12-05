@@ -84,7 +84,7 @@ export default function PortfolioTabs(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
-        activeNetwork: { graphCacheUrl, chainId },
+        activeNetwork: { GCGO_URL, chainId },
     } = useContext<AppStateContextIF>(AppStateContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
@@ -111,8 +111,8 @@ export default function PortfolioTabs(props: propsIF) {
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
 
-    const userPositionsCacheEndpoint = graphCacheUrl + '/user_positions?';
-    const userLimitOrdersCacheEndpoint = graphCacheUrl + '/user_limit_orders?';
+    const userPositionsCacheEndpoint = GCGO_URL + '/user_positions?';
+    const userLimitOrdersCacheEndpoint = GCGO_URL + '/user_limit_orders?';
 
     const getLookupUserPositions = async (accountToSearch: string) => {
         fetch(
@@ -214,7 +214,7 @@ export default function PortfolioTabs(props: propsIF) {
                 chainId: chainId,
                 n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
-                graphCacheUrl: graphCacheUrl,
+                GCGO_URL: GCGO_URL,
                 provider,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,
