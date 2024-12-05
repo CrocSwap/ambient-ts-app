@@ -1,17 +1,4 @@
-import {
-    useContext,
-    // START: Import React and Dongles
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
-// START: Import JSX Functional Components
-import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
-import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
-import TabComponent from '../../Global/TabComponent/TabComponent';
-// import Tokens from '../Tokens/Tokens';
-import styles from './PortfolioTabs.module.css';
-// START: Import Local Files
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { fetchUserRecentChanges } from '../../../ambient-utils/api';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../../ambient-utils/constants';
@@ -45,10 +32,14 @@ import {
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import Points from '../../Global/Account/AccountTabs/Points/Points';
+import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
+import TabComponent from '../../Global/TabComponent/TabComponent';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
+import styles from './PortfolioTabs.module.css';
 
 // interface for React functional component props
 interface propsIF {

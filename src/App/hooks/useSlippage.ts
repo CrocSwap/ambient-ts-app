@@ -1,4 +1,3 @@
-// START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     DEFAULT_SLIPPAGE_VALUES,

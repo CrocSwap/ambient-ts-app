@@ -28,11 +28,11 @@ const DnaAnimation: React.FC = () => {
                 y1={height / 2 + movement}
                 x2={x}
                 y2={height / 2 - movement}
-                stroke="#4D5255" // Line color
+                stroke='#4D5255' // Line color
                 strokeWidth={lineStroke}
-                className="line"
+                className='line'
                 style={{ animationDelay: `${i * delay}s` }} // Set delay
-            />
+            />,
         );
 
         // Circle elements
@@ -42,10 +42,10 @@ const DnaAnimation: React.FC = () => {
                 cx={x}
                 cy={height / 2}
                 r={dotSize}
-                fill="#4D5255" // Initial color
-                className="circle"
+                fill='#4D5255' // Initial color
+                className='circle'
                 style={{ animationDelay: `${i * delay}s` }} // Set delay
-            />
+            />,
         );
 
         // Alternate circle elements
@@ -55,18 +55,18 @@ const DnaAnimation: React.FC = () => {
                 cx={x}
                 cy={height / 2}
                 r={dotSize}
-                fill="#4D5255" // Initial color
-                className="circlealt"
+                fill='#4D5255' // Initial color
+                className='circlealt'
                 style={{ animationDelay: `${i * delay}s` }} // Set delay
-            />
+            />,
         );
     }
 
     return (
         <svg
-            xmlns="http://www.w3.org/2000/svg"
+            xmlns='http://www.w3.org/2000/svg'
             viewBox={`0 0 ${width} ${height}`}
-            preserveAspectRatio="xMidYMid meet"
+            preserveAspectRatio='xMidYMid meet'
             style={{ width: '100%', height: 'auto' }} // Make the SVG responsive
         >
             <style>
@@ -147,7 +147,7 @@ const DnaAnimation: React.FC = () => {
                     }
                 `}
             </style>
-            <g className="rotating-group">
+            <g className='rotating-group'>
                 <g>{lines}</g>
                 <g>{circles}</g>
             </g>

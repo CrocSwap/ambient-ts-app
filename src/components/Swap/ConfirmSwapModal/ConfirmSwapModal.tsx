@@ -1,7 +1,5 @@
-// START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState } from 'react';
 
-// START: Import Other Local Files
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { TokenPairIF } from '../../../ambient-utils/types';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
