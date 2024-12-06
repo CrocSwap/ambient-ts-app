@@ -1,10 +1,10 @@
 {
     "name": "Ambient Token List",
     "logoURI": "https://ambient.finance/rings_192.png",
-    "timestamp": "2024-12-04T22:52:00.209Z",
+    "timestamp": "2024-12-06T14:43:55.207Z",
     "version": {
         "major": 1,
-        "minor": 0,
+        "minor": 1,
         "patch": 0
     },
     "tags": {},
