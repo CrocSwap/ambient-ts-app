@@ -1,10 +1,6 @@
-// START: Import React and Dongles
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-// START: Import JSX Components
 import InitPoolExtraInfo from '../../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
-
-// START: Import Local Files
 
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -133,6 +129,7 @@ export default function InitPool() {
         quoteToken,
         setIsTokenAPrimary,
         setPrimaryQuantity,
+        isTokenAPrimary,
     } = useContext(TradeDataContext);
 
     useEffect(() => {
@@ -864,6 +861,17 @@ export default function InitPool() {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, isMintLiqEnabled]);
 
+    const { isTokenAInputDisabled, isTokenBInputDisabled } =
+        useRangeInputDisable(
+            isAmbient,
+            isTokenABase,
+            selectedPoolPriceTick, // Took place of: selectedPoolPriceTick,
+            defaultLowTick,
+            defaultHighTick,
+            isDenomBase,
+            isMintLiqEnabled,
+        );
+
     const tokenASurplusMinusTokenARemainderNum =
         fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
         fromDisplayQty(tokenACollateral || '0', tokenA.decimals);
@@ -871,29 +879,35 @@ export default function InitPool() {
         fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) -
         fromDisplayQty(tokenBCollateral || '0', tokenB.decimals);
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
-        ? tokenASurplusMinusTokenARemainderNum < 0
+        ? tokenASurplusMinusTokenARemainderNum < 0 && !isTokenAInputDisabled
             ? tokenASurplusMinusTokenARemainderNum * -1n
             : 0n
-        : fromDisplayQty(tokenACollateral || '0', tokenA.decimals);
+        : !isTokenAInputDisabled
+          ? fromDisplayQty(tokenACollateral || '0', tokenA.decimals)
+          : 0n;
+
     const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
-        ? tokenBSurplusMinusTokenBRemainderNum < 0
+        ? tokenBSurplusMinusTokenBRemainderNum < 0 && !isTokenBInputDisabled
             ? tokenBSurplusMinusTokenBRemainderNum * -1n
             : 0n
-        : fromDisplayQty(tokenBCollateral || '0', tokenB.decimals);
+        : !isTokenBInputDisabled
+          ? fromDisplayQty(tokenBCollateral || '0', tokenB.decimals)
+          : 0n;
 
-    // if liquidity miniting is enabled, tthen oken allowance must be greater than the amount of tokens the user is depositing,
+    // if liquidity miniting is enabled, then token allowance must be greater than the amount of tokens the user is depositing,
     // plus a small amount for the initialization transactions
-    // if liquidity minting is disabled, then token allowance must be greater than 0
+    // if liquidity minting is disabled, then token allowance must be greater than 0.1 of the token
     const isTokenAAllowanceSufficient =
         tokenAAllowance === undefined
             ? true
-            : isMintLiqEnabled
+            : isMintLiqEnabled && !isTokenAInputDisabled
               ? tokenAAllowance > tokenAQtyCoveredByWalletBalance
               : tokenAAllowance >= fromDisplayQty('0.1', tokenA.decimals);
+
     const isTokenBAllowanceSufficient =
         tokenBAllowance === undefined
             ? true
-            : isMintLiqEnabled
+            : isMintLiqEnabled && !isTokenBInputDisabled
               ? tokenBAllowance > tokenBQtyCoveredByWalletBalance
               : tokenBAllowance >= fromDisplayQty('0.1', tokenB.decimals);
 
@@ -1020,17 +1034,6 @@ export default function InitPool() {
         resetConfirmation,
     );
 
-    const { isTokenAInputDisabled, isTokenBInputDisabled } =
-        useRangeInputDisable(
-            isAmbient,
-            isTokenABase,
-            selectedPoolPriceTick, // Took place of: selectedPoolPriceTick,
-            defaultLowTick,
-            defaultHighTick,
-            isDenomBase,
-            isMintLiqEnabled,
-        );
-
     useEffect(() => {
         if (isTokenAInputDisabled) setIsTokenAPrimary(false);
         if (isTokenBInputDisabled) setIsTokenAPrimary(true);
@@ -1140,6 +1143,9 @@ export default function InitPool() {
         selectedPoolPriceTick,
         tokenAQtyCoveredByWalletBalance,
         tokenBQtyCoveredByWalletBalance,
+        isTokenAPrimary,
+        tokenABalance,
+        tokenBBalance,
     };
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;

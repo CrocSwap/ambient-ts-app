@@ -1,4 +1,3 @@
-// START: Import React and Dongles
 import {
     Dispatch,
     memo,
@@ -8,7 +7,7 @@ import {
     useState,
 } from 'react';
 
-// START: Import Local Files
+import { LuSettings } from 'react-icons/lu';
 import { useLocation } from 'react-router-dom';
 import {
     LS_KEY_ORDER_HISTORY_SETTINGS,
@@ -41,9 +40,6 @@ import OrderHistoryDisplay from './TradeChartsComponents/OrderHistoryDisplay';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
-// import{ LabelSettingsArrow } from '../../Chart/Draw/FloatingToolbar/FloatingToolbarSettingsCss';
-// import Divider from '../../../../components/Global/Divider/Divider';
-import { LuSettings } from 'react-icons/lu';
 // interface for React functional component props
 interface propsIF {
     changeState: (

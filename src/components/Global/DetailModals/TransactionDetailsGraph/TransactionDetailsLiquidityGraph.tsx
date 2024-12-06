@@ -15,19 +15,10 @@ import {
     LiquidityRangeIF,
     TransactionIF,
 } from '../../../../ambient-utils/types';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
-import {
-    CachedDataContext,
-    CachedDataContextIF,
-} from '../../../../contexts/CachedDataContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ChartThemeIF } from '../../../../contexts/ChartContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
     clipCanvas,
     fillLiqInfinity,
@@ -61,10 +52,10 @@ type liquidityChartData = {
 };
 
 export default function TransactionDetailsLiquidityGraph(props: propsIF) {
-    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
+    const { activeNetwork } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedQuerySpotTick } =
-        useContext<CachedDataContextIF>(CachedDataContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+        useContext(CachedDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const {
         chainId,
@@ -167,7 +158,7 @@ export default function TransactionDetailsLiquidityGraph(props: propsIF) {
                 quoteDecimals,
                 poolIdx,
                 crocEnv,
-                activeNetwork.graphCacheUrl,
+                activeNetwork.GCGO_URL,
                 cachedFetchTokenPrice,
                 cachedQuerySpotTick,
                 props.currentPoolPriceTick,

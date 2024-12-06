@@ -1,10 +1,7 @@
-// START: Import React and Dongles
 import { useContext, useEffect, useRef, useState } from 'react';
 import { CiCircleMore } from 'react-icons/ci';
 import { FiExternalLink } from 'react-icons/fi';
-// START: Import JSX Functional Components
 
-// START: Import Local Files
 import { TransactionIF } from '../../../../../ambient-utils/types';
 import { AppStateContext } from '../../../../../contexts';
 import { RangeContext } from '../../../../../contexts/RangeContext';

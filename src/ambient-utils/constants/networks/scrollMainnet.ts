@@ -8,6 +8,7 @@ import {
     scrollUSDC,
     scrollUSDT,
     scrollWBTC,
+    scrollWrsETH,
 } from '../defaultTokens';
 import { GCGO_SCROLL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
@@ -33,7 +34,7 @@ const chainSpecForWalletConnector = {
 export const scrollMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    graphCacheUrl: GCGO_SCROLL_URL,
+    GCGO_URL: GCGO_SCROLL_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [scrollETH, scrollUSDC],
@@ -43,10 +44,10 @@ export const scrollMainnet: NetworkIF = {
     displayName: chainSpecForWalletConnector.name,
     topPools: [
         new TopPool(scrollETH, scrollUSDC, chainSpecFromSDK.poolIndex),
-        new TopPool(scrollUSDT, scrollUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(scrollSCR, scrollETH, chainSpecFromSDK.poolIndex),
-        new TopPool(scrollETH, scrollWBTC, chainSpecFromSDK.poolIndex),
         new TopPool(scrollETH, scrollUSDT, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollETH, scrollWBTC, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollWrsETH, scrollETH, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

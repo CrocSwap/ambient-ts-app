@@ -15,7 +15,6 @@ import {
     trimString,
 } from '../../../ambient-utils/dataLayer';
 import NetworkSelector from '../../../App/components/PageHeader/NetworkSelector/NetworkSelector';
-import Logo from '../../../assets/futa/images/futaLogo.svg';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -63,25 +62,10 @@ const dropdownItemVariants = {
     visible: { opacity: 1, y: 0 },
 };
 
-const linksContainerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1, // Stagger the appearance of child elements
-            delayChildren: 0.2, // Delay before children start appearing
-        },
-    },
-};
-
-const linkItemVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: { opacity: 1, x: 0 },
-};
-
 export default function Navbar() {
     // States
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const currentLocationIsHome = location.pathname == '/';
 
     // Context
     const { isConnected } = useWeb3ModalAccount();
@@ -170,6 +154,7 @@ export default function Navbar() {
         isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
     const clickLogout = useCallback(async () => {
+        setCrocEnv(undefined);
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -179,7 +164,6 @@ export default function Navbar() {
         resetTokenBalances();
         setShowAllData(true);
         disconnectUser();
-        setCrocEnv(undefined);
     }, []);
 
     // Custom Hooks
@@ -228,31 +212,6 @@ export default function Navbar() {
         },
     ];
 
-    // Components
-    const linksDisplay = (
-        <motion.div
-            className={styles.desktopLinksContainer}
-            initial='hidden'
-            animate='visible'
-            variants={linksContainerVariants}
-        >
-            {navbarLinks.map((item, idx) => (
-                <motion.div
-                    id={item.id}
-                    key={idx}
-                    className={styles.desktopLink}
-                    variants={linkItemVariants}
-                    style={{
-                        color: location.pathname.includes(item.link)
-                            ? 'var(--text1)'
-                            : '',
-                    }}
-                >
-                    <Link to={item.link}>{item.label}</Link>
-                </motion.div>
-            ))}
-        </motion.div>
-    );
     const connectWagmiButton = (
         <button
             id='connect_wallet_button_page_header'
@@ -299,14 +258,33 @@ export default function Navbar() {
         </motion.div>
     );
 
+    const tabLinks = (
+        <ul className={styles.navTabs} role='tablist'>
+            {navbarLinks.map((navLink) => (
+                <li key={navLink.id} className={styles.navItem}>
+                    <Link
+                        to={navLink.link}
+                        className={`${styles.navLink} ${location.pathname.includes(navLink.link) ? styles.active : styles.not_active}`}
+                    >
+                        <span className={styles.slantedText}>
+                            {navLink.label}
+                        </span>
+                    </Link>
+                </li>
+            ))}
+        </ul>
+    );
+
     return (
         <>
-            <div className={styles.container}>
+            <div
+                className={`${styles.container} ${currentLocationIsHome && styles.fixedPositioned}`}
+            >
                 <div className={styles.logoContainer}>
                     <Link to='/'>
-                        <img src={Logo} alt='futa logo' />
+                        <h3>FU/TA</h3>
                     </Link>
-                    {desktopScreen && linksDisplay}
+                    {desktopScreen && tabLinks}
                 </div>
                 <div className={styles.rightContainer}>
                     {!desktopScreen && <NetworkSelector customBR={'50%'} />}

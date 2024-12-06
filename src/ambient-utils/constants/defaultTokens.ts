@@ -15,7 +15,7 @@ export const mainnetUSDC: TokenIF = {
     chainId: 1,
     decimals: 6,
     logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+        'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
     name: 'USDC',
     symbol: 'USDC',
 };
@@ -47,6 +47,15 @@ export const mainnetSWETH: TokenIF = {
     logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png',
     name: 'Swell Ethereum',
     symbol: 'swETH',
+};
+
+export const mainnetRSETH: TokenIF = {
+    address: '0xa1290d69c65a6fe4df752f95823fae25cb99e5a7',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://etherscan.io/token/images/kelprseth_32.png',
+    name: 'Kelp DAO Restaked ETH',
+    symbol: 'rsETH',
 };
 
 export const mainnetRSWETH: TokenIF = {
@@ -418,7 +427,7 @@ export const sepoliaUSDC: TokenIF = {
     decimals: 6,
     chainId: 11155111,
     logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+        'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
 };
 
 export const sepoliaWBTC: TokenIF = {
@@ -744,7 +753,7 @@ export const scrollSepoliaUSDC: TokenIF = {
     decimals: 6,
     chainId: 534351,
     logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+        'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
 };
 
 export const plumeSepoliaETH: TokenIF = {
@@ -763,7 +772,7 @@ export const plumeSepoliaUSD: TokenIF = {
     symbol: 'pUSD',
     decimals: 6,
     chainId: 98864,
-    logoURI: '',
+    logoURI: 'https://img.cryptorank.io/coins/plume_network1716480863760.png',
 };
 
 export const plumeSepoliaNEV: TokenIF = {
@@ -791,7 +800,8 @@ export const swellSepoliaUSDC: TokenIF = {
     symbol: 'USDC',
     decimals: 6,
     chainId: 1924,
-    logoURI: '',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
 };
 
 export const swellSepoliaUSDT: TokenIF = {
@@ -819,6 +829,26 @@ export const baseSepoliaUSDC: TokenIF = {
     symbol: 'USDC',
     decimals: 6,
     chainId: 84532,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
+};
+
+export const swellETH: TokenIF = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 1923,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const swellWTT: TokenIF = {
+    name: 'Wolski Test Token',
+    address: '0x83CA2E0018cBa6CD1149F2BB059d2Fc6D0fDf456',
+    symbol: 'WTT',
+    decimals: 6,
+    chainId: 1923,
     logoURI: '',
 };
 
@@ -845,6 +875,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetWstETH,
     mainnetMATIC,
     mainnetSWETH,
+    mainnetRSETH,
     mainnetRSWETH,
     mainnetSWELL,
     mainnetSTONE,
@@ -919,4 +950,6 @@ export const defaultTokens: TokenIF[] = [
     baseSepoliaETH,
     baseSepoliaUSDC,
     baseSepoliaUSDT,
+    swellETH,
+    swellWTT,
 ];

@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { FiPlusCircle } from 'react-icons/fi';
 import { MdOutlineExplore, MdOutlineSwapVerticalCircle } from 'react-icons/md';
 import { RiAccountCircleLine } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { chainNumToString } from '../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -29,6 +29,7 @@ const itemVariants = {
 
 export default function Footer() {
     const { tokenA, tokenB } = useContext(TradeDataContext);
+    const location = useLocation();
 
     const paramsSlug = formSlugForPairParams({
         chain: chainNumToString(tokenA.chainId),
@@ -65,7 +66,7 @@ export default function Footer() {
 
     if (desktopScreen) return <DesktopFooter />;
 
-    return (
+    return location.pathname == '/' ? null : (
         <motion.footer
             className={styles.container}
             initial='hidden'
