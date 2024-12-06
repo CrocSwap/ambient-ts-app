@@ -73,6 +73,10 @@ export default defineConfig({
                         return 'siwe'; // works
                     } else if (id.toLowerCase().includes('framer')) {
                         return 'framer'; // works
+                    } else if (
+                        id.toLowerCase().includes('universal-provider')
+                    ) {
+                        return 'provider'; // works
                     } else if (id.toLowerCase().includes('walletconnect')) {
                         return 'walletconnect'; // works
                     } else if (id.toLowerCase().includes('web3modal')) {
