@@ -189,12 +189,7 @@ modal.subscribeEvents(async (event) => {
         if (
             !networkIds.includes(modal.getState().selectedNetworkId as number)
         ) {
-            console.log(
-                {
-                    state: modal.getState(),
-                },
-                'disconnecting',
-            );
+            // console.log('disconnecting');
             modal.disconnect();
         }
     }
