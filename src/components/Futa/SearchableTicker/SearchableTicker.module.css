@@ -294,7 +294,7 @@
 .noAuctionsContent button:hover {
     background: var(--accent2);
 }
-@media (min-width: 780px) {
+@media (min-width: 768px) {
     .container {
         display: grid;
     }
@@ -302,6 +302,7 @@
     .mainBorder{
         border: 2px solid var(--borders, #5C6F72);
         padding: 8px;
+        height: calc(100% - 8px);
     }
 
     .tickerTableContainer {
@@ -311,7 +312,13 @@
         height: 100%;
     }
 }
+@media (min-width: 1080px) {
+    .mainBorder{
+     
+        height: calc(100% - 8px);
+    }
 
+}
 @media (min-width: 1280px) {
     .content h2 {
         color: var(--text1, #ceffff);
