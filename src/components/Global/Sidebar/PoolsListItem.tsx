@@ -109,7 +109,8 @@ export default function PoolsListItem(props: propsIF) {
         return output as pageNames;
     }, [pathname, isFuta]);
 
-    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { tokenA, tokenB, setPoolPriceNonDisplay } =
+        useContext(TradeDataContext);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen(navTarget);
@@ -203,6 +204,7 @@ export default function PoolsListItem(props: propsIF) {
                 color='text2'
                 onClick={() => {
                     if (isPoolDropdownOpen) setIsPoolDropdownOpen(false);
+                    setPoolPriceNonDisplay(0);
                 }}
             >
                 {[

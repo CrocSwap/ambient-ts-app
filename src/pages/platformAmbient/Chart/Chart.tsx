@@ -1660,7 +1660,11 @@ export default function Chart(props: propsIF) {
 
     // calculate range value for denom
     useEffect(() => {
-        if (!advancedMode && simpleRangeWidth === 100) {
+        if (
+            !advancedMode &&
+            simpleRangeWidth === 100 &&
+            currentPoolPriceTick !== undefined
+        ) {
             const lowTick = currentPoolPriceTick - simpleRangeWidth * 100;
             const highTick = currentPoolPriceTick + simpleRangeWidth * 100;
 
@@ -2026,7 +2030,11 @@ export default function Chart(props: propsIF) {
                         rectCanvas,
                     );
 
-                    if (!cancelDrag && liquidityData) {
+                    if (
+                        !cancelDrag &&
+                        liquidityData &&
+                        currentPoolPriceTick !== undefined
+                    ) {
                         setIsLineDrag(true);
                         setCrosshairActive('none');
 
@@ -2810,7 +2818,7 @@ export default function Chart(props: propsIF) {
     ]);
 
     const onClickRange = async (event: PointerEvent) => {
-        if (scaleData && liquidityData) {
+        if (scaleData && liquidityData && currentPoolPriceTick !== undefined) {
             let newRangeValue: lineValue[];
 
             const low = ranges.filter(
@@ -4233,15 +4241,17 @@ export default function Chart(props: propsIF) {
     }, [market, marketLine]);
 
     useEffect(() => {
-        const noGoZoneBoundaries = noGoZone(
-            currentPoolPriceTick,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            gridSize,
-        );
-        setNoGoZoneBoundaries(() => {
-            return noGoZoneBoundaries;
-        });
+        if (currentPoolPriceTick !== undefined) {
+            const noGoZoneBoundaries = noGoZone(
+                currentPoolPriceTick,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                gridSize,
+            );
+            setNoGoZoneBoundaries(() => {
+                return noGoZoneBoundaries;
+            });
+        }
     }, [
         currentPoolPriceTick,
         baseTokenDecimals,
@@ -4403,7 +4413,7 @@ export default function Chart(props: propsIF) {
     }
 
     function changeScaleRangeOrReposition(isTriggeredByZoom: boolean) {
-        if (scaleData && rescale) {
+        if (scaleData && rescale && currentPoolPriceTick !== undefined) {
             const min = minPrice;
             const max = maxPrice;
 
