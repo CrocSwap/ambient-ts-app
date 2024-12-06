@@ -76,9 +76,11 @@ export default defineConfig({
                         return 'commonjs';
                     } else if (id.toLowerCase().includes('p5')) {
                         return 'p5';
-                    } else if (id.toLowerCase().includes('lodash')) {
-                        return 'lodash';
-                    } else if (
+                    }
+                    //  else if (id.toLowerCase().includes('lodash')) {
+                    //     return 'lodash';
+                    // }
+                    else if (
                         id.toLowerCase().includes('mui') ||
                         id.toLowerCase().includes('material')
                     ) {
