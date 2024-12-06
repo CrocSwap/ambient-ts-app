@@ -37,7 +37,7 @@ export default defineConfig({
             targets: [
                 {
                     src: 'src/ambient-utils/constants/ambient-token-list.json',
-                    dest: 'public',
+                    dest: '../public',
                 },
             ],
         }),
