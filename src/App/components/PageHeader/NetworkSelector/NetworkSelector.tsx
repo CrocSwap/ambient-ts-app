@@ -1,40 +1,36 @@
 // import{ lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { motion } from 'framer-motion';
 import { useContext, useEffect, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { useSearchParams } from 'react-router-dom';
 import { supportedNetworks } from '../../../../ambient-utils/constants';
+import { lookupChainId } from '../../../../ambient-utils/dataLayer';
+import baseSepoliaLogo from '../../../../assets/images/networks/Base_Network_Logo.svg';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
+import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
+import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
+import plumeSepoliaLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
 import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
+import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
+import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
+import swellLogo from '../../../../assets/images/networks/swell_network_small_logo.svg';
+import swellSepoliaLogo from '../../../../assets/images/networks/swell_sepolia.webp';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
+import { CrocEnvContext } from '../../../../contexts';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
 import { Text } from '../../../../styled/Common';
 import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
-// import plumeMainnetLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
-import baseSepoliaLogo from '../../../../assets/images/networks/Base_Network_Logo.svg';
-import plumeSepoliaLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
-import swellSepoliaLogo from '../../../../assets/images/networks/swell_network_small_logo.svg';
-// import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_network_logo.webp';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { motion } from 'framer-motion';
-import { lookupChainId } from '../../../../ambient-utils/dataLayer';
-import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
-import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
-import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
-import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
-import { CrocEnvContext } from '../../../../contexts';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
-import {
-    BrandContext,
-    BrandContextIF,
-} from '../../../../contexts/BrandContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import styles from './NetworkSelector.module.css';
 interface propsIF {
     customBR?: string;
@@ -57,8 +53,7 @@ export default function NetworkSelector(props: propsIF) {
         chooseNetwork,
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const { networks, platformName, includeCanto } =
-        useContext<BrandContextIF>(BrandContext);
+    const { networks, platformName, includeCanto } = useContext(BrandContext);
     const { setCrocEnv } = useContext(CrocEnvContext);
     const { closeBottomSheet } = useBottomSheet();
     const { switchNetwork } = useSwitchNetwork();
@@ -152,6 +147,17 @@ export default function NetworkSelector(props: propsIF) {
             testnet: false,
             link: '',
             condition: chainMap.has('0x82750'),
+        },
+        {
+            id: 'swell_network_selector',
+            chainId: '0x783',
+            name: 'Swell',
+            logo: swellLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: false,
+            link: '',
+            condition: chainMap.has('0x783'),
         },
         {
             id: 'blast_network_selector',

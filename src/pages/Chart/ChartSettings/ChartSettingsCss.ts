@@ -260,7 +260,7 @@ const StyledSelectbox = styled.div`
     align-items: center;
 `;
 
-const ConxtextOptions = styled.div`
+const ContextOptions = styled.div`
     width: 100%;
 
     display: flex;
@@ -269,7 +269,7 @@ const ConxtextOptions = styled.div`
     align-items: start;
 `;
 
-const ConxtextOptionsSection = styled.div`
+const ContextOptionsSection = styled.div`
     width: 100%;
 
     display: grid;
@@ -327,30 +327,30 @@ const SelectedButton = styled.button<{
 `;
 
 export {
+    ActionButtonContainer,
     ChartSettingsContainer,
-    ContextMenu,
-    ContextMenuHeader,
-    CheckListContainer,
-    SelectionContainer,
-    ColorPickerContainer,
-    ContextMenuFooter,
-    ContextMenuHeaderText,
-    CloseButton,
     CheckList,
-    OptionColor,
+    CheckListContainer,
+    CloseButton,
     ColorList,
     ColorOptions,
+    ColorPickerContainer,
+    ContextMenu,
     ContextMenuContextText,
-    ActionButtonContainer,
+    ContextMenuFooter,
+    ContextMenuHeader,
+    ContextMenuHeaderText,
+    ContextOptions,
+    ContextOptionsSection,
     FooterButtons,
     FooterContextText,
-    StyledCheckbox,
     Icon,
-    StyledSelectbox,
-    ConxtextOptions,
-    ConxtextOptionsSection,
-    OptionsHeader,
-    OptionsContent,
     MobileSettingsRow,
+    OptionColor,
+    OptionsContent,
+    OptionsHeader,
     SelectedButton,
+    SelectionContainer,
+    StyledCheckbox,
+    StyledSelectbox,
 };

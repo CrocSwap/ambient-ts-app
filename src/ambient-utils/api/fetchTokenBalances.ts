@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CrocEnv } from '@crocswap-libs/sdk';
 import ambientTokenList from '../constants/ambient-token-list.json';
+import testnetTokenList from '../constants/testnet-token-list.json';
 import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
 import { TokenIF } from '../types/token/TokenIF';
 import {
@@ -27,7 +28,7 @@ export interface IDexBalanceQueryProps {
     address: string;
     chain: string;
     crocEnv: CrocEnv | undefined;
-    graphCacheUrl: string;
+    GCGO_URL: string;
     _refreshTime: number;
 }
 
@@ -38,9 +39,9 @@ export const fetchAmbientListWalletBalances = async (
 
     if (!crocEnv) return;
 
-    const ambientTokensOnActiveChain = ambientTokenList.tokens.filter(
-        (token: any) => token.chainId === parseInt(props.chain),
-    );
+    const ambientTokensOnActiveChain = ambientTokenList.tokens
+        .concat(testnetTokenList.tokens)
+        .filter((token: any) => token.chainId === parseInt(props.chain));
 
     const balancePromises = ambientTokensOnActiveChain.map(async (token) => {
         const walletBalance = (
@@ -64,14 +65,14 @@ export const fetchAmbientListWalletBalances = async (
 };
 
 async function fetchDexBalances(props: IDexBalanceQueryProps) {
-    const { address, crocEnv, chain, graphCacheUrl } = props;
+    const { address, crocEnv, chain, GCGO_URL } = props;
 
     if (!crocEnv) return;
 
     const dexBalancesFromCache = await fetchDepositBalances({
         user: address,
         chainId: chain,
-        graphCacheUrl: graphCacheUrl,
+        GCGO_URL: GCGO_URL,
         crocEnv: crocEnv,
     });
     return dexBalancesFromCache;

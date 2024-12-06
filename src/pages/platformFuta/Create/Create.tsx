@@ -23,7 +23,6 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import SynthwaveGrid from '../Home/Animations/SynthwaveGrid';
 import styles from './Create.module.css';
 
 export default function Create() {
@@ -259,7 +258,6 @@ export default function Create() {
                 {footerDisplay}
             </div>
 
-            <SynthwaveGrid hasVideoPlayedOnce isCreatePage />
             {getActionTrigger('create_auction_input_trigger', () => {
                 setTickerInput('MY TOKEN');
             })}

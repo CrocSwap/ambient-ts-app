@@ -25,18 +25,6 @@
             center center;
 }
 
-.stars {
-    background:
-        linear-gradient(
-            180deg,
-            var(--dark1) 0%,
-            var(--dark1) 0%,
-            rgba(0, 0, 0, 0) 0%,
-            var(--dark1) 100%
-        ),
-        url('/src/assets/images/home/stars.png') no-repeat center center;
-}
-
 .home2 {
     background: url(/src/assets/images/home/home2.png) no-repeat;
 }
