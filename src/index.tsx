@@ -106,19 +106,20 @@ modal.subscribeEvents(async (event) => {
             ? parseInt(lastUsedNetworkIdString)
             : defaultChainIdInteger;
 
-        console.log({
-            currentChainId,
-            desiredChainId,
-            lastUsedNetworkIdString,
-            defaultChainIdInteger,
-            connected: modal.getIsConnected(),
-        });
+        const currentNetworkIsSupported = networkIds.includes(
+            modal.getState().selectedNetworkId as number,
+        );
+
+        // console.log({
+        //     currentNetworkIsSupported,
+        //     currentChainId,
+        //     desiredChainId,
+        //     lastUsedNetworkIdString,
+        //     defaultChainIdInteger,
+        //     connected: modal.getIsConnected(),
+        // });
         if (currentChainId !== desiredChainId) {
             try {
-                const currentNetworkIsSupported = networkIds.includes(
-                    modal.getState().selectedNetworkId as number,
-                );
-                console.log({ currentNetworkIsSupported });
                 if (!currentNetworkIsSupported) return;
                 await modal.switchNetwork(desiredChainId); // Pass the number directly
 
@@ -126,18 +127,13 @@ modal.subscribeEvents(async (event) => {
                 await new Promise((resolve) => setTimeout(resolve, 5000));
 
                 const newChainId = modal.getState().selectedNetworkId as number;
-                console.log({
-                    newChainId,
-                    desiredChainId,
-                    state: modal.getState(),
-                });
+                // console.log({
+                //     newChainId,
+                //     desiredChainId,
+                //     state: modal.getState(),
+                // });
                 if (newChainId !== desiredChainId && modal.getState().open) {
-                    console.log(
-                        {
-                            state: modal.getState(),
-                        },
-                        'waiting',
-                    );
+                    //    console.log('returning')
                     return;
                 } else if (
                     newChainId !== desiredChainId &&
@@ -150,25 +146,13 @@ modal.subscribeEvents(async (event) => {
                         );
                         const finalChainId = modal.getState()
                             .selectedNetworkId as number;
-                        console.log({ finalChainId, desiredChainId });
+                        // console.log({ finalChainId, desiredChainId });
                         if (finalChainId !== desiredChainId) {
-                            console.log(
-                                {
-                                    selectedNetwork:
-                                        modal.getState().selectedNetworkId,
-                                },
-                                'disconnecting',
-                            );
+                            // console.log('disconnecting');
                             modal.disconnect();
                         }
                     } catch (retryError) {
-                        console.log(
-                            {
-                                selectedNetwork:
-                                    modal.getState().selectedNetworkId,
-                            },
-                            'disconnecting',
-                        );
+                        // console.log('disconnecting');
                         modal.disconnect();
                     }
                 } else if (
@@ -176,23 +160,13 @@ modal.subscribeEvents(async (event) => {
                     modal.getState().open &&
                     modal.getIsConnected()
                 ) {
-                    console.log(
-                        {
-                            state: modal.getState(),
-                        },
-                        'closing modal',
-                    );
+                    // console.log('closing modal');
                     modal.close();
                 } else if (modal.getIsConnected()) {
-                    console.log('connected');
+                    // console.log('connected');
                 }
             } catch (error) {
-                console.log(
-                    {
-                        state: modal.getState(),
-                    },
-                    'disconnecting',
-                );
+                // console.log('disconnecting');
                 modal.disconnect();
             }
         } else if (
@@ -200,15 +174,10 @@ modal.subscribeEvents(async (event) => {
             modal.getState().open &&
             modal.getIsConnected()
         ) {
-            console.log(
-                {
-                    state: modal.getState(),
-                },
-                'closing modal',
-            );
+            // console.log('closing');
             modal.close();
         } else if (modal.getIsConnected()) {
-            console.log('connected');
+            // console.log('connected');
         }
     }
 
