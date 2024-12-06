@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react';
-import Divider from '../../../components/Futa/Divider/FutaDivider';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
 import { AppStateContext } from '../../../contexts';

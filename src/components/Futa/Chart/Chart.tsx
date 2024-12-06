@@ -1,4 +1,3 @@
-import FutaDivider from '../Divider/FutaDivider';
 import styles from './Chart.module.css';
 import ScatterChart from './ScatterChart/ScatterChart';
 
