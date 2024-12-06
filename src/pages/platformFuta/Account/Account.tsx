@@ -214,7 +214,18 @@ export default function Account() {
         accountData.auctions || [],
     );
 
-    console.log(sorted);
+    const filtered = useMemo<sortedAuctionsIF>(() => {
+        const output = { ...sorted };
+        if (tickerSet === 'created') {
+            output.data = sorted.data.filter(
+                (tck: AuctionDataIF) =>
+                    tck.createdBy &&
+                    tck.createdBy.toLowerCase() === userAddress?.toLowerCase(),
+            );
+        }
+        console.log(output);
+        return output;
+    }, [tickerSet]);
 
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
@@ -231,7 +242,7 @@ export default function Account() {
             <div className={styles.content}>
                 <button onClick={() => toggleDisplay()}>Switch View</button>
                 <SearchableTicker
-                    auctions={sorted}
+                    auctions={filtered}
                     title='accounttt'
                     isAccount={true}
                 />

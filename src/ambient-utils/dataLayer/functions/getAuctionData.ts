@@ -44,6 +44,9 @@ export interface AuctionDataIF {
     createdAt: number;
     auctionLength: number;
     filledClearingPriceInNativeTokenWei: string;
+    // @Ben:    I'm making this optional for ease rn but I think it
+    // @Ben:    ... should prolly be a non-optional property
+    createdBy?: `0x${string}`;
 
     // user specific data received for account queries
     userAddress?: string;
