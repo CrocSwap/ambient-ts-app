@@ -3,7 +3,6 @@ import { execSync } from 'child_process';
 import { defineConfig } from 'vite';
 import macrosPlugin from 'vite-plugin-babel-macros';
 import checker from 'vite-plugin-checker';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
     base: '/',
@@ -33,14 +32,6 @@ export default defineConfig({
                     );
             },
         },
-        viteStaticCopy({
-            targets: [
-                {
-                    src: 'src/ambient-utils/constants/ambient-token-list.json',
-                    dest: '../public',
-                },
-            ],
-        }),
     ],
     define: {
         'import.meta.env': {},
