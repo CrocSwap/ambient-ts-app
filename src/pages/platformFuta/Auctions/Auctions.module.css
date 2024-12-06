@@ -30,3 +30,9 @@
     display: grid;
     gap: 1rem;
 }
+.label{
+    font-size: var(--body-size);
+    color: #5C6F72;
+    text-transform: uppercase;
+    padding: 0 8px;
+}

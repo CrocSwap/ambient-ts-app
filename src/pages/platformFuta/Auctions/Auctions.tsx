@@ -8,6 +8,7 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import styles from './Auctions.module.css';
 import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
+import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
 
 interface propsIF {
     hideTicker?: boolean;
@@ -80,6 +81,8 @@ export default function Auctions(props: propsIF) {
                     }
                     <div />
                     <div className={styles.flexColumn}>
+                        <p className={styles.label}>TICKER</p>
+                        <FutaDivider2 />
                         {!hideTicker && (
                             <TickerComponent
                                 isAuctionPage
