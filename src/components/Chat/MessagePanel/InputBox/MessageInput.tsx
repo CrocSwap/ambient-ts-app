@@ -71,6 +71,8 @@ interface MessageInputProps {
     isChatOpen?: boolean;
     isMobile?: boolean;
     userMap?: Map<string, User>;
+    showEmojiPicker: boolean;
+    setShowEmojiPicker: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -78,7 +80,6 @@ export default function MessageInput(props: MessageInputProps) {
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
     const [message, setMessage] = useState('');
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
@@ -97,6 +98,8 @@ export default function MessageInput(props: MessageInputProps) {
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
 
     const roomId = props.room;
+
+    const { showEmojiPicker, setShowEmojiPicker } = props;
 
     const isRoomAdmins = roomId === 'Admins';
 
@@ -177,7 +180,7 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const handleEmojiPickerHideShow = () => {
-        if (!isUserConnected) {
+        if (!isUserConnected && !userAddress) {
             setShowEmojiPicker(false);
         } else {
             setShowEmojiPicker(!showEmojiPicker);
@@ -206,6 +209,9 @@ export default function MessageInput(props: MessageInputProps) {
 
     useEffect(() => {
         messageInputText();
+        if (!isUserConnected && !userAddress) {
+            setShowEmojiPicker(false);
+        }
     }, [isUserConnected, userAddress]);
 
     useEffect(() => {
@@ -222,6 +228,14 @@ export default function MessageInput(props: MessageInputProps) {
 
     const handleSendMessageButton = () => {
         if (message === '') {
+            return;
+        }
+        if (message.length > 140) {
+            props.setShowPopUp(true);
+            props.setPopUpText(
+                'Maximum length exceeded (140 characters limit).',
+            );
+
             return;
         }
         const parts = message.split(/\s+/);
@@ -444,19 +458,19 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     function openEmojiPanel(e: KeyboardEvent) {
-        if (e.code === 'KeyX' && e.altKey) {
+        if (e.code === 'KeyX' && e.altKey && isUserConnected && userAddress) {
             setShowEmojiPicker(true);
         }
     }
 
     function closeEmojiPanel(e: KeyboardEvent) {
-        if (e.code === 'KeyQ' && e.altKey) {
+        if (e.code === 'KeyQ' && e.altKey && isUserConnected && userAddress) {
             setShowEmojiPicker(false);
         }
     }
 
     function openInfo(e: KeyboardEvent) {
-        if (e.code === 'KeyM' && e.ctrlKey) {
+        if (e.code === 'KeyM' && e.ctrlKey && isUserConnected && userAddress) {
             setShowEmojiPicker(true);
             setIsInfoPressed(true);
         }
@@ -785,10 +799,12 @@ export default function MessageInput(props: MessageInputProps) {
                         />
                         {inputLength >= 100 && (
                             <div
+                                id='chat-progress-bar'
                                 className={styles.message_input_field}
                                 style={{
                                     fontSize:
                                         inputLength > 240 ? '10px' : '12px',
+                                    position: 'relative',
                                 }}
                             >
                                 <CircularProgressBarForChat
@@ -799,15 +815,18 @@ export default function MessageInput(props: MessageInputProps) {
                                 </div>
                             </div>
                         )}
-
-                        <BsEmojiSmile
-                            className={
-                                isUserConnected
-                                    ? styles.svgButton
-                                    : styles.not_LoggedIn_svgButton
-                            }
+                        <span
+                            id='chat-emoji-button'
                             onClick={handleEmojiPickerHideShow}
-                        />
+                        >
+                            <BsEmojiSmile
+                                className={
+                                    isUserConnected
+                                        ? styles.svgButton
+                                        : styles.not_LoggedIn_svgButton
+                                }
+                            />
+                        </span>
                         {}
                         <div
                             className={
@@ -815,30 +834,33 @@ export default function MessageInput(props: MessageInputProps) {
                                     ? styles.send_message_button
                                     : styles.not_LoggedIn_send_message_button
                             }
+                            id='chat-send-message-button'
                             onClick={() => handleSendMessageButton()}
                         >
-                            <svg
-                                width='16'
-                                height='16'
-                                viewBox='0 0 16 16'
-                                fill='none'
-                                xmlns='http://www.w3.org/2000/svg'
-                            >
-                                <path
-                                    d='M14.6663 1.3335L7.33301 8.66683M14.6663 1.3335L9.99967 14.6668L7.33301 8.66683M14.6663 1.3335L1.33301 6.00016L7.33301 8.66683'
-                                    stroke='#EBEBFF'
-                                    strokeOpacity='0.25'
-                                    strokeLinecap='round'
-                                    strokeLinejoin='round'
-                                    className={
-                                        isUserConnected
-                                            ? styles.svgButton
-                                            : styles.not_LoggedIn_svgButton
-                                    }
-                                    id='send message button'
-                                />
-                                <title>Send Message</title>
-                            </svg>
+                            <span>
+                                <svg
+                                    width='16'
+                                    height='16'
+                                    viewBox='0 0 16 16'
+                                    fill='none'
+                                    xmlns='http://www.w3.org/2000/svg'
+                                >
+                                    <path
+                                        d='M14.6663 1.3335L7.33301 8.66683M14.6663 1.3335L9.99967 14.6668L7.33301 8.66683M14.6663 1.3335L1.33301 6.00016L7.33301 8.66683'
+                                        stroke='#EBEBFF'
+                                        strokeOpacity='0.25'
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                        className={
+                                            isUserConnected
+                                                ? styles.svgButton
+                                                : styles.not_LoggedIn_svgButton
+                                        }
+                                        id='send message button'
+                                    />
+                                    <title>Send Message</title>
+                                </svg>
+                            </span>
                         </div>
                     </div>
                     {showEmojiPicker && (
@@ -846,21 +868,24 @@ export default function MessageInput(props: MessageInputProps) {
                             className={styles.emojiPicker}
                             style={{ width: '100%' }}
                         >
-                            <span className={styles.emoji_close_button}>
+                            <span
+                                id='chat-close-emoji-panel-button'
+                                className={styles.emoji_close_button}
+                                onClick={() => setShowEmojiPicker(false)}
+                            >
                                 <RiCloseFill
                                     size={20}
                                     title='Close Emoji Picker'
-                                    onClick={() => setShowEmojiPicker(false)}
-                                    id='close emoji panel button'
                                     style={{ cursor: 'pointer' }}
                                 />
                             </span>
                             <span
+                                id='chat-info-button'
                                 className={styles.emoji_close_button}
                                 onClick={() => setIsInfoPressed(!isInfoPressed)}
                                 style={{ cursor: 'pointer' }}
                             >
-                                <RiInformationLine title='Info' id='info' />
+                                <RiInformationLine title='Info' />
                             </span>
                             {isInfoPressed ? (
                                 <ul>

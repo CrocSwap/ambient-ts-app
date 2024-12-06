@@ -145,7 +145,7 @@ export default function Room(props: propsIF) {
             if (!found) {
                 newRoomList.push({
                     name: getRoomNameFromPool(pool),
-                    shownName: getRoomNameFromPool(pool) + ' ❤️',
+                    shownName: getRoomNameFromPool(pool),
                     base: pool.base.symbol,
                     quote: pool.quote.symbol,
                     isFavourite: true,
@@ -169,8 +169,7 @@ export default function Room(props: propsIF) {
                 quoteToken.symbol,
             );
             currentPoolRoomObj.shownName =
-                getRoomNameFromBaseQuote(baseToken.symbol, quoteToken.symbol) +
-                ' 📈';
+                getRoomNameFromBaseQuote(baseToken.symbol, quoteToken.symbol);
             newRoomList.push(currentPoolRoomObj);
         }
 
@@ -185,7 +184,7 @@ export default function Room(props: propsIF) {
             if (!newRoomList.some((e) => e.name == getRoomNameFromPool(pool))) {
                 newRoomList.push({
                     name: getRoomNameFromPool(pool),
-                    shownName: getRoomNameFromPool(pool) + ' 🏊',
+                    shownName: getRoomNameFromPool(pool),
                     base: pool.base.symbol,
                     quote: pool.quote.symbol,
                 });
@@ -341,6 +340,7 @@ export default function Room(props: propsIF) {
                 }
             >
                 <div
+                    id='chat-open-close-room-dropdown'
                     className={styles.room_name_wrapper}
                     onClick={() => handleDropdownMenu()}
                     style={{ flexGrow: '1' }}
@@ -362,6 +362,7 @@ export default function Room(props: propsIF) {
                         onMouseOut={handleMouseOut}
                     >
                         <div
+                            id='currentpool-button'
                             className={
                                 isHovering
                                     ? styles.bgsalmon
@@ -375,17 +376,22 @@ export default function Room(props: propsIF) {
                     ''
                 )}
                 <div onClick={() => handleDropdownMenu()}> </div>
-                <div onClick={() => handleDropdownMenu()}>
+                <div
+                    id='chat-open-close-room-dropdown-button'
+                    onClick={() => handleDropdownMenu()}
+                >
                     <RiArrowDownSLine
                         className={styles.star_icon + ' ' + styles.m_hidden}
                         size={22}
-                        id='room dropdown'
                     />
                 </div>
             </div>
             {isActive && (
-                <div className={styles.dropdown_content}>
-                    <div className={styles.item}>
+                <div
+                    id='chat-dropdown-content'
+                    className={styles.dropdown_content}
+                >
+                    <div id='chat-rooms' className={styles.item}>
                         {roomList
                             .filter((e) => e.name !== props.selectedRoom)
                             .map((pool, i) => (
@@ -393,6 +399,7 @@ export default function Room(props: propsIF) {
                                     className={styles.dropdown_item}
                                     key={i}
                                     data-value={pool.name}
+                                    id={pool.name}
                                     data-icon='glyphicon glyphicon-eye-open'
                                     onClick={(event: any) =>
                                         handleRoomClick(event, pool.name)

@@ -93,7 +93,7 @@ export const formatMessageTime = (time: string) => {
 
 export const isLink = (url: string) => {
     const urlPattern =
-        /^(https?:\/\/)?((www\.)?([a-z0-9]+([-]{1}[a-z0-9]+)*\.[a-z]{2,7}))(\/.*)?$/i;
+        /^(https?:\/\/)?((www\.)?([a-z0-9\u00C0-\u017F]+([-]{1}[a-z0-9\u00C0-\u017F]+)*\.[a-z\u00C0-\u017F]{2,7}))(\/.*)?$/i;
     return urlPattern.test(url);
 };
 
@@ -238,14 +238,14 @@ export const getDefaultRooms = (isModerator: boolean) => {
     const ret: ChatRoomIF[] = [
         {
             name: 'Global',
-            shownName: 'Global 🌍',
+            shownName: 'Global',
         },
     ];
 
     if (isModerator) {
         ret.push({
             name: 'Admins',
-            shownName: 'Admins 👑',
+            shownName: 'Admins',
         });
     }
 
@@ -269,19 +269,6 @@ export const createRoomIF = (
             name: resp.roomInfo,
             popularity: popularityScore,
         };
-    }
-
-    try {
-        if (popularityScore && popularityScore > 0) {
-            let append = '';
-            for (let i = 0; i < popularityScore; i++) {
-                append += '🔥';
-            }
-
-            ret.shownName = `${ret.name} ${append}`;
-        }
-    } catch {
-        console.error('Error creating roomIF');
     }
 
     return ret;
