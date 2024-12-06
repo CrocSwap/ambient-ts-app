@@ -49,33 +49,29 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    if (id.toLowerCase().includes('utils')) {
-                        return 'utils';
-                    } else if (id.toLowerCase().includes('components')) {
-                        return 'components';
-                    } else if (id.toLowerCase().includes('node_modules')) {
+                    // if (id.toLowerCase().includes('utils')) {
+                    //     return 'utils';
+                    // } else if (id.toLowerCase().includes('components')) {
+                    //     return 'components';
+                    // } else
+                    if (id.toLowerCase().includes('node_modules')) {
                         return 'vendor'; // General vendor chunk for everything else in node_modules
                     }
                 },
                 // manualChunks(id) {
-                //     // if (id.toLowerCase().includes('react-dom')) {
-                //     //     return 'reactdom';
-                //     // } else
-                //     if (id.toLowerCase().includes('react-color')) {
+                //     if (id.toLowerCase().includes('react-dom')) {
+                //         return 'reactdom';
+                //     } else if (id.toLowerCase().includes('react-color')) {
                 //         return 'reactcolor';
-                //     }
-                //     // else if (id.toLowerCase().includes('react-icons')) {
-                //     //     return 'reacticons';
-                //     // }
-                //     else if (id.toLowerCase().includes('react-reveal')) {
+                //     } else if (id.toLowerCase().includes('react-icons')) {
+                //         return 'reacticons';
+                //     } else if (id.toLowerCase().includes('react-reveal')) {
                 //         return 'reactreveal';
                 //     } else if (id.toLowerCase().includes('websocket')) {
                 //         return 'websocket';
-                //     }
-                //     //  else if (id.toLowerCase().includes('emoji')) {
-                //     //     return 'emoji';
-                //     // }
-                //     else if (id.toLowerCase().includes('react')) {
+                //     } else if (id.toLowerCase().includes('emoji')) {
+                //         return 'emoji';
+                //     } else if (id.toLowerCase().includes('react')) {
                 //         return 'react';
                 //     } else if (id.toLowerCase().includes('styled')) {
                 //         return 'styled';
@@ -85,11 +81,9 @@ export default defineConfig({
                 //         return 'commonjs';
                 //     } else if (id.toLowerCase().includes('p5')) {
                 //         return 'p5';
-                //     }
-                //     //  else if (id.toLowerCase().includes('lodash')) {
-                //     //     return 'lodash';
-                //     // }
-                //     else if (
+                //     } else if (id.toLowerCase().includes('lodash')) {
+                //         return 'lodash';
+                //     } else if (
                 //         id.toLowerCase().includes('mui') ||
                 //         id.toLowerCase().includes('material')
                 //     ) {
@@ -116,11 +110,9 @@ export default defineConfig({
                 //         return 'coinbase';
                 //     } else if (id.toLowerCase().includes('ethers')) {
                 //         return 'ethers';
-                //     }
-                //     //  else if (id.toLowerCase().includes('framer')) {
-                //     //     return 'framer';
-                //     // }
-                //     else if (id.toLowerCase().includes('qrcode')) {
+                //     } else if (id.toLowerCase().includes('framer')) {
+                //         return 'framer';
+                //     } else if (id.toLowerCase().includes('qrcode')) {
                 //         return 'qrcode';
                 //     } else if (id.toLowerCase().includes('zod')) {
                 //         return 'zod';
