@@ -105,9 +105,11 @@ export default defineConfig({
                         return 'coinbase';
                     } else if (id.toLowerCase().includes('ethers')) {
                         return 'ethers';
-                    } else if (id.toLowerCase().includes('framer')) {
-                        return 'framer';
-                    } else if (id.toLowerCase().includes('qrcode')) {
+                    }
+                    //  else if (id.toLowerCase().includes('framer')) {
+                    //     return 'framer';
+                    // }
+                    else if (id.toLowerCase().includes('qrcode')) {
                         return 'qrcode';
                     } else if (id.toLowerCase().includes('zod')) {
                         return 'zod';
