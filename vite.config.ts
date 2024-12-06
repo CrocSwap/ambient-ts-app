@@ -49,8 +49,16 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    if (id.toLowerCase().includes('lodash')) {
+                    if (id.toLowerCase().includes('ens-normalize')) {
+                        return 'ens'; // works
+                    } else if (id.toLowerCase().includes('lodash')) {
                         return 'lodash'; // works
+                    } else if (id.toLowerCase().includes('re-resizeable')) {
+                        return 'resizeable'; // works
+                    } else if (id.toLowerCase().includes('intro.js')) {
+                        return 'intro'; // works
+                    } else if (id.toLowerCase().includes('stablelib')) {
+                        return 'stablelib'; // works
                     } else if (id.toLowerCase().includes('numbro')) {
                         return 'numbro'; // works
                     } else if (id.toLowerCase().includes('moment')) {
@@ -69,6 +77,14 @@ export default defineConfig({
                         return 'walletconnect'; // works
                     } else if (id.toLowerCase().includes('web3modal')) {
                         return 'web3modal'; // works
+                    } else if (
+                        id.toLowerCase().includes('emoji-picker-react')
+                    ) {
+                        return 'emoji-picker-react'; // works
+                    } else if (id.toLowerCase().includes('material-ui')) {
+                        return 'material-ui'; // works
+                    } else if (id.toLowerCase().includes('bignumber')) {
+                        return 'bignumber'; // works
                     } else if (id.toLowerCase().includes('node_modules')) {
                         return 'vendor'; // General vendor chunk for everything else in node_modules
                     } else if (id.toLowerCase().includes('assets')) {
