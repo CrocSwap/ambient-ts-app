@@ -236,144 +236,6 @@ export default function SearchableTicker(props: propsIF) {
         return output;
     }
 
-    const headerDisplay = (
-        <div className={styles.header}>
-            <Divider count={2} />
-            {title && (
-                <h3
-                    className={styles.title}
-                    onClick={
-                        setIsFullLayoutActive
-                            ? () => setIsFullLayoutActive((prev) => !prev)
-                            : () => null
-                    }
-                >
-                    {title}
-                </h3>
-            )}
-            <div className={styles.filter_options}>
-                <div className={styles.search_and_filter}>
-                    <div className={styles.text_search_box}>
-                        <BiSearch
-                            size={20}
-                            color='var(--text2)'
-                            id='searchable_ticker_input'
-                            onClick={() => focusInput()}
-                        />
-                        <input
-                            type='text'
-                            id={INPUT_DOM_ID}
-                            value={searchInputRaw}
-                            onChange={(e) => setSearchInputRaw(e.target.value)}
-                            placeholder='SEARCH...'
-                            spellCheck={false}
-                            autoComplete='off'
-                            tabIndex={1}
-                        />
-                        {searchInputRaw && (
-                            <MdClose
-                                size={20}
-                                color='var(--text2)'
-                                onClick={() => clearInput()}
-                            />
-                        )}
-                    </div>
-                    <div className={styles.filters} ref={timeDropdownRef}>
-                        <div className={styles.timeDropdownContent}>
-                            <div
-                                className={styles.timeDropdownButton}
-                                onClick={() =>
-                                    setIsSortDropdownOpen(!isSortDropdownOpen)
-                                }
-                            >
-                                <p>{activeSortOption.label}</p>
-                                {isSortDropdownOpen ? (
-                                    <IoIosArrowUp color='var(--accent1)' />
-                                ) : (
-                                    <IoIosArrowDown color='var(--accent1)' />
-                                )}
-                            </div>
-
-                            <div
-                                className={styles.sort_direction}
-                                onClick={() => auctions.reverse()}
-                            >
-                                <IoIosArrowUp
-                                    size={14}
-                                    color={
-                                        getArrowDirection() === 'up'
-                                            ? 'var(--accent1)'
-                                            : ''
-                                    }
-                                />
-
-                                <IoIosArrowDown
-                                    size={14}
-                                    color={
-                                        getArrowDirection() === 'down'
-                                            ? 'var(--accent1)'
-                                            : ''
-                                    }
-                                />
-                            </div>
-                        </div>
-
-                        {isSortDropdownOpen && (
-                            <div className={styles.dropdown}>
-                                {sortDropdownOptions.map((item, idx) => (
-                                    <p
-                                        className={styles.timeItem}
-                                        key={idx}
-                                        onClick={() => {
-                                            setActiveSortOption(item);
-                                            setIsSortDropdownOpen(false);
-                                            auctions.update(
-                                                item.slug as auctionSorts,
-                                            );
-                                        }}
-                                    >
-                                        {item.label}
-                                    </p>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-                <div className={styles.sort_toggles}>
-                    <button
-                        onClick={() => setShowComplete(!showComplete)}
-                        className={
-                            showComplete ? styles.buttonOn : styles.buttonOff
-                        }
-                    >
-                        SHOW COMPLETE
-                    </button>
-                    <button
-                        onClick={() => watchlists.toggle()}
-                        className={
-                            styles[
-                                watchlists.shouldDisplay
-                                    ? 'buttonOn'
-                                    : 'buttonOff'
-                            ]
-                        }
-                    >
-                        <FaEye
-                            size={17}
-                            className={
-                                styles[
-                                    watchlists.shouldDisplay
-                                        ? 'eyeOn'
-                                        : 'eyeOff'
-                                ]
-                            }
-                        />
-                        WATCHLIST
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
     const fullScreenTable = false;
 
     const noAuctionsContent = (
@@ -527,7 +389,6 @@ export default function SearchableTicker(props: propsIF) {
             //             searchableTickerHeights.current + d.height,
             //         );
             //     }
-
             // }}
             onResizeStop={(
                 evt: MouseEvent | TouchEvent,
@@ -560,8 +421,148 @@ export default function SearchableTicker(props: propsIF) {
             }}
             ref={canvasRef}
         >
-            {headerDisplay}
+            <div className={styles.header}>
+                <Divider count={2} />
+                {title && (
+                    <h3
+                        className={styles.title}
+                        onClick={
+                            setIsFullLayoutActive
+                                ? () => setIsFullLayoutActive((prev) => !prev)
+                                : () => null
+                        }
+                    >
+                        {title}
+                    </h3>
+                )}
+                <div className={styles.filter_options}>
+                    <div className={styles.search_and_filter}>
+                        <div className={styles.text_search_box}>
+                            <BiSearch
+                                size={20}
+                                color='var(--text2)'
+                                id='searchable_ticker_input'
+                                onClick={() => focusInput()}
+                            />
+                            <input
+                                type='text'
+                                id={INPUT_DOM_ID}
+                                value={searchInputRaw}
+                                onChange={(e) =>
+                                    setSearchInputRaw(e.target.value)
+                                }
+                                placeholder='SEARCH...'
+                                spellCheck={false}
+                                autoComplete='off'
+                                tabIndex={1}
+                            />
+                            {searchInputRaw && (
+                                <MdClose
+                                    size={20}
+                                    color='var(--text2)'
+                                    onClick={() => clearInput()}
+                                />
+                            )}
+                        </div>
+                        <div className={styles.filters} ref={timeDropdownRef}>
+                            <div className={styles.timeDropdownContent}>
+                                <div
+                                    className={styles.timeDropdownButton}
+                                    onClick={() =>
+                                        setIsSortDropdownOpen(
+                                            !isSortDropdownOpen,
+                                        )
+                                    }
+                                >
+                                    <p>{activeSortOption.label}</p>
+                                    {isSortDropdownOpen ? (
+                                        <IoIosArrowUp color='var(--accent1)' />
+                                    ) : (
+                                        <IoIosArrowDown color='var(--accent1)' />
+                                    )}
+                                </div>
 
+                                <div
+                                    className={styles.sort_direction}
+                                    onClick={() => auctions.reverse()}
+                                >
+                                    <IoIosArrowUp
+                                        size={14}
+                                        color={
+                                            getArrowDirection() === 'up'
+                                                ? 'var(--accent1)'
+                                                : ''
+                                        }
+                                    />
+
+                                    <IoIosArrowDown
+                                        size={14}
+                                        color={
+                                            getArrowDirection() === 'down'
+                                                ? 'var(--accent1)'
+                                                : ''
+                                        }
+                                    />
+                                </div>
+                            </div>
+
+                            {isSortDropdownOpen && (
+                                <div className={styles.dropdown}>
+                                    {sortDropdownOptions.map((item, idx) => (
+                                        <p
+                                            className={styles.timeItem}
+                                            key={idx}
+                                            onClick={() => {
+                                                setActiveSortOption(item);
+                                                setIsSortDropdownOpen(false);
+                                                auctions.update(
+                                                    item.slug as auctionSorts,
+                                                );
+                                            }}
+                                        >
+                                            {item.label}
+                                        </p>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className={styles.sort_toggles}>
+                        <button
+                            onClick={() => setShowComplete(!showComplete)}
+                            className={
+                                showComplete
+                                    ? styles.buttonOn
+                                    : styles.buttonOff
+                            }
+                        >
+                            SHOW COMPLETE
+                        </button>
+                        <button
+                            onClick={() => watchlists.toggle()}
+                            className={
+                                styles[
+                                    watchlists.shouldDisplay
+                                        ? 'buttonOn'
+                                        : 'buttonOff'
+                                ]
+                            }
+                        >
+                            <FaEye
+                                size={17}
+                                className={
+                                    styles[
+                                        watchlists.shouldDisplay
+                                            ? 'eyeOn'
+                                            : 'eyeOff'
+                                    ]
+                                }
+                            />
+                            WATCHLIST
+                        </button>
+                    </div>
+                </div>
+            </div>
             <FlexContainer
                 flexDirection='column'
                 fullHeight
