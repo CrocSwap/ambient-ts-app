@@ -1,13 +1,9 @@
-/** ***** Import React and Dongles *******/
 import { useContext, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
-/** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
-// import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
 
-/** * **** Import Local Files *******/
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { AppStateContext } from '../contexts/AppStateContext';

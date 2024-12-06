@@ -1,11 +1,9 @@
-// START: Import React and Dongles
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
-// START: Import Local Files
 import {
     isBtcPair,
     isETHPair,

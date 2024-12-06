@@ -56,9 +56,7 @@ export interface BlastUserXpDataIF {
     data: BlastUserXpIF | undefined;
 }
 
-export const UserDataContext = createContext<UserDataContextIF>(
-    {} as UserDataContextIF,
-);
+export const UserDataContext = createContext({} as UserDataContextIF);
 
 export const UserDataContextProvider = (props: {
     children: React.ReactNode;

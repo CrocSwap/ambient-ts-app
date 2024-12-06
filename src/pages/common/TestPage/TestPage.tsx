@@ -1,10 +1,4 @@
-// import { useContext } from 'react';
-// import { BrandContext } from '../../contexts/BrandContext';
-
-
 import FutaNewLanding from '../../platformFuta/Home/FutaLandings/NewLandings/FutaNewLanding';
-
-
 
 export default function TestPage() {
     // const [activeTab, setActiveTab] = useState(0);
@@ -15,14 +9,14 @@ export default function TestPage() {
     //   { label: 'Account', content: <div>Content for Account</div> },
     //   { label: 'Chat', content: <div>Content for Chat</div> },
     // ];
-  
-    return (
-      // <FlexContainer justifyContent='center' alignItems='center' style={{width: '100vw', height: '100vh'}}>
 
-      //   <FadingTextGrid/>
-      // </FlexContainer>
-    
-      <FutaNewLanding/>
-      // <FutaLandingNav/>
+    return (
+        // <FlexContainer justifyContent='center' alignItems='center' style={{width: '100vw', height: '100vh'}}>
+
+        //   <FadingTextGrid/>
+        // </FlexContainer>
+
+        <FutaNewLanding />
+        // <FutaLandingNav/>
     );
-  };
+}

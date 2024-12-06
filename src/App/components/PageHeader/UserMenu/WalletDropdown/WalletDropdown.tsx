@@ -15,18 +15,9 @@ import {
 } from '../../../../../ambient-utils/constants';
 import processLogoSrc from '../../../../../components/Global/TokenIcon/processLogoSrc';
 import { TokenContext } from '../../../../../contexts';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../../contexts/AppStateContext';
-import {
-    ChainDataContext,
-    ChainDataContextIF,
-} from '../../../../../contexts/ChainDataContext';
-import {
-    TokenBalanceContext,
-    TokenBalanceContextIF,
-} from '../../../../../contexts/TokenBalanceContext';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 import UserProfileCard from '../UserProfileCard';
 
 interface propsIF {
@@ -58,15 +49,13 @@ export default function WalletDropdown(props: propsIF) {
 
     const {
         activeNetwork: { chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
 
-    const { nativeTokenUsdPrice } =
-        useContext<ChainDataContextIF>(ChainDataContext);
+    const { nativeTokenUsdPrice } = useContext(ChainDataContext);
 
     const { tokens } = useContext(TokenContext);
 
-    const { tokenBalances } =
-        useContext<TokenBalanceContextIF>(TokenBalanceContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
     const defaultPair = supportedNetworks[chainId].defaultPair;
     const nativeData: TokenIF | undefined =
         tokenBalances &&

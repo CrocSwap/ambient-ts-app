@@ -56,9 +56,7 @@ export interface PoolDataIF extends PoolIF {
     usdPriceMoneynessBased: number;
 }
 
-export const ExploreContext = createContext<ExploreContextIF>(
-    {} as ExploreContextIF,
-);
+export const ExploreContext = createContext({} as ExploreContextIF);
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { activeNetwork, isUserOnline } = useContext(AppStateContext);
@@ -369,7 +367,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const dexTokens: useTokenStatsIF = useTokenStats(
         activeNetwork.chainId,
         crocEnv,
-        activeNetwork.graphCacheUrl,
+        activeNetwork.GCGO_URL,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         tokens,

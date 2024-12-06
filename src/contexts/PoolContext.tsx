@@ -21,8 +21,8 @@ import {
 import { PoolIF, PoolStatIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { usePoolList } from '../App/hooks/usePoolList';
-import { AppStateContext, AppStateContextIF } from './AppStateContext';
-import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
+import { AppStateContext } from './AppStateContext';
+import { CrocEnvContext } from './CrocEnvContext';
 import { TradeDataContext } from './TradeDataContext';
 
 export interface PoolContextIF {
@@ -43,18 +43,18 @@ export interface PoolContextIF {
     quoteTokenFdvDisplay: string | undefined;
 }
 
-export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
+export const PoolContext = createContext({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { graphCacheUrl, chainId, poolIndex },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+        activeNetwork: { GCGO_URL, chainId, poolIndex },
+    } = useContext(AppStateContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
 
-    const poolList: PoolIF[] = usePoolList(graphCacheUrl, crocEnv);
+    const poolList: PoolIF[] = usePoolList(GCGO_URL, crocEnv);
 
     const pool = useMemo(
         () => crocEnv?.pool(baseToken.address, quoteToken.address),

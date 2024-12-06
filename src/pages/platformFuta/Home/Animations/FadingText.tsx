@@ -17,8 +17,8 @@ const FadingText: React.FC<FadingTextProps> = ({
     fadeInTime = 1000,
     fadeOutDelay = 0,
     fadeOutTime = 1000,
-    color = '#AACFD1',   // Default color
-    fontSize = '24px'    // Default font size
+    color = '#AACFD1', // Default color
+    fontSize = '24px', // Default font size
 }) => {
     const [isFadingIn, setIsFadingIn] = useState<boolean>(false);
 
@@ -27,9 +27,12 @@ const FadingText: React.FC<FadingTextProps> = ({
             setIsFadingIn(true);
         }, fadeInDelay);
 
-        const fadeOutTimer = setTimeout(() => {
-            setIsFadingIn(false);
-        }, fadeInDelay + fadeInTime + fadeOutDelay);
+        const fadeOutTimer = setTimeout(
+            () => {
+                setIsFadingIn(false);
+            },
+            fadeInDelay + fadeInTime + fadeOutDelay,
+        );
 
         return () => {
             clearTimeout(fadeInTimer);

@@ -1,4 +1,3 @@
-// START: Import Local Files
 import { memo, useContext, useEffect, useState } from 'react';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import styles from './RangePriceInfo.module.css';
