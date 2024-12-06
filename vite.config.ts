@@ -59,9 +59,11 @@ export default defineConfig({
                         return 'reactreveal';
                     } else if (id.toLowerCase().includes('websocket')) {
                         return 'websocket';
-                    } else if (id.toLowerCase().includes('emoji')) {
-                        return 'emoji';
-                    } else if (id.toLowerCase().includes('react')) {
+                    }
+                    //  else if (id.toLowerCase().includes('emoji')) {
+                    //     return 'emoji';
+                    // }
+                    else if (id.toLowerCase().includes('react')) {
                         return 'react';
                     } else if (id.toLowerCase().includes('styled')) {
                         return 'styled';
