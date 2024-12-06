@@ -49,9 +49,10 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    if (id.toLowerCase().includes('react-dom')) {
-                        return 'reactdom';
-                    } else if (id.toLowerCase().includes('react-color')) {
+                    // if (id.toLowerCase().includes('react-dom')) {
+                    //     return 'reactdom';
+                    // } else
+                    if (id.toLowerCase().includes('react-color')) {
                         return 'reactcolor';
                     }
                     // else if (id.toLowerCase().includes('react-icons')) {
