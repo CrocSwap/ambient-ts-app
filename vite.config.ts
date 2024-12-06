@@ -49,7 +49,13 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    if (id.toLowerCase().includes('ens-normalize')) {
+                    if (id.toLowerCase().includes('react-reveal')) {
+                        return 'reveal'; // works
+                    } else if (id.toLowerCase().includes('react-icons')) {
+                        return 'icons'; // works
+                    } else if (id.toLowerCase().includes('styled-components')) {
+                        return 'styled-components'; // works
+                    } else if (id.toLowerCase().includes('ens-normalize')) {
                         return 'ens'; // works
                     } else if (id.toLowerCase().includes('lodash')) {
                         return 'lodash'; // works
@@ -85,7 +91,11 @@ export default defineConfig({
                         id.toLowerCase().includes('emoji-picker-react')
                     ) {
                         return 'emoji-picker-react'; // works
-                    } else if (id.toLowerCase().includes('material-ui')) {
+                    } else if (
+                        id.toLowerCase().includes('material-ui') ||
+                        id.toLowerCase().includes('popper') ||
+                        id.toLowerCase().includes('mui')
+                    ) {
                         return 'material-ui'; // works
                     } else if (id.toLowerCase().includes('bignumber')) {
                         return 'bignumber'; // works
