@@ -53,9 +53,11 @@ export default defineConfig({
                         return 'reactdom';
                     } else if (id.toLowerCase().includes('react-color')) {
                         return 'reactcolor';
-                    } else if (id.toLowerCase().includes('react-icons')) {
-                        return 'reacticons';
-                    } else if (id.toLowerCase().includes('react-reveal')) {
+                    }
+                    // else if (id.toLowerCase().includes('react-icons')) {
+                    //     return 'reacticons';
+                    // }
+                    else if (id.toLowerCase().includes('react-reveal')) {
                         return 'reactreveal';
                     } else if (id.toLowerCase().includes('websocket')) {
                         return 'websocket';
