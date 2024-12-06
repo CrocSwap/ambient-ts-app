@@ -95,6 +95,7 @@ modal.subscribeEvents(async (event) => {
     );
 
     if (event.data.event === 'CONNECT_SUCCESS') {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         const currentChainId = modal.getState().selectedNetworkId as number;
 
         const lastUsedNetworkIdString = getLocalStorageItem(
@@ -113,7 +114,6 @@ modal.subscribeEvents(async (event) => {
                 await new Promise((resolve) => setTimeout(resolve, 2000));
 
                 const newChainId = modal.getState().selectedNetworkId as number;
-
                 if (newChainId !== desiredChainId && !modal.getState().open) {
                     try {
                         await modal.switchNetwork(desiredChainId);
@@ -126,12 +126,11 @@ modal.subscribeEvents(async (event) => {
                             modal.disconnect();
                         }
                     } catch (retryError) {
-                        console.error('Retry failed:', retryError);
                         modal.disconnect();
                     }
                 }
             } catch (error) {
-                console.error('Failed to switch network:', error);
+                console.log('Failed to switch network:', error);
                 modal.disconnect();
             }
         }
@@ -145,6 +144,9 @@ modal.subscribeEvents(async (event) => {
         if (
             !networkIds.includes(modal.getState().selectedNetworkId as number)
         ) {
+            console.log({
+                selectedNetwork: modal.getState().selectedNetworkId,
+            });
             modal.disconnect();
         }
     }
