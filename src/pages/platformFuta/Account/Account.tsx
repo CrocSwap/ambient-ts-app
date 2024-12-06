@@ -261,7 +261,7 @@ export default function Account() {
         <div className={styles.container}>
             <div className={styles.content}>
                 <SearchableTicker
-                    auctions={sorted}
+                    auctions={filtered}
                     title='account'
                     isAccount={true}
                 />
@@ -274,7 +274,7 @@ export default function Account() {
             <div className={styles.content}>
                 <BreadCrumb />
                 <h2>Account</h2>
-                <SearchableTicker auctions={sorted} isAccount={true} />
+                <SearchableTicker auctions={filtered} isAccount={true} />
             </div>
             {claimAllContainer}
         </div>
@@ -285,7 +285,7 @@ export default function Account() {
             <div className={styles.content}>
                 <BreadCrumb />
                 <h2>Account</h2>
-                <SearchableTicker auctions={sorted} isAccount={true} />
+                <SearchableTicker auctions={filtered} isAccount={true} />
             </div>
         </div>
     );
