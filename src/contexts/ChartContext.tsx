@@ -176,7 +176,7 @@ export interface LocalChartSettingsIF {
     showFeeRate: boolean;
 }
 
-export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
+export const ChartContext = createContext({} as ChartContextIF);
 
 export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const { skin, platformName } = useContext(BrandContext);

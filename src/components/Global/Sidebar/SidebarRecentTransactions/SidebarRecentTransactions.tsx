@@ -1,13 +1,10 @@
-// START: Import React and Dongles
 import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
-// START: Import Local Files
 import { TransactionIF } from '../../../../ambient-utils/types';
 
-// START: Import JSX Components
 import { AppStateContext } from '../../../../contexts';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';

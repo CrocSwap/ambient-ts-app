@@ -27,7 +27,6 @@ import {
     mainnetUSDT,
     mainnetWBTC,
     mainnetWstETH,
-    plumeSepoliaETH,
     plumeSepoliaNEV,
     plumeSepoliaUSD,
     scrollAxlUSDC,
@@ -185,7 +184,6 @@ export const STAKED_ETH_TOKENS = [
     blastWrsETH.address,
     blastEzETH.address,
     blastWEETH.address,
-    plumeSepoliaETH.address,
 ].map((x) => x.toLowerCase());
 
 export const USD_EXCLUDED_TOKENS = [mainnetSWELL.address].map((x) =>

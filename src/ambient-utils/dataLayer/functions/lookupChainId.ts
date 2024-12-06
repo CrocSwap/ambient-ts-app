@@ -38,6 +38,11 @@ export function lookupChainId(
         case '0x82750':
             chainIdHex = '0x82750';
             break;
+        case 'swell':
+        case '1923':
+        case '0x783':
+            chainIdHex = '0x783';
+            break;
         case 'blast':
         case '81457':
         case '0x13e31':

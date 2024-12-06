@@ -64,7 +64,7 @@ export default function TransactionSubmitted(props: PropsIF) {
         <Button
             idForDOM='import_token_B_into_wallet_button'
             flat
-            title={`Import ${tokenBSymbol} into Connected Wallet`}
+            title={`import ${tokenBSymbol} into Connected Wallet`}
             action={handleAddToMetaMask}
             disabled={false}
         />

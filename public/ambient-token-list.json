@@ -1,7 +1,7 @@
 {
     "name": "Ambient Token List",
     "logoURI": "https://ambient.finance/rings_192.png",
-    "timestamp": "2022-03-17T15:02:53.363Z",
+    "timestamp": "2024-12-04T22:52:00.209Z",
     "version": {
         "major": 1,
         "minor": 0,
@@ -634,7 +634,7 @@
             "symbol": "pUSD",
             "decimals": 6,
             "chainId": 98864,
-            "logoURI": ""
+            "logoURI": "https://img.cryptorank.io/coins/plume_network1716480863760.png"
         },
         {
             "name": "Nest Egg Vault",
@@ -658,7 +658,7 @@
             "symbol": "USDC",
             "decimals": 6,
             "chainId": 1924,
-            "logoURI": ""
+            "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
         },
         {
             "name": "Ambient USDT",
@@ -690,6 +690,22 @@
             "symbol": "USDT",
             "decimals": 6,
             "chainId": 84532,
+            "logoURI": ""
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": ""
+        },
+        {
+            "name": "Wolski Test Token",
+            "address": "0x83CA2E0018cBa6CD1149F2BB059d2Fc6D0fDf456",
+            "symbol": "WTT",
+            "decimals": 6,
+            "chainId": 1923,
             "logoURI": ""
         }
     ]

@@ -41,9 +41,7 @@ export interface TradeTableContextIF {
     setHideEmptyPositionsOnAccount: (val: boolean) => void;
 }
 
-export const TradeTableContext = createContext<TradeTableContextIF>(
-    {} as TradeTableContextIF,
-);
+export const TradeTableContext = createContext({} as TradeTableContextIF);
 
 export const TradeTableContextProvider = (props: {
     children: React.ReactNode;
