@@ -1,12 +1,11 @@
 /* eslint-disable camelcase */
-import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { ZeroAddress } from 'ethers';
 import { supportedNetworks } from '../constants/networks';
 import {
     isUsdStableToken,
     memoizePromiseFn,
-    querySpotPrice,
     translateToken,
-    truncateDecimals,
 } from '../dataLayer/functions';
 import { fetchBatch } from './fetchBatch';
 
@@ -15,8 +14,8 @@ const randomNum = Math.random();
 export const fetchTokenPrice = async (
     dispToken: string,
     chain: string,
-    crocEnv: CrocEnv,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    crocEnv: CrocEnv,
     _lastTime: number,
 ) => {
     const address = translateToken(dispToken, chain);
@@ -30,7 +29,7 @@ export const fetchTokenPrice = async (
                       ? 'blast'
                       : chain === '0x18230'
                         ? 'plume'
-                        : chain === '0x784'
+                        : chain === '0x783'
                           ? 'swell'
                           : chain === '0x14a34'
                             ? 'base'
@@ -52,32 +51,25 @@ export const fetchTokenPrice = async (
         const defaultPair = supportedNetworks[chain]?.defaultPair;
         if (!defaultPair) return;
         if (
-            // if token is ETH, return current value of ETH-USDC pool
-            dispToken.toLowerCase() === defaultPair[0].address.toLowerCase()
+            // if token is ETH, return current value of mainnet ETH
+            dispToken.toLowerCase() === ZeroAddress
         ) {
-            if (!crocEnv || (await crocEnv.context).chain.chainId !== chain)
-                return;
-            const spotPrice = await querySpotPrice(
-                crocEnv,
-                defaultPair[0].address.toLowerCase(),
-                defaultPair[1].address.toLowerCase(),
-                chain,
-                _lastTime,
-            );
-
-            const displayPrice: number = spotPrice
-                ? 1 /
-                  toDisplayPrice(
-                      spotPrice,
-                      defaultPair[0].decimals,
-                      defaultPair[1].decimals,
-                  )
-                : 3500;
-            const usdPriceFormatted = truncateDecimals(displayPrice, 2);
-            return {
-                usdPrice: displayPrice,
-                usdPriceFormatted: usdPriceFormatted,
+            const body = {
+                config_path: 'price',
+                asset_platform: 'ethereum',
+                token_address: ZeroAddress,
             };
+
+            const response = await fetchBatch<'price'>(body);
+
+            if ('error' in response) throw new Error(response.error);
+            if (response.value.source === '') {
+                throw new Error('no source available');
+            }
+            if (response.value.usdPrice === Infinity) {
+                throw new Error('USD value returned as Infinity');
+            }
+            return response.value;
         } else if (
             // if token is USD stablecoin, return $1
             isUsdStableToken(dispToken)

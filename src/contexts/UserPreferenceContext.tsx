@@ -30,7 +30,7 @@ export interface UserPreferenceContextIF {
     };
 }
 
-export const UserPreferenceContext = createContext<UserPreferenceContextIF>(
+export const UserPreferenceContext = createContext(
     {} as UserPreferenceContextIF,
 );
 

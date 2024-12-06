@@ -154,10 +154,10 @@ const OptionsTabStyle = styled.div<{
 `;
 
 export {
+    ColorPickerTab,
     FloatingDiv,
     FloatingDivContainer,
     OptionsTab,
     OptionsTabSize,
     OptionsTabStyle,
-    ColorPickerTab,
 };

@@ -31,7 +31,7 @@ const chainSpecForWalletConnector = {
 export const baseSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    graphCacheUrl: GCGO_TESTNET_URL,
+    GCGO_URL: GCGO_TESTNET_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [baseSepoliaETH, baseSepoliaUSDC],

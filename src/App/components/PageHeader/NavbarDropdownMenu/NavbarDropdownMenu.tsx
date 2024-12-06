@@ -1,4 +1,3 @@
-// START: Import React and Dongles
 import { memo, useContext, useEffect, useRef } from 'react';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { BsMedium } from 'react-icons/bs';

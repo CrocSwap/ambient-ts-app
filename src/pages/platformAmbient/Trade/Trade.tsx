@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// START: Import React and Dongles
 import { NumberSize } from 're-resizable';
 import {
     memo,
@@ -11,9 +9,6 @@ import {
 } from 'react';
 import { Outlet } from 'react-router-dom';
 
-// START: Import JSX Components
-import TradeTabs2 from '../../../components/Trade/TradeTabs/TradeTabs2';
-// START: Import Local Files
 import { Direction } from 're-resizable/lib/resizer';
 import {
     getFormattedNumber,
@@ -22,6 +17,7 @@ import {
 import { CandleDataIF } from '../../../ambient-utils/types';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import { NoChartData } from '../../../components/NoChartData/NoChartData';
+import TradeTabs2 from '../../../components/Trade/TradeTabs/TradeTabs2';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';

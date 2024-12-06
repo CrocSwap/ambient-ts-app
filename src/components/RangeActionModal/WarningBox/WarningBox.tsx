@@ -1,6 +1,6 @@
 import React from 'react';
 import { IoWarningOutline } from 'react-icons/io5';
-import styles from './WarningBox.module.css'; // Import your styles here
+import styles from './WarningBox.module.css';
 
 interface WarningBoxProps {
     title?: string;

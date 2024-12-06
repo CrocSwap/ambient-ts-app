@@ -1,5 +1,5 @@
-import styles from './GameCard.module.css';
 import coverImage from '../../../assets/images/memory-game/cover.png';
+import styles from './GameCard.module.css';
 
 type gameItem = {
     src: string;

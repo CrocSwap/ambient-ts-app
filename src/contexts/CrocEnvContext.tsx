@@ -52,9 +52,7 @@ export interface CrocEnvContextIF {
     blastProvider: Provider | undefined;
 }
 
-export const CrocEnvContext = createContext<CrocEnvContextIF>(
-    {} as CrocEnvContextIF,
-);
+export const CrocEnvContext = createContext({} as CrocEnvContextIF);
 const mainnetProvider = new BatchedJsonRpcProvider(
     ethereumMainnet.evmRpcUrl,
     parseInt(ethereumMainnet.chainId),
