@@ -34,7 +34,7 @@ const chainSpecForWalletConnector = {
 export const ethereumMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    graphCacheUrl: GCGO_ETHEREUM_URL,
+    GCGO_URL: GCGO_ETHEREUM_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [mainnetETH, mainnetUSDC],

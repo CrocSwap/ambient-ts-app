@@ -1,7 +1,5 @@
-// START: Import React and Dongles
 import { AnimatePresence, motion } from 'framer-motion';
 import { ReactNode, useContext, useEffect, useState } from 'react';
-// START: Import Local Files
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { maxWidth } from '../../../ambient-utils/types/mediaQueries';
 import Button from '../../../components/Form/Button';

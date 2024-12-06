@@ -29,7 +29,7 @@ export const blastMainnet: NetworkIF = {
     chainSpec: chainSpecFromSDK,
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
-    graphCacheUrl: GCGO_BLAST_URL,
+    GCGO_URL: GCGO_BLAST_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [blastETH, blastUSDB],

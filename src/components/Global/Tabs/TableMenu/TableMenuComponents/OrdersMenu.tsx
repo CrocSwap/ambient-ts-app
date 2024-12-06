@@ -1,18 +1,12 @@
-// START: Import React and Dongles
 import { useContext, useEffect, useRef, useState } from 'react';
 import { CiCircleMore } from 'react-icons/ci';
 import { FiExternalLink } from 'react-icons/fi';
-// START: Import JSX Functional Components
 
-// START: Import Local Files
 import {
     LimitModalAction,
     LimitOrderIF,
 } from '../../../../../ambient-utils/types';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
@@ -60,7 +54,7 @@ export default function OrdersMenu(props: propsIF) {
 
     const {
         activeNetwork: { chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);

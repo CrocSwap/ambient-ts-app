@@ -1,6 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
-import { GCGO_OVERRIDE_URL } from '../constants';
 import { getTransactionData, SpotPriceFn } from '../dataLayer/functions';
 import { TokenIF, TransactionServerIF } from '../types';
 import { FetchAddrFn } from './fetchAddress';
@@ -19,7 +18,7 @@ interface argsIF {
     time?: number;
     timeBefore?: number;
     crocEnv: CrocEnv;
-    graphCacheUrl: string;
+    GCGO_URL: string;
     provider: Provider;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -39,7 +38,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         time,
         timeBefore,
         crocEnv,
-        graphCacheUrl,
+        GCGO_URL,
         provider,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
@@ -47,9 +46,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         cachedEnsResolve,
     } = args;
 
-    const poolRecentChangesCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/pool_txs?'
-        : graphCacheUrl + '/pool_txs?';
+    const poolRecentChangesCacheEndpoint = GCGO_URL + '/pool_txs?';
 
     const poolChanges = fetch(
         period && time
