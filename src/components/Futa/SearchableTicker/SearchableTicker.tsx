@@ -343,21 +343,6 @@ export default function SearchableTicker(props: propsIF) {
                 height: searchableTickerHeights.current,
             }}
             minHeight={4}
-            // onResize={(
-            //     evt: MouseEvent | TouchEvent,
-            //     dir: Direction,
-            //     ref: HTMLElement,
-            //     d: NumberSize,
-            // ) => {
-            //     if (
-            //         searchableTickerHeights.current + d.height <
-            //         CHART_MIN_HEIGHT
-            //     ) {
-            //         setIsSearchableTickerHeightMinimum(true);
-            //     } else {
-            //         setIsSearchableTickerHeightMinimum(false);
-            //     }
-            // }}
             onResize={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,
@@ -372,24 +357,8 @@ export default function SearchableTicker(props: propsIF) {
                 }
             }}
             onResizeStart={() => {
-                // may be useful later
+                /* may be useful later */
             }}
-            // onResizeStop={(
-            //     evt: MouseEvent | TouchEvent,
-            //     dir: Direction,
-            //     ref: HTMLElement,
-            //     d: NumberSize,
-            // ) => {
-            //     if (
-            //         searchableTickerHeights.current + d.height < CHART_MIN_HEIGHT
-            //     ) {
-            //         setSearchableTickerHeight(searchableTickerHeights.min);
-            //     } else {
-            //         setSearchableTickerHeight(
-            //             searchableTickerHeights.current + d.height,
-            //         );
-            //     }
-            // }}
             onResizeStop={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,
