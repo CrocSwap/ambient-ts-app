@@ -184,6 +184,9 @@ export default function MessageInput(props: MessageInputProps) {
     const handleEmojiPickerHideShow = () => {
         if (!isUserConnected && !userAddress) {
             setShowEmojiPicker(false);
+        } else if (showMobileVersion) {
+            setShowEmojiPicker(false);
+            inputRef?.current?.focus();
         } else {
             setShowEmojiPicker(!showEmojiPicker);
         }
