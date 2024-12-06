@@ -4957,12 +4957,15 @@ export default function Chart(props: propsIF) {
         mouseX: number,
         mouseY: number,
         diameter: number,
+        isTriangle = false,
     ) {
         if (scaleData && circleScale) {
             const startX = scaleData.xScale(element[0].x);
             const startY = scaleData.yScale(element[0].y);
 
-            const circleDiameter = Math.sqrt(circleScale(diameter) / Math.PI);
+            const circleDiameter = Math.sqrt(
+                (isTriangle ? 1000 : circleScale(diameter)) / Math.PI,
+            );
 
             let distance = false;
 
@@ -5322,6 +5325,32 @@ export default function Chart(props: propsIF) {
                                 mouseX,
                                 mouseY,
                                 limitOrder.totalValueUSD,
+                            )
+                        ) {
+                            resElement = {
+                                id: limitOrder.positionHash,
+                                type: 'limitCircle',
+                                order: limitOrder,
+                            };
+                        }
+                    } else if (limitOrder.claimableLiq === 0) {
+                        const swapOrderData = [
+                            {
+                                x: limitOrder.timeFirstMint * 1000,
+                                y: denomInBase
+                                    ? limitOrder.invLimitPriceDecimalCorrected
+                                    : limitOrder.limitPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkSwapLoation(
+                                swapOrderData,
+                                mouseX,
+                                mouseY,
+                                limitOrder.totalValueUSD,
+                                true,
                             )
                         ) {
                             resElement = {
@@ -6157,10 +6186,13 @@ export default function Chart(props: propsIF) {
                                       .limitPriceDecimalCorrected,
                         );
 
+                        const time =
+                            hoveredOrderHistory.order.claimableLiq === 0
+                                ? hoveredOrderHistory.order.timeFirstMint
+                                : hoveredOrderHistory.order.crossTime;
+
                         const tempPlace =
-                            scaleData?.xScale(
-                                hoveredOrderHistory.order.crossTime * 1000,
-                            ) +
+                            scaleData?.xScale(time * 1000) +
                             scale(
                                 circleScaleLimitOrder(
                                     hoveredOrderHistory.order.totalValueUSD,
@@ -6193,9 +6225,7 @@ export default function Chart(props: propsIF) {
                                         top + 35));
 
                         const left =
-                            scaleData?.xScale(
-                                hoveredOrderHistory.order.crossTime * 1000,
-                            ) +
+                            scaleData?.xScale(time * 1000) +
                             (isOverLeft && isOverTop
                                 ? -scale(
                                       circleScaleLimitOrder(
