@@ -84,8 +84,6 @@ export default defineConfig({
                         return 'moment';
                     } else if (id.toLowerCase().includes('numbro')) {
                         return 'numbro';
-                    } else if (id.toLowerCase().includes('bignumber')) {
-                        return 'bignumber';
                     } else if (id.toLowerCase().includes('i18')) {
                         return 'i18';
                     } else if (id.toLowerCase().includes('siwe')) {
@@ -126,12 +124,8 @@ export default defineConfig({
                         return 'futa';
                     } else if (id.toLowerCase().includes('chat')) {
                         return 'chat';
-                    } else if (id.toLowerCase().includes('home')) {
-                        return 'home';
                     } else if (id.toLowerCase().includes('form')) {
                         return 'form';
-                    } else if (id.toLowerCase().includes('rangeactionmodal')) {
-                        return 'rangeactionmodal';
                     } else if (id.toLowerCase().includes('utils')) {
                         return 'utils';
                     } else if (id.toLowerCase().includes('components')) {
