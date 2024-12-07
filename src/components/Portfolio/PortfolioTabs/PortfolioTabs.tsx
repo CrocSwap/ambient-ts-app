@@ -1,23 +1,7 @@
-import {
-    useContext,
-    // START: Import React and Dongles
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
-// START: Import JSX Functional Components
-import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
-import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
-import TabComponent from '../../Global/TabComponent/TabComponent';
-// import Tokens from '../Tokens/Tokens';
-import styles from './PortfolioTabs.module.css';
-// START: Import Local Files
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { fetchUserRecentChanges } from '../../../ambient-utils/api';
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    GCGO_OVERRIDE_URL,
-} from '../../../ambient-utils/constants';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../ambient-utils/constants';
 import {
     filterLimitArray,
     getLimitOrderData,
@@ -37,10 +21,7 @@ import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
@@ -51,10 +32,14 @@ import {
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import Points from '../../Global/Account/AccountTabs/Points/Points';
+import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
+import TabComponent from '../../Global/TabComponent/TabComponent';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
+import styles from './PortfolioTabs.module.css';
 
 // interface for React functional component props
 interface propsIF {
@@ -87,8 +72,8 @@ export default function PortfolioTabs(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
-        activeNetwork: { graphCacheUrl, chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
+        activeNetwork: { GCGO_URL, chainId },
+    } = useContext(AppStateContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
@@ -114,12 +99,8 @@ export default function PortfolioTabs(props: propsIF) {
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
 
-    const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_positions?'
-        : graphCacheUrl + '/user_positions?';
-    const userLimitOrdersCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
-        : graphCacheUrl + '/user_limit_orders?';
+    const userPositionsCacheEndpoint = GCGO_URL + '/user_positions?';
+    const userLimitOrdersCacheEndpoint = GCGO_URL + '/user_limit_orders?';
 
     const getLookupUserPositions = async (accountToSearch: string) => {
         fetch(
@@ -221,7 +202,7 @@ export default function PortfolioTabs(props: propsIF) {
                 chainId: chainId,
                 n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
-                graphCacheUrl: graphCacheUrl,
+                GCGO_URL: GCGO_URL,
                 provider,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,

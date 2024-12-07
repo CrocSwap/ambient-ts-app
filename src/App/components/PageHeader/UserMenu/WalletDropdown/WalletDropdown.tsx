@@ -15,18 +15,9 @@ import {
 } from '../../../../../ambient-utils/constants';
 import processLogoSrc from '../../../../../components/Global/TokenIcon/processLogoSrc';
 import { TokenContext } from '../../../../../contexts';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../../contexts/AppStateContext';
-import {
-    ChainDataContext,
-    ChainDataContextIF,
-} from '../../../../../contexts/ChainDataContext';
-import {
-    TokenBalanceContext,
-    TokenBalanceContextIF,
-} from '../../../../../contexts/TokenBalanceContext';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 import UserProfileCard from '../UserProfileCard';
 
 interface propsIF {
@@ -58,15 +49,13 @@ export default function WalletDropdown(props: propsIF) {
 
     const {
         activeNetwork: { chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
 
-    const { isActiveNetworkBlast, nativeTokenUsdPrice, isActiveNetworkPlume } =
-        useContext<ChainDataContextIF>(ChainDataContext);
+    const { nativeTokenUsdPrice } = useContext(ChainDataContext);
 
     const { tokens } = useContext(TokenContext);
 
-    const { tokenBalances } =
-        useContext<TokenBalanceContextIF>(TokenBalanceContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
     const defaultPair = supportedNetworks[chainId].defaultPair;
     const nativeData: TokenIF | undefined =
         tokenBalances &&
@@ -236,55 +225,23 @@ export default function WalletDropdown(props: propsIF) {
                 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
         },
     ];
-    if (isActiveNetworkBlast) {
-        tokensData.push({
-            symbol: 'USDB',
-            amount: secondTokenBalanceForDom
-                ? parseFloat(secondTokenBalanceForDom ?? '0') === 0
-                    ? '0.00'
-                    : secondTokenBalanceForDom
-                : '...',
-            value: secondTokenUsdValueForDom
-                ? parseFloat(secondTokenUsdValueForDom ?? '0') === 0
-                    ? '$0.00'
-                    : secondTokenUsdValueForDom
-                : '...',
-            logoUri:
-                'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
-        });
-    } else if (isActiveNetworkPlume) {
-        tokensData.push({
-            symbol: 'pUSD',
-            amount: secondTokenBalanceForDom
-                ? parseFloat(secondTokenBalanceForDom ?? '0') === 0
-                    ? '0.00'
-                    : secondTokenBalanceForDom
-                : '...',
-            value: secondTokenUsdValueForDom
-                ? parseFloat(secondTokenUsdValueForDom ?? '0') === 0
-                    ? '$0.00'
-                    : secondTokenUsdValueForDom
-                : '...',
-            logoUri:
-                'https://img.cryptorank.io/coins/plume_network1716480863760.png',
-        });
-    } else {
-        tokensData.push({
-            symbol: 'USDC',
-            amount: secondTokenBalanceForDom
-                ? parseFloat(secondTokenBalanceForDom ?? '0') === 0
-                    ? '0.00'
-                    : secondTokenBalanceForDom
-                : '...',
-            value: secondTokenUsdValueForDom
-                ? parseFloat(secondTokenUsdValueForDom ?? '0') === 0
-                    ? '$0.00'
-                    : secondTokenUsdValueForDom
-                : '...',
-            logoUri:
-                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
-        });
-    }
+
+    tokensData.push({
+        symbol: secondDefaultTokenData?.symbol || 'USDC',
+        amount: secondTokenBalanceForDom
+            ? parseFloat(secondTokenBalanceForDom ?? '0') === 0
+                ? '0.00'
+                : secondTokenBalanceForDom
+            : '...',
+        value: secondTokenUsdValueForDom
+            ? parseFloat(secondTokenUsdValueForDom ?? '0') === 0
+                ? '$0.00'
+                : secondTokenUsdValueForDom
+            : '...',
+        logoUri:
+            secondDefaultTokenData?.logoURI ||
+            'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
+    });
 
     return (
         <div

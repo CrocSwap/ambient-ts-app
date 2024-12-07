@@ -422,19 +422,17 @@ export const orderRowConstants = (props: propsIF) => {
             type={sideType}
             data-label='price'
         >
-            {(
-                <p>
-                    <span>
-                        {isAccountView
-                            ? isTradeDollarizationEnabled
-                                ? displayPriceInUsd
-                                : truncatedDisplayPriceDenomByMoneyness
-                            : isTradeDollarizationEnabled
-                              ? displayPriceInUsd
-                              : truncatedDisplayPrice}
-                    </span>
-                </p>
-            ) || '…'}
+            <p>
+                <span>
+                    {isAccountView
+                        ? isTradeDollarizationEnabled
+                            ? displayPriceInUsd
+                            : truncatedDisplayPriceDenomByMoneyness
+                        : isTradeDollarizationEnabled
+                          ? displayPriceInUsd
+                          : truncatedDisplayPrice}
+                </span>
+            </p>
         </RowItem>
     );
 

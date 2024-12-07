@@ -9,19 +9,24 @@ import TradeNowButton from './TradeNowButton/TradeNowButton';
 
 export default function Hero() {
     const smallScreen: boolean = useMediaQuery('(max-width: 1200px)');
-    const { hero, platformName } = useContext(BrandContext);
+    const { platformName, cobrandingLogo } = useContext(BrandContext);
+
+    const hero: heroItem[] = cobrandingLogo
+        ? [
+              { content: 'ambient', processAs: 'text' },
+              { content: '×', processAs: 'separator' },
+              { content: cobrandingLogo, processAs: 'image' },
+          ]
+        : [{ content: 'ambient', processAs: 'text' }];
 
     // recognized slugs for background image CSS classes
-    type cssSlugs = 'purple_waves' | 'stars';
+    type cssSlugs = 'purple_waves';
     // slug to specify the desired background image
     const cssSlug = useMemo<cssSlugs>(() => {
         // declare an output variable
         let slug: cssSlugs;
         // router to map a background image from deployment config
         switch (platformName) {
-            case 'futa':
-                slug = 'stars';
-                break;
             case 'ambient':
             default:
                 slug = 'purple_waves';

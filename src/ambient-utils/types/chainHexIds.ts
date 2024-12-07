@@ -1,6 +1,7 @@
 export type chainHexIds =
     | '0x1' // ethereum mainnet
     | '0x82750' // scroll mainnet
+    | '0x783' // swell mainnet
     | '0x13e31' // blast mainnet
     | '0xaa36a7' // ethereum sepolia
     | '0x8274f' // scroll sepolia
