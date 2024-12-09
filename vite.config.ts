@@ -49,7 +49,9 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    if (
+                    if (id.endsWith('.css')) {
+                        return 'styles'; // Combine all CSS into the "styles" chunk
+                    } else if (
                         id.toLowerCase().includes('eventemitter3') ||
                         id.toLowerCase().includes('cross-fetch') ||
                         id.toLowerCase().includes('multiformats') ||
