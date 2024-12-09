@@ -49,142 +49,136 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    if (id.toLowerCase().includes('readable-stream')) {
-                        return 'readable-stream'; // works
+                    if (
+                        id.toLowerCase().includes('eventemitter3') ||
+                        id.toLowerCase().includes('cross-fetch') ||
+                        id.toLowerCase().includes('multiformats') ||
+                        id.toLowerCase().includes('dayjs') ||
+                        id.toLowerCase().includes('css-vendor')
+                    ) {
+                        return 'various-independent-libs-1';
+                    } else if (id.toLowerCase().includes('readable-stream')) {
+                        return 'readable-stream';
                     } else if (id.toLowerCase().includes('qrcode/lib')) {
-                        return 'qrcode'; // works
+                        return 'qrcode';
                     } else if (id.toLowerCase().includes('react-color')) {
-                        return 'react-color'; // works
+                        return 'react-color';
                     } else if (id.toLowerCase().includes('lib.esm')) {
-                        return 'lib.esm'; // works
+                        return 'lib.esm';
                     } else if (id.toLowerCase().includes('ui/dist/esm')) {
-                        return 'esm'; // works
+                        return 'esm';
                     } else if (id.toLowerCase().includes('react-reveal')) {
-                        return 'reveal'; // works
+                        return 'reveal';
                     } else if (id.toLowerCase().includes('react-icons')) {
-                        return 'icons'; // works
+                        return 'icons';
                     } else if (id.toLowerCase().includes('styled-components')) {
-                        return 'styled-components'; // works
+                        return 'styled-components';
                     } else if (id.toLowerCase().includes('ens-normalize')) {
-                        return 'ens'; // works
+                        return 'ens';
                     } else if (id.toLowerCase().includes('lodash')) {
-                        return 'lodash'; // works
+                        return 'lodash';
                     } else if (id.toLowerCase().includes('re-resizable')) {
-                        return 'resizable'; // works
+                        return 'resizable';
                     } else if (id.toLowerCase().includes('intro.js')) {
-                        return 'intro'; // works
+                        return 'intro';
                     } else if (id.toLowerCase().includes('stablelib')) {
-                        return 'stablelib'; // works
+                        return 'stablelib';
                     } else if (id.toLowerCase().includes('numbro')) {
-                        return 'numbro'; // works
+                        return 'numbro';
                     } else if (id.toLowerCase().includes('moment')) {
-                        return 'moment'; // works
+                        return 'moment';
                     } else if (id.toLowerCase().includes('i18')) {
-                        return 'i18'; // works
+                        return 'i18';
                     } else if (id.toLowerCase().includes('zod')) {
-                        return 'zod'; // works
+                        return 'zod';
                     } else if (id.toLowerCase().includes('noble')) {
-                        return 'noble'; // works
+                        return 'noble';
                     } else if (id.toLowerCase().includes('siwe')) {
-                        return 'siwe'; // works
+                        return 'siwe';
                     } else if (id.toLowerCase().includes('framer')) {
-                        return 'framer'; // works
+                        return 'framer';
                     } else if (
                         id.toLowerCase().includes('universal-provider')
                     ) {
-                        return 'provider'; // works
+                        return 'provider';
                     } else if (id.toLowerCase().includes('walletconnect')) {
-                        return 'walletconnect'; // works
+                        return 'walletconnect';
                     } else if (id.toLowerCase().includes('web3modal')) {
-                        return 'web3modal'; // works
+                        return 'web3modal';
                     } else if (
                         id.toLowerCase().includes('emoji-picker-react')
                     ) {
-                        return 'emoji-picker-react'; // works
+                        return 'emoji-picker-react';
                     } else if (
                         id.toLowerCase().includes('material-ui') ||
                         id.toLowerCase().includes('popper') ||
                         id.toLowerCase().includes('mui')
                     ) {
-                        return 'material-ui'; // works
+                        return 'material-ui';
                     } else if (id.toLowerCase().includes('bignumber')) {
-                        return 'bignumber'; // works
+                        return 'bignumber';
                     } else if (id.toLowerCase().includes('@emotion')) {
-                        return 'emotion'; // works
+                        return 'emotion';
                     } else if (
                         id.toLowerCase().includes('react-use-websocket')
                     ) {
-                        return 'websocket'; // works
+                        return 'websocket';
                     } else if (
                         id.toLowerCase().includes('ethers') ||
                         id.toLowerCase().includes('crocswap-libs')
                     ) {
-                        return 'ethers'; // works
+                        return 'ethers';
                     } else if (id.toLowerCase().includes('motionone')) {
-                        return 'motionone'; // works
+                        return 'motionone';
                     } else if (id.toLowerCase().includes('jss/dist')) {
-                        return 'jss/dist'; // works
+                        return 'jss/dist';
                     } else if (id.toLowerCase().includes('modern-screenshot')) {
-                        return 'modern-screenshot'; // works
-                    } else if (
-                        id.toLowerCase().includes('react-transition-group')
-                    ) {
-                        return 'react-transition-group'; // works
+                        return 'modern-screenshot';
                     } else if (id.toLowerCase().includes('aes-js')) {
-                        return 'aes-js'; // works
+                        return 'aes-js';
                     } else if (id.toLowerCase().includes('sha.js')) {
-                        return 'sha.js'; // works
+                        return 'sha.js';
                     } else if (id.toLowerCase().includes('tinycolor2')) {
-                        return 'tinycolor2'; // works
+                        return 'tinycolor2';
                     } else if (id.toLowerCase().includes('events')) {
-                        return 'events'; // works
+                        return 'events';
                     } else if (id.toLowerCase().includes('tslib')) {
-                        return 'tslib'; // works
+                        return 'tslib';
                     } else if (id.toLowerCase().includes('lit')) {
-                        return 'lit'; // works
+                        return 'lit';
                     } else if (id.toLowerCase().includes('remix-run')) {
-                        return 'remix-run'; // works
+                        return 'remix-run';
                     } else if (id.toLowerCase().includes('popmotion')) {
-                        return 'popmotion'; // works
-                    } else if (id.toLowerCase().includes('reactcss')) {
-                        return 'reactcss'; // works
-                    } else if (id.toLowerCase().includes('cross-fetch')) {
-                        return 'cross-fetch'; // works
-                    } else if (id.toLowerCase().includes('dayjs')) {
-                        return 'dayjs'; // works
-                    } else if (id.toLowerCase().includes('multiformats')) {
-                        return 'multiformats'; // works
-                    } else if (id.toLowerCase().includes('eventemitter3')) {
-                        return 'eventemitter3'; // works
-                    } else if (id.toLowerCase().includes('css-vendor')) {
-                        return 'css-vendor'; // works
+                        return 'popmotion';
                     } else if (id.toLowerCase().includes('d3')) {
-                        return 'd3'; // works
+                        return 'd3';
                     } else if (id.toLowerCase().includes('coinbase')) {
-                        return 'coinbase'; // works
+                        return 'coinbase';
                     } else if (
+                        id.toLowerCase().includes('reactcss') ||
+                        id.toLowerCase().includes('react-transition-group') ||
                         id.toLowerCase().includes('react-jazzicon') ||
                         id.toLowerCase().includes('react-blockies')
                     ) {
-                        return 'avatar'; // works
+                        return 'various-independent-libs-2';
                     } else if (id.toLowerCase().includes('node_modules')) {
                         return 'vendor'; // General vendor chunk for everything else in node_modules
                     } else if (id.toLowerCase().includes('assets')) {
-                        return 'assets'; // works
+                        return 'assets';
                     } else if (id.toLowerCase().includes('futa')) {
-                        return 'futa'; // works
+                        return 'futa';
                     } else if (id.toLowerCase().includes('chat')) {
-                        return 'chat'; // works
+                        return 'chat';
                     } else if (id.toLowerCase().includes('utils')) {
-                        return 'utils'; // works
+                        return 'utils';
                     } else if (id.toLowerCase().includes('global')) {
-                        return 'global'; // works
+                        return 'global';
                     } else if (id.toLowerCase().includes('trade')) {
-                        return 'trade'; // works
+                        return 'trade';
                     } else if (id.toLowerCase().includes('components')) {
-                        return 'components'; // works
+                        return 'components';
                     } else if (id.toLowerCase().includes('form')) {
-                        return 'form'; // works
+                        return 'form';
                     }
                 },
             },
