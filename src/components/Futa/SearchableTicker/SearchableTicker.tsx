@@ -34,7 +34,10 @@ import { auctionDataSets } from '../../../pages/platformFuta/Account/Account';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
-    toggleData?: (set: auctionDataSets) => void;
+    dataState?: {
+        active: auctionDataSets;
+        toggle: (set: auctionDataSets) => void;
+    };
     title?: string;
     setIsFullLayoutActive?: Dispatch<SetStateAction<boolean>>;
     isAccount?: boolean;
@@ -48,7 +51,7 @@ export default function SearchableTicker(props: propsIF) {
         setIsFullLayoutActive,
         placeholderTicker,
         isAccount,
-        toggleData,
+        dataState,
     } = props;
     const [isSortDropdownOpen, setIsSortDropdownOpen] =
         useState<boolean>(false);
@@ -256,11 +259,29 @@ export default function SearchableTicker(props: propsIF) {
             )}
             <div className={styles.filter_options}>
                 <div className={styles.data_set_toggles}>
-                    <button onClick={() => toggleData && toggleData('bids')}>
-                        Bids
+                    <button
+                        className={
+                            dataState?.active === 'bids'
+                                ? styles.button_active
+                                : null
+                        }
+                        onClick={() =>
+                            dataState?.toggle && dataState.toggle('bids')
+                        }
+                    >
+                        BIDS
                     </button>
-                    <button onClick={() => toggleData && toggleData('created')}>
-                        Created
+                    <button
+                        className={
+                            dataState?.active === 'created'
+                                ? styles.button_active
+                                : null
+                        }
+                        onClick={() =>
+                            dataState?.toggle && dataState.toggle('created')
+                        }
+                    >
+                        CREATED
                     </button>
                 </div>
                 <div className={styles.search_and_filter}>

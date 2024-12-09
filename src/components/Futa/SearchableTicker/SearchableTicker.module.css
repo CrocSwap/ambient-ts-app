@@ -44,6 +44,11 @@
 
 .data_set_toggles > button {
     min-width: 160px;
+    border: none;
+}
+
+.button_active {
+    background: var(--accent1, #0ccdff);
 }
 
 .search_and_filter {

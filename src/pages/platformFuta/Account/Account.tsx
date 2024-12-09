@@ -246,7 +246,10 @@ export default function Account() {
             <div className={styles.content}>
                 <SearchableTicker
                     auctions={filtered}
-                    toggleData={toggleData}
+                    dataState={{
+                        active: tickerSet,
+                        toggle: toggleData,
+                    }}
                     title='accounttt'
                     isAccount={true}
                 />
@@ -273,6 +276,10 @@ export default function Account() {
             <div className={styles.content}>
                 <SearchableTicker
                     auctions={filtered}
+                    dataState={{
+                        active: tickerSet,
+                        toggle: toggleData,
+                    }}
                     title='account'
                     isAccount={true}
                 />
@@ -287,7 +294,10 @@ export default function Account() {
                 <h2>Account3</h2>
                 <SearchableTicker
                     auctions={filtered}
-                    toggleData={toggleData}
+                    dataState={{
+                        active: tickerSet,
+                        toggle: toggleData,
+                    }}
                     isAccount={true}
                 />
             </div>
@@ -302,7 +312,10 @@ export default function Account() {
                 <h2>Account</h2>
                 <SearchableTicker
                     auctions={filtered}
-                    toggleData={toggleData}
+                    dataState={{
+                        active: tickerSet,
+                        toggle: toggleData,
+                    }}
                     isAccount={true}
                 />
             </div>
