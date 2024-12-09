@@ -37,7 +37,7 @@
         "react-router-dom": "^6.27.0",
         "react-transition-group": "^4.4.2",
         "react-use-websocket": "^4.8.1",
-        "styled-components": "6.0.3",
+        "styled-components": "6.1.13",
         "web-vitals": "^2.1.0"
     },
     "resolutions": {
