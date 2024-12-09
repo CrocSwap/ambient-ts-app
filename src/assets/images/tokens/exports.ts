@@ -51,6 +51,7 @@ import USDB from './USDB.png';
 import USDC from './USDC.svg';
 import USDE from './USDe-Black.svg';
 import USDT from './USDT.svg';
+import WBTC from './WBTC.webp';
 import WEETH from './WEETH.svg';
 import WRSETH from './WRSETH.png';
 import WTT from './WTT.webp';
@@ -114,6 +115,7 @@ export {
     USDE,
     USDPLUS,
     USDT,
+    WBTC,
     WEETH,
     WRSETH,
     WTT,

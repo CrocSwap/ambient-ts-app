@@ -480,7 +480,7 @@
             "address": "0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1",
             "symbol": "WBTC",
             "decimals": 8,
-            "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
         },
         {
             "name": "Bridged Wrapped Lido Staked Ether",
