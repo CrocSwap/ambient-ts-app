@@ -1,4 +1,5 @@
 .home_wallpaper_mobile {
+    content-visibility: auto; /* Ensures the element is rendered only when visible */
     background:
         linear-gradient(
             to bottom,
@@ -13,6 +14,7 @@
 }
 
 .purple_waves {
+    content-visibility: auto; /* Ensures the element is rendered only when visible */
     background:
         linear-gradient(
             180deg,
