@@ -49,8 +49,16 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    if (id.toLowerCase().includes('ui/dist/esm')) {
-                        return 'esm';
+                    if (id.toLowerCase().includes('readable-stream')) {
+                        return 'readable-stream'; // works
+                    } else if (id.toLowerCase().includes('qrcode/lib')) {
+                        return 'qrcode'; // works
+                    } else if (id.toLowerCase().includes('react-color')) {
+                        return 'react-color'; // works
+                    } else if (id.toLowerCase().includes('lib.esm')) {
+                        return 'lib.esm'; // works
+                    } else if (id.toLowerCase().includes('ui/dist/esm')) {
+                        return 'esm'; // works
                     } else if (id.toLowerCase().includes('react-reveal')) {
                         return 'reveal'; // works
                     } else if (id.toLowerCase().includes('react-icons')) {
@@ -61,8 +69,8 @@ export default defineConfig({
                         return 'ens'; // works
                     } else if (id.toLowerCase().includes('lodash')) {
                         return 'lodash'; // works
-                    } else if (id.toLowerCase().includes('re-resizeable')) {
-                        return 'resizeable'; // works
+                    } else if (id.toLowerCase().includes('re-resizable')) {
+                        return 'resizable'; // works
                     } else if (id.toLowerCase().includes('intro.js')) {
                         return 'intro'; // works
                     } else if (id.toLowerCase().includes('stablelib')) {
@@ -101,6 +109,64 @@ export default defineConfig({
                         return 'material-ui'; // works
                     } else if (id.toLowerCase().includes('bignumber')) {
                         return 'bignumber'; // works
+                    } else if (id.toLowerCase().includes('@emotion')) {
+                        return 'emotion'; // works
+                    } else if (
+                        id.toLowerCase().includes('react-use-websocket')
+                    ) {
+                        return 'websocket'; // works
+                    } else if (
+                        id.toLowerCase().includes('ethers') ||
+                        id.toLowerCase().includes('crocswap-libs')
+                    ) {
+                        return 'ethers'; // works
+                    } else if (id.toLowerCase().includes('motionone')) {
+                        return 'motionone'; // works
+                    } else if (id.toLowerCase().includes('jss/dist')) {
+                        return 'jss/dist'; // works
+                    } else if (id.toLowerCase().includes('modern-screenshot')) {
+                        return 'modern-screenshot'; // works
+                    } else if (
+                        id.toLowerCase().includes('react-transition-group')
+                    ) {
+                        return 'react-transition-group'; // works
+                    } else if (id.toLowerCase().includes('aes-js')) {
+                        return 'aes-js'; // works
+                    } else if (id.toLowerCase().includes('sha.js')) {
+                        return 'sha.js'; // works
+                    } else if (id.toLowerCase().includes('tinycolor2')) {
+                        return 'tinycolor2'; // works
+                    } else if (id.toLowerCase().includes('events')) {
+                        return 'events'; // works
+                    } else if (id.toLowerCase().includes('tslib')) {
+                        return 'tslib'; // works
+                    } else if (id.toLowerCase().includes('lit')) {
+                        return 'lit'; // works
+                    } else if (id.toLowerCase().includes('remix-run')) {
+                        return 'remix-run'; // works
+                    } else if (id.toLowerCase().includes('popmotion')) {
+                        return 'popmotion'; // works
+                    } else if (id.toLowerCase().includes('reactcss')) {
+                        return 'reactcss'; // works
+                    } else if (id.toLowerCase().includes('cross-fetch')) {
+                        return 'cross-fetch'; // works
+                    } else if (id.toLowerCase().includes('dayjs')) {
+                        return 'dayjs'; // works
+                    } else if (id.toLowerCase().includes('multiformats')) {
+                        return 'multiformats'; // works
+                    } else if (id.toLowerCase().includes('eventemitter3')) {
+                        return 'eventemitter3'; // works
+                    } else if (id.toLowerCase().includes('css-vendor')) {
+                        return 'css-vendor'; // works
+                    } else if (id.toLowerCase().includes('d3')) {
+                        return 'd3'; // works
+                    } else if (id.toLowerCase().includes('coinbase')) {
+                        return 'coinbase'; // works
+                    } else if (
+                        id.toLowerCase().includes('react-jazzicon') ||
+                        id.toLowerCase().includes('react-blockies')
+                    ) {
+                        return 'avatar'; // works
                     } else if (id.toLowerCase().includes('node_modules')) {
                         return 'vendor'; // General vendor chunk for everything else in node_modules
                     } else if (id.toLowerCase().includes('assets')) {
