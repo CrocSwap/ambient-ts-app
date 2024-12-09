@@ -244,7 +244,6 @@ export default function Account() {
     const desktopVersionWithClaimAll = (
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
-                <button onClick={() => toggleData()}>Switch View</button>
                 <SearchableTicker
                     auctions={filtered}
                     toggleData={toggleData}
