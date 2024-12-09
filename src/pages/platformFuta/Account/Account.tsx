@@ -22,6 +22,8 @@ import {
 } from '../Auctions/useSortedAuctions';
 import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
 
+export type auctionDataSets = 'bids' | 'created';
+
 export default function Account() {
     const { accountData } = useContext(AuctionsContext);
     const { isUserConnected, userAddress } = useContext(UserDataContext);
@@ -45,16 +47,25 @@ export default function Account() {
         undefined,
     );
 
+    const [tickerSet, setTickerSet] = useState<auctionDataSets>('bids');
+    function toggleData(set?: auctionDataSets): void {
+        console.log('toggling...');
+        if (set) {
+            setTickerSet(set);
+        } else if (tickerSet === 'bids') {
+            setTickerSet('created');
+        } else if (tickerSet === 'created') {
+            setTickerSet('bids');
+        }
+    }
+
     if (addressFromParams && !isAddressEns && !isAddressHex) {
         return <Navigate to='/404' replace />;
     }
 
     const sumUnclaimedAndUnreturned = useMemo(() => {
         if (!accountData.auctions) return BigInt(0);
-        // return { totalUnclaimed: BigInt(0), totalUnreturned: BigInt(0) };
         let sum = BigInt(0);
-        // let totalUnclaimed = BigInt(0);
-        // let totalUnreturned = BigInt(0);
 
         accountData.auctions.forEach((auction: AuctionDataIF) => {
             if (auction.qtyUnclaimedByUserInAuctionedTokenWei) {
@@ -63,16 +74,6 @@ export default function Account() {
             if (auction.qtyUnreturnedToUserInNativeTokenWei) {
                 sum += BigInt(auction.qtyUnreturnedToUserInNativeTokenWei);
             }
-            // if (auction.qtyUnclaimedByUserInAuctionedTokenWei) {
-            //     totalUnclaimed += BigInt(
-            //         auction.qtyUnclaimedByUserInAuctionedTokenWei,
-            //     );
-            // }
-            // if (auction.qtyUnreturnedToUserInNativeTokenWei) {
-            //     totalUnreturned += BigInt(
-            //         auction.qtyUnreturnedToUserInNativeTokenWei,
-            //     );
-            // }
         });
 
         return sum;
@@ -216,6 +217,20 @@ export default function Account() {
     const sorted: sortedAuctionsIF = useSortedAuctions(
         accountData.auctions || [],
     );
+
+    const filtered = useMemo<sortedAuctionsIF>(() => {
+        const output = { ...sorted };
+        if (tickerSet === 'created') {
+            output.data = sorted.data.filter(
+                (tck: AuctionDataIF) =>
+                    tck.createdBy &&
+                    tck.createdBy.toLowerCase() === userAddress?.toLowerCase(),
+            );
+        }
+        console.log(output);
+        return output;
+    }, [tickerSet]);
+
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
     if (!isUserConnected && !addressFromParams) {
@@ -230,8 +245,12 @@ export default function Account() {
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
                 <SearchableTicker
-                    auctions={sorted}
-                    title='account'
+                    auctions={filtered}
+                    dataState={{
+                        active: tickerSet,
+                        toggle: toggleData,
+                    }}
+                    title='accounttt'
                     isAccount={true}
                 />
             </div>
@@ -242,7 +261,6 @@ export default function Account() {
                     // ... layout with CSS Grid styling
                 }
             </div>
-
             <div className={styles.rightLayout}>
                 <div>
                     <p className={styles.label}>CLAIM</p>
@@ -257,7 +275,11 @@ export default function Account() {
         <div className={styles.container}>
             <div className={styles.content}>
                 <SearchableTicker
-                    auctions={sorted}
+                    auctions={filtered}
+                    dataState={{
+                        active: tickerSet,
+                        toggle: toggleData,
+                    }}
                     title='account'
                     isAccount={true}
                 />
@@ -269,8 +291,15 @@ export default function Account() {
         <div className={styles.container}>
             <div className={styles.content}>
                 <BreadCrumb />
-                <h2>Account</h2>
-                <SearchableTicker auctions={sorted} isAccount={true} />
+                <h2>Account3</h2>
+                <SearchableTicker
+                    auctions={filtered}
+                    dataState={{
+                        active: tickerSet,
+                        toggle: toggleData,
+                    }}
+                    isAccount={true}
+                />
             </div>
             {claimAllContainer}
         </div>
@@ -281,7 +310,14 @@ export default function Account() {
             <div className={styles.content}>
                 <BreadCrumb />
                 <h2>Account</h2>
-                <SearchableTicker auctions={sorted} isAccount={true} />
+                <SearchableTicker
+                    auctions={filtered}
+                    dataState={{
+                        active: tickerSet,
+                        toggle: toggleData,
+                    }}
+                    isAccount={true}
+                />
             </div>
         </div>
     );

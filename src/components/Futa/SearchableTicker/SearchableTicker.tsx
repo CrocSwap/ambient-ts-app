@@ -30,9 +30,14 @@ import Chart from '../Chart/Chart';
 import Typewriter from '../TypeWriter/TypeWriter';
 import styles from './SearchableTicker.module.css';
 import TickerItem from './TickerItem';
+import { auctionDataSets } from '../../../pages/platformFuta/Account/Account';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
+    dataState?: {
+        active: auctionDataSets;
+        toggle: (set: auctionDataSets) => void;
+    };
     title?: string;
     setIsFullLayoutActive?: Dispatch<SetStateAction<boolean>>;
     isAccount?: boolean;
@@ -46,6 +51,7 @@ export default function SearchableTicker(props: propsIF) {
         setIsFullLayoutActive,
         placeholderTicker,
         isAccount,
+        dataState,
     } = props;
     const [isSortDropdownOpen, setIsSortDropdownOpen] =
         useState<boolean>(false);
@@ -252,6 +258,32 @@ export default function SearchableTicker(props: propsIF) {
                 </h3>
             )}
             <div className={styles.filter_options}>
+                <div className={styles.data_set_toggles}>
+                    <button
+                        className={
+                            dataState?.active === 'bids'
+                                ? styles.button_active
+                                : null
+                        }
+                        onClick={() =>
+                            dataState?.toggle && dataState.toggle('bids')
+                        }
+                    >
+                        BIDS
+                    </button>
+                    <button
+                        className={
+                            dataState?.active === 'created'
+                                ? styles.button_active
+                                : null
+                        }
+                        onClick={() =>
+                            dataState?.toggle && dataState.toggle('created')
+                        }
+                    >
+                        CREATED
+                    </button>
+                </div>
                 <div className={styles.search_and_filter}>
                     <div className={styles.text_search_box}>
                         <BiSearch
@@ -481,21 +513,6 @@ export default function SearchableTicker(props: propsIF) {
                 height: searchableTickerHeights.current,
             }}
             minHeight={4}
-            // onResize={(
-            //     evt: MouseEvent | TouchEvent,
-            //     dir: Direction,
-            //     ref: HTMLElement,
-            //     d: NumberSize,
-            // ) => {
-            //     if (
-            //         searchableTickerHeights.current + d.height <
-            //         CHART_MIN_HEIGHT
-            //     ) {
-            //         setIsSearchableTickerHeightMinimum(true);
-            //     } else {
-            //         setIsSearchableTickerHeightMinimum(false);
-            //     }
-            // }}
             onResize={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,
@@ -510,25 +527,8 @@ export default function SearchableTicker(props: propsIF) {
                 }
             }}
             onResizeStart={() => {
-                // may be useful later
+                /* may be useful later */
             }}
-            // onResizeStop={(
-            //     evt: MouseEvent | TouchEvent,
-            //     dir: Direction,
-            //     ref: HTMLElement,
-            //     d: NumberSize,
-            // ) => {
-            //     if (
-            //         searchableTickerHeights.current + d.height < CHART_MIN_HEIGHT
-            //     ) {
-            //         setSearchableTickerHeight(searchableTickerHeights.min);
-            //     } else {
-            //         setSearchableTickerHeight(
-            //             searchableTickerHeights.current + d.height,
-            //         );
-            //     }
-
-            // }}
             onResizeStop={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,
