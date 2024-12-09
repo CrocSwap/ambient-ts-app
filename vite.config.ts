@@ -103,8 +103,6 @@ export default defineConfig({
                         id.toLowerCase().includes('universal-provider')
                     ) {
                         return 'provider';
-                    } else if (id.toLowerCase().includes('walletconnect')) {
-                        return 'walletconnect';
                     } else if (id.toLowerCase().includes('web3modal')) {
                         return 'web3modal';
                     } else if (
@@ -156,6 +154,8 @@ export default defineConfig({
                         return 'd3';
                     } else if (id.toLowerCase().includes('coinbase')) {
                         return 'coinbase';
+                    } else if (id.toLowerCase().includes('walletconnect')) {
+                        return 'walletconnect';
                     } else if (
                         id.toLowerCase().includes('reactcss') ||
                         id.toLowerCase().includes('react-transition-group') ||
