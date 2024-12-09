@@ -14,7 +14,7 @@
 }
 
 .purple_waves {
-    content-visibility: auto; /* Ensures the element is rendered only when visible */
+    content-visibility: auto;
     background:
         linear-gradient(
             180deg,
@@ -28,12 +28,15 @@
 }
 
 .home2 {
+    content-visibility: auto;
     background: url(/src/assets/images/home/home2.png) no-repeat;
 }
 .home3 {
+    content-visibility: auto;
     background: url(/src/assets/images/home/home3.png) no-repeat;
 }
 .home4 {
+    content-visibility: auto;
     background: url(/src/assets/images/home/home4.png) no-repeat;
 }
 
