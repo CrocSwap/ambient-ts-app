@@ -30,9 +30,11 @@ import Chart from '../Chart/Chart';
 import Typewriter from '../TypeWriter/TypeWriter';
 import styles from './SearchableTicker.module.css';
 import TickerItem from './TickerItem';
+import { auctionDataSets } from '../../../pages/platformFuta/Account/Account';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
+    toggleData?: (set: auctionDataSets) => void;
     title?: string;
     setIsFullLayoutActive?: Dispatch<SetStateAction<boolean>>;
     isAccount?: boolean;
@@ -46,6 +48,7 @@ export default function SearchableTicker(props: propsIF) {
         setIsFullLayoutActive,
         placeholderTicker,
         isAccount,
+        toggleData,
     } = props;
     const [isSortDropdownOpen, setIsSortDropdownOpen] =
         useState<boolean>(false);
@@ -252,6 +255,14 @@ export default function SearchableTicker(props: propsIF) {
                 </h3>
             )}
             <div className={styles.filter_options}>
+                <div className={styles.data_set_toggles}>
+                    <button onClick={() => toggleData && toggleData('bids')}>
+                        Bids
+                    </button>
+                    <button onClick={() => toggleData && toggleData('created')}>
+                        Created
+                    </button>
+                </div>
                 <div className={styles.search_and_filter}>
                     <div className={styles.text_search_box}>
                         <BiSearch

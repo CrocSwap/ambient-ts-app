@@ -22,6 +22,8 @@ import {
 } from '../Auctions/useSortedAuctions';
 import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
 
+export type auctionDataSets = 'bids' | 'created';
+
 export default function Account() {
     const { accountData } = useContext(AuctionsContext);
     const { isUserConnected, userAddress } = useContext(UserDataContext);
@@ -45,9 +47,12 @@ export default function Account() {
         undefined,
     );
 
-    const [tickerSet, setTickerSet] = useState<'bids' | 'created'>('bids');
-    function toggleDisplay(): void {
-        if (tickerSet === 'bids') {
+    const [tickerSet, setTickerSet] = useState<auctionDataSets>('bids');
+    function toggleData(set?: auctionDataSets): void {
+        console.log('toggling...');
+        if (set) {
+            setTickerSet(set);
+        } else if (tickerSet === 'bids') {
             setTickerSet('created');
         } else if (tickerSet === 'created') {
             setTickerSet('bids');
@@ -239,9 +244,10 @@ export default function Account() {
     const desktopVersionWithClaimAll = (
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
-                <button onClick={() => toggleDisplay()}>Switch View</button>
+                <button onClick={() => toggleData()}>Switch View</button>
                 <SearchableTicker
                     auctions={filtered}
+                    toggleData={toggleData}
                     title='accounttt'
                     isAccount={true}
                 />
@@ -279,8 +285,12 @@ export default function Account() {
         <div className={styles.container}>
             <div className={styles.content}>
                 <BreadCrumb />
-                <h2>Account</h2>
-                <SearchableTicker auctions={filtered} isAccount={true} />
+                <h2>Account3</h2>
+                <SearchableTicker
+                    auctions={filtered}
+                    toggleData={toggleData}
+                    isAccount={true}
+                />
             </div>
             {claimAllContainer}
         </div>
@@ -291,7 +301,11 @@ export default function Account() {
             <div className={styles.content}>
                 <BreadCrumb />
                 <h2>Account</h2>
-                <SearchableTicker auctions={filtered} isAccount={true} />
+                <SearchableTicker
+                    auctions={filtered}
+                    toggleData={toggleData}
+                    isAccount={true}
+                />
             </div>
         </div>
     );

@@ -29,14 +29,32 @@
     align-items: center;
 }
 
-.search_and_filter {
+.filter_options > * {
+    outline: 1px solid blue;
+}
+
+.data_set_toggles {
     display: flex;
     flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+    /* outline: 1px solid green; */
+}
+
+.data_set_toggles > button {
+    min-width: 120px;
+}
+
+.search_and_filter {
+    display: flex;
+    flex-direction: column;
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
     width: 100%;
     gap: 10px;
+    /* outline: 2px solid salmon; */
 }
 
 .text_search_box {
