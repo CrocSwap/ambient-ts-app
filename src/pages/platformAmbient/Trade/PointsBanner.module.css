@@ -1,4 +1,4 @@
-.points_banner {
+/* .points_banner {
     position: relative;
     width: 100%;
     background: linear-gradient(
@@ -17,9 +17,9 @@
     margin-top: 5px;
     border-radius: 16px;
     border: 1px solid var(--accent1, #7371fc);
-}
+} */
 
-.points_banner_small {
+/* .points_banner_small {
     position: relative;
     background:
         linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%),
@@ -42,7 +42,7 @@
 
     bottom: 65px;
     z-index: 0;
-}
+} */
 
 .points_banner_container {
     height: 100%;
