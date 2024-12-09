@@ -47,8 +47,8 @@
 }
 
 .tokens_name {
-    font-family: var(--font-logo);
-    font-weight: 100;
+    font-family: var(--font-family);
+    font-weight: 300;
     font-size: var(--header-size);
     line-height: 22px;
     display: flex;
@@ -63,7 +63,7 @@
     gap: 4px;
 }
 .pool_price_title {
-    /* font-family: 'Lexend Deca'; */
+    font-family: var(--font-family);
     font-style: normal;
     font-weight: 300;
     font-size: var(--body-size);
@@ -72,7 +72,7 @@
 }
 
 .row_title {
-    /* font-family: 'Lexend Deca'; */
+    font-family: var(--font-family);
     font-style: normal;
     font-weight: 300;
     font-size: var(--body-size);
