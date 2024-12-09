@@ -47,8 +47,8 @@
 }
 
 .tokens_name {
-    font-family: var(--font-family);
-    font-weight: 300;
+    font-family: 'Lexend Exa';
+    font-weight: 100;
     font-size: var(--header-size);
     line-height: 22px;
     display: flex;
