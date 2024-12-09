@@ -49,7 +49,9 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    if (id.toLowerCase().includes('react-reveal')) {
+                    if (id.toLowerCase().includes('ui/dist/esm')) {
+                        return 'esm';
+                    } else if (id.toLowerCase().includes('react-reveal')) {
                         return 'reveal'; // works
                     } else if (id.toLowerCase().includes('react-icons')) {
                         return 'icons'; // works
