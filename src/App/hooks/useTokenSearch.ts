@@ -131,7 +131,9 @@ export const useTokenSearch = (
                 chainId === '0x1'
                     ? patchLists(
                           tokens.getTokensFromList(tokenListURIs.ambient),
-                          tokens.getTokensFromList(tokenListURIs.uniswap),
+                          tokens.getTokensFromList(
+                              tokenListURIs.ethereumCoingecko,
+                          ),
                       )
                     : chainId === '0x82750'
                       ? patchLists(
