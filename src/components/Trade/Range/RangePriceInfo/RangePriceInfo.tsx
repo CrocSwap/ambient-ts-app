@@ -117,17 +117,23 @@ function RangePriceInfo(props: propsIF) {
     useEffect(() => {
         setUserFlippedMaxMinDisplay(false);
 
+        setMaxPriceUsdEquivalent('...');
+        setMinPriceUsdEquivalent('...');
         updateMainnetPricesAsync();
-    }, [
-        crocEnv !== undefined,
-        baseToken.address + quoteToken.address,
-        poolPriceDisplay,
-    ]);
+    }, [crocEnv !== undefined, baseToken.address + quoteToken.address]);
 
     useEffect(() => {
         if (!pinnedMinPrice || !pinnedMaxPrice) return;
 
         let minPriceNum, maxPriceNum;
+
+        console.log({
+            isDenomBase,
+            basePrice,
+            quotePrice,
+            pinnedMinPrice,
+            pinnedMaxPrice,
+        });
 
         if (isDenomBase) {
             minPriceNum = parseFloat(pinnedMinPrice) * (quotePrice || 0);
@@ -138,6 +144,8 @@ function RangePriceInfo(props: propsIF) {
 
             maxPriceNum = parseFloat(pinnedMaxPrice) * (basePrice || 0);
         }
+
+        console.log({ maxPriceNum, pinnedMaxPrice, quotePrice, isDenomBase });
 
         const minDisplayUsdPriceString = isAmbient
             ? '$0'
@@ -186,6 +194,26 @@ function RangePriceInfo(props: propsIF) {
             </span>
         </div>
     );
+
+    useEffect(() => {
+        console.log({
+            isTradeDollarizationEnabled,
+            minPriceUsdEquivalent,
+            minPrice,
+            maxPriceUsdEquivalent,
+            maxPrice,
+            pinnedMinPrice,
+            pinnedMaxPrice,
+        });
+    }, [
+        isTradeDollarizationEnabled,
+        minPriceUsdEquivalent,
+        minPrice,
+        maxPriceUsdEquivalent,
+        maxPrice,
+        pinnedMinPrice,
+        pinnedMaxPrice,
+    ]);
 
     // JSX frag for highest price in range
     const maximumPrice = nonDenomTokenDollarEquivalentExists ? (

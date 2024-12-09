@@ -21,7 +21,7 @@ interface propsIF {
     tokenB: TokenIF;
     isDenomBase: boolean;
     rescale: boolean | undefined;
-    currentPoolPriceTick: number;
+    currentPoolPriceTick: number | undefined;
     poolPriceDisplay: number;
     /* eslint-disable @typescript-eslint/no-explicit-any */
     changeScale: any;
@@ -307,7 +307,10 @@ export default function RangeLinesChart(props: propsIF) {
     };
 
     const setBalancedLines = (isRepositionLinesSet = false) => {
-        if (tokenA.address !== tokenB.address) {
+        if (
+            tokenA.address !== tokenB.address &&
+            currentPoolPriceTick !== undefined
+        ) {
             if (
                 location.pathname.includes('reposition') &&
                 position !== undefined &&
