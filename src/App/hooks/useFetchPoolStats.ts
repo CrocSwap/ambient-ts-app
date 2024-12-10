@@ -352,9 +352,6 @@ const useFetchPoolStats = (
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
                 tokens.allDefaultTokens,
-                localPoolPriceNonDisplay
-                    ? localPoolPriceNonDisplay[1]
-                    : undefined,
                 enableTotalSupply,
             );
 
@@ -396,7 +393,7 @@ const useFetchPoolStats = (
                     ? shouldInvertDisplay
                         ? ydayPrice / nowPrice - 1.0
                         : nowPrice / ydayPrice - 1.0
-                    : 0.0;
+                    : undefined;
 
             const tvlResult = expandedPoolStatsNow?.tvlTotalUsd;
             const feesTotalNow = expandedPoolStatsNow?.feesTotalUsd;
@@ -473,7 +470,7 @@ const useFetchPoolStats = (
             }
 
             try {
-                if (!priceChangeResult) {
+                if (priceChangeResult === undefined || volumeChange24h === 0) {
                     setPoolPriceChangePercent(undefined);
                     setIsPoolPriceChangePositive(true);
                     return;

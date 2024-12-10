@@ -223,7 +223,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 ? shouldInvert
                     ? ydayPrice / nowPrice - 1.0
                     : nowPrice / ydayPrice - 1.0
-                : 0.0;
+                : undefined;
+
         if (!expandedPoolStatsNow || expandedPoolStatsNow.tvlTotalUsd < 100) {
             // return early
             const poolData: PoolDataIF = {
@@ -270,7 +271,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // human readable price change over last 24 hours
         let priceChangePercent: string;
 
-        if (!priceChangeRaw) {
+        if (priceChangeRaw === undefined || volumeChange24h === 0) {
             priceChangePercent = '';
         } else if (priceChangeRaw * 100 >= 0.01) {
             priceChangePercent =

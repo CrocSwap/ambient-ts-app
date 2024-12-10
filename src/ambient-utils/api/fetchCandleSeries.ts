@@ -101,7 +101,7 @@ export async function fetchCandleSeriesCroc(
             }
             const payload = json?.data as CandleDataServerIF[];
 
-            const candles = expandPoolStats(
+            const candles = expandPoolStatsCandle(
                 payload,
                 baseTokenAddress,
                 quoteTokenAddress,
@@ -151,7 +151,7 @@ function capNumDurations(numDurations: number): number {
     return numDurations;
 }
 
-async function expandPoolStats(
+async function expandPoolStatsCandle(
     payload: CandleDataServerIF[],
     base: string,
     quote: string,
