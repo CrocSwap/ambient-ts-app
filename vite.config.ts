@@ -116,7 +116,8 @@ export default defineConfig({
                         return 'coinbase';
                     } else if (
                         id.toLowerCase().includes('walletconnect') ||
-                        id.toLowerCase().includes('universal-provider')
+                        id.toLowerCase().includes('universal-provider') ||
+                        id.toLowerCase().includes('qrcode')
                     ) {
                         return 'walletconnect';
                     } else if (
