@@ -8,6 +8,7 @@ import {
 import TokenRowSkeleton from '../../../components/Global/Explore/TokenRow/TokenRowSkeleton';
 import {
     AppStateContext,
+    ChainDataContext,
     ReceiptContext,
     UserDataContext,
 } from '../../../contexts';
@@ -27,7 +28,10 @@ function Vaults() {
     } = useContext(AppStateContext);
     const { sessionReceipts } = useContext(ReceiptContext);
 
-    const { userAddress, isUserConnected } = useContext(UserDataContext);
+    const { allVaultsData, setAllVaultsData } = useContext(ChainDataContext);
+
+    const { userAddress, isUserConnected, userVaultData, setUserVaultData } =
+        useContext(UserDataContext);
 
     const vaultHeader = (
         <div className={styles.vaultHeader}>
@@ -47,11 +51,6 @@ function Vaults() {
             <span className={styles.actionButtonContainer} />
         </div>
     );
-
-    // vault data from tempest API
-    const [allVaultsData, setAllVaultsData] = useState<
-        AllVaultsServerIF[] | null | undefined
-    >(null);
 
     async function getAllVaultsData(): Promise<void> {
         const endpoint = `${VAULTS_API_URL}/vaults`;
@@ -81,11 +80,6 @@ function Vaults() {
 
         await Promise.race([fetchData(), timeout]);
     }
-
-    // hooks to fetch and hold user vault data
-    const [userVaultData, setUserVaultData] = useState<
-        UserVaultsServerIF[] | undefined
-    >();
 
     const [serverErrorReceived, setServerErrorReceived] =
         useState<boolean>(false);
