@@ -62,7 +62,7 @@ export default defineConfig({
                         id.toLowerCase().includes('stablelib') ||
                         id.toLowerCase().includes('lodash')
                     ) {
-                        return 'various-independent-libs-1';
+                        return 'libs-1';
                     } else if (id.toLowerCase().includes('lib.esm')) {
                         return 'lib.esm';
                     } else if (id.toLowerCase().includes('ui/dist/esm')) {
@@ -72,11 +72,9 @@ export default defineConfig({
                         id.toLowerCase().includes('moment') ||
                         id.toLowerCase().includes('siwe')
                     ) {
-                        return 'numbers';
+                        return 'libs-2';
                     } else if (id.toLowerCase().includes('noble')) {
                         return 'noble';
-                    } else if (id.toLowerCase().includes('framer-motion')) {
-                        return 'framer-motion';
                     } else if (id.toLowerCase().includes('web3modal')) {
                         return 'web3modal';
                     } else if (
@@ -86,23 +84,22 @@ export default defineConfig({
                         id.toLowerCase().includes('react-color') ||
                         id.toLowerCase().includes('re-resizable') ||
                         id.toLowerCase().includes('@emotion') ||
-                        id.toLowerCase().includes('styled-components')
+                        id.toLowerCase().includes('styled-components') ||
+                        id.toLowerCase().includes('framer-motion')
                     ) {
-                        return 'styling';
+                        return 'libs-3';
                     } else if (
                         id.toLowerCase().includes('emoji-picker-react')
                     ) {
                         return 'emoji-picker-react';
                     } else if (id.toLowerCase().includes('ethers')) {
                         return 'ethers';
-                    } else if (id.toLowerCase().includes('aes-js')) {
-                        return 'aes-js';
                     } else if (
+                        id.toLowerCase().includes('aes-js') ||
                         id.toLowerCase().includes('tslib') ||
-                        id.toLowerCase().includes('motionone') ||
-                        id.toLowerCase().includes('aes-js')
+                        id.toLowerCase().includes('motionone')
                     ) {
-                        return 'tslib';
+                        return 'aes-js';
                     } else if (
                         id.toLowerCase().includes('remix-run') ||
                         id.toLowerCase().includes('react-router') ||
@@ -110,15 +107,14 @@ export default defineConfig({
                         id.toLowerCase().includes('react-use-websocket') ||
                         id.toLowerCase().includes('intro.js')
                     ) {
-                        return 'react-router';
+                        return 'libs-4';
                     } else if (id.toLowerCase().includes('d3')) {
                         return 'd3';
-                    } else if (id.toLowerCase().includes('coinbase')) {
-                        return 'coinbase';
                     } else if (
+                        id.toLowerCase().includes('coinbase') ||
                         id.toLowerCase().includes('utils/dist/index.es.js')
                     ) {
-                        return 'utils/dist/index.es.js';
+                        return 'coinbase';
                     } else if (
                         id.toLowerCase().includes('walletconnect') ||
                         id.toLowerCase().includes('universal-provider')
@@ -137,15 +133,13 @@ export default defineConfig({
                         id.toLowerCase().includes('modern-screenshot') ||
                         id.toLowerCase().includes('crocswap-libs')
                     ) {
-                        return 'various-independent-libs-2';
+                        return 'libs-5';
                     } else if (id.toLowerCase().includes('node_modules')) {
                         return 'vendor'; // General vendor chunk for everything else in node_modules
                     } else if (id.toLowerCase().includes('assets')) {
                         return 'assets';
                     } else if (id.toLowerCase().includes('futa')) {
                         return 'futa';
-                    } else if (id.toLowerCase().includes('ambient-utils')) {
-                        return 'chat-utils';
                     } else if (id.toLowerCase().includes('chat')) {
                         return 'chat';
                     } else if (id.toLowerCase().includes('global')) {
@@ -155,7 +149,7 @@ export default defineConfig({
                     } else if (id.toLowerCase().includes('components')) {
                         return 'components';
                     } else if (id.toLowerCase().includes('platformambient')) {
-                        return 'platformambient';
+                        return 'platformAmbient';
                     } else if (id.toLowerCase().includes('form')) {
                         return 'form';
                     }
