@@ -20,20 +20,22 @@
 }
 
 .filter_options {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-areas: 'left mid right';
     gap: 10px;
     width: 100%;
     align-items: center;
 }
 
 .filter_options > * {
-    outline: 1px solid blue;
+    height: 100%;
+    /* outline: 1px solid blue; */
 }
 
+/* container for BIDS and CREATED data toggles */
 .data_set_toggles {
+    grid-area: right;
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -42,9 +44,11 @@
     /* outline: 1px solid green; */
 }
 
+/* the actual BIDS and CREATED buttons */
 .data_set_toggles > button {
     min-width: 160px;
     border: none;
+    cursor: pointer;
 }
 
 .button_active {
@@ -52,8 +56,9 @@
 }
 
 .search_and_filter {
+    grid-area: left;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
@@ -62,17 +67,19 @@
     /* outline: 2px solid salmon; */
 }
 
+/* wrapper for search input icon, text field, and 'clear' button */
 .text_search_box {
     display: flex;
     flex-direction: row;
     align-items: center;
     width: 100%;
-    height: 24px;
+    height: 100%;
     padding: 0px 4px 0px 8px;
     gap: 4px;
     background-color: var(--dark2);
 }
 
+/* text entry box for search input */
 .text_search_box > input {
     width: 100%;
     padding: 0 8px;
@@ -90,7 +97,10 @@
     color: var(--text2);
 }
 
+/* SHOW COMPLETE and WATCHLIST buttons */
 .sort_toggles {
+    grid-area: mid;
+    justify-self: start;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -128,6 +138,7 @@
 
 .filters {
     position: relative;
+    width: 210px;
 }
 
 .timeDropdownContent {
@@ -164,6 +175,7 @@
     color: var(--accent1);
     opacity: 50%;
 }
+
 .dropdown {
     height: auto;
     width: calc(100% - 25px);
@@ -177,6 +189,7 @@
     flex-direction: column;
     gap: 4px;
 }
+
 .timeItem {
     font-size: 12px;
     color: var(--text1);
@@ -196,22 +209,22 @@
     border-left: 4px solid var(--accent2);
     border-right: 4px solid var(--accent2);
     align-items: center;
-
     font-size: 18px;
     color: var(--text1);
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
     vertical-align: middle;
-
     height: 32px;
 }
 
 .tickerItemContainer:hover {
     background: var(--dark4);
 }
+
 .tickerItemContainer p:first-of-type {
     text-transform: uppercase;
 }
+
 .tickerItemContainer p:not(:nth-of-type(3)) {
     padding: 0 8px;
 }
@@ -227,11 +240,13 @@
     justify-content: center;
     align-items: center;
 }
+
 .tickerStatus {
     width: 10px;
     height: 10px;
     border-radius: 50%;
 }
+
 .tickerTableContainer {
     width: 100%;
     height: 100%;
@@ -256,6 +271,7 @@
     border-radius: 50%;
     background: var(--text3);
 }
+
 .tickerTableContent {
     width: 100%;
     display: flex;
@@ -266,6 +282,7 @@
     scrollbar-color: var(--dark2) var(--dark2);
     padding-bottom: 1rem;
 }
+
 .scrolling {
     scrollbar-color: var(--accent1) var(--dark2);
 }
@@ -273,9 +290,11 @@
 .active {
     background: #28585d;
 }
+
 .hoverActive {
     background: var(--dark4);
 }
+
 .marketCap {
     text-align: end;
 }
@@ -317,6 +336,7 @@
 .noAuctionsContent button:hover {
     background: var(--accent2);
 }
+
 @media (min-width: 768px) {
     .container {
         display: grid;
@@ -335,13 +355,14 @@
         height: 100%;
     }
 }
+
 @media (min-width: 1080px) {
-    .mainBorder{
-     
+    .mainBorder {
         height: calc(100% - 8px);
     }
 
 }
+
 @media (min-width: 1280px) {
     .content h2 {
         color: var(--text1, #ceffff);
