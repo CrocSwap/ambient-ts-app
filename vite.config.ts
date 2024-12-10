@@ -73,8 +73,6 @@ export default defineConfig({
                         id.toLowerCase().includes('siwe')
                     ) {
                         return 'libs-2';
-                    } else if (id.toLowerCase().includes('noble')) {
-                        return 'noble';
                     } else if (id.toLowerCase().includes('web3modal')) {
                         return 'web3modal';
                     } else if (
@@ -97,7 +95,8 @@ export default defineConfig({
                     } else if (
                         id.toLowerCase().includes('aes-js') ||
                         id.toLowerCase().includes('tslib') ||
-                        id.toLowerCase().includes('motionone')
+                        id.toLowerCase().includes('motionone') ||
+                        id.toLowerCase().includes('noble')
                     ) {
                         return 'aes-js';
                     } else if (
@@ -150,8 +149,6 @@ export default defineConfig({
                         return 'components';
                     } else if (id.toLowerCase().includes('platformambient')) {
                         return 'platformAmbient';
-                    } else if (id.toLowerCase().includes('form')) {
-                        return 'form';
                     }
                 },
             },
