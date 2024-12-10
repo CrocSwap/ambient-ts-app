@@ -218,8 +218,11 @@ export default function Account() {
         accountData.auctions || [],
     );
 
+    // logic to filter bids created by authenticated wallet when relevant
     const filtered = useMemo<sortedAuctionsIF>(() => {
+        // copy sorted data to an output variable
         const output = { ...sorted };
+        // apply filter if user sets state to created auctions only
         if (tickerSet === 'created') {
             output.data = sorted.data.filter(
                 (tck: AuctionDataIF) =>
@@ -227,6 +230,7 @@ export default function Account() {
                     tck.createdBy.toLowerCase() === userAddress?.toLowerCase(),
             );
         }
+        // return data after processing (processing is actually optional)
         return output;
     }, [tickerSet, sorted]);
 
