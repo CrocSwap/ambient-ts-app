@@ -41,7 +41,7 @@
 [[plugins]]
 package = "@netlify/plugin-sitemap"
   [plugins.inputs]
-  buildDir = "."
+  buildDir = "build"
 
 [build]
   command = "npm run build && cp src/ambient-utils/constants/ambient-token-list.json src/ambient-utils/constants/testnet-token-list.json build/"
