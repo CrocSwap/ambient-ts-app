@@ -38,12 +38,6 @@
   path = "/*"
   function = "country-redirect"
 
-[[plugins]]
-package = "@netlify/plugin-sitemap"
-  [plugins.inputs]
-  buildDir = "build"
-  exclude = ["/geoblocked"]
-
 [build]
   command = "npm run build && cp src/ambient-utils/constants/ambient-token-list.json src/ambient-utils/constants/testnet-token-list.json build/"
   publish = "build"
