@@ -5,10 +5,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: var(--font-logo);
+    font-family: var(--font-family);
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    font-weight: 500;
+    font-weight: 300;
     width: 30px;
     height: 30px;
     border-radius: 100%;
@@ -31,10 +31,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: var(--font-logo);
+    font-family: var(--font-family);
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    font-weight: 500;
+    font-weight: 300;
     width: 30px;
     height: 30px;
     border-radius: 100%;

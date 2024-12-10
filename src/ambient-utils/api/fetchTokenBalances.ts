@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CrocEnv } from '@crocswap-libs/sdk';
 import ambientTokenList from '../constants/ambient-token-list.json';
+import testnetTokenList from '../constants/testnet-token-list.json';
 import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
 import { TokenIF } from '../types/token/TokenIF';
 import {
@@ -38,9 +39,9 @@ export const fetchAmbientListWalletBalances = async (
 
     if (!crocEnv) return;
 
-    const ambientTokensOnActiveChain = ambientTokenList.tokens.filter(
-        (token: any) => token.chainId === parseInt(props.chain),
-    );
+    const ambientTokensOnActiveChain = ambientTokenList.tokens
+        .concat(testnetTokenList.tokens)
+        .filter((token: any) => token.chainId === parseInt(props.chain));
 
     const balancePromises = ambientTokensOnActiveChain.map(async (token) => {
         const walletBalance = (

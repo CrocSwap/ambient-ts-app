@@ -78,6 +78,19 @@
     color: var(--accent1);
 }
 
+.label{
+    font-size: var(--body-size);
+    color: #5C6F72;
+    text-transform: uppercase;
+    padding: 0 8px;
+}
+
+@media (min-width: 768px) {
+.chartSection{
+    border: 2px solid var(--borders, #5C6F72);
+    padding: 0 8px;
+}
+}
 @media (max-width: 600px) {
     .mainSection {
         display: flex;

@@ -1,4 +1,14 @@
+.mainContainer{
+    background: url('../../../assets/futa/home/background.png') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    height: calc(100dvh - 65px);
+}
+
 .create_token {
+    background: var(--dark1);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -8,6 +18,8 @@
     max-width: 400px;
     height: calc(100svh - 420px);
     z-index: 99 !important;
+
+  
 }
 
 .create_token_top {
@@ -147,9 +159,8 @@
     justify-content: space-between;
 }
 
-@media only screen and (min-width: 1080px) {
+@media only screen and (min-width: 768px) {
     .mainContainer {
-        height: calc(100vh - 155px);
         transition: all var(--animation-speed) ease-in-out;
         overflow: hidden;
     }

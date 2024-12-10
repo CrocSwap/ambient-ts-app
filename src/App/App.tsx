@@ -16,7 +16,6 @@ import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useKeyPress from './hooks/useKeyPress';
 
 import FooterNav from '../components/Global/FooterNav/FooterNav';
-import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 import { FlexContainer } from '../styled/Common';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 
@@ -43,10 +42,8 @@ export default function App() {
         },
         walletModal: { isOpen: isWalletModalOpen },
         appHeaderDropdown,
-        showPointSystemPopup,
-        dismissPointSystemPopup,
     } = useContext(AppStateContext);
-    const { platformName, skin, showPoints } = useContext(BrandContext);
+    const { platformName, skin } = useContext(BrandContext);
     const {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
@@ -163,11 +160,6 @@ export default function App() {
                             : '100dvh',
                 }}
             >
-                {showPoints && showPointSystemPopup && (
-                    <PointSystemPopup
-                        dismissPointSystemPopup={dismissPointSystemPopup}
-                    />
-                )}
                 <AppOverlay />
                 {platformName === 'futa'
                     ? location.pathname !== '/' && <Navbar />

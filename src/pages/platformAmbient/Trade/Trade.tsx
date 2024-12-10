@@ -34,7 +34,6 @@ import {
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
-import PointsBanner from './PointsBanner';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -55,11 +54,8 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const { provider } = useContext(CrocEnvContext);
     const {
         activeNetwork: { chainId },
-        showTopPtsBanner,
-        dismissTopBannerPopup,
     } = useContext(AppStateContext);
     const { setIsCandleSelected } = useContext(CandleContext);
-    const { showPoints } = useContext(BrandContext);
 
     const {
         isFullScreen: isChartFullScreen,
@@ -223,12 +219,6 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                     }}
                     ref={canvasRef}
                 >
-                    {showTopPtsBanner && showPoints && (
-                        <div style={{ padding: '0 8px' }}>
-                            <PointsBanner dismissElem={dismissTopBannerPopup} />
-                        </div>
-                    )}
-
                     {!isChartFullScreen && <TradeChartsHeader tradePage />}
                     {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                     <FlexContainer

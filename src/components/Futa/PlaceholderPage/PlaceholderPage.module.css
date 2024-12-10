@@ -1,4 +1,4 @@
-.container {
+/* .container {
     background: url('../../../assets/futa/images/futaCover.svg') no-repeat
         center center fixed;
     -webkit-background-size: cover;
@@ -13,7 +13,7 @@
     width: 100%;
     height: calc(100vh - 64px);
     padding: 8px;
-}
+} */
 
 .container h1 {
     font-family: 'Roboto Mono';

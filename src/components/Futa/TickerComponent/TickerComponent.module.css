@@ -40,7 +40,7 @@
 
 .openBidContainer,
 .maxMarketContainer {
-    border-top: 1px solid var(--dark3);
+    /* border-top: 1px solid var(--dark3); */
     padding-top: 8px;
 }
 
@@ -172,7 +172,7 @@
     align-items: center;
     gap: 10px;
     align-self: stretch;
-    border: 1px solid var(--dark3, #1e1e24);
+    /* border: 1px solid var(--dark3, #1e1e24); */
     margin-bottom: 8px;
 }
 .extraRow {

@@ -4,8 +4,6 @@ import { useIdleTimer } from 'react-idle-timer';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     CHAT_ENABLED,
-    DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
-    DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
     VIEW_ONLY,
 } from '../ambient-utils/constants';
 import { NetworkIF } from '../ambient-utils/types';
@@ -13,10 +11,6 @@ import {
     globalPopupMethodsIF,
     useGlobalPopup,
 } from '../App/components/GlobalPopup/useGlobalPopup';
-import {
-    getCtaDismissalsFromLocalStorage,
-    saveCtaDismissalToLocalStorage,
-} from '../App/functions/localStorage';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
 import useChatApi from '../components/Chat/Service/ChatApi';
@@ -49,10 +43,6 @@ export interface AppStateContextIF {
         open: () => void;
         close: () => void;
     };
-    showPointSystemPopup: boolean;
-    dismissPointSystemPopup: () => void;
-    showTopPtsBanner: boolean;
-    dismissTopBannerPopup: () => void;
     isUserIdle: boolean;
     isUserIdle20min: boolean;
     activeNetwork: NetworkIF;
@@ -143,42 +133,6 @@ export const AppStateContextProvider = (props: {
 
     const [isGateWalletModalOpen, openGateWalletModal, closeGateWalletModal] =
         useModal();
-
-    const pointsModalDismissalDuration =
-        DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES || 1440;
-
-    const pointsBannerDismissalDuration =
-        DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES || 1440;
-
-    const ctaPopupDismissalTime =
-        getCtaDismissalsFromLocalStorage().find(
-            (x) => x.ctaId === 'points_modal_cta',
-        )?.unixTimeOfDismissal || 0;
-
-    const [showPointSystemPopup, setShowPointSystemPopup] = useState(
-        ctaPopupDismissalTime <
-            Math.floor(Date.now() / 1000 - 60 * pointsModalDismissalDuration),
-    );
-
-    const dismissPointSystemPopup = () => {
-        setShowPointSystemPopup(false);
-        saveCtaDismissalToLocalStorage({ ctaId: 'points_modal_cta' });
-    };
-
-    const ctaBannerDismissalTime =
-        getCtaDismissalsFromLocalStorage().find(
-            (x) => x.ctaId === 'top_points_banner_cta',
-        )?.unixTimeOfDismissal || 0;
-
-    const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
-        ctaBannerDismissalTime <
-            Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
-    );
-
-    const dismissTopBannerPopup = () => {
-        setShowTopPtsBanner(false);
-        saveCtaDismissalToLocalStorage({ ctaId: 'top_points_banner_cta' });
-    };
 
     const [_, hasAgreedTerms] = useTermsAgreed();
     const { open: openW3Modal } = useWeb3Modal();
@@ -334,10 +288,6 @@ export const AppStateContextProvider = (props: {
                 },
                 close: closeGateWalletModal,
             },
-            showPointSystemPopup,
-            dismissPointSystemPopup,
-            showTopPtsBanner,
-            dismissTopBannerPopup,
             activeNetwork,
             chooseNetwork,
         }),
@@ -359,10 +309,6 @@ export const AppStateContextProvider = (props: {
             closeGateWalletModal,
             isAppHeaderDropdown,
             setIsAppHeaderDropdown,
-            showPointSystemPopup,
-            dismissPointSystemPopup,
-            showTopPtsBanner,
-            dismissTopBannerPopup,
             dimensions.contentHeight,
             dimensions.viewportHeight,
             activeNetwork,

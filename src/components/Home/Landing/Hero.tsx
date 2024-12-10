@@ -20,16 +20,13 @@ export default function Hero() {
         : [{ content: 'ambient', processAs: 'text' }];
 
     // recognized slugs for background image CSS classes
-    type cssSlugs = 'purple_waves' | 'stars';
+    type cssSlugs = 'purple_waves';
     // slug to specify the desired background image
     const cssSlug = useMemo<cssSlugs>(() => {
         // declare an output variable
         let slug: cssSlugs;
         // router to map a background image from deployment config
         switch (platformName) {
-            case 'futa':
-                slug = 'stars';
-                break;
             case 'ambient':
             default:
                 slug = 'purple_waves';
