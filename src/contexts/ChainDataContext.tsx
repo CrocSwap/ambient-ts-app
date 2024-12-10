@@ -28,7 +28,11 @@ import {
     ZERO_ADDRESS,
 } from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
-import { SinglePoolDataIF, TokenIF } from '../ambient-utils/types';
+import {
+    AllVaultsServerIF,
+    SinglePoolDataIF,
+    TokenIF,
+} from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
@@ -63,6 +67,10 @@ export interface ChainDataContextIF {
     isActiveNetworkL2: boolean;
     nativeTokenUsdPrice: number | undefined;
     allPoolStats: SinglePoolDataIF[] | undefined;
+    allVaultsData: AllVaultsServerIF[] | null | undefined;
+    setAllVaultsData: Dispatch<
+        SetStateAction<AllVaultsServerIF[] | null | undefined>
+    >;
 }
 
 export const ChainDataContext = createContext({} as ChainDataContextIF);
@@ -119,6 +127,11 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     const isVaultSupportedOnNetwork =
         vaultSupportedNetworkIds.includes(chainId);
+
+    // vault data from tempest API
+    const [allVaultsData, setAllVaultsData] = useState<
+        AllVaultsServerIF[] | null | undefined
+    >(null);
 
     const blockPollingUrl = BLOCK_POLLING_RPC_URL
         ? BLOCK_POLLING_RPC_URL
@@ -604,6 +617,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isActiveNetworkL2,
         allPoolStats,
         nativeTokenUsdPrice,
+        allVaultsData,
+        setAllVaultsData,
     };
 
     return (

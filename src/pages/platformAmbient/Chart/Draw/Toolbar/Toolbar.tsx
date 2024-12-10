@@ -340,6 +340,7 @@ function ChartToolbar() {
             }
             onMouseLeave={handleMouseLeave}
             onMouseMove={handleMouseMove}
+            style={{ paddingLeft: isFuta ? '16px' : '' }}
         >
             <DrawlistContainer isActive={isToolbarOpen}>
                 <ScrollableDiv

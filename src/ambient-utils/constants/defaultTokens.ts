@@ -733,7 +733,8 @@ export const scrollWBTC: TokenIF = {
     name: 'Bridged Wrapped Bitcoin',
     symbol: 'WBTC',
     decimals: 8,
-    logoURI: 'https://scroll-tech.github.io/token-list/data/WBTC/logo.svg',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
 };
 
 export const scrollSepoliaETH: TokenIF = {

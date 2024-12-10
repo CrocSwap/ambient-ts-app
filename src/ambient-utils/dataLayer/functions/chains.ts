@@ -1,5 +1,5 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { supportedNetworks } from '../../constants';
+import { supportedNetworks, vaultSupportedNetworkIds } from '../../constants';
 
 // function to validate any given value as a proper id for a supported chain
 export function validateChainId(chainIdToValidate: string): boolean {
@@ -41,3 +41,8 @@ export function getChainExplorer(chainId: string | number): string {
 const PLACEHOLDER_BLOCK_EXPLORER = 'https://etherscan.io/';
 
 const DFLT_SUPPORTED_CHAINS = Object.keys(supportedNetworks);
+
+export const someSupportedNetworkIsVaultSupportedNetwork =
+    vaultSupportedNetworkIds.some((vaultNetworkId) =>
+        validateChainId(vaultNetworkId),
+    );
