@@ -67,8 +67,6 @@ export default defineConfig({
                         return 'lib.esm';
                     } else if (id.toLowerCase().includes('ui/dist/esm')) {
                         return 'esm';
-                    } else if (id.toLowerCase().includes('styled-components')) {
-                        return 'styled-components';
                     } else if (id.toLowerCase().includes('intro.js')) {
                         return 'intro';
                     } else if (
@@ -94,17 +92,14 @@ export default defineConfig({
                         id.toLowerCase().includes('mui') ||
                         id.toLowerCase().includes('react-color') ||
                         id.toLowerCase().includes('re-resizable') ||
-                        id.toLowerCase().includes('@emotion')
+                        id.toLowerCase().includes('@emotion') ||
+                        id.toLowerCase().includes('styled-components')
                     ) {
                         return 'styling';
                     } else if (
                         id.toLowerCase().includes('emoji-picker-react')
                     ) {
                         return 'emoji-picker-react';
-                    } else if (
-                        id.toLowerCase().includes('react-use-websocket')
-                    ) {
-                        return 'websocket';
                     } else if (id.toLowerCase().includes('ethers')) {
                         return 'ethers';
                     } else if (id.toLowerCase().includes('aes-js')) {
@@ -117,7 +112,8 @@ export default defineConfig({
                     } else if (
                         id.toLowerCase().includes('remix-run') ||
                         id.toLowerCase().includes('react-router') ||
-                        id.toLowerCase().includes('react-dom')
+                        id.toLowerCase().includes('react-dom') ||
+                        id.toLowerCase().includes('react-use-websocket')
                     ) {
                         return 'react-router';
                     } else if (id.toLowerCase().includes('d3')) {
