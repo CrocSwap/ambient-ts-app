@@ -132,6 +132,10 @@ export default defineConfig({
                         return 'd3';
                     } else if (id.toLowerCase().includes('coinbase')) {
                         return 'coinbase';
+                    } else if (
+                        id.toLowerCase().includes('utils/dist/index.es.js')
+                    ) {
+                        return 'utils/dist/index.es.js';
                     } else if (id.toLowerCase().includes('walletconnect')) {
                         return 'walletconnect';
                     } else if (
