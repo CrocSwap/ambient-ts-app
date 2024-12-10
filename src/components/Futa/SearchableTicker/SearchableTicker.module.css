@@ -19,6 +19,7 @@
     text-transform: uppercase;
 }
 
+/* container with all the table management buttons */
 .filter_options {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
@@ -28,6 +29,7 @@
     align-items: center;
 }
 
+/* make all direct children of `.filter_options` to occupy available height */
 .filter_options > * {
     height: 100%;
     /* outline: 1px solid blue; */
@@ -55,6 +57,7 @@
     background: var(--accent1, #0ccdff);
 }
 
+/* search input box and sort order dropdown clickable */
 .search_and_filter {
     grid-area: left;
     display: flex;
@@ -398,7 +401,75 @@
     }
 }
 
+/* WHY DOES THE APP BREAK WHEN I REMOVE THIS */
+/* IF I TAKE IT OUT THE ENTIRE TABLE DISAPPEARS */
+/* IT SHOULD BE REDUNDANT WITH THE FIRST RULE IN THIS FILE */
 .container {
     display: flex;
     flex-direction: column;
 }
+
+
+@media (max-width: 400px) {
+    .filter_options {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+        grid-template-areas: 'top' 'bottom';
+    }
+
+    .data_set_toggles {
+        grid-area: top;
+    }
+
+    .search_and_filter {
+        grid-area: bottom;
+    }
+
+    .sort_toggles {
+        display: none;
+    }
+}
+
+/* PLEASE LEAVE THESE HERE UNTIL WE'RE READY TO MERGE INTO PRODUCTION */
+
+/* container with all the table management buttons */
+/* .filter_options {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-areas: 'left mid right';
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+} */
+
+/* container for BIDS and CREATED data toggles */
+/* .data_set_toggles {
+    grid-area: right;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+} */
+
+/* search input box and sort order dropdown clickable */
+/* .search_and_filter {
+    grid-area: left;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+} */
+
+/* SHOW COMPLETE and WATCHLIST buttons */
+/* .sort_toggles {
+    grid-area: mid;
+    justify-self: start;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+} */
