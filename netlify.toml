@@ -42,6 +42,9 @@
 package = "@netlify/plugin-sitemap"
   [plugins.inputs]
   buildDir = "build"
+  customPages = [
+    "/explore",
+  ]
 
 [build]
   command = "npm run build && cp src/ambient-utils/constants/ambient-token-list.json src/ambient-utils/constants/testnet-token-list.json build/"
