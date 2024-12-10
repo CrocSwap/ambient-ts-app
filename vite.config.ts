@@ -67,23 +67,16 @@ export default defineConfig({
                         return 'lib.esm';
                     } else if (id.toLowerCase().includes('ui/dist/esm')) {
                         return 'esm';
-                    } else if (id.toLowerCase().includes('intro.js')) {
-                        return 'intro';
                     } else if (
                         id.toLowerCase().includes('numbro') ||
-                        id.toLowerCase().includes('moment')
+                        id.toLowerCase().includes('moment') ||
+                        id.toLowerCase().includes('siwe')
                     ) {
                         return 'numbers';
                     } else if (id.toLowerCase().includes('noble')) {
                         return 'noble';
-                    } else if (id.toLowerCase().includes('siwe')) {
-                        return 'siwe';
-                    } else if (id.toLowerCase().includes('framer')) {
-                        return 'framer';
-                    } else if (
-                        id.toLowerCase().includes('universal-provider')
-                    ) {
-                        return 'provider';
+                    } else if (id.toLowerCase().includes('framer-motion')) {
+                        return 'framer-motion';
                     } else if (id.toLowerCase().includes('web3modal')) {
                         return 'web3modal';
                     } else if (
@@ -106,14 +99,16 @@ export default defineConfig({
                         return 'aes-js';
                     } else if (
                         id.toLowerCase().includes('tslib') ||
-                        id.toLowerCase().includes('motionone')
+                        id.toLowerCase().includes('motionone') ||
+                        id.toLowerCase().includes('aes-js')
                     ) {
                         return 'tslib';
                     } else if (
                         id.toLowerCase().includes('remix-run') ||
                         id.toLowerCase().includes('react-router') ||
                         id.toLowerCase().includes('react-dom') ||
-                        id.toLowerCase().includes('react-use-websocket')
+                        id.toLowerCase().includes('react-use-websocket') ||
+                        id.toLowerCase().includes('intro.js')
                     ) {
                         return 'react-router';
                     } else if (id.toLowerCase().includes('d3')) {
@@ -124,7 +119,10 @@ export default defineConfig({
                         id.toLowerCase().includes('utils/dist/index.es.js')
                     ) {
                         return 'utils/dist/index.es.js';
-                    } else if (id.toLowerCase().includes('walletconnect')) {
+                    } else if (
+                        id.toLowerCase().includes('walletconnect') ||
+                        id.toLowerCase().includes('universal-provider')
+                    ) {
                         return 'walletconnect';
                     } else if (
                         id.toLowerCase().includes('reactcss') ||
