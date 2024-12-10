@@ -227,9 +227,8 @@ export default function Account() {
                     tck.createdBy.toLowerCase() === userAddress?.toLowerCase(),
             );
         }
-        console.log(output);
         return output;
-    }, [tickerSet]);
+    }, [tickerSet, sorted]);
 
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
