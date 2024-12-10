@@ -11,7 +11,7 @@ import {
     ReceiptContext,
     UserDataContext,
 } from '../../../contexts';
-import { placeholderVaultsListData } from './placeholderVaultsData';
+import { fallbackVaultsList } from './fallbackVaultsList';
 import { Vault } from './Vault';
 import VaultRow from './VaultRow/VaultRow';
 import styles from './Vaults.module.css';
@@ -180,7 +180,7 @@ function Vaults() {
                         ? skeletonDisplay
                         : (allVaultsData?.length
                               ? allVaultsData
-                              : placeholderVaultsListData
+                              : fallbackVaultsList
                           )
                               .sort(
                                   (
