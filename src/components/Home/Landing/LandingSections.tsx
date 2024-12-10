@@ -73,6 +73,7 @@ export default function LandingSections() {
                     alt='concentrated and ambient liquidity'
                     width='331px'
                     height='420px'
+                    loading='lazy'
                 />
                 <FasterSection
                     flexDirection='column'
@@ -149,6 +150,7 @@ export default function LandingSections() {
                     alt='range and limit orders'
                     width='240px'
                     height='420px'
+                    loading='lazy'
                 />
             </RowContainer>
         </SlideContainer>

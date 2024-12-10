@@ -21,30 +21,40 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 export default function Investors() {
     const row1 = (
         <InvestorRow row={1}>
-            <img src={blocktower} alt='block tower' />
+            <img src={blocktower} alt='block tower' loading='lazy' />
         </InvestorRow>
     );
 
     const row2 = (
         <InvestorRow row={2}>
-            <img src={jane} alt='jane street' />
-            <img src={circle} alt='circle ' />
+            <img src={jane} alt='jane street' loading='lazy' />
+            <img src={circle} alt='circle ' loading='lazy' />
         </InvestorRow>
     );
 
     const row3 = (
         <InvestorRow row={3}>
-            <img src={tensai} alt='tensai capital' />
-            <img src={naval} alt='naval ravikant' />
+            <img src={tensai} alt='tensai capital' loading='lazy' />
+            <img src={naval} alt='naval ravikant' loading='lazy' />
         </InvestorRow>
     );
 
     const row4 = (
         <InvestorRow row={4}>
-            <img src={yunt} alt='yunt capital' width='200px' />
-            <img src={susa} alt='susa ' width='50px' />
-            <img src={quantstamp} alt='quantstamp ' width='200px' />
-            <img src={hypotenuse} alt='hypotenuse ' width='200px' />
+            <img src={yunt} alt='yunt capital' width='200px' loading='lazy' />
+            <img src={susa} alt='susa ' width='50px' loading='lazy' />
+            <img
+                src={quantstamp}
+                alt='quantstamp '
+                width='200px'
+                loading='lazy'
+            />
+            <img
+                src={hypotenuse}
+                alt='hypotenuse '
+                width='200px'
+                loading='lazy'
+            />
         </InvestorRow>
     );
     const row5 = (
@@ -77,8 +87,8 @@ export default function Investors() {
     );
     const row7 = (
         <InvestorRow row={7}>
-            <img src={PositiveSum} alt='positivie sum' />
-            <img src={motivate} alt='motivate ' />
+            <img src={PositiveSum} alt='positivie sum' loading='lazy' />
+            <img src={motivate} alt='motivate ' loading='lazy' />
         </InvestorRow>
     );
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
@@ -89,8 +99,8 @@ export default function Investors() {
                 <Text fontSize='header1'>Pre-Seed</Text>
             </GridContainer>
             <GridContainer numCols={2} gap={10}>
-                <img src={PositiveSum} alt='positive sum' />
-                <img src={motivate} alt='motivate' />
+                <img src={PositiveSum} alt='positive sum' loading='lazy' />
+                <img src={motivate} alt='motivate' loading='lazy' />
             </GridContainer>
         </GridContainer>
     );
@@ -105,15 +115,55 @@ export default function Investors() {
                     gap={8}
                     wrap
                 >
-                    <img src={blocktower} alt='block tower' width='180px' />
-                    <img src={jane} alt='jane street' width='180px' />
-                    <img src={circle} alt='circle' width='180px' />
-                    <img src={tensai} alt='tensai capital' width='180px' />
-                    <img src={naval} alt='naval ravikant' width='180px' />
-                    <img src={yunt} alt='yunt capital' width='200px' />
-                    <img src={susa} alt='susa' width='50px' />
-                    <img src={quantstamp} alt='quantstamp' width='200px' />
-                    <img src={hypotenuse} alt='hypotenuse' width='200px' />
+                    <img
+                        src={blocktower}
+                        alt='block tower'
+                        width='180px'
+                        loading='lazy'
+                    />
+                    <img
+                        src={jane}
+                        alt='jane street'
+                        width='180px'
+                        loading='lazy'
+                    />
+                    <img
+                        src={circle}
+                        alt='circle'
+                        width='180px'
+                        loading='lazy'
+                    />
+                    <img
+                        src={tensai}
+                        alt='tensai capital'
+                        width='180px'
+                        loading='lazy'
+                    />
+                    <img
+                        src={naval}
+                        alt='naval ravikant'
+                        width='180px'
+                        loading='lazy'
+                    />
+                    <img
+                        src={yunt}
+                        alt='yunt capital'
+                        width='200px'
+                        loading='lazy'
+                    />
+                    <img src={susa} alt='susa' width='50px' loading='lazy' />
+                    <img
+                        src={quantstamp}
+                        alt='quantstamp'
+                        width='200px'
+                        loading='lazy'
+                    />
+                    <img
+                        src={hypotenuse}
+                        alt='hypotenuse'
+                        width='200px'
+                        loading='lazy'
+                    />
                     <span>Julian Koh</span>
                     <span>llllvvuu</span>
                     <span>Dogetoshi</span>
