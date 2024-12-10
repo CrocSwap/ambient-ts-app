@@ -291,7 +291,6 @@ export default function Account() {
         <div className={styles.container}>
             <div className={styles.content}>
                 <BreadCrumb />
-                <h2>Account3</h2>
                 <SearchableTicker
                     auctions={filtered}
                     dataState={{
