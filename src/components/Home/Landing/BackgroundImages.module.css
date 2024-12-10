@@ -1,4 +1,5 @@
 .home_wallpaper_mobile {
+    content-visibility: auto; /* Ensures the element is rendered only when visible */
     background:
         linear-gradient(
             to bottom,
@@ -9,10 +10,11 @@
             rgba(13, 17, 23, 0.9),
             rgba(13, 17, 23, 1)
         ),
-        url('/src/assets/images/home/home_wallpaper_compressed.png') no-repeat;
+        url('/src/assets/images/home/home_wallpaper.webp') no-repeat;
 }
 
 .purple_waves {
+    content-visibility: auto;
     background:
         linear-gradient(
             180deg,
@@ -21,17 +23,20 @@
             rgba(0, 0, 0, 0) 0%,
             var(--dark1) 100%
         ),
-        url('/src/assets/images/home/home_wallpaper_compressed.png') no-repeat
-            center center;
+        url('/src/assets/images/home/home_wallpaper.webp') no-repeat center
+            center;
 }
 
 .home2 {
+    content-visibility: auto;
     background: url(/src/assets/images/home/home2.png) no-repeat;
 }
 .home3 {
+    content-visibility: auto;
     background: url(/src/assets/images/home/home3.png) no-repeat;
 }
 .home4 {
+    content-visibility: auto;
     background: url(/src/assets/images/home/home4.png) no-repeat;
 }
 
