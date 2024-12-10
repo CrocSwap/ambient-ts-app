@@ -113,11 +113,10 @@ export default defineConfig({
                         id.toLowerCase().includes('react-use-websocket')
                     ) {
                         return 'websocket';
-                    } else if (
-                        id.toLowerCase().includes('ethers') ||
-                        id.toLowerCase().includes('crocswap-libs')
-                    ) {
+                    } else if (id.toLowerCase().includes('ethers')) {
                         return 'ethers';
+                    } else if (id.toLowerCase().includes('jss/dist')) {
+                        return 'jss/dist';
                     } else if (id.toLowerCase().includes('aes-js')) {
                         return 'aes-js';
                     } else if (
@@ -127,7 +126,8 @@ export default defineConfig({
                         return 'tslib';
                     } else if (
                         id.toLowerCase().includes('remix-run') ||
-                        id.toLowerCase().includes('react-router')
+                        id.toLowerCase().includes('react-router') ||
+                        id.toLowerCase().includes('react-dom')
                     ) {
                         return 'react-router';
                     } else if (id.toLowerCase().includes('d3')) {
@@ -150,7 +150,8 @@ export default defineConfig({
                         id.toLowerCase().includes('tinycolor2') ||
                         id.toLowerCase().includes('sha.js') ||
                         id.toLowerCase().includes('popmotion') ||
-                        id.toLowerCase().includes('modern-screenshot')
+                        id.toLowerCase().includes('modern-screenshot') ||
+                        id.toLowerCase().includes('crocswap-libs')
                     ) {
                         return 'various-independent-libs-2';
                     } else if (id.toLowerCase().includes('node_modules')) {
@@ -159,6 +160,8 @@ export default defineConfig({
                         return 'assets';
                     } else if (id.toLowerCase().includes('futa')) {
                         return 'futa';
+                    } else if (id.toLowerCase().includes('ambient-utils')) {
+                        return 'chat-utils';
                     } else if (id.toLowerCase().includes('chat')) {
                         return 'chat';
                     } else if (id.toLowerCase().includes('global')) {
@@ -167,6 +170,8 @@ export default defineConfig({
                         return 'trade';
                     } else if (id.toLowerCase().includes('components')) {
                         return 'components';
+                    } else if (id.toLowerCase().includes('platformambient')) {
+                        return 'platformambient';
                     } else if (id.toLowerCase().includes('form')) {
                         return 'form';
                     }
