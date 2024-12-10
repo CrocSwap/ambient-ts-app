@@ -63,18 +63,12 @@ export default defineConfig({
                         id.toLowerCase().includes('lodash')
                     ) {
                         return 'various-independent-libs-1';
-                    } else if (id.toLowerCase().includes('readable-stream')) {
-                        return 'readable-stream';
-                    } else if (id.toLowerCase().includes('qrcode/lib')) {
-                        return 'qrcode';
                     } else if (id.toLowerCase().includes('lib.esm')) {
                         return 'lib.esm';
                     } else if (id.toLowerCase().includes('ui/dist/esm')) {
                         return 'esm';
                     } else if (id.toLowerCase().includes('styled-components')) {
                         return 'styled-components';
-                    } else if (id.toLowerCase().includes('ens-normalize')) {
-                        return 'ens';
                     } else if (id.toLowerCase().includes('intro.js')) {
                         return 'intro';
                     } else if (
@@ -113,8 +107,6 @@ export default defineConfig({
                         return 'websocket';
                     } else if (id.toLowerCase().includes('ethers')) {
                         return 'ethers';
-                    } else if (id.toLowerCase().includes('jss/dist')) {
-                        return 'jss/dist';
                     } else if (id.toLowerCase().includes('aes-js')) {
                         return 'aes-js';
                     } else if (
