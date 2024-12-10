@@ -42,9 +42,6 @@
 package = "@netlify/plugin-sitemap"
   [plugins.inputs]
   buildDir = "build"
-  customPages = [
-    "/explore",
-  ]
   exclude = ["/geoblocked"]
 
 [build]
