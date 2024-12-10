@@ -510,7 +510,6 @@ function RangeDetailsModal(props: propsIF) {
                     <TransactionDetailsGraph {...GraphProps} />
                 </div>
             </div>
-            <p className={styles.ambi_copyright}>ambient.finance</p>
         </div>
     );
     const shareComponentMobile = (

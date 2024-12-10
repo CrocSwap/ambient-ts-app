@@ -63,19 +63,6 @@
     border-radius: var(--border-radius);
 }
 
-.ambi_copyright {
-    font-family: var(--font-logo);
-    display: flex;
-    justify-content: center;
-
-    font-weight: 200;
-    font-size: var(--header1-size);
-    line-height: 30px;
-    color: var(--text1);
-    padding: 4px 0;
-    cursor: default;
-}
-
 .outer_container {
     min-height: 562px;
     height: auto;
