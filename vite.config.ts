@@ -144,8 +144,6 @@ export default defineConfig({
                         return 'events';
                     } else if (id.toLowerCase().includes('tslib')) {
                         return 'tslib';
-                    } else if (id.toLowerCase().includes('lit')) {
-                        return 'lit';
                     } else if (id.toLowerCase().includes('remix-run')) {
                         return 'remix-run';
                     } else if (id.toLowerCase().includes('popmotion')) {
@@ -175,8 +173,6 @@ export default defineConfig({
                         return 'futa';
                     } else if (id.toLowerCase().includes('chat')) {
                         return 'chat';
-                    } else if (id.toLowerCase().includes('utils')) {
-                        return 'utils';
                     } else if (id.toLowerCase().includes('global')) {
                         return 'global';
                     } else if (id.toLowerCase().includes('trade')) {
