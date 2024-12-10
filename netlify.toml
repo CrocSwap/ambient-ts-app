@@ -45,6 +45,7 @@ package = "@netlify/plugin-sitemap"
   customPages = [
     "/explore",
   ]
+  exclude = ["/geoblocked"]
 
 [build]
   command = "npm run build && cp src/ambient-utils/constants/ambient-token-list.json src/ambient-utils/constants/testnet-token-list.json build/"
