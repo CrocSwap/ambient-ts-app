@@ -323,10 +323,10 @@ const useFetchPoolStats = (
             shouldInvertDisplay !== undefined &&
             crocEnv &&
             provider &&
-            localPoolPriceNonDisplay !== undefined &&
-            // check if the local pool price for the current pool
-            localPoolPriceNonDisplay[0] ===
-                pool.base.address + pool.quote.address
+            (!isTradePair ||
+                (localPoolPriceNonDisplay !== undefined &&
+                    localPoolPriceNonDisplay[0] ===
+                        pool.base.address + pool.quote.address))
         ) {
             const poolStatsNow = {
                 baseFees: currentPoolStats?.baseFees || 0,
@@ -352,7 +352,9 @@ const useFetchPoolStats = (
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
                 tokens.allDefaultTokens,
-                localPoolPriceNonDisplay[1],
+                localPoolPriceNonDisplay
+                    ? localPoolPriceNonDisplay[1]
+                    : undefined,
                 enableTotalSupply,
             );
 
@@ -386,7 +388,7 @@ const useFetchPoolStats = (
             const volumeTotal24hAgo = expandedPoolStats24hAgo?.volumeTotalUsd;
             const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
-            const nowPrice = localPoolPriceNonDisplay[1];
+            const nowPrice = currentPoolStats?.lastPriceSwap;
             const ydayPrice = currentPoolStats?.priceSwap24hAgo;
 
             const priceChangeResult =
