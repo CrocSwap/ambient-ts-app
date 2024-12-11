@@ -1,6 +1,10 @@
 /* eslint-disable no-undef */
 /* eslint-disable camelcase */
+import { config } from 'dotenv';
 import { writeFileSync } from 'fs';
+
+// Load .env.local
+config({ path: '.env.local' });
 
 const manifest = {
     short_name: 'Ambient',
@@ -20,7 +24,7 @@ const manifest = {
             purpose: 'any',
         },
         {
-            src: process.env.MASKABLE_ICON_SRC || 'maskable_icon.png',
+            src: process.env.MASKABLE_ICON_SRC || 'maskable_icon-test2.png',
             type: 'image/png',
             sizes: '192x192',
             purpose: 'maskable',
