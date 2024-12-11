@@ -373,7 +373,7 @@ export default function Chart(props: propsIF) {
                 return prev;
             });
         }
-    }, [chartThemeColors]);
+    }, [chartThemeColors, colorChangeTrigger]);
 
     const location = useLocation();
 

@@ -275,6 +275,8 @@ export default function RangeLinesChart(props: propsIF) {
         liqMode,
         liqTransitionPointforCurve,
         liqTransitionPointforDepth,
+        lineSellColor,
+        lineBuyColor,
     ]);
 
     useEffect(() => {
