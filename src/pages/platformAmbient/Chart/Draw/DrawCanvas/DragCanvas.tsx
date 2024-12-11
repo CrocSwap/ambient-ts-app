@@ -53,6 +53,7 @@ interface DragCanvasProps {
     setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setContextMenuPlacement: any;
+    openMobileSettingsModal: () => void;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -82,9 +83,13 @@ export default function DragCanvas(props: DragCanvasProps) {
         period,
         setContextmenu,
         setContextMenuPlacement,
+        openMobileSettingsModal,
     } = props;
 
-    const mobileView = useMediaQuery('(max-width: 600px)');
+    const mobileView = useMediaQuery('(max-width: 768px)');
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     useEffect(() => {
         if (scaleData !== undefined && !isChartZoom) {
@@ -415,19 +420,23 @@ export default function DragCanvas(props: DragCanvasProps) {
             'contextmenu',
             (event: PointerEvent) => {
                 if (!event.shiftKey) {
-                    event.preventDefault();
+                    if (tabletView) {
+                        event.preventDefault();
 
-                    const screenHeight = window.innerHeight;
+                        const screenHeight = window.innerHeight;
 
-                    const diff = screenHeight - event.clientY;
+                        const diff = screenHeight - event.clientY;
 
-                    setContextMenuPlacement({
-                        top: event.clientY,
-                        left: event.clientX,
-                        isReversed: diff < 350,
-                    });
+                        setContextMenuPlacement({
+                            top: event.clientY,
+                            left: event.clientX,
+                            isReversed: diff < 350,
+                        });
 
-                    setContextmenu(true);
+                        setContextmenu(true);
+                    } else {
+                        openMobileSettingsModal();
+                    }
                 } else {
                     setContextmenu(false);
                 }

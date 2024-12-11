@@ -6206,6 +6206,7 @@ export default function Chart(props: propsIF) {
                         period={period}
                         setContextmenu={setContextmenu}
                         setContextMenuPlacement={setContextMenuPlacement}
+                        openMobileSettingsModal={openMobileSettingsModal}
                     />
                 )}
                 <YAxisCanvas {...yAxisCanvasProps} />
