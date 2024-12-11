@@ -1,12 +1,5 @@
 import React, { createContext } from 'react';
 import {
-    AmbientListBalancesQueryFn,
-    DexBalancesQueryFn,
-    FetchAddrFn,
-    FetchBlockTimeFn,
-    FetchContractDetailsFn,
-    FetchTopPairedTokenFn,
-    TokenPriceFn,
     memoizeFetchAmbientListWalletBalances,
     memoizeFetchBlockTime,
     memoizeFetchContractDetails,
@@ -16,16 +9,8 @@ import {
     memoizeTokenPrice,
 } from '../ambient-utils/api';
 
-import { NFTQueryFn, memoizeFetchNFT } from '../ambient-utils/api/fetchNft';
+import { memoizeFetchNFT } from '../ambient-utils/api/fetchNft';
 import {
-    AllPoolStatsFn,
-    AuctionStatusQueryFn,
-    Change24Fn,
-    GlobalAuctionListQueryFn,
-    LiquidityFeeFn,
-    PoolStatsFn,
-    SpotPriceFn,
-    UserAuctionListQueryFn,
     memoizeAllPoolStats,
     memoizeGet24hChange,
     memoizeGetAuctionStatus,
@@ -36,26 +21,7 @@ import {
     memoizeQuerySpotPrice,
     memoizeQuerySpotTick,
 } from '../ambient-utils/dataLayer';
-
-export interface CachedDataContextIF {
-    cachedFetchAmbientListWalletBalances: AmbientListBalancesQueryFn;
-    cachedFetchDexBalances: DexBalancesQueryFn;
-    cachedFetchTokenPrice: TokenPriceFn;
-    cachedPoolStatsFetch: PoolStatsFn;
-    cachedAllPoolStatsFetch: AllPoolStatsFn;
-    cachedGet24hChange: Change24Fn;
-    cachedGetLiquidityFee: LiquidityFeeFn;
-    cachedGetGlobalAuctionsList: GlobalAuctionListQueryFn;
-    cachedGetAuctionStatus: AuctionStatusQueryFn;
-    cachedGetUserAuctionsList: UserAuctionListQueryFn;
-    cachedQuerySpotPrice: SpotPriceFn;
-    cachedQuerySpotTick: SpotPriceFn;
-    cachedTokenDetails: FetchContractDetailsFn;
-    cachedEnsResolve: FetchAddrFn;
-    cachedFetchTopPairedToken: FetchTopPairedTokenFn;
-    cachedFetchBlockTime: FetchBlockTimeFn;
-    cachedFetchNFT: NFTQueryFn;
-}
+import { CachedDataContextIF } from '../ambient-utils/types/contextTypes';
 
 export const CachedDataContext = createContext({} as CachedDataContextIF);
 

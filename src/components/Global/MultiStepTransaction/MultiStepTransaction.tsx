@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 
-export interface SlideInProps {
-    isVisible: boolean;
-    children: React.ReactNode;
-}
+// interface SlideInProps {
+//     isVisible: boolean;
+//     children: React.ReactNode;
+// }
 
-export interface StepProps {
+interface StepProps {
     onNext: () => void;
     onPrevious: () => void;
 }
 
-export interface TransactionStep {
+interface TransactionStep {
     component: React.FC<StepProps>;
 }
 
-export interface MultiStepTransactionProps {
+interface MultiStepTransactionProps {
     steps: TransactionStep[];
 }
 

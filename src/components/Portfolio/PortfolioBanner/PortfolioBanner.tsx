@@ -8,11 +8,12 @@ import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { PoolContext } from '../../../contexts/PoolContext';
+
 import {
     NftFetchSettingsIF,
     NftListByChain,
-} from '../../../contexts/TokenBalanceContext';
-import { UserXpDataIF } from '../../../contexts/UserDataContext';
+    UserXpDataIF,
+} from '../../../ambient-utils/types/contextTypes';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';

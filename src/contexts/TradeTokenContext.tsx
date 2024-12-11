@@ -10,43 +10,13 @@ import {
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
 import { ZERO_ADDRESS } from '../ambient-utils/constants';
+import { TradeTokenContextIF } from '../ambient-utils/types/contextTypes';
 import { AppStateContext } from './AppStateContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
 import { TradeDataContext } from './TradeDataContext';
 import { UserDataContext } from './UserDataContext';
-
-export interface TradeTokenContextIF {
-    baseToken: {
-        address: string;
-        balance: string;
-        setBalance: (val: string) => void;
-        dexBalance: string;
-        setDexBalance: (val: string) => void;
-        decimals: number;
-    };
-    quoteToken: {
-        address: string;
-        balance: string;
-        setBalance: (val: string) => void;
-        dexBalance: string;
-        setDexBalance: (val: string) => void;
-        decimals: number;
-    };
-    tokenABalance: string;
-    tokenBBalance: string;
-    tokenADexBalance: string;
-    tokenBDexBalance: string;
-    isTokenAEth: boolean;
-    isTokenBEth: boolean;
-    tokenAAllowance: bigint | undefined;
-    tokenBAllowance: bigint | undefined;
-    setRecheckTokenAApproval: (val: boolean) => void;
-    setRecheckTokenBApproval: (val: boolean) => void;
-    isTokenABase: boolean;
-    contextMatchesParams: boolean;
-}
 
 export const TradeTokenContext = createContext({} as TradeTokenContextIF);
 

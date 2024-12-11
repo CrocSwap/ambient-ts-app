@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 import {
     BlastUserXpDataIF,
-    UserDataContext,
     UserXpDataIF,
-} from '../../../../../contexts/UserDataContext';
+} from '../../../../../ambient-utils/types/contextTypes';
+import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../../styled/Common';
 import { ViewMoreButton } from '../../../../../styled/Components/TransactionTable';
 import PointsRow from './PointsRow';

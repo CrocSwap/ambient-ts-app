@@ -1,9 +1,6 @@
-import { CrocPoolView } from '@crocswap-libs/sdk';
 import {
     createContext,
-    Dispatch,
     ReactNode,
-    SetStateAction,
     useContext,
     useEffect,
     useMemo,
@@ -18,30 +15,13 @@ import {
     isStablePair,
     isWbtcOrStakedBTCToken,
 } from '../ambient-utils/dataLayer';
-import { PoolIF, PoolStatIF } from '../ambient-utils/types';
+import { PoolIF } from '../ambient-utils/types';
+import { PoolContextIF } from '../ambient-utils/types/contextTypes';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { usePoolList } from '../App/hooks/usePoolList';
 import { AppStateContext } from './AppStateContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeDataContext } from './TradeDataContext';
-
-export interface PoolContextIF {
-    poolList: PoolIF[];
-    pool: CrocPoolView | undefined;
-    isPoolInitialized: boolean | undefined;
-    poolPriceDisplay: number | undefined;
-    isPoolPriceChangePositive: boolean;
-    poolPriceChangePercent: string | undefined;
-    dailyVol: number | undefined;
-    poolData: PoolStatIF;
-    usdPrice: number | undefined;
-    usdPriceInverse: number | undefined;
-    isTradeDollarizationEnabled: boolean;
-    setIsTradeDollarizationEnabled: Dispatch<SetStateAction<boolean>>;
-    fdvOfDenomTokenDisplay: string | undefined;
-    baseTokenFdvDisplay: string | undefined;
-    quoteTokenFdvDisplay: string | undefined;
-}
 
 export const PoolContext = createContext({} as PoolContextIF);
 
@@ -49,6 +29,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const {
         activeNetwork: { GCGO_URL, chainId, poolIndex },
     } = useContext(AppStateContext);
+
     const { crocEnv } = useContext(CrocEnvContext);
 
     const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =

@@ -1,6 +1,10 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { useMemo, useState } from 'react';
 import { AuctionDataIF } from '../../../ambient-utils/dataLayer';
+import {
+    sortDetailsIF,
+    sortedAuctionsIF,
+} from '../../../ambient-utils/types/contextTypes';
 
 export type auctionSorts =
     | 'createdAt'
@@ -8,21 +12,6 @@ export type auctionSorts =
     | 'ticker'
     | 'marketCap'
     | 'timeLeft';
-
-export interface sortDetailsIF {
-    sortBy: auctionSorts;
-    isReversed: boolean;
-}
-
-// interface for return value of the hook
-export interface sortedAuctionsIF {
-    data: AuctionDataIF[];
-    active: auctionSorts;
-    isReversed: boolean;
-    update: (newSort: auctionSorts) => void;
-    reverse: () => void;
-    custom(s: auctionSorts, r: boolean): void;
-}
 
 export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
     // default sort sequence for data

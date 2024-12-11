@@ -7,7 +7,7 @@ import {
     diffHashSigScaleData,
 } from '../../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../../ambient-utils/types';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
+import { ChartThemeIF } from '../../../../ambient-utils/types/contextTypes';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import '../Chart.css';
 import {

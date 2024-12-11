@@ -1,7 +1,5 @@
 import {
     createContext,
-    Dispatch,
-    SetStateAction,
     useContext,
     useEffect,
     useMemo,
@@ -20,6 +18,7 @@ import {
     CandlesByPoolAndDurationIF,
     CandleScaleIF,
 } from '../ambient-utils/types';
+import { CandleContextIF } from '../ambient-utils/types/contextTypes';
 import { chartSettingsIF } from '../App/hooks/useChartSettings';
 import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 import { AppStateContext } from './AppStateContext';
@@ -28,30 +27,6 @@ import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { UserDataContext } from './UserDataContext';
-
-export interface CandleContextIF {
-    candleData: CandlesByPoolAndDurationIF | undefined;
-    setCandleData: Dispatch<
-        SetStateAction<CandlesByPoolAndDurationIF | undefined>
-    >;
-
-    isManualCandleFetchRequested: boolean;
-    setIsManualCandleFetchRequested: Dispatch<SetStateAction<boolean>>;
-    isCandleSelected: boolean | undefined;
-    setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
-    isFetchingCandle: boolean;
-    setIsFetchingCandle: Dispatch<SetStateAction<boolean>>;
-    candleDomains: CandleDomainIF;
-    setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>;
-    candleScale: CandleScaleIF;
-    setCandleScale: Dispatch<SetStateAction<CandleScaleIF>>;
-    candleTimeLocal: number | undefined;
-    timeOfEndCandle: number | undefined;
-    isCondensedModeEnabled: boolean;
-    setIsCondensedModeEnabled: Dispatch<SetStateAction<boolean>>;
-    showFutaCandles: boolean;
-    setShowFutaCandles: Dispatch<SetStateAction<boolean>>;
-}
 
 export const CandleContext = createContext({} as CandleContextIF);
 

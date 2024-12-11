@@ -11,13 +11,15 @@ import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../../ambient-utils/dataLayer';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
+import {
+    ChartThemeIF,
+    LiquidityDataLocal,
+} from '../../../../ambient-utils/types/contextTypes';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { formatAmountWithoutDigit } from '../../../../utils/numbers';
-import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import {
     getXandYLocationForChart,
     lineValue,

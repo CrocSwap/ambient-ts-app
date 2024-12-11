@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
-import { sortDirections } from '../../../ambient-utils/types';
-import { PoolDataIF } from '../../../contexts/ExploreContext';
+import { PoolDataIF, sortDirections } from '../../../ambient-utils/types';
 
 export type sortType =
     | 'price'

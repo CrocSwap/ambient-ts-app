@@ -1,69 +1,9 @@
 import React, { createContext } from 'react';
-
-export interface ReceiptContextIF {
-    sessionReceipts: Array<string>;
-    allReceipts: Array<string>;
-    pendingTransactions: Array<string>;
-    transactionsByType: Array<TransactionByType>;
-    sessionPositionUpdates: PositionUpdateIF[];
-    addTransactionByType: (txByType: TransactionByType) => void;
-    addReceipt: (receipt: string) => void;
-    addPendingTx: (tx: string) => void;
-    addPositionUpdate: (positionUpdate: PositionUpdateIF) => void;
-    updateTransactionHash: (oldHash: string, newHash: string) => void;
-    removePendingTx: (pendingTx: string) => void;
-    removeReceipt: (txHash: string) => void;
-    resetReceiptData: () => void;
-}
-
-interface TransactionByType {
-    userAddress: string;
-    txHash: string;
-    txAction?:
-        | 'Sell'
-        | 'Buy'
-        | 'Add'
-        | 'Remove'
-        | 'Harvest'
-        | 'Claim'
-        | 'Reposition';
-    txType:
-        | 'Market'
-        | 'Limit'
-        | 'Range'
-        | 'Deposit'
-        | 'Withdraw'
-        | 'Transfer'
-        | 'Init'
-        | 'Approve';
-    txDescription: string;
-    txDetails?: {
-        baseAddress: string;
-        quoteAddress: string;
-        poolIdx: number;
-        baseSymbol?: string;
-        quoteSymbol?: string;
-        baseTokenDecimals?: number;
-        quoteTokenDecimals?: number;
-        isAmbient?: boolean;
-        lowTick?: number;
-        highTick?: number;
-        isBid?: boolean;
-        gridSize?: number;
-        originalLowTick?: number;
-        originalHighTick?: number;
-    };
-}
-
-export interface PositionUpdateIF {
-    positionID: string;
-    isLimit: boolean;
-    isFullRemoval?: boolean;
-    txHash?: string;
-    unixTimeAdded?: number;
-    unixTimeIndexed?: number;
-    unixTimeReceipt?: number;
-}
+import {
+    PositionUpdateIF,
+    ReceiptContextIF,
+    TransactionByType,
+} from '../ambient-utils/types/contextTypes';
 
 export const ReceiptContext = createContext({} as ReceiptContextIF);
 

@@ -7,16 +7,14 @@ import { CgColorBucket } from 'react-icons/cg';
 import { IoMdColorFilter } from 'react-icons/io';
 import { IoCloseOutline } from 'react-icons/io5';
 import { TbLayoutGridAdd } from 'react-icons/tb';
+import { ChartThemeIF } from '../../../../../ambient-utils/types/contextTypes';
 import { useDrawSettings } from '../../../../../App/hooks/useDrawSettings';
 import useKeyPress from '../../../../../App/hooks/useKeyPress';
 import dragButton from '../../../../../assets/images/icons/draw/floating_button.svg';
 import dashOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/dash.svg';
 import dottedOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/dotted.svg';
 import lineOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/line.svg';
-import {
-    ChartContext,
-    ChartThemeIF,
-} from '../../../../../contexts/ChartContext';
+import { ChartContext } from '../../../../../contexts/ChartContext';
 import {
     drawDataHistory,
     saveShapeAttiributesToLocalStorage,

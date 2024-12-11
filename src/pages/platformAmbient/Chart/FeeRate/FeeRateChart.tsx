@@ -7,7 +7,7 @@ import {
     diffHashSigScaleData,
 } from '../../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../../ambient-utils/types';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
+import { ChartThemeIF } from '../../../../ambient-utils/types/contextTypes';
 import '../Chart.css';
 import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';

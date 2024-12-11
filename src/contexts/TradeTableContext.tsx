@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../ambient-utils/constants';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
+import { TradeTableContextIF } from '../ambient-utils/types/contextTypes';
 import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 import { linkGenMethodsIF, useLinkGen } from '../utils/hooks/useLinkGen';
 import { CandleContext } from './CandleContext';
@@ -11,35 +12,6 @@ import { TradeDataContext } from './TradeDataContext';
 
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
-export interface TradeTableContextIF {
-    showOrderPulseAnimation: boolean;
-    showRangePulseAnimation: boolean;
-    showSwapPulseAnimation: boolean;
-    currentPositionActive: string;
-    setCurrentPositionActive: (val: string) => void;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: (val: string) => void;
-    currentLimitOrderActive: string;
-    setCurrentLimitOrderActive: (val: string) => void;
-    toggleTradeTable: () => void;
-    toggleTradeTableCollapse: () => void;
-    showAllData: boolean;
-    setShowAllData: (val: boolean) => void;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: (val: number) => void;
-    activeTradeTab: string;
-    setActiveTradeTab: (val: string) => void;
-
-    outsideControl: boolean;
-    setOutsideControl: (val: boolean) => void;
-    handlePulseAnimation: (type: 'swap' | 'limitOrder' | 'range') => void;
-
-    activeMobileComponent: string;
-    setActiveMobileComponent: (val: string) => void;
-
-    hideEmptyPositionsOnAccount: boolean;
-    setHideEmptyPositionsOnAccount: (val: boolean) => void;
-}
 
 export const TradeTableContext = createContext({} as TradeTableContextIF);
 

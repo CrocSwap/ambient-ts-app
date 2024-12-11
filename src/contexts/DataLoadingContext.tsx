@@ -1,26 +1,5 @@
 import React, { createContext, useState } from 'react';
-
-export interface DataLoadingContextIF {
-    isConnectedUserTxDataLoading: boolean;
-    isConnectedUserOrderDataLoading: boolean;
-    isConnectedUserPoolOrderDataLoading: boolean;
-    isConnectedUserPoolTxDataLoading: boolean;
-    isConnectedUserRangeDataLoading: boolean;
-    isConnectedUserPoolRangeDataLoading: boolean;
-    isLookupUserTxDataLoading: boolean;
-    isLookupUserOrderDataLoading: boolean;
-    isLookupUserRangeDataLoading: boolean;
-    isPoolTxDataLoading: boolean;
-    isPoolOrderDataLoading: boolean;
-    isPoolRangeDataLoading: boolean;
-    isCandleDataLoading: boolean;
-    setDataLoadingStatus: (params: {
-        datasetName: keyof DataLoadingContextIF;
-        loadingStatus: boolean;
-    }) => void;
-    resetPoolDataLoadingStatus: () => void;
-    resetConnectedUserDataLoadingStatus: () => void;
-}
+import { DataLoadingContextIF } from '../ambient-utils/types/contextTypes';
 
 export const DataLoadingContext = createContext({} as DataLoadingContextIF);
 

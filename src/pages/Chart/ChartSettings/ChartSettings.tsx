@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { VscClose } from 'react-icons/vsc';
-import { ChartThemeIF } from '../../../contexts/ChartContext';
 import {
     ChartSettingsContainer,
     CloseButton,
@@ -10,6 +9,10 @@ import {
     ContextMenuHeaderText,
 } from './ChartSettingsCss';
 
+import {
+    ChartThemeIF,
+    ColorObjIF,
+} from '../../../ambient-utils/types/contextTypes';
 import { BrandContext } from '../../../contexts/BrandContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { chartItemStates } from '../../platformAmbient/Chart/ChartUtils/chartUtils';
@@ -31,14 +34,6 @@ interface ContextMenuIF {
         React.SetStateAction<boolean>
     >;
     render: () => void;
-}
-
-export interface ColorObjIF {
-    selectedColor: string | undefined;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    replaceSelector: string;
-    index: number | undefined;
-    placement: string;
 }
 
 export default function ChartSettings(props: ContextMenuIF) {

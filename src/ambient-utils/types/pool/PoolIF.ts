@@ -8,3 +8,21 @@ export interface PoolIF {
     poolIdx: number;
     isBaseTokenMoneynessGreaterOrEqual?: boolean;
 }
+
+export interface PoolDataIF extends PoolIF {
+    spotPrice: number;
+    displayPrice: string;
+    poolIdx: number;
+    tvl: number;
+    tvlStr: string;
+    volume: number;
+    volumeStr: string;
+    apr: number;
+    priceChange: number;
+    priceChangeStr: string;
+    moneyness: {
+        base: number;
+        quote: number;
+    };
+    usdPriceMoneynessBased: number;
+}

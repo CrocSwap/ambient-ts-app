@@ -15,14 +15,9 @@ import {
     MEDIUM_LINK,
     TWITTER_LINK,
 } from '../../ambient-utils/constants';
+import { footerItemIF } from '../../ambient-utils/types/footer';
 import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
 import FooterCard from './FooterCard';
-
-export interface footerItemIF {
-    title: JSX.Element;
-    content: string;
-    link: string;
-}
 
 export default function Footer() {
     const [, , termsUrls] = useTermsAgreed();

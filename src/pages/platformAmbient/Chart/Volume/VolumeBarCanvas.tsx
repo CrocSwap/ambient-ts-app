@@ -3,8 +3,8 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleDataIF } from '../../../../ambient-utils/types';
+import { ChartThemeIF } from '../../../../ambient-utils/types/contextTypes';
 import { BrandContext } from '../../../../contexts/BrandContext';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
 import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
 
 interface propsIF {

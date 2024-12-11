@@ -27,10 +27,11 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
+
 import {
     BlastUserXpDataIF,
     UserXpDataIF,
-} from '../../../contexts/UserDataContext';
+} from '../../../ambient-utils/types/contextTypes';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import Points from '../../Global/Account/AccountTabs/Points/Points';

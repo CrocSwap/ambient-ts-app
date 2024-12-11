@@ -16,6 +16,10 @@ import {
 } from '../../../ambient-utils/api';
 import { trimString } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
+import {
+    BlastUserXpDataIF,
+    UserXpDataIF,
+} from '../../../ambient-utils/types/contextTypes';
 import { useSimulatedIsUserConnected } from '../../../App/hooks/useSimulatedIsUserConnected';
 import Modal from '../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../components/Global/ModalHeader/ModalHeader';
@@ -27,11 +31,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import {
-    BlastUserXpDataIF,
-    UserDataContext,
-    UserXpDataIF,
-} from '../../../contexts/UserDataContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Level from '../Level/Level';

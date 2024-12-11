@@ -16,10 +16,7 @@ import { MdClose } from 'react-icons/md';
 import { AuctionDataIF, diffHashSig } from '../../../ambient-utils/dataLayer';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { FutaSearchableTickerContext } from '../../../contexts/Futa/FutaSearchableTickerContext';
-import {
-    auctionSorts,
-    sortedAuctionsIF,
-} from '../../../pages/platformFuta/Auctions/useSortedAuctions';
+import { auctionSorts } from '../../../pages/platformFuta/Auctions/useSortedAuctions';
 import { FlexContainer } from '../../../styled/Common';
 import { ResizableContainer } from '../../../styled/Components/Trade';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -27,6 +24,7 @@ import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
 import Chart from '../Chart/Chart';
 // import Divider from '../Divider/FutaDivider';
+import { sortedAuctionsIF } from '../../../ambient-utils/types/contextTypes';
 import Typewriter from '../TypeWriter/TypeWriter';
 import styles from './SearchableTicker.module.css';
 import TickerItem from './TickerItem';

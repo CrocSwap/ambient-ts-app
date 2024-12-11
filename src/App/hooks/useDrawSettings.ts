@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { diffHashSig } from '../../ambient-utils/dataLayer';
-import { ChartThemeIF } from '../../contexts/ChartContext';
+import { ChartThemeIF } from '../../ambient-utils/types/contextTypes';
 import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/platformAmbient/Chart/ChartUtils/chartConstants';
 import {
     drawnShapeDefaultDash,

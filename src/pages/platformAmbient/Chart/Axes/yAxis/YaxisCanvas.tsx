@@ -13,6 +13,7 @@ import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../../../ambient-utils/dataLayer';
+import { LiquidityDataLocal } from '../../../../../ambient-utils/types/contextTypes';
 import { BrandContext } from '../../../../../contexts/BrandContext';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
@@ -20,7 +21,6 @@ import {
     formatAmountChartData,
     formatPoolPriceAxis,
 } from '../../../../../utils/numbers';
-import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import {
     crosshair,
     fillLiqAdvanced,
