@@ -519,7 +519,7 @@ export default function Limit() {
     ]);
 
     useEffect(() => {
-        setNewLimitOrderTransactionHash('');
+        resetConfirmation();
     }, [baseToken.address + quoteToken.address]);
 
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
