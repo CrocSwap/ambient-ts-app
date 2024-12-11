@@ -999,6 +999,13 @@ function Ranges(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
+    useEffect(() => {
+        console.log(
+            '>>> relevantTransactionsByType',
+            relevantTransactionsByType,
+        );
+    }, [relevantTransactionsByType]);
+
     type RecentlyUpdatedPosition = {
         posHash: string;
         timestamp: number;

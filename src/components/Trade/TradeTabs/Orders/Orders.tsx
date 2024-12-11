@@ -1,6 +1,9 @@
 /* eslint-disable no-irregular-whitespace */
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { LimitOrderIF } from '../../../../ambient-utils/types';
+import {
+    LimitOrderIF,
+    LimitOrderServerIF,
+} from '../../../../ambient-utils/types';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -9,7 +12,7 @@ import { useSortedLimits } from '../useSortedLimits';
 import OrderHeader from './OrderTable/OrderHeader';
 
 import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLimitOrders';
-import { AppStateContext } from '../../../../contexts';
+import { AppStateContext, ChainDataContext } from '../../../../contexts';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
@@ -28,6 +31,7 @@ import Spinner from '../../../Global/Spinner/Spinner';
 import TableRows from '../TableRows';
 import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
+import { getLimitOrderData } from '../../../../ambient-utils/dataLayer';
 
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
@@ -47,6 +51,7 @@ function Orders(props: propsIF) {
     } = useContext(SidebarContext);
 
     const { crocEnv, provider } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const {
         activeNetwork: { chainId, poolIndex, GCGO_URL },
@@ -109,6 +114,10 @@ function Orders(props: propsIF) {
     const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
     const moreDataAvailableRef = useRef<boolean>();
     moreDataAvailableRef.current = moreDataAvailable;
+
+    const [unindexedUpdatedOrders, setUnindexedUpdatedOrders] = useState<
+        LimitOrderIF[]
+    >([]);
 
     const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
 
@@ -534,6 +543,79 @@ function Orders(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
+    useEffect(() => {
+        if (relevantTransactionsByType.length > 0) {
+            console.log(
+                '>>> relevantTransactionsByType',
+                relevantTransactionsByType,
+            );
+        }
+
+        (async () => {
+            if (relevantTransactionsByType.length === 0) {
+                setUnindexedUpdatedOrders([]);
+            }
+
+            const pendingOrders = relevantTransactionsByType.filter((tx) => {
+                return tx.txAction === 'Buy' || tx.txAction === 'Sell';
+            });
+
+            const newOrders = await Promise.all(
+                pendingOrders.map(async (pendingOrder) => {
+                    if (!crocEnv || !pendingOrder.txDetails)
+                        return {} as LimitOrderIF;
+
+                    const pos = crocEnv.positions(
+                        pendingOrder.txDetails.quoteAddress,
+                        pendingOrder.txDetails.baseAddress,
+                        pendingOrder.userAddress,
+                    );
+
+                    console.log('>>> pos', pos, getLimitOrderData);
+
+                    const mockServerOrder: LimitOrderServerIF = {
+                        chainId: chainId,
+                        limitOrderId: pendingOrder.txHash,
+                        pivotTime: 0,
+                        askTick: 0,
+                        bidTick: 0,
+                        isBid: pendingOrder.txAction === 'Buy',
+                        poolIdx: poolIndex,
+                        base: pendingOrder.txDetails.baseAddress,
+                        quote: pendingOrder.txDetails.quoteAddress,
+                        user: pendingOrder.userAddress,
+                        concLiq: 0,
+                        rewardLiq: 0,
+                        claimableLiq: 0,
+                        crossTime: 0,
+                        latestUpdateTime: 0,
+                    };
+
+                    console.log(mockServerOrder);
+
+                    // const limitOrderData = await getLimitOrderData(
+                    //     mockServerOrder,
+
+                    //     chainId,
+                    //     crocEnv,
+                    //     provider,
+                    // );
+
+                    const onChainOrder = undefined;
+
+                    // const onChainOrder: LimitOrderIF = {
+                    //     chainId: chainId,
+                    //     limitOrderId: ,
+                    // }
+
+                    return onChainOrder;
+                }),
+            );
+
+            console.log('>>> newOrders', newOrders);
+        })();
+    }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
+
     const shouldDisplayNoTableData =
         !isLoading &&
         !limitOrderData.length &&
@@ -799,7 +881,9 @@ function Orders(props: propsIF) {
                 {showInfiniteScroll ? (
                     <TableRowsInfiniteScroll
                         type='Order'
-                        data={sortedLimitDataToDisplay}
+                        data={unindexedUpdatedOrders.concat(
+                            sortedLimitDataToDisplay,
+                        )}
                         tableView={tableView}
                         isAccountView={isAccountView}
                         fetcherFunction={addMoreData}
