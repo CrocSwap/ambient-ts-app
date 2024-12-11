@@ -55,6 +55,9 @@ interface undoRedoButtonList {
 
 function ChartToolbar() {
     const mobileView = useMediaQuery('(max-width: 768px)');
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const { platformName } = useContext(BrandContext);
@@ -314,7 +317,7 @@ function ChartToolbar() {
     };
 
     const handleOnMouseEnter = (description: string) => {
-        if (!mobileView) {
+        if (!mobileView && !tabletView) {
             setHoveredTool(() => description);
         }
     };
