@@ -32,7 +32,7 @@
             "symbol": "WBTC",
             "decimals": 8,
             "chainId": 11155111,
-            "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
         },
         {
             "name": "ZirCat",
@@ -88,7 +88,7 @@
             "address": "0xb3B942b6d4a4858838aAb8f94DdaEdd479CD1594",
             "symbol": "WBTC",
             "decimals": 8,
-            "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
         },
         {
             "name": "Native Ether",

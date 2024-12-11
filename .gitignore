@@ -26,6 +26,7 @@ yarn-error.log*
 # Local Netlify folder
 .netlify
 .vscode/settings.json
+stats.html
 
 #test
 /e2e/helpers/UserData
