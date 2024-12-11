@@ -44,5 +44,5 @@ const manifest = {
     background_color: '#7371fc',
 };
 
-writeFileSync('./public/site.webmanifest', JSON.stringify(manifest, null, 2));
+writeFileSync('./build/site.webmanifest', JSON.stringify(manifest, null, 2));
 console.log('site.webmanifest generated!');
