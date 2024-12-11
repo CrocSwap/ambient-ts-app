@@ -1,3 +1,4 @@
+import { CrocEnv } from '@crocswap-libs/sdk';
 import moment from 'moment';
 import {
     createContext,
@@ -6,6 +7,7 @@ import {
     SetStateAction,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from 'react';
 import useWebSocket from 'react-use-websocket';
@@ -20,6 +22,9 @@ import {
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
 import {
     BLOCK_POLLING_RPC_URL,
+    GCGO_BLAST_URL,
+    GCGO_ETHEREUM_URL,
+    GCGO_SCROLL_URL,
     hiddenTokens,
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
@@ -27,7 +32,11 @@ import {
     vaultSupportedNetworkIds,
     ZERO_ADDRESS,
 } from '../ambient-utils/constants';
-import { isJsonString } from '../ambient-utils/dataLayer';
+import {
+    getChainStats,
+    getFormattedNumber,
+    isJsonString,
+} from '../ambient-utils/dataLayer';
 import {
     AllVaultsServerIF,
     SinglePoolDataIF,
@@ -71,6 +80,9 @@ export interface ChainDataContextIF {
     setAllVaultsData: Dispatch<
         SetStateAction<AllVaultsServerIF[] | null | undefined>
     >;
+    totalTvlString: string | undefined;
+    totalVolumeString: string | undefined;
+    totalFeesString: string | undefined;
 }
 
 export const ChainDataContext = createContext({} as ChainDataContextIF);
@@ -93,7 +105,13 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         setNFTFetchSettings,
     } = useContext(TokenBalanceContext);
     const { sessionReceipts } = useContext(ReceiptContext);
-    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        provider,
+        mainnetProvider,
+        scrollProvider,
+        blastProvider,
+    } = useContext(CrocEnvContext);
     const {
         cachedFetchAmbientListWalletBalances,
         cachedFetchDexBalances,
@@ -103,6 +121,9 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         cachedAllPoolStatsFetch,
     } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
+
+    const allDefaultTokens = tokens.allDefaultTokens;
+
     const {
         userAddress,
         isUserConnected,
@@ -132,6 +153,14 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const [allVaultsData, setAllVaultsData] = useState<
         AllVaultsServerIF[] | null | undefined
     >(null);
+
+    const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
+    const [totalVolumeString, setTotalVolumeString] = useState<
+        string | undefined
+    >();
+    const [totalFeesString, setTotalFeesString] = useState<
+        string | undefined
+    >();
 
     const blockPollingUrl = BLOCK_POLLING_RPC_URL
         ? BLOCK_POLLING_RPC_URL
@@ -599,6 +628,176 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         }
     }, [isUserOnline, userAddress, isActiveNetworkBlast]);
 
+    const mainnetCrocEnv = useMemo(
+        () =>
+            mainnetProvider
+                ? new CrocEnv(mainnetProvider, undefined)
+                : undefined,
+        [mainnetProvider !== undefined],
+    );
+
+    const scrollCrocEnv = useMemo(
+        () =>
+            scrollProvider ? new CrocEnv(scrollProvider, undefined) : undefined,
+        [scrollProvider !== undefined],
+    );
+
+    const blastCrocEnv = useMemo(
+        () =>
+            blastProvider ? new CrocEnv(blastProvider, undefined) : undefined,
+        [blastProvider !== undefined],
+    );
+
+    useEffect(() => {
+        if (
+            mainnetCrocEnv !== undefined &&
+            scrollCrocEnv !== undefined &&
+            blastCrocEnv !== undefined &&
+            allDefaultTokens.length > 0
+        ) {
+            let tvlTotalUsd = 0,
+                volumeTotalUsd = 0,
+                feesTotalUsd = 0;
+
+            const numChainsToAggregate = 3;
+            let resultsReceived = 0;
+
+            getChainStats(
+                'cumulative',
+                '0x1',
+                mainnetCrocEnv,
+                GCGO_ETHEREUM_URL,
+                cachedFetchTokenPrice,
+                10,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
+
+                resultsReceived += 1;
+
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                }
+            });
+
+            getChainStats(
+                'cumulative',
+                '0x82750',
+                scrollCrocEnv,
+                GCGO_SCROLL_URL,
+                cachedFetchTokenPrice,
+                20,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
+                resultsReceived += 1;
+
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                }
+            });
+
+            getChainStats(
+                'cumulative',
+                '0x13e31',
+                blastCrocEnv,
+                GCGO_BLAST_URL,
+                cachedFetchTokenPrice,
+                10,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
+                resultsReceived += 1;
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                }
+            });
+        }
+    }, [
+        mainnetCrocEnv !== undefined &&
+            scrollCrocEnv !== undefined &&
+            blastCrocEnv !== undefined &&
+            allDefaultTokens.length > 0,
+    ]);
+
     const chainDataContext = {
         lastBlockNumber,
         setLastBlockNumber,
@@ -619,6 +818,9 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         nativeTokenUsdPrice,
         allVaultsData,
         setAllVaultsData,
+        totalTvlString,
+        totalVolumeString,
+        totalFeesString,
     };
 
     return (
