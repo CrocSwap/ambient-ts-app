@@ -1457,6 +1457,8 @@ export default function Chart(props: propsIF) {
 
                                     event.preventDefault();
                                 } else {
+                                    setSelectedDrawnShape(undefined);
+                                    setIsShowFloatingToolbar(false);
                                     openMobileSettingsModal();
                                 }
                             }
@@ -4748,6 +4750,8 @@ export default function Chart(props: propsIF) {
                 (event: PointerEvent) => {
                     if (mobileView) {
                         event.preventDefault();
+                        setSelectedDrawnShape(undefined);
+                        setIsShowFloatingToolbar(false);
                         openMobileSettingsModal();
                     } else {
                         if (!event.shiftKey) {
@@ -6207,6 +6211,7 @@ export default function Chart(props: propsIF) {
                         setContextmenu={setContextmenu}
                         setContextMenuPlacement={setContextMenuPlacement}
                         openMobileSettingsModal={openMobileSettingsModal}
+                        setIsShowFloatingToolbar={setIsShowFloatingToolbar}
                     />
                 )}
                 <YAxisCanvas {...yAxisCanvasProps} />

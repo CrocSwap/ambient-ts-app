@@ -54,6 +54,7 @@ interface DragCanvasProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setContextMenuPlacement: any;
     openMobileSettingsModal: () => void;
+    setIsShowFloatingToolbar: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -84,6 +85,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         setContextmenu,
         setContextMenuPlacement,
         openMobileSettingsModal,
+        setIsShowFloatingToolbar,
     } = props;
 
     const mobileView = useMediaQuery('(max-width: 768px)');
@@ -435,6 +437,8 @@ export default function DragCanvas(props: DragCanvasProps) {
 
                         setContextmenu(true);
                     } else {
+                        setSelectedDrawnShape(undefined);
+                        setIsShowFloatingToolbar(false);
                         openMobileSettingsModal();
                     }
                 } else {
