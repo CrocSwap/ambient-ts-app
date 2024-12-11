@@ -639,7 +639,7 @@ export default function TransactionDetailsGraph(
 
             const svg = svgDiv.select('svg').node() as HTMLCanvasElement;
 
-            if (svg) {
+            if (svg && svgWidth) {
                 const svgHeight = svg.getBoundingClientRect().height;
                 xScale.range([0, svgWidth]);
                 yScale.range([svgHeight, 0]);
@@ -1536,7 +1536,7 @@ export default function TransactionDetailsGraph(
             justifyContent='center'
             alignItems='center'
         >
-            <Spinner size={100} bg='var(--dark1)' centered />;
+            <Spinner size={100} bg='var(--dark1)' centered />
         </FlexContainer>
     );
 
