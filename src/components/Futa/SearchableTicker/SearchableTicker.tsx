@@ -217,9 +217,17 @@ export default function SearchableTicker(props: propsIF) {
             tickerItemRefs.current[hoveredTicker] &&
             !isMouseEnter
         ) {
-            tickerItemRefs.current[hoveredTicker]?.scrollIntoView({
-                behavior: 'smooth',
-            });
+            // tickerItemRefs.current[hoveredTicker]?.scrollIntoView({
+            //     behavior: 'smooth',
+            // });
+
+            const itemRef = tickerItemRefs.current[hoveredTicker];
+            if (itemRef && containerRef.current) {
+                containerRef.current.scrollTo({
+                    top: itemRef.offsetTop,
+                    behavior: 'smooth',
+                });
+            }
         }
     }, [hoveredTicker, isMouseEnter]);
 
