@@ -4,11 +4,12 @@ import { config } from 'dotenv';
 import { writeFileSync } from 'fs';
 
 // Load .env.local
+// config({ path: '.env.futa' });
 config({ path: '.env.local' });
 
 const manifest = {
-    short_name: 'Ambient',
-    name: 'Ambient',
+    short_name: process.env.MANIFEST_NAME || 'Ambient',
+    name: process.env.MANIFEST_NAME || 'Ambient',
     icons: [
         {
             src: process.env.FAVICON_SRC || 'favicon.ico',
@@ -17,14 +18,14 @@ const manifest = {
         },
         {
             src:
-                process.env.ANDROID_CHROME_192_SRC ||
+                process.env.MANIFEST_SITE_LOGO_x192 ||
                 'android-chrome-192x192.png',
             type: 'image/png',
             sizes: '192x192',
             purpose: 'any',
         },
         {
-            src: process.env.MASKABLE_ICON_SRC || 'maskable_icon-test2.png',
+            src: process.env.MANIFEST_SITE_LOGO_x192 || 'maskable_icon.png',
             type: 'image/png',
             sizes: '192x192',
             purpose: 'maskable',
