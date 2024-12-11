@@ -452,7 +452,7 @@ function Swap(props: propsIF) {
     }, [tokenA.address + tokenB.address, isTokenAPrimary]);
 
     useEffect(() => {
-        setNewSwapTransactionHash('');
+        resetConfirmation();
     }, [baseToken.address + quoteToken.address]);
 
     const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
