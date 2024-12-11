@@ -12,7 +12,7 @@ const manifest = {
     name: process.env.MANIFEST_NAME || 'Ambient',
     icons: [
         {
-            src: process.env.FAVICON_SRC || 'favicon.ico',
+            src: process.env.VITE_FAVICON_32_32 || 'favicon.ico',
             sizes: '48x48',
             type: 'image/x-icon',
         },
@@ -32,7 +32,7 @@ const manifest = {
         },
         {
             src:
-                process.env.ANDROID_CHROME_512_SRC ||
+                process.env.MANIFEST_SITE_LOGO_x512 ||
                 'android-chrome-512x512.png',
             type: 'image/png',
             sizes: '512x512',
