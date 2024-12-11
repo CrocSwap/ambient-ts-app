@@ -189,15 +189,8 @@ export default function TickerItem(props: PropsIF) {
                 <p className={styles.tick_name}>{ticker}</p>
             </div>
             <p className={styles.marketCap}>{formattedMarketCap}</p>
-            <div className={styles.statusContainer}>
-                <p>{!status2 ? 'IN' : 'OUT'}</p>
-                {/* {status2 && (
-                    <span
-                        className={styles.tickerStatus}
-                        style={{ background: status2 ? status2 : '' }}
-                    />
-                )} */}
-            </div>
+            <p className={styles.statusContainer}>{!status2 ? 'IN' : 'OUT'}</p>
+
             <p
                 style={{
                     color:
