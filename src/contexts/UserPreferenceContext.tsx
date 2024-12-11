@@ -37,6 +37,11 @@ export const UserPreferenceContext = createContext(
 export const UserPreferenceContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);

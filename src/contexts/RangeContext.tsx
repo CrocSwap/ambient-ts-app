@@ -36,7 +36,11 @@ export interface RangeContextIF {
 export const RangeContext = createContext({} as RangeContextIF);
 
 export const RangeContextProvider = (props: { children: ReactNode }) => {
-    // low and high bounds of range to display in DOM for advanced mode
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    } // low and high bounds of range to display in DOM for advanced mode
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
 

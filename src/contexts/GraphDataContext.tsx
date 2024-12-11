@@ -98,6 +98,11 @@ function normalizeAddr(addr: string): string {
 export const GraphDataContext = createContext({} as GraphDataContextIF);
 
 export const GraphDataContextProvider = (props: { children: ReactNode }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const {
         activeNetwork: { GCGO_URL, chainId },
         server: { isEnabled: isServerEnabled },

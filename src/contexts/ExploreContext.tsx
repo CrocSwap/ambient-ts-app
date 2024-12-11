@@ -14,7 +14,7 @@ import {
     getFormattedNumber,
     getMoneynessRank,
 } from '../ambient-utils/dataLayer';
-import { PoolIF, SinglePoolDataIF } from '../ambient-utils/types';
+import { PoolDataIF, PoolIF, SinglePoolDataIF } from '../ambient-utils/types';
 import {
     useTokenStats,
     useTokenStatsIF,
@@ -38,27 +38,18 @@ export interface ExploreContextIF {
     setIsExploreDollarizationEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
-export interface PoolDataIF extends PoolIF {
-    spotPrice: number;
-    displayPrice: string;
-    poolIdx: number;
-    tvl: number;
-    tvlStr: string;
-    volume: number;
-    volumeStr: string;
-    apr: number;
-    priceChange: number;
-    priceChangeStr: string;
-    moneyness: {
-        base: number;
-        quote: number;
-    };
-    usdPriceMoneynessBased: number;
-}
-
 export const ExploreContext = createContext({} as ExploreContextIF);
 
-export const ExploreContextProvider = (props: { children: ReactNode }) => {
+export const ExploreContextProvider = ({
+    children,
+}: {
+    children: ReactNode;
+}) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
@@ -390,7 +381,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     return (
         <ExploreContext.Provider value={exploreContext}>
-            {props.children}
+            {children}
         </ExploreContext.Provider>
     );
 };

@@ -77,6 +77,11 @@ const blastProvider = new BatchedJsonRpcProvider(
 );
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         activeNetwork: { chainId, evmRpcUrl },

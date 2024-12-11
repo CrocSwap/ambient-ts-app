@@ -46,6 +46,11 @@ export const TradeTableContext = createContext({} as TradeTableContextIF);
 export const TradeTableContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const { isCandleSelected } = useContext(CandleContext);
     const { setChartHeight, chartHeights, isCandleDataNull } =
         useContext(ChartContext);

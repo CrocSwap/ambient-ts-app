@@ -68,6 +68,11 @@ export const UserDataContext = createContext({} as UserDataContextIF);
 export const UserDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const [resolvedAddressFromContext, setResolvedAddressInContext] =
         React.useState<string>('');
     const [secondaryEnsFromContext, setSecondaryEnsInContext] =

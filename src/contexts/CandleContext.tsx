@@ -56,6 +56,11 @@ export interface CandleContextIF {
 export const CandleContext = createContext({} as CandleContextIF);
 
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const {
         server: { isEnabled: isServerEnabled },
         isUserOnline,

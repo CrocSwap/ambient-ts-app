@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { cleanupBatchManager } from '../ambient-utils/api';
+import React from 'react';
 import { AppStateContextProvider } from './AppStateContext';
 import { AuctionsContextProvider } from './AuctionsContext';
 import { BottomSheetContextProvider } from './BottomSheetContext';
@@ -28,12 +27,6 @@ import { UserPreferenceContextProvider } from './UserPreferenceContext';
 import { XpLeadersContextProvider } from './XpLeadersContext';
 
 export const GlobalContexts = (props: { children: React.ReactNode }) => {
-    useEffect(() => {
-        return () => {
-            (async () => await cleanupBatchManager())();
-        };
-    }, []);
-
     return (
         <AppStateContextProvider>
             <CachedDataContextProvider>

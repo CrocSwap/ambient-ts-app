@@ -48,6 +48,11 @@ export const TokenBalanceContext = createContext({} as TokenBalanceContextIF);
 export const TokenBalanceContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const [tokenBalances, setTokenBalances] = useState<TokenIF[] | undefined>(
         undefined,
     );

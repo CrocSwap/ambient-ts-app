@@ -27,6 +27,11 @@ export const DataLoadingContext = createContext({} as DataLoadingContextIF);
 export const DataLoadingContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const [isConnectedUserTxDataLoading, setIsConnectedUserTxDataLoading] =
         useState(true);
     const [

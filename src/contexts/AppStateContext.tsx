@@ -1,6 +1,7 @@
 import { useWeb3Modal } from '@web3modal/ethers/react';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { useIdleTimer } from 'react-idle-timer';
+import { cleanupBatchManager } from '../ambient-utils/api';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     CHAT_ENABLED,
@@ -58,6 +59,12 @@ export const AppStateContext = createContext({} as AppStateContextIF);
 export const AppStateContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
+
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
     const [isAppHeaderDropdown, setIsAppHeaderDropdown] = useState(false);
     const [isTutorialMode, setIsTutorialMode] = useState(false);
@@ -77,6 +84,13 @@ export const AppStateContextProvider = (props: {
         contentHeight: window.innerHeight - TOTAL_FIXED_HEIGHT,
         viewportHeight: window.innerHeight,
     });
+
+    useEffect(() => {
+        return () => {
+            (async () => await cleanupBatchManager())();
+        };
+    }, []);
+
     // Add this useEffect for handling resize
     useEffect(() => {
         const calculateHeights = () => {

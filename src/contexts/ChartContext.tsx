@@ -179,6 +179,11 @@ export interface LocalChartSettingsIF {
 export const ChartContext = createContext({} as ChartContextIF);
 
 export const ChartContextProvider = (props: { children: React.ReactNode }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const { skin, platformName } = useContext(BrandContext);
 
     const isFuta = ['futa'].includes(platformName);
