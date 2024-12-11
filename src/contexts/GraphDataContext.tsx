@@ -16,79 +16,24 @@ import {
     TokenIF,
     TransactionIF,
 } from '../ambient-utils/types';
+import {
+    Changes,
+    GraphDataContextIF,
+    LimitOrdersByPool,
+    LimitOrdersByUser,
+    PoolRequestParams,
+    PositionsByPool,
+    PositionsByUser,
+    PositionUpdateIF,
+} from '../ambient-utils/types/contextTypes';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { DataLoadingContext } from './DataLoadingContext';
-import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
+import { ReceiptContext } from './ReceiptContext';
 import { TokenContext } from './TokenContext';
 import { TradeDataContext } from './TradeDataContext';
 import { UserDataContext } from './UserDataContext';
-
-export interface Changes {
-    dataReceived: boolean;
-    changes: Array<TransactionIF>;
-}
-
-interface PositionsByUser {
-    dataReceived: boolean;
-    positions: Array<PositionIF>;
-}
-interface LimitOrdersByUser {
-    dataReceived: boolean;
-    limitOrders: LimitOrderIF[];
-}
-export interface PositionsByPool {
-    dataReceived: boolean;
-    positions: Array<PositionIF>;
-}
-export interface LimitOrdersByPool {
-    dataReceived: boolean;
-    limitOrders: LimitOrderIF[];
-}
-interface PoolRequestParams {
-    baseAddress: string;
-    quoteAddress: string;
-    poolIndex: number;
-    chainId: string;
-}
-
-export interface GraphDataContextIF {
-    positionsByUser: PositionsByUser;
-    limitOrdersByUser: LimitOrdersByUser;
-    transactionsByUser: Changes;
-    userTransactionsByPool: Changes;
-    unindexedNonFailedSessionTransactionHashes: string[];
-    unindexedNonFailedSessionPositionUpdates: PositionUpdateIF[];
-    unindexedNonFailedSessionLimitOrderUpdates: PositionUpdateIF[];
-    transactionsByPool: Changes;
-    userPositionsByPool: PositionsByPool;
-    positionsByPool: PositionsByPool;
-    userLimitOrdersByPool: LimitOrdersByPool;
-    limitOrdersByPool: LimitOrdersByPool;
-    liquidityData: LiquidityDataIF | undefined;
-    liquidityFee: number | undefined;
-
-    setLiquidity: (
-        liqData: LiquidityDataIF,
-        request: PoolRequestParams | undefined,
-    ) => void;
-    setLiquidityFee: React.Dispatch<React.SetStateAction<number | undefined>>;
-    setTransactionsByPool: React.Dispatch<React.SetStateAction<Changes>>;
-    setTransactionsByUser: React.Dispatch<React.SetStateAction<Changes>>;
-    setUserTransactionsByPool: React.Dispatch<React.SetStateAction<Changes>>;
-    setUserPositionsByPool: React.Dispatch<
-        React.SetStateAction<PositionsByPool>
-    >;
-    setPositionsByPool: React.Dispatch<React.SetStateAction<PositionsByPool>>;
-    setUserLimitOrdersByPool: React.Dispatch<
-        React.SetStateAction<LimitOrdersByPool>
-    >;
-    setLimitOrdersByPool: React.Dispatch<
-        React.SetStateAction<LimitOrdersByPool>
-    >;
-    resetUserGraphData: () => void;
-}
 
 function normalizeAddr(addr: string): string {
     const caseAddr = addr.toLowerCase();

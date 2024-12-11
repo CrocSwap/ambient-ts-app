@@ -11,21 +11,13 @@ import {
     recentPoolsMethodsIF,
     useRecentPools,
 } from '../App/hooks/useRecentPools';
-import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
+import { useSidebar } from '../App/hooks/useSidebar';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
+import { SidebarContextIF } from '../ambient-utils/types/contextTypes';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { AppStateContext } from './AppStateContext';
 import { ReceiptContext } from './ReceiptContext';
-
-export interface SidebarContextIF {
-    recentPools: recentPoolsMethodsIF;
-    sidebar: sidebarMethodsIF;
-    hideOnMobile: boolean;
-    toggleMobileModeVisibility: () => void;
-    setIsPoolDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    isPoolDropdownOpen: boolean;
-}
 
 export const SidebarContext = createContext({} as SidebarContextIF);
 

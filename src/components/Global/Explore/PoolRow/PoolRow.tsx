@@ -3,8 +3,7 @@ import {
     getUnicodeCharacter,
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
-import { TokenIF } from '../../../../ambient-utils/types';
-import { PoolDataIF } from '../../../../contexts/ExploreContext';
+import { PoolDataIF, TokenIF } from '../../../../ambient-utils/types';
 import TokenIcon from '../../TokenIcon/TokenIcon';
 
 import { useMemo } from 'react';

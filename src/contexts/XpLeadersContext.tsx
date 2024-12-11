@@ -1,22 +1,13 @@
 import React, { createContext, useContext } from 'react';
 import { fetchXpLeadersData } from '../ambient-utils/api';
-import { UserXpIF } from '../ambient-utils/types';
+import {
+    XpLeaderboardDataIF,
+    XpLeadersDataIF,
+} from '../ambient-utils/types/contextTypes';
 import { AppStateContext } from './AppStateContext';
 
 interface XpLeadersContextIF {
     xpLeaders: XpLeadersDataIF;
-}
-
-export interface XpLeadersDataIF {
-    global: XpLeaderboardDataIF;
-    byWeek: XpLeaderboardDataIF;
-    byChain: XpLeaderboardDataIF;
-    getXpLeaders: (xpLeaderboardType: string) => void;
-}
-
-export interface XpLeaderboardDataIF {
-    dataReceived: boolean;
-    data: Array<UserXpIF> | undefined;
 }
 
 export const XpLeadersContext = createContext({} as XpLeadersContextIF);

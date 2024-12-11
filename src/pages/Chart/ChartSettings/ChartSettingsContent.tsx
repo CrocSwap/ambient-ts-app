@@ -2,13 +2,14 @@ import Divider from '@material-ui/core/Divider/Divider';
 import * as d3 from 'd3';
 import { MouseEvent, useContext, useEffect, useMemo, useState } from 'react';
 import { SketchPicker } from 'react-color';
+import {
+    ChartThemeIF,
+    ColorObjIF,
+    LocalChartSettingsIF,
+} from '../../../ambient-utils/types/contextTypes';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { BrandContext } from '../../../contexts/BrandContext';
-import {
-    ChartContext,
-    ChartThemeIF,
-    LocalChartSettingsIF,
-} from '../../../contexts/ChartContext';
+import { ChartContext } from '../../../contexts/ChartContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
@@ -25,7 +26,6 @@ import {
     ListItem,
 } from '../../platformAmbient/Chart/Draw/FloatingToolbar/FloatingToolbarSettingsCss';
 import CurveDepth from '../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/CurveDepth';
-import { ColorObjIF } from './ChartSettings';
 import {
     ActionButtonContainer,
     CheckList,

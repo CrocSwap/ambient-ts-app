@@ -21,7 +21,7 @@ export type columnSlugs =
     | 'volume'
     | 'tradeBtn';
 
-export interface HeaderItem {
+interface HeaderItem {
     label: string;
     slug: columnSlugs;
     sortable: boolean;

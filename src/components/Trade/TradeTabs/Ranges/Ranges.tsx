@@ -13,15 +13,13 @@ import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-util
 import { getPositionData } from '../../../../ambient-utils/dataLayer';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
+import { PositionsByPool } from '../../../../ambient-utils/types/contextTypes';
 import { AppStateContext } from '../../../../contexts';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
-import {
-    GraphDataContext,
-    PositionsByPool,
-} from '../../../../contexts/GraphDataContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';

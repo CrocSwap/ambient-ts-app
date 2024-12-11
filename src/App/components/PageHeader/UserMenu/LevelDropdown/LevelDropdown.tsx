@@ -1,5 +1,5 @@
+import { UserXpDataIF } from '../../../../../ambient-utils/types/contextTypes';
 import UserLevelDisplay from '../../../../../components/Global/LevelsCard/UserLevelDisplay';
-import { UserXpDataIF } from '../../../../../contexts/UserDataContext';
 import UserProfileCard from '../UserProfileCard';
 import styles from './LevelDropdown.module.css';
 interface propsIF {

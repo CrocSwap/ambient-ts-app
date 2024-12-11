@@ -7,10 +7,7 @@ import {
     getFormattedNumber,
     getTimeDifference,
 } from '../../../ambient-utils/dataLayer';
-import {
-    AuctionStatusDataIF,
-    AuctionsContext,
-} from '../../../contexts/AuctionsContext';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Divider from '../Divider/FutaDivider';
@@ -18,6 +15,7 @@ import styles from './TickerComponent.module.css';
 
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { LuChevronDown } from 'react-icons/lu';
+import { AuctionStatusDataIF } from '../../../ambient-utils/types/auctionsTypes';
 import { AppStateContext } from '../../../contexts';
 import {
     MARKET_CAP_MULTIPLIER_BIG_INT,
@@ -28,7 +26,7 @@ import ProgressBar from '../ProgressBar/ProgressBar';
 import TooltipLabel from '../TooltipLabel/TooltipLabel';
 
 // Props interface
-export interface PropsIF {
+interface PropsIF {
     freshAuctionStatusData: AuctionStatusDataIF;
     auctionDetailsForConnectedUser: AuctionDataIF | undefined;
     filledMarketCapInEth: string | undefined;
@@ -55,7 +53,7 @@ export interface PropsIF {
 }
 
 // Main function
-export const tickerDisplayElements = (props: PropsIF) => {
+export default function tickerDisplayElements(props: PropsIF) {
     // Destructure props
     const {
         freshAuctionStatusData,
@@ -631,4 +629,4 @@ export const tickerDisplayElements = (props: PropsIF) => {
         openedBidDisplay,
         yourBidDisplay,
     };
-};
+}

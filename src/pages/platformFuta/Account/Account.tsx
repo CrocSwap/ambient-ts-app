@@ -8,6 +8,8 @@ import {
     AuctionTxResponseIF,
     claimAndReturnAll,
 } from '../../../ambient-utils/dataLayer';
+import { sortedAuctionsIF } from '../../../ambient-utils/types/contextTypes';
+import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
 import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
@@ -16,11 +18,7 @@ import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import {
-    sortedAuctionsIF,
-    useSortedAuctions,
-} from '../Auctions/useSortedAuctions';
-import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
+import { useSortedAuctions } from '../Auctions/useSortedAuctions';
 
 export default function Account() {
     const { accountData } = useContext(AuctionsContext);

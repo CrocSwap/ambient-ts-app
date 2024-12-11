@@ -1,180 +1,31 @@
 import * as d3 from 'd3';
 import React, {
     createContext,
-    Dispatch,
-    SetStateAction,
     useContext,
     useEffect,
     useRef,
     useState,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import {
-    chartSettingsMethodsIF,
-    useChartSettings,
-} from '../App/hooks/useChartSettings';
+import { useChartSettings } from '../App/hooks/useChartSettings';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
+import {
+    ChartContextIF,
+    ChartThemeIF,
+    LocalChartSettingsIF,
+    TradeTableState,
+} from '../ambient-utils/types/contextTypes';
 import {
     LS_KEY_CHART_ANNOTATIONS,
     LS_KEY_CHART_CONTEXT_SETTINGS,
 } from '../pages/platformAmbient/Chart/ChartUtils/chartConstants';
 import {
-    drawDataHistory,
     getCssVariable,
     selectedDrawnData,
 } from '../pages/platformAmbient/Chart/ChartUtils/chartUtils';
-import {
-    actionKeyIF,
-    actionStackIF,
-    useUndoRedo,
-} from '../pages/platformAmbient/Chart/ChartUtils/useUndoRedo';
+import { useUndoRedo } from '../pages/platformAmbient/Chart/ChartUtils/useUndoRedo';
 import { BrandContext } from './BrandContext';
-import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
-
-type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
-
-interface ChartHeights {
-    current: number;
-    saved: number;
-    min: number;
-    max: number;
-    default: number;
-}
-
-export interface ChartContextIF {
-    chartSettings: chartSettingsMethodsIF;
-    isFullScreen: boolean;
-    setIsFullScreen: (val: boolean) => void;
-    setChartHeight: (val: number) => void;
-    chartHeights: ChartHeights;
-    isEnabled: boolean;
-    canvasRef: React.MutableRefObject<null>;
-    chartCanvasRef: React.MutableRefObject<null>;
-    tradeTableState: TradeTableState;
-    isMagnetActive: { value: boolean };
-    setIsMagnetActive: React.Dispatch<{ value: boolean }>;
-    isChangeScaleChart: boolean;
-    setIsChangeScaleChart: React.Dispatch<boolean>;
-    isCandleDataNull: boolean;
-    setNumCandlesFetched: React.Dispatch<{
-        candleCount: number | undefined;
-        switchPeriodFlag: boolean;
-    }>;
-    numCandlesFetched: {
-        candleCount: number | undefined;
-        switchPeriodFlag: boolean;
-    };
-    setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
-    isToolbarOpen: boolean;
-    setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    undoRedoOptions: {
-        undo: () => void;
-        redo: () => void;
-        deleteItem: (item: drawDataHistory) => void;
-        currentPool: TradeDataContextIF;
-        drawnShapeHistory: drawDataHistory[];
-        setDrawnShapeHistory: React.Dispatch<SetStateAction<drawDataHistory[]>>;
-        drawActionStack: Map<actionKeyIF, actionStackIF[]>;
-        actionKey: actionKeyIF;
-        addDrawActionStack: (
-            tempLastData: drawDataHistory,
-            isNewShape: boolean,
-            type: string,
-            updatedData?: drawDataHistory | undefined,
-        ) => void;
-        undoStack: Map<actionKeyIF, actionStackIF[]>;
-        deleteAllShapes: () => void;
-        currentPoolDrawnShapes: drawDataHistory[];
-    };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    toolbarRef: React.MutableRefObject<any>;
-    activeDrawingType: string;
-    setActiveDrawingType: React.Dispatch<SetStateAction<string>>;
-    selectedDrawnShape: selectedDrawnData | undefined;
-    setSelectedDrawnShape: React.Dispatch<
-        SetStateAction<selectedDrawnData | undefined>
-    >;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    chartContainerOptions: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setChartContainerOptions: React.Dispatch<SetStateAction<any>>;
-    isChartHeightMinimum: boolean;
-    setIsChartHeightMinimum: React.Dispatch<SetStateAction<boolean>>;
-    isMagnetActiveLocal: boolean;
-    setIsMagnetActiveLocal: React.Dispatch<SetStateAction<boolean>>;
-    setChartThemeColors: React.Dispatch<
-        SetStateAction<ChartThemeIF | undefined>
-    >;
-    chartThemeColors: ChartThemeIF | undefined;
-    setColorChangeTrigger: React.Dispatch<SetStateAction<boolean>>;
-    colorChangeTrigger: boolean;
-    defaultChartSettings: LocalChartSettingsIF;
-    setContextmenu: React.Dispatch<SetStateAction<boolean>>;
-    contextmenu: boolean;
-    setShouldResetBuffer: React.Dispatch<SetStateAction<boolean>>;
-    shouldResetBuffer: boolean;
-    contextMenuPlacement:
-        | {
-              top: number;
-              left: number;
-              isReversed: boolean;
-          }
-        | undefined;
-    setContextMenuPlacement: React.Dispatch<
-        SetStateAction<
-            | {
-                  top: number;
-                  left: number;
-                  isReversed: boolean;
-              }
-            | undefined
-        >
-    >;
-}
-
-export interface ChartThemeIF {
-    // candle color
-    upCandleBodyColor: d3.RGBColor | d3.HSLColor | null;
-    downCandleBodyColor: d3.RGBColor | d3.HSLColor | null;
-    upCandleBorderColor: d3.RGBColor | d3.HSLColor | null;
-    downCandleBorderColor: d3.RGBColor | d3.HSLColor | null;
-
-    selectedDateFillColor: d3.RGBColor | d3.HSLColor | null;
-
-    // liq Color
-    liqAskColor: d3.RGBColor | d3.HSLColor | null;
-    liqBidColor: d3.RGBColor | d3.HSLColor | null;
-
-    // drawing color
-    drawngShapeDefaultColor: d3.RGBColor | d3.HSLColor | null;
-
-    selectedDateStrokeColor: d3.RGBColor | d3.HSLColor | null;
-    text2: d3.RGBColor | d3.HSLColor | null;
-    accent1: d3.RGBColor | d3.HSLColor | null;
-    accent3: d3.RGBColor | d3.HSLColor | null;
-    dark1: d3.RGBColor | d3.HSLColor | null;
-    textColor: string;
-
-    [key: string]: d3.RGBColor | d3.HSLColor | string | null;
-}
-
-export interface LocalChartSettingsIF {
-    chartColors: {
-        upCandleBodyColor: string;
-        downCandleBodyColor: string;
-        selectedDateFillColor: string;
-        upCandleBorderColor: string;
-        downCandleBorderColor: string;
-        liqAskColor: string;
-        liqBidColor: string;
-        selectedDateStrokeColor: string;
-        textColor: string;
-    };
-    isTradeDollarizationEnabled: boolean;
-    showVolume: boolean;
-    showTvl: boolean;
-    showFeeRate: boolean;
-}
+import { TradeDataContext } from './TradeDataContext';
 
 export const ChartContext = createContext({} as ChartContextIF);
 

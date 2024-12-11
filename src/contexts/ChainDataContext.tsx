@@ -2,9 +2,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import moment from 'moment';
 import {
     createContext,
-    Dispatch,
     ReactNode,
-    SetStateAction,
     useContext,
     useEffect,
     useMemo,
@@ -42,49 +40,21 @@ import {
     SinglePoolDataIF,
     TokenIF,
 } from '../ambient-utils/types';
+import {
+    BlastUserXpDataIF,
+    ChainDataContextIF,
+    NftDataIF,
+    NftListByChain,
+    UserXpDataIF,
+} from '../ambient-utils/types/contextTypes';
 import { AppStateContext } from './AppStateContext';
 import { BrandContext } from './BrandContext';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { ReceiptContext } from './ReceiptContext';
-import {
-    NftDataIF,
-    NftListByChain,
-    TokenBalanceContext,
-} from './TokenBalanceContext';
+import { TokenBalanceContext } from './TokenBalanceContext';
 import { TokenContext } from './TokenContext';
-import {
-    BlastUserXpDataIF,
-    UserDataContext,
-    UserXpDataIF,
-} from './UserDataContext';
-
-export interface ChainDataContextIF {
-    gasPriceInGwei: number | undefined;
-    setGasPriceinGwei: Dispatch<SetStateAction<number | undefined>>;
-    lastBlockNumber: number;
-    setLastBlockNumber: Dispatch<SetStateAction<number>>;
-    rpcNodeStatus: RpcNodeStatus;
-    connectedUserXp: UserXpDataIF;
-    connectedUserBlastXp: BlastUserXpDataIF;
-    isActiveNetworkBlast: boolean;
-    isActiveNetworkPlume: boolean;
-    isActiveNetworkSwell: boolean;
-    isActiveNetworkBase: boolean;
-    isActiveNetworkScroll: boolean;
-    isActiveNetworkMainnet: boolean;
-    isVaultSupportedOnNetwork: boolean;
-    isActiveNetworkL2: boolean;
-    nativeTokenUsdPrice: number | undefined;
-    allPoolStats: SinglePoolDataIF[] | undefined;
-    allVaultsData: AllVaultsServerIF[] | null | undefined;
-    setAllVaultsData: Dispatch<
-        SetStateAction<AllVaultsServerIF[] | null | undefined>
-    >;
-    totalTvlString: string | undefined;
-    totalVolumeString: string | undefined;
-    totalFeesString: string | undefined;
-}
+import { UserDataContext } from './UserDataContext';
 
 export const ChainDataContext = createContext({} as ChainDataContextIF);
 

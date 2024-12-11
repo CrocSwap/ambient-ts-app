@@ -1,9 +1,7 @@
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
-    Dispatch,
     ReactNode,
-    SetStateAction,
     createContext,
     useContext,
     useEffect,
@@ -14,7 +12,8 @@ import {
     getFormattedNumber,
     getMoneynessRank,
 } from '../ambient-utils/dataLayer';
-import { PoolIF, SinglePoolDataIF } from '../ambient-utils/types';
+import { PoolDataIF, PoolIF, SinglePoolDataIF } from '../ambient-utils/types';
+import { ExploreContextIF } from '../ambient-utils/types/contextTypes';
 import {
     useTokenStats,
     useTokenStatsIF,
@@ -26,42 +25,14 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { PoolContext } from './PoolContext';
 import { TokenContext } from './TokenContext';
 
-export interface ExploreContextIF {
-    pools: {
-        all: Array<PoolDataIF>;
-        getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
-
-        reset: () => void;
-    };
-    topTokensOnchain: useTokenStatsIF;
-    isExploreDollarizationEnabled: boolean;
-    setIsExploreDollarizationEnabled: Dispatch<SetStateAction<boolean>>;
-}
-
-export interface PoolDataIF extends PoolIF {
-    spotPrice: number;
-    displayPrice: string;
-    poolIdx: number;
-    tvl: number;
-    tvlStr: string;
-    volume: number;
-    volumeStr: string;
-    apr: number;
-    priceChange: number;
-    priceChangeStr: string;
-    moneyness: {
-        base: number;
-        quote: number;
-    };
-    usdPriceMoneynessBased: number;
-}
-
 export const ExploreContext = createContext({} as ExploreContextIF);
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { activeNetwork, isUserOnline } = useContext(AppStateContext);
+
     const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
+
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { allPoolStats } = useContext(ChainDataContext);

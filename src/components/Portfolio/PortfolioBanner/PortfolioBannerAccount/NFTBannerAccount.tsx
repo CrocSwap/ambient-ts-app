@@ -7,11 +7,12 @@ import { trimString } from '../../../../ambient-utils/dataLayer';
 import nftPlaceHolder from '../../../../assets/images/Temporary/nft/nft-placeholder.svg';
 import nftSelected from '../../../../assets/images/Temporary/nft/nft-profile-selected.svg';
 import thumbnailSelected from '../../../../assets/images/Temporary/nft/nft-thumbnail-selected.svg';
+
 import {
     NftDataIF,
     NftFetchSettingsIF,
     NftListByChain,
-} from '../../../../contexts/TokenBalanceContext';
+} from '../../../../ambient-utils/types/contextTypes';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { getAvatarForType } from '../../../Chat/ChatRenderUtils';

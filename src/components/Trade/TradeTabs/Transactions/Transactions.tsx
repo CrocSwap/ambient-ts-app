@@ -18,6 +18,7 @@ import {
 
 import { fetchPoolUserChanges } from '../../../../ambient-utils/api/fetchPoolUserChanges';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
+import { Changes } from '../../../../ambient-utils/types/contextTypes';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
 import { UserDataContext } from '../../../../contexts';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
@@ -26,10 +27,7 @@ import { CandleContext } from '../../../../contexts/CandleContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
-import {
-    Changes,
-    GraphDataContext,
-} from '../../../../contexts/GraphDataContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TokenContext } from '../../../../contexts/TokenContext';

@@ -7,7 +7,8 @@ import {
     diffHashSigScaleData,
 } from '../../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../../ambient-utils/types';
-import { ChartContext, ChartThemeIF } from '../../../../contexts/ChartContext';
+import { ChartThemeIF } from '../../../../ambient-utils/types/contextTypes';
+import { ChartContext } from '../../../../contexts/ChartContext';
 import { defaultCandleBandwith } from '../ChartUtils/chartConstants';
 import {
     CandleDataChart,

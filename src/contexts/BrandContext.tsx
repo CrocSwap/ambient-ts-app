@@ -1,5 +1,10 @@
 import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
 import { chainHexIds } from '../ambient-utils/types';
+import {
+    BrandContextIF,
+    PREMIUM_THEMES_IN_ENV,
+    premiumThemes,
+} from '../ambient-utils/types/contextTypes';
 import { skins } from '../App/hooks/useSkin';
 import {
     ambientProductionBrandAssets,
@@ -13,34 +18,9 @@ import {
     swellBrandAssets,
     swellSepoliaBrandAssets,
 } from '../assets/branding';
-import { brandIF, fontSets } from '../assets/branding/types';
+import { brandIF } from '../assets/branding/types';
 import { AppStateContext } from './AppStateContext';
 import { UserDataContext } from './UserDataContext';
-
-const PREMIUM_THEMES_IN_ENV = {
-    theme1: 'VITE_THEME_1_ACCOUNTS',
-    theme2: 'VITE_THEME_2_ACCOUNTS',
-};
-
-type premiumThemes = keyof typeof PREMIUM_THEMES_IN_ENV;
-
-export interface BrandContextIF {
-    skin: {
-        active: skins;
-        available: skins[];
-        set: (s: skins) => void;
-    };
-    fontSet: fontSets;
-    colorAndFont: string;
-    platformName: string;
-    networks: chainHexIds[];
-    headerImage: string;
-    showPoints: boolean;
-    showDexStats: boolean;
-    premium: Record<premiumThemes, boolean>;
-    includeCanto: boolean;
-    cobrandingLogo: string | undefined;
-}
 
 export const BrandContext = createContext({} as BrandContextIF);
 

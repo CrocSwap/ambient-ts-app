@@ -10,8 +10,8 @@ import {
     CandleDataIF,
     LiquidityRangeIF,
 } from '../../../../ambient-utils/types';
+import { LiquidityDataLocal } from '../../../../ambient-utils/types/contextTypes';
 import { skins } from '../../../../App/hooks/useSkin';
-import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import { getBidPriceValue } from '../Liquidity/LiquiditySeries/AreaSeries';
 import {
     LS_KEY_CHART_ANNOTATIONS,

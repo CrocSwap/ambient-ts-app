@@ -9,14 +9,12 @@ import { useSortedLimits } from '../useSortedLimits';
 import OrderHeader from './OrderTable/OrderHeader';
 
 import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLimitOrders';
+import { LimitOrdersByPool } from '../../../../ambient-utils/types/contextTypes';
 import { AppStateContext } from '../../../../contexts';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
-import {
-    GraphDataContext,
-    LimitOrdersByPool,
-} from '../../../../contexts/GraphDataContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';

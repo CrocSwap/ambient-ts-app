@@ -41,6 +41,7 @@ import {
     CandlesByPoolAndDurationIF,
     TransactionIF,
 } from '../../../ambient-utils/types';
+import { LiquidityDataLocal } from '../../../ambient-utils/types/contextTypes';
 import Divider from '../../../components/Global/Divider/Divider';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { BrandContext } from '../../../contexts/BrandContext';
@@ -60,7 +61,6 @@ import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import ChartSettings from '../../Chart/ChartSettings/ChartSettings';
 import { filterCandleWithTransaction } from '../../Chart/ChartUtils/discontinuityScaleUtils';
-import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
 import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 import YAxisCanvas from './Axes/yAxis/YaxisCanvas';
 import CandleChart from './Candle/CandleChart';

@@ -1,8 +1,10 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { LiquidityRangeIF } from '../../../../../ambient-utils/types';
-import { ChartThemeIF } from '../../../../../contexts/ChartContext';
-import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
+import {
+    ChartThemeIF,
+    LiquidityDataLocal,
+} from '../../../../../ambient-utils/types/contextTypes';
 
 export function getActiveLiqDepth(
     data: LiquidityRangeIF,

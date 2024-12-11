@@ -1,7 +1,5 @@
 import React, {
-    Dispatch,
     ReactNode,
-    SetStateAction,
     createContext,
     useContext,
     useEffect,
@@ -10,77 +8,18 @@ import React, {
 import { CURRENT_AUCTION_VERSION } from '../ambient-utils/constants';
 import { AuctionDataIF } from '../ambient-utils/dataLayer/functions/getAuctionData';
 import {
+    AccountDataIF,
+    AuctionStatusDataIF,
+    AuctionsDataIF,
+} from '../ambient-utils/types/auctionsTypes';
+import { AuctionsContextIF } from '../ambient-utils/types/contextTypes';
+import {
     tickerWatchlistIF,
     useTickerWatchlist,
 } from '../pages/platformFuta/useTickerWatchlist';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { UserDataContext } from './UserDataContext';
-
-export interface AuctionsContextIF {
-    globalAuctionList: AuctionsDataIF;
-    setFilteredAuctionList: Dispatch<
-        SetStateAction<AuctionDataIF[] | undefined>
-    >;
-    filteredAuctionList: AuctionDataIF[] | undefined;
-    accountData: AccountDataIF;
-    updateUserAuctionsList(address: string): void;
-    updateGlobalAuctionsList(): void;
-    getFreshAuctionData(ticker: string): void;
-    freshAuctionStatusData: AuctionStatusDataIF;
-    isLoading: boolean;
-    setIsLoading: Dispatch<SetStateAction<boolean>>;
-    showComments: boolean;
-    setShowComments: Dispatch<SetStateAction<boolean>>;
-    tickerInput: string;
-    setTickerInput: Dispatch<SetStateAction<string>>;
-    selectedTicker: string | undefined;
-    hoveredTicker: string | undefined;
-    setHoveredTicker: Dispatch<SetStateAction<string | undefined>>;
-    setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
-    watchlists: {
-        v1: tickerWatchlistIF;
-        shouldDisplay: boolean;
-        show: () => void;
-        unshow: () => void;
-        toggle: () => void;
-    };
-    showComplete: boolean;
-    setShowComplete: Dispatch<SetStateAction<boolean>>;
-}
-
-export interface AuctionStatusDataIF {
-    dataReceived: boolean;
-    chainId: string;
-    ticker: string;
-    createdAt: number;
-    auctionLength: number;
-    filledClearingPriceInNativeTokenWei: string;
-
-    // open bid data
-    openBidClearingPriceInNativeTokenWei?: string | undefined;
-    openBidQtyFilledInNativeTokenWei?: string | undefined;
-
-    // closed auction data
-    tokenAddress?: string | undefined;
-}
-
-export interface AuctionsDataIF {
-    dataReceived: boolean;
-    chainId: string;
-    data: AuctionDataIF[] | undefined;
-}
-
-export interface AccountDataIF {
-    dataReceived: boolean;
-    chainId: string;
-    userAddress: string;
-    auctions: AuctionDataIF[] | undefined;
-}
-
-export interface AuctionIF {
-    status: string;
-}
 
 export const AuctionsContext = createContext({} as AuctionsContextIF);
 

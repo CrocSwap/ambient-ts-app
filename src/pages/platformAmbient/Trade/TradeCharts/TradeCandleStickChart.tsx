@@ -19,6 +19,7 @@ import {
     CandleScaleIF,
     TransactionIF,
 } from '../../../../ambient-utils/types';
+import { LiquidityDataLocal } from '../../../../ambient-utils/types/contextTypes';
 import Spinner from '../../../../components/Global/Spinner/Spinner';
 import { RangeContext } from '../../../../contexts';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
@@ -43,7 +44,6 @@ import {
     liquidityChartData,
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
-import { LiquidityDataLocal } from './TradeCharts';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {

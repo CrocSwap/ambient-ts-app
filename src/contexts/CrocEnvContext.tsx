@@ -1,6 +1,6 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useWeb3ModalProvider } from '@web3modal/ethers/react';
-import { Provider, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import {
     ReactNode,
     createContext,
@@ -18,6 +18,10 @@ import {
 } from '../ambient-utils/constants';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { PoolIF, TokenIF } from '../ambient-utils/types';
+import {
+    CrocEnvContextIF,
+    UrlRoutesTemplateIF,
+} from '../ambient-utils/types/contextTypes';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
 import { BatchedJsonRpcProvider } from '../utils/batchedProvider';
@@ -32,25 +36,6 @@ import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { TokenContext } from './TokenContext';
 import { UserDataContext } from './UserDataContext';
-
-interface UrlRoutesTemplateIF {
-    swap: string;
-    market: string;
-    limit: string;
-    pool: string;
-}
-
-export interface CrocEnvContextIF {
-    crocEnv: CrocEnv | undefined;
-    setCrocEnv: (val: CrocEnv | undefined) => void;
-    topPools: PoolIF[];
-    ethMainnetUsdPrice: number | undefined;
-    defaultUrlParams: UrlRoutesTemplateIF;
-    provider: Provider;
-    mainnetProvider: Provider | undefined;
-    scrollProvider: Provider | undefined;
-    blastProvider: Provider | undefined;
-}
 
 export const CrocEnvContext = createContext({} as CrocEnvContextIF);
 const mainnetProvider = new BatchedJsonRpcProvider(

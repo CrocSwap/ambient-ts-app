@@ -1,16 +1,13 @@
 import { useContext, useState } from 'react';
 import { skins } from '../../../App/hooks/useSkin';
+import {
+    allColorsIF,
+    cssColorIF,
+} from '../../../ambient-utils/types/contextTypes';
 import { BrandContext } from '../../../contexts/BrandContext';
 import Swap from '../../platformAmbient/Swap/Swap';
 import styles from './CSSDebug.module.css';
 import ColorToggle from './ColorToggle';
-
-export type colorFormats = 'text' | 'background' | 'border';
-
-export interface cssColorIF {
-    name: string;
-    format: colorFormats;
-}
 
 const textColors: cssColorIF[] = [
     { name: '--text1', format: 'text' },
@@ -38,12 +35,6 @@ const borderColors: cssColorIF[] = [
     { name: '--border', format: 'border' },
     { name: '--dark-border-color', format: 'border' },
 ];
-
-export interface allColorsIF {
-    text: cssColorIF[];
-    background: cssColorIF[];
-    border: cssColorIF[];
-}
 
 const allColors: allColorsIF = {
     text: textColors,

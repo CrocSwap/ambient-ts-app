@@ -1,67 +1,12 @@
 import { useDisconnect, useWeb3ModalAccount } from '@web3modal/ethers/react';
-import React, {
-    Dispatch,
-    SetStateAction,
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-} from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { fetchEnsAddress } from '../ambient-utils/api';
 import { checkBlacklist } from '../ambient-utils/constants';
-import {
-    BlastUserXpIF,
-    UserVaultsServerIF,
-    UserXpIF,
-} from '../ambient-utils/types';
+import { UserVaultsServerIF } from '../ambient-utils/types';
+import { UserDataContextIF } from '../ambient-utils/types/contextTypes';
 import { UserAvatarDataIF } from '../components/Chat/ChatIFs';
 import { getAvatarRest } from '../components/Chat/ChatUtilsHelper';
 import { AppStateContext } from './AppStateContext';
-
-export interface UserDataContextIF {
-    isUserConnected: boolean | undefined;
-    userAddress: `0x${string}` | undefined;
-    walletChain: number | undefined;
-    disconnectUser: () => void;
-    ensName: string | null | undefined;
-    resolvedAddressFromContext: string;
-    setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
-    userProfileNFT: string | undefined;
-    setUserProfileNFT: Dispatch<SetStateAction<string | undefined>>;
-    userThumbnailNFT: string | undefined;
-    setUserThumbnailNFT: Dispatch<SetStateAction<string | undefined>>;
-    currentUserID: string | undefined;
-    setCurrentUserID: Dispatch<SetStateAction<string | undefined>>;
-    isfetchNftTriggered: boolean;
-    setIsfetchNftTriggered: Dispatch<SetStateAction<boolean>>;
-    secondaryEnsFromContext: string;
-    setSecondaryEnsInContext: Dispatch<SetStateAction<string>>;
-    nftTestWalletAddress: string;
-    setNftTestWalletAddress: Dispatch<SetStateAction<string>>;
-    userAvatarData: UserAvatarDataIF | undefined;
-    updateUserAvatarData: (
-        walletID: string,
-        avatarData: UserAvatarDataIF,
-    ) => void;
-    userVaultData: UserVaultsServerIF[] | undefined;
-    setUserVaultData: React.Dispatch<
-        React.SetStateAction<UserVaultsServerIF[] | undefined>
-    >;
-}
-
-export interface UserXpDataIF {
-    dataReceived: boolean;
-    data: UserXpIF | undefined;
-}
-export interface UserNftIF {
-    userID: string;
-    avatarImage: string | undefined;
-}
-
-export interface BlastUserXpDataIF {
-    dataReceived: boolean;
-    data: BlastUserXpIF | undefined;
-}
 
 export const UserDataContext = createContext({} as UserDataContextIF);
 

@@ -1,5 +1,5 @@
 import { CORPORATE_LINK } from '../../ambient-utils/constants';
-import { footerItemIF } from './Footer';
+import { footerItemIF } from '../../ambient-utils/types/footer';
 import styles from './Footer.module.css';
 
 interface propsIF {

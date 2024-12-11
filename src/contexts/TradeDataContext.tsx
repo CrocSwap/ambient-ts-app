@@ -1,9 +1,7 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import {
     createContext,
-    Dispatch,
     ReactNode,
-    SetStateAction,
     useContext,
     useEffect,
     useMemo,
@@ -17,50 +15,9 @@ import {
     translateTokenSymbol,
 } from '../ambient-utils/dataLayer';
 import { TokenIF } from '../ambient-utils/types';
+import { TradeDataContextIF } from '../ambient-utils/types/contextTypes';
 import { AppStateContext } from './AppStateContext';
 import { TokenContext } from './TokenContext';
-
-export interface TradeDataContextIF {
-    tokenA: TokenIF;
-    tokenB: TokenIF;
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
-    areDefaultTokensUpdatedForChain: boolean;
-    isTokenABase: boolean;
-    isDenomBase: boolean;
-    didUserFlipDenom: boolean;
-    isTokenAPrimary: boolean;
-    soloToken: TokenIF;
-    shouldSwapDirectionReverse: boolean;
-    primaryQuantity: string;
-    limitTick: number | undefined;
-    poolPriceNonDisplay: number;
-    currentPoolPriceTick: number;
-    slippageTolerance: number;
-
-    setTokenA: Dispatch<SetStateAction<TokenIF>>;
-    setTokenB: Dispatch<SetStateAction<TokenIF>>;
-    setDenomInBase: Dispatch<SetStateAction<boolean>>;
-    setIsTokenAPrimary: Dispatch<SetStateAction<boolean>>;
-    setDidUserFlipDenom: Dispatch<SetStateAction<boolean>>;
-    toggleDidUserFlipDenom: () => void;
-    setSoloToken: Dispatch<SetStateAction<TokenIF>>;
-    setShouldSwapDirectionReverse: Dispatch<SetStateAction<boolean>>;
-    setPrimaryQuantity: Dispatch<SetStateAction<string>>;
-    setLimitTick: Dispatch<SetStateAction<number | undefined>>;
-    setPoolPriceNonDisplay: Dispatch<SetStateAction<number>>;
-    setSlippageTolerance: Dispatch<SetStateAction<number>>;
-    defaultRangeWidthForActivePool: number;
-    getDefaultRangeWidthForTokenPair: (
-        chainId: string,
-        baseAddress: string,
-        quoteAddress: string,
-    ) => number;
-    noGoZoneBoundaries: number[];
-    setNoGoZoneBoundaries: Dispatch<SetStateAction<number[]>>;
-    blackListedTimeParams: Map<string, Set<number>>;
-    addToBlackList: (tokenPair: string, timeParam: number) => void;
-}
 
 export const TradeDataContext = createContext({} as TradeDataContextIF);
 // Have to set these values to something on load, so we use default pair

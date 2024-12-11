@@ -6,52 +6,13 @@ import {
     CHAT_ENABLED,
     VIEW_ONLY,
 } from '../ambient-utils/constants';
-import { NetworkIF } from '../ambient-utils/types';
-import {
-    globalPopupMethodsIF,
-    useGlobalPopup,
-} from '../App/components/GlobalPopup/useGlobalPopup';
+import { AppStateContextIF } from '../ambient-utils/types/contextTypes';
+import { useGlobalPopup } from '../App/components/GlobalPopup/useGlobalPopup';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import { useModal } from '../components/Global/Modal/useModal';
-import {
-    snackbarMethodsIF,
-    useSnackbar,
-} from '../components/Global/SnackbarComponent/useSnackbar';
-
-export interface AppStateContextIF {
-    appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
-    appHeaderDropdown: {
-        isActive: boolean;
-        setIsActive: (val: boolean) => void;
-    };
-    globalPopup: globalPopupMethodsIF;
-    snackbar: snackbarMethodsIF;
-    tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
-    chat: {
-        isOpen: boolean;
-        setIsOpen: (val: boolean) => void;
-        isEnabled: boolean;
-        setIsEnabled: (val: boolean) => void;
-    };
-    server: { isEnabled: boolean };
-    isUserOnline: boolean;
-    subscriptions: { isEnabled: boolean };
-    walletModal: {
-        isOpen: boolean;
-        open: () => void;
-        close: () => void;
-    };
-    isUserIdle: boolean;
-    isUserIdle20min: boolean;
-    activeNetwork: NetworkIF;
-    chooseNetwork: (network: NetworkIF) => void;
-    layout: {
-        contentHeight: number;
-        viewportHeight: number;
-    };
-}
+import { useSnackbar } from '../components/Global/SnackbarComponent/useSnackbar';
 
 export const AppStateContext = createContext({} as AppStateContextIF);
 

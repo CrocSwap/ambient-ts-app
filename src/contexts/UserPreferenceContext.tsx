@@ -1,34 +1,14 @@
 import React, { createContext, useContext, useEffect, useMemo } from 'react';
-import {
-    dexBalanceMethodsIF,
-    useExchangePrefs,
-} from '../App/hooks/useExchangePrefs';
-import { favePoolsMethodsIF, useFavePools } from '../App/hooks/useFavePools';
-import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
-import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
+import { useExchangePrefs } from '../App/hooks/useExchangePrefs';
+import { useFavePools } from '../App/hooks/useFavePools';
+import { useSkipConfirm } from '../App/hooks/useSkipConfirm';
+import { useSlippage } from '../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import { getMoneynessRankByAddr } from '../ambient-utils/dataLayer';
+import { UserPreferenceContextIF } from '../ambient-utils/types/contextTypes';
 import { AppStateContext } from './AppStateContext';
 import { TradeDataContext } from './TradeDataContext';
 import { TradeTokenContext } from './TradeTokenContext';
-
-export interface UserPreferenceContextIF {
-    favePools: favePoolsMethodsIF;
-    swapSlippage: SlippageMethodsIF;
-    mintSlippage: SlippageMethodsIF;
-    repoSlippage: SlippageMethodsIF;
-    dexBalSwap: dexBalanceMethodsIF;
-    dexBalLimit: dexBalanceMethodsIF;
-    dexBalRange: dexBalanceMethodsIF;
-    bypassConfirmSwap: skipConfirmIF;
-    bypassConfirmLimit: skipConfirmIF;
-    bypassConfirmRange: skipConfirmIF;
-    bypassConfirmRepo: skipConfirmIF;
-    cssDebug: {
-        cache: (k: string, v: string) => void;
-        check: (k: string) => string | undefined;
-    };
-}
 
 export const UserPreferenceContext = createContext(
     {} as UserPreferenceContextIF,

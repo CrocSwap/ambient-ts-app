@@ -2,14 +2,12 @@ import { ReactElement, useContext, useEffect, useState } from 'react';
 import { progressToNextLevel } from '../../../ambient-utils/api';
 import LevelsCard from '../../../components/Global/LevelsCard/LevelsCard';
 import LevelDisplay from '../../../components/Global/LevelsCard/UserLevelDisplay';
-import {
-    UserDataContext,
-    UserXpDataIF,
-} from '../../../contexts/UserDataContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './Level.module.css';
 import RankTable from './RankTable/RankTable';
 // import{ FiRefreshCcw } from 'react-icons/fi';
+import { UserXpDataIF } from '../../../ambient-utils/types/contextTypes';
 import {
     getLeaderboardSelectionFromLocalStorage,
     saveLeaderboardSelectionToLocalStorage,

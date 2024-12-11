@@ -2,7 +2,7 @@ import {
     AuctionListResponseIF,
     AuctionStatusResponseIF,
 } from '../../ambient-utils/dataLayer';
-import { AccountDataIF } from '../../contexts/AuctionsContext';
+import { AccountDataIF } from '../../ambient-utils/types/auctionsTypes';
 
 const nowInSeconds = Math.floor(Date.now() / 1000);
 

@@ -15,9 +15,9 @@ import {
     LiquidityRangeIF,
     TransactionIF,
 } from '../../../../ambient-utils/types';
+import { ChartThemeIF } from '../../../../ambient-utils/types/contextTypes';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
     clipCanvas,
