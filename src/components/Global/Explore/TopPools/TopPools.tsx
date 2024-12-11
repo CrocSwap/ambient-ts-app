@@ -1,7 +1,6 @@
 import { Dispatch, memo, SetStateAction } from 'react';
 import checkPoolForWETH from '../../../../App/functions/checkPoolForWETH';
-import { PoolIF } from '../../../../ambient-utils/types';
-import { PoolDataIF } from '../../../../contexts/ExploreContext';
+import { PoolDataIF, PoolIF } from '../../../../ambient-utils/types';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';

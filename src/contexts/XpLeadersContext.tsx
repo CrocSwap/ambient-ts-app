@@ -24,6 +24,11 @@ export const XpLeadersContext = createContext({} as XpLeadersContextIF);
 export const XpLeadersContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);

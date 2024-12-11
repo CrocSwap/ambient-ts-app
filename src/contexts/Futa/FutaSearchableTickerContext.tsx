@@ -36,7 +36,11 @@ export const FutaSearchableTickerContext = createContext(
 export const FutaSearchableTickerContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    // 2:1 ratio of the window height subtracted by main header and token info header
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    } // 2:1 ratio of the window height subtracted by main header and token info header
     const SEARCHABLE_TICKER_MAX_HEIGHT = window.innerHeight - 160;
     const SEARCHABLE_TICKER_MIN_HEIGHT = 54;
     const SEARCHABLE_TICKER_DEFAULT_HEIGHT = Math.floor(

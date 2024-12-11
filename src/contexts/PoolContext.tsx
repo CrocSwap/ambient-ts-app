@@ -46,6 +46,11 @@ export interface PoolContextIF {
 export const PoolContext = createContext({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: ReactNode }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const {
         activeNetwork: { GCGO_URL, chainId, poolIndex },
     } = useContext(AppStateContext);

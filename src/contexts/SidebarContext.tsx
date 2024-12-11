@@ -30,7 +30,11 @@ export interface SidebarContextIF {
 export const SidebarContext = createContext({} as SidebarContextIF);
 
 export const SidebarContextProvider = (props: { children: ReactNode }) => {
-    // logic to open a snackbar notification
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    } // logic to open a snackbar notification
     const {
         activeNetwork: { chainId },
         snackbar: { open: openSnackbar },

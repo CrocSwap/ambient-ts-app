@@ -89,6 +89,11 @@ export interface ChainDataContextIF {
 export const ChainDataContext = createContext({} as ChainDataContextIF);
 
 export const ChainDataContextProvider = (props: { children: ReactNode }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const {
         activeNetwork: {
             chainId,

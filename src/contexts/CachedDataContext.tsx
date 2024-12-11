@@ -63,6 +63,11 @@ export const CachedDataContext = createContext({} as CachedDataContextIF);
 export const CachedDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const cachedDataState: CachedDataContextIF = {
         cachedFetchAmbientListWalletBalances:
             memoizeFetchAmbientListWalletBalances(),

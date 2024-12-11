@@ -45,6 +45,11 @@ export interface BrandContextIF {
 export const BrandContext = createContext({} as BrandContextIF);
 
 export const BrandContextProvider = (props: { children: ReactNode }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const { userAddress } = useContext(UserDataContext);
     const {
         activeNetwork: { chainId },

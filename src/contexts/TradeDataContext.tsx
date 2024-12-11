@@ -69,6 +69,11 @@ export const TradeDataContext = createContext({} as TradeDataContextIF);
 // pair is necessary at load time
 
 export const TradeDataContextProvider = (props: { children: ReactNode }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);

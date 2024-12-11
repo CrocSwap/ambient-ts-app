@@ -70,6 +70,11 @@ export const ReceiptContext = createContext({} as ReceiptContextIF);
 export const ReceiptContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    if (import.meta.hot) {
+        import.meta.hot.accept(() => {
+            window.location.reload(); // Forces a full browser reload when context code changes
+        });
+    }
     const [sessionReceipts, setSessionReceipts] = React.useState<string[]>([]);
     const [allReceipts, setAllReceipts] = React.useState<string[]>([]);
     const [pendingTransactions, setPendingTransactions] = React.useState<
