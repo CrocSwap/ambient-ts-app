@@ -43,6 +43,7 @@ import {
     TokenIF,
 } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
+import { BrandContext } from './BrandContext';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { ReceiptContext } from './ReceiptContext';
@@ -121,6 +122,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         cachedAllPoolStatsFetch,
     } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
+    const { showDexStats } = useContext(BrandContext);
 
     const allDefaultTokens = tokens.allDefaultTokens;
 
@@ -650,6 +652,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     useEffect(() => {
         if (
+            showDexStats &&
             mainnetCrocEnv !== undefined &&
             scrollCrocEnv !== undefined &&
             blastCrocEnv !== undefined &&
@@ -792,6 +795,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             });
         }
     }, [
+        showDexStats,
         mainnetCrocEnv !== undefined &&
             scrollCrocEnv !== undefined &&
             blastCrocEnv !== undefined &&
