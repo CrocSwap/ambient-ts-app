@@ -55,7 +55,7 @@ export interface PropsIF {
 }
 
 // Main function
-export const tickerDisplayElements = (props: PropsIF) => {
+export const TickerDisplayElements = (props: PropsIF) => {
     // Destructure props
     const {
         freshAuctionStatusData,

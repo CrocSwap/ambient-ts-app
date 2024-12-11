@@ -42,8 +42,8 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import Comments from '../Comments/Comments';
-import { tickerDisplayElements } from './tickerDisplayElements';
 import FutaDivider2 from '../Divider/FutaDivider2';
+import { TickerDisplayElements } from './TickerElements';
 interface PropsIF {
     isAuctionPage?: boolean;
     placeholderTicker?: boolean;
@@ -724,7 +724,7 @@ export default function TickerComponent(props: PropsIF) {
         tickerDisplay,
         openedBidDisplay,
         yourBidDisplay,
-    } = tickerDisplayElements(tickerDisplayElementsProps);
+    } = TickerDisplayElements(tickerDisplayElementsProps);
 
     const allocationOrReturnDisplay = (
         <div className={styles.allocationContainer}>
