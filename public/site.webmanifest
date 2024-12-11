@@ -1,33 +1,33 @@
 {
-    "short_name": "Ambient",
-    "name": "Ambient",
-    "icons": [
-        {
-            "src": "favicon.ico",
-            "sizes": "48x48",
-            "type": "image/x-icon"
-        },
-        {
-            "src": "android-chrome-192x192.png",
-            "type": "image/png",
-            "sizes": "192x192",
-            "purpose": "any"
-        },
-        {
-            "src": "maskable_icon.png",
-            "type": "image/png",
-            "sizes": "192x192",
-            "purpose": "maskable"
-        },
-        {
-            "src": "android-chrome-512x512.png",
-            "type": "image/png",
-            "sizes": "512x512",
-            "purpose": "any"
-        }
-    ],
-    "start_url": ".",
-    "display": "standalone",
-    "theme_color": "#7371fc",
-    "background_color": "#7371fc"
+  "short_name": "Ambient",
+  "name": "Ambient",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "android-chrome-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "maskable_icon.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "android-chrome-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#7371fc",
+  "background_color": "#7371fc"
 }
