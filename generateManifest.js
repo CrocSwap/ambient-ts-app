@@ -41,8 +41,8 @@ const manifest = {
     ],
     start_url: '.',
     display: 'standalone',
-    theme_color: '#7371fc',
-    background_color: '#7371fc',
+    theme_color: process.env.MANIFEST_COLOR || '#7371fc',
+    background_color: process.env.MANIFEST_COLOR || '#7371fc',
 };
 
 writeFileSync('./build/site.webmanifest', JSON.stringify(manifest, null, 2));
