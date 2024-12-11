@@ -8,6 +8,13 @@
 .container svg:hover {
     cursor: default;
 }
+.label{
+    font-size: var(--body-size);
+    color: #5C6F72;
+    text-transform: uppercase;
+    padding: 0 8px;
+    padding-top: 4px;
+}
 
 .content {
     width: 100%;
