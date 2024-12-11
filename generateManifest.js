@@ -17,23 +17,19 @@ const manifest = {
             type: 'image/x-icon',
         },
         {
-            src:
-                process.env.MANIFEST_SITE_LOGO_x192 ||
-                'android-chrome-192x192.png',
+            src: process.env.MANIFEST_SITE_LOGO_x192 || 'ambient_icon_x192.png',
             type: 'image/png',
             sizes: '192x192',
             purpose: 'any',
         },
         {
-            src: process.env.MANIFEST_SITE_LOGO_x192 || 'maskable_icon.png',
+            src: process.env.MANIFEST_SITE_LOGO_x192 || 'ambient_icon_x192.png',
             type: 'image/png',
             sizes: '192x192',
             purpose: 'maskable',
         },
         {
-            src:
-                process.env.MANIFEST_SITE_LOGO_x512 ||
-                'android-chrome-512x512.png',
+            src: process.env.MANIFEST_SITE_LOGO_x512 || 'ambient_icon_x512.png',
             type: 'image/png',
             sizes: '512x512',
             purpose: 'any',
