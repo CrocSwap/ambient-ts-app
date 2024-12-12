@@ -57,9 +57,7 @@ export default function Auctions(props: propsIF) {
                 <div
                     className={styles.auctionsTickerContainer}
                     style={{
-                        gridTemplateColumns: hideTicker
-                            ? '1fr'
-                            : '1fr 4px 390px',
+                        gridTemplateColumns: hideTicker ? '1fr' : '1fr 390px',
                     }}
                 >
                     <span id='auctions_search_wrapper'>
@@ -78,7 +76,7 @@ export default function Auctions(props: propsIF) {
                         // empty `<div />` on the next line preserves
                         // ... spacing with CSS Grid layout
                     }
-                    <div />
+
                     <div className={styles.flexColumn}>
                         <p className={styles.label}>TICKER</p>
                         <FutaDivider2 />
