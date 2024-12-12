@@ -1133,6 +1133,8 @@ function Ranges(props: propsIF) {
                         addPositionHash(posHash);
                     }
 
+                    console.log('>>> posHash', posHash);
+
                     const mockServerPosition: PositionServerIF = {
                         positionId: posHash,
                         chainId: chainId,

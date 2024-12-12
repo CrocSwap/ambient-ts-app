@@ -32,6 +32,7 @@ import TableRows from '../TableRows';
 import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
 import { getLimitOrderData } from '../../../../ambient-utils/dataLayer';
+import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
@@ -557,7 +558,8 @@ function Orders(props: propsIF) {
             }
 
             const pendingOrders = relevantTransactionsByType.filter((tx) => {
-                return tx.txAction === 'Buy' || tx.txAction === 'Sell';
+                // return (tx.txAction === 'Buy' || tx.txAction === 'Sell');
+                return tx.txType === 'Limit';
             });
 
             const newOrders = await Promise.all(
@@ -565,13 +567,24 @@ function Orders(props: propsIF) {
                     if (!crocEnv || !pendingOrder.txDetails)
                         return {} as LimitOrderIF;
 
-                    const pos = crocEnv.positions(
-                        pendingOrder.txDetails.quoteAddress,
-                        pendingOrder.txDetails.baseAddress,
-                        pendingOrder.userAddress,
-                    );
+                    // const pos = crocEnv.positions(
+                    //     pendingOrder.txDetails.quoteAddress,
+                    //     pendingOrder.txDetails.baseAddress,
+                    //     pendingOrder.userAddress,
+                    // );
 
-                    console.log('>>> pos', pos, getLimitOrderData);
+                    const positionHash = getPositionHash(undefined, {
+                        isPositionTypeAmbient:
+                            pendingOrder.txDetails.isAmbient || false,
+                        user: pendingOrder.userAddress,
+                        baseAddress: pendingOrder.txDetails.baseAddress,
+                        quoteAddress: pendingOrder.txDetails.quoteAddress,
+                        poolIdx: pendingOrder.txDetails.poolIdx,
+                        bidTick: pendingOrder.txDetails.lowTick || 0,
+                        askTick: pendingOrder.txDetails.highTick || 0,
+                    });
+
+                    console.log('>>> positionHash', positionHash);
 
                     const mockServerOrder: LimitOrderServerIF = {
                         chainId: chainId,
@@ -591,28 +604,107 @@ function Orders(props: propsIF) {
                         latestUpdateTime: 0,
                     };
 
-                    console.log(mockServerOrder);
+                    const limitOrderData = await getLimitOrderData(
+                        mockServerOrder,
+                        tokenList,
+                        crocEnv,
+                        provider,
+                        chainId,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                    );
 
-                    // const limitOrderData = await getLimitOrderData(
-                    //     mockServerOrder,
-
-                    //     chainId,
-                    //     crocEnv,
-                    //     provider,
-                    // );
-
-                    const onChainOrder = undefined;
-
-                    // const onChainOrder: LimitOrderIF = {
-                    //     chainId: chainId,
-                    //     limitOrderId: ,
-                    // }
+                    const onChainOrder: LimitOrderIF = {
+                        id: limitOrderData.id,
+                        limitOrderId: limitOrderData.limitOrderId,
+                        positionHash: limitOrderData.positionHash,
+                        pivotTime: limitOrderData.pivotTime,
+                        crossTime: limitOrderData.crossTime,
+                        user: limitOrderData.user,
+                        base: limitOrderData.base,
+                        quote: limitOrderData.quote,
+                        poolIdx: limitOrderData.poolIdx,
+                        curentPoolPriceDisplayNum:
+                            limitOrderData.curentPoolPriceDisplayNum,
+                        bidTick: limitOrderData.bidTick,
+                        askTickInvPriceDecimalCorrected:
+                            limitOrderData.askTickInvPriceDecimalCorrected,
+                        askTickPriceDecimalCorrected:
+                            limitOrderData.askTickPriceDecimalCorrected,
+                        bidTickInvPriceDecimalCorrected:
+                            limitOrderData.bidTickInvPriceDecimalCorrected,
+                        bidTickPriceDecimalCorrected:
+                            limitOrderData.bidTickPriceDecimalCorrected,
+                        askTick: limitOrderData.askTick,
+                        isBid: limitOrderData.isBid,
+                        positionLiq: limitOrderData.positionLiq,
+                        positionLiqBase: limitOrderData.positionLiqBase,
+                        positionLiqQuote: limitOrderData.positionLiqQuote,
+                        originalPositionLiqBase:
+                            limitOrderData.originalPositionLiqBase,
+                        originalPositionLiqQuote:
+                            limitOrderData.originalPositionLiqQuote,
+                        expectedPositionLiqBase:
+                            limitOrderData.expectedPositionLiqBase,
+                        expectedPositionLiqQuote:
+                            limitOrderData.expectedPositionLiqQuote,
+                        positionLiqBaseDecimalCorrected:
+                            limitOrderData.positionLiqBaseDecimalCorrected,
+                        positionLiqQuoteDecimalCorrected:
+                            limitOrderData.positionLiqQuoteDecimalCorrected,
+                        originalPositionLiqBaseDecimalCorrected:
+                            limitOrderData.originalPositionLiqBaseDecimalCorrected,
+                        originalPositionLiqQuoteDecimalCorrected:
+                            limitOrderData.originalPositionLiqQuoteDecimalCorrected,
+                        expectedPositionLiqBaseDecimalCorrected:
+                            limitOrderData.expectedPositionLiqBaseDecimalCorrected,
+                        expectedPositionLiqQuoteDecimalCorrected:
+                            limitOrderData.expectedPositionLiqQuoteDecimalCorrected,
+                        claimableLiq: limitOrderData.claimableLiq,
+                        claimableLiqPivotTimes:
+                            limitOrderData.claimableLiqPivotTimes,
+                        claimableLiqBase: limitOrderData.claimableLiqBase,
+                        claimableLiqQuote: limitOrderData.claimableLiqQuote,
+                        claimableLiqBaseDecimalCorrected:
+                            limitOrderData.claimableLiqBaseDecimalCorrected,
+                        claimableLiqQuoteDecimalCorrected:
+                            limitOrderData.claimableLiqQuoteDecimalCorrected,
+                        baseSymbol: limitOrderData.baseSymbol,
+                        baseName: limitOrderData.baseName,
+                        baseDecimals: limitOrderData.baseDecimals,
+                        baseTokenLogoURI: limitOrderData.baseTokenLogoURI,
+                        quoteSymbol: limitOrderData.quoteSymbol,
+                        quoteName: limitOrderData.quoteName,
+                        quoteDecimals: limitOrderData.quoteDecimals,
+                        quoteTokenLogoURI: limitOrderData.quoteTokenLogoURI,
+                        limitPrice: limitOrderData.limitPrice,
+                        invLimitPrice: limitOrderData.invLimitPrice,
+                        limitPriceDecimalCorrected:
+                            limitOrderData.limitPriceDecimalCorrected,
+                        invLimitPriceDecimalCorrected:
+                            limitOrderData.invLimitPriceDecimalCorrected,
+                        baseUsdPrice: limitOrderData.baseUsdPrice,
+                        quoteUsdPrice: limitOrderData.quoteUsdPrice,
+                        isBaseTokenMoneynessGreaterOrEqual:
+                            limitOrderData.isBaseTokenMoneynessGreaterOrEqual,
+                        ensResolution: limitOrderData.ensResolution,
+                        totalValueUSD: limitOrderData.totalValueUSD,
+                        latestUpdateTime: limitOrderData.latestUpdateTime,
+                        timeFirstMint: limitOrderData.timeFirstMint,
+                        chainId: limitOrderData.chainId,
+                        concLiq: limitOrderData.concLiq,
+                        rewardLiq: limitOrderData.rewardLiq,
+                    };
 
                     return onChainOrder;
                 }),
             );
 
-            console.log('>>> newOrders', newOrders);
+            if (newOrders.length > 0) {
+                console.log('>>> newOrders', newOrders);
+            }
         })();
     }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
 
@@ -632,6 +724,9 @@ function Orders(props: propsIF) {
 
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
+        sortedLimits.map((limit) => {
+            console.log('>>> limit', limit.positionHash, limit.id);
+        });
         return isAccountView
             ? sortedLimits
             : sortedLimits.slice(
