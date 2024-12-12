@@ -3,7 +3,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
 import { plumeETH, plumeWTT } from '../defaultTokens';
-import { GCGO_SWELL_URL } from '../gcgo';
+import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 export const PUBLIC_RPC_URL = 'https://phoenix-rpc.plumenetwork.xyz';
@@ -27,7 +27,7 @@ const chainSpecForWalletConnector = {
 export const plumeMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    GCGO_URL: GCGO_SWELL_URL,
+    GCGO_URL: GCGO_PLUME_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [plumeETH, plumeWTT],
