@@ -15,6 +15,11 @@
     Access-Control-Allow-Origin = "*"
 
 [[headers]]
+  for = "/testnet-token-list.json" 
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
   for = "/rings_192.png"
   [headers.values]
     Access-Control-Allow-Origin = "*"
@@ -33,7 +38,6 @@
   path = "/*"
   function = "country-redirect"
 
-[[plugins]]
-package = "@netlify/plugin-sitemap"
-  [plugins.inputs]
-  buildDir = "."
+[build]
+  command = "npm run build && cp src/ambient-utils/constants/ambient-token-list.json src/ambient-utils/constants/testnet-token-list.json build/"
+  publish = "build"

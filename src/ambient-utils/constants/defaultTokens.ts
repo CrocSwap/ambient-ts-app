@@ -733,7 +733,8 @@ export const scrollWBTC: TokenIF = {
     name: 'Bridged Wrapped Bitcoin',
     symbol: 'WBTC',
     decimals: 8,
-    logoURI: 'https://scroll-tech.github.io/token-list/data/WBTC/logo.svg',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
 };
 
 export const scrollSepoliaETH: TokenIF = {
@@ -852,6 +853,25 @@ export const swellWTT: TokenIF = {
     logoURI: '',
 };
 
+export const plumeETH: TokenIF = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 98865,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const plumeWTT: TokenIF = {
+    name: 'Wolski Test Token',
+    address: '0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3',
+    symbol: 'WTT',
+    decimals: 6,
+    chainId: 98865,
+    logoURI: '',
+};
+
 export const baseSepoliaUSDT: TokenIF = {
     name: 'Ambient USDT',
     address: '0x868cFD46ad326354AD214bEA9f08fD8EfBfac3b9',
@@ -952,4 +972,5 @@ export const defaultTokens: TokenIF[] = [
     baseSepoliaUSDT,
     swellETH,
     swellWTT,
+    plumeWTT,
 ];

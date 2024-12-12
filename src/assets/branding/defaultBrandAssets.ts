@@ -29,6 +29,13 @@ export const defaultBrandAssets: brandIF = {
             premiumColor: [],
             cobrandingLogo: blastLogo,
         },
+        // plume mainnet
+        '0x18231': {
+            // first value in array is default color scheme
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
+            premiumColor: [],
+            cobrandingLogo: plumeLogo,
+        },
         // ethereum mainnet
         '0x1': {
             // first value in array is default color scheme
@@ -72,7 +79,7 @@ export const defaultBrandAssets: brandIF = {
     },
     platformName: 'ambient',
     fontSet: 'ambient',
-    showPoints: false,
+    showPoints: true,
     showDexStats: true,
     headerImage: large as string,
     includeCanto: true,

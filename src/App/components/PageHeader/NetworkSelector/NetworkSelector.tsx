@@ -13,7 +13,7 @@ import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
-import plumeSepoliaLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
+import plumeLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
 import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
 import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
 import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
@@ -149,17 +149,6 @@ export default function NetworkSelector(props: propsIF) {
             condition: chainMap.has('0x82750'),
         },
         {
-            id: 'swell_network_selector',
-            chainId: '0x783',
-            name: 'Swell',
-            logo: swellLogo,
-            custom: 0,
-            isExternal: false,
-            testnet: false,
-            link: '',
-            condition: chainMap.has('0x783'),
-        },
-        {
             id: 'blast_network_selector',
             chainId: '0x13e31',
             name: 'Blast',
@@ -169,6 +158,28 @@ export default function NetworkSelector(props: propsIF) {
             testnet: false,
             link: '',
             condition: chainMap.has('0x13e31'),
+        },
+        {
+            id: 'plume_network_selector',
+            chainId: '0x18231',
+            name: 'Plume',
+            logo: plumeLogo,
+            custom: 1,
+            isExternal: false,
+            testnet: false,
+            link: '',
+            condition: chainMap.has('0x18231'),
+        },
+        {
+            id: 'swell_network_selector',
+            chainId: '0x783',
+            name: 'Swell',
+            logo: swellLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: false,
+            link: '',
+            condition: chainMap.has('0x783'),
         },
         {
             id: 'canto_network_selector',
@@ -196,7 +207,7 @@ export default function NetworkSelector(props: propsIF) {
             id: 'plume_sepolia_network_selector',
             chainId: '0x18230',
             name: 'Plume',
-            logo: plumeSepoliaLogo,
+            logo: plumeLogo,
             custom: 2,
             isExternal: false,
             testnet: true,

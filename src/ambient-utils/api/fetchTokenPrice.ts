@@ -27,7 +27,7 @@ export const fetchTokenPrice = async (
                     ? 'scroll'
                     : chain === '0x13e31'
                       ? 'blast'
-                      : chain === '0x18230'
+                      : chain === '0x18231'
                         ? 'plume'
                         : chain === '0x783'
                           ? 'swell'
