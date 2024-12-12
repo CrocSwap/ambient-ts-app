@@ -12,30 +12,52 @@ const manifest = {
     name: process.env.MANIFEST_NAME || 'Ambient',
     icons: [
         {
-            src: process.env.VITE_FAVICON_32_32 || 'favicon.ico',
+            src: process.env.VITE_SITE_ICON_x48 || 'icons/ambient_icon_x48.png',
             sizes: '48x48',
-            type: 'image/x-icon',
+            type: 'image/png',
         },
         {
-            src: process.env.MANIFEST_SITE_LOGO_x192 || 'ambient_icon_x192.png',
+            src: process.env.VITE_SITE_ICON_x72 || 'icons/ambient_icon_x72.png',
+            sizes: '72x72',
             type: 'image/png',
+        },
+        {
+            src: process.env.VITE_SITE_ICON_x96 || 'icons/ambient_icon_x96.png',
+            sizes: '96x96',
+            type: 'image/png',
+        },
+        {
+            src:
+                process.env.VITE_SITE_ICON_x128 ||
+                'icons/ambient_icon_x128.png',
+            sizes: '128x128',
+            type: 'image/png',
+        },
+        {
+            src:
+                process.env.VITE_SITE_ICON_x192 ||
+                'icons/ambient_icon_x192.png',
             sizes: '192x192',
+            type: 'image/png',
             purpose: 'any',
         },
         {
-            src: process.env.MANIFEST_SITE_LOGO_x192 || 'ambient_icon_x192.png',
+            src:
+                process.env.VITE_SITE_ICON_x256 ||
+                'icons/ambient_icon_x256.png',
+            sizes: '256x256',
             type: 'image/png',
-            sizes: '192x192',
+        },
+        {
+            src:
+                process.env.VITE_SITE_ICON_x512 ||
+                'icons/ambient_icon_x512.png',
+            sizes: '512x512',
+            type: 'image/png',
             purpose: 'maskable',
         },
-        {
-            src: process.env.MANIFEST_SITE_LOGO_x512 || 'ambient_icon_x512.png',
-            type: 'image/png',
-            sizes: '512x512',
-            purpose: 'any',
-        },
     ],
-    start_url: '.',
+    start_url: '/',
     display: 'standalone',
     theme_color: process.env.MANIFEST_COLOR || '#7371fc',
     background_color: process.env.MANIFEST_COLOR || '#7371fc',
