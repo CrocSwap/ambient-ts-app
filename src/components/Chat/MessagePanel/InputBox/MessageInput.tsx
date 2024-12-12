@@ -917,6 +917,7 @@ export default function MessageInput(props: MessageInputProps) {
                             ) : (
                                 <Picker
                                     theme={Theme.DARK}
+                                    searchDisabled={true}
                                     style={{
                                         width: '100%',
                                     }}

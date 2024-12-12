@@ -240,4 +240,5 @@ aside.emoji-picker-react {
 }
 .epr-body{
     scroll-behavior: auto !important;
+    max-height: calc(100% - 15rem);
 }
