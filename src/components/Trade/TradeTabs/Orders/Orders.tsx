@@ -724,9 +724,9 @@ function Orders(props: propsIF) {
 
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
-        sortedLimits.map((limit) => {
-            console.log('>>> limit', limit.positionHash, limit.id);
-        });
+        // sortedLimits.map((limit) => {
+        //     console.log('>>> limit', limit.positionHash, limit.id);
+        // });
         return isAccountView
             ? sortedLimits
             : sortedLimits.slice(
