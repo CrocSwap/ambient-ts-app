@@ -44,8 +44,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         showHistorical,
         hoveredOrderHistory,
         isHoveredOrderHistory,
-        // selectedOrderHistory,
-        // isSelectedOrderHistory,
+        selectedOrderHistory,
+        isSelectedOrderHistory,
         drawSettings,
         filteredTransactionalData,
         circleScale,
@@ -406,11 +406,20 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             bandAreaHistorical.length > 0
                         ) {
                             bandAreaHistorical.forEach((element: any) => {
-                                if (
-                                    hoveredOrderHistory &&
-                                    hoveredOrderHistory.type === 'historical' &&
-                                    hoveredOrderHistory.id === element.id
-                                ) {
+                                const isShapeSelected =
+                                    (selectedOrderHistory &&
+                                        isSelectedOrderHistory &&
+                                        selectedOrderHistory.type ===
+                                            'historical' &&
+                                        selectedOrderHistory.id ===
+                                            element.id) ||
+                                    (hoveredOrderHistory &&
+                                        isHoveredOrderHistory &&
+                                        hoveredOrderHistory.type ===
+                                            'historical' &&
+                                        hoveredOrderHistory.id === element.id);
+
+                                if (isShapeSelected) {
                                     element.serie.decorate(
                                         (context: CanvasRenderingContext2D) => {
                                             const style = getComputedStyle(
@@ -479,13 +488,19 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     if (showLiquidity) {
                         if (limitCircleSeries && limitCircleSeries.length > 0) {
                             limitCircleSeries.forEach((limit: any) => {
-                                if (
-                                    hoveredOrderHistory &&
-                                    isHoveredOrderHistory &&
-                                    hoveredOrderHistory.type ===
-                                        'limitCircle' &&
-                                    hoveredOrderHistory.id === limit.id
-                                ) {
+                                const isShapeSelected =
+                                    (selectedOrderHistory &&
+                                        isSelectedOrderHistory &&
+                                        selectedOrderHistory.type ===
+                                            'limitCircle' &&
+                                        selectedOrderHistory.id === limit.id) ||
+                                    (hoveredOrderHistory &&
+                                        isHoveredOrderHistory &&
+                                        hoveredOrderHistory.type ===
+                                            'limitCircle' &&
+                                        hoveredOrderHistory.id === limit.id);
+
+                                if (isShapeSelected) {
                                     lineSeries.decorate(
                                         (context: CanvasRenderingContext2D) => {
                                             context.setLineDash([4, 2]);
@@ -609,13 +624,21 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                 const buyColorHex = d3.color(buyColor);
                                 const sellColorHex = d3.color(sellColor);
 
-                                if (
-                                    hoveredOrderHistory &&
-                                    isHoveredOrderHistory &&
-                                    hoveredOrderHistory.type ===
-                                        'limitCircle' &&
-                                    hoveredOrderHistory.id === limitData.id
-                                ) {
+                                const isShapeSelected =
+                                    (selectedOrderHistory &&
+                                        isSelectedOrderHistory &&
+                                        selectedOrderHistory.type ===
+                                            'limitCircle' &&
+                                        selectedOrderHistory.id ===
+                                            limitData.id) ||
+                                    (hoveredOrderHistory &&
+                                        isHoveredOrderHistory &&
+                                        hoveredOrderHistory.type ===
+                                            'limitCircle' &&
+                                        hoveredOrderHistory.id ===
+                                            limitData.id);
+
+                                if (isShapeSelected) {
                                     lineSeries.decorate(
                                         (context: CanvasRenderingContext2D) => {
                                             context.strokeStyle =
@@ -737,12 +760,17 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
                     if (showSwap && circleSeries && circleSeries.length > 0) {
                         circleSeries.forEach((element: any) => {
-                            if (
-                                hoveredOrderHistory &&
-                                isHoveredOrderHistory &&
-                                hoveredOrderHistory.type === 'swap' &&
-                                hoveredOrderHistory.id === element.id
-                            ) {
+                            const isShapeSelected =
+                                (selectedOrderHistory &&
+                                    isSelectedOrderHistory &&
+                                    selectedOrderHistory.type === 'swap' &&
+                                    selectedOrderHistory.id === element.id) ||
+                                (hoveredOrderHistory &&
+                                    isHoveredOrderHistory &&
+                                    hoveredOrderHistory.type === 'swap' &&
+                                    hoveredOrderHistory.id === element.id);
+
+                            if (isShapeSelected) {
                                 element.serie.decorate(
                                     (context: CanvasRenderingContext2D) => {
                                         const colorPalette =

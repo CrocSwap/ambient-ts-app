@@ -5269,12 +5269,12 @@ export default function Chart(props: propsIF) {
         }
     }, [userTransactionData, denomInBase]);
 
-    const handleCardClick = (tx: TransactionIF): void => {
+    const handleCardClick = (id: string): void => {
         setSelectedDate(undefined);
         setOutsideControl(true);
         setSelectedOutsideTab(0);
         setShowAllData(false);
-        setCurrentTxActiveInTransactions(tx.txId);
+        setCurrentTxActiveInTransactions(id);
     };
 
     useEffect(() => {
@@ -5457,7 +5457,7 @@ export default function Chart(props: propsIF) {
                         ? resElement.id !== selectedOrderHistory?.id
                         : true;
 
-                    shouldSelect && handleCardClick(resElement);
+                    shouldSelect && handleCardClick(resElement.id);
 
                     setSelectedOrderHistory(() => {
                         return shouldSelect ? resElement : undefined;
@@ -6101,15 +6101,15 @@ export default function Chart(props: propsIF) {
         if (scaleData) {
             const scale = d3.scaleLinear().range([60, 75]).domain([1000, 3000]);
 
+            const canvas = d3
+                .select(d3CanvasMain.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const rectCanvas = canvas.getBoundingClientRect();
+            const right = rectCanvas.right;
+
             if (isHoveredOrderHistory && hoveredOrderHistory) {
-                const canvas = d3
-                    .select(d3CanvasMain.current)
-                    .select('canvas')
-                    .node() as HTMLCanvasElement;
-
-                const rectCanvas = canvas.getBoundingClientRect();
-                const right = rectCanvas.right;
-
                 if (hoveredOrderHistory.type === 'swap' && circleScale) {
                     setHoveredOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
@@ -6299,27 +6299,91 @@ export default function Chart(props: propsIF) {
                 }
             }
 
-            if (isSelectedOrderHistory && selectedOrderHistory && circleScale) {
-                setSelectedOrderTooltipPlacement(() => {
-                    const top = scaleData.yScale(
-                        denomInBase
-                            ? selectedOrderHistory.order
-                                  .swapInvPriceDecimalCorrected
-                            : selectedOrderHistory.order
-                                  .swapPriceDecimalCorrected,
-                    );
-                    const left =
-                        scaleData?.xScale(
-                            selectedOrderHistory.order.txTime * 1000,
-                        ) +
-                        scale(
-                            circleScale(
-                                selectedOrderHistory.order.totalValueUSD,
-                            ),
+            if (isSelectedOrderHistory && selectedOrderHistory) {
+                if (selectedOrderHistory.type === 'swap' && circleScale) {
+                    setSelectedOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? selectedOrderHistory.order
+                                      .swapInvPriceDecimalCorrected
+                                : selectedOrderHistory.order
+                                      .swapPriceDecimalCorrected,
+                        );
+                        const left =
+                            scaleData?.xScale(
+                                selectedOrderHistory.order.txTime * 1000,
+                            ) +
+                            scale(
+                                circleScale(
+                                    selectedOrderHistory.order.totalValueUSD,
+                                ),
+                            );
+
+                        return { top, left, isOnLeftSide: false };
+                    });
+                }
+
+                if (
+                    selectedOrderHistory.type === 'limitCircle' &&
+                    circleScaleLimitOrder
+                ) {
+                    setSelectedOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? selectedOrderHistory.order
+                                      .invLimitPriceDecimalCorrected
+                                : selectedOrderHistory.order
+                                      .limitPriceDecimalCorrected,
                         );
 
-                    return { top, left, isOnLeftSide: false };
-                });
+                        const time =
+                            selectedOrderHistory.order.claimableLiq === 0
+                                ? selectedOrderHistory.order.timeFirstMint
+                                : selectedOrderHistory.order.crossTime;
+
+                        const left =
+                            scaleData?.xScale(time * 1000) +
+                            +scale(
+                                circleScaleLimitOrder(
+                                    selectedOrderHistory.order.totalValueUSD,
+                                ),
+                            );
+
+                        return { top, left, isOnLeftSide: false };
+                    });
+                }
+
+                if (selectedOrderHistory.type === 'historical') {
+                    const minPrice = denomInBase
+                        ? selectedOrderHistory.order
+                              .bidTickInvPriceDecimalCorrected
+                        : selectedOrderHistory.order
+                              .bidTickPriceDecimalCorrected;
+
+                    const maxPrice = denomInBase
+                        ? selectedOrderHistory.order
+                              .askTickInvPriceDecimalCorrected
+                        : selectedOrderHistory.order
+                              .askTickPriceDecimalCorrected;
+
+                    const diff = Math.abs(maxPrice - minPrice) / 2;
+
+                    const pricePlacement = minPrice + diff;
+
+                    setSelectedOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(pricePlacement);
+
+                        const left = scaleData?.xScale(
+                            selectedOrderHistory.order.latestUpdateTime * 1000,
+                        );
+
+                        return {
+                            top: top < 0 ? 10 : top,
+                            left: left > right ? right - 150 : left,
+                            isOnLeftSide: false,
+                        };
+                    });
+                }
             }
         }
     };
@@ -6707,7 +6771,7 @@ export default function Chart(props: propsIF) {
                 )}
 
             {scaleData &&
-                showSwap &&
+                (showSwap || showLiquidity || showHistorical) &&
                 selectedOrderHistory &&
                 selectedOrderTooltipPlacement && (
                     <OrderHistoryTooltip
