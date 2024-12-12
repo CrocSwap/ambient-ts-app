@@ -18,7 +18,7 @@ const chainSpecFromSDK = lookupChain(chainIdHex);
 
 const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
-    name: 'Swell',
+    name: 'Swellchain',
     currency: 'ETH',
     rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://explorer.swellnetwork.io/',
@@ -35,7 +35,7 @@ export const swellMainnet: NetworkIF = {
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: chainSpecForWalletConnector.name,
+    displayName: 'Swell',
     topPools: [new TopPool(swellETH, swellWTT, chainSpecFromSDK.poolIndex)],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

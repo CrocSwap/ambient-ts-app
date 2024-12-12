@@ -5,6 +5,7 @@ import {
     blastBrandAssets,
     defaultBrandAssets,
     futaBrandAssets,
+    plumeBrandAssets,
     plumeSepoliaBrandAssets,
     scrollBrandAssets,
     swellBrandAssets,
@@ -16,6 +17,7 @@ import { blastMainnet } from './blastMainnet';
 import { blastSepolia } from './blastSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
 import { ethereumSepolia } from './ethereumSepolia';
+import { plumeMainnet } from './plumeMainnet';
 import { plumeSepolia } from './plumeSepolia';
 import { scrollMainnet } from './scrollMainnet';
 import { scrollSepolia } from './scrollSepolia';
@@ -25,16 +27,17 @@ import { swellSepolia } from './swellSepolia';
 export const brand: string | undefined =
     import.meta.env.VITE_BRAND_ASSET_SET ?? '';
 
-const networks: NetworkIF[] = [
-    ethereumSepolia,
+const allNetworks: NetworkIF[] = [
     ethereumMainnet,
     scrollMainnet,
-    scrollSepolia,
-    blastSepolia,
     blastMainnet,
-    plumeSepolia,
-    swellSepolia,
+    plumeMainnet,
     swellMainnet,
+    ethereumSepolia,
+    plumeSepolia,
+    blastSepolia,
+    swellSepolia,
+    scrollSepolia,
     baseSepolia,
 ];
 
@@ -43,7 +46,7 @@ function getNetworks(chns: (string | chainHexIds)[]): {
 } {
     const networksToShow: NetworkIF[] = chns
         .map((c: string) => {
-            const network: NetworkIF | undefined = networks.find(
+            const network: NetworkIF | undefined = allNetworks.find(
                 (n: NetworkIF) => n.chainId.toLowerCase() === c,
             );
             return network;
@@ -65,19 +68,25 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
               ? getNetworks(Object.keys(swellBrandAssets.networks))
               : brand === 'blast'
                 ? getNetworks(Object.keys(blastBrandAssets.networks))
-                : brand === 'futa'
-                  ? getNetworks(Object.keys(futaBrandAssets.networks))
-                  : brand === 'plumeSepolia'
-                    ? getNetworks(Object.keys(plumeSepoliaBrandAssets.networks))
-                    : brand === 'swellSepolia'
+                : brand === 'plume'
+                  ? getNetworks(Object.keys(plumeBrandAssets.networks))
+                  : brand === 'futa'
+                    ? getNetworks(Object.keys(futaBrandAssets.networks))
+                    : brand === 'plumeSepolia'
                       ? getNetworks(
-                            Object.keys(swellSepoliaBrandAssets.networks),
+                            Object.keys(plumeSepoliaBrandAssets.networks),
                         )
-                      : brand === 'baseSepolia'
+                      : brand === 'swellSepolia'
                         ? getNetworks(
-                              Object.keys(baseSepoliaBrandAssets.networks),
+                              Object.keys(swellSepoliaBrandAssets.networks),
                           )
-                        : getNetworks(Object.keys(defaultBrandAssets.networks));
+                        : brand === 'baseSepolia'
+                          ? getNetworks(
+                                Object.keys(baseSepoliaBrandAssets.networks),
+                            )
+                          : getNetworks(
+                                Object.keys(defaultBrandAssets.networks),
+                            );
 
 export const vaultSupportedNetworkIds = ['0x1', '0x82750'];
 export const vaultSupportedNetworks = getNetworks(vaultSupportedNetworkIds);
@@ -104,6 +113,7 @@ export {
     blastSepolia,
     ethereumMainnet,
     ethereumSepolia,
+    plumeMainnet,
     plumeSepolia,
     scrollMainnet,
     scrollSepolia,

@@ -2,52 +2,44 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
-import {
-    mainnetETH,
-    mainnetRSWETH,
-    mainnetSWELL,
-    mainnetTBTC,
-    mainnetUSDC,
-    mainnetWBTC,
-} from '../defaultTokens';
-import { GCGO_ETHEREUM_URL } from '../gcgo';
+import { plumeETH, plumeNEV, plumeUSD } from '../defaultTokens';
+import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const PUBLIC_RPC_URL = 'https://ethereum-rpc.publicnode.com';
+export const PUBLIC_RPC_URL = 'https://phoenix-rpc.plumenetwork.xyz';
 
 export const RESTRICTED_RPC_URL =
-    import.meta.env.VITE_MAINNET_RPC_URL !== undefined
-        ? import.meta.env.VITE_MAINNET_RPC_URL
+    import.meta.env.VITE_PLUME_RPC_URL !== undefined
+        ? import.meta.env.VITE_PLUME_RPC_URL
         : PUBLIC_RPC_URL;
 
-const chainIdHex = '0x1';
+const chainIdHex = '0x18231';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
 const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
-    name: 'Ethereum',
+    name: 'Plume Mainnet',
     currency: 'ETH',
     rpcUrl: PUBLIC_RPC_URL,
-    explorerUrl: 'https://etherscan.io/',
+    explorerUrl: 'https://phoenix-explorer.plumenetwork.xyz/',
 };
 
-export const ethereumMainnet: NetworkIF = {
+export const plumeMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    GCGO_URL: GCGO_ETHEREUM_URL,
+    GCGO_URL: GCGO_PLUME_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [mainnetETH, mainnetUSDC],
+    defaultPair: [plumeETH, plumeUSD],
+    defaultPairFuta: [plumeETH, plumeUSD],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: 'Ethereum',
+    displayName: 'Plume',
     topPools: [
-        new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetETH, mainnetTBTC, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetRSWETH, mainnetETH, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetRSWETH, mainnetSWELL, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetETH, mainnetWBTC, chainSpecFromSDK.poolIndex),
+        new TopPool(plumeETH, plumeUSD, chainSpecFromSDK.poolIndex),
+        new TopPool(plumeNEV, plumeUSD, chainSpecFromSDK.poolIndex),
+        new TopPool(plumeETH, plumeNEV, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

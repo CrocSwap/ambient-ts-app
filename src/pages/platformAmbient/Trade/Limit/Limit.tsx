@@ -519,7 +519,7 @@ export default function Limit() {
     ]);
 
     useEffect(() => {
-        setNewLimitOrderTransactionHash('');
+        resetConfirmation();
     }, [baseToken.address + quoteToken.address]);
 
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
@@ -1087,7 +1087,12 @@ export default function Limit() {
                                 tokenA.symbol,
                                 undefined,
                                 isActiveNetworkPlume
-                                    ? tokenAQtyCoveredByWalletBalance
+                                    ? isTokenAPrimary
+                                        ? tokenAQtyCoveredByWalletBalance
+                                        : // add 1% buffer to avoid rounding errors
+                                          (tokenAQtyCoveredByWalletBalance *
+                                              101n) /
+                                          100n
                                     : tokenABalance
                                       ? fromDisplayQty(
                                             tokenABalance,
