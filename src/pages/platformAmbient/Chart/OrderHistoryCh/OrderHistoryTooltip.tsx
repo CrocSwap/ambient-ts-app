@@ -33,7 +33,8 @@ export default function OrderHistoryTooltip(props: {
     };
     handleCardClick: React.Dispatch<TransactionIF>;
     setSelectedOrderHistory: React.Dispatch<
-        React.SetStateAction<TransactionIF | undefined>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        React.SetStateAction<any>
     >;
     setIsSelectedOrderHistory: React.Dispatch<React.SetStateAction<boolean>>;
     pointerEvents: boolean;

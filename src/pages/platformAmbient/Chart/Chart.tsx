@@ -358,6 +358,26 @@ export default function Chart(props: propsIF) {
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
 
+    const filteredTransactionalData = useMemo(() => {
+        const leftDomain = scaleData.xScale.domain()[0];
+        const rightDomain = scaleData.xScale.domain()[1];
+
+        const diff = Math.abs(rightDomain - leftDomain);
+
+        const tempFilterData = userTransactionData?.filter(
+            (transaction) =>
+                transaction.entityType === 'swap' &&
+                transaction.txTime * 1000 > leftDomain - diff / 4 &&
+                transaction.txTime * 1000 < rightDomain + diff / 4,
+        );
+
+        const top20TotalValue = tempFilterData
+            ?.sort((a, b) => d3.descending(a.totalValueUSD, b.totalValueUSD))
+            .slice(0, 20);
+
+        return top20TotalValue;
+    }, [userTransactionData, diffHashSigScaleData(scaleData, 'x')]);
+
     useEffect(() => {
         if (
             chartThemeColors &&
@@ -439,8 +459,12 @@ export default function Chart(props: propsIF) {
     const [isSelectedOrderHistory, setIsSelectedOrderHistory] =
         useState<boolean>(false);
 
-    const [selectedOrderHistory, setSelectedOrderHistory] =
-        useState<TransactionIF>();
+    const [selectedOrderHistory, setSelectedOrderHistory] = useState<{
+        type: string;
+        id: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        order: any;
+    }>();
 
     const [hoverOHTooltip, setHoverOHTooltip] = useState<boolean>(true);
 
@@ -5384,8 +5408,8 @@ export default function Chart(props: propsIF) {
                 });
             }
 
-            if (userTransactionData && showSwap) {
-                userTransactionData.forEach((element) => {
+            if (filteredTransactionalData && showSwap) {
+                filteredTransactionalData.forEach((element) => {
                     if (element.entityType === 'swap' && showSwap) {
                         const swapOrderData = [
                             {
@@ -5430,7 +5454,7 @@ export default function Chart(props: propsIF) {
             if (onClick && scaleData) {
                 if (resElement) {
                     const shouldSelect = selectedOrderHistory
-                        ? resElement.txId !== selectedOrderHistory?.txId
+                        ? resElement.id !== selectedOrderHistory?.id
                         : true;
 
                     shouldSelect && handleCardClick(resElement);
@@ -6279,12 +6303,20 @@ export default function Chart(props: propsIF) {
                 setSelectedOrderTooltipPlacement(() => {
                     const top = scaleData.yScale(
                         denomInBase
-                            ? selectedOrderHistory.swapInvPriceDecimalCorrected
-                            : selectedOrderHistory.swapPriceDecimalCorrected,
+                            ? selectedOrderHistory.order
+                                  .swapInvPriceDecimalCorrected
+                            : selectedOrderHistory.order
+                                  .swapPriceDecimalCorrected,
                     );
                     const left =
-                        scaleData?.xScale(selectedOrderHistory.txTime * 1000) +
-                        scale(circleScale(selectedOrderHistory.totalValueUSD));
+                        scaleData?.xScale(
+                            selectedOrderHistory.order.txTime * 1000,
+                        ) +
+                        scale(
+                            circleScale(
+                                selectedOrderHistory.order.totalValueUSD,
+                            ),
+                        );
 
                     return { top, left, isOnLeftSide: false };
                 });
@@ -6427,7 +6459,9 @@ export default function Chart(props: propsIF) {
                             hoveredOrderHistory={hoveredOrderHistory}
                             isHoveredOrderHistory={isHoveredOrderHistory}
                             drawSettings={drawSettings}
-                            userTransactionData={userTransactionData}
+                            filteredTransactionalData={
+                                filteredTransactionalData
+                            }
                             circleScale={circleScale}
                             circleScaleLimitOrder={circleScaleLimitOrder}
                             isSelectedOrderHistory={isSelectedOrderHistory}
@@ -6653,7 +6687,7 @@ export default function Chart(props: propsIF) {
             {scaleData &&
                 (showSwap || showLiquidity || showHistorical) &&
                 hoveredOrderHistory &&
-                hoveredOrderHistory.id !== selectedOrderHistory?.txId &&
+                hoveredOrderHistory.id !== selectedOrderHistory?.id &&
                 hoveredOrderTooltipPlacement && (
                     <OrderHistoryTooltip
                         hoveredOrderHistory={hoveredOrderHistory}

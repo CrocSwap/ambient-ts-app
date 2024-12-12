@@ -11,10 +11,7 @@ import {
 import { calculateCircleColor, createCircle } from '../ChartUtils/circle';
 import { createLinearLineSeries } from '../Draw/DrawCanvas/LinearLineSeries';
 import { createBandArea } from '../Draw/DrawCanvas/BandArea';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../../ambient-utils/dataLayer';
+import { diffHashSig } from '../../../../ambient-utils/dataLayer';
 import { TransactionIF } from '../../../../ambient-utils/types';
 import { BrandContext } from '../../../../contexts/BrandContext';
 import { GraphDataContext } from '../../../../contexts';
@@ -28,11 +25,12 @@ interface OrderHistoryCanvasProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     hoveredOrderHistory: any;
     isHoveredOrderHistory: boolean;
-    selectedOrderHistory: TransactionIF | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    selectedOrderHistory: any;
     isSelectedOrderHistory: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     drawSettings: any;
-    userTransactionData: TransactionIF[] | undefined;
+    filteredTransactionalData: TransactionIF[] | undefined;
     circleScale: d3.ScaleLinear<number, number>;
     circleScaleLimitOrder: d3.ScaleLinear<number, number>;
 }
@@ -49,7 +47,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         // selectedOrderHistory,
         // isSelectedOrderHistory,
         drawSettings,
-        userTransactionData,
+        filteredTransactionalData,
         circleScale,
         circleScaleLimitOrder,
     } = props;
@@ -110,26 +108,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
             ),
         [userPositionsByPool],
     );
-
-    const filteredTransactionalData = useMemo(() => {
-        const leftDomain = scaleData.xScale.domain()[0];
-        const rightDomain = scaleData.xScale.domain()[1];
-
-        const diff = Math.abs(rightDomain - leftDomain);
-
-        const tempFilterData = userTransactionData?.filter(
-            (transaction) =>
-                transaction.entityType === 'swap' &&
-                transaction.txTime * 1000 > leftDomain - diff / 4 &&
-                transaction.txTime * 1000 < rightDomain + diff / 4,
-        );
-
-        const top20TotalValue = tempFilterData
-            ?.sort((a, b) => d3.descending(a.totalValueUSD, b.totalValueUSD))
-            .slice(0, 20);
-
-        return top20TotalValue;
-    }, [userTransactionData, diffHashSigScaleData(scaleData, 'x')]);
 
     useEffect(() => {
         if (circleScaleLimitOrder && circleScale && scaleData) {
