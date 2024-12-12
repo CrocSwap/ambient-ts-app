@@ -27,16 +27,17 @@ import { swellSepolia } from './swellSepolia';
 export const brand: string | undefined =
     import.meta.env.VITE_BRAND_ASSET_SET ?? '';
 
-const networks: NetworkIF[] = [
-    ethereumSepolia,
+const allNetworks: NetworkIF[] = [
     ethereumMainnet,
     scrollMainnet,
-    scrollSepolia,
-    blastSepolia,
     blastMainnet,
-    plumeSepolia,
-    swellSepolia,
+    plumeMainnet,
     swellMainnet,
+    ethereumSepolia,
+    plumeSepolia,
+    blastSepolia,
+    swellSepolia,
+    scrollSepolia,
     baseSepolia,
 ];
 
@@ -45,7 +46,7 @@ function getNetworks(chns: (string | chainHexIds)[]): {
 } {
     const networksToShow: NetworkIF[] = chns
         .map((c: string) => {
-            const network: NetworkIF | undefined = networks.find(
+            const network: NetworkIF | undefined = allNetworks.find(
                 (n: NetworkIF) => n.chainId.toLowerCase() === c,
             );
             return network;

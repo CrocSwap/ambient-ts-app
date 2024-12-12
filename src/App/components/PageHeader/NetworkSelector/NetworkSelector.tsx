@@ -160,11 +160,11 @@ export default function NetworkSelector(props: propsIF) {
             condition: chainMap.has('0x13e31'),
         },
         {
-            id: 'plume_sepolia_network_selector',
+            id: 'plume_network_selector',
             chainId: '0x18231',
             name: 'Plume',
             logo: plumeLogo,
-            custom: 2,
+            custom: 1,
             isExternal: false,
             testnet: false,
             link: '',
