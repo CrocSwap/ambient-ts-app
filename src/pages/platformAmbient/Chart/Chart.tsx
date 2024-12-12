@@ -5359,6 +5359,27 @@ export default function Chart(props: propsIF) {
                                 order: limitOrder,
                             };
                         }
+
+                        const line = [
+                            ...swapOrderData,
+                            {
+                                x: new Date().getTime() + 5 * 86400 * 1000,
+                                y: denomInBase
+                                    ? limitOrder.invLimitPriceDecimalCorrected
+                                    : limitOrder.limitPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkLineLocation(line, mouseX, mouseY, denomInBase)
+                        ) {
+                            resElement = {
+                                id: limitOrder.positionHash,
+                                type: 'limitCircle',
+                                order: limitOrder,
+                            };
+                        }
                     }
                 });
             }
