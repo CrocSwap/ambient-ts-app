@@ -27,8 +27,10 @@ import {
     mainnetUSDT,
     mainnetWBTC,
     mainnetWstETH,
+    plumeNEV,
     plumeSepoliaNEV,
     plumeSepoliaUSD,
+    plumeUSD,
     scrollAxlUSDC,
     scrollDAI,
     scrollPufETH,
@@ -124,30 +126,31 @@ export function remapTokenIfWrappedNative(addr: string): string {
     return addr;
 }
 
+// USDC prioritized in some lists
 export const USDC_TOKENS = [
     mainnetUSDC.address,
     blastUSDB.address,
+    plumeUSD.address,
     sepoliaUSDC.address,
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
     scrollUSDC.address,
-    plumeSepoliaUSD.address,
-    plumeSepoliaNEV.address,
     swellSepoliaUSDC.address,
     baseSepoliaUSDC.address,
 ].map((x) => x.toLowerCase());
 
-// No need to specify chain ID because token address is unique even across chains
 export const STABLE_USD_TOKENS = [
     mainnetDAI.address,
     mainnetUSDT.address,
     mainnetLUSD.address,
+    plumeNEV.address,
     blastUSDPLUS.address,
     scrollUSDT.address,
     scrollDAI.address,
     scrollAxlUSDC.address,
     scrollUSDE.address,
     scrollsUSDe.address,
+    plumeSepoliaUSD.address,
     plumeSepoliaNEV.address,
     swellSepoliaUSDT.address,
     baseSepoliaUSDT.address,
@@ -198,9 +201,10 @@ export const STAKED_BTC_TOKENS = [
 export const WRAPPED_NATIVE_TOKENS = [
     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // Mainnet
     '0x5300000000000000000000000000000000000004', // Scroll (test and main)
-    '0x863d7abb9c62d8bc69ea9ebc3e3583057d533e6f', // Scroll Sepolia
-    '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14', // Sepolia
     '0x4300000000000000000000000000000000000004', // Blast
+    '0x11476323D8DFCBAFac942588E2f38823d2Dd308e', // Plume
+    '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14', // Sepolia
     '0x4200000000000000000000000000000000000023', // Blast Sepolia
     '0xaA6210015fbf0855F0D9fDA3C415c1B12776Ae74', // Plume Sepolia
+    '0x863d7abb9c62d8bc69ea9ebc3e3583057d533e6f', // Scroll Sepolia
 ].map((x) => x.toLowerCase());
