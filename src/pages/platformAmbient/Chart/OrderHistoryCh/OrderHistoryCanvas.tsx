@@ -252,6 +252,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         ];
 
                         limitLineDataArray.push({
+                            id: limitOrder.positionHash,
                             triangleData: triangleLimitData,
                             lineData: lineData,
                         });
@@ -491,6 +492,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                 element.serie.xScale().range(range);
 
                                 element.serie([element.data]);
+
+                                if (ctx) ctx.restore();
                             });
                         }
                     }
@@ -604,42 +607,56 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                             context.lineWidth = 1;
                                         },
                                     );
-
-                                    if (ctx) ctx.restore();
                                 }
 
                                 limit.serie(limit.data);
                             });
                         }
 
-                        if (limitLineData && limitLineData.length > 0) {
+                        if (
+                            limitLineData &&
+                            limitLineData.length > 0 &&
+                            lineSeries &&
+                            triangleLimit &&
+                            ctx
+                        ) {
                             limitLineData.forEach((limitData: any) => {
-                                if (lineSeries) {
+                                const style = getComputedStyle(ctx.canvas);
+
+                                const sellColor =
+                                    style.getPropertyValue('--accent1');
+                                const buyColor =
+                                    style.getPropertyValue('--accent5');
+
+                                const buyColorHex = d3.color(buyColor);
+                                const sellColorHex = d3.color(sellColor);
+
+                                if (
+                                    hoveredOrderHistory &&
+                                    isHoveredOrderHistory &&
+                                    hoveredOrderHistory.type ===
+                                        'limitCircle' &&
+                                    hoveredOrderHistory.id === limitData.id
+                                ) {
                                     lineSeries.decorate(
                                         (context: CanvasRenderingContext2D) => {
-                                            context.setLineDash([4, 2]);
                                             context.strokeStyle =
                                                 (denomInBase &&
                                                     !limitData.lineData[0]
                                                         .isBid) ||
                                                 (!denomInBase &&
                                                     limitData.lineData[0].isBid)
-                                                    ? 'rgba(115, 113, 252)'
-                                                    : 'rgba(205, 193, 255)';
+                                                    ? sellColor?.toString()
+                                                    : buyColor?.toString();
+
+                                            context.setLineDash([4, 2]);
+
+                                            context.lineWidth = 1;
                                         },
                                     );
 
-                                    lineSeries(limitData.lineData);
-
-                                    if (ctx) ctx.setLineDash([0, 0]);
-
-                                    ctx?.restore();
-                                }
-
-                                if (triangleLimit) {
                                     triangleLimit.decorate(
                                         (context: CanvasRenderingContext2D) => {
-                                            // context.setLineDash([0, 0]);
                                             const rotateDegree = 90;
                                             context.rotate(
                                                 (rotateDegree * Math.PI) / 180,
@@ -651,8 +668,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                                         .isBid) ||
                                                 (!denomInBase &&
                                                     limitData.lineData[0].isBid)
-                                                    ? 'rgba(115, 113, 252)'
-                                                    : 'rgba(205, 193, 255)';
+                                                    ? sellColor
+                                                    : buyColor;
 
                                             context.fillStyle =
                                                 (denomInBase &&
@@ -660,13 +677,82 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                                         .isBid) ||
                                                 (!denomInBase &&
                                                     limitData.lineData[0].isBid)
-                                                    ? 'rgba(115, 113, 252)'
-                                                    : 'rgba(205, 193, 255)';
+                                                    ? sellColor
+                                                    : buyColor;
+
+                                            context.lineWidth = 1;
+                                        },
+                                    );
+                                } else {
+                                    lineSeries.decorate(
+                                        (context: CanvasRenderingContext2D) => {
+                                            context.setLineDash([4, 2]);
+
+                                            if (buyColorHex && sellColorHex) {
+                                                buyColorHex.opacity = 0.7;
+                                                sellColorHex.opacity = 0.7;
+
+                                                context.strokeStyle =
+                                                    (denomInBase &&
+                                                        !limitData.lineData[0]
+                                                            .isBid) ||
+                                                    (!denomInBase &&
+                                                        limitData.lineData[0]
+                                                            .isBid)
+                                                        ? sellColorHex?.toString()
+                                                        : buyColorHex?.toString();
+                                            }
+
+                                            context.lineWidth = 1;
                                         },
                                     );
 
-                                    triangleLimit(limitData.triangleData);
+                                    triangleLimit.decorate(
+                                        (context: CanvasRenderingContext2D) => {
+                                            // context.setLineDash([0, 0]);
+                                            const rotateDegree = 90;
+                                            context.rotate(
+                                                (rotateDegree * Math.PI) / 180,
+                                            );
+
+                                            if (buyColorHex && sellColorHex) {
+                                                buyColorHex.opacity = 0.7;
+                                                sellColorHex.opacity = 0.7;
+
+                                                context.strokeStyle =
+                                                    (denomInBase &&
+                                                        !limitData.lineData[0]
+                                                            .isBid) ||
+                                                    (!denomInBase &&
+                                                        limitData.lineData[0]
+                                                            .isBid)
+                                                        ? sellColorHex.toString()
+                                                        : buyColorHex.toString();
+
+                                                context.fillStyle =
+                                                    (denomInBase &&
+                                                        !limitData.lineData[0]
+                                                            .isBid) ||
+                                                    (!denomInBase &&
+                                                        limitData.lineData[0]
+                                                            .isBid)
+                                                        ? sellColorHex.toString()
+                                                        : buyColorHex.toString();
+                                            }
+
+                                            context.lineWidth = 1;
+                                        },
+                                    );
                                 }
+
+                                lineSeries(limitData.lineData);
+
+                                if (ctx) ctx.setLineDash([0, 0]);
+                                ctx?.restore();
+
+                                triangleLimit(limitData.triangleData);
+
+                                ctx?.restore();
                             });
                         }
                     }
