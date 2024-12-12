@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { CSSTransition } from 'react-transition-group';
 import {
+    formatSubscript,
     getFormattedNumber,
     trimString,
     uriToHttp,
@@ -139,17 +140,19 @@ export default function OrderHistoryTooltip(props: {
                     : 'Sell') + ': '}
             </StyledHeader>
             <StyledHeader color={'white'} size={'15px'}>
-                {denomInBase
-                    ? getFormattedNumber({
-                          value: hoveredOrderHistory.order
-                              .originalPositionLiqBaseDecimalCorrected,
-                          removeExtraTrailingZeros: true,
-                      })
-                    : getFormattedNumber({
-                          value: hoveredOrderHistory.order
-                              .claimableLiqQuoteDecimalCorrected,
-                          removeExtraTrailingZeros: true,
-                      })}
+                {formatSubscript(
+                    denomInBase
+                        ? hoveredOrderHistory.order.isBid
+                            ? hoveredOrderHistory.order
+                                  .originalPositionLiqBaseDecimalCorrected
+                            : hoveredOrderHistory.order
+                                  .expectedPositionLiqBaseDecimalCorrected
+                        : hoveredOrderHistory.order.isBid
+                          ? hoveredOrderHistory.order
+                                .expectedPositionLiqQuoteDecimalCorrected
+                          : hoveredOrderHistory.order
+                                .originalPositionLiqQuoteDecimalCorrected,
+                )}
             </StyledHeader>
             <StyledHeader color={'white'} size={'15px'}>
                 {denomInBase

@@ -154,7 +154,7 @@ const subscriptUnicode = [
     '0\u{2082}\u{2080}',
 ];
 
-const formatSubscript = (value: number, precision = 3) => {
+export const formatSubscript = (value: number, precision = 3) => {
     // math to find number of 0s after the decimal
     const zeros = Math.ceil(Math.log10(1 / value)) - 1;
     const valueNonZero = Math.round(value * 10 ** (zeros + precision));
