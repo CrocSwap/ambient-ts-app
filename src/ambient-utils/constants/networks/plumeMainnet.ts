@@ -18,7 +18,7 @@ const chainSpecFromSDK = lookupChain(chainIdHex);
 
 const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
-    name: 'Plume',
+    name: 'Plume Mainnet',
     currency: 'ETH',
     rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://phoenix-explorer.plumenetwork.xyz/',
@@ -35,7 +35,7 @@ export const plumeMainnet: NetworkIF = {
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: chainSpecForWalletConnector.name,
+    displayName: 'Plume',
     topPools: [
         new TopPool(plumeETH, plumeUSD, chainSpecFromSDK.poolIndex),
         new TopPool(plumeNEV, plumeUSD, chainSpecFromSDK.poolIndex),
