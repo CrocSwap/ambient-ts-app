@@ -55,6 +55,13 @@ export const defaultBrandAssets: brandIF = {
             premiumColor: [],
             cobrandingLogo: plumeLogo,
         },
+        // scroll sepolia
+        '0x8274f': {
+            // first value in array is default color scheme
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
+            premiumColor: [],
+            cobrandingLogo: scrollLogo,
+        },
         // swell sepolia
         '0x784': {
             // first value in array is default color scheme
