@@ -853,7 +853,7 @@ export const swellWTT: TokenIF = {
     logoURI: '',
 };
 
-export const plumeETH: TokenIF = {
+export const plumeNativeETH: TokenIF = {
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
     symbol: 'ETH',
@@ -861,6 +861,24 @@ export const plumeETH: TokenIF = {
     chainId: 98865,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const plumePETH: TokenIF = {
+    name: 'plumeETH',
+    address: '0x11476323D8DFCBAFac942588E2f38823d2Dd308e',
+    symbol: 'pETH',
+    decimals: 18,
+    chainId: 98865,
+    logoURI: '',
+};
+
+export const plumeUSDC: TokenIF = {
+    name: 'Bridged USDC (Stargate)',
+    address: '0x3938A812c54304fEffD266C7E2E70B48F9475aD6',
+    symbol: 'USDC.e',
+    decimals: 6,
+    chainId: 98865,
+    logoURI: '',
 };
 
 export const plumeWTT: TokenIF = {
@@ -872,7 +890,7 @@ export const plumeWTT: TokenIF = {
     logoURI: '',
 };
 
-export const plumeUSD: TokenIF = {
+export const plumePUSD: TokenIF = {
     name: 'Plume USD',
     address: '0x360822f796975cEccD8095c10720c57567b4199f',
     symbol: 'pUSD',
@@ -1000,6 +1018,9 @@ export const defaultTokens: TokenIF[] = [
     swellETH,
     swellWTT,
     plumeWTT,
-    plumeUSD,
+    plumePUSD,
     plumeNEV,
+    plumeNativeETH,
+    plumePETH,
+    plumeUSDC,
 ];
