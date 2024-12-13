@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { ZeroAddress } from 'ethers';
+import { PRICE_WINDOW_GRANULARITY } from '../constants';
 import { supportedNetworks } from '../constants/networks';
 import {
     isUsdStableToken,
@@ -92,9 +93,6 @@ export type TokenPriceFn = (
     address: string,
     chain: string,
 ) => Promise<TokenPriceFnReturn>;
-
-// Refresh USD prices in 15 minute windows
-const PRICE_WINDOW_GRANULARITY = 15 * 60 * 1000;
 
 const randomOffset = PRICE_WINDOW_GRANULARITY * randomNum;
 

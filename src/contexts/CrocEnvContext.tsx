@@ -10,6 +10,7 @@ import {
     useState,
 } from 'react';
 import {
+    PRICE_WINDOW_GRANULARITY,
     ZERO_ADDRESS,
     blastMainnet,
     ethereumMainnet,
@@ -205,16 +206,26 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             setCrocEnv(newCrocEnv);
         }
     };
+
     useEffect(() => {
         if (isUserOnline) setNewCrocEnv();
     }, [provider, walletProvider, isUserOnline, userAddress]);
 
+    const fetchMainnetEthPrice = async () => {
+        const mainnetEthPrice = (
+            await cachedFetchTokenPrice(ZERO_ADDRESS, '0x1')
+        )?.usdPrice;
+        setEthMainnetUsdPrice(mainnetEthPrice);
+    };
+
     useEffect(() => {
-        Promise.resolve(cachedFetchTokenPrice(ZERO_ADDRESS, '0x1')).then(
-            (response) => {
-                setEthMainnetUsdPrice(response?.usdPrice);
-            },
-        );
+        fetchMainnetEthPrice();
+
+        const interval = setInterval(() => {
+            fetchMainnetEthPrice();
+        }, PRICE_WINDOW_GRANULARITY);
+
+        return () => clearInterval(interval);
     }, []);
 
     useEffect(() => {
