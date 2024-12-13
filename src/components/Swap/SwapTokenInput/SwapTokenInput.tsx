@@ -223,7 +223,9 @@ function SwapTokenInput(props: propsIF) {
                 : '';
 
             // prevent writing result of impact query to the UI if a new query has been made
-            if (lastQuery.current.inputValue === input) {
+            if (
+                parseFloat(lastQuery.current.inputValue) === parseFloat(input)
+            ) {
                 setBuyQtyString(truncatedTokenBQty);
                 setIsBuyLoading(false);
             }
@@ -253,7 +255,9 @@ function SwapTokenInput(props: propsIF) {
                 : '';
 
             // prevent writing result of impact query to the UI if a new query has been made
-            if (lastQuery.current.inputValue === input) {
+            if (
+                parseFloat(lastQuery.current.inputValue) === parseFloat(input)
+            ) {
                 setSellQtyString(truncatedTokenAQty);
                 setIsSellLoading(false);
             }
