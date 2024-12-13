@@ -6,14 +6,15 @@ import { LogoutButton } from '../../../../../components/Global/LogoutButton/Logo
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 import styles from './WalletDropdown.module.css';
 
-import { toDisplayQty } from '@crocswap-libs/sdk';
+import { toDisplayPrice, toDisplayQty } from '@crocswap-libs/sdk';
 import { Link } from 'react-router-dom';
 import {
+    CACHE_UPDATE_FREQ_IN_MS,
     ZERO_ADDRESS,
     supportedNetworks,
 } from '../../../../../ambient-utils/constants';
 import processLogoSrc from '../../../../../components/Global/TokenIcon/processLogoSrc';
-import { TokenContext } from '../../../../../contexts';
+import { CrocEnvContext, TokenContext } from '../../../../../contexts';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
@@ -52,6 +53,7 @@ export default function WalletDropdown(props: propsIF) {
     } = useContext(AppStateContext);
 
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { tokens } = useContext(TokenContext);
 
@@ -69,7 +71,8 @@ export default function WalletDropdown(props: propsIF) {
         );
     }, [tokenBalances]);
 
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
+        useContext(CachedDataContext);
 
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF): JSX.Element {
         const { logoUri, symbol, address, amount, value } = props;
@@ -94,7 +97,7 @@ export default function WalletDropdown(props: propsIF) {
                 </div>
                 <div className={styles.tokenAmount}>
                     <h3>{amount}</h3>
-                    <h6>{value !== undefined ? value : '...'}</h6>
+                    <h6>{value !== '$0.00' ? value : '...'}</h6>
                 </div>
             </section>
         );
@@ -147,17 +150,41 @@ export default function WalletDropdown(props: propsIF) {
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
-                    (price &&
-                        price?.usdPrice *
-                            (secondTokenCombinedBalanceDisplayNum ?? 0)) ??
-                    0;
+                    price.usdPrice *
+                    (secondTokenCombinedBalanceDisplayNum ?? 0);
                 const usdValueTruncated = getFormattedNumber({
                     value: usdValueNum,
                     isUSD: true,
                 });
                 setSecondTokenUsdValueForDom(usdValueTruncated);
             } else {
-                setSecondTokenUsdValueForDom(undefined);
+                if (!crocEnv || !nativeTokenUsdPrice) return;
+
+                cachedQuerySpotPrice(
+                    crocEnv,
+                    ZERO_ADDRESS,
+                    secondDefaultTokenData.address,
+                    chainId,
+                    Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+                ).then((ethPoolPriceNonDisplay) => {
+                    if (!ethPoolPriceNonDisplay)
+                        setSecondTokenUsdValueForDom(undefined);
+
+                    const ethPoolPriceDisplay = toDisplayPrice(
+                        ethPoolPriceNonDisplay,
+                        18,
+                        secondDefaultTokenData.decimals,
+                    );
+                    const usdValueNum: number =
+                        ethPoolPriceDisplay *
+                        nativeTokenUsdPrice *
+                        (secondTokenCombinedBalanceDisplayNum ?? 0);
+                    const usdValueTruncated = getFormattedNumber({
+                        value: usdValueNum,
+                        isUSD: true,
+                    });
+                    setSecondTokenUsdValueForDom(usdValueTruncated);
+                });
             }
         });
     }, [chainId, JSON.stringify(secondDefaultTokenData)]);
