@@ -1,13 +1,12 @@
 import { AnimateSharedLayout, motion } from 'framer-motion';
 import { memo, useCallback, useContext, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { vaultSupportedNetworkIds } from '../../../ambient-utils/constants';
 import {
     chainNumToString,
     checkEoaHexAddress,
     getFormattedNumber,
+    someSupportedNetworkIsVaultSupportedNetwork,
     trimString,
-    validateChainId,
 } from '../../../ambient-utils/dataLayer';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import Button from '../../../components/Form/Button';
@@ -272,11 +271,6 @@ const PageHeader = function () {
             : activeTradeTab.toLowerCase() === 'wallet balances'
               ? 'wallet-balances'
               : activeTradeTab.toLowerCase();
-
-    const someSupportedNetworkIsVaultSupportedNetwork =
-        vaultSupportedNetworkIds.some((vaultNetworkId) =>
-            validateChainId(vaultNetworkId),
-        );
 
     const linkData: linkDataIF[] = [
         {

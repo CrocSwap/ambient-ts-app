@@ -10,7 +10,7 @@ export const tokenListURIs = {
     scrollCoingecko: 'https://tokens.coingecko.com/scroll/all.json',
     scrollTech:
         'https://raw.githubusercontent.com/scroll-tech/token-list/main/scroll.tokenlist.json',
-    uniswap: 'https://tokens.uniswap.org',
+    // uniswap: 'https://tokens.uniswap.org',
     futa: '/futa-token-list.json',
     baseCoingecko: 'https://tokens.coingecko.com/base/all.json',
 };
