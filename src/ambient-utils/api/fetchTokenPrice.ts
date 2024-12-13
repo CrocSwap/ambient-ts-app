@@ -21,7 +21,7 @@ export const fetchTokenPrice = async (
     try {
         const body = {
             config_path: 'price',
-            asset_platform: activeNetwork.tokenPriceQueryAssetPlatform
+            asset_platform: activeNetwork?.tokenPriceQueryAssetPlatform
                 ? activeNetwork.tokenPriceQueryAssetPlatform
                 : 'ethereum',
             token_address: address,
