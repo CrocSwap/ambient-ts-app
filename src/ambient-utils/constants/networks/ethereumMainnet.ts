@@ -42,6 +42,7 @@ export const ethereumMainnet: NetworkIF = {
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Ethereum',
+    tokenPriceQueryAssetPlatform: 'ethereum',
     topPools: [
         new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetTBTC, chainSpecFromSDK.poolIndex),
