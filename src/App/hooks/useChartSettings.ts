@@ -49,10 +49,6 @@ export interface chartSettingsMethodsIF {
 
 // hook to manage user preferences for chart settings
 export const useChartSettings = (
-    numCandlesFetched: {
-        candleCount: number | undefined;
-        switchPeriodFlag: boolean;
-    },
     currentPoolString: string,
 ): chartSettingsMethodsIF => {
     // fn to get user preference for overlay to display on the chart by module
@@ -92,41 +88,7 @@ export const useChartSettings = (
     const getCandleTime = (
         currentCandleTimeGlobal: TimeInSecondsType | undefined,
     ): TimeInSecondsType | undefined => {
-        if (numCandlesFetched?.candleCount === undefined) {
-            return undefined;
-        }
-
-        let newCandleDuration;
-        if (currentCandleTimeGlobal === undefined) {
-            if (numCandlesFetched.candleCount >= 7) {
-                newCandleDuration = 3600;
-            } else {
-                newCandleDuration = 900;
-            }
-        } else {
-            if (numCandlesFetched.candleCount >= 7) {
-                newCandleDuration = currentCandleTimeGlobal;
-            } else {
-                if (currentCandleTimeGlobal === 86400) {
-                    newCandleDuration = 14400;
-                    setMaxDuration(14400);
-                } else if (currentCandleTimeGlobal === 14400) {
-                    newCandleDuration = 3600;
-                    setMaxDuration(3600);
-                } else if (currentCandleTimeGlobal === 3600) {
-                    newCandleDuration = 900;
-                    setMaxDuration(900);
-                } else if (currentCandleTimeGlobal === 900) {
-                    newCandleDuration = 300;
-                    setMaxDuration(300);
-                } else {
-                    newCandleDuration = 60;
-                    setMaxDuration(60);
-                }
-            }
-        }
-
-        return newCandleDuration as TimeInSecondsType;
+        return currentCandleTimeGlobal;
     };
 
     useEffect(() => {
@@ -138,7 +100,7 @@ export const useChartSettings = (
             | undefined;
 
         setCandleTimeGlobal(() => getCandleTime(currentCandleTimeGlobal));
-    }, [numCandlesFetched?.switchPeriodFlag]);
+    }, []);
 
     const [marketOverlay, setMarketOverlay] = useState<OverlayType>(
         getOverlay('market') ?? 'depth',

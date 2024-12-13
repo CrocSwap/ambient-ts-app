@@ -1055,6 +1055,28 @@ function TradeCandleStickChart(props: propsIF) {
         !isFetchingCandle &&
         !isFetchingEnoughData;
 
+    useEffect(() => {
+        console.log(
+            !isLoading,
+            candleData !== undefined,
+            isPoolInitialized !== undefined,
+            prevPeriod === period,
+            scaleData,
+            period === candleData?.duration,
+            !isFetchingCandle,
+            !isFetchingEnoughData,
+        );
+    }, [
+        !isLoading,
+        candleData !== undefined,
+        isPoolInitialized !== undefined,
+        prevPeriod === period,
+        scaleData,
+        period === candleData?.duration,
+        !isFetchingCandle,
+        !isFetchingEnoughData,
+    ]);
+
     const loadingText = (
         <div
             style={{ height: '100%', width: '100%' }}

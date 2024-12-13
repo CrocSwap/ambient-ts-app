@@ -67,8 +67,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isEnabled: isChartEnabled,
         isCandleDataNull,
         setIsCandleDataNull,
-        numCandlesFetched,
-        setNumCandlesFetched,
     } = useContext(ChartContext);
     const {
         activeNetwork: { chainId, poolIndex, GCGO_URL },
@@ -139,14 +137,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         isFetchFirst200Candle: true,
                     };
                 });
-            } else {
-                // If there are no candles in the first 200 candles, it changes timeframe
-                if (candleData?.candles) {
-                    setNumCandlesFetched({
-                        candleCount: candleData?.candles.length || 0,
-                        switchPeriodFlag: !numCandlesFetched?.switchPeriodFlag,
-                    });
-                }
             }
         }
     }, [isFinishRequest]);
@@ -302,10 +292,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 ? Math.floor(Date.now() / 1000)
                 : candleScale.lastCandleDate || 0;
 
-            const nCandles = Math.min(
-                Math.max(candleScale?.nCandles || 7, 7),
-                2999,
-            );
+            const nCandles = Math.min(Math.max(candleScale?.nCandles), 2999);
 
             setIsFinishRequest(false);
             !bypassSpinner && setIsFetchingCandle(true);
@@ -353,12 +340,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         }
                     }
 
-                    if (
-                        (candleSeries && candles?.candles.length >= 7) ||
-                        (candleSeries &&
-                            candleSeries.length > 0 &&
-                            candleTimeLocal === 60)
-                    ) {
+                    if (candleSeries && candleSeries.length > 0) {
                         setIsFetchingCandle(false);
                     }
                     setIsFirstFetch(false);
