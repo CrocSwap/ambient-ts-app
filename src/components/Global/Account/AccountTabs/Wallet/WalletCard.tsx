@@ -32,7 +32,6 @@ export default function WalletCard(props: propsIF) {
     const {
         tokens: { getTokenByAddress },
     } = useContext(TokenContext);
-
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
@@ -84,7 +83,8 @@ export default function WalletCard(props: propsIF) {
                                     Date.now() / CACHE_UPDATE_FREQ_IN_MS,
                                 ),
                             );
-                        if (!ethPoolPriceNonDisplay) setTokenPrice(undefined);
+                        if (!ethPoolPriceNonDisplay || !nativeTokenUsdPrice)
+                            setTokenPrice(undefined);
 
                         const ethPoolPriceDisplay = toDisplayPrice(
                             ethPoolPriceNonDisplay,

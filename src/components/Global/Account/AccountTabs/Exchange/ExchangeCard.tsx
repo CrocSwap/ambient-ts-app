@@ -37,7 +37,6 @@ export default function ExchangeCard(props: propsIF) {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
-
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
@@ -85,7 +84,8 @@ export default function ExchangeCard(props: propsIF) {
                                     Date.now() / CACHE_UPDATE_FREQ_IN_MS,
                                 ),
                             );
-                        if (!ethPoolPriceNonDisplay) setTokenPrice(undefined);
+                        if (!ethPoolPriceNonDisplay || !nativeTokenUsdPrice)
+                            setTokenPrice(undefined);
 
                         const ethPoolPriceDisplay = toDisplayPrice(
                             ethPoolPriceNonDisplay,
