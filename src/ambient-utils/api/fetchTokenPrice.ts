@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { ZeroAddress } from 'ethers';
 import { PRICE_WINDOW_GRANULARITY } from '../constants';
-import { supportedNetworks } from '../constants/networks';
+import { allNetworks } from '../constants/networks';
 import {
     isUsdStableToken,
     memoizePromiseFn,
@@ -17,7 +17,7 @@ export const fetchTokenPrice = async (
     _lastTime: number,
 ) => {
     const address = translateToken(dispToken, chain);
-    const activeNetwork = supportedNetworks[chain];
+    const activeNetwork = allNetworks[chain];
     try {
         const body = {
             config_path: 'price',
