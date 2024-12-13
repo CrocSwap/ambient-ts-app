@@ -91,6 +91,8 @@ async function expandLiquidityData(
         quotePrice,
     );
 
+    console.log({ curveTick, liq, ranges });
+
     return {
         currentTick: curveTick,
         ranges: ranges,
@@ -128,6 +130,7 @@ function bumpsToRanges(
     let liqRunning = curve.ambientLiq;
 
     let ranges = bumps.map((b) => {
+        lastTick = b.bumpTick;
         const lowerPrice = tickToPrice(lastTick);
         const upperPrice = tickToPrice(b.bumpTick);
         const lowerPriceDisp = toDisplayPrice(
@@ -190,7 +193,6 @@ function bumpsToRanges(
         retVal.deltaAverageUSD =
             (Math.abs(deltaBaseUSD) + Math.abs(deltaQuoteUSD)) / 2;
 
-        lastTick = b.bumpTick;
         liqRunning += b.liquidityDelta;
 
         return retVal;
