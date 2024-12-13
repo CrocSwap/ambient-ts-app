@@ -14,6 +14,7 @@ import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_l
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
 import plumeLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
+import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_logo_small.webp';
 import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
 import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
 import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
@@ -164,7 +165,7 @@ export default function NetworkSelector(props: propsIF) {
             chainId: '0x18231',
             name: 'Plume',
             logo: plumeLogo,
-            custom: 1,
+            custom: 0,
             isExternal: false,
             testnet: false,
             link: '',
@@ -207,7 +208,7 @@ export default function NetworkSelector(props: propsIF) {
             id: 'plume_sepolia_network_selector',
             chainId: '0x18230',
             name: 'Plume',
-            logo: plumeLogo,
+            logo: plumeSepoliaLogo,
             custom: 2,
             isExternal: false,
             testnet: true,

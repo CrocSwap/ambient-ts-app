@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import FadingText from './FadingText';
 import fadingTextData from './fadingTextData.json';
 
@@ -11,8 +11,14 @@ interface FadingTextItem {
     color: string;
 }
 
-const FadingTextGrid: React.FC<{ onAnimationComplete?: () => void }> = ({
+interface FadingTextGridProps {
+    onAnimationComplete?: () => void;
+    setShowMainContent: Dispatch<SetStateAction<boolean>>;
+}
+
+const FadingTextGrid: React.FC<FadingTextGridProps> = ({
     onAnimationComplete,
+    setShowMainContent,
 }) => {
     useEffect(() => {
         // Calculate the longest duration based on fadeIn and fadeOut delays and times
@@ -46,6 +52,7 @@ const FadingTextGrid: React.FC<{ onAnimationComplete?: () => void }> = ({
                 width: '100vw',
                 overflow: 'hidden',
             }}
+            onClick={() => setShowMainContent(true)}
         >
             {(fadingTextData as FadingTextItem[]).map((item, index) => (
                 <FadingText

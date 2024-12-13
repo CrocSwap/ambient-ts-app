@@ -13,7 +13,7 @@ import {
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
 import styles from './SearchableTicker.module.css';
-import styles2 from './TickerItem.module.css';
+import { GoChevronRight } from 'react-icons/go';
 
 interface PropsIF {
     auction: AuctionDataIF;
@@ -182,8 +182,15 @@ export default function TickerItem(props: PropsIF) {
                 setHoveredTicker(ticker);
             }}
         >
-            <p className={styles2.ticker_name}>{ticker}</p>
+            <div className={styles.ticker_name}>
+                <span className={styles.ticker_name_arrow}>
+                    <GoChevronRight />
+                </span>
+                <p className={styles.tick_name}>{ticker}</p>
+            </div>
             <p className={styles.marketCap}>{formattedMarketCap}</p>
+            <p className={styles.statusContainer}>{!status2 ? 'IN' : 'OUT'}</p>
+
             <p
                 style={{
                     color:
@@ -194,17 +201,10 @@ export default function TickerItem(props: PropsIF) {
                               ? 'var(--text1)'
                               : 'var(--orange)',
                 }}
+                className={styles.timeRemaining}
             >
                 {timeRemaining}
             </p>
-            <div className={styles.statusContainer}>
-                {status2 && (
-                    <span
-                        className={styles.tickerStatus}
-                        style={{ background: status2 ? status2 : '' }}
-                    />
-                )}
-            </div>
         </Link>
     );
 }
