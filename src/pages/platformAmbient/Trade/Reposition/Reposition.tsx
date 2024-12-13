@@ -65,7 +65,7 @@ function Reposition() {
         useContext(CrocEnvContext);
 
     const {
-        activeNetwork: { blockExplorer },
+        activeNetwork: { blockExplorer, chainId },
     } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
@@ -343,6 +343,7 @@ function Reposition() {
             addPendingTx(tx?.hash);
             if (tx?.hash) {
                 addTransactionByType({
+                    chainId: chainId,
                     userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction: 'Reposition',

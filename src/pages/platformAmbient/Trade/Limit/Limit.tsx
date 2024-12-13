@@ -737,6 +737,7 @@ export default function Limit() {
             addPendingTx(tx?.hash);
             setNewLimitOrderTransactionHash(tx.hash);
             addTransactionByType({
+                chainId: chainId,
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txAction:

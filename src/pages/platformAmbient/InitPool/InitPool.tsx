@@ -1641,6 +1641,7 @@ export default function InitPool() {
 
                     if (tx?.hash) {
                         addTransactionByType({
+                            chainId: chainId,
                             userAddress: userAddress || '',
                             txHash: tx.hash,
                             txType: 'Withdraw',
