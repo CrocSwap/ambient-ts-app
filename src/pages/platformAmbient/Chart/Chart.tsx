@@ -6132,7 +6132,7 @@ export default function Chart(props: propsIF) {
                 .node() as HTMLCanvasElement;
 
             const rectCanvas = canvas.getBoundingClientRect();
-            const right = rectCanvas.right;
+            const canvasRightEnd = rectCanvas.right;
 
             if (isHoveredOrderHistory && hoveredOrderHistory) {
                 if (hoveredOrderHistory.type === 'swap' && circleScale) {
@@ -6220,15 +6220,45 @@ export default function Chart(props: propsIF) {
                     const pricePlacement = minPrice + diff;
 
                     setHoveredOrderTooltipPlacement(() => {
-                        const top = scaleData.yScale(pricePlacement);
+                        let top = scaleData.yScale(pricePlacement);
 
                         const left = scaleData?.xScale(
                             hoveredOrderHistory.order.latestUpdateTime * 1000,
                         );
 
+                        if (
+                            isSelectedOrderHistory &&
+                            selectedOrderTooltipPlacement
+                        ) {
+                            const { isOverLeft, isOverTop } = isShapeOverlaps(
+                                left,
+                                top,
+                                selectedOrderTooltipPlacement.left,
+                                selectedOrderTooltipPlacement.top,
+                            );
+
+                            if (isOverLeft && isOverTop) {
+                                const direction =
+                                    selectedOrderTooltipPlacement.top - top < 0
+                                        ? -1
+                                        : 1;
+
+                                const diff =
+                                    90 -
+                                    Math.abs(
+                                        selectedOrderTooltipPlacement.top - top,
+                                    );
+
+                                top = top - diff * direction;
+                            }
+                        }
+
                         return {
                             top: top < 0 ? 10 : top,
-                            left: left > right ? right - 150 : left,
+                            left:
+                                left > canvasRightEnd
+                                    ? canvasRightEnd - 150
+                                    : left,
                             isOnLeftSide: false,
                         };
                     });
@@ -6392,7 +6422,17 @@ export default function Chart(props: propsIF) {
                                 ? selectedOrderHistory.order.timeFirstMint
                                 : selectedOrderHistory.order.crossTime;
 
-                        const left = scaleData?.xScale(time * 1000) + 55;
+                        const distance =
+                            selectedOrderHistory.order.claimableLiq > 0
+                                ? scale(
+                                      circleScaleLimitOrder(
+                                          selectedOrderHistory.order
+                                              .totalValueUSD,
+                                      ),
+                                  )
+                                : 55;
+
+                        const left = scaleData?.xScale(time * 1000) + distance;
 
                         return { top, left, isOnLeftSide: false };
                     });
@@ -6424,7 +6464,10 @@ export default function Chart(props: propsIF) {
 
                         return {
                             top: top < 0 ? 10 : top,
-                            left: left > right ? right - 150 : left,
+                            left:
+                                left > canvasRightEnd
+                                    ? canvasRightEnd - 150
+                                    : left,
                             isOnLeftSide: false,
                         };
                     });
