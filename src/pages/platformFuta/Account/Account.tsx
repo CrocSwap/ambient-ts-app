@@ -49,7 +49,6 @@ export default function Account() {
 
     const [tickerSet, setTickerSet] = useState<auctionDataSets>('bids');
     function toggleData(set?: auctionDataSets): void {
-        console.log('toggling...');
         if (set) {
             setTickerSet(set);
         } else if (tickerSet === 'bids') {
@@ -218,6 +217,10 @@ export default function Account() {
         accountData.auctions || [],
     );
 
+    // !important:  the table will display "No tickers available" if `sorted` is
+    // !important:  ... removed from the dependency array of this hook which I
+    // !important:  ... sometimes do to simulate state, please re-insert if it is
+    // !important:  ... ever inadvertently left out
     // logic to filter bids created by authenticated wallet when relevant
     const filtered = useMemo<sortedAuctionsIF>(() => {
         // copy sorted data to an output variable
@@ -232,7 +235,7 @@ export default function Account() {
         }
         // return data after processing (processing is actually optional)
         return output;
-    }, [tickerSet, sorted]);
+    }, [tickerSet]);
 
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
@@ -253,7 +256,6 @@ export default function Account() {
                         active: tickerSet,
                         toggle: toggleData,
                     }}
-                    title='accounttt'
                     isAccount={true}
                 />
             </div>
@@ -283,7 +285,6 @@ export default function Account() {
                         active: tickerSet,
                         toggle: toggleData,
                     }}
-                    title='account'
                     isAccount={true}
                 />
             </div>

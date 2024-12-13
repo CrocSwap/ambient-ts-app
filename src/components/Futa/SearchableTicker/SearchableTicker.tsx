@@ -1,14 +1,6 @@
 import { NumberSize } from 're-resizable';
 import { Direction } from 're-resizable/lib/resizer';
-import {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { BiSearch } from 'react-icons/bi';
 import { FaEye } from 'react-icons/fa';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
@@ -38,21 +30,34 @@ interface propsIF {
         active: auctionDataSets;
         toggle: (set: auctionDataSets) => void;
     };
-    title?: string;
-    setIsFullLayoutActive?: Dispatch<SetStateAction<boolean>>;
     isAccount?: boolean;
     placeholderTicker?: boolean | undefined;
 }
 
 export default function SearchableTicker(props: propsIF) {
-    const {
-        auctions,
-        title,
-        setIsFullLayoutActive,
-        placeholderTicker,
-        isAccount,
-        dataState,
-    } = props;
+    const { auctions, placeholderTicker, isAccount, dataState } = props;
+
+    // logic to expand table to full height if no data is available, this
+    // ... keeps the 'no data available' msg centered in the visual space,
+    useEffect(() => {
+        // declare a variable to hold new table height
+        let heightToUse: number;
+        // if data is available, use either the saved or default height
+        if (auctions.data.length) {
+            heightToUse =
+                searchableTickerHeights.saved ??
+                searchableTickerHeights.default;
+        } else {
+            heightToUse = searchableTickerHeights.max;
+        }
+        // update state with new value
+        setSearchableTickerHeight(heightToUse);
+        // !important:  dependency array must be in the form val === 0,
+        // !important:  ... this logic should only apply in situations
+        // !important:  ... with no data or missing data, not when state
+        // !important:  ... adds additional data to what we already have
+    }, [auctions.data.length === 0]);
+
     const [isSortDropdownOpen, setIsSortDropdownOpen] =
         useState<boolean>(false);
     // scrolling is disabled when hover on table
@@ -244,46 +249,35 @@ export default function SearchableTicker(props: propsIF) {
 
     const headerDisplay = (
         <div className={styles.header}>
-            {/* <Divider count={1} /> */}
-            {title && (
-                <h3
-                    className={styles.title}
-                    onClick={
-                        setIsFullLayoutActive
-                            ? () => setIsFullLayoutActive((prev) => !prev)
-                            : () => null
-                    }
-                >
-                    {title}
-                </h3>
-            )}
             <div className={styles.filter_options}>
-                <div className={styles.data_set_toggles}>
-                    <button
-                        className={
-                            dataState?.active === 'bids'
-                                ? styles.button_active
-                                : null
-                        }
-                        onClick={() =>
-                            dataState?.toggle && dataState.toggle('bids')
-                        }
-                    >
-                        BIDS
-                    </button>
-                    <button
-                        className={
-                            dataState?.active === 'created'
-                                ? styles.button_active
-                                : null
-                        }
-                        onClick={() =>
-                            dataState?.toggle && dataState.toggle('created')
-                        }
-                    >
-                        CREATED
-                    </button>
-                </div>
+                {isAccount ? (
+                    <div className={styles.data_set_toggles}>
+                        <button
+                            className={
+                                dataState?.active === 'bids'
+                                    ? styles.button_active
+                                    : null
+                            }
+                            onClick={() =>
+                                dataState?.toggle && dataState.toggle('bids')
+                            }
+                        >
+                            BIDS
+                        </button>
+                        <button
+                            className={
+                                dataState?.active === 'created'
+                                    ? styles.button_active
+                                    : null
+                            }
+                            onClick={() =>
+                                dataState?.toggle && dataState.toggle('created')
+                            }
+                        >
+                            CREATED
+                        </button>
+                    </div>
+                ) : null}
                 <div className={styles.search_and_filter}>
                     <div className={styles.text_search_box}>
                         <BiSearch
@@ -406,10 +400,9 @@ export default function SearchableTicker(props: propsIF) {
             </div>
         </div>
     );
-    const fullScreenTable = false;
 
     const noAuctionsContent = (
-        <div className={styles.noAuctionsContent}>
+        <div className={styles.no_auctions_content}>
             <Typewriter
                 text={
                     watchlists.shouldDisplay
@@ -559,8 +552,7 @@ export default function SearchableTicker(props: propsIF) {
         <div
             className={styles.container}
             style={{
-                gridTemplateRows:
-                    fullScreenTable || isAccount ? 'auto 100%' : '',
+                gridTemplateRows: isAccount ? 'auto 100%' : '',
             }}
             ref={canvasRef}
         >
@@ -575,7 +567,7 @@ export default function SearchableTicker(props: propsIF) {
                     {isMobile ? searchableContent : resizableChart}
                 </div>
 
-                {!fullScreenTable && !isAccount && !isMobile && <Chart />}
+                {!isAccount && !isMobile && <Chart />}
             </FlexContainer>
         </div>
     );

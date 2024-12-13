@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
 import { AppStateContext } from '../../../contexts';
@@ -32,13 +32,7 @@ export default function Auctions(props: propsIF) {
         globalAuctionList.data || [],
     );
 
-    // DOM id for search input field
-    const INPUT_DOM_ID = 'ticker_auction_search_input';
-
-    false && INPUT_DOM_ID;
-
     const desktopScreen: boolean = useMediaQuery('(min-width: 968px)');
-    const [_, setIsFullLayoutActive] = useState<boolean>(false);
 
     const cacheFrequency = Math.floor(Date.now() / 30000);
 
@@ -66,8 +60,6 @@ export default function Auctions(props: propsIF) {
                         <div style={{ height: 'calc(100vh - 80px)' }}>
                             <SearchableTicker
                                 auctions={sorted}
-                                title=''
-                                setIsFullLayoutActive={setIsFullLayoutActive}
                                 placeholderTicker={placeholderTicker}
                             />
                         </div>

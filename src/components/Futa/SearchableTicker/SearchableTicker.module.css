@@ -251,10 +251,10 @@
 }
 
 .tickerTableContainer {
+    flex-direction: column;
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: column;
     gap: 8px;
 }
 
@@ -307,19 +307,22 @@
     padding: 0 12px;
 }
 
-.noAuctionsContent {
+/* differential content when length of data array is zero */
+.no_auctions_content {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     padding: 2rem 0;
+    height: 100%;
 }
 
-.noAuctionsContent p {
+.no_auctions_content > p {
     color: var(--text2);
 }
 
-.noAuctionsContent button {
+.no_auctions_content > button {
     display: flex;
     padding: 2px 8px;
     justify-content: center;
@@ -336,7 +339,7 @@
     text-transform: uppercase;
 }
 
-.noAuctionsContent button:hover {
+.no_auctions_content > button:hover {
     background: var(--accent2);
 }
 
