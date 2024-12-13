@@ -9,6 +9,9 @@ function registerToken(token: TokenIF): TokenIF {
     return token;
 }
 
+// Dynamically created list of all tokens
+export const defaultTokens: TokenIF[] = tokenRegistry;
+
 export const mainnetETH: TokenIF = registerToken({
     address: '0x0000000000000000000000000000000000000000',
     chainId: 1,
@@ -916,6 +919,3 @@ export const baseSepoliaUSDT: TokenIF = registerToken({
     chainId: 84532,
     logoURI: '',
 });
-
-// Dynamically created list of all tokens
-export const defaultTokens: TokenIF[] = tokenRegistry;
