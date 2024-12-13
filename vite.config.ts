@@ -82,8 +82,6 @@ export default defineConfig({
                         id.toLowerCase().includes('moment')
                     ) {
                         return 'numbers';
-                    } else if (id.toLowerCase().includes('i18n')) {
-                        return 'i18n';
                     } else if (id.toLowerCase().includes('noble')) {
                         return 'noble';
                     } else if (id.toLowerCase().includes('siwe')) {

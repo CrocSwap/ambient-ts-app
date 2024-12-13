@@ -1,3 +1,4 @@
+import { CrocEnv } from '@crocswap-libs/sdk';
 import moment from 'moment';
 import {
     createContext,
@@ -6,6 +7,7 @@ import {
     SetStateAction,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from 'react';
 import useWebSocket from 'react-use-websocket';
@@ -20,6 +22,9 @@ import {
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
 import {
     BLOCK_POLLING_RPC_URL,
+    GCGO_BLAST_URL,
+    GCGO_ETHEREUM_URL,
+    GCGO_SCROLL_URL,
     hiddenTokens,
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
@@ -27,9 +32,18 @@ import {
     vaultSupportedNetworkIds,
     ZERO_ADDRESS,
 } from '../ambient-utils/constants';
-import { isJsonString } from '../ambient-utils/dataLayer';
-import { SinglePoolDataIF, TokenIF } from '../ambient-utils/types';
+import {
+    getChainStats,
+    getFormattedNumber,
+    isJsonString,
+} from '../ambient-utils/dataLayer';
+import {
+    AllVaultsServerIF,
+    SinglePoolDataIF,
+    TokenIF,
+} from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
+import { BrandContext } from './BrandContext';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { ReceiptContext } from './ReceiptContext';
@@ -63,6 +77,13 @@ export interface ChainDataContextIF {
     isActiveNetworkL2: boolean;
     nativeTokenUsdPrice: number | undefined;
     allPoolStats: SinglePoolDataIF[] | undefined;
+    allVaultsData: AllVaultsServerIF[] | null | undefined;
+    setAllVaultsData: Dispatch<
+        SetStateAction<AllVaultsServerIF[] | null | undefined>
+    >;
+    totalTvlString: string | undefined;
+    totalVolumeString: string | undefined;
+    totalFeesString: string | undefined;
 }
 
 export const ChainDataContext = createContext({} as ChainDataContextIF);
@@ -85,7 +106,13 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         setNFTFetchSettings,
     } = useContext(TokenBalanceContext);
     const { sessionReceipts } = useContext(ReceiptContext);
-    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        provider,
+        mainnetProvider,
+        scrollProvider,
+        blastProvider,
+    } = useContext(CrocEnvContext);
     const {
         cachedFetchAmbientListWalletBalances,
         cachedFetchDexBalances,
@@ -95,6 +122,10 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         cachedAllPoolStatsFetch,
     } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
+    const { showDexStats } = useContext(BrandContext);
+
+    const allDefaultTokens = tokens.allDefaultTokens;
+
     const {
         userAddress,
         isUserConnected,
@@ -113,12 +144,25 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(chainId);
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);
-    const isActiveNetworkPlume = ['0x18230'].includes(chainId);
+    const isActiveNetworkPlume = ['0x18230', '0x18231'].includes(chainId);
     const isActiveNetworkSwell = ['0x783', '0x784'].includes(chainId);
     const isActiveNetworkBase = ['0x14a34'].includes(chainId);
 
     const isVaultSupportedOnNetwork =
         vaultSupportedNetworkIds.includes(chainId);
+
+    // vault data from tempest API
+    const [allVaultsData, setAllVaultsData] = useState<
+        AllVaultsServerIF[] | null | undefined
+    >(null);
+
+    const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
+    const [totalVolumeString, setTotalVolumeString] = useState<
+        string | undefined
+    >();
+    const [totalFeesString, setTotalFeesString] = useState<
+        string | undefined
+    >();
 
     const blockPollingUrl = BLOCK_POLLING_RPC_URL
         ? BLOCK_POLLING_RPC_URL
@@ -134,26 +178,28 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkL2 = !L1_NETWORKS.includes(chainId);
 
     const BLOCK_NUM_POLL_MS = isUserIdle ? 30000 : 5000; // poll for new block every 30 seconds when user is idle, every 5 seconds when user is active
-
-    const fetchGasPrice = async () => {
-        const newGasPrice =
-            await supportedNetworks[chainId].getGasPriceInGwei(provider);
-        if (gasPriceInGwei !== newGasPrice) {
-            setGasPriceinGwei(newGasPrice);
-        }
-    };
-
-    const gasPricePollingCacheTime = Math.floor(
-        Date.now() / (isUserIdle ? 60000 : 10000),
-    ); // poll for new gas price every 60 seconds when user is idle, every 10 seconds when user is active
+    const GAS_PRICE_POLL_MS = isUserIdle ? 60000 : 10000; // poll for new gas price every 60 seconds when user is idle, every 10 seconds when user is active
 
     const poolStatsPollingCacheTime = Math.floor(
         Date.now() / (isUserIdle ? 120000 : 30000),
     ); // poll for new pool stats every 120 seconds when user is idle, every 30 seconds when user is active
 
+    const fetchGasPrice = async () => {
+        setGasPriceinGwei(
+            await supportedNetworks[chainId].getGasPriceInGwei(provider),
+        );
+    };
+
     useEffect(() => {
+        setGasPriceinGwei(undefined);
         fetchGasPrice();
-    }, [gasPricePollingCacheTime]);
+
+        const interval = setInterval(() => {
+            fetchGasPrice();
+        }, GAS_PRICE_POLL_MS);
+
+        return () => clearInterval(interval);
+    }, [chainId]);
 
     async function pollBlockNum(): Promise<void> {
         try {
@@ -510,17 +556,12 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     >();
 
     useEffect(() => {
-        if (!crocEnv) return;
-        Promise.resolve(
-            cachedFetchTokenPrice(ZERO_ADDRESS, chainId, crocEnv),
-        ).then((price) => {
-            if (price?.usdPrice !== undefined) {
-                setNativeTokenUsdPrice(price.usdPrice);
-            } else {
-                setNativeTokenUsdPrice(undefined);
-            }
-        });
-    }, [crocEnv, chainId]);
+        Promise.resolve(cachedFetchTokenPrice(ZERO_ADDRESS, chainId)).then(
+            (response) => {
+                setNativeTokenUsdPrice(response?.usdPrice);
+            },
+        );
+    }, [chainId]);
 
     const [connectedUserXp, setConnectedUserXp] = useState<UserXpDataIF>({
         dataReceived: false,
@@ -586,6 +627,178 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         }
     }, [isUserOnline, userAddress, isActiveNetworkBlast]);
 
+    const mainnetCrocEnv = useMemo(
+        () =>
+            mainnetProvider
+                ? new CrocEnv(mainnetProvider, undefined)
+                : undefined,
+        [mainnetProvider !== undefined],
+    );
+
+    const scrollCrocEnv = useMemo(
+        () =>
+            scrollProvider ? new CrocEnv(scrollProvider, undefined) : undefined,
+        [scrollProvider !== undefined],
+    );
+
+    const blastCrocEnv = useMemo(
+        () =>
+            blastProvider ? new CrocEnv(blastProvider, undefined) : undefined,
+        [blastProvider !== undefined],
+    );
+
+    useEffect(() => {
+        if (
+            showDexStats &&
+            mainnetCrocEnv !== undefined &&
+            scrollCrocEnv !== undefined &&
+            blastCrocEnv !== undefined &&
+            allDefaultTokens.length > 0
+        ) {
+            let tvlTotalUsd = 0,
+                volumeTotalUsd = 0,
+                feesTotalUsd = 0;
+
+            const numChainsToAggregate = 3;
+            let resultsReceived = 0;
+
+            getChainStats(
+                'cumulative',
+                '0x1',
+                mainnetCrocEnv,
+                GCGO_ETHEREUM_URL,
+                cachedFetchTokenPrice,
+                10,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
+
+                resultsReceived += 1;
+
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                }
+            });
+
+            getChainStats(
+                'cumulative',
+                '0x82750',
+                scrollCrocEnv,
+                GCGO_SCROLL_URL,
+                cachedFetchTokenPrice,
+                20,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
+                resultsReceived += 1;
+
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                }
+            });
+
+            getChainStats(
+                'cumulative',
+                '0x13e31',
+                blastCrocEnv,
+                GCGO_BLAST_URL,
+                cachedFetchTokenPrice,
+                10,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
+                resultsReceived += 1;
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                }
+            });
+        }
+    }, [
+        showDexStats,
+        mainnetCrocEnv !== undefined &&
+            scrollCrocEnv !== undefined &&
+            blastCrocEnv !== undefined &&
+            allDefaultTokens.length > 0,
+    ]);
+
     const chainDataContext = {
         lastBlockNumber,
         setLastBlockNumber,
@@ -604,6 +817,11 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isActiveNetworkL2,
         allPoolStats,
         nativeTokenUsdPrice,
+        allVaultsData,
+        setAllVaultsData,
+        totalTvlString,
+        totalVolumeString,
+        totalFeesString,
     };
 
     return (

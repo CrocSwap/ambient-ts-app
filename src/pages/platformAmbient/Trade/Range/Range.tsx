@@ -511,7 +511,7 @@ function Range() {
     }, [rangeWidthPercentage]);
 
     useEffect(() => {
-        setNewRangeTransactionHash('');
+        resetConfirmation();
         setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
 

@@ -452,7 +452,7 @@ function Swap(props: propsIF) {
     }, [tokenA.address + tokenB.address, isTokenAPrimary]);
 
     useEffect(() => {
-        setNewSwapTransactionHash('');
+        resetConfirmation();
     }, [baseToken.address + quoteToken.address]);
 
     const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
@@ -624,6 +624,7 @@ function Swap(props: propsIF) {
 
             if (tx.hash) {
                 addTransactionByType({
+                    chainId: chainId,
                     userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction:
@@ -960,7 +961,12 @@ function Swap(props: propsIF) {
                                 tokenA.symbol,
                                 undefined,
                                 isActiveNetworkPlume
-                                    ? tokenAQtyCoveredByWalletBalance
+                                    ? isTokenAPrimary
+                                        ? tokenAQtyCoveredByWalletBalance
+                                        : // add 1% buffer to avoid rounding errors
+                                          (tokenAQtyCoveredByWalletBalance *
+                                              101n) /
+                                          100n
                                     : tokenABalance
                                       ? fromDisplayQty(
                                             tokenABalance,

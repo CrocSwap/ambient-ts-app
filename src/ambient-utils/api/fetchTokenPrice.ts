@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
-import { CrocEnv } from '@crocswap-libs/sdk';
 import { ZeroAddress } from 'ethers';
-import { supportedNetworks } from '../constants/networks';
+import { PRICE_WINDOW_GRANULARITY } from '../constants';
+import { allNetworks } from '../constants/networks';
 import {
     isUsdStableToken,
     memoizePromiseFn,
@@ -14,26 +14,16 @@ const randomNum = Math.random();
 export const fetchTokenPrice = async (
     dispToken: string,
     chain: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    crocEnv: CrocEnv,
     _lastTime: number,
 ) => {
     const address = translateToken(dispToken, chain);
+    const activeNetwork = allNetworks[chain];
     try {
         const body = {
             config_path: 'price',
-            asset_platform:
-                chain === '0x82750'
-                    ? 'scroll'
-                    : chain === '0x13e31'
-                      ? 'blast'
-                      : chain === '0x18230'
-                        ? 'plume'
-                        : chain === '0x783'
-                          ? 'swell'
-                          : chain === '0x14a34'
-                            ? 'base'
-                            : 'ethereum',
+            asset_platform: activeNetwork?.tokenPriceQueryAssetPlatform
+                ? activeNetwork.tokenPriceQueryAssetPlatform
+                : 'ethereum',
             token_address: address,
         };
 
@@ -48,7 +38,7 @@ export const fetchTokenPrice = async (
         }
         return response.value;
     } catch (error) {
-        const defaultPair = supportedNetworks[chain]?.defaultPair;
+        const defaultPair = activeNetwork.defaultPair;
         if (!defaultPair) return;
         if (
             // if token is ETH, return current value of mainnet ETH
@@ -102,22 +92,17 @@ export type TokenPriceFnReturn =
 export type TokenPriceFn = (
     address: string,
     chain: string,
-    crocEnv: CrocEnv,
 ) => Promise<TokenPriceFnReturn>;
-
-// Refresh USD prices in 15 minute windows
-const PRICE_WINDOW_GRANULARITY = 15 * 60 * 1000;
 
 const randomOffset = PRICE_WINDOW_GRANULARITY * randomNum;
 
 // TODO: remove this after moving over to fetchBatch
 export function memoizeTokenPrice(): TokenPriceFn {
     const memoFn = memoizePromiseFn(fetchTokenPrice);
-    return (address: string, chain: string, crocEnv: CrocEnv) =>
+    return (address: string, chain: string) =>
         memoFn(
             address,
             chain,
-            crocEnv,
             Math.floor((Date.now() + randomOffset) / PRICE_WINDOW_GRANULARITY),
         );
 }

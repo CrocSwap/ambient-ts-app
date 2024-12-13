@@ -228,9 +228,16 @@ export default function SearchableTicker(props: propsIF) {
             tickerItemRefs.current[hoveredTicker] &&
             !isMouseEnter
         ) {
-            tickerItemRefs.current[hoveredTicker]?.scrollIntoView({
-                behavior: 'smooth',
-            });
+            // tickerItemRefs.current[hoveredTicker]?.scrollIntoView({
+            //     behavior: 'smooth',
+            // });
+            const itemRef = tickerItemRefs.current[hoveredTicker];
+            if (itemRef && containerRef.current) {
+                containerRef.current.scrollTo({
+                    top: itemRef.offsetTop,
+                    behavior: 'smooth',
+                });
+            }
         }
     }, [hoveredTicker, isMouseEnter]);
 
@@ -456,10 +463,8 @@ export default function SearchableTicker(props: propsIF) {
                 <header className={styles.tickerHeader}>
                     <p>TICKER</p>
                     <p className={styles.marketCapHeader}>MARKET CAP</p>
-                    <p>REMAINING</p>
-                    <div className={styles.statusContainer}>
-                        {/* <span /> */}
-                    </div>
+                    <p>STATUS</p>
+                    <p>TIME</p>
                 </header>
             ) : null}
             <div

@@ -472,6 +472,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     ? advancedLow
                     : poolPriceDisplay
                 : low;
+
         const lastHigh =
             liqType === 'bid'
                 ? high
@@ -480,16 +481,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                   : poolPriceDisplay;
 
         if (scaleData) {
-            if (lastLow && lastHigh) {
+            if (!Number.isNaN(lastLow) && !Number.isNaN(lastHigh)) {
                 clipCanvas(
                     scaleData?.yScale(lastLow),
                     scaleData?.yScale(lastHigh),
-                    canvas,
-                );
-            } else {
-                clipCanvas(
-                    scaleData?.yScale(low),
-                    scaleData?.yScale(high),
                     canvas,
                 );
             }
@@ -551,13 +546,29 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         const isRange =
             location.pathname.includes('pool') ||
             location.pathname.includes('reposition');
+
+        const _low = ranges.filter(
+            (target: lineValue) => target.name === 'Min',
+        )[0].value;
+        const _high = ranges.filter(
+            (target: lineValue) => target.name === 'Max',
+        )[0].value;
+
+        const low = _low > _high ? _high : _low;
+        const high = _low > _high ? _low : _high;
+
         if (isRange) {
-            clipHighlightedLines(canvas, 'ask');
-            lineLiqDepthAskSeries(allData);
-            ctx?.restore();
-            clipHighlightedLines(canvas, 'bid');
-            lineLiqDepthBidSeries(allData.slice().reverse());
-            ctx?.restore();
+            if (!advancedMode || (advancedMode && high > poolPriceDisplay)) {
+                clipHighlightedLines(canvas, 'bid');
+                lineLiqDepthBidSeries(allData.slice().reverse());
+                ctx?.restore();
+            }
+
+            if (!advancedMode || (advancedMode && low < poolPriceDisplay)) {
+                clipHighlightedLines(canvas, 'ask');
+                lineLiqDepthAskSeries(allData);
+                ctx?.restore();
+            }
         }
     };
 

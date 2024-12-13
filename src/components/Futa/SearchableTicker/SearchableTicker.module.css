@@ -211,9 +211,8 @@
 
 .tickerItemContainer {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 30px;
-    border-left: 4px solid var(--accent2);
-    border-right: 4px solid var(--accent2);
+    grid-template-columns: repeat(4, 1fr);
+    /* border-left: 4px solid var(--accent2); */
     align-items: center;
     font-size: 18px;
     color: var(--text1);
@@ -230,21 +229,42 @@
 .tickerItemContainer p:first-of-type {
     text-transform: uppercase;
 }
-
-.tickerItemContainer p:not(:nth-of-type(3)) {
+/* .tickerItemContainer p:not(:nth-of-type(3)) {
     padding: 0 8px;
-}
+} */
 
 .tickerItemContainer p:nth-of-type(3),
-.tickerHeader p:nth-of-type(3) {
+.tickerHeader p:nth-of-type(3) ,
+.tickerItemContainer p:nth-of-type(4),
+.tickerHeader p:nth-of-type(4){
     text-align: end;
 }
+.ticker_name {
+    letter-spacing: 0.5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
 
-.statusContainer {
-    width: 30px;
+    
+}
+.ticker_name_arrow{
+    padding-left: 4px;
+    opacity: 0;
+    transition: all var(--animation-speed) ease-in-out;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100%;
+    
+}
+.tickerItemContainer:hover .ticker_name_arrow{
+    opacity: 1;
+}
+       
+
+.statusContainer {
+    text-align: end;
 }
 
 .tickerStatus {
@@ -263,12 +283,12 @@
 
 .tickerHeader {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 30px;
+    grid-template-columns: repeat(4, 1fr);
     color: var(--text3);
     font-size: 12px;
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
-    padding-left: 12px;
+    padding-left: 27px;
 }
 
 .tickerHeader span {
@@ -300,8 +320,7 @@
 .hoverActive {
     background: var(--dark4);
 }
-
-.marketCap {
+.marketCap, .timeRemaining {
     text-align: end;
 }
 
@@ -345,7 +364,18 @@
 .no_auctions_content > button:hover {
     background: var(--accent2);
 }
+.container {
+    display: flex;
+    flex-direction: column;
+}
 
+@media (max-width: 500px){
+    .tickerItemContainer, .tickerHeader {
+       
+        grid-template-columns: 1fr 1fr 50px 60px;
+       
+    }
+}
 @media (min-width: 768px) {
     .container {
         display: grid;
@@ -359,6 +389,7 @@
 
     .tickerTableContainer {
         height: 100%;
+        
     }
     .tickerTableContent {
         height: 100%;

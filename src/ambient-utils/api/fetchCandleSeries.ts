@@ -101,11 +101,10 @@ export async function fetchCandleSeriesCroc(
             }
             const payload = json?.data as CandleDataServerIF[];
 
-            const candles = expandPoolStats(
+            const candles = expandPoolStatsCandle(
                 payload,
                 baseTokenAddress,
                 quoteTokenAddress,
-                poolIndex,
                 chainId,
                 crocEnv,
                 cachedFetchTokenPrice,
@@ -151,11 +150,10 @@ function capNumDurations(numDurations: number): number {
     return numDurations;
 }
 
-async function expandPoolStats(
+async function expandPoolStatsCandle(
     payload: CandleDataServerIF[],
     base: string,
     quote: string,
-    poolIdx: number,
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
@@ -164,8 +162,8 @@ async function expandPoolStats(
     const baseDecimals = await crocEnv.token(base).decimals;
     const quoteDecimals = await crocEnv.token(quote).decimals;
 
-    const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
-    const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
+    const basePricePromise = cachedFetchTokenPrice(base, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
 
     const baseUsdPrice = (await basePricePromise)?.usdPrice;
     const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
