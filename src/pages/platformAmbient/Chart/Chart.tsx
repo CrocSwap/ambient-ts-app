@@ -6097,6 +6097,31 @@ export default function Chart(props: propsIF) {
         isUpdatingShape,
     };
 
+    const isShapeOverlaps = (
+        tempLeft: number,
+        tempTop: number,
+        selectedLeft: number,
+        selectedTop: number,
+    ) => {
+        const isOverLeft =
+            isSelectedOrderHistory &&
+            selectedOrderTooltipPlacement &&
+            ((tempLeft + 75 <= selectedLeft + 75 &&
+                tempLeft + 75 >= selectedLeft - 75) ||
+                (tempLeft - 75 <= selectedLeft + 75 &&
+                    tempLeft - 75 >= selectedLeft - 75));
+
+        const isOverTop =
+            isSelectedOrderHistory &&
+            selectedOrderTooltipPlacement &&
+            ((selectedTop - 35 <= tempTop + 35 &&
+                selectedTop - 35 >= tempTop - 35) ||
+                (selectedTop + 35 >= tempTop - 35 &&
+                    selectedTop + 35 <= tempTop + 35));
+
+        return { isOverLeft, isOverTop };
+    };
+
     const calculateOrderHistoryTooltipPlacements = (scaleData: scaleData) => {
         if (scaleData) {
             const scale = d3.scaleLinear().range([60, 75]).domain([1000, 3000]);
@@ -6120,7 +6145,7 @@ export default function Chart(props: propsIF) {
                                       .swapPriceDecimalCorrected,
                         );
 
-                        const tempPlace =
+                        let left =
                             scaleData?.xScale(
                                 hoveredOrderHistory.order.txTime * 1000,
                             ) +
@@ -6130,58 +6155,49 @@ export default function Chart(props: propsIF) {
                                 ),
                             );
 
-                        const isOverLeft =
+                        let isOnLeftSide = false;
+                        if (
                             isSelectedOrderHistory &&
-                            selectedOrderTooltipPlacement &&
-                            ((tempPlace + 75 <
-                                selectedOrderTooltipPlacement.left + 75 &&
-                                tempPlace + 75 >
-                                    selectedOrderTooltipPlacement.left - 75) ||
-                                (tempPlace - 75 <
-                                    selectedOrderTooltipPlacement.left + 75 &&
-                                    tempPlace - 75 >
-                                        selectedOrderTooltipPlacement.left -
-                                            75));
+                            selectedOrderTooltipPlacement
+                        ) {
+                            const { isOverLeft, isOverTop } = isShapeOverlaps(
+                                left,
+                                top,
+                                selectedOrderTooltipPlacement.left,
+                                selectedOrderTooltipPlacement.top,
+                            );
 
-                        const isOverTop =
-                            isSelectedOrderHistory &&
-                            selectedOrderTooltipPlacement &&
-                            ((selectedOrderTooltipPlacement.top - 35 <
-                                top + 35 &&
-                                selectedOrderTooltipPlacement.top - 35 >
-                                    top - 35) ||
-                                (selectedOrderTooltipPlacement.top + 35 >
-                                    top - 35 &&
-                                    selectedOrderTooltipPlacement.top + 35 <
-                                        top + 35));
+                            isOnLeftSide = !!(isOverLeft && isOverTop);
 
-                        const left =
-                            scaleData?.xScale(
-                                hoveredOrderHistory.order.txTime * 1000,
-                            ) +
-                            (isOverLeft && isOverTop
-                                ? -scale(
-                                      circleScale(
+                            left =
+                                scaleData?.xScale(
+                                    hoveredOrderHistory.order.txTime * 1000,
+                                ) +
+                                (isOverLeft && isOverTop
+                                    ? -scale(
+                                          circleScale(
+                                              hoveredOrderHistory.order
+                                                  .totalValueUSD,
+                                          ),
+                                      ) +
+                                      (circleScale(
                                           hoveredOrderHistory.order
                                               .totalValueUSD,
-                                      ),
-                                  ) +
-                                  (circleScale(
-                                      hoveredOrderHistory.order.totalValueUSD,
-                                  ) < 1500
-                                      ? -105
-                                      : -90)
-                                : +scale(
-                                      circleScale(
-                                          hoveredOrderHistory.order
-                                              .totalValueUSD,
-                                      ),
-                                  ));
+                                      ) < 1500
+                                          ? -105
+                                          : -90)
+                                    : +scale(
+                                          circleScale(
+                                              hoveredOrderHistory.order
+                                                  .totalValueUSD,
+                                          ),
+                                      ));
+                        }
 
                         return {
                             top,
                             left,
-                            isOnLeftSide: !!(isOverLeft && isOverTop),
+                            isOnLeftSide,
                         };
                     });
                 }
@@ -6236,65 +6252,100 @@ export default function Chart(props: propsIF) {
                                 ? hoveredOrderHistory.order.timeFirstMint
                                 : hoveredOrderHistory.order.crossTime;
 
-                        const tempPlace =
-                            scaleData?.xScale(time * 1000) +
-                            scale(
-                                circleScaleLimitOrder(
-                                    hoveredOrderHistory.order.totalValueUSD,
-                                ),
-                            );
+                        if (hoveredOrderHistory.order.claimableLiq === 0) {
+                            const left = scaleData?.xScale(time * 1000) + 55;
 
-                        const isOverLeft =
-                            isSelectedOrderHistory &&
-                            selectedOrderTooltipPlacement &&
-                            ((tempPlace + 75 <
-                                selectedOrderTooltipPlacement.left + 75 &&
-                                tempPlace + 75 >
-                                    selectedOrderTooltipPlacement.left - 75) ||
-                                (tempPlace - 75 <
-                                    selectedOrderTooltipPlacement.left + 75 &&
-                                    tempPlace - 75 >
-                                        selectedOrderTooltipPlacement.left -
-                                            75));
+                            let topPlacement = top;
 
-                        const isOverTop =
-                            isSelectedOrderHistory &&
-                            selectedOrderTooltipPlacement &&
-                            ((selectedOrderTooltipPlacement.top - 35 <
-                                top + 35 &&
-                                selectedOrderTooltipPlacement.top - 35 >
-                                    top - 35) ||
-                                (selectedOrderTooltipPlacement.top + 35 >
-                                    top - 35 &&
-                                    selectedOrderTooltipPlacement.top + 35 <
-                                        top + 35));
+                            if (
+                                isSelectedOrderHistory &&
+                                selectedOrderTooltipPlacement
+                            ) {
+                                const { isOverLeft, isOverTop } =
+                                    isShapeOverlaps(
+                                        left,
+                                        top,
+                                        selectedOrderTooltipPlacement.left,
+                                        selectedOrderTooltipPlacement.top,
+                                    );
 
-                        const left =
-                            scaleData?.xScale(time * 1000) +
-                            (isOverLeft && isOverTop
-                                ? -scale(
-                                      circleScaleLimitOrder(
-                                          hoveredOrderHistory.order
-                                              .totalValueUSD,
-                                      ),
-                                  ) +
-                                  (circleScaleLimitOrder(
-                                      hoveredOrderHistory.order.totalValueUSD,
-                                  ) < 1500
-                                      ? -105
-                                      : -90)
-                                : +scale(
-                                      circleScaleLimitOrder(
-                                          hoveredOrderHistory.order
-                                              .totalValueUSD,
-                                      ),
-                                  ));
+                                if (isOverLeft && isOverTop) {
+                                    const direction =
+                                        selectedOrderTooltipPlacement.top -
+                                            top <
+                                        0
+                                            ? -1
+                                            : 1;
 
-                        return {
-                            top,
-                            left,
-                            isOnLeftSide: !!(isOverLeft && isOverTop),
-                        };
+                                    const diff =
+                                        90 -
+                                        Math.abs(
+                                            selectedOrderTooltipPlacement.top -
+                                                top,
+                                        );
+
+                                    topPlacement = top - diff * direction;
+                                }
+                            }
+
+                            return {
+                                top: topPlacement,
+                                left,
+                                isOnLeftSide: false,
+                            };
+                        } else {
+                            let left =
+                                scaleData?.xScale(time * 1000) +
+                                scale(
+                                    circleScaleLimitOrder(
+                                        hoveredOrderHistory.order.totalValueUSD,
+                                    ),
+                                );
+
+                            let isOnLeftSide = false;
+                            if (
+                                isSelectedOrderHistory &&
+                                selectedOrderTooltipPlacement
+                            ) {
+                                const { isOverLeft, isOverTop } =
+                                    isShapeOverlaps(
+                                        left,
+                                        top,
+                                        selectedOrderTooltipPlacement.left,
+                                        selectedOrderTooltipPlacement.top,
+                                    );
+
+                                left =
+                                    scaleData?.xScale(time * 1000) +
+                                    (isOverLeft && isOverTop
+                                        ? -scale(
+                                              circleScaleLimitOrder(
+                                                  hoveredOrderHistory.order
+                                                      .totalValueUSD,
+                                              ),
+                                          ) +
+                                          (circleScaleLimitOrder(
+                                              hoveredOrderHistory.order
+                                                  .totalValueUSD,
+                                          ) < 1500
+                                              ? -105
+                                              : -90)
+                                        : +scale(
+                                              circleScaleLimitOrder(
+                                                  hoveredOrderHistory.order
+                                                      .totalValueUSD,
+                                              ),
+                                          ));
+
+                                isOnLeftSide = !!(isOverLeft && isOverTop);
+                            }
+
+                            return {
+                                top: top,
+                                left,
+                                isOnLeftSide,
+                            };
+                        }
                     });
                 }
             }
@@ -6341,13 +6392,7 @@ export default function Chart(props: propsIF) {
                                 ? selectedOrderHistory.order.timeFirstMint
                                 : selectedOrderHistory.order.crossTime;
 
-                        const left =
-                            scaleData?.xScale(time * 1000) +
-                            +scale(
-                                circleScaleLimitOrder(
-                                    selectedOrderHistory.order.totalValueUSD,
-                                ),
-                            );
+                        const left = scaleData?.xScale(time * 1000) + 55;
 
                         return { top, left, isOnLeftSide: false };
                     });
