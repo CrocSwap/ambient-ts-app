@@ -17,6 +17,7 @@ export interface ReceiptContextIF {
 }
 
 interface TransactionByType {
+    chainId: string;
     userAddress: string;
     txHash: string;
     txAction?:

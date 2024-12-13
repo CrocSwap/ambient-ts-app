@@ -24,7 +24,7 @@ export function useCreateRangePosition() {
     const { crocEnv } = useContext(CrocEnvContext);
 
     const {
-        activeNetwork: { gridSize, poolIndex },
+        activeNetwork: { gridSize, poolIndex, chainId },
     } = useContext(AppStateContext);
 
     const { userAddress } = useContext(UserDataContext);
@@ -164,6 +164,7 @@ export function useCreateRangePosition() {
 
             if (tx?.hash)
                 addTransactionByType({
+                    chainId: chainId,
                     userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction: 'Add',

@@ -44,6 +44,10 @@ const NotificationTable = (props: NotificationTableProps) => {
                 transactionsByType.find((e) => e.txHash === receipt?.hash)
                     ?.txDescription
             }
+            chainId={
+                transactionsByType.find((e) => e.txHash === receipt?.hash)
+                    ?.chainId
+            }
         />
     ));
 
@@ -55,6 +59,7 @@ const NotificationTable = (props: NotificationTableProps) => {
             txType={
                 transactionsByType.find((e) => e.txHash === tx)?.txDescription
             }
+            chainId={transactionsByType.find((e) => e.txHash === tx)?.chainId}
         />
     ));
 

@@ -68,7 +68,10 @@ export default function Transfer(props: propsIF) {
     const { crocEnv, ethMainnetUsdPrice, provider } =
         useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
-    const { isUserOnline } = useContext(AppStateContext);
+    const {
+        isUserOnline,
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const { gasPriceInGwei, isActiveNetworkScroll, isActiveNetworkBlast } =
         useContext(ChainDataContext);
@@ -221,6 +224,7 @@ export default function Transfer(props: propsIF) {
                 addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        chainId: chainId,
                         userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Transfer',

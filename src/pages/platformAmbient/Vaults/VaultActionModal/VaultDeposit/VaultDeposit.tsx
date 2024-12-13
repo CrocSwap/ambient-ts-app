@@ -196,6 +196,7 @@ export default function VaultDeposit(props: Props) {
         if (tx?.hash) {
             addPendingTx(tx?.hash);
             addTransactionByType({
+                chainId: chainId,
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txType: 'Deposit',
