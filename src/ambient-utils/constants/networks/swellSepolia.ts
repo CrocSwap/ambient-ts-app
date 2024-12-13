@@ -40,6 +40,7 @@ export const swellSepolia: NetworkIF = {
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Swell Testnet',
+    tokenPriceQueryAssetPlatform: undefined,
     topPools: [
         new TopPool(
             swellSepoliaETH,

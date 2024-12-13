@@ -485,16 +485,14 @@ export default function InitPool() {
         useState(false);
 
     const refreshReferencePrice = async () => {
-        if (tradeDataMatchesURLParams && crocEnv) {
+        if (tradeDataMatchesURLParams) {
             const basePricePromise = cachedFetchTokenPrice(
                 baseToken.address,
                 chainId,
-                crocEnv,
             );
             const quotePricePromise = cachedFetchTokenPrice(
                 quoteToken.address,
                 chainId,
-                crocEnv,
             );
 
             const basePrice = await basePricePromise;
@@ -560,7 +558,6 @@ export default function InitPool() {
     useEffect(() => {
         refreshReferencePrice();
     }, [
-        crocEnv,
         baseToken,
         quoteToken,
         isDenomBase,

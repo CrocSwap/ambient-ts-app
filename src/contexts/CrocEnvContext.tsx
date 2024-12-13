@@ -10,10 +10,11 @@ import {
     useState,
 } from 'react';
 import {
+    PRICE_WINDOW_GRANULARITY,
+    ZERO_ADDRESS,
     blastMainnet,
     ethereumMainnet,
     getDefaultPairForChain,
-    mainnetETH,
     scrollMainnet,
 } from '../ambient-utils/constants';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
@@ -205,23 +206,27 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             setCrocEnv(newCrocEnv);
         }
     };
+
     useEffect(() => {
         if (isUserOnline) setNewCrocEnv();
     }, [provider, walletProvider, isUserOnline, userAddress]);
 
+    const fetchMainnetEthPrice = async () => {
+        const mainnetEthPrice = (
+            await cachedFetchTokenPrice(ZERO_ADDRESS, '0x1')
+        )?.usdPrice;
+        setEthMainnetUsdPrice(mainnetEthPrice);
+    };
+
     useEffect(() => {
-        if (provider && crocEnv && isUserOnline) {
-            (async () => {
-                const mainnetEthPrice = await cachedFetchTokenPrice(
-                    mainnetETH.address,
-                    ethereumMainnet.chainId,
-                    crocEnv,
-                );
-                const usdPrice = mainnetEthPrice?.usdPrice;
-                usdPrice !== Infinity && setEthMainnetUsdPrice(usdPrice);
-            })();
-        }
-    }, [crocEnv, provider, isUserOnline]);
+        fetchMainnetEthPrice();
+
+        const interval = setInterval(() => {
+            fetchMainnetEthPrice();
+        }, PRICE_WINDOW_GRANULARITY);
+
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainId));
