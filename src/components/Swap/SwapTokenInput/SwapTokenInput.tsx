@@ -24,7 +24,7 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { formatTokenInput } from '../../../utils/numbers';
+import { formatTokenInput, stringToBigInt } from '../../../utils/numbers';
 import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 
@@ -224,7 +224,10 @@ function SwapTokenInput(props: propsIF) {
 
             // prevent writing result of impact query to the UI if a new query has been made
             if (
-                parseFloat(lastQuery.current.inputValue) === parseFloat(input)
+                stringToBigInt(
+                    lastQuery.current.inputValue,
+                    tokenA.decimals,
+                ) === stringToBigInt(input, tokenA.decimals)
             ) {
                 setBuyQtyString(truncatedTokenBQty);
                 setIsBuyLoading(false);
@@ -256,7 +259,10 @@ function SwapTokenInput(props: propsIF) {
 
             // prevent writing result of impact query to the UI if a new query has been made
             if (
-                parseFloat(lastQuery.current.inputValue) === parseFloat(input)
+                stringToBigInt(
+                    lastQuery.current.inputValue,
+                    tokenB.decimals,
+                ) === stringToBigInt(input, tokenB.decimals)
             ) {
                 setSellQtyString(truncatedTokenAQty);
                 setIsSellLoading(false);
