@@ -427,6 +427,16 @@
         grid-area: top;
     }
 
+    /**
+    *       @Junior: any idea why I needed to put `!important` on all three
+    *       @Junior: ... of these properties to get them consumed?
+    */
+    .button_active {
+        color: var(--text3) !important;
+        border: none !important;
+        background: var(--accent1, #0ccdff) !important;
+    }
+
     .search_and_filter {
         grid-area: bottom;
     }

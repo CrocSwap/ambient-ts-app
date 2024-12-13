@@ -234,6 +234,8 @@ export default function SearchableTicker(props: propsIF) {
         }
     }, [hoveredTicker, isMouseEnter]);
 
+    // @Junior: do we still need this? `customLoading` is hardcoded to `false`
+    // @Junior: ... so this isn't actually being consumed by the app
     if (customLoading) return <AuctionLoader setIsLoading={setIsLoading} />;
 
     // fn to determine directionality sort arrows should indicate
