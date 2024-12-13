@@ -68,7 +68,10 @@ export default function Deposit(props: propsIF) {
         setTokenModalOpen = () => null,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
-    const { isUserOnline } = useContext(AppStateContext);
+    const {
+        isUserOnline,
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const {
         gasPriceInGwei,
         isActiveNetworkL2,
@@ -278,6 +281,7 @@ export default function Deposit(props: propsIF) {
                 addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        chainId: chainId,
                         userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Deposit',

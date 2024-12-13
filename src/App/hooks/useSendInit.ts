@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import { AppStateContext } from '../../contexts';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
@@ -21,6 +22,9 @@ export function useSendInit(
 ) {
     const { crocEnv } = useContext(CrocEnvContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const {
         addPendingTx,
         addReceipt,
@@ -48,6 +52,7 @@ export function useSendInit(
                 if (tx) addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        chainId: chainId,
                         userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Init',
