@@ -29,7 +29,11 @@ import { TokenContext } from './TokenContext';
 export interface ExploreContextIF {
     pools: {
         all: Array<PoolDataIF>;
-        getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
+        getAllPools: (
+            poolList: PoolIF[],
+            crocEnv: CrocEnv,
+            chainId: string,
+        ) => void;
 
         reset: () => void;
     };
@@ -368,7 +372,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const exploreContext: ExploreContextIF = {
         pools: {
             all: allPools,
-            getAll: getAllPools,
+            getAllPools: getAllPools,
             reset: () => {
                 setIntermediaryPoolData([]);
             },
