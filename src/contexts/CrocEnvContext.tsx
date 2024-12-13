@@ -210,18 +210,15 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     }, [provider, walletProvider, isUserOnline, userAddress]);
 
     useEffect(() => {
-        if (provider && crocEnv && isUserOnline) {
-            (async () => {
-                const mainnetEthPrice = await cachedFetchTokenPrice(
-                    mainnetETH.address,
-                    ethereumMainnet.chainId,
-                    crocEnv,
-                );
-                const usdPrice = mainnetEthPrice?.usdPrice;
-                usdPrice !== Infinity && setEthMainnetUsdPrice(usdPrice);
-            })();
-        }
-    }, [crocEnv, provider, isUserOnline]);
+        (async () => {
+            const mainnetEthPrice = await cachedFetchTokenPrice(
+                mainnetETH.address,
+                ethereumMainnet.chainId,
+            );
+            const usdPrice = mainnetEthPrice?.usdPrice;
+            usdPrice !== Infinity && setEthMainnetUsdPrice(usdPrice);
+        })();
+    }, []);
 
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainId));

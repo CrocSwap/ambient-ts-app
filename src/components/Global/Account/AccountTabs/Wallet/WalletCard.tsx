@@ -8,7 +8,6 @@ import {
 } from '../../../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../../../ambient-utils/types';
 import { AppStateContext } from '../../../../../contexts';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
@@ -25,7 +24,6 @@ export default function WalletCard(props: propsIF) {
     const {
         tokens: { getTokenByAddress },
     } = useContext(TokenContext);
-    const { crocEnv } = useContext(CrocEnvContext);
 
     const {
         activeNetwork: { chainId },
@@ -55,13 +53,11 @@ export default function WalletCard(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            if (!crocEnv) return;
             try {
                 if (tokenFromMap?.symbol) {
                     const price = await cachedFetchTokenPrice(
                         tokenFromMap.address,
                         chainId,
-                        crocEnv,
                     );
                     if (price) setTokenPrice(price);
                 }
@@ -69,7 +65,7 @@ export default function WalletCard(props: propsIF) {
                 console.error(err);
             }
         })();
-    }, [crocEnv, tokenMapKey]);
+    }, [tokenMapKey]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 

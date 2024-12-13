@@ -4,7 +4,6 @@ import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../../../ambient-utils/types';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import styles from './WalletDropdown.module.css';
 
 import { toDisplayQty } from '@crocswap-libs/sdk';
@@ -109,11 +108,7 @@ export default function WalletDropdown(props: propsIF) {
         string | undefined
     >();
 
-    const { crocEnv } = useContext(CrocEnvContext);
-
     useEffect(() => {
-        if (!crocEnv) return;
-
         if (secondDefaultTokenData === undefined) {
             setSecondTokenUsdValueForDom(undefined);
             setSecondTokenBalanceForDom(undefined);
@@ -149,11 +144,7 @@ export default function WalletDropdown(props: propsIF) {
 
         setSecondTokenBalanceForDom(secondTokenCombinedBalanceDisplayTruncated);
         Promise.resolve(
-            cachedFetchTokenPrice(
-                secondDefaultTokenData.address,
-                chainId,
-                crocEnv,
-            ),
+            cachedFetchTokenPrice(secondDefaultTokenData.address, chainId),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
@@ -170,7 +161,7 @@ export default function WalletDropdown(props: propsIF) {
                 setSecondTokenUsdValueForDom(undefined);
             }
         });
-    }, [crocEnv, chainId, JSON.stringify(secondDefaultTokenData)]);
+    }, [chainId, JSON.stringify(secondDefaultTokenData)]);
 
     const nativeCombinedBalance =
         nativeData?.walletBalance !== undefined

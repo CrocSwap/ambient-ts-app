@@ -298,20 +298,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             : toDisplayPrice(nowPrice, pool.base.decimals, pool.quote.decimals);
 
         const tokenPriceForUsd = shouldInvert
-            ? (
-                  await cachedFetchTokenPrice(
-                      pool.quote.address,
-                      pool.chainId,
-                      crocEnv,
-                  )
-              )?.usdPrice || 0
-            : (
-                  await cachedFetchTokenPrice(
-                      pool.base.address,
-                      pool.chainId,
-                      crocEnv,
-                  )
-              )?.usdPrice || 0;
+            ? (await cachedFetchTokenPrice(pool.quote.address, pool.chainId))
+                  ?.usdPrice || 0
+            : (await cachedFetchTokenPrice(pool.base.address, pool.chainId))
+                  ?.usdPrice || 0;
 
         const usdPriceMoneynessBased = displayPrice * tokenPriceForUsd;
 

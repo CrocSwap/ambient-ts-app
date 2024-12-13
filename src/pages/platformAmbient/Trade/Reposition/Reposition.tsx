@@ -577,16 +577,14 @@ function Reposition() {
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (!crocEnv || !position) return;
+        if (!position) return;
         const basePricePromise = cachedFetchTokenPrice(
             position.base,
             position.chainId,
-            crocEnv,
         );
         const quotePricePromise = cachedFetchTokenPrice(
             position.quote,
             position.chainId,
-            crocEnv,
         );
         Promise.all([basePricePromise, quotePricePromise]).then(
             ([basePrice, quotePrice]) => {
@@ -594,7 +592,7 @@ function Reposition() {
                 setQuotePrice(quotePrice?.usdPrice);
             },
         );
-    }, [position, crocEnv !== undefined]);
+    }, [position]);
 
     const calcNewValue = async () => {
         if (
