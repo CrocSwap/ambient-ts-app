@@ -51,10 +51,13 @@
     min-width: 160px;
     border: none;
     cursor: pointer;
+    color: var(--text2);
+    background-color: var(--dark3);
 }
 
 .button_active {
-    background: var(--accent1, #0ccdff);
+    border: 1px solid var(--accent1) !important;
+    /* background: var(--accent1, #0ccdff); */
 }
 
 /* search input box and sort order dropdown clickable */
