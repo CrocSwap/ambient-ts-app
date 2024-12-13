@@ -963,7 +963,8 @@ export default function Limit() {
                     }}
                     tokenBInputQty={{
                         value:
-                            tokenBInputQtyNoExponentString !== '0.0'
+                            tokenBInputQtyNoExponentString !== '0.0' ||
+                            !isTokenAPrimary
                                 ? tokenBInputQty
                                 : '0',
                         set: setTokenBInputQty,
