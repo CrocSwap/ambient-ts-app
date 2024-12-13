@@ -1071,6 +1071,8 @@ function Ranges(props: propsIF) {
                         return {} as PositionIF;
                     const liqBigInt = position.liq;
                     const liqNum = bigIntToFloat(liqBigInt);
+
+                    console.log('>>>> RANGES | liqNum', liqNum);
                     if (pendingPositionUpdate.txDetails.isAmbient) {
                         positionLiqBase =
                             liqNum * Math.sqrt(poolPriceNonDisplay);
