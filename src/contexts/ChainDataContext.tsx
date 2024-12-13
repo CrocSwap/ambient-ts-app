@@ -554,14 +554,9 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     >();
 
     useEffect(() => {
-        if (!crocEnv) return;
         Promise.resolve(cachedFetchTokenPrice(ZERO_ADDRESS, chainId)).then(
-            (price) => {
-                if (price?.usdPrice !== undefined) {
-                    setNativeTokenUsdPrice(price.usdPrice);
-                } else {
-                    setNativeTokenUsdPrice(undefined);
-                }
+            (response) => {
+                setNativeTokenUsdPrice(response?.usdPrice);
             },
         );
     }, [chainId]);

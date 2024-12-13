@@ -10,10 +10,10 @@ import {
     useState,
 } from 'react';
 import {
+    ZERO_ADDRESS,
     blastMainnet,
     ethereumMainnet,
     getDefaultPairForChain,
-    mainnetETH,
     scrollMainnet,
 } from '../ambient-utils/constants';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
@@ -210,14 +210,11 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     }, [provider, walletProvider, isUserOnline, userAddress]);
 
     useEffect(() => {
-        (async () => {
-            const mainnetEthPrice = await cachedFetchTokenPrice(
-                mainnetETH.address,
-                ethereumMainnet.chainId,
-            );
-            const usdPrice = mainnetEthPrice?.usdPrice;
-            usdPrice !== Infinity && setEthMainnetUsdPrice(usdPrice);
-        })();
+        Promise.resolve(cachedFetchTokenPrice(ZERO_ADDRESS, '0x1')).then(
+            (response) => {
+                setEthMainnetUsdPrice(response?.usdPrice);
+            },
+        );
     }, []);
 
     useEffect(() => {

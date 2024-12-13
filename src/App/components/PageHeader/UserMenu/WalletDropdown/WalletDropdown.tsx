@@ -32,6 +32,7 @@ interface propsIF {
 interface TokenAmountDisplayPropsIF {
     logoUri: string;
     symbol: string;
+    address: string;
     amount: string;
     value?: string;
 }
@@ -71,7 +72,8 @@ export default function WalletDropdown(props: propsIF) {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF): JSX.Element {
-        const { logoUri, symbol, amount, value } = props;
+        const { logoUri, symbol, address, amount, value } = props;
+        const token = tokens.getTokenByAddress(address);
         const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${value} dollars`;
         return (
             <section
@@ -82,10 +84,7 @@ export default function WalletDropdown(props: propsIF) {
                 <div className={styles.logoName}>
                     <img
                         src={processLogoSrc({
-                            token: tokens.getTokensByNameOrSymbol(
-                                symbol,
-                                chainId,
-                            )[0],
+                            token: token,
                             symbol: symbol,
                             sourceURI: logoUri,
                         })}
@@ -205,21 +204,21 @@ export default function WalletDropdown(props: propsIF) {
 
     const tokensData = [
         {
-            symbol: defaultPair[0]?.symbol || 'ETH',
+            symbol: defaultPair[0]?.symbol,
+            address: defaultPair[0]?.address,
             amount: nativeCombinedBalanceTruncated
                 ? nativeData?.symbol === 'ETH'
                     ? 'Ξ ' + nativeCombinedBalanceTruncated
                     : nativeCombinedBalanceTruncated
                 : '...',
             value: nativeTokenMainnetUsdValueTruncated,
-            logoUri:
-                defaultPair[0]?.logoURI ||
-                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+            logoUri: defaultPair[0]?.logoURI || '',
         },
     ];
 
     tokensData.push({
-        symbol: defaultPair[1]?.symbol || 'USDC',
+        symbol: defaultPair[1]?.symbol,
+        address: defaultPair[1]?.address,
         amount: secondTokenBalanceForDom
             ? parseFloat(secondTokenBalanceForDom ?? '0') === 0
                 ? '0.00'
@@ -260,6 +259,7 @@ export default function WalletDropdown(props: propsIF) {
                         }
                         value={tokenData.value}
                         symbol={tokenData.symbol}
+                        address={tokenData.address}
                         logoUri={tokenData.logoUri}
                         key={JSON.stringify(tokenData)}
                     />
