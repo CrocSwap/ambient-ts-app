@@ -214,7 +214,7 @@ export default function WalletDropdown(props: propsIF) {
 
     const tokensData = [
         {
-            symbol: nativeData?.symbol || 'ETH',
+            symbol: defaultPair[0]?.symbol || 'ETH',
             amount: nativeCombinedBalanceTruncated
                 ? nativeData?.symbol === 'ETH'
                     ? 'Ξ ' + nativeCombinedBalanceTruncated
@@ -222,12 +222,13 @@ export default function WalletDropdown(props: propsIF) {
                 : '...',
             value: nativeTokenMainnetUsdValueTruncated,
             logoUri:
+                defaultPair[0]?.logoURI ||
                 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
         },
     ];
 
     tokensData.push({
-        symbol: secondDefaultTokenData?.symbol || 'USDC',
+        symbol: defaultPair[1]?.symbol || 'USDC',
         amount: secondTokenBalanceForDom
             ? parseFloat(secondTokenBalanceForDom ?? '0') === 0
                 ? '0.00'
@@ -239,7 +240,7 @@ export default function WalletDropdown(props: propsIF) {
                 : secondTokenUsdValueForDom
             : '...',
         logoUri:
-            secondDefaultTokenData?.logoURI ||
+            defaultPair[1]?.logoURI ||
             'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
     });
 

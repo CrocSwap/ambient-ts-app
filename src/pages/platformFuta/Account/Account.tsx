@@ -229,11 +229,7 @@ export default function Account() {
     const desktopVersionWithClaimAll = (
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
-                <SearchableTicker
-                    auctions={sorted}
-                    title='account'
-                    isAccount={true}
-                />
+                <SearchableTicker auctions={sorted} title='' isAccount={true} />
             </div>
             <div className={styles.separatorContainer}>
                 {

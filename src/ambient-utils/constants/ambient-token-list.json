@@ -529,6 +529,22 @@
             "decimals": 6,
             "chainId": 1923,
             "logoURI": ""
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 98865,
+            "logoURI": ""
+        },
+        {
+            "name": "Wolski Test Token",
+            "address": "0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3",
+            "symbol": "WTT",
+            "decimals": 6,
+            "chainId": 98865,
+            "logoURI": ""
         }
     ]
 }
