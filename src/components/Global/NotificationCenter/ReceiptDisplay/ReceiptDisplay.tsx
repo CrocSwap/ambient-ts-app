@@ -19,20 +19,20 @@ interface ReceiptDisplayPropsIF {
     hash: string;
     txBlockNumber?: number;
     txType: string | undefined;
+    chainId: string | undefined;
 }
 
 export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
-    const { status, hash, txBlockNumber, txType } = props;
+    const { status, hash, txBlockNumber, txType, chainId } = props;
     const { provider } = useContext(CrocEnvContext);
-
     const {
-        activeNetwork: { chainId },
+        activeNetwork: { chainId: currentChainId },
     } = useContext(AppStateContext);
 
     const { cachedFetchBlockTime } = useContext(CachedDataContext);
     const { removeReceipt } = useContext(ReceiptContext);
 
-    const blockExplorer = getChainExplorer(chainId);
+    const blockExplorer = getChainExplorer(chainId ?? currentChainId);
     const EtherscanTx = `${blockExplorer}tx/${hash}`;
 
     const handleNavigateEtherscan = () => {
