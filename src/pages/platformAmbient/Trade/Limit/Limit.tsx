@@ -737,6 +737,7 @@ export default function Limit() {
             addPendingTx(tx?.hash);
             setNewLimitOrderTransactionHash(tx.hash);
             addTransactionByType({
+                chainId: chainId,
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txAction:
@@ -962,7 +963,8 @@ export default function Limit() {
                     }}
                     tokenBInputQty={{
                         value:
-                            tokenBInputQtyNoExponentString !== '0.0'
+                            tokenBInputQtyNoExponentString !== '0.0' ||
+                            !isTokenAPrimary
                                 ? tokenBInputQty
                                 : '0',
                         set: setTokenBInputQty,

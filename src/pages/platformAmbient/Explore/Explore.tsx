@@ -45,7 +45,7 @@ export default function Explore(props: ExploreIF) {
 
     const getAllPoolData = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
-            pools.getAll(poolList, crocEnv, chainId);
+            pools.getAllPools(poolList, crocEnv, chainId);
         }
     };
 

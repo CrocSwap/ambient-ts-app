@@ -29,7 +29,11 @@ import { TokenContext } from './TokenContext';
 export interface ExploreContextIF {
     pools: {
         all: Array<PoolDataIF>;
-        getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
+        getAllPools: (
+            poolList: PoolIF[],
+            crocEnv: CrocEnv,
+            chainId: string,
+        ) => void;
 
         reset: () => void;
     };
@@ -298,20 +302,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             : toDisplayPrice(nowPrice, pool.base.decimals, pool.quote.decimals);
 
         const tokenPriceForUsd = shouldInvert
-            ? (
-                  await cachedFetchTokenPrice(
-                      pool.quote.address,
-                      pool.chainId,
-                      crocEnv,
-                  )
-              )?.usdPrice || 0
-            : (
-                  await cachedFetchTokenPrice(
-                      pool.base.address,
-                      pool.chainId,
-                      crocEnv,
-                  )
-              )?.usdPrice || 0;
+            ? (await cachedFetchTokenPrice(pool.quote.address, pool.chainId))
+                  ?.usdPrice || 0
+            : (await cachedFetchTokenPrice(pool.base.address, pool.chainId))
+                  ?.usdPrice || 0;
 
         const usdPriceMoneynessBased = displayPrice * tokenPriceForUsd;
 
@@ -378,7 +372,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const exploreContext: ExploreContextIF = {
         pools: {
             all: allPools,
-            getAll: getAllPools,
+            getAllPools: getAllPools,
             reset: () => {
                 setIntermediaryPoolData([]);
             },

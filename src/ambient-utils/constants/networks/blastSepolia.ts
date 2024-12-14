@@ -27,6 +27,7 @@ export const blastSepolia: NetworkIF = {
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     displayName: 'Blast Testnet',
+    tokenPriceQueryAssetPlatform: undefined,
     topPools: [
         new TopPool(
             blastSepoliaETH,

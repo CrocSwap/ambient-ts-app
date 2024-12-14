@@ -44,7 +44,7 @@ export default function LimitActionModal(props: propsIF) {
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
     const {
-        activeNetwork: { poolIndex },
+        activeNetwork: { poolIndex, chainId },
     } = useContext(AppStateContext);
 
     const {
@@ -184,6 +184,7 @@ export default function LimitActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     if (tx?.hash) {
                         addTransactionByType({
+                            chainId: chainId,
                             userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Remove',
@@ -218,6 +219,7 @@ export default function LimitActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     if (tx?.hash) {
                         addTransactionByType({
+                            chainId: chainId,
                             userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Remove',
@@ -319,6 +321,7 @@ export default function LimitActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     if (tx?.hash) {
                         addTransactionByType({
+                            chainId: chainId,
                             userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Claim',
@@ -353,6 +356,7 @@ export default function LimitActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     if (tx?.hash) {
                         addTransactionByType({
+                            chainId: chainId,
                             userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Claim',

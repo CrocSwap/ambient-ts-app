@@ -4,7 +4,6 @@ import styles from './RangePriceInfo.module.css';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
@@ -48,7 +47,6 @@ function RangePriceInfo(props: propsIF) {
         setIsTradeDollarizationEnabled,
         poolPriceDisplay,
     } = useContext(PoolContext);
-    const { crocEnv } = useContext(CrocEnvContext);
 
     const { isDenomBase, baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -90,13 +88,12 @@ function RangePriceInfo(props: propsIF) {
     const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncated;
 
     const updateMainnetPricesAsync = async () => {
-        if (!crocEnv) return;
         const baseTokenPrice =
-            (await cachedFetchTokenPrice(baseToken.address, chainId, crocEnv))
+            (await cachedFetchTokenPrice(baseToken.address, chainId))
                 ?.usdPrice || 0;
 
         const quoteTokenPrice =
-            (await cachedFetchTokenPrice(quoteToken.address, chainId, crocEnv))
+            (await cachedFetchTokenPrice(quoteToken.address, chainId))
                 ?.usdPrice || 0;
 
         if (baseTokenPrice) {
@@ -116,13 +113,8 @@ function RangePriceInfo(props: propsIF) {
 
     useEffect(() => {
         setUserFlippedMaxMinDisplay(false);
-
         updateMainnetPricesAsync();
-    }, [
-        crocEnv !== undefined,
-        baseToken.address + quoteToken.address,
-        poolPriceDisplay,
-    ]);
+    }, [baseToken.address + quoteToken.address, poolPriceDisplay]);
 
     useEffect(() => {
         if (!pinnedMinPrice || !pinnedMaxPrice) return;

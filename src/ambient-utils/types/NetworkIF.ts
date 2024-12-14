@@ -24,6 +24,7 @@ export interface NetworkIF {
     topPools: TopPool[];
     blockExplorer: string;
     displayName: string;
+    tokenPriceQueryAssetPlatform: string | undefined;
     chainSpec: ChainSpec;
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
 }
