@@ -1,6 +1,6 @@
 import {
-    CrocImpact,
     bigIntToFloat,
+    CrocImpact,
     fromDisplayQty,
     toDisplayQty,
 } from '@crocswap-libs/sdk';
@@ -9,9 +9,9 @@ import { useLocation } from 'react-router-dom';
 import {
     getFormattedNumber,
     getPriceImpactString,
-    getTxReceipt,
     isStablePair,
     performSwap,
+    waitForTransaction,
 } from '../../../../ambient-utils/dataLayer';
 import Button from '../../../../components/Form/Button';
 import { useModal } from '../../../../components/Global/Modal/useModal';
@@ -56,9 +56,9 @@ import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { useUrlParams } from '../../../../utils/hooks/useUrlParams';
 import {
-    TransactionError,
     isTransactionFailedError,
     isTransactionReplacedError,
+    TransactionError,
 } from '../../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../../utils/tutorial/Swap';
 
@@ -652,7 +652,7 @@ function Swap(props: propsIF) {
         if (tx) {
             let receipt;
             try {
-                receipt = await getTxReceipt(tx);
+                receipt = await waitForTransaction(provider, tx.hash, 1);
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });
