@@ -235,10 +235,7 @@ export default function Account() {
         }
         // return data after processing (processing is actually optional)
         return output;
-    }, [
-        tickerSet,
-        // sorted
-    ]);
+    }, [tickerSet, sorted]);
 
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
