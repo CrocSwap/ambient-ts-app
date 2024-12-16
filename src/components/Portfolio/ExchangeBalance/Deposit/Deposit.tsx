@@ -292,7 +292,6 @@ export default function Deposit(props: propsIF) {
                         receipt = await waitForTransaction(
                             provider,
                             tx.hash,
-                            1,
                             removePendingTx,
                             addPendingTx,
                             updateTransactionHash,

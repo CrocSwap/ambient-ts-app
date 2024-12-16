@@ -234,7 +234,6 @@ export default function Transfer(props: propsIF) {
                         receipt = await waitForTransaction(
                             provider,
                             tx.hash,
-                            1,
                             removePendingTx,
                             addPendingTx,
                             updateTransactionHash,

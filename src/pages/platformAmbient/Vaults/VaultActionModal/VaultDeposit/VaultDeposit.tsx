@@ -209,7 +209,6 @@ export default function VaultDeposit(props: Props) {
                 receipt = await waitForTransaction(
                     provider,
                     tx.hash,
-                    1,
                     removePendingTx,
                     addPendingTx,
                     updateTransactionHash,

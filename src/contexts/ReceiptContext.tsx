@@ -95,13 +95,10 @@ export const ReceiptContextProvider = (props: {
         setTransactionsByType((prev) => [...prev, txByType]);
     };
     const addReceipt = (receipt: TransactionReceipt) => {
-        console.log({ receipt });
         setSessionReceipts((prev) => [receipt, ...prev]);
         setAllReceipts((prev) => [receipt, ...prev]);
     };
     const addPendingTx = (pendingTx: string) => {
-        console.log({ pendingTx, transactionsByType });
-
         setPendingTransactions((prev) => [pendingTx, ...prev]);
     };
     const removePendingTx = (nonPendingTx: string, isRemoved?: boolean) => {

@@ -255,7 +255,6 @@ export default function LimitActionModal(props: propsIF) {
                     receipt = await waitForTransaction(
                         provider,
                         tx.hash,
-                        1,
                         removePendingTx,
                         addPendingTx,
                         updateTransactionHash,
@@ -381,7 +380,6 @@ export default function LimitActionModal(props: propsIF) {
                     receipt = await waitForTransaction(
                         provider,
                         tx.hash,
-                        1,
                         removePendingTx,
                         addPendingTx,
                         updateTransactionHash,

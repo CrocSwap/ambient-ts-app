@@ -61,7 +61,6 @@ export function useApprove() {
                     receipt = await waitForTransaction(
                         provider,
                         tx.hash,
-                        1,
                         removePendingTx,
                         addPendingTx,
                         updateTransactionHash,
@@ -118,7 +117,6 @@ export function useApprove() {
                     receipt = await waitForTransaction(
                         provider,
                         tx.hash,
-                        1,
                         removePendingTx,
                         addPendingTx,
                         updateTransactionHash,

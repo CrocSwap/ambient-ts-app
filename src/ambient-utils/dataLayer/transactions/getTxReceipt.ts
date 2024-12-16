@@ -4,7 +4,6 @@ import { PositionUpdateIF } from '../../../contexts/ReceiptContext';
 export async function waitForTransaction(
     provider: Provider,
     txHash: string,
-    confirmations = 1,
     removePendingTx: (pendingTx: string, isRemoved?: boolean) => void,
     addPendingTx: (tx: string) => void,
     updateTransactionHash: (oldHash: string, newHash: string) => void,
@@ -18,23 +17,21 @@ export async function waitForTransaction(
     while (!receipt) {
         // Fetch the original transaction
         const originalTx = await provider.getTransaction(txHash);
-
         if (originalTx) {
             fromAccount = originalTx.from;
             originalNonce = originalTx.nonce;
         } else {
-            console.log(
-                `Transaction with hash ${txHash} was dropped or replaced.`,
-            );
-
-            if (!fromAccount) return;
             // Check if the nonce has been used for another transaction
-            const latestNonce = await provider.getTransactionCount(
-                fromAccount,
-                'latest',
-            );
+            const latestNonce =
+                fromAccount &&
+                (await provider.getTransactionCount(fromAccount, 'latest'));
 
-            if (originalNonce && latestNonce > originalNonce) {
+            if (
+                originalNonce &&
+                latestNonce &&
+                fromAccount &&
+                latestNonce > originalNonce
+            ) {
                 console.log(
                     'Transaction replaced. Searching for the new transaction...',
                 );
@@ -68,15 +65,14 @@ export async function waitForTransaction(
                 }
             }
         }
+        await new Promise((resolve) => setTimeout(resolve, interval)); // Delay between loops
 
         // Fetch the receipt for the current transaction hash
         receipt = await provider.getTransactionReceipt(newTxHash ?? txHash);
         // If receipt exists and confirmations are met
-        if (receipt && (await receipt.confirmations()) >= confirmations) {
+        if (receipt && receipt.blockNumber) {
             return receipt;
         }
-
-        await new Promise((resolve) => setTimeout(resolve, interval)); // Delay
     }
 }
 

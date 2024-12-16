@@ -57,7 +57,6 @@ export function useSendInit(
                         receipt = await waitForTransaction(
                             provider,
                             tx.hash,
-                            1,
                             removePendingTx,
                             addPendingTx,
                             updateTransactionHash,
