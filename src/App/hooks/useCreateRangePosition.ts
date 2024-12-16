@@ -6,6 +6,7 @@ import {
     IS_LOCAL_ENV,
     ZERO_ADDRESS,
 } from '../../ambient-utils/constants';
+import { waitForTransaction } from '../../ambient-utils/dataLayer';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 import { createRangePositionTx } from '../../ambient-utils/dataLayer/transactions/range';
 import { AppStateContext } from '../../contexts';
@@ -21,7 +22,7 @@ import {
 } from '../../utils/TransactionError';
 
 export function useCreateRangePosition() {
-    const { crocEnv } = useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
         activeNetwork: { gridSize, poolIndex, chainId },
@@ -197,39 +198,40 @@ export function useCreateRangePosition() {
             console.error({ error });
             setTxError(error);
         }
-
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                removePendingTx(error.hash);
-                const newTransactionHash = error.replacement.hash;
-                addPendingTx(newTransactionHash);
-                activeRangeTxHash.current = newTransactionHash;
-                addPositionUpdate({
-                    txHash: newTransactionHash,
-                    positionID: posHash,
-                    isLimit: false,
-                    unixTimeAdded: Math.floor(Date.now() / 1000),
-                });
-                updateTransactionHash(error.hash, error.replacement.hash);
-                setNewRangeTransactionHash(newTransactionHash);
-            } else if (isTransactionFailedError(error)) {
-                activeRangeTxHash.current = '';
-                receipt = error.receipt;
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await waitForTransaction(provider, tx.hash, 1);
+            } catch (e) {
+                const error = e as TransactionError;
+                console.error({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    IS_LOCAL_ENV && console.debug('repriced');
+                    removePendingTx(error.hash);
+                    const newTransactionHash = error.replacement.hash;
+                    addPendingTx(newTransactionHash);
+                    activeRangeTxHash.current = newTransactionHash;
+                    addPositionUpdate({
+                        txHash: newTransactionHash,
+                        positionID: posHash,
+                        isLimit: false,
+                        unixTimeAdded: Math.floor(Date.now() / 1000),
+                    });
+                    updateTransactionHash(error.hash, error.replacement.hash);
+                    setNewRangeTransactionHash(newTransactionHash);
+                } else if (isTransactionFailedError(error)) {
+                    activeRangeTxHash.current = '';
+                    receipt = error.receipt;
+                }
             }
-        }
-        if (receipt) {
-            addReceipt(receipt);
-            removePendingTx(receipt.hash);
-            if (setIsTxCompletedRange) {
-                setIsTxCompletedRange(true);
+            if (receipt) {
+                addReceipt(receipt);
+                removePendingTx(receipt.hash);
+                if (setIsTxCompletedRange) {
+                    setIsTxCompletedRange(true);
+                }
             }
         }
     };

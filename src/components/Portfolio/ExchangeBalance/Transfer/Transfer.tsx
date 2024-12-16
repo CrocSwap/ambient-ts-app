@@ -13,7 +13,10 @@ import {
     ZERO_ADDRESS,
     checkBlacklist,
 } from '../../../../ambient-utils/constants';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    waitForTransaction,
+} from '../../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../../ambient-utils/types';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
@@ -222,6 +225,7 @@ export default function Transfer(props: propsIF) {
                     .token(selectedToken.address)
                     .transfer(transferQtyDisplay, resolvedAddress);
                 addPendingTx(tx?.hash);
+
                 if (tx?.hash)
                     addTransactionByType({
                         chainId: chainId,
@@ -230,37 +234,44 @@ export default function Transfer(props: propsIF) {
                         txType: 'Transfer',
                         txDescription: `Transfer ${selectedToken.symbol}`,
                     });
-                let receipt;
-                try {
-                    if (tx) receipt = await tx.wait();
-                } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && console.debug('repriced');
-                        removePendingTx(error.hash);
-
-                        const newTransactionHash = error.replacement.hash;
-                        addPendingTx(newTransactionHash);
-
-                        updateTransactionHash(
-                            error.hash,
-                            error.replacement.hash,
+                if (tx) {
+                    let receipt;
+                    try {
+                        receipt = await waitForTransaction(
+                            provider,
+                            tx.hash,
+                            1,
                         );
-                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
+                    } catch (e) {
+                        const error = e as TransactionError;
                         console.error({ error });
-                        receipt = error.receipt;
-                    }
-                }
+                        // The user used "speed up" or something similar
+                        // in their client, but we now have the updated info
+                        if (isTransactionReplacedError(error)) {
+                            IS_LOCAL_ENV && console.debug('repriced');
+                            removePendingTx(error.hash);
 
-                if (receipt) {
-                    addReceipt(receipt);
-                    removePendingTx(receipt.hash);
-                    resetTransferQty();
+                            const newTransactionHash = error.replacement.hash;
+                            addPendingTx(newTransactionHash);
+
+                            updateTransactionHash(
+                                error.hash,
+                                error.replacement.hash,
+                            );
+                            IS_LOCAL_ENV &&
+                                console.debug({ newTransactionHash });
+                            receipt = error.receipt;
+                        } else if (isTransactionFailedError(error)) {
+                            console.error({ error });
+                            receipt = error.receipt;
+                        }
+                    }
+
+                    if (receipt) {
+                        addReceipt(receipt);
+                        removePendingTx(receipt.hash);
+                        resetTransferQty();
+                    }
                 }
             } catch (error) {
                 if (

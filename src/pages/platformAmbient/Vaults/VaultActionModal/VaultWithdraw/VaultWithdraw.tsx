@@ -1,6 +1,7 @@
 import {
     getFormattedNumber,
     uriToHttp,
+    waitForTransaction,
 } from '../../../../../ambient-utils/dataLayer';
 import Button from '../../../../../components/Form/Button';
 import TokenIcon from '../../../../../components/Global/TokenIcon/TokenIcon';
@@ -59,7 +60,8 @@ export default function VaultWithdraw(props: propsIF) {
     const [showSubmitted, setShowSubmitted] = useState(false);
     const [removalPercentage, setRemovalPercentage] = useState(100);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
+    const { ethMainnetUsdPrice, crocEnv, provider } =
+        useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
     const {
         activeNetwork: { chainId },
@@ -116,34 +118,37 @@ export default function VaultWithdraw(props: propsIF) {
         } else {
             setShowSubmitted(false);
         }
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            setShowSubmitted(false);
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                removePendingTx(error.hash);
 
-                const newTransactionHash = error.replacement.hash;
-                addPendingTx(newTransactionHash);
-
-                updateTransactionHash(error.hash, error.replacement.hash);
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await waitForTransaction(provider, tx.hash, 1);
+            } catch (e) {
+                const error = e as TransactionError;
+                setShowSubmitted(false);
                 console.error({ error });
-                receipt = error.receipt;
-            }
-        }
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    IS_LOCAL_ENV && console.debug('repriced');
+                    removePendingTx(error.hash);
 
-        if (receipt) {
-            addReceipt(receipt);
-            removePendingTx(receipt.hash);
-            setShowSubmitted(false);
+                    const newTransactionHash = error.replacement.hash;
+                    addPendingTx(newTransactionHash);
+
+                    updateTransactionHash(error.hash, error.replacement.hash);
+                    receipt = error.receipt;
+                } else if (isTransactionFailedError(error)) {
+                    console.error({ error });
+                    receipt = error.receipt;
+                }
+            }
+
+            if (receipt) {
+                addReceipt(receipt);
+                removePendingTx(receipt.hash);
+                setShowSubmitted(false);
+            }
         }
     };
 

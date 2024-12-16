@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import { waitForTransaction } from '../../ambient-utils/dataLayer';
 import { AppStateContext } from '../../contexts';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
@@ -20,7 +21,7 @@ export function useSendInit(
     setTxError: React.Dispatch<React.SetStateAction<Error | undefined>>,
     resetConfirmation: () => void, // Include resetConfirmation as an argument
 ) {
-    const { crocEnv } = useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
     const {
         activeNetwork: { chainId },
@@ -49,8 +50,9 @@ export function useSendInit(
                     .initPool(initialPriceInBaseDenom);
 
                 setNewInitTransactionHash(tx?.hash);
-                if (tx) addPendingTx(tx?.hash);
-                if (tx?.hash)
+                if (tx) {
+                    addPendingTx(tx?.hash);
+
                     addTransactionByType({
                         chainId: chainId,
                         userAddress: userAddress || '',
@@ -58,36 +60,42 @@ export function useSendInit(
                         txType: 'Init',
                         txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
                     });
-                let receipt;
-                try {
-                    if (tx) receipt = await tx.wait();
-                } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && console.debug('repriced');
-                        removePendingTx(error.hash);
-
-                        const newTransactionHash = error.replacement.hash;
-                        addPendingTx(newTransactionHash);
-
-                        updateTransactionHash(
-                            error.hash,
-                            error.replacement.hash,
+                    let receipt;
+                    try {
+                        receipt = await waitForTransaction(
+                            provider,
+                            tx.hash,
+                            1,
                         );
-                        setNewInitTransactionHash(newTransactionHash);
+                    } catch (e) {
+                        const error = e as TransactionError;
+                        console.error({ error });
+                        if (isTransactionReplacedError(error)) {
+                            IS_LOCAL_ENV && console.debug('repriced');
+                            removePendingTx(error.hash);
 
-                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
-                        receipt = error.receipt;
+                            const newTransactionHash = error.replacement.hash;
+                            addPendingTx(newTransactionHash);
+
+                            updateTransactionHash(
+                                error.hash,
+                                error.replacement.hash,
+                            );
+                            setNewInitTransactionHash(newTransactionHash);
+
+                            IS_LOCAL_ENV &&
+                                console.debug({ newTransactionHash });
+                            receipt = error.receipt;
+                        } else if (isTransactionFailedError(error)) {
+                            receipt = error.receipt;
+                        }
                     }
-                }
-                if (receipt) {
-                    addReceipt(receipt);
-                    removePendingTx(receipt.hash);
-                    if (cb) cb();
-                    setIsTxCompletedInit(true);
+                    if (receipt) {
+                        addReceipt(receipt);
+                        removePendingTx(receipt.hash);
+                        if (cb) cb();
+                        setIsTxCompletedInit(true);
+                    }
                 }
             } catch (error) {
                 console.error({ error });

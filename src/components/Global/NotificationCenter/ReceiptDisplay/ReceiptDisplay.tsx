@@ -76,7 +76,6 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                 provider && txBlockNumber
                     ? await cachedFetchBlockTime(provider, txBlockNumber)
                     : undefined;
-            console.log({ provider, txBlockNumber, blockTime });
             if (blockTime) setBlockTime(blockTime);
         })();
     }, [provider, txBlockNumber]);

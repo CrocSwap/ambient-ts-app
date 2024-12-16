@@ -1,9 +1,4 @@
-import { Provider, TransactionReceipt, TransactionResponse } from 'ethers';
-
-export async function getTxReceipt(tx: TransactionResponse) {
-    const receipt = await tx.wait();
-    return receipt;
-}
+import { Provider, TransactionReceipt } from 'ethers';
 
 export async function waitForTransaction(
     provider: Provider,
@@ -15,7 +10,6 @@ export async function waitForTransaction(
 
     while (!receipt) {
         receipt = await provider.getTransactionReceipt(txHash);
-        console.log({ receipt });
         if (receipt && (await receipt.confirmations()) >= confirmations) {
             return receipt; // Transaction mined and confirmations met
         }

@@ -41,6 +41,7 @@ import {
     roundDownTick,
     roundUpTick,
     truncateDecimals,
+    waitForTransaction,
 } from '../../../ambient-utils/dataLayer';
 import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { CurrencyQuantityInput } from '../../../styled/Components/TradeModules';
@@ -1649,36 +1650,43 @@ export default function InitPool() {
                         });
                     }
 
-                    let receipt;
-                    try {
-                        if (tx) receipt = await tx.wait();
-                    } catch (e) {
-                        const error = e as TransactionError;
-                        console.error({ error });
-
-                        if (isTransactionReplacedError(error)) {
-                            IS_LOCAL_ENV && console.debug('repriced');
-                            removePendingTx(error.hash);
-
-                            const newTransactionHash = error.replacement.hash;
-                            addPendingTx(newTransactionHash);
-
-                            updateTransactionHash(
-                                error.hash,
-                                error.replacement.hash,
+                    if (tx) {
+                        let receipt;
+                        try {
+                            receipt = await waitForTransaction(
+                                provider,
+                                tx.hash,
+                                1,
                             );
-                            IS_LOCAL_ENV &&
-                                console.debug({ newTransactionHash });
-                            receipt = error.receipt;
-                        } else if (isTransactionFailedError(error)) {
+                        } catch (e) {
+                            const error = e as TransactionError;
                             console.error({ error });
-                            receipt = error.receipt;
-                        }
-                    }
 
-                    if (receipt) {
-                        addReceipt(receipt);
-                        removePendingTx(receipt.hash);
+                            if (isTransactionReplacedError(error)) {
+                                IS_LOCAL_ENV && console.debug('repriced');
+                                removePendingTx(error.hash);
+
+                                const newTransactionHash =
+                                    error.replacement.hash;
+                                addPendingTx(newTransactionHash);
+
+                                updateTransactionHash(
+                                    error.hash,
+                                    error.replacement.hash,
+                                );
+                                IS_LOCAL_ENV &&
+                                    console.debug({ newTransactionHash });
+                                receipt = error.receipt;
+                            } else if (isTransactionFailedError(error)) {
+                                console.error({ error });
+                                receipt = error.receipt;
+                            }
+                        }
+
+                        if (receipt) {
+                            addReceipt(receipt);
+                            removePendingTx(receipt.hash);
+                        }
                     }
                 } finally {
                     setIsWithdrawPending(false);

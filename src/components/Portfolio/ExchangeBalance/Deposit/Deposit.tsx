@@ -25,7 +25,10 @@ import {
     GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
     NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants/';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    waitForTransaction,
+} from '../../../../ambient-utils/dataLayer';
 import { useApprove } from '../../../../App/functions/approve';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { AppStateContext } from '../../../../contexts';
@@ -67,7 +70,8 @@ export default function Deposit(props: propsIF) {
         selectedTokenDecimals,
         setTokenModalOpen = () => null,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
     const {
         isUserOnline,
         activeNetwork: { chainId },
@@ -288,38 +292,43 @@ export default function Deposit(props: propsIF) {
                         txDescription: `Deposit ${selectedToken.symbol}`,
                     });
 
-                let receipt;
-
-                try {
-                    if (tx) receipt = await tx.wait();
-                } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && 'repriced';
-                        removePendingTx(error.hash);
-
-                        const newTransactionHash = error.replacement.hash;
-                        addPendingTx(newTransactionHash);
-
-                        updateTransactionHash(
-                            error.hash,
-                            error.replacement.hash,
+                if (tx) {
+                    let receipt;
+                    try {
+                        receipt = await waitForTransaction(
+                            provider,
+                            tx.hash,
+                            1,
                         );
-                        IS_LOCAL_ENV && { newTransactionHash };
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
+                    } catch (e) {
+                        const error = e as TransactionError;
                         console.error({ error });
-                        receipt = error.receipt;
-                    }
-                }
+                        // The user used "speed up" or something similar
+                        // in their client, but we now have the updated info
+                        if (isTransactionReplacedError(error)) {
+                            IS_LOCAL_ENV && 'repriced';
+                            removePendingTx(error.hash);
 
-                if (receipt) {
-                    addReceipt(receipt);
-                    removePendingTx(receipt.hash);
-                    resetDepositQty();
+                            const newTransactionHash = error.replacement.hash;
+                            addPendingTx(newTransactionHash);
+
+                            updateTransactionHash(
+                                error.hash,
+                                error.replacement.hash,
+                            );
+                            IS_LOCAL_ENV && { newTransactionHash };
+                            receipt = error.receipt;
+                        } else if (isTransactionFailedError(error)) {
+                            console.error({ error });
+                            receipt = error.receipt;
+                        }
+                    }
+
+                    if (receipt) {
+                        addReceipt(receipt);
+                        removePendingTx(receipt.hash);
+                        resetDepositQty();
+                    }
                 }
             } catch (error) {
                 if (

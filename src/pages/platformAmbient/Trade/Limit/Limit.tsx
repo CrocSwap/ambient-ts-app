@@ -10,8 +10,8 @@ import {
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
     getFormattedNumber,
-    getTxReceipt,
     submitLimitOrder,
+    waitForTransaction,
 } from '../../../../ambient-utils/dataLayer';
 import { useTradeData } from '../../../../App/hooks/useTradeData';
 import Button from '../../../../components/Form/Button';
@@ -58,7 +58,8 @@ import {
 import { limitTutorialSteps } from '../../../../utils/tutorial/Limit';
 
 export default function Limit() {
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
 
     const {
         activeNetwork: { chainId, gridSize, poolIndex },
@@ -776,7 +777,7 @@ export default function Limit() {
 
         let receipt;
         try {
-            if (tx) receipt = await getTxReceipt(tx);
+            if (tx) receipt = await waitForTransaction(provider, tx.hash, 1);
         } catch (e) {
             const error = e as TransactionError;
             console.error({ error });
