@@ -317,7 +317,7 @@ export default function Deposit(props: propsIF) {
                 }
 
                 if (receipt) {
-                    addReceipt(JSON.stringify(receipt));
+                    addReceipt(receipt);
                     removePendingTx(receipt.hash);
                     resetDepositQty();
                 }

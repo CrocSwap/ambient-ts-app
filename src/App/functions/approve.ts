@@ -85,7 +85,7 @@ export function useApprove() {
                 }
             }
             if (receipt) {
-                addReceipt(JSON.stringify(receipt));
+                addReceipt(receipt);
                 removePendingTx(receipt.hash);
             }
         } catch (error) {
@@ -151,7 +151,7 @@ export function useApprove() {
                 }
             }
             if (receipt) {
-                addReceipt(JSON.stringify(receipt));
+                addReceipt(receipt);
                 removePendingTx(receipt.hash);
             }
         } catch (error) {

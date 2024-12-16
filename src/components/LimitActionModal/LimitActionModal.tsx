@@ -282,7 +282,7 @@ export default function LimitActionModal(props: propsIF) {
             }
 
             if (receipt) {
-                addReceipt(JSON.stringify(receipt));
+                addReceipt(receipt);
                 removePendingTx(receipt.hash);
                 if (receipt.status === 1) {
                     // track removals separately to identify limit mints that were subsequently removed
@@ -418,7 +418,7 @@ export default function LimitActionModal(props: propsIF) {
             }
 
             if (receipt) {
-                addReceipt(JSON.stringify(receipt));
+                addReceipt(receipt);
                 removePendingTx(receipt.hash);
                 if (receipt.status === 1) {
                     // track claims separately to identify limit mints that were subsequently removed

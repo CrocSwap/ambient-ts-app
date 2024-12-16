@@ -30,15 +30,14 @@ const NotificationTable = (props: NotificationTableProps) => {
     const { resetReceiptData, transactionsByType, sessionReceipts } =
         useContext(ReceiptContext);
 
-    const parsedReceipts = sessionReceipts.map((receipt) =>
-        JSON.parse(receipt),
-    );
+    const parsedReceipts = sessionReceipts.map((receipt) => receipt);
 
     const parsedReceiptsDisplay = parsedReceipts.map((receipt, idx) => (
         <ReceiptDisplay
             key={idx}
             status={receipt?.status === 1 ? 'successful' : 'failed'}
             hash={receipt?.hash}
+            provider={receipt?.provider}
             txBlockNumber={receipt?.blockNumber}
             txType={
                 transactionsByType.find((e) => e.txHash === receipt?.hash)

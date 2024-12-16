@@ -1,3 +1,4 @@
+import { Provider } from 'ethers';
 import { useContext, useEffect, useState } from 'react';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { MdErrorOutline } from 'react-icons/md';
@@ -9,7 +10,6 @@ import {
 } from '../../../../ambient-utils/dataLayer';
 import { AppStateContext } from '../../../../contexts';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import Spinner from '../../Spinner/Spinner';
 import styles from './ReceiptDisplay.module.css';
@@ -17,14 +17,14 @@ import styles from './ReceiptDisplay.module.css';
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
     hash: string;
+    provider?: Provider;
     txBlockNumber?: number;
     txType: string | undefined;
     chainId: string | undefined;
 }
 
 export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
-    const { status, hash, txBlockNumber, txType, chainId } = props;
-    const { provider } = useContext(CrocEnvContext);
+    const { status, hash, txBlockNumber, provider, txType, chainId } = props;
     const {
         activeNetwork: { chainId: currentChainId },
     } = useContext(AppStateContext);
@@ -76,6 +76,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                 provider && txBlockNumber
                     ? await cachedFetchBlockTime(provider, txBlockNumber)
                     : undefined;
+            console.log({ provider, txBlockNumber, blockTime });
             if (blockTime) setBlockTime(blockTime);
         })();
     }, [provider, txBlockNumber]);

@@ -226,7 +226,7 @@ export function useCreateRangePosition() {
             }
         }
         if (receipt) {
-            addReceipt(JSON.stringify(receipt));
+            addReceipt(receipt);
             removePendingTx(receipt.hash);
             if (setIsTxCompletedRange) {
                 setIsTxCompletedRange(true);

@@ -677,7 +677,7 @@ function Swap(props: propsIF) {
             }
 
             if (receipt) {
-                addReceipt(JSON.stringify(receipt));
+                addReceipt(receipt);
                 removePendingTx(receipt.hash);
             }
         }

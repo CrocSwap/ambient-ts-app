@@ -84,7 +84,7 @@ export function useSendInit(
                     }
                 }
                 if (receipt) {
-                    addReceipt(JSON.stringify(receipt));
+                    addReceipt(receipt);
                     removePendingTx(receipt.hash);
                     if (cb) cb();
                     setIsTxCompletedInit(true);

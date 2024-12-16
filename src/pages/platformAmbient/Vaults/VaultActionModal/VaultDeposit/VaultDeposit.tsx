@@ -229,7 +229,7 @@ export default function VaultDeposit(props: Props) {
         }
 
         if (receipt) {
-            addReceipt(JSON.stringify(receipt));
+            addReceipt(receipt);
             removePendingTx(receipt.hash);
             setShowSubmitted(false);
         }

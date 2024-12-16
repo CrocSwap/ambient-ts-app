@@ -1677,7 +1677,7 @@ export default function InitPool() {
                     }
 
                     if (receipt) {
-                        addReceipt(JSON.stringify(receipt));
+                        addReceipt(receipt);
                         removePendingTx(receipt.hash);
                     }
                 } finally {

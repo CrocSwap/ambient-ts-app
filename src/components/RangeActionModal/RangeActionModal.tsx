@@ -414,7 +414,7 @@ function RangeActionModal(props: propsIF) {
         if (receipt) {
             IS_LOCAL_ENV && console.debug('dispatching receipt');
             IS_LOCAL_ENV && console.debug({ receipt });
-            addReceipt(JSON.stringify(receipt));
+            addReceipt(receipt);
             removePendingTx(receipt.hash);
         }
     };
@@ -510,7 +510,7 @@ function RangeActionModal(props: propsIF) {
         if (receipt) {
             IS_LOCAL_ENV && console.debug('dispatching receipt');
             IS_LOCAL_ENV && console.debug({ receipt });
-            addReceipt(JSON.stringify(receipt));
+            addReceipt(receipt);
             removePendingTx(receipt.hash);
         }
     };
