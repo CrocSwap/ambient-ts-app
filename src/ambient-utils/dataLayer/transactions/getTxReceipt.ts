@@ -5,7 +5,7 @@ export async function waitForTransaction(
     provider: Provider,
     txHash: string,
     confirmations = 1,
-    removePendingTx: (pendingTx: string) => void,
+    removePendingTx: (pendingTx: string, isRemoved?: boolean) => void,
     addPendingTx: (tx: string) => void,
     updateTransactionHash: (oldHash: string, newHash: string) => void,
     setLocalTxHash?: (value: React.SetStateAction<string>) => void,
@@ -26,7 +26,6 @@ export async function waitForTransaction(
             console.log(
                 `Transaction with hash ${txHash} was dropped or replaced.`,
             );
-            removePendingTx(txHash);
 
             if (!fromAccount) return;
             // Check if the nonce has been used for another transaction
@@ -35,12 +34,11 @@ export async function waitForTransaction(
                 'latest',
             );
 
-            console.log({ originalNonce, latestNonce });
-
             if (originalNonce && latestNonce > originalNonce) {
-                console.warn(
+                console.log(
                     'Transaction replaced. Searching for the new transaction...',
                 );
+                removePendingTx(txHash, true);
 
                 // Find the replacement transaction
                 const newTx = await findReplacementTransaction(
@@ -48,7 +46,6 @@ export async function waitForTransaction(
                     fromAccount,
                     originalNonce,
                 );
-                console.log({ newTx });
 
                 if (newTx) {
                     console.log('Replacement transaction found:', newTx.hash);
@@ -74,7 +71,6 @@ export async function waitForTransaction(
 
         // Fetch the receipt for the current transaction hash
         receipt = await provider.getTransactionReceipt(newTxHash ?? txHash);
-        console.log({ receipt });
         // If receipt exists and confirmations are met
         if (receipt && (await receipt.confirmations()) >= confirmations) {
             return receipt;
