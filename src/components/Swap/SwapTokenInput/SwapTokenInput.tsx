@@ -426,7 +426,8 @@ function SwapTokenInput(props: propsIF) {
                 tokenInput={
                     isTokenAPrimary ||
                     isLiquidityInsufficient ||
-                    (!isTokenAPrimary && parseFloat(buyQtyString) > 0)
+                    (!isTokenAPrimary &&
+                        stringToBigInt(buyQtyString, tokenB.decimals) > 0)
                         ? sellQtyString
                         : ''
                 }
@@ -461,7 +462,7 @@ function SwapTokenInput(props: propsIF) {
                 tokenInput={
                     !isTokenAPrimary ||
                     isLiquidityInsufficient ||
-                    parseFloat(sellQtyString) > 0
+                    stringToBigInt(sellQtyString, tokenA.decimals) > 0n
                         ? buyQtyString
                         : ''
                 }
