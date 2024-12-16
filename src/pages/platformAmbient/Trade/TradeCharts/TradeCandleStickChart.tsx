@@ -87,12 +87,12 @@ function TradeCandleStickChart(props: propsIF) {
 
     const {
         candleData,
+        setCandleData,
         isFetchingCandle,
         setCandleScale,
         candleScale,
         timeOfEndCandle,
         isCondensedModeEnabled,
-        setIsCondensedModeEnabled,
         candleDomains,
         setCandleDomains,
     } = useContext(CandleContext);
@@ -836,6 +836,8 @@ function TradeCandleStickChart(props: propsIF) {
                             }
                         }
 
+                        setCandleData(undefined);
+
                         setCandleScale((prev: CandleScaleIF) => {
                             return {
                                 isFetchForTimeframe: !prev.isFetchForTimeframe,
@@ -887,6 +889,8 @@ function TradeCandleStickChart(props: propsIF) {
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
             resetXScale(scaleData.xScale);
+
+            setCandleData(undefined);
 
             setCandleScale((prev: CandleScaleIF) => {
                 return {
@@ -969,16 +973,6 @@ function TradeCandleStickChart(props: propsIF) {
                 ).filter((i) => i.isShowData && i.time * 1000 < maxDom);
                 const minTime = firstCandleDate * 1000;
 
-                const checkDomainData = candles.filter(
-                    (i) => i.time * 1000 > scaleData?.xScale.domain()[0],
-                );
-
-                if (scaleData !== undefined && checkDomainData.length === 0) {
-                    setIsCondensedModeEnabled(false);
-                    setFetchCountForEnoughData(1);
-                    return;
-                }
-
                 if (
                     candles.length < 100 &&
                     !timeOfEndCandle &&
@@ -1013,24 +1007,9 @@ function TradeCandleStickChart(props: propsIF) {
                         return dom;
                     });
                 } else {
-                    if (
-                        fetchCountForEnoughData ===
-                            maxRequestCountForCondensed &&
-                        period !== 86400 &&
-                        candles.length < 100
-                    ) {
-                        setIsCondensedModeEnabled(false);
-                    } else {
-                        if (!candleDomains.isResetRequest) {
-                            setFetchCountForEnoughData(
-                                maxRequestCountForCondensed,
-                            );
-                            setIsFetchingEnoughData(false);
-
-                            if (candles.length < 7) {
-                                setIsCondensedModeEnabled(false);
-                            }
-                        }
+                    if (!candleDomains.isResetRequest) {
+                        setFetchCountForEnoughData(maxRequestCountForCondensed);
+                        setIsFetchingEnoughData(false);
                     }
                 }
             }
@@ -1043,6 +1022,7 @@ function TradeCandleStickChart(props: propsIF) {
         period === undefined,
         isCondensedModeEnabled,
         isDenomBase,
+        candleDomains.isResetRequest,
     ]);
 
     const isOpenChart =
@@ -1054,28 +1034,6 @@ function TradeCandleStickChart(props: propsIF) {
         period === candleData?.duration &&
         !isFetchingCandle &&
         !isFetchingEnoughData;
-
-    useEffect(() => {
-        console.log(
-            !isLoading,
-            candleData !== undefined,
-            isPoolInitialized !== undefined,
-            prevPeriod === period,
-            scaleData,
-            period === candleData?.duration,
-            !isFetchingCandle,
-            !isFetchingEnoughData,
-        );
-    }, [
-        !isLoading,
-        candleData !== undefined,
-        isPoolInitialized !== undefined,
-        prevPeriod === period,
-        scaleData,
-        period === candleData?.duration,
-        !isFetchingCandle,
-        !isFetchingEnoughData,
-    ]);
 
     const loadingText = (
         <div
@@ -1174,8 +1132,6 @@ function TradeCandleStickChart(props: propsIF) {
                             updateURL={updateURL}
                             userTransactionData={userTransactionData}
                             setPrevCandleCount={setPrevCandleCount}
-                            isFetchingEnoughData={isFetchingEnoughData}
-                            setIsFetchingEnoughData={setIsFetchingEnoughData}
                             isCompletedFetchData={isCompletedFetchData}
                             setIsCompletedFetchData={setIsCompletedFetchData}
                             setChartResetStatus={setChartResetStatus}

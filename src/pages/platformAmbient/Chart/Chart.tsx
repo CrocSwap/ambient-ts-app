@@ -164,8 +164,6 @@ interface propsIF {
     updateURL: (changes: updatesIF) => void;
     userTransactionData: Array<TransactionIF> | undefined;
     setPrevCandleCount: React.Dispatch<React.SetStateAction<number>>;
-    isFetchingEnoughData: boolean;
-    setIsFetchingEnoughData: React.Dispatch<React.SetStateAction<boolean>>;
     isCompletedFetchData: boolean;
     setIsCompletedFetchData: React.Dispatch<React.SetStateAction<boolean>>;
     setChartResetStatus: React.Dispatch<
