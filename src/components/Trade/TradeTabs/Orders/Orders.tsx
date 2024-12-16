@@ -1,4 +1,5 @@
 /* eslint-disable no-irregular-whitespace */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
     LimitOrderIF,
@@ -39,6 +40,7 @@ import {
     quoteTokenForConcLiq,
     tickToPrice,
 } from '@crocswap-libs/sdk';
+import DebugDiv from '../../../Chat/DomDebugger/Draggable/DebugDiv';
 
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
@@ -213,7 +215,7 @@ function Orders(props: propsIF) {
     const pageDataCountRef = useRef<PageDataCountIF>();
     pageDataCountRef.current = pageDataCount;
 
-    const getIndexForPages = (start: boolean) => {
+    const getIndexForPages = (start: boolean, offset = 0) => {
         const pageDataCountVal = (
             pageDataCountRef.current ? pageDataCountRef.current : pageDataCount
         ).counts;
@@ -225,6 +227,9 @@ function Orders(props: propsIF) {
         } else {
             for (let i = 0; i <= pagesVisible[1]; i++) {
                 ret += pageDataCountVal[i];
+                if (pagesVisible[1] === 1 && offset > 0) {
+                    ret += offset;
+                }
             }
         }
 
@@ -550,20 +555,49 @@ function Orders(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const getPositionHashByRelevantTx = (tx: any) => {
+        if (tx.txDetails) {
+            return getPositionHash(undefined, {
+                isPositionTypeAmbient: false,
+                user: tx.userAddress,
+                baseAddress: tx.txDetails.baseAddress,
+                quoteAddress: tx.txDetails.quoteAddress,
+                poolIdx: tx.txDetails.poolIdx,
+                bidTick: tx.txDetails.lowTick || 0,
+                askTick: tx.txDetails.highTick || 0,
+            });
+        }
+    };
+
     type RecentlyUpdatedPosition = {
         posHash: string;
         timestamp: number;
+        order: LimitOrderIF;
+        type: string;
+        action: string;
     };
 
     // list of recently updated positions
     const [listOfRecentlyUpdatedPositions, setListOfRecentlyUpdatedPositions] =
         useState<RecentlyUpdatedPosition[]>([]);
 
-    const addPositionHash = (posHash: string) => {
+    const addRecentlyUpdatedOrder = (
+        type: string,
+        action: string,
+        order: LimitOrderIF,
+        timestamp: number,
+    ) => {
         setListOfRecentlyUpdatedPositions((prev) => {
             return [
-                ...prev,
-                { posHash, timestamp: Math.floor(Date.now() / 1000) },
+                ...prev.filter((e) => e.posHash !== order.positionHash),
+                {
+                    posHash: order.positionHash,
+                    timestamp: Math.floor(Date.now() / 1000),
+                    order: order,
+                    type: type,
+                    action: action,
+                },
             ];
         });
     };
@@ -572,7 +606,9 @@ function Orders(props: propsIF) {
         if (relevantTransactionsByType.length > 0) {
             console.log(
                 '>>> relevantTransactionsByType',
-                relevantTransactionsByType,
+                getPositionHashByRelevantTx(
+                    relevantTransactionsByType[0],
+                )?.substring(0, 6),
             );
         }
 
@@ -591,8 +627,6 @@ function Orders(props: propsIF) {
                     if (!crocEnv || !pendingOrder.txDetails)
                         return {} as LimitOrderIF;
 
-                    console.log('>>> pendingOrder', pendingOrder);
-
                     const pos = crocEnv.positions(
                         pendingOrder.txDetails.quoteAddress,
                         pendingOrder.txDetails.baseAddress,
@@ -607,19 +641,12 @@ function Orders(props: propsIF) {
                         lastBlockNumber,
                     );
 
-                    // const position = await pos.queryRangePos(
-                    //     pendingOrder.txDetails.lowTick || 0,
-                    //     pendingOrder.txDetails.highTick || 0,
-                    //     lastBlockNumber
-                    // )
-
                     const position = await pos.queryKnockoutLivePos(
                         pendingOrder.txAction === 'Buy',
                         pendingOrder.txDetails.lowTick || 0,
                         pendingOrder.txDetails.highTick || 0,
                         // lastBlockNumber
                     );
-
                     if (!pendingOrder.txDetails) {
                         return {} as LimitOrderIF;
                     }
@@ -627,12 +654,19 @@ function Orders(props: propsIF) {
                     const liqBigInt = position.liq;
                     const liqNum = bigIntToFloat(liqBigInt);
 
-                    console.log('>>>> lowTick', pendingOrder.txDetails.lowTick);
-                    console.log(
-                        '>>>> highTick',
-                        pendingOrder.txDetails.highTick,
+                    const highTickPrice = tickToPrice(
+                        pendingOrder.txDetails.highTick || 0,
                     );
-                    console.log('>>>> liqNum', liqNum);
+
+                    console.log('>>> isBid', pendingOrder.txDetails.isBid);
+
+                    const usdValue = pendingOrder.txDetails.isBid
+                        ? (1 / poolPriceNonDisplay) *
+                          parseFloat(pendingOrder.txDetails.baseTokenQty || '1')
+                        : (1 / highTickPrice) *
+                          parseFloat(
+                              pendingOrder.txDetails.baseTokenQty || '1',
+                          );
 
                     const positionLiqBase = bigIntToFloat(
                         baseTokenForConcLiq(
@@ -665,12 +699,12 @@ function Orders(props: propsIF) {
                         (order) => order.positionHash === positionHash,
                     );
 
-                    const onChainLiqDifferentThanMatchingPositionLiq =
-                        liqBigInt > BigInt(matchingPosition?.positionLiq || 0);
+                    // const onChainLiqDifferentThanMatchingPositionLiq =
+                    //     liqBigInt > BigInt(matchingPosition?.positionLiq || 0);
 
-                    if (onChainLiqDifferentThanMatchingPositionLiq) {
-                        addPositionHash(positionHash);
-                    }
+                    // if (onChainLiqDifferentThanMatchingPositionLiq) {
+                    //     addPositionHash(positionHash);
+                    // }
 
                     const mockServerOrder: LimitOrderServerIF = {
                         chainId: chainId,
@@ -702,14 +736,11 @@ function Orders(props: propsIF) {
                         cachedEnsResolve,
                     );
 
-                    console.log('>>>> ..................');
-                    console.log(' >>>> ', limitOrderData.totalValueUSD);
-                    console.log('>>>> ..................');
-
                     const onChainOrder: LimitOrderIF = {
                         positionLiq: liqNum,
                         positionLiqBase: positionLiqBase,
                         positionLiqQuote: positionLiqQuote,
+                        totalValueUSD: usdValue || 0,
                         base: pendingOrder.txDetails.baseAddress,
                         quote: pendingOrder.txDetails.quoteAddress,
                         baseDecimals:
@@ -787,9 +818,15 @@ function Orders(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual:
                             limitOrderData.isBaseTokenMoneynessGreaterOrEqual,
                         ensResolution: limitOrderData.ensResolution,
-                        totalValueUSD: limitOrderData.totalValueUSD,
                         chainId: limitOrderData.chainId,
                     };
+
+                    addRecentlyUpdatedOrder(
+                        pendingOrder.txType || '',
+                        pendingOrder.txAction || '',
+                        onChainOrder,
+                        Math.floor(Date.now() / 1000),
+                    );
 
                     return onChainOrder;
                 }),
@@ -797,10 +834,11 @@ function Orders(props: propsIF) {
 
             setUnindexedUpdatedOrders([...updatedOrders]);
         })();
-    }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
+        // }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
+    }, [JSON.stringify(relevantTransactionsByType)]);
 
     const unindexedUpdatedOrderHashes = unindexedUpdatedOrders.map(
-        (pos) => pos.limitOrderId,
+        (pos) => pos.positionHash,
     );
 
     const pendingPositionsToDisplayPlaceholder =
@@ -829,13 +867,6 @@ function Orders(props: propsIF) {
                             Date.now() / 1000 - 60,
                 );
 
-            console.log(
-                '>>>> ',
-                unindexedUpdatedOrderHashes.includes(pendingPosHash),
-                ' >>>> ',
-                matchingPositionUpdatedInLastMinute,
-            );
-
             // identify completed adds when update time in last minute (does not work for removes)
             return !unindexedUpdatedOrderHashes.includes(pendingPosHash);
             // || (matchingPosition && !matchingPositionUpdatedInLastMinute)
@@ -857,22 +888,42 @@ function Orders(props: propsIF) {
     ] = useSortedLimits('time', limitOrderData);
 
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
+
     const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
         // sortedLimits.map((limit) => {
         //     console.log('>>> limit', limit.positionHash, limit.id);
         // });
 
-        const filteredSortedLimits = sortedLimits.filter((limit) => {
-            return !unindexedUpdatedOrderHashes.includes(limit.positionHash);
+        // merge with recently updated data
+        const updatedHashes = new Set();
+        const recentlyUpdatedToShow: LimitOrderIF[] = [];
+
+        listOfRecentlyUpdatedPositions.forEach((e) => {
+            // if(e.action !== 'Remove' && e.timestamp < Date.now() / 1000 - 60) {
+            if (e.action !== 'Remove') {
+                recentlyUpdatedToShow.push(e.order);
+            }
+            updatedHashes.add(e.posHash);
         });
 
+        const mergedList: LimitOrderIF[] = [
+            ...recentlyUpdatedToShow.reverse(),
+            ...sortedLimits.filter((e) => !updatedHashes.has(e.positionHash)),
+        ];
+
+        // ----------------------------
         return isAccountView
-            ? filteredSortedLimits
-            : filteredSortedLimits.slice(
+            ? mergedList
+            : mergedList.slice(
                   getIndexForPages(true),
-                  getIndexForPages(false),
+                  getIndexForPages(false, recentlyUpdatedToShow.length),
               );
-    }, [sortedLimits, pagesVisible, isAccountView]);
+    }, [
+        sortedLimits,
+        pagesVisible,
+        isAccountView,
+        listOfRecentlyUpdatedPositions,
+    ]);
 
     // -----------------------------------------------------------------------------------------------------------------------------
 
@@ -1119,9 +1170,10 @@ function Orders(props: propsIF) {
                 {showInfiniteScroll ? (
                     <TableRowsInfiniteScroll
                         type='Order'
-                        data={unindexedUpdatedOrders.concat(
-                            sortedLimitDataToDisplay,
-                        )}
+                        // data={unindexedUpdatedOrders.concat(
+                        //     sortedLimitDataToDisplay,
+                        // )}
+                        data={sortedLimitDataToDisplay}
                         tableView={tableView}
                         isAccountView={isAccountView}
                         fetcherFunction={addMoreData}
@@ -1179,6 +1231,51 @@ function Orders(props: propsIF) {
                 position: 'relative',
             }}
         >
+            {/* <DebugDiv 
+            title='unindexed orders'
+            left={100}
+            top={100}
+                >
+            {
+                unindexedUpdatedOrders.map((tx, idx) => (                 
+                    <div key={`unindexed-${idx}`} style={{display: 'block', background: 'var(--dark3)'}}>{tx.positionHash.substring(0,6)} {tx.totalValueUSD}</div>
+                ))
+            }
+            </DebugDiv>
+
+            <DebugDiv
+                title='relevant transactions'
+            left={300}
+            top={100}
+            >
+                {
+                    relevantTransactionsByType.map((tx, idx) => (                 
+                        <div key={`relevant-${idx}`}> {getPositionHashByRelevantTx(tx)?.substring(0,6)} {tx.txAction}</div>
+                    ))
+                }
+            </DebugDiv>
+
+            <DebugDiv title='updated hashes'
+            left={500}
+            top={100}
+            >
+                {
+                    unindexedUpdatedOrderHashes.map((tx, idx) => (                 
+                        <div key={`updated-${idx}`}> {tx.substring(0,6)}</div>
+                    ))
+                }
+            </DebugDiv>
+
+            <DebugDiv title= 'recently updated positions'
+            left={700}
+            top={100}
+            >
+                {
+                    listOfRecentlyUpdatedPositions.map((tx, idx) => (                 
+                        <div key={`updated-${idx}`}> {tx.type} {tx.action} {tx.order.positionHash.substring(0,6)} {tx.order.totalValueUSD} </div>
+                    ))
+                }
+            </DebugDiv> */}
             <div>{headerColumnsDisplay}</div>
 
             <div

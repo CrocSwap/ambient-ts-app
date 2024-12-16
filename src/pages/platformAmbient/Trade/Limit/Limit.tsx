@@ -759,6 +759,9 @@ export default function Limit() {
                         ? limitTick + gridSize
                         : limitTick,
                     isBid: isSellTokenBase,
+                    baseTokenQty: isSellTokenBase
+                        ? tokenAInputQtyNoExponentString
+                        : tokenBInputQtyNoExponentString,
                 },
             });
 
