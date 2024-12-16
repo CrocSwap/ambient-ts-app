@@ -125,13 +125,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                     </div>
                 )}
                 {tableView === 'large' && <div>{id}</div>}
-                {tableView === 'large' && <div>{wallet}</div>}
-                {tableView !== 'large' && (
-                    <div>
-                        {id}
-                        {wallet}
-                    </div>
-                )}
+                <div>{wallet}</div>
                 {tableView !== 'small' ? (
                     transaction.type === 'Range' ? (
                         <FlexContainer
