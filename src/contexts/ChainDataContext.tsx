@@ -178,26 +178,28 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkL2 = !L1_NETWORKS.includes(chainId);
 
     const BLOCK_NUM_POLL_MS = isUserIdle ? 30000 : 5000; // poll for new block every 30 seconds when user is idle, every 5 seconds when user is active
-
-    const fetchGasPrice = async () => {
-        const newGasPrice =
-            await supportedNetworks[chainId].getGasPriceInGwei(provider);
-        if (gasPriceInGwei !== newGasPrice) {
-            setGasPriceinGwei(newGasPrice);
-        }
-    };
-
-    const gasPricePollingCacheTime = Math.floor(
-        Date.now() / (isUserIdle ? 60000 : 10000),
-    ); // poll for new gas price every 60 seconds when user is idle, every 10 seconds when user is active
+    const GAS_PRICE_POLL_MS = isUserIdle ? 60000 : 10000; // poll for new gas price every 60 seconds when user is idle, every 10 seconds when user is active
 
     const poolStatsPollingCacheTime = Math.floor(
         Date.now() / (isUserIdle ? 120000 : 30000),
     ); // poll for new pool stats every 120 seconds when user is idle, every 30 seconds when user is active
 
+    const fetchGasPrice = async () => {
+        setGasPriceinGwei(
+            await supportedNetworks[chainId].getGasPriceInGwei(provider),
+        );
+    };
+
     useEffect(() => {
+        setGasPriceinGwei(undefined);
         fetchGasPrice();
-    }, [gasPricePollingCacheTime]);
+
+        const interval = setInterval(() => {
+            fetchGasPrice();
+        }, GAS_PRICE_POLL_MS);
+
+        return () => clearInterval(interval);
+    }, [chainId]);
 
     async function pollBlockNum(): Promise<void> {
         try {
@@ -554,17 +556,12 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     >();
 
     useEffect(() => {
-        if (!crocEnv) return;
-        Promise.resolve(
-            cachedFetchTokenPrice(ZERO_ADDRESS, chainId, crocEnv),
-        ).then((price) => {
-            if (price?.usdPrice !== undefined) {
-                setNativeTokenUsdPrice(price.usdPrice);
-            } else {
-                setNativeTokenUsdPrice(undefined);
-            }
-        });
-    }, [crocEnv, chainId]);
+        Promise.resolve(cachedFetchTokenPrice(ZERO_ADDRESS, chainId)).then(
+            (response) => {
+                setNativeTokenUsdPrice(response?.usdPrice);
+            },
+        );
+    }, [chainId]);
 
     const [connectedUserXp, setConnectedUserXp] = useState<UserXpDataIF>({
         dataReceived: false,

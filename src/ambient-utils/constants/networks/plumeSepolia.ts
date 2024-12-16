@@ -38,6 +38,7 @@ export const plumeSepolia: NetworkIF = {
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Plume Devnet',
+    tokenPriceQueryAssetPlatform: undefined,
     topPools: [
         new TopPool(
             plumeSepoliaETH,

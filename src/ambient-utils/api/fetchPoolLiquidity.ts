@@ -76,8 +76,8 @@ async function expandLiquidityData(
         );
     }
 
-    const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
-    const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
+    const basePricePromise = cachedFetchTokenPrice(base, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
 
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;

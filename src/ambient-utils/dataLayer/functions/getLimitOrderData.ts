@@ -45,16 +45,8 @@ export const getLimitOrderData = async (
 
     newOrder.ensResolution = (await cachedEnsResolve(order.user)) ?? '';
 
-    const basePricePromise = cachedFetchTokenPrice(
-        baseTokenAddress,
-        chainId,
-        crocEnv,
-    );
-    const quotePricePromise = cachedFetchTokenPrice(
-        quoteTokenAddress,
-        chainId,
-        crocEnv,
-    );
+    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
 
     const posHash = getPositionHash(undefined, {
         isPositionTypeAmbient: false,

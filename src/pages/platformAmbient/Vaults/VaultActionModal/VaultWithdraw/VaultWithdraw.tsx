@@ -24,6 +24,7 @@ import {
 import Modal from '../../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
 import {
+    AppStateContext,
     ChainDataContext,
     CrocEnvContext,
     ReceiptContext,
@@ -60,7 +61,9 @@ export default function VaultWithdraw(props: propsIF) {
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
-
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const {
         addPendingTx,
         addReceipt,
@@ -104,6 +107,7 @@ export default function VaultWithdraw(props: propsIF) {
         if (tx?.hash) {
             addPendingTx(tx?.hash);
             addTransactionByType({
+                chainId: chainId,
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txType: 'Withdraw',
