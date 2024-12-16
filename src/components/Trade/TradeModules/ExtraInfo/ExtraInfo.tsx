@@ -9,6 +9,7 @@ import {
 
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
+import { CrocSmartSwapRoute } from '@crocswap-libs/sdk';
 
 interface PropsIF {
     extraInfo: {
@@ -21,6 +22,7 @@ interface PropsIF {
     showDropdown: boolean;
     showWarning?: boolean;
     priceImpactExceedsThreshold?: boolean;
+    route?: CrocSmartSwapRoute;
 }
 
 export const ExtraInfo = (props: PropsIF) => {

@@ -11,6 +11,10 @@ import { getMoneynessRankByAddr } from '../ambient-utils/dataLayer';
 import { AppStateContext } from './AppStateContext';
 import { TradeDataContext } from './TradeDataContext';
 import { TradeTokenContext } from './TradeTokenContext';
+import {
+    directSwapsOnlyIF,
+    useDirectSwapsOnly,
+} from '../App/hooks/useDirectSwapsOnlyPref';
 
 export interface UserPreferenceContextIF {
     favePools: favePoolsMethodsIF;
@@ -24,6 +28,7 @@ export interface UserPreferenceContextIF {
     bypassConfirmLimit: skipConfirmIF;
     bypassConfirmRange: skipConfirmIF;
     bypassConfirmRepo: skipConfirmIF;
+    directSwapsOnly: directSwapsOnlyIF;
     cssDebug: {
         cache: (k: string, v: string) => void;
         check: (k: string) => string | undefined;
@@ -112,6 +117,7 @@ export const UserPreferenceContextProvider = (props: {
         bypassConfirmLimit: useSkipConfirm('limit'),
         bypassConfirmRange: useSkipConfirm('range'),
         bypassConfirmRepo: useSkipConfirm('repo'),
+        directSwapsOnly: useDirectSwapsOnly(),
         cssDebug: {
             cache: cacheCSSProperty,
             check: checkCSSPropertyCache,

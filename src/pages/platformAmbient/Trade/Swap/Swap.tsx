@@ -1,5 +1,5 @@
 import {
-    CrocImpact,
+    CrocSmartSwapImpact,
     bigIntToFloat,
     fromDisplayQty,
     toDisplayQty,
@@ -90,9 +90,8 @@ function Swap(props: propsIF) {
         tokenADexBalance,
         isTokenABase: isSellTokenBase,
     } = useContext(TradeTokenContext);
-    const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
-        UserPreferenceContext,
-    );
+    const { swapSlippage, dexBalSwap, bypassConfirmSwap, directSwapsOnly } =
+        useContext(UserPreferenceContext);
     const {
         addPendingTx,
         addReceipt,
@@ -101,6 +100,7 @@ function Swap(props: propsIF) {
         updateTransactionHash,
         pendingTransactions,
     } = useContext(ReceiptContext);
+    const { allPoolStats } = useContext(ChainDataContext);
 
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
@@ -183,7 +183,7 @@ function Swap(props: propsIF) {
         | {
               input: string;
               isInputSell: boolean;
-              impact: CrocImpact | undefined;
+              impact: CrocSmartSwapImpact | undefined;
           }
         | undefined
     >();
@@ -523,7 +523,12 @@ function Swap(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            if (!crocEnv || !L1_GAS_CALC_ENABLED) return;
+            if (
+                !crocEnv ||
+                !L1_GAS_CALC_ENABLED ||
+                lastImpactQuery?.impact === undefined
+            )
+                return;
 
             const qty = isTokenAPrimary
                 ? sellQtyNoExponentString.replaceAll(',', '')
@@ -540,6 +545,7 @@ function Swap(props: propsIF) {
                       slippageTolerancePercentage,
                       isWithdrawFromDexChecked,
                       isSaveAsDexSurplusChecked,
+                      lastImpact: lastImpactQuery?.impact,
                   })
                 : undefined;
 
@@ -568,8 +574,7 @@ function Swap(props: propsIF) {
     }, [
         crocEnv,
         isTokenAPrimary,
-        sellQtyNoExponentString,
-        buyQtyNoExponentString,
+        lastImpactQuery,
         tokenA.address,
         tokenB.address,
         slippageTolerancePercentage,
@@ -592,6 +597,9 @@ function Swap(props: propsIF) {
     };
 
     async function initiateSwap() {
+        if (lastImpactQuery?.impact === undefined) {
+            return;
+        }
         resetConfirmation();
 
         setShowConfirmation(true);
@@ -608,16 +616,21 @@ function Swap(props: propsIF) {
             const sellTokenAddress = tokenA.address;
             const buyTokenAddress = tokenB.address;
 
-            tx = await performSwap({
-                crocEnv,
-                isQtySell,
-                qty,
-                buyTokenAddress,
-                sellTokenAddress,
-                slippageTolerancePercentage,
-                isWithdrawFromDexChecked,
-                isSaveAsDexSurplusChecked,
-            });
+            tx = await performSwap(
+                {
+                    crocEnv,
+                    isQtySell,
+                    qty,
+                    buyTokenAddress,
+                    sellTokenAddress,
+                    slippageTolerancePercentage,
+                    isWithdrawFromDexChecked,
+                    isSaveAsDexSurplusChecked,
+                    allPoolStats,
+                    directSwapsOnly: directSwapsOnly.isEnabled,
+                },
+                lastImpactQuery.impact,
+            );
             activeTxHash.current = tx?.hash;
             setNewSwapTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
@@ -825,6 +838,7 @@ function Swap(props: propsIF) {
                 <TradeModuleHeader
                     slippage={swapSlippage}
                     dexBalSwap={dexBalSwap}
+                    directSwapsOnly={directSwapsOnly}
                     bypassConfirm={bypassConfirmSwap}
                     settingsTitle='Swap'
                     isSwapPage={!isOnTradeRoute}
@@ -874,6 +888,11 @@ function Swap(props: propsIF) {
                         parseFloat(primaryQuantity) > 0
                     }
                     showWarning={showWarning}
+                    route={
+                        lastImpactQuery?.impact?.routes[
+                            lastImpactQuery?.impact.chosenRoute
+                        ]
+                    }
                 />
             }
             modal={
