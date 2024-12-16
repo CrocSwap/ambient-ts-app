@@ -575,7 +575,7 @@ function Swap(props: propsIF) {
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(
-            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
         );
     }, [tokenADexBalance]);
 
