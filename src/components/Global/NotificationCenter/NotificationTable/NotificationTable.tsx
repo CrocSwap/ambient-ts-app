@@ -30,9 +30,7 @@ const NotificationTable = (props: NotificationTableProps) => {
     const { resetReceiptData, transactionsByType, sessionReceipts } =
         useContext(ReceiptContext);
 
-    const parsedReceipts = sessionReceipts.map((receipt) => receipt);
-
-    const parsedReceiptsDisplay = parsedReceipts.map((receipt, idx) => (
+    const sessionReceiptsDisplay = sessionReceipts.map((receipt, idx) => (
         <ReceiptDisplay
             key={idx}
             status={receipt?.status === 1 ? 'successful' : 'failed'}
@@ -74,7 +72,7 @@ const NotificationTable = (props: NotificationTableProps) => {
 
                 <div className={styles.content}>
                     {pendingTransactionsDisplay}
-                    {parsedReceiptsDisplay}
+                    {sessionReceiptsDisplay}
                 </div>
 
                 <FlexContainer justifyContent='center' margin='auto'>
