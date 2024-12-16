@@ -18,11 +18,6 @@ import { AppStateContext } from '../../contexts';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
-import {
-    TransactionError,
-    isTransactionFailedError,
-    isTransactionReplacedError,
-} from '../../utils/TransactionError';
 import Button from '../Form/Button';
 import Modal from '../Global/Modal/Modal';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
@@ -257,35 +252,19 @@ export default function LimitActionModal(props: propsIF) {
             if (tx) {
                 let receipt;
                 try {
-                    receipt = await waitForTransaction(provider, tx.hash, 1);
+                    receipt = await waitForTransaction(
+                        provider,
+                        tx.hash,
+                        1,
+                        removePendingTx,
+                        addPendingTx,
+                        updateTransactionHash,
+                        setNewTxHash,
+                        posHash,
+                        addPositionUpdate,
+                    );
                 } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && 'repriced';
-                        removePendingTx(error.hash);
-                        const newTransactionHash = error.replacement.hash;
-                        addPendingTx(newTransactionHash);
-                        addPositionUpdate({
-                            txHash: newTransactionHash,
-                            positionID: posHash,
-                            isLimit: true,
-                            unixTimeAdded: Math.floor(Date.now() / 1000),
-                        });
-                        updateTransactionHash(
-                            error.hash,
-                            error.replacement.hash,
-                        );
-                        setNewTxHash(newTransactionHash);
-                        IS_LOCAL_ENV && { newTransactionHash };
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
-                        console.error({ error });
-                        receipt = error.receipt;
-                    }
+                    console.error({ e });
                 }
 
                 if (receipt) {
@@ -399,34 +378,19 @@ export default function LimitActionModal(props: propsIF) {
             if (tx) {
                 let receipt;
                 try {
-                    receipt = await waitForTransaction(provider, tx.hash, 1);
+                    receipt = await waitForTransaction(
+                        provider,
+                        tx.hash,
+                        1,
+                        removePendingTx,
+                        addPendingTx,
+                        updateTransactionHash,
+                        setNewTxHash,
+                        posHash,
+                        addPositionUpdate,
+                    );
                 } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && console.debug('repriced');
-                        removePendingTx(error.hash);
-                        const newTransactionHash = error.replacement.hash;
-                        addPendingTx(newTransactionHash);
-                        addPositionUpdate({
-                            txHash: newTransactionHash,
-                            positionID: posHash,
-                            isLimit: true,
-                            unixTimeAdded: Math.floor(Date.now() / 1000),
-                        });
-                        updateTransactionHash(
-                            error.hash,
-                            error.replacement.hash,
-                        );
-                        setNewTxHash(newTransactionHash);
-                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
-                        console.error({ error });
-                        receipt = error.receipt;
-                    }
+                    console.error({ e });
                 }
 
                 if (receipt) {

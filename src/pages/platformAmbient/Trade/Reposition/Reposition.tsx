@@ -33,11 +33,6 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../../utils/TransactionError';
-import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
@@ -118,6 +113,8 @@ function Reposition() {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const { position } = (locationState || {}) as { position?: PositionIF };
+
+    const posHash = getPositionHash(position);
 
     const slippageTolerancePercentage = position
         ? isStablePair(position.base, position.quote)
@@ -366,7 +363,6 @@ function Reposition() {
                         isBid: position.positionLiqQuote === 0,
                     },
                 });
-                const posHash = getPositionHash(position);
                 addPositionUpdate({
                     txHash: tx.hash,
                     positionID: posHash,
@@ -384,32 +380,19 @@ function Reposition() {
         if (tx) {
             let receipt;
             try {
-                receipt = await waitForTransaction(provider, tx.hash, 1);
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    1,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewRepositionTransactionHash,
+                    posHash,
+                    addPositionUpdate,
+                );
             } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    removePendingTx(error.hash);
-                    const newTransactionHash = error.replacement.hash;
-                    addPendingTx(newTransactionHash);
-
-                    updateTransactionHash(error.hash, error.replacement.hash);
-                    setNewRepositionTransactionHash(newTransactionHash);
-                    const posHash = getPositionHash(position);
-                    addPositionUpdate({
-                        txHash: newTransactionHash,
-                        positionID: posHash,
-                        isLimit: false,
-                        unixTimeAdded: Math.floor(Date.now() / 1000),
-                    });
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    receipt = error.receipt;
-                }
+                console.error({ e });
             }
             if (receipt) {
                 addReceipt(receipt);

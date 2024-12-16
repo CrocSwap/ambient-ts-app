@@ -777,7 +777,16 @@ export default function Limit() {
 
         let receipt;
         try {
-            if (tx) receipt = await waitForTransaction(provider, tx.hash, 1);
+            if (tx)
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    1,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewLimitOrderTransactionHash,
+                );
         } catch (e) {
             const error = e as TransactionError;
             console.error({ error });

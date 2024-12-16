@@ -38,7 +38,6 @@ import {
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET,
     GAS_DROPS_ESTIMATE_SWAP_NATIVE,
     GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX,
-    IS_LOCAL_ENV,
     L1_GAS_CALC_ENABLED,
     NUM_GWEI_IN_ETH,
     NUM_GWEI_IN_WEI,
@@ -55,11 +54,6 @@ import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { useUrlParams } from '../../../../utils/hooks/useUrlParams';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../../utils/tutorial/Swap';
 
 interface propsIF {
@@ -652,28 +646,18 @@ function Swap(props: propsIF) {
         if (tx) {
             let receipt;
             try {
-                receipt = await waitForTransaction(provider, tx.hash, 1);
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    1,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewSwapTransactionHash,
+                );
+                console.log({ receipt });
             } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    removePendingTx(error.hash);
-
-                    const newTransactionHash = error.replacement.hash;
-                    activeTxHash.current = newTransactionHash;
-                    addPendingTx(newTransactionHash);
-                    updateTransactionHash(error.hash, error.replacement.hash);
-                    setNewSwapTransactionHash(newTransactionHash);
-
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    receipt = error.receipt;
-                    activeTxHash.current = '';
-                }
+                console.log({ e });
             }
 
             if (receipt) {

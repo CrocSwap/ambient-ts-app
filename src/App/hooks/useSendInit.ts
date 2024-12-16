@@ -1,21 +1,13 @@
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
-import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { waitForTransaction } from '../../ambient-utils/dataLayer';
 import { AppStateContext } from '../../contexts';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../utils/TransactionError';
 export function useSendInit(
-    setNewInitTransactionHash: React.Dispatch<
-        React.SetStateAction<string | undefined>
-    >,
+    setNewInitTransactionHash: React.Dispatch<React.SetStateAction<string>>,
     setIsInitPending: React.Dispatch<React.SetStateAction<boolean>>,
     setIsTxCompletedInit: React.Dispatch<React.SetStateAction<boolean>>,
     setTxError: React.Dispatch<React.SetStateAction<Error | undefined>>,
@@ -49,8 +41,8 @@ export function useSendInit(
                     ?.pool(baseToken.address, quoteToken.address)
                     .initPool(initialPriceInBaseDenom);
 
-                setNewInitTransactionHash(tx?.hash);
                 if (tx) {
+                    setNewInitTransactionHash(tx.hash);
                     addPendingTx(tx?.hash);
 
                     addTransactionByType({
@@ -66,29 +58,13 @@ export function useSendInit(
                             provider,
                             tx.hash,
                             1,
+                            removePendingTx,
+                            addPendingTx,
+                            updateTransactionHash,
+                            setNewInitTransactionHash,
                         );
                     } catch (e) {
-                        const error = e as TransactionError;
-                        console.error({ error });
-                        if (isTransactionReplacedError(error)) {
-                            IS_LOCAL_ENV && console.debug('repriced');
-                            removePendingTx(error.hash);
-
-                            const newTransactionHash = error.replacement.hash;
-                            addPendingTx(newTransactionHash);
-
-                            updateTransactionHash(
-                                error.hash,
-                                error.replacement.hash,
-                            );
-                            setNewInitTransactionHash(newTransactionHash);
-
-                            IS_LOCAL_ENV &&
-                                console.debug({ newTransactionHash });
-                            receipt = error.receipt;
-                        } else if (isTransactionFailedError(error)) {
-                            receipt = error.receipt;
-                        }
+                        console.error({ e });
                     }
                     if (receipt) {
                         addReceipt(receipt);

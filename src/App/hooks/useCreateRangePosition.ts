@@ -61,7 +61,9 @@ export function useCreateRangePosition() {
         defaultLowTick: number;
         defaultHighTick: number;
         isAdd: boolean;
-        setNewRangeTransactionHash: (s: string) => void;
+        setNewRangeTransactionHash: (
+            value: React.SetStateAction<string>,
+        ) => void;
         setTxError: (s: Error) => void;
         resetConfirmation: () => void;
         setIsTxCompletedRange?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -201,7 +203,17 @@ export function useCreateRangePosition() {
         if (tx) {
             let receipt;
             try {
-                receipt = await waitForTransaction(provider, tx.hash, 1);
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    1,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewRangeTransactionHash,
+                    posHash,
+                    addPositionUpdate,
+                );
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });

@@ -78,12 +78,7 @@ import { AppStateContext } from '../../../contexts';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import {
-    isTransactionDeniedError,
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../utils/TransactionError';
+import { isTransactionDeniedError } from '../../../utils/TransactionError';
 // react functional component
 export default function InitPool() {
     const { crocEnv, provider, ethMainnetUsdPrice } =
@@ -983,12 +978,10 @@ export default function InitPool() {
     // default low tick to seed in the DOM (range lower value)
     // initialPriceInBaseDenom
 
-    const [newInitTransactionHash, setNewInitTransactionHash] = useState<
-        undefined | string
-    >('');
-    const [newRangeTransactionHash, setNewRangeTransactionHash] = useState<
-        undefined | string
-    >('');
+    const [newInitTransactionHash, setNewInitTransactionHash] =
+        useState<string>('');
+    const [newRangeTransactionHash, setNewRangeTransactionHash] =
+        useState<string>('');
     const [txError, setTxError] = useState<Error>();
 
     const [isInitPending, setIsInitPending] = useState(false);
@@ -1657,30 +1650,12 @@ export default function InitPool() {
                                 provider,
                                 tx.hash,
                                 1,
+                                removePendingTx,
+                                addPendingTx,
+                                updateTransactionHash,
                             );
                         } catch (e) {
-                            const error = e as TransactionError;
-                            console.error({ error });
-
-                            if (isTransactionReplacedError(error)) {
-                                IS_LOCAL_ENV && console.debug('repriced');
-                                removePendingTx(error.hash);
-
-                                const newTransactionHash =
-                                    error.replacement.hash;
-                                addPendingTx(newTransactionHash);
-
-                                updateTransactionHash(
-                                    error.hash,
-                                    error.replacement.hash,
-                                );
-                                IS_LOCAL_ENV &&
-                                    console.debug({ newTransactionHash });
-                                receipt = error.receipt;
-                            } else if (isTransactionFailedError(error)) {
-                                console.error({ error });
-                                receipt = error.receipt;
-                            }
+                            console.error({ e });
                         }
 
                         if (receipt) {

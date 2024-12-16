@@ -13,7 +13,6 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import {
     GAS_DROPS_ESTIMATE_VAULT_WITHDRAWAL,
-    IS_LOCAL_ENV,
     NUM_GWEI_IN_WEI,
     VAULT_TX_L1_DATA_FEE_ESTIMATE,
 } from '../../../../../ambient-utils/constants';
@@ -31,11 +30,6 @@ import {
     ReceiptContext,
     UserDataContext,
 } from '../../../../../contexts';
-import {
-    TransactionError,
-    isTransactionFailedError,
-    isTransactionReplacedError,
-} from '../../../../../utils/TransactionError';
 
 import { MdEdit } from 'react-icons/md';
 import useKeyPress from '../../../../../App/hooks/useKeyPress';
@@ -122,26 +116,17 @@ export default function VaultWithdraw(props: propsIF) {
         if (tx) {
             let receipt;
             try {
-                receipt = await waitForTransaction(provider, tx.hash, 1);
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    1,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                );
             } catch (e) {
-                const error = e as TransactionError;
                 setShowSubmitted(false);
-                console.error({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    removePendingTx(error.hash);
-
-                    const newTransactionHash = error.replacement.hash;
-                    addPendingTx(newTransactionHash);
-
-                    updateTransactionHash(error.hash, error.replacement.hash);
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    console.error({ error });
-                    receipt = error.receipt;
-                }
+                console.error({ e });
             }
 
             if (receipt) {

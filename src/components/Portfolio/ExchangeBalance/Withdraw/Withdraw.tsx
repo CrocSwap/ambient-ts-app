@@ -9,7 +9,6 @@ import {
 } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import {
-    IS_LOCAL_ENV,
     ZERO_ADDRESS,
     checkBlacklist,
 } from '../../../../ambient-utils/constants';
@@ -27,11 +26,6 @@ import {
     MaxButton,
     SVGContainer,
 } from '../../../../styled/Components/Portfolio';
-import {
-    TransactionError,
-    isTransactionFailedError,
-    isTransactionReplacedError,
-} from '../../../../utils/TransactionError';
 
 import {
     GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20,
@@ -248,30 +242,12 @@ export default function Withdraw(props: propsIF) {
                             provider,
                             tx.hash,
                             1,
+                            removePendingTx,
+                            addPendingTx,
+                            updateTransactionHash,
                         );
                     } catch (e) {
-                        const error = e as TransactionError;
-                        console.error({ error });
-                        // The user used "speed up" or something similar
-                        // in their client, but we now have the updated info
-                        if (isTransactionReplacedError(error)) {
-                            IS_LOCAL_ENV && console.debug('repriced');
-                            removePendingTx(error.hash);
-
-                            const newTransactionHash = error.replacement.hash;
-                            addPendingTx(newTransactionHash);
-
-                            updateTransactionHash(
-                                error.hash,
-                                error.replacement.hash,
-                            );
-                            IS_LOCAL_ENV &&
-                                console.debug({ newTransactionHash });
-                            receipt = error.receipt;
-                        } else if (isTransactionFailedError(error)) {
-                            console.error({ error });
-                            receipt = error.receipt;
-                        }
+                        console.error({ e });
                     }
 
                     if (receipt) {

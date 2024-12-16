@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
-import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { waitForTransaction } from '../../ambient-utils/dataLayer';
 import {
     AllVaultsServerIF,
@@ -12,11 +11,6 @@ import { AppStateContext } from '../../contexts';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../utils/TransactionError';
 
 export function useApprove() {
     const {
@@ -64,26 +58,16 @@ export function useApprove() {
             if (tx) {
                 let receipt;
                 try {
-                    receipt = await waitForTransaction(provider, tx.hash, 1);
+                    receipt = await waitForTransaction(
+                        provider,
+                        tx.hash,
+                        1,
+                        removePendingTx,
+                        addPendingTx,
+                        updateTransactionHash,
+                    );
                 } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-                    // The user used 'speed up' or something similar
-                    // in their client, but we now have the updated info
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && console.debug('repriced');
-                        removePendingTx(error.hash);
-
-                        const newTransactionHash = error.receipt.hash;
-                        addPendingTx(newTransactionHash);
-
-                        updateTransactionHash(error.hash, error.receipt.hash);
-                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
-                        console.error({ error });
-                        receipt = error.receipt;
-                    }
+                    console.error({ e });
                 }
                 if (receipt) {
                     addReceipt(receipt);
@@ -131,26 +115,16 @@ export function useApprove() {
             if (tx) {
                 let receipt;
                 try {
-                    receipt = await waitForTransaction(provider, tx.hash, 1);
+                    receipt = await waitForTransaction(
+                        provider,
+                        tx.hash,
+                        1,
+                        removePendingTx,
+                        addPendingTx,
+                        updateTransactionHash,
+                    );
                 } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-                    // The user used 'speed up' or something similar
-                    // in their client, but we now have the updated info
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && console.debug('repriced');
-                        removePendingTx(error.hash);
-
-                        const newTransactionHash = error.receipt.hash;
-                        addPendingTx(newTransactionHash);
-
-                        updateTransactionHash(error.hash, error.receipt.hash);
-                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
-                        console.error({ error });
-                        receipt = error.receipt;
-                    }
+                    console.error({ e });
                 }
                 if (receipt) {
                     addReceipt(receipt);

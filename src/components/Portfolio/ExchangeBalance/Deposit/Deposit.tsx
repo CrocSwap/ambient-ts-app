@@ -15,7 +15,6 @@ import {
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
     DEPOSIT_BUFFER_MULTIPLIER_L2,
     DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
-    IS_LOCAL_ENV,
     NUM_GWEI_IN_ETH,
     NUM_WEI_IN_GWEI,
     ZERO_ADDRESS,
@@ -41,11 +40,6 @@ import {
     MaxButton,
     SVGContainer,
 } from '../../../../styled/Components/Portfolio';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../../utils/TransactionError';
 import Button from '../../../Form/Button';
 import CurrencySelector from '../../../Form/CurrencySelector';
 import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
@@ -299,29 +293,12 @@ export default function Deposit(props: propsIF) {
                             provider,
                             tx.hash,
                             1,
+                            removePendingTx,
+                            addPendingTx,
+                            updateTransactionHash,
                         );
                     } catch (e) {
-                        const error = e as TransactionError;
-                        console.error({ error });
-                        // The user used "speed up" or something similar
-                        // in their client, but we now have the updated info
-                        if (isTransactionReplacedError(error)) {
-                            IS_LOCAL_ENV && 'repriced';
-                            removePendingTx(error.hash);
-
-                            const newTransactionHash = error.replacement.hash;
-                            addPendingTx(newTransactionHash);
-
-                            updateTransactionHash(
-                                error.hash,
-                                error.replacement.hash,
-                            );
-                            IS_LOCAL_ENV && { newTransactionHash };
-                            receipt = error.receipt;
-                        } else if (isTransactionFailedError(error)) {
-                            console.error({ error });
-                            receipt = error.receipt;
-                        }
+                        console.error({ e });
                     }
 
                     if (receipt) {
