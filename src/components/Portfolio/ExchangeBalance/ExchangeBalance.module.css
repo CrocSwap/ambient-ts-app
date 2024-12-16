@@ -26,11 +26,6 @@
     border-radius: var(--border-radius);
 }
 
-/* just for testing */
-/* .portfolio_motion_container * {
-    background-color: transparent;
-} */
-
 .portfolio_motion_sub_container {
     width: 100%;
     height: 100%;
