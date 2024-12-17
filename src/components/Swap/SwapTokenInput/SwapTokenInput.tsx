@@ -1,4 +1,4 @@
-import { CrocImpact } from '@crocswap-libs/sdk';
+import { CrocImpact, fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
 import {
     Dispatch,
     memo,
@@ -8,10 +8,6 @@ import {
     useRef,
     useState,
 } from 'react';
-import {
-    precisionOfInput,
-    truncateDecimals,
-} from '../../../ambient-utils/dataLayer';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { AppStateContext } from '../../../contexts';
@@ -24,7 +20,11 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { formatTokenInput, stringToBigInt } from '../../../utils/numbers';
+import {
+    formatTokenInput,
+    normalizeExponential,
+    stringToBigInt,
+} from '../../../utils/numbers';
 import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 
@@ -201,26 +201,28 @@ function SwapTokenInput(props: propsIF) {
             });
         }
         if (sellToken) {
-            let precisionForTruncation = 6;
+            const estimatedBuyBigInt = impact?.buyQty
+                ? stringToBigInt(impact.buyQty, tokenB.decimals)
+                : 0n;
 
-            const rawTokenBQty = impact?.buyQty ? parseFloat(impact.buyQty) : 0;
+            const precisionForTruncation =
+                tokenB.decimals < 6
+                    ? tokenB.decimals
+                    : estimatedBuyBigInt <
+                        fromDisplayQty('0.000001', tokenB.decimals)
+                      ? tokenB.decimals
+                      : estimatedBuyBigInt <
+                          fromDisplayQty('100', tokenB.decimals)
+                        ? 3
+                        : estimatedBuyBigInt >=
+                            fromDisplayQty('100', tokenB.decimals)
+                          ? 2
+                          : 6;
 
-            // find the largest precision that doesn't exceed the token's decimal places
-            while (
-                precisionOfInput(
-                    rawTokenBQty.toPrecision(precisionForTruncation),
-                ) > tokenB.decimals &&
-                precisionForTruncation > 1
-            ) {
-                precisionForTruncation--;
-            }
-            const truncatedTokenBQty = rawTokenBQty
-                ? rawTokenBQty < 2
-                    ? rawTokenBQty
-                          .toPrecision(precisionForTruncation)
-                          .replace(/\.?0+$/, '')
-                    : truncateDecimals(rawTokenBQty, rawTokenBQty < 100 ? 3 : 2)
-                : '';
+            const normalizedEstimatedBuyString = normalizeExponential(
+                toDisplayQty(estimatedBuyBigInt, tokenB.decimals),
+                precisionForTruncation,
+            ).replace(/\.?0+$/, '');
 
             // prevent writing result of impact query to the UI if a new query has been made
             if (
@@ -229,42 +231,42 @@ function SwapTokenInput(props: propsIF) {
                     tokenA.decimals,
                 ) === stringToBigInt(input, tokenA.decimals)
             ) {
-                setBuyQtyString(truncatedTokenBQty);
+                setBuyQtyString(normalizedEstimatedBuyString);
                 setIsBuyLoading(false);
             }
         } else {
-            let precisionForTruncation = 6;
+            const estimatedSellBigInt = impact?.buyQty
+                ? stringToBigInt(impact.sellQty, tokenA.decimals)
+                : 0n;
 
-            const rawTokenAQty = impact?.sellQty
-                ? parseFloat(impact.sellQty)
-                : 0;
+            const precisionForTruncation =
+                tokenA.decimals < 6
+                    ? tokenA.decimals
+                    : estimatedSellBigInt <
+                        fromDisplayQty('0.01', tokenA.decimals)
+                      ? tokenA.decimals
+                      : estimatedSellBigInt >
+                          fromDisplayQty('100', tokenA.decimals)
+                        ? 2
+                        : estimatedSellBigInt >
+                            fromDisplayQty('2', tokenA.decimals)
+                          ? 3
+                          : 6;
 
-            // find the largest precision that doesn't exceed the token's decimal places
-            while (
-                precisionOfInput(
-                    rawTokenAQty.toPrecision(precisionForTruncation),
-                ) > tokenA.decimals &&
-                precisionForTruncation > 1
-            ) {
-                precisionForTruncation--;
-            }
-
-            const truncatedTokenAQty = rawTokenAQty
-                ? rawTokenAQty < 2
-                    ? rawTokenAQty
-                          .toPrecision(precisionForTruncation)
-                          .replace(/\.?0+$/, '')
-                    : truncateDecimals(rawTokenAQty, rawTokenAQty < 100 ? 3 : 2)
-                : '';
+            const normalizedEstimatedSellString = normalizeExponential(
+                toDisplayQty(estimatedSellBigInt, tokenA.decimals),
+                precisionForTruncation,
+            ).replace(/\.?0+$/, '');
 
             // prevent writing result of impact query to the UI if a new query has been made
-            if (
-                stringToBigInt(
-                    lastQuery.current.inputValue,
-                    tokenB.decimals,
-                ) === stringToBigInt(input, tokenB.decimals)
-            ) {
-                setSellQtyString(truncatedTokenAQty);
+            const lastQueryBigInt = stringToBigInt(
+                lastQuery.current.inputValue,
+                tokenB.decimals,
+            );
+            const currentQueryBigInt = stringToBigInt(input, tokenB.decimals);
+
+            if (lastQueryBigInt === currentQueryBigInt) {
+                setSellQtyString(normalizedEstimatedSellString);
                 setIsSellLoading(false);
             }
         }
@@ -426,8 +428,7 @@ function SwapTokenInput(props: propsIF) {
                 tokenInput={
                     isTokenAPrimary ||
                     isLiquidityInsufficient ||
-                    (!isTokenAPrimary &&
-                        stringToBigInt(buyQtyString, tokenB.decimals) > 0)
+                    (!isTokenAPrimary && parseFloat(buyQtyString) > 0)
                         ? sellQtyString
                         : ''
                 }
@@ -462,7 +463,7 @@ function SwapTokenInput(props: propsIF) {
                 tokenInput={
                     !isTokenAPrimary ||
                     isLiquidityInsufficient ||
-                    stringToBigInt(sellQtyString, tokenA.decimals) > 0n
+                    parseFloat(sellQtyString) > 0
                         ? buyQtyString
                         : ''
                 }

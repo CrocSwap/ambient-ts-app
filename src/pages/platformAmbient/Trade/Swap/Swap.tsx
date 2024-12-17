@@ -48,6 +48,7 @@ import {
 } from '../../../../ambient-utils/constants';
 import { useApprove } from '../../../../App/functions/approve';
 import { calcL1Gas } from '../../../../App/functions/calcL1Gas';
+import useDebounce from '../../../../App/hooks/useDebounce';
 import { AppStateContext } from '../../../../contexts';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
@@ -125,29 +126,26 @@ function Swap(props: propsIF) {
         !isTokenAPrimary ? primaryQuantity : '',
     );
 
-    const sellQtyNoExponentString = useMemo(() => {
-        try {
-            return sellQtyString.includes('e')
-                ? toDisplayQty(
-                      fromDisplayQty(sellQtyString || '0', tokenA.decimals),
-                      tokenA.decimals,
-                  )
-                : sellQtyString;
-        } catch (error) {
-            console.log({ error });
-            return sellQtyString;
-        }
-    }, [sellQtyString, tokenA.decimals]);
+    const sellQtyBigInt = useMemo(
+        () => fromDisplayQty(sellQtyString || '0', tokenA.decimals),
+        [sellQtyString, tokenA.decimals],
+    );
 
+    const sellQtyNoExponentString = useMemo(() => {
+        return sellQtyString.includes('e')
+            ? toDisplayQty(sellQtyBigInt, tokenA.decimals)
+            : sellQtyString;
+    }, [sellQtyBigInt, sellQtyString, tokenA.decimals]);
+
+    const buyQtyBigInt = useMemo(
+        () => fromDisplayQty(buyQtyString || '0', tokenB.decimals),
+        [buyQtyString, tokenB.decimals],
+    );
     const buyQtyNoExponentString = useMemo(() => {
-        const buyQtyBigInt = fromDisplayQty(
-            buyQtyString || '0',
-            tokenB.decimals,
-        );
         return buyQtyString.includes('e')
             ? toDisplayQty(buyQtyBigInt, tokenB.decimals)
             : buyQtyString;
-    }, [buyQtyString, tokenB.decimals]);
+    }, [buyQtyBigInt, buyQtyString, tokenB.decimals]);
 
     const [isSellLoading, setIsSellLoading] = useState(false);
     const [isBuyLoading, setIsBuyLoading] = useState(false);
@@ -766,18 +764,30 @@ function Swap(props: propsIF) {
         : poolData.basePrice;
 
     const percentDiffUsdValue =
-        usdValueTokenA && usdValueTokenB
+        usdValueTokenA &&
+        usdValueTokenB &&
+        buyQtyBigInt > 0n &&
+        sellQtyBigInt > 0n
             ? ((usdValueTokenB * parseFloat(buyQtyNoExponentString) -
                   usdValueTokenA * parseFloat(sellQtyNoExponentString)) /
                   (usdValueTokenA * parseFloat(sellQtyNoExponentString))) *
               100
             : 0;
 
-    const showUsdDiffWarning =
+    const usdDiffGreaterThanThreshold =
         (percentDiffUsdValue || 0) < -10 &&
         isTokenAWalletBalanceSufficient &&
         !isLiquidityInsufficient &&
         !(isButtonDisabled && swapButtonErrorMessage === 'Enter an Amount');
+
+    const usdDiffGreaterThanThresholdDebounced = useDebounce(
+        usdDiffGreaterThanThreshold,
+        500,
+    );
+
+    const showUsdDiffWarning = usdDiffGreaterThanThreshold
+        ? usdDiffGreaterThanThresholdDebounced
+        : false;
 
     const showWarning = showPriceImpactWarning || showUsdDiffWarning;
 
