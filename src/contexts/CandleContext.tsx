@@ -372,7 +372,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         ).getTime();
 
         return lastDate;
-    }, [candleData?.candles?.length, lastCandleDateInSeconds]);
+    }, [lastCandleDateInSeconds]);
 
     const numDurationsNeeded = useMemo(() => {
         if (candleTimeLocal === undefined) return;
