@@ -332,12 +332,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         }
                         setIsCandleDataNull(false);
                     } else {
-                        if (
-                            candleScale?.isFetchFirst200Candle &&
-                            candleTimeLocal === 60
-                        ) {
-                            setIsCandleDataNull(true);
-                        }
+                        setIsCandleDataNull(true);
                     }
 
                     if (candleSeries && candleSeries.length > 0) {
