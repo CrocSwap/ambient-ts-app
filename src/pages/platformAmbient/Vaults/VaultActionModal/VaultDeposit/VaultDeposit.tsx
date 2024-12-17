@@ -120,21 +120,14 @@ export default function VaultDeposit(props: Props) {
 
     // calculate price of gas for vault deposit
     useEffect(() => {
-        if (crocEnv) {
-            (async () => {
-                const mainAssetPrice =
-                    (
-                        await cachedFetchTokenPrice(
-                            mainAsset.address,
-                            chainId,
-                            crocEnv,
-                        )
-                    )?.usdPrice || 0.0;
+        (async () => {
+            const mainAssetPrice =
+                (await cachedFetchTokenPrice(mainAsset.address, chainId))
+                    ?.usdPrice || 0.0;
 
-                setMainAssetPrice(mainAssetPrice);
-            })();
-        }
-    }, [crocEnv]);
+            setMainAssetPrice(mainAssetPrice);
+        })();
+    }, [mainAsset.address, chainId]);
 
     // calculate price of gas for vault deposit
     useEffect(() => {
@@ -203,6 +196,7 @@ export default function VaultDeposit(props: Props) {
         if (tx?.hash) {
             addPendingTx(tx?.hash);
             addTransactionByType({
+                chainId: chainId,
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txType: 'Deposit',
