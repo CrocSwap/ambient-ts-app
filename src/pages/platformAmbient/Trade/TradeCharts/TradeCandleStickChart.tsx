@@ -253,9 +253,11 @@ function TradeCandleStickChart(props: propsIF) {
     }, [isFetchingEnoughData]);
 
     const sumActiveLiq = unparsedLiquidityData
-        ? unparsedLiquidityData.ranges.reduce((sum, range) => {
-              return sum + (range.activeLiq || 0);
-          }, 0)
+        ? unparsedLiquidityData.ranges.askRanges
+              .concat(unparsedLiquidityData.ranges.bidRanges)
+              .reduce((sum, range) => {
+                  return sum + (range.activeLiq || 0);
+              }, 0)
         : 0;
 
     // Parse liquidity data
@@ -290,6 +292,10 @@ function TradeCandleStickChart(props: propsIF) {
                 gridSize,
             );
 
+            const allData = unparsedLiquidityData.ranges.askRanges.concat(
+                unparsedLiquidityData.ranges.bidRanges,
+            );
+
             const limitBoundary = parseFloat(
                 rangeBoundary.pinnedMaxPriceDisplay,
             );
@@ -298,7 +304,7 @@ function TradeCandleStickChart(props: propsIF) {
                 poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
             const domainLeft = Math.min(
-                ...unparsedLiquidityData.ranges
+                ...allData
                     .filter((item) => item.activeLiq > 0)
                     .map((o: any) => {
                         return o.activeLiq !== undefined
@@ -307,13 +313,13 @@ function TradeCandleStickChart(props: propsIF) {
                     }),
             );
             const domainRight = Math.max(
-                ...unparsedLiquidityData.ranges.map((o: any) => {
+                ...allData.map((o: any) => {
                     return o.activeLiq !== undefined ? o.activeLiq : 0;
                 }),
             );
 
             const depthBidLeft = Math.min(
-                ...unparsedLiquidityData.ranges.map((o: any) => {
+                ...allData.map((o: any) => {
                     return o.cumBidLiq !== undefined && o.cumBidLiq !== 0
                         ? o.cumBidLiq
                         : Infinity;
@@ -321,7 +327,7 @@ function TradeCandleStickChart(props: propsIF) {
             );
 
             const depthBidRight = Math.max(
-                ...unparsedLiquidityData.ranges.map((o: any) => {
+                ...allData.map((o: any) => {
                     return o.cumBidLiq !== undefined && o.cumBidLiq !== 0
                         ? o.cumBidLiq
                         : 0;
@@ -329,7 +335,7 @@ function TradeCandleStickChart(props: propsIF) {
             );
 
             const depthAskLeft = Math.min(
-                ...unparsedLiquidityData.ranges.map((o: any) => {
+                ...allData.map((o: any) => {
                     return o.cumAskLiq !== undefined && o.cumAskLiq !== 0
                         ? o.cumAskLiq
                         : Infinity;
@@ -337,7 +343,7 @@ function TradeCandleStickChart(props: propsIF) {
             );
 
             const depthAskRight = Math.max(
-                ...unparsedLiquidityData.ranges.map((o: any) => {
+                ...allData.map((o: any) => {
                     const price = isDenomBase
                         ? o.upperBoundInvPriceDecimalCorrected
                         : o.upperBoundPriceDecimalCorrected;
@@ -365,7 +371,7 @@ function TradeCandleStickChart(props: propsIF) {
                 ])
                 .range([30, 550]);
 
-            unparsedLiquidityData.ranges.map((data: any) => {
+            allData.map((data: any) => {
                 const liqUpperPrices = isDenomBase
                     ? data.upperBoundInvPriceDecimalCorrected
                     : data.lowerBoundPriceDecimalCorrected;

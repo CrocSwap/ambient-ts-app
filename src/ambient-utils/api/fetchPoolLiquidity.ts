@@ -112,7 +112,7 @@ function bumpsToRanges(
     quoteDecimals: number,
     basePrice: number,
     quotePrice: number,
-): LiquidityRangeIF[] {
+): LiquidityParsedDataIF {
     let bumps = curve.liquidityBumps ? curve.liquidityBumps : [];
 
     // Insert a synthetic bump right at the current price tick, so curve is smooth
@@ -238,9 +238,7 @@ function bumpsToRanges(
         r.cumDeltaQuote += cumDeltaQuote;
     });
 
-    ranges = bidRanges.concat(askRanges);
-
-    ranges.forEach((r) => {
+    bidRanges.forEach((r) => {
         const cumDeltaBaseDecimal = r.cumDeltaBase / Math.pow(10, baseDecimals);
         const cumDeltaQuoteDecimal =
             r.cumDeltaQuote / Math.pow(10, quoteDecimals);
@@ -250,12 +248,26 @@ function bumpsToRanges(
             (Math.abs(cumDeltaBaseUSD) + Math.abs(cumDeltaQuoteUSD)) / 2;
     });
 
-    return ranges;
+    askRanges.forEach((r) => {
+        const cumDeltaBaseDecimal = r.cumDeltaBase / Math.pow(10, baseDecimals);
+        const cumDeltaQuoteDecimal =
+            r.cumDeltaQuote / Math.pow(10, quoteDecimals);
+        const cumDeltaBaseUSD = cumDeltaBaseDecimal * basePrice;
+        const cumDeltaQuoteUSD = cumDeltaQuoteDecimal * quotePrice;
+        r.cumAverageUSD =
+            (Math.abs(cumDeltaBaseUSD) + Math.abs(cumDeltaQuoteUSD)) / 2;
+    });
+
+    return {
+        askRanges: askRanges,
+        bidRanges: bidRanges,
+        hasAmbientPosition: isAmbient,
+    };
 }
 
 export interface LiquidityDataIF {
     currentTick: number;
-    ranges: Array<LiquidityRangeIF>;
+    ranges: LiquidityParsedDataIF;
     curveState: {
         base: string;
         quote: string;
@@ -284,6 +296,12 @@ export interface LiquidityRangeIF {
     cumDeltaBase: number;
     cumDeltaQuote: number;
     cumAverageUSD: number;
+}
+
+export interface LiquidityParsedDataIF {
+    askRanges: Array<LiquidityRangeIF>;
+    bidRanges: Array<LiquidityRangeIF>;
+    hasAmbientPosition: boolean;
 }
 
 interface LiquidityCurveServerIF {
