@@ -51,10 +51,11 @@ function SwapExtraInfo(props: propsIF) {
           }) + ' %'
         : '...';
 
-    const displayPriceWithDenom =
-        isDenomBase && poolPriceDisplay
+    const displayPriceWithDenom = poolPriceDisplay
+        ? isDenomBase
             ? 1 / poolPriceDisplay
-            : (poolPriceDisplay ?? 0);
+            : (poolPriceDisplay ?? 0)
+        : effectivePriceWithDenom;
 
     const displayPriceString = displayPriceWithDenom
         ? getFormattedNumber({
