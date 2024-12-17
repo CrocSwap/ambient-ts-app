@@ -7,6 +7,7 @@ import {
     TokenIF,
     VaultStrategy,
 } from '../../ambient-utils/types';
+import { AppStateContext } from '../../contexts';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
@@ -25,6 +26,9 @@ export function useApprove() {
         updateTransactionHash,
     } = useContext(ReceiptContext);
     const { userAddress } = useContext(UserDataContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
     // TODO: useTokenBalancesAndAllowances replaces this in the init page branch
@@ -50,6 +54,7 @@ export function useApprove() {
             if (tx) addPendingTx(tx?.hash);
             if (tx?.hash)
                 addTransactionByType({
+                    chainId: chainId,
                     userAddress: userAddress || '',
                     txHash: tx.hash,
                     txType: 'Approve',
@@ -115,6 +120,7 @@ export function useApprove() {
             if (tx) addPendingTx(tx?.hash);
             if (tx?.hash)
                 addTransactionByType({
+                    chainId: chainId,
                     userAddress: userAddress || '',
                     txHash: tx.hash,
                     txType: 'Approve',

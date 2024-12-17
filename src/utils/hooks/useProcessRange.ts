@@ -95,55 +95,36 @@ export const useProcessRange = (
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (crocEnv) {
-            const fetchTokenPrice = async () => {
-                const baseTokenPrice =
-                    (
-                        await cachedFetchTokenPrice(
-                            position.base,
-                            position.chainId,
-                            crocEnv,
-                        )
-                    )?.usdPrice || 0.0;
-                const quoteTokenPrice =
-                    (
-                        await cachedFetchTokenPrice(
-                            position.quote,
-                            position.chainId,
-                            crocEnv,
-                        )
-                    )?.usdPrice || 0.0;
+        const fetchTokenPrice = async () => {
+            const baseTokenPrice =
+                (await cachedFetchTokenPrice(position.base, position.chainId))
+                    ?.usdPrice || 0.0;
+            const quoteTokenPrice =
+                (await cachedFetchTokenPrice(position.quote, position.chainId))
+                    ?.usdPrice || 0.0;
 
-                if (baseTokenPrice) {
-                    setBasePrice(baseTokenPrice);
-                } else if (
-                    quoteTokenPrice &&
-                    position.curentPoolPriceDisplayNum
-                ) {
-                    // this may be backwards
-                    const estimatedBasePrice =
-                        quoteTokenPrice / position.curentPoolPriceDisplayNum;
-                    setBasePrice(estimatedBasePrice);
-                }
-                if (quoteTokenPrice) {
-                    setQuotePrice(quoteTokenPrice);
-                } else if (
-                    baseTokenPrice &&
-                    position.curentPoolPriceDisplayNum
-                ) {
-                    const estimatedQuotePrice =
-                        baseTokenPrice * position.curentPoolPriceDisplayNum;
-                    setQuotePrice(estimatedQuotePrice);
-                }
-            };
+            if (baseTokenPrice) {
+                setBasePrice(baseTokenPrice);
+            } else if (quoteTokenPrice && position.curentPoolPriceDisplayNum) {
+                // this may be backwards
+                const estimatedBasePrice =
+                    quoteTokenPrice / position.curentPoolPriceDisplayNum;
+                setBasePrice(estimatedBasePrice);
+            }
+            if (quoteTokenPrice) {
+                setQuotePrice(quoteTokenPrice);
+            } else if (baseTokenPrice && position.curentPoolPriceDisplayNum) {
+                const estimatedQuotePrice =
+                    baseTokenPrice * position.curentPoolPriceDisplayNum;
+                setQuotePrice(estimatedQuotePrice);
+            }
+        };
 
-            fetchTokenPrice();
-        }
+        fetchTokenPrice();
     }, [
         position.base,
         position.quote,
         position.chainId,
-        crocEnv !== undefined,
         position.curentPoolPriceDisplayNum,
     ]);
 

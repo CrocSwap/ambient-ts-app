@@ -624,6 +624,7 @@ function Swap(props: propsIF) {
 
             if (tx.hash) {
                 addTransactionByType({
+                    chainId: chainId,
                     userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction:

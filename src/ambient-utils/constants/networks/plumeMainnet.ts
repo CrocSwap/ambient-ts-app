@@ -36,6 +36,7 @@ export const plumeMainnet: NetworkIF = {
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Plume',
+    tokenPriceQueryAssetPlatform: 'plume',
     topPools: [
         new TopPool(plumeETH, plumeUSD, chainSpecFromSDK.poolIndex),
         new TopPool(plumeNEV, plumeUSD, chainSpecFromSDK.poolIndex),
