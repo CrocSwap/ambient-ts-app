@@ -340,12 +340,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const [isToolbarOpen, setIsToolbarOpen] =
         useState<boolean>(initialIsToolbarOpen);
 
-    const currentPoolString =
-        undoRedoOptions.currentPool.tokenA.address +
-        '/' +
-        undoRedoOptions.currentPool.tokenB.address;
-
-    const chartSettings = useChartSettings(currentPoolString);
+    const chartSettings = useChartSettings();
 
     const chartContext = {
         chartSettings,

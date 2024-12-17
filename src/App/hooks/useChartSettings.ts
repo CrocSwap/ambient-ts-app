@@ -48,9 +48,7 @@ export interface chartSettingsMethodsIF {
 }
 
 // hook to manage user preferences for chart settings
-export const useChartSettings = (
-    currentPoolString: string,
-): chartSettingsMethodsIF => {
+export const useChartSettings = (): chartSettingsMethodsIF => {
     // fn to get user preference for overlay to display on the chart by module
     // will return `undefined` if the value does not exist yet
     // value of `undefined` will be handled downstream
