@@ -154,11 +154,15 @@ function SwapExtraInfo(props: propsIF) {
             },
             {
                 title: 'Liquidity Provider Fee',
-                tooltipTitle: `This is a dynamically updated rate to reward ${
-                    isDenomBase ? baseTokenSymbol : quoteTokenSymbol
-                } / ${
-                    isDenomBase ? quoteTokenSymbol : baseTokenSymbol
-                } liquidity providers.`,
+                tooltipTitle:
+                    route && route?.paths[0].hops.length == 2
+                        ? `This is a dynamically updated rate to reward ${
+                              isDenomBase ? baseTokenSymbol : quoteTokenSymbol
+                          } / ${
+                              isDenomBase ? quoteTokenSymbol : baseTokenSymbol
+                          } liquidity providers.`
+                        : `This is a dynamically updated rate to reward liquidity
+                  providers in pools along the swap route.`,
                 data: liquidityProviderFeeString,
                 placement: 'bottom',
             },

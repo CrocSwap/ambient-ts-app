@@ -50,7 +50,6 @@ import {
 import { useApprove } from '../../../../App/functions/approve';
 import { calcL1Gas } from '../../../../App/functions/calcL1Gas';
 import { AppStateContext } from '../../../../contexts';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
@@ -76,6 +75,7 @@ function Swap(props: propsIF) {
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const {
+        allPoolStats,
         gasPriceInGwei,
         isActiveNetworkBlast,
         isActiveNetworkScroll,
@@ -100,7 +100,6 @@ function Swap(props: propsIF) {
         updateTransactionHash,
         pendingTransactions,
     } = useContext(ReceiptContext);
-    const { allPoolStats } = useContext(ChainDataContext);
 
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
@@ -110,7 +109,6 @@ function Swap(props: propsIF) {
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
     // TODO: confirm this doesn't break data that needs to be different when on trade page
-    const { liquidityFee } = useContext(GraphDataContext);
     const {
         tokenA,
         tokenB,
@@ -191,6 +189,34 @@ function Swap(props: propsIF) {
     const priceImpact = useMemo(() => {
         return lastImpactQuery ? lastImpactQuery.impact : undefined;
     }, [lastImpactQuery]);
+
+    const liquidityFee = useMemo(() => {
+        const impact = lastImpactQuery?.impact;
+        if (allPoolStats == undefined || impact == undefined) return undefined;
+        let liquidityFee = 0;
+        for (const path of impact.routes[impact.chosenRoute].paths) {
+            for (let i = 0; i < path.hops.length - 1; i++) {
+                const fromPool = path.hops[i];
+                const toPool = path.hops[i + 1];
+                const base =
+                    fromPool.token.toLowerCase() < toPool.token.toLowerCase()
+                        ? fromPool.token
+                        : toPool.token;
+                const quote =
+                    fromPool.token.toLowerCase() < toPool.token.toLowerCase()
+                        ? toPool.token
+                        : fromPool.token;
+                const pool = allPoolStats.find(
+                    (pool) =>
+                        pool.base.toLowerCase() === base.toLowerCase() &&
+                        pool.quote.toLowerCase() === quote.toLowerCase() &&
+                        pool.poolIdx == fromPool.poolIdx,
+                );
+                if (pool) liquidityFee += pool.feeRate;
+            }
+        }
+        return liquidityFee;
+    }, [lastImpactQuery, allPoolStats]);
 
     useEffect(() => {
         if (primaryQuantity === '') {
