@@ -505,8 +505,23 @@ function Swap(props: propsIF) {
                     ? GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX
                     : GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET;
 
+            let intermediateSwapsGas = 0;
+            let swapPaths = 1;
+            if (lastImpactQuery?.impact) {
+                const impact = lastImpactQuery.impact;
+                let swaps = 0;
+                for (const path of impact.routes[impact.chosenRoute].paths)
+                    swaps += path.hops.length - 2;
+                swapPaths = impact.routes[impact.chosenRoute].paths.length;
+                intermediateSwapsGas =
+                    swaps * GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX;
+            }
+
+            const totalSwapGas =
+                swapPaths * averageSwapCostInGasDrops + intermediateSwapsGas;
+
             const costOfMainnetSwapInETH =
-                gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
+                gasPriceInGwei * totalSwapGas * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyMainnet(
                 SWAP_BUFFER_MULTIPLIER_MAINNET * costOfMainnetSwapInETH,
@@ -515,7 +530,7 @@ function Swap(props: propsIF) {
                 l1GasFeeSwapInGwei / NUM_GWEI_IN_ETH;
 
             const l2costOfScrollSwapInETH =
-                gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
+                gasPriceInGwei * totalSwapGas * NUM_GWEI_IN_WEI;
             const costOfScrollSwapInETH =
                 l1costOfScrollSwapInETH + l2costOfScrollSwapInETH;
 
@@ -525,7 +540,7 @@ function Swap(props: propsIF) {
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageSwapCostInGasDrops *
+                totalSwapGas *
                 NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
@@ -545,6 +560,7 @@ function Swap(props: propsIF) {
         isSaveAsDexSurplusChecked,
         extraL1GasFeeSwap,
         l1GasFeeSwapInGwei,
+        lastImpactQuery,
     ]);
 
     useEffect(() => {
