@@ -1,4 +1,4 @@
-import { CrocImpact } from '@crocswap-libs/sdk';
+import { CrocSmartSwapImpact } from '@crocswap-libs/sdk';
 import {
     Dispatch,
     memo,
@@ -14,7 +14,7 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { AppStateContext } from '../../../contexts';
+import { AppStateContext, UserPreferenceContext } from '../../../contexts';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -42,7 +42,7 @@ interface propsIF {
             | {
                   input: string;
                   isInputSell: boolean;
-                  impact: CrocImpact | undefined;
+                  impact: CrocSmartSwapImpact | undefined;
               }
             | undefined
         >
@@ -81,7 +81,7 @@ function SwapTokenInput(props: propsIF) {
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, allPoolStats } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { isUserOnline } = useContext(AppStateContext);
     const {
@@ -107,6 +107,7 @@ function SwapTokenInput(props: propsIF) {
         shouldSwapDirectionReverse,
         setShouldSwapDirectionReverse,
     } = useContext(TradeDataContext);
+    const { directSwapsOnly } = useContext(UserPreferenceContext);
     // hook to generate navigation actions with pre-loaded path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
 
@@ -150,6 +151,7 @@ function SwapTokenInput(props: propsIF) {
         isTokenAPrimary,
         crocEnv,
         chainId,
+        directSwapsOnly,
     ]);
 
     useEffect(() => {
@@ -178,6 +180,7 @@ function SwapTokenInput(props: propsIF) {
             isNaN(parseFloat(input)) ||
             parseFloat(input) <= 0 ||
             !crocEnv
+            // allPoolStats === undefined
         ) {
             setIsLiquidityInsufficient(false);
 
@@ -190,6 +193,8 @@ function SwapTokenInput(props: propsIF) {
             tokenB.address,
             slippageTolerancePercentage / 100,
             input,
+            allPoolStats || [],
+            directSwapsOnly.isEnabled,
         );
         if (impact === undefined) {
             setLastImpactQuery(undefined);
@@ -272,8 +277,8 @@ function SwapTokenInput(props: propsIF) {
         // prevent swaps with a price impact in excess of -99.99% or 1 million percent
         if (impact) {
             if (
-                impact.percentChange < -0.9999 ||
-                impact.percentChange > 10000
+                impact.percentChange &&
+                (impact.percentChange < -0.9999 || impact.percentChange > 10000)
             ) {
                 setIsLiquidityInsufficient(true);
                 setSwapAllowed(false);

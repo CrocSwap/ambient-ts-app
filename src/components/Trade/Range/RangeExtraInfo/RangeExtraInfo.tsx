@@ -89,7 +89,7 @@ function RangeExtraInfo(props: propsIF) {
             title: 'Estimated APR',
             tooltipTitle: `Estimated APR is based on selected range width, historical volume, fee rate, and pool
                 liquidity. This value is only a historical estimate, and does not account
-                for divergence loss from large price swings. 
+                for divergence loss from large price swings.
                 Very concentrated or unbalanced ranges are more likely to go out of range and not earn fees while out of range.
                 Returns not guaranteed.`,
             data: estRangeAprString,

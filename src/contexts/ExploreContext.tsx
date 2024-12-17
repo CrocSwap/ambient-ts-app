@@ -170,6 +170,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             lastPriceLiq: poolStats?.lastPriceLiq || 0,
             lastPriceSwap: poolStats?.lastPriceSwap || 0,
             latestTime: poolStats?.latestTime || 0,
+            events: poolStats?.events || 0,
             isHistorical: false,
         };
 
@@ -196,6 +197,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             lastPriceLiq: poolStats?.lastPriceLiq || 0,
             lastPriceSwap: poolStats?.lastPriceSwap || 0,
             latestTime: poolStats?.latestTime || 0,
+            events: poolStats?.events || 0,
             isHistorical: false,
         };
 

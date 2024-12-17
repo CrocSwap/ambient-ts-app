@@ -13,7 +13,9 @@ import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationMo
 import DollarizationModalControl from '../DollarizationModalControl/DollarizationModalControl';
 import Modal from '../Modal/Modal';
 import SendToDexBalControl from '../SendToDexBalControl/SendToDexBalControl';
+import DirectSwapsOnlyModalControl from '../DirectSwapsOnlyControl/DirectSwapsOnlyControl';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
+import { directSwapsOnlyIF } from '../../../App/hooks/useDirectSwapsOnlyPref';
 
 export type TransactionModuleType =
     | 'Swap'
@@ -27,11 +29,19 @@ interface propsIF {
     slippage: SlippageMethodsIF;
     dexBalSwap?: dexBalanceMethodsIF;
     bypassConfirm: skipConfirmIF;
+    directSwapsOnly?: directSwapsOnlyIF;
     onClose: () => void;
 }
 
 export default function TransactionSettingsModal(props: propsIF) {
-    const { module, slippage, dexBalSwap, onClose, bypassConfirm } = props;
+    const {
+        module,
+        slippage,
+        dexBalSwap,
+        directSwapsOnly,
+        onClose,
+        bypassConfirm,
+    } = props;
     const { tokenA, tokenB } = useContext(TradeDataContext);
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
@@ -50,11 +60,18 @@ export default function TransactionSettingsModal(props: propsIF) {
         ? dexBalSwap.outputToDexBal.isEnabled
         : false;
 
+    const persistedDirectSwapsOnly: boolean = directSwapsOnly
+        ? directSwapsOnly.isEnabled
+        : false;
+
     const [currentSlippage, setCurrentSlippage] =
         useState<number>(persistedSlippage);
 
     const [currentSaveSwapToDexBal, setCurrentSaveSwapToDexBal] =
         useState<boolean>(persistedSaveSwapToDexBal);
+
+    const [currentDirectSwapsOnly, setCurrentDirectSwapsOnly] =
+        useState<boolean>(persistedDirectSwapsOnly);
 
     const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
         bypassConfirm.isEnabled,
@@ -74,6 +91,11 @@ export default function TransactionSettingsModal(props: propsIF) {
                 : dexBalSwap.outputToDexBal.disable()
             : undefined;
         setIsTradeDollarizationEnabled(currentDollarizationMode);
+        directSwapsOnly
+            ? currentDirectSwapsOnly
+                ? directSwapsOnly.enable()
+                : directSwapsOnly.disable()
+            : undefined;
         onClose();
     };
 
@@ -128,6 +150,14 @@ export default function TransactionSettingsModal(props: propsIF) {
                         <SendToDexBalControl
                             tempSaveToDex={currentSaveSwapToDexBal}
                             setTempSaveToDex={setCurrentSaveSwapToDexBal}
+                            displayInSettings={true}
+                        />
+                    )}
+
+                    {module === 'Swap' && (
+                        <DirectSwapsOnlyModalControl
+                            tempDirectSwapsOnly={currentDirectSwapsOnly}
+                            setTempDirectSwapsOnly={setCurrentDirectSwapsOnly}
                             displayInSettings={true}
                         />
                     )}

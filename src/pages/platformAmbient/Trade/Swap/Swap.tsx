@@ -1,5 +1,5 @@
 import {
-    CrocImpact,
+    CrocSmartSwapImpact,
     bigIntToFloat,
     fromDisplayQty,
     toDisplayQty,
@@ -50,7 +50,6 @@ import {
 import { useApprove } from '../../../../App/functions/approve';
 import { calcL1Gas } from '../../../../App/functions/calcL1Gas';
 import { AppStateContext } from '../../../../contexts';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
@@ -76,6 +75,7 @@ function Swap(props: propsIF) {
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const {
+        allPoolStats,
         gasPriceInGwei,
         isActiveNetworkBlast,
         isActiveNetworkScroll,
@@ -90,9 +90,8 @@ function Swap(props: propsIF) {
         tokenADexBalance,
         isTokenABase: isSellTokenBase,
     } = useContext(TradeTokenContext);
-    const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
-        UserPreferenceContext,
-    );
+    const { swapSlippage, dexBalSwap, bypassConfirmSwap, directSwapsOnly } =
+        useContext(UserPreferenceContext);
     const {
         addPendingTx,
         addReceipt,
@@ -110,7 +109,6 @@ function Swap(props: propsIF) {
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
     // TODO: confirm this doesn't break data that needs to be different when on trade page
-    const { liquidityFee } = useContext(GraphDataContext);
     const {
         tokenA,
         tokenB,
@@ -183,7 +181,7 @@ function Swap(props: propsIF) {
         | {
               input: string;
               isInputSell: boolean;
-              impact: CrocImpact | undefined;
+              impact: CrocSmartSwapImpact | undefined;
           }
         | undefined
     >();
@@ -191,6 +189,34 @@ function Swap(props: propsIF) {
     const priceImpact = useMemo(() => {
         return lastImpactQuery ? lastImpactQuery.impact : undefined;
     }, [lastImpactQuery]);
+
+    const liquidityFee = useMemo(() => {
+        const impact = lastImpactQuery?.impact;
+        if (allPoolStats == undefined || impact == undefined) return undefined;
+        let liquidityFee = 0;
+        for (const path of impact.routes[impact.chosenRoute].paths) {
+            for (let i = 0; i < path.hops.length - 1; i++) {
+                const fromPool = path.hops[i];
+                const toPool = path.hops[i + 1];
+                const base =
+                    fromPool.token.toLowerCase() < toPool.token.toLowerCase()
+                        ? fromPool.token
+                        : toPool.token;
+                const quote =
+                    fromPool.token.toLowerCase() < toPool.token.toLowerCase()
+                        ? toPool.token
+                        : fromPool.token;
+                const pool = allPoolStats.find(
+                    (pool) =>
+                        pool.base.toLowerCase() === base.toLowerCase() &&
+                        pool.quote.toLowerCase() === quote.toLowerCase() &&
+                        pool.poolIdx == fromPool.poolIdx,
+                );
+                if (pool) liquidityFee += pool.feeRate;
+            }
+        }
+        return liquidityFee;
+    }, [lastImpactQuery, allPoolStats]);
 
     useEffect(() => {
         if (primaryQuantity === '') {
@@ -479,8 +505,23 @@ function Swap(props: propsIF) {
                     ? GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX
                     : GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET;
 
+            let intermediateSwapsGas = 0;
+            let swapPaths = 1;
+            if (lastImpactQuery?.impact) {
+                const impact = lastImpactQuery.impact;
+                let swaps = 0;
+                for (const path of impact.routes[impact.chosenRoute].paths)
+                    swaps += path.hops.length - 2;
+                swapPaths = impact.routes[impact.chosenRoute].paths.length;
+                intermediateSwapsGas =
+                    swaps * GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX;
+            }
+
+            const totalSwapGas =
+                swapPaths * averageSwapCostInGasDrops + intermediateSwapsGas;
+
             const costOfMainnetSwapInETH =
-                gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
+                gasPriceInGwei * totalSwapGas * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyMainnet(
                 SWAP_BUFFER_MULTIPLIER_MAINNET * costOfMainnetSwapInETH,
@@ -489,7 +530,7 @@ function Swap(props: propsIF) {
                 l1GasFeeSwapInGwei / NUM_GWEI_IN_ETH;
 
             const l2costOfScrollSwapInETH =
-                gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
+                gasPriceInGwei * totalSwapGas * NUM_GWEI_IN_WEI;
             const costOfScrollSwapInETH =
                 l1costOfScrollSwapInETH + l2costOfScrollSwapInETH;
 
@@ -499,7 +540,7 @@ function Swap(props: propsIF) {
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageSwapCostInGasDrops *
+                totalSwapGas *
                 NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
@@ -519,11 +560,17 @@ function Swap(props: propsIF) {
         isSaveAsDexSurplusChecked,
         extraL1GasFeeSwap,
         l1GasFeeSwapInGwei,
+        lastImpactQuery,
     ]);
 
     useEffect(() => {
         (async () => {
-            if (!crocEnv || !L1_GAS_CALC_ENABLED) return;
+            if (
+                !crocEnv ||
+                !L1_GAS_CALC_ENABLED ||
+                lastImpactQuery?.impact === undefined
+            )
+                return;
 
             const qty = isTokenAPrimary
                 ? sellQtyNoExponentString.replaceAll(',', '')
@@ -540,6 +587,7 @@ function Swap(props: propsIF) {
                       slippageTolerancePercentage,
                       isWithdrawFromDexChecked,
                       isSaveAsDexSurplusChecked,
+                      lastImpact: lastImpactQuery?.impact,
                   })
                 : undefined;
 
@@ -568,8 +616,7 @@ function Swap(props: propsIF) {
     }, [
         crocEnv,
         isTokenAPrimary,
-        sellQtyNoExponentString,
-        buyQtyNoExponentString,
+        lastImpactQuery,
         tokenA.address,
         tokenB.address,
         slippageTolerancePercentage,
@@ -592,6 +639,9 @@ function Swap(props: propsIF) {
     };
 
     async function initiateSwap() {
+        if (lastImpactQuery?.impact === undefined) {
+            return;
+        }
         resetConfirmation();
 
         setShowConfirmation(true);
@@ -608,16 +658,21 @@ function Swap(props: propsIF) {
             const sellTokenAddress = tokenA.address;
             const buyTokenAddress = tokenB.address;
 
-            tx = await performSwap({
-                crocEnv,
-                isQtySell,
-                qty,
-                buyTokenAddress,
-                sellTokenAddress,
-                slippageTolerancePercentage,
-                isWithdrawFromDexChecked,
-                isSaveAsDexSurplusChecked,
-            });
+            tx = await performSwap(
+                {
+                    crocEnv,
+                    isQtySell,
+                    qty,
+                    buyTokenAddress,
+                    sellTokenAddress,
+                    slippageTolerancePercentage,
+                    isWithdrawFromDexChecked,
+                    isSaveAsDexSurplusChecked,
+                    allPoolStats,
+                    directSwapsOnly: directSwapsOnly.isEnabled,
+                },
+                lastImpactQuery.impact,
+            );
             activeTxHash.current = tx?.hash;
             setNewSwapTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
@@ -825,6 +880,7 @@ function Swap(props: propsIF) {
                 <TradeModuleHeader
                     slippage={swapSlippage}
                     dexBalSwap={dexBalSwap}
+                    directSwapsOnly={directSwapsOnly}
                     bypassConfirm={bypassConfirmSwap}
                     settingsTitle='Swap'
                     isSwapPage={!isOnTradeRoute}
@@ -874,6 +930,11 @@ function Swap(props: propsIF) {
                         parseFloat(primaryQuantity) > 0
                     }
                     showWarning={showWarning}
+                    route={
+                        lastImpactQuery?.impact?.routes[
+                            lastImpactQuery?.impact.chosenRoute
+                        ]
+                    }
                 />
             }
             modal={

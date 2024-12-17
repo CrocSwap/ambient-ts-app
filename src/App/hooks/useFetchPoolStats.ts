@@ -183,7 +183,7 @@ const useFetchPoolStats = (
                     setPoolPriceDisplay(undefined);
                     setLocalPoolPriceNonDisplay(undefined);
                     setPoolPriceDisplayNum(undefined);
-                    setIsPoolInitialized(false);
+                    // setIsPoolInitialized(false); // TODO: revert
                 }
             })();
         }
@@ -335,6 +335,7 @@ const useFetchPoolStats = (
                 lastPriceLiq: currentPoolStats?.lastPriceLiq || 0,
                 lastPriceSwap: currentPoolStats?.lastPriceSwap || 0,
                 latestTime: currentPoolStats?.latestTime || 0,
+                events: currentPoolStats?.events || 0,
                 isHistorical: false,
             };
 
@@ -362,6 +363,7 @@ const useFetchPoolStats = (
                 lastPriceLiq: currentPoolStats?.lastPriceLiq || 0,
                 lastPriceSwap: currentPoolStats?.lastPriceSwap || 0,
                 latestTime: currentPoolStats?.latestTime || 0,
+                events: currentPoolStats?.events || 0,
                 isHistorical: true,
             };
 

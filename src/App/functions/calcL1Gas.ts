@@ -1,4 +1,9 @@
-import { CrocEnv, estimateScrollL1Gas } from '@crocswap-libs/sdk';
+import {
+    CrocEnv,
+    CrocSmartSwapImpact,
+    estimateScrollL1Gas,
+} from '@crocswap-libs/sdk';
+import { getSwapPlan } from '../../ambient-utils/dataLayer';
 
 interface SimulateSwapParams {
     crocEnv: CrocEnv;
@@ -9,35 +14,15 @@ interface SimulateSwapParams {
     slippageTolerancePercentage: number; // TODO: add comments about params and their expected values
     isWithdrawFromDexChecked?: boolean;
     isSaveAsDexSurplusChecked?: boolean;
+    lastImpact: CrocSmartSwapImpact;
 }
 export const getFauxRawTx = async (
     params: SimulateSwapParams,
 ): Promise<`0x${string}` | undefined> => {
-    const {
-        crocEnv,
-        isQtySell,
-        qty,
-        buyTokenAddress,
-        sellTokenAddress,
-        slippageTolerancePercentage,
-        isWithdrawFromDexChecked = true,
-        isSaveAsDexSurplusChecked = false,
-    } = params;
+    const { lastImpact } = params;
     try {
-        const plan = isQtySell
-            ? crocEnv.sell(sellTokenAddress, qty).for(buyTokenAddress, {
-                  slippage: slippageTolerancePercentage / 100,
-              })
-            : crocEnv.buy(buyTokenAddress, qty).with(sellTokenAddress, {
-                  slippage: slippageTolerancePercentage / 100,
-              });
-
-        const raw = await plan.getFauxRawTx({
-            settlement: {
-                sellDexSurplus: isWithdrawFromDexChecked,
-                buyDexSurplus: isSaveAsDexSurplusChecked,
-            },
-        });
+        const plan = getSwapPlan(params);
+        const raw = await plan.getFauxRawTx(lastImpact);
         return raw;
     } catch (e) {
         console.log({ e });

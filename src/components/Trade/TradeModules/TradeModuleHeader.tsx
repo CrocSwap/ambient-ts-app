@@ -17,17 +17,25 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useModal } from '../../Global/Modal/useModal';
 import TradeLinks from './TradeLinks';
 import styles from './TradeModuleHeader.module.css';
+import { directSwapsOnlyIF } from '../../../App/hooks/useDirectSwapsOnlyPref';
 interface propsIF {
     slippage: SlippageMethodsIF;
     dexBalSwap?: dexBalanceMethodsIF;
+    directSwapsOnly?: directSwapsOnlyIF;
     bypassConfirm: skipConfirmIF;
     settingsTitle: TransactionModuleType;
     isSwapPage?: boolean;
 }
 
 function TradeModuleHeader(props: propsIF) {
-    const { slippage, dexBalSwap, bypassConfirm, settingsTitle, isSwapPage } =
-        props;
+    const {
+        slippage,
+        dexBalSwap,
+        directSwapsOnly,
+        bypassConfirm,
+        settingsTitle,
+        isSwapPage,
+    } = props;
 
     const [isSettingsModalOpen, openSettingsModal, closeSettingsModal] =
         useModal();
@@ -86,6 +94,7 @@ function TradeModuleHeader(props: propsIF) {
                         module={settingsTitle}
                         slippage={slippage}
                         dexBalSwap={dexBalSwap}
+                        directSwapsOnly={directSwapsOnly}
                         bypassConfirm={bypassConfirm}
                         onClose={closeSettingsModal}
                     />
@@ -141,6 +150,7 @@ function TradeModuleHeader(props: propsIF) {
                     module={settingsTitle}
                     slippage={slippage}
                     dexBalSwap={dexBalSwap}
+                    directSwapsOnly={directSwapsOnly}
                     bypassConfirm={bypassConfirm}
                     onClose={closeSettingsModal}
                 />

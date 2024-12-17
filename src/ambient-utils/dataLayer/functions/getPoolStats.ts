@@ -293,6 +293,7 @@ interface PoolStatsServerIF {
     lastPriceIndic: number;
     lastPriceSwap: number;
     feeRate: number;
+    events: number;
     isHistorical: boolean;
 }
 

@@ -1,4 +1,4 @@
-import { CrocImpact } from '@crocswap-libs/sdk';
+import { CrocSmartSwapImpact, CrocSmartSwapRoute } from '@crocswap-libs/sdk';
 import { memo, useContext } from 'react';
 import {
     getFormattedNumber,
@@ -7,9 +7,11 @@ import {
 import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ExtraInfo } from '../../Trade/TradeModules/ExtraInfo/ExtraInfo';
+import { useTokens } from '../../../App/hooks/useTokens';
+import { AppStateContext } from '../../../contexts';
 
 interface propsIF {
-    priceImpact: CrocImpact | undefined;
+    priceImpact: CrocSmartSwapImpact | undefined;
     slippageTolerance: number;
     liquidityFee: number | undefined;
     swapGasPriceinDollars: string | undefined;
@@ -17,6 +19,7 @@ interface propsIF {
     effectivePriceWithDenom: number | undefined;
     showExtraInfoDropdown: boolean;
     showWarning: boolean;
+    route: CrocSmartSwapRoute | undefined;
 }
 
 function SwapExtraInfo(props: propsIF) {
@@ -28,12 +31,15 @@ function SwapExtraInfo(props: propsIF) {
         swapGasPriceinDollars,
         showExtraInfoDropdown,
         showWarning,
+        route,
     } = props;
 
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+    const { activeNetwork } = useContext(AppStateContext);
+    const { getTokenByAddress } = useTokens(activeNetwork.chainId, undefined);
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
@@ -45,10 +51,11 @@ function SwapExtraInfo(props: propsIF) {
           }) + ' %'
         : '...';
 
-    const displayPriceWithDenom =
-        isDenomBase && poolPriceDisplay
+    const displayPriceWithDenom = poolPriceDisplay
+        ? isDenomBase
             ? 1 / poolPriceDisplay
-            : (poolPriceDisplay ?? 0);
+            : (poolPriceDisplay ?? 0)
+        : effectivePriceWithDenom;
 
     const displayPriceString = displayPriceWithDenom
         ? getFormattedNumber({
@@ -77,13 +84,23 @@ function SwapExtraInfo(props: propsIF) {
     const priceImpactExceedsThreshold =
         priceImpactNum !== undefined && priceImpactNum > 2;
 
+    let swapRoute = '';
+    if (route) {
+        for (let i = 0; i < route?.paths[0].hops.length; i++) {
+            const tokenAddr = route?.paths[0].hops[i].token;
+            const token = getTokenByAddress(tokenAddr);
+            swapRoute += token?.symbol;
+            if (i < route?.paths[0].hops.length - 1) swapRoute += ' ➔ ';
+        }
+    }
+
     const extraInfo = [
         {
             title: 'Avg. Rate',
             tooltipTitle:
                 'Expected Conversion Rate After Price Impact and Provider Fee',
             data:
-                priceImpactNum !== undefined
+                effectivePriceWithDenom !== undefined
                     ? isDenomBase
                         ? `${getFormattedNumber({
                               value: effectivePriceWithDenom,
@@ -94,42 +111,64 @@ function SwapExtraInfo(props: propsIF) {
                     : '...',
             placement: 'bottom',
         },
-        {
-            title: 'Final Price',
-            tooltipTitle: 'Expected Pool Price After Swap',
-            data:
-                priceImpactNum !== undefined
-                    ? isDenomBase
-                        ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                        : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`
-                    : '...',
-            placement: 'bottom',
-        },
-        {
-            title: 'Price Impact',
-            tooltipTitle:
-                'Difference Between Current (Spot) Price and Final Price',
-            data: priceImpactNum
-                ? `${getPriceImpactString(priceImpactNum)} %`
-                : '...',
-            placement: 'bottom',
-        },
-        {
-            title: 'Slippage Tolerance',
-            tooltipTitle: 'This can be changed in settings.',
-            data: `${slippageTolerance} %`,
-        },
-        {
-            title: 'Liquidity Provider Fee',
-            tooltipTitle: `This is a dynamically updated rate to reward ${
-                isDenomBase ? baseTokenSymbol : quoteTokenSymbol
-            } / ${
-                isDenomBase ? quoteTokenSymbol : baseTokenSymbol
-            } liquidity providers.`,
-            data: liquidityProviderFeeString,
-            placement: 'bottom',
-        },
     ];
+    if (route && route?.paths[0].hops.length > 2) {
+        extraInfo.push({
+            title: 'Swap route',
+            tooltipTitle: 'Tokens involved in the multihop swap',
+            data: swapRoute,
+            placement: 'bottom',
+        });
+    } else {
+        extraInfo.push(
+            ...[
+                {
+                    title: 'Final Price',
+                    tooltipTitle: 'Expected Pool Price After Swap',
+                    data:
+                        priceImpactNum !== undefined
+                            ? isDenomBase
+                                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`
+                            : '...',
+                    placement: 'bottom',
+                },
+                {
+                    title: 'Price Impact',
+                    tooltipTitle:
+                        'Difference Between Current (Spot) Price and Final Price',
+                    data: priceImpactNum
+                        ? `${getPriceImpactString(priceImpactNum)} %`
+                        : '...',
+                    placement: 'bottom',
+                },
+            ],
+        );
+    }
+    extraInfo.push(
+        ...[
+            {
+                title: 'Slippage Tolerance',
+                tooltipTitle: 'This can be changed in settings.',
+                data: `${slippageTolerance} %`,
+                placement: 'bottom', // TODO: is this needed?
+            },
+            {
+                title: 'Liquidity Provider Fee',
+                tooltipTitle:
+                    route && route?.paths[0].hops.length == 2
+                        ? `This is a dynamically updated rate to reward ${
+                              isDenomBase ? baseTokenSymbol : quoteTokenSymbol
+                          } / ${
+                              isDenomBase ? quoteTokenSymbol : baseTokenSymbol
+                          } liquidity providers.`
+                        : `This is a dynamically updated rate to reward liquidity
+                  providers in pools along the swap route.`,
+                data: liquidityProviderFeeString,
+                placement: 'bottom',
+            },
+        ],
+    );
 
     const conversionRateNonUsd = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
@@ -151,6 +190,7 @@ function SwapExtraInfo(props: propsIF) {
             showDropdown={showExtraInfoDropdown}
             showWarning={showWarning}
             priceImpactExceedsThreshold={priceImpactExceedsThreshold}
+            route={route}
         />
     );
 }
