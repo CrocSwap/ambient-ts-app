@@ -8,6 +8,7 @@ import {
     useRef,
     useState,
 } from 'react';
+import { precisionOfInput } from '../../../ambient-utils/dataLayer';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { AppStateContext } from '../../../contexts';
@@ -337,6 +338,13 @@ function SwapTokenInput(props: propsIF) {
                 isAutoUpdate: true,
                 inputValue: primaryQuantity,
             };
+            if (precisionOfInput(primaryQuantity) > tokenA.decimals) {
+                setBuyQtyString('');
+                setSellQtyString('');
+                setPrimaryQuantity('');
+                setIsBuyLoading(false);
+                return;
+            }
             await refreshImpact(primaryQuantity, true);
         }
     };
@@ -363,6 +371,13 @@ function SwapTokenInput(props: propsIF) {
                 isAutoUpdate: true,
                 inputValue: primaryQuantity,
             };
+            if (precisionOfInput(primaryQuantity) > tokenB.decimals) {
+                setBuyQtyString('');
+                setSellQtyString('');
+                setPrimaryQuantity('');
+                setIsSellLoading(false);
+                return;
+            }
             await refreshImpact(primaryQuantity, false);
         }
     };
