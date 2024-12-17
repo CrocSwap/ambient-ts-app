@@ -209,14 +209,14 @@ function SwapTokenInput(props: propsIF) {
                 tokenB.decimals < 6
                     ? tokenB.decimals
                     : estimatedBuyBigInt <
-                        fromDisplayQty('0.000001', tokenB.decimals)
+                        fromDisplayQty('0.01', tokenB.decimals)
                       ? tokenB.decimals
-                      : estimatedBuyBigInt <
+                      : estimatedBuyBigInt >
                           fromDisplayQty('100', tokenB.decimals)
-                        ? 3
-                        : estimatedBuyBigInt >=
-                            fromDisplayQty('100', tokenB.decimals)
-                          ? 2
+                        ? 2
+                        : estimatedBuyBigInt >
+                            fromDisplayQty('2', tokenB.decimals)
+                          ? 3
                           : 6;
 
             const normalizedEstimatedBuyString = normalizeExponential(
