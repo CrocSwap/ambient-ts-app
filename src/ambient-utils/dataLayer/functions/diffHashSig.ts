@@ -80,7 +80,10 @@ export function diffHashSigLiquidity(liquidity?: LiquidityDataIF) {
     if (!liquidity) {
         return 'null';
     }
-    if (liquidity.ranges.length === 0) {
+    if (
+        liquidity.ranges.askRanges.length === 0 &&
+        liquidity.ranges.bidRanges.length === 0
+    ) {
         return 'empty';
     }
 
@@ -88,7 +91,9 @@ export function diffHashSigLiquidity(liquidity?: LiquidityDataIF) {
         time: liquidity,
         tick: liquidity.currentTick,
         curveState: liquidity.curveState,
-        ranges: liquidity.ranges.map((r) => r.activeLiq),
+        ranges: liquidity.ranges.askRanges
+            .concat(liquidity.ranges.bidRanges)
+            .map((r) => r.activeLiq),
     });
 }
 

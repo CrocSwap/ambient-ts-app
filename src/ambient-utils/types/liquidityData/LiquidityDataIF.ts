@@ -1,8 +1,7 @@
-import { LiquidityRangeIF } from './LiquidityRangeIF';
-
+import { LiquidityParsedDataIF } from '../../api';
 export interface LiquidityDataIF {
     currentTick: number;
-    ranges: Array<LiquidityRangeIF>;
+    ranges: LiquidityParsedDataIF;
     curveState: {
         base: string;
         quote: string;

@@ -112,7 +112,7 @@ function bumpsToRanges(
     quoteDecimals: number,
     basePrice: number,
     quotePrice: number,
-): LiquidityRangeIF[] {
+): LiquidityParsedDataIF {
     let bumps = curve.liquidityBumps ? curve.liquidityBumps : [];
 
     // Insert a synthetic bump right at the current price tick, so curve is smooth
@@ -126,11 +126,12 @@ function bumpsToRanges(
 
     bumps = bumps.sort((a, b) => a.bumpTick - b.bumpTick);
 
+    const isAmbient = bumps.some((i) => i.bumpTick === 0);
+
     let lastTick = -Infinity;
     let liqRunning = curve.ambientLiq;
 
     let ranges = bumps.map((b) => {
-        lastTick = b.bumpTick;
         const lowerPrice = tickToPrice(lastTick);
         const upperPrice = tickToPrice(b.bumpTick);
         const lowerPriceDisp = toDisplayPrice(
@@ -193,10 +194,15 @@ function bumpsToRanges(
         retVal.deltaAverageUSD =
             (Math.abs(deltaBaseUSD) + Math.abs(deltaQuoteUSD)) / 2;
 
+        lastTick = b.bumpTick;
         liqRunning += b.liquidityDelta;
 
         return retVal;
     });
+
+    if (!isAmbient) {
+        ranges = ranges.filter((i) => i.lowerBound !== -Infinity);
+    }
 
     const bidRanges = ranges.filter((r) => r.upperBound <= tick);
     const askRanges = ranges.filter((r) => r.lowerBound >= tick);
@@ -232,9 +238,7 @@ function bumpsToRanges(
         r.cumDeltaQuote += cumDeltaQuote;
     });
 
-    ranges = bidRanges.concat(askRanges);
-
-    ranges.forEach((r) => {
+    bidRanges.forEach((r) => {
         const cumDeltaBaseDecimal = r.cumDeltaBase / Math.pow(10, baseDecimals);
         const cumDeltaQuoteDecimal =
             r.cumDeltaQuote / Math.pow(10, quoteDecimals);
@@ -244,12 +248,26 @@ function bumpsToRanges(
             (Math.abs(cumDeltaBaseUSD) + Math.abs(cumDeltaQuoteUSD)) / 2;
     });
 
-    return ranges;
+    askRanges.forEach((r) => {
+        const cumDeltaBaseDecimal = r.cumDeltaBase / Math.pow(10, baseDecimals);
+        const cumDeltaQuoteDecimal =
+            r.cumDeltaQuote / Math.pow(10, quoteDecimals);
+        const cumDeltaBaseUSD = cumDeltaBaseDecimal * basePrice;
+        const cumDeltaQuoteUSD = cumDeltaQuoteDecimal * quotePrice;
+        r.cumAverageUSD =
+            (Math.abs(cumDeltaBaseUSD) + Math.abs(cumDeltaQuoteUSD)) / 2;
+    });
+
+    return {
+        askRanges: askRanges,
+        bidRanges: bidRanges,
+        hasAmbientPosition: isAmbient,
+    };
 }
 
 export interface LiquidityDataIF {
     currentTick: number;
-    ranges: Array<LiquidityRangeIF>;
+    ranges: LiquidityParsedDataIF;
     curveState: {
         base: string;
         quote: string;
@@ -278,6 +296,12 @@ export interface LiquidityRangeIF {
     cumDeltaBase: number;
     cumDeltaQuote: number;
     cumAverageUSD: number;
+}
+
+export interface LiquidityParsedDataIF {
+    askRanges: Array<LiquidityRangeIF>;
+    bidRanges: Array<LiquidityRangeIF>;
+    hasAmbientPosition: boolean;
 }
 
 interface LiquidityCurveServerIF {
