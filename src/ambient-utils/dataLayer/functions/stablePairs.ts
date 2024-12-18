@@ -28,9 +28,11 @@ import {
     mainnetWBTC,
     mainnetWstETH,
     plumeNEV,
+    plumePETH,
+    plumePUSD,
     plumeSepoliaNEV,
     plumeSepoliaUSD,
-    plumeUSD,
+    plumeUSDC,
     scrollAxlUSDC,
     scrollDAI,
     scrollPufETH,
@@ -130,7 +132,7 @@ export function remapTokenIfWrappedNative(addr: string): string {
 export const USDC_TOKENS = [
     mainnetUSDC.address,
     blastUSDB.address,
-    plumeUSD.address,
+    plumeUSDC.address,
     sepoliaUSDC.address,
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
@@ -144,6 +146,7 @@ export const STABLE_USD_TOKENS = [
     mainnetUSDT.address,
     mainnetLUSD.address,
     plumeNEV.address,
+    plumePUSD.address,
     blastUSDPLUS.address,
     scrollUSDT.address,
     scrollDAI.address,
@@ -187,6 +190,7 @@ export const STAKED_ETH_TOKENS = [
     blastWrsETH.address,
     blastEzETH.address,
     blastWEETH.address,
+    plumePETH.address,
 ].map((x) => x.toLowerCase());
 
 export const USD_EXCLUDED_TOKENS = [mainnetSWELL.address].map((x) =>
@@ -202,7 +206,6 @@ export const WRAPPED_NATIVE_TOKENS = [
     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // Mainnet
     '0x5300000000000000000000000000000000000004', // Scroll (test and main)
     '0x4300000000000000000000000000000000000004', // Blast
-    '0x11476323D8DFCBAFac942588E2f38823d2Dd308e', // Plume
     '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14', // Sepolia
     '0x4200000000000000000000000000000000000023', // Blast Sepolia
     '0xaA6210015fbf0855F0D9fDA3C415c1B12776Ae74', // Plume Sepolia

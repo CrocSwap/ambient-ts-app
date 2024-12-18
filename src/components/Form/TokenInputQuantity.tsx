@@ -118,6 +118,7 @@ function TokenInputQuantity(props: propsIF) {
             .replace(/\s+/g, ''); // Remove any spaces
 
         if (inputStringNoCommas === '.') inputStringNoCommas = '0.';
+        if (inputStringNoCommas === 'e') inputStringNoCommas = '1e';
 
         const inputStringNoUnfinishedExponent = isNaN(+inputStringNoCommas)
             ? inputStringNoCommas.replace(

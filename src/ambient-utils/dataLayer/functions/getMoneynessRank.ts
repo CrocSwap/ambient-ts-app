@@ -3,9 +3,11 @@ import { defaultTokens } from '../../constants/defaultTokens';
 export const getTranslatedSymbol = (tokenSymbol: string) =>
     tokenSymbol.toUpperCase() === 'USD+'
         ? 'USDPLUS'
-        : tokenSymbol.toUpperCase() === 'SOLVBTC.B'
-          ? 'SOLVBTC'
-          : tokenSymbol.toUpperCase();
+        : tokenSymbol.toUpperCase() === 'USDC.E'
+          ? 'USDC'
+          : tokenSymbol.toUpperCase() === 'SOLVBTC.B'
+            ? 'SOLVBTC'
+            : tokenSymbol.toUpperCase();
 
 export const getMoneynessRank = (tokenSymbol: string): number => {
     /* 
