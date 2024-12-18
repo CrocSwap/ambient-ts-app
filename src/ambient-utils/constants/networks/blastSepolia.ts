@@ -11,7 +11,7 @@ const chainSpecFromSDK = lookupChain(chainIdHex);
 
 const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
-    name: 'Blast Sepolia',
+    name: 'Blast Sepolia Testnet',
     currency: 'ETH',
     rpcUrl: 'https://sepolia.blast.io/',
     explorerUrl: 'https://testnet.blastscan.io/',
@@ -26,7 +26,8 @@ export const blastSepolia: NetworkIF = {
     defaultPair: [blastSepoliaETH, blastSepoliaUSDB],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
-    displayName: chainSpecForWalletConnector.name,
+    displayName: 'Blast Testnet',
+    tokenPriceQueryAssetPlatform: undefined,
     topPools: [
         new TopPool(
             blastSepoliaETH,
