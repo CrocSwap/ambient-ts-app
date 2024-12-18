@@ -743,11 +743,11 @@ export default function Chart(props: propsIF) {
             }> = [];
 
             const leftDomain =
-                visibleCandleData.length > 1
+                visibleCandleData.length > 3
                     ? d3.min(visibleCandleData, (d) => d.time)
                     : scaleData.xScale.domain()[0] / 1000;
             const rightDomain =
-                visibleCandleData.length > 1
+                visibleCandleData.length > 3
                     ? d3.max(visibleCandleData, (d) => d.time)
                     : scaleData.xScale.domain()[1] / 1000;
 
@@ -771,7 +771,7 @@ export default function Chart(props: propsIF) {
 
             const mergedSwap = sortedBuySwaps.concat(sortedSellSwap);
 
-            if (leftDomain && rightDomain) {
+            if (leftDomain !== undefined && rightDomain !== undefined) {
                 mergedSwap.map((transaction) => {
                     if (
                         transaction.txTime > leftDomain &&
