@@ -18,13 +18,12 @@ export default function DebugDiv(props: DebugDivPropsIF) {
 
             interact(debugDivRef.current).draggable({
                 listeners: {
-                    start(event) {
-                        console.log(event.type, event.target);
-                    },
+                    // start(event) {
+                    //     console.log(event.type, event.target);
+                    // },
                     move(event) {
                         position.x += event.dx;
                         position.y += event.dy;
-
                         event.target.style.transform = `translate(${position.x}px, ${position.y}px)`;
                     },
                 },
