@@ -4297,7 +4297,7 @@ export default function Chart(props: propsIF) {
         if (scaleData) {
             if (
                 unparsedCandleData !== undefined &&
-                (!isTriggeredByZoom || unparsedCandleData.length > 10) &&
+                !isTriggeredByZoom &&
                 poolPriceWithoutDenom
             ) {
                 const isLine = ['futa'].includes(platformName);

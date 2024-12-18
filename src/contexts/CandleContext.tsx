@@ -28,6 +28,7 @@ import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { UserDataContext } from './UserDataContext';
+import { TradeDataContext } from './TradeDataContext';
 
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
@@ -73,6 +74,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = useContext(AppStateContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
+    const { poolPriceNonDisplay: poolPriceDisplay, setPoolPriceNonDisplay } =
+        useContext(TradeDataContext);
     const { isUserConnected } = useContext(UserDataContext);
     const {
         baseToken: { address: baseTokenAddress },
@@ -193,6 +196,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setCandleData(undefined);
         setTimeOfEndCandle(undefined);
         setIsCondensedModeEnabled(true);
+        setPoolPriceNonDisplay(0);
     }, [baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
@@ -204,7 +208,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv &&
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
-                isChangeUserConnected
+                isChangeUserConnected &&
+                poolPriceDisplay
             ) {
                 isChartEnabled && isUserOnline && fetchCandles(true);
                 if (isManualCandleFetchRequested)
@@ -217,9 +222,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isChartEnabled,
         crocEnv,
         isUserOnline,
-        baseTokenAddress + quoteTokenAddress,
         isPoolInitialized,
         chainId,
+        poolPriceDisplay === 0,
     ]);
 
     // only works when the period changes
@@ -284,7 +289,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             isUserOnline &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            crocEnv
+            crocEnv &&
+            poolPriceDisplay
         ) {
             setIsZoomRequestCanceled({ value: true });
 
@@ -317,6 +323,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
+                poolPriceDisplay,
             )
                 .then((candles) => {
                     setCandleData(candles);
@@ -387,7 +394,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         numDurations: number,
         minTimeMemo: number,
     ) => {
-        if (!crocEnv || !candleTimeLocal) {
+        if (!crocEnv || !candleTimeLocal || !poolPriceDisplay) {
             return;
         }
 
@@ -420,6 +427,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedQuerySpotPrice,
+            poolPriceDisplay,
             signal,
         )
             .then((incrCandles) => {
