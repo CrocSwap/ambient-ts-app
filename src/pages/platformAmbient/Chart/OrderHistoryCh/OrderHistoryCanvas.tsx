@@ -30,7 +30,12 @@ interface OrderHistoryCanvasProps {
     isSelectedOrderHistory: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     drawSettings: any;
-    filteredTransactionalData: TransactionIF[] | undefined;
+    filteredTransactionalData:
+        | Array<{
+              order: TransactionIF;
+              mergedTx: Array<TransactionIF>;
+          }>
+        | undefined;
     circleScale: d3.ScaleLinear<number, number>;
     circleScaleLimitOrder: d3.ScaleLinear<number, number>;
 }
@@ -247,17 +252,26 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
             }
 
             if (showSwap && filteredTransactionalData) {
-                filteredTransactionalData.forEach((order) => {
+                filteredTransactionalData.forEach((transaction) => {
+                    let totalValueUSD = transaction.order.totalValueUSD;
+
+                    if (transaction.mergedTx.length > 0) {
+                        transaction.mergedTx.map((merged) => {
+                            totalValueUSD =
+                                totalValueUSD + merged.totalValueUSD;
+                        });
+                    }
+
                     const circleSerie = createCircle(
                         scaleData?.xScale,
                         scaleData?.yScale,
-                        circleScale(order.totalValueUSD),
+                        circleScale(totalValueUSD),
                         1,
                         denomInBase,
                         false,
                         false,
-                        (denomInBase && !order.isBuy) ||
-                            (!denomInBase && order.isBuy),
+                        (denomInBase && !transaction.order.isBuy) ||
+                            (!denomInBase && transaction.order.isBuy),
                         '--accent1',
                         ['futa'].includes(platformName)
                             ? '--negative'
@@ -266,17 +280,17 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
                     const circleData = [
                         {
-                            x: order.txTime * 1000,
+                            x: transaction.order.txTime * 1000,
                             y: denomInBase
-                                ? order.swapInvPriceDecimalCorrected
-                                : order.swapPriceDecimalCorrected,
+                                ? transaction.order.swapInvPriceDecimalCorrected
+                                : transaction.order.swapPriceDecimalCorrected,
                             denomInBase: denomInBase,
-                            isBuy: order.isBuy,
+                            isBuy: transaction.order.isBuy,
                         },
                     ];
 
                     circleSerieArray.push({
-                        id: order.txId,
+                        id: transaction.order.txId,
                         data: circleData,
                         serie: circleSerie,
                     });

@@ -71,8 +71,8 @@ export default function OrderHistoryTooltip(props: {
         <OrderHistoryHeader>
             <StyledHeader
                 color={
-                    (denomInBase && !hoveredOrderHistory.order.isBuy) ||
-                    (!denomInBase && hoveredOrderHistory.order.isBuy)
+                    (denomInBase && !hoveredOrderHistory.order.order.isBuy) ||
+                    (!denomInBase && hoveredOrderHistory.order.order.isBuy)
                         ? ['futa'].includes(platformName)
                             ? 'var(--negative)'
                             : 'var(--accent5)'
@@ -80,8 +80,8 @@ export default function OrderHistoryTooltip(props: {
                 }
                 size={'15px'}
             >
-                {((denomInBase && !hoveredOrderHistory.order.isBuy) ||
-                (!denomInBase && hoveredOrderHistory.order.isBuy)
+                {((denomInBase && !hoveredOrderHistory.order.order.isBuy) ||
+                (!denomInBase && hoveredOrderHistory.order.order.isBuy)
                     ? 'Buy'
                     : 'Sell') + ': '}
             </StyledHeader>
@@ -89,10 +89,7 @@ export default function OrderHistoryTooltip(props: {
             <StyledHeader color={'white'} size={'15px'}>
                 {getFormattedNumber({
                     value: Math.abs(
-                        denomInBase
-                            ? hoveredOrderHistory.order.baseFlowDecimalCorrected
-                            : hoveredOrderHistory.order
-                                  .quoteFlowDecimalCorrected,
+                        hoveredOrderHistory.tokenFlowDecimalCorrected,
                     ),
                     abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                 })}
@@ -100,20 +97,20 @@ export default function OrderHistoryTooltip(props: {
 
             <StyledHeader color={'white'} size={'15px'}>
                 {denomInBase
-                    ? hoveredOrderHistory.order.baseSymbol
-                    : hoveredOrderHistory.order.quoteSymbol}
+                    ? hoveredOrderHistory.order.order.baseSymbol
+                    : hoveredOrderHistory.order.order.quoteSymbol}
             </StyledHeader>
 
             {(
                 denomInBase
-                    ? hoveredOrderHistory.order.baseTokenLogoURI
-                    : hoveredOrderHistory.order.quoteTokenLogoURI
+                    ? hoveredOrderHistory.order.order.baseTokenLogoURI
+                    : hoveredOrderHistory.order.order.quoteTokenLogoURI
             ) ? (
                 <img
                     src={uriToHttp(
                         denomInBase
-                            ? hoveredOrderHistory.order.baseTokenLogoURI
-                            : hoveredOrderHistory.order.quoteTokenLogoURI,
+                            ? hoveredOrderHistory.order.order.baseTokenLogoURI
+                            : hoveredOrderHistory.order.order.quoteTokenLogoURI,
                     )}
                     alt='base token'
                     style={{ width: '18px' }}
@@ -126,8 +123,8 @@ export default function OrderHistoryTooltip(props: {
         <OrderHistoryHeader>
             <StyledHeader
                 color={
-                    (denomInBase && !hoveredOrderHistory.order.isBid) ||
-                    (!denomInBase && hoveredOrderHistory.order.isBid)
+                    (denomInBase && !hoveredOrderHistory.order.order.isBid) ||
+                    (!denomInBase && hoveredOrderHistory.order.order.isBid)
                         ? ['futa'].includes(platformName)
                             ? 'var(--negative)'
                             : 'var(--accent5)'
@@ -135,41 +132,41 @@ export default function OrderHistoryTooltip(props: {
                 }
                 size={'15px'}
             >
-                {((denomInBase && !hoveredOrderHistory.order.isBid) ||
-                (!denomInBase && hoveredOrderHistory.order.isBid)
+                {((denomInBase && !hoveredOrderHistory.order.order.isBid) ||
+                (!denomInBase && hoveredOrderHistory.order.order.isBid)
                     ? 'Buy'
                     : 'Sell') + ': '}
             </StyledHeader>
             <StyledHeader color={'white'} size={'15px'}>
                 {formatSubscript(
                     denomInBase
-                        ? hoveredOrderHistory.order.isBid
-                            ? hoveredOrderHistory.order
+                        ? hoveredOrderHistory.order.order.isBid
+                            ? hoveredOrderHistory.order.order
                                   .originalPositionLiqBaseDecimalCorrected
-                            : hoveredOrderHistory.order
+                            : hoveredOrderHistory.order.order
                                   .expectedPositionLiqBaseDecimalCorrected
-                        : hoveredOrderHistory.order.isBid
-                          ? hoveredOrderHistory.order
+                        : hoveredOrderHistory.order.order.isBid
+                          ? hoveredOrderHistory.order.order
                                 .expectedPositionLiqQuoteDecimalCorrected
-                          : hoveredOrderHistory.order
+                          : hoveredOrderHistory.order.order
                                 .originalPositionLiqQuoteDecimalCorrected,
                 )}
             </StyledHeader>
             <StyledHeader color={'white'} size={'15px'}>
                 {denomInBase
-                    ? hoveredOrderHistory.order.baseSymbol
-                    : hoveredOrderHistory.order.quoteSymbol}
+                    ? hoveredOrderHistory.order.order.baseSymbol
+                    : hoveredOrderHistory.order.order.quoteSymbol}
             </StyledHeader>
             {(
                 denomInBase
-                    ? hoveredOrderHistory.order.baseTokenLogoURI
-                    : hoveredOrderHistory.order.quoteTokenLogoURI
+                    ? hoveredOrderHistory.order.order.baseTokenLogoURI
+                    : hoveredOrderHistory.order.order.quoteTokenLogoURI
             ) ? (
                 <img
                     src={uriToHttp(
                         denomInBase
-                            ? hoveredOrderHistory.order.baseTokenLogoURI
-                            : hoveredOrderHistory.order.quoteTokenLogoURI,
+                            ? hoveredOrderHistory.order.order.baseTokenLogoURI
+                            : hoveredOrderHistory.order.order.quoteTokenLogoURI,
                     )}
                     alt='base token'
                     style={{ width: '18px' }}
@@ -184,17 +181,21 @@ export default function OrderHistoryTooltip(props: {
                 Range
             </StyledHeader>
 
-            {hoveredOrderHistory.order.baseTokenLogoURI ? (
+            {hoveredOrderHistory.order.order.baseTokenLogoURI ? (
                 <img
-                    src={uriToHttp(hoveredOrderHistory.order.baseTokenLogoURI)}
+                    src={uriToHttp(
+                        hoveredOrderHistory.order.order.baseTokenLogoURI,
+                    )}
                     alt='base token'
                     style={{ width: '18px' }}
                 />
             ) : undefined}
 
-            {hoveredOrderHistory.order.quoteTokenLogoURI ? (
+            {hoveredOrderHistory.order.order.quoteTokenLogoURI ? (
                 <img
-                    src={uriToHttp(hoveredOrderHistory.order.quoteTokenLogoURI)}
+                    src={uriToHttp(
+                        hoveredOrderHistory.order.order.quoteTokenLogoURI,
+                    )}
                     alt='base token'
                     style={{ width: '18px' }}
                 />
@@ -217,12 +218,14 @@ export default function OrderHistoryTooltip(props: {
     const historicalTypeText = (
         <StyledHeader color={'var(--text1)'} size={'15px'}>
             {(denomInBase
-                ? hoveredOrderHistory.order.highRangeShortDisplayInBase
-                : hoveredOrderHistory.order.highRangeShortDisplayInQuote) +
+                ? hoveredOrderHistory.order.order.highRangeShortDisplayInBase
+                : hoveredOrderHistory.order.order
+                      .highRangeShortDisplayInQuote) +
                 ' - ' +
                 (denomInBase
-                    ? hoveredOrderHistory.order.lowRangeShortDisplayInBase
-                    : hoveredOrderHistory.order.lowRangeShortDisplayInQuote)}
+                    ? hoveredOrderHistory.order.order.lowRangeShortDisplayInBase
+                    : hoveredOrderHistory.order.order
+                          .lowRangeShortDisplayInQuote)}
         </StyledHeader>
     );
 
@@ -261,8 +264,8 @@ export default function OrderHistoryTooltip(props: {
                                                 ? !prev
                                                 : prev;
 
-                                        return hoveredOrderHistory.order ===
-                                            prevSelected
+                                        return hoveredOrderHistory.order
+                                            .order === prevSelected
                                             ? undefined
                                             : hoveredOrderHistory;
                                     },
@@ -293,8 +296,7 @@ export default function OrderHistoryTooltip(props: {
                         <StyledHeader color={'var(--text2)'} size={'13px'}>
                             {'$' +
                                 getFormattedNumber({
-                                    value: hoveredOrderHistory.order
-                                        .totalValueUSD,
+                                    value: hoveredOrderHistory.totalValueUSD,
                                     abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                                 })}
                         </StyledHeader>

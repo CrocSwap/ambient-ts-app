@@ -358,26 +358,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
 
-    const filteredTransactionalData = useMemo(() => {
-        const leftDomain = scaleData.xScale.domain()[0];
-        const rightDomain = scaleData.xScale.domain()[1];
-
-        const diff = Math.abs(rightDomain - leftDomain);
-
-        const tempFilterData = userTransactionData?.filter(
-            (transaction) =>
-                transaction.entityType === 'swap' &&
-                transaction.txTime * 1000 > leftDomain - diff / 4 &&
-                transaction.txTime * 1000 < rightDomain + diff / 4,
-        );
-
-        const top20TotalValue = tempFilterData
-            ?.sort((a, b) => d3.descending(a.totalValueUSD, b.totalValueUSD))
-            .slice(0, 20);
-
-        return top20TotalValue;
-    }, [userTransactionData, diffHashSigScaleData(scaleData, 'x')]);
-
     useEffect(() => {
         if (
             chartThemeColors &&
@@ -449,6 +429,8 @@ export default function Chart(props: propsIF) {
     const [hoveredOrderHistory, setHoveredOrderHistory] = useState<{
         type: string;
         id: string;
+        totalValueUSD: number;
+        tokenFlowDecimalCorrected: number;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         order: any;
     }>();
@@ -619,6 +601,41 @@ export default function Chart(props: propsIF) {
         );
     };
 
+    const minimum = (data: CandleDataIF[], mouseX: number) => {
+        const xScale = scaleData?.xScale;
+        if (xScale) {
+            const accessor = (d: CandleDataIF) =>
+                Math.abs(mouseX - xScale(d.time * 1000));
+
+            return data
+                .map(function (dataPoint: CandleDataIF) {
+                    return [accessor(dataPoint), dataPoint];
+                })
+                .reduce(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    function (accumulator: any, dataPoint: any) {
+                        return accumulator[0] > dataPoint[0]
+                            ? dataPoint
+                            : accumulator;
+                    },
+                    [Number.MAX_VALUE, null],
+                );
+        }
+    };
+
+    // finds candle closest to the mouse
+    const snapForCandle = (point: number, filtered: Array<CandleDataIF>) => {
+        if (scaleData) {
+            if (point == undefined) return [];
+            if (filtered.length > 1) {
+                const nearest = minimum(filtered, point)[1];
+                return nearest;
+            }
+        }
+
+        return filtered[0];
+    };
+
     const unparsedCandleData = useMemo(() => {
         const data = filterCandleWithTransaction(
             unparsedData.candles,
@@ -715,6 +732,100 @@ export default function Chart(props: propsIF) {
         unparsedCandleData,
         isCondensedModeEnabled,
     ]);
+
+    const filteredTransactionalData = useMemo(() => {
+        if (userTransactionData && showSwap) {
+            const mergedTransactionArray: Array<{
+                order: TransactionIF;
+                mergedTx: Array<TransactionIF>;
+            }> = [];
+
+            const leftDomain = d3.min(visibleCandleData, (d) => d.time);
+            const rightDomain = d3.max(visibleCandleData, (d) => d.time);
+
+            const userSwaps = userTransactionData.filter(
+                (transaction) => transaction.entityType === 'swap',
+            );
+
+            const buySwaps = userSwaps.filter(
+                (transaction) => transaction.isBuy,
+            );
+            const sortedBuySwaps = buySwaps.sort((a, b) =>
+                d3.descending(a.txTime, b.txTime),
+            );
+
+            const sellSwaps = userSwaps.filter(
+                (transaction) => !transaction.isBuy,
+            );
+            const sortedSellSwap = sellSwaps.sort((a, b) =>
+                d3.descending(a.txTime, b.txTime),
+            );
+
+            const mergedSwap = sortedBuySwaps.concat(sortedSellSwap);
+
+            if (leftDomain && rightDomain) {
+                mergedSwap.map((transaction) => {
+                    if (
+                        transaction.txTime > leftDomain &&
+                        transaction.txTime < rightDomain
+                    ) {
+                        const point = scaleData.xScale(
+                            transaction.txTime * 1000,
+                        );
+
+                        const nearest = snapForCandle(point, visibleCandleData);
+
+                        if (mergedTransactionArray.length > 0) {
+                            const latestElement =
+                                mergedTransactionArray[
+                                    mergedTransactionArray.length - 1
+                                ];
+
+                            const diff = Math.abs(
+                                nearest.time - latestElement.order.txTime,
+                            );
+                            const shouldMerge = diff < period / 2;
+
+                            const isSameDirection =
+                                (transaction.isBuy &&
+                                    latestElement.order.isBuy) ||
+                                (!transaction.isBuy &&
+                                    !latestElement.order.isBuy);
+
+                            if (shouldMerge && isSameDirection) {
+                                latestElement.mergedTx.push(transaction);
+                            } else {
+                                mergedTransactionArray.push({
+                                    order: transaction,
+                                    mergedTx: [],
+                                });
+                            }
+                        } else {
+                            mergedTransactionArray.push({
+                                order: transaction,
+                                mergedTx: [],
+                            });
+                        }
+                    }
+                });
+            }
+
+            if (mergedTransactionArray.length > 0) {
+                const top20TotalValue = mergedTransactionArray
+                    ?.sort((a, b) =>
+                        d3.descending(
+                            a.order.totalValueUSD,
+                            b.order.totalValueUSD,
+                        ),
+                    )
+                    .slice(0, 20);
+
+                return top20TotalValue;
+            }
+        }
+
+        return undefined;
+    }, [userTransactionData, diffHashSigScaleData(scaleData, 'x')]);
 
     const lastCandleData = unparsedData.candles?.reduce(
         function (prev, current) {
@@ -1151,19 +1262,6 @@ export default function Chart(props: propsIF) {
         // auto zoom active
         setRescale(true);
     }, [location.pathname, period, denomInBase]);
-
-    // finds candle closest to the mouse
-    const snapForCandle = (point: number, filtered: Array<CandleDataIF>) => {
-        if (scaleData) {
-            if (point == undefined) return [];
-            if (filtered.length > 1) {
-                const nearest = minimum(filtered, point)[1];
-                return nearest;
-            }
-        }
-
-        return filtered[0];
-    };
 
     // calculates first fetch candle domain for time and pool change
     useEffect(() => {
@@ -5325,6 +5423,8 @@ export default function Chart(props: propsIF) {
                                 id: position.positionId,
                                 type: 'historical',
                                 order: position,
+                                totalValue: 0,
+                                tokenFlowDecimalCorrected: 0,
                             };
                         }
                     }
@@ -5333,6 +5433,14 @@ export default function Chart(props: propsIF) {
 
             if (userLimitOrdersByPool && showLiquidity) {
                 userLimitOrdersByPool.limitOrders.forEach((limitOrder) => {
+                    const tokenFlowDecimalCorrected = denomInBase
+                        ? limitOrder.isBid
+                            ? limitOrder.originalPositionLiqBaseDecimalCorrected
+                            : limitOrder.expectedPositionLiqBaseDecimalCorrected
+                        : limitOrder.isBid
+                          ? limitOrder.expectedPositionLiqQuoteDecimalCorrected
+                          : limitOrder.originalPositionLiqQuoteDecimalCorrected;
+
                     if (limitOrder.claimableLiq > 0) {
                         const swapOrderData = [
                             {
@@ -5343,6 +5451,7 @@ export default function Chart(props: propsIF) {
                                 denomInBase: denomInBase,
                             },
                         ];
+
                         if (
                             checkSwapLoation(
                                 swapOrderData,
@@ -5355,6 +5464,9 @@ export default function Chart(props: propsIF) {
                                 id: limitOrder.positionHash,
                                 type: 'limitCircle',
                                 order: limitOrder,
+                                totalValueUSD: limitOrder.totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
                             };
                         }
                     } else if (limitOrder.claimableLiq === 0) {
@@ -5381,6 +5493,9 @@ export default function Chart(props: propsIF) {
                                 id: limitOrder.positionHash,
                                 type: 'limitCircle',
                                 order: limitOrder,
+                                totalValueUSD: limitOrder.totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
                             };
                         }
 
@@ -5402,6 +5517,9 @@ export default function Chart(props: propsIF) {
                                 id: limitOrder.positionHash,
                                 type: 'limitCircle',
                                 order: limitOrder,
+                                totalValueUSD: limitOrder.totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
                             };
                         }
                     }
@@ -5410,28 +5528,50 @@ export default function Chart(props: propsIF) {
 
             if (filteredTransactionalData && showSwap) {
                 filteredTransactionalData.forEach((element) => {
-                    if (element.entityType === 'swap' && showSwap) {
+                    if (element.order.entityType === 'swap' && showSwap) {
                         const swapOrderData = [
                             {
-                                x: element.txTime * 1000,
+                                x: element.order.txTime * 1000,
                                 y: denomInBase
-                                    ? element.swapInvPriceDecimalCorrected
-                                    : element.swapPriceDecimalCorrected,
+                                    ? element.order.swapInvPriceDecimalCorrected
+                                    : element.order.swapPriceDecimalCorrected,
                                 denomInBase: denomInBase,
                             },
                         ];
+
+                        let totalValueUSD = element.order.totalValueUSD;
+                        let tokenFlowDecimalCorrected = denomInBase
+                            ? element.order.baseFlowDecimalCorrected
+                            : element.order.quoteFlowDecimalCorrected;
+
+                        if (element.mergedTx.length > 0) {
+                            element.mergedTx.map((merged) => {
+                                totalValueUSD =
+                                    totalValueUSD + merged.totalValueUSD;
+
+                                tokenFlowDecimalCorrected =
+                                    tokenFlowDecimalCorrected +
+                                    (denomInBase
+                                        ? merged.baseFlowDecimalCorrected
+                                        : merged.quoteFlowDecimalCorrected);
+                            });
+                        }
+
                         if (
                             checkSwapLoation(
                                 swapOrderData,
                                 mouseX,
                                 mouseY,
-                                element.totalValueUSD,
+                                totalValueUSD,
                             )
                         ) {
                             resElement = {
-                                id: element.txId,
+                                id: element.order.txId,
                                 type: 'swap',
                                 order: element,
+                                totalValueUSD: totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
                             };
                         }
                     }
@@ -5720,28 +5860,6 @@ export default function Chart(props: propsIF) {
                 setSelectedDate(undefined);
             }
             render();
-        }
-    };
-
-    const minimum = (data: CandleDataIF[], mouseX: number) => {
-        const xScale = scaleData?.xScale;
-        if (xScale) {
-            const accessor = (d: CandleDataIF) =>
-                Math.abs(mouseX - xScale(d.time * 1000));
-
-            return data
-                .map(function (dataPoint: CandleDataIF) {
-                    return [accessor(dataPoint), dataPoint];
-                })
-                .reduce(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    function (accumulator: any, dataPoint: any) {
-                        return accumulator[0] > dataPoint[0]
-                            ? dataPoint
-                            : accumulator;
-                    },
-                    [Number.MAX_VALUE, null],
-                );
         }
     };
 
@@ -6139,20 +6257,18 @@ export default function Chart(props: propsIF) {
                     setHoveredOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
-                                ? hoveredOrderHistory.order
+                                ? hoveredOrderHistory.order.order
                                       .swapInvPriceDecimalCorrected
-                                : hoveredOrderHistory.order
+                                : hoveredOrderHistory.order.order
                                       .swapPriceDecimalCorrected,
                         );
 
                         let left =
                             scaleData?.xScale(
-                                hoveredOrderHistory.order.txTime * 1000,
+                                hoveredOrderHistory.order.order.txTime * 1000,
                             ) +
                             scale(
-                                circleScale(
-                                    hoveredOrderHistory.order.totalValueUSD,
-                                ),
+                                circleScale(hoveredOrderHistory.totalValueUSD),
                             );
 
                         let isOnLeftSide = false;
@@ -6171,25 +6287,23 @@ export default function Chart(props: propsIF) {
 
                             left =
                                 scaleData?.xScale(
-                                    hoveredOrderHistory.order.txTime * 1000,
+                                    hoveredOrderHistory.order.order.txTime *
+                                        1000,
                                 ) +
                                 (isOverLeft && isOverTop
                                     ? -scale(
                                           circleScale(
-                                              hoveredOrderHistory.order
-                                                  .totalValueUSD,
+                                              hoveredOrderHistory.totalValueUSD,
                                           ),
                                       ) +
                                       (circleScale(
-                                          hoveredOrderHistory.order
-                                              .totalValueUSD,
+                                          hoveredOrderHistory.totalValueUSD,
                                       ) < 1500
                                           ? -105
                                           : -90)
                                     : +scale(
                                           circleScale(
-                                              hoveredOrderHistory.order
-                                                  .totalValueUSD,
+                                              hoveredOrderHistory.totalValueUSD,
                                           ),
                                       ));
                         }
@@ -6204,15 +6318,15 @@ export default function Chart(props: propsIF) {
 
                 if (hoveredOrderHistory.type === 'historical') {
                     const minPrice = denomInBase
-                        ? hoveredOrderHistory.order
+                        ? hoveredOrderHistory.order.order
                               .bidTickInvPriceDecimalCorrected
-                        : hoveredOrderHistory.order
+                        : hoveredOrderHistory.order.order
                               .bidTickPriceDecimalCorrected;
 
                     const maxPrice = denomInBase
-                        ? hoveredOrderHistory.order
+                        ? hoveredOrderHistory.order.order
                               .askTickInvPriceDecimalCorrected
-                        : hoveredOrderHistory.order
+                        : hoveredOrderHistory.order.order
                               .askTickPriceDecimalCorrected;
 
                     const diff = Math.abs(maxPrice - minPrice) / 2;
@@ -6223,7 +6337,8 @@ export default function Chart(props: propsIF) {
                         let top = scaleData.yScale(pricePlacement);
 
                         const left = scaleData?.xScale(
-                            hoveredOrderHistory.order.latestUpdateTime * 1000,
+                            hoveredOrderHistory.order.order.latestUpdateTime *
+                                1000,
                         );
 
                         if (
@@ -6271,18 +6386,20 @@ export default function Chart(props: propsIF) {
                     setHoveredOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
-                                ? hoveredOrderHistory.order
+                                ? hoveredOrderHistory.order.order
                                       .invLimitPriceDecimalCorrected
-                                : hoveredOrderHistory.order
+                                : hoveredOrderHistory.order.order
                                       .limitPriceDecimalCorrected,
                         );
 
                         const time =
-                            hoveredOrderHistory.order.claimableLiq === 0
-                                ? hoveredOrderHistory.order.timeFirstMint
-                                : hoveredOrderHistory.order.crossTime;
+                            hoveredOrderHistory.order.order.claimableLiq === 0
+                                ? hoveredOrderHistory.order.order.timeFirstMint
+                                : hoveredOrderHistory.order.order.crossTime;
 
-                        if (hoveredOrderHistory.order.claimableLiq === 0) {
+                        if (
+                            hoveredOrderHistory.order.order.claimableLiq === 0
+                        ) {
                             const left = scaleData?.xScale(time * 1000) + 55;
 
                             let topPlacement = top;
@@ -6328,7 +6445,8 @@ export default function Chart(props: propsIF) {
                                 scaleData?.xScale(time * 1000) +
                                 scale(
                                     circleScaleLimitOrder(
-                                        hoveredOrderHistory.order.totalValueUSD,
+                                        hoveredOrderHistory.order.order
+                                            .totalValueUSD,
                                     ),
                                 );
 
@@ -6351,11 +6469,11 @@ export default function Chart(props: propsIF) {
                                         ? -scale(
                                               circleScaleLimitOrder(
                                                   hoveredOrderHistory.order
-                                                      .totalValueUSD,
+                                                      .order.totalValueUSD,
                                               ),
                                           ) +
                                           (circleScaleLimitOrder(
-                                              hoveredOrderHistory.order
+                                              hoveredOrderHistory.order.order
                                                   .totalValueUSD,
                                           ) < 1500
                                               ? -105
@@ -6363,7 +6481,7 @@ export default function Chart(props: propsIF) {
                                         : +scale(
                                               circleScaleLimitOrder(
                                                   hoveredOrderHistory.order
-                                                      .totalValueUSD,
+                                                      .order.totalValueUSD,
                                               ),
                                           ));
 
