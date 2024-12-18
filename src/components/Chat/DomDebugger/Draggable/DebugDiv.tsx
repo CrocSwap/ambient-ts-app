@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import styles from './DebugDiv.module.css';
 
 interface DebugDivPropsIF {
