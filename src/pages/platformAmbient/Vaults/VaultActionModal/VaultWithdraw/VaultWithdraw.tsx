@@ -1,6 +1,7 @@
 import {
     getFormattedNumber,
     uriToHttp,
+    waitForTransaction,
 } from '../../../../../ambient-utils/dataLayer';
 import Button from '../../../../../components/Form/Button';
 import TokenIcon from '../../../../../components/Global/TokenIcon/TokenIcon';
@@ -12,7 +13,6 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import {
     GAS_DROPS_ESTIMATE_VAULT_WITHDRAWAL,
-    IS_LOCAL_ENV,
     NUM_GWEI_IN_WEI,
     VAULT_TX_L1_DATA_FEE_ESTIMATE,
 } from '../../../../../ambient-utils/constants';
@@ -30,11 +30,6 @@ import {
     ReceiptContext,
     UserDataContext,
 } from '../../../../../contexts';
-import {
-    TransactionError,
-    isTransactionFailedError,
-    isTransactionReplacedError,
-} from '../../../../../utils/TransactionError';
 
 import { MdEdit } from 'react-icons/md';
 import useKeyPress from '../../../../../App/hooks/useKeyPress';
@@ -59,7 +54,8 @@ export default function VaultWithdraw(props: propsIF) {
     const [showSubmitted, setShowSubmitted] = useState(false);
     const [removalPercentage, setRemovalPercentage] = useState(100);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
+    const { ethMainnetUsdPrice, crocEnv, provider } =
+        useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
     const {
         activeNetwork: { chainId },
@@ -116,34 +112,27 @@ export default function VaultWithdraw(props: propsIF) {
         } else {
             setShowSubmitted(false);
         }
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            setShowSubmitted(false);
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                removePendingTx(error.hash);
 
-                const newTransactionHash = error.replacement.hash;
-                addPendingTx(newTransactionHash);
-
-                updateTransactionHash(error.hash, error.replacement.hash);
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
-                console.error({ error });
-                receipt = error.receipt;
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                );
+            } catch (e) {
+                setShowSubmitted(false);
+                console.error({ e });
             }
-        }
 
-        if (receipt) {
-            addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.hash);
-            setShowSubmitted(false);
+            if (receipt) {
+                addReceipt(receipt);
+                removePendingTx(receipt.hash);
+                setShowSubmitted(false);
+            }
         }
     };
 

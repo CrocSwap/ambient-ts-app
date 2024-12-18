@@ -522,6 +522,7 @@ function Orders(props: propsIF) {
 
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>
+            !tx.isRemoved &&
             unindexedNonFailedSessionLimitOrderUpdates.some(
                 (update) => update.txHash === tx.txHash,
             ) &&

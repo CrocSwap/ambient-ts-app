@@ -20,13 +20,14 @@ export default function TransactionException(props: propsIF) {
     } = useContext(AppStateContext);
     const { txError } = props;
     const txErrorMessage = parseErrorMessage(txError);
-    let txErrorCopyable = JSON.stringify(txError);
-    if (txErrorCopyable === '{}') {
-        try {
+    let txErrorCopyable: string;
+    try {
+        txErrorCopyable = JSON.stringify(txError);
+        if (txErrorCopyable === '{}') {
             txErrorCopyable = txError.toString();
-        } catch {
-            txErrorCopyable = '';
         }
+    } catch (error) {
+        txErrorCopyable = '';
     }
     const rangeModuleActive = location.pathname.includes('/trade/pool');
     const { tokenA, tokenB, isTokenAPrimary } = useContext(TradeDataContext);

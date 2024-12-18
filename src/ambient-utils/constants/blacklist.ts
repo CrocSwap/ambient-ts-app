@@ -183,6 +183,11 @@ export const hiddenTokens = [
         chainId: 11155111,
     },
     {
+        // different sepolia USDC on Scroll-Tech's scroll scroll list
+        address: '0x7878290DB8C4f02bd06E0E249617871c19508bE6',
+        chainId: 534351,
+    },
+    {
         // aUSDC on Plume Devnet
         address: '0xef380e725648cfe1488d98973151599a75186016',
         chainId: 98864,
