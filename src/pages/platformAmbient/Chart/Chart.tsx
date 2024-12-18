@@ -5446,7 +5446,7 @@ export default function Chart(props: propsIF) {
                                 id: position.positionId,
                                 type: 'historical',
                                 order: position,
-                                totalValue: 0,
+                                totalValue: position.totalValueUSD,
                                 tokenFlowDecimalCorrected: 0,
                             };
                         }
@@ -6341,15 +6341,15 @@ export default function Chart(props: propsIF) {
 
                 if (hoveredOrderHistory.type === 'historical') {
                     const minPrice = denomInBase
-                        ? hoveredOrderHistory.order.order
+                        ? hoveredOrderHistory.order
                               .bidTickInvPriceDecimalCorrected
-                        : hoveredOrderHistory.order.order
+                        : hoveredOrderHistory.order
                               .bidTickPriceDecimalCorrected;
 
                     const maxPrice = denomInBase
-                        ? hoveredOrderHistory.order.order
+                        ? hoveredOrderHistory.order
                               .askTickInvPriceDecimalCorrected
-                        : hoveredOrderHistory.order.order
+                        : hoveredOrderHistory.order
                               .askTickPriceDecimalCorrected;
 
                     const diff = Math.abs(maxPrice - minPrice) / 2;
@@ -6360,8 +6360,7 @@ export default function Chart(props: propsIF) {
                         let top = scaleData.yScale(pricePlacement);
 
                         const left = scaleData?.xScale(
-                            hoveredOrderHistory.order.order.latestUpdateTime *
-                                1000,
+                            hoveredOrderHistory.order.latestUpdateTime * 1000,
                         );
 
                         if (
@@ -6409,20 +6408,18 @@ export default function Chart(props: propsIF) {
                     setHoveredOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
-                                ? hoveredOrderHistory.order.order
+                                ? hoveredOrderHistory.order
                                       .invLimitPriceDecimalCorrected
-                                : hoveredOrderHistory.order.order
+                                : hoveredOrderHistory.order
                                       .limitPriceDecimalCorrected,
                         );
 
                         const time =
-                            hoveredOrderHistory.order.order.claimableLiq === 0
-                                ? hoveredOrderHistory.order.order.timeFirstMint
-                                : hoveredOrderHistory.order.order.crossTime;
+                            hoveredOrderHistory.order.claimableLiq === 0
+                                ? hoveredOrderHistory.order.timeFirstMint
+                                : hoveredOrderHistory.order.crossTime;
 
-                        if (
-                            hoveredOrderHistory.order.order.claimableLiq === 0
-                        ) {
+                        if (hoveredOrderHistory.order.claimableLiq === 0) {
                             const left = scaleData?.xScale(time * 1000) + 55;
 
                             let topPlacement = top;
@@ -6468,8 +6465,7 @@ export default function Chart(props: propsIF) {
                                 scaleData?.xScale(time * 1000) +
                                 scale(
                                     circleScaleLimitOrder(
-                                        hoveredOrderHistory.order.order
-                                            .totalValueUSD,
+                                        hoveredOrderHistory.totalValueUSD,
                                     ),
                                 );
 
@@ -6491,20 +6487,17 @@ export default function Chart(props: propsIF) {
                                     (isOverLeft && isOverTop
                                         ? -scale(
                                               circleScaleLimitOrder(
-                                                  hoveredOrderHistory.order
-                                                      .order.totalValueUSD,
+                                                  hoveredOrderHistory.totalValueUSD,
                                               ),
                                           ) +
                                           (circleScaleLimitOrder(
-                                              hoveredOrderHistory.order.order
-                                                  .totalValueUSD,
+                                              hoveredOrderHistory.totalValueUSD,
                                           ) < 1500
                                               ? -105
                                               : -90)
                                         : +scale(
                                               circleScaleLimitOrder(
-                                                  hoveredOrderHistory.order
-                                                      .order.totalValueUSD,
+                                                  hoveredOrderHistory.totalValueUSD,
                                               ),
                                           ));
 
@@ -6550,19 +6543,19 @@ export default function Chart(props: propsIF) {
                     setSelectedOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
-                                ? selectedOrderHistory.order.order
+                                ? selectedOrderHistory.order
                                       .invLimitPriceDecimalCorrected
-                                : selectedOrderHistory.order.order
+                                : selectedOrderHistory.order
                                       .limitPriceDecimalCorrected,
                         );
 
                         const time =
-                            selectedOrderHistory.order.order.claimableLiq === 0
-                                ? selectedOrderHistory.order.order.timeFirstMint
-                                : selectedOrderHistory.order.order.crossTime;
+                            selectedOrderHistory.order.claimableLiq === 0
+                                ? selectedOrderHistory.order.timeFirstMint
+                                : selectedOrderHistory.order.crossTime;
 
                         const distance =
-                            selectedOrderHistory.order.order.claimableLiq > 0
+                            selectedOrderHistory.order.claimableLiq > 0
                                 ? scale(
                                       circleScaleLimitOrder(
                                           selectedOrderHistory.totalValueUSD,
@@ -6578,15 +6571,15 @@ export default function Chart(props: propsIF) {
 
                 if (selectedOrderHistory.type === 'historical') {
                     const minPrice = denomInBase
-                        ? selectedOrderHistory.order.order
+                        ? selectedOrderHistory.order
                               .bidTickInvPriceDecimalCorrected
-                        : selectedOrderHistory.order.order
+                        : selectedOrderHistory.order
                               .bidTickPriceDecimalCorrected;
 
                     const maxPrice = denomInBase
-                        ? selectedOrderHistory.order.order
+                        ? selectedOrderHistory.order
                               .askTickInvPriceDecimalCorrected
-                        : selectedOrderHistory.order.order
+                        : selectedOrderHistory.order
                               .askTickPriceDecimalCorrected;
 
                     const diff = Math.abs(maxPrice - minPrice) / 2;
@@ -6597,8 +6590,7 @@ export default function Chart(props: propsIF) {
                         const top = scaleData.yScale(pricePlacement);
 
                         const left = scaleData?.xScale(
-                            selectedOrderHistory.order.order.latestUpdateTime *
-                                1000,
+                            selectedOrderHistory.order.latestUpdateTime * 1000,
                         );
 
                         return {

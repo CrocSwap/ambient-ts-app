@@ -67,7 +67,7 @@ export default function OrderHistoryTooltip(props: {
 
     const [hoveredID, setHoveredID] = useState<string | undefined>();
 
-    const swapHeader = (
+    const swapHeader = hoveredOrderHistory.type === 'swap' && (
         <OrderHistoryHeader>
             <StyledHeader
                 color={
@@ -123,8 +123,8 @@ export default function OrderHistoryTooltip(props: {
         <OrderHistoryHeader>
             <StyledHeader
                 color={
-                    (denomInBase && !hoveredOrderHistory.order.order.isBid) ||
-                    (!denomInBase && hoveredOrderHistory.order.order.isBid)
+                    (denomInBase && !hoveredOrderHistory.order.isBid) ||
+                    (!denomInBase && hoveredOrderHistory.order.isBid)
                         ? ['futa'].includes(platformName)
                             ? 'var(--negative)'
                             : 'var(--accent5)'
@@ -132,41 +132,41 @@ export default function OrderHistoryTooltip(props: {
                 }
                 size={'15px'}
             >
-                {((denomInBase && !hoveredOrderHistory.order.order.isBid) ||
-                (!denomInBase && hoveredOrderHistory.order.order.isBid)
+                {((denomInBase && !hoveredOrderHistory.order.isBid) ||
+                (!denomInBase && hoveredOrderHistory.order.isBid)
                     ? 'Buy'
                     : 'Sell') + ': '}
             </StyledHeader>
             <StyledHeader color={'white'} size={'15px'}>
                 {formatSubscript(
                     denomInBase
-                        ? hoveredOrderHistory.order.order.isBid
-                            ? hoveredOrderHistory.order.order
+                        ? hoveredOrderHistory.order.isBid
+                            ? hoveredOrderHistory.order
                                   .originalPositionLiqBaseDecimalCorrected
-                            : hoveredOrderHistory.order.order
+                            : hoveredOrderHistory.order
                                   .expectedPositionLiqBaseDecimalCorrected
-                        : hoveredOrderHistory.order.order.isBid
-                          ? hoveredOrderHistory.order.order
+                        : hoveredOrderHistory.order.isBid
+                          ? hoveredOrderHistory.order
                                 .expectedPositionLiqQuoteDecimalCorrected
-                          : hoveredOrderHistory.order.order
+                          : hoveredOrderHistory.order
                                 .originalPositionLiqQuoteDecimalCorrected,
                 )}
             </StyledHeader>
             <StyledHeader color={'white'} size={'15px'}>
                 {denomInBase
-                    ? hoveredOrderHistory.order.order.baseSymbol
-                    : hoveredOrderHistory.order.order.quoteSymbol}
+                    ? hoveredOrderHistory.order.baseSymbol
+                    : hoveredOrderHistory.order.quoteSymbol}
             </StyledHeader>
             {(
                 denomInBase
-                    ? hoveredOrderHistory.order.order.baseTokenLogoURI
-                    : hoveredOrderHistory.order.order.quoteTokenLogoURI
+                    ? hoveredOrderHistory.order.baseTokenLogoURI
+                    : hoveredOrderHistory.order.quoteTokenLogoURI
             ) ? (
                 <img
                     src={uriToHttp(
                         denomInBase
-                            ? hoveredOrderHistory.order.order.baseTokenLogoURI
-                            : hoveredOrderHistory.order.order.quoteTokenLogoURI,
+                            ? hoveredOrderHistory.order.baseTokenLogoURI
+                            : hoveredOrderHistory.order.quoteTokenLogoURI,
                     )}
                     alt='base token'
                     style={{ width: '18px' }}
@@ -181,21 +181,17 @@ export default function OrderHistoryTooltip(props: {
                 Range
             </StyledHeader>
 
-            {hoveredOrderHistory.order.order.baseTokenLogoURI ? (
+            {hoveredOrderHistory.order.baseTokenLogoURI ? (
                 <img
-                    src={uriToHttp(
-                        hoveredOrderHistory.order.order.baseTokenLogoURI,
-                    )}
+                    src={uriToHttp(hoveredOrderHistory.order.baseTokenLogoURI)}
                     alt='base token'
                     style={{ width: '18px' }}
                 />
             ) : undefined}
 
-            {hoveredOrderHistory.order.order.quoteTokenLogoURI ? (
+            {hoveredOrderHistory.order.quoteTokenLogoURI ? (
                 <img
-                    src={uriToHttp(
-                        hoveredOrderHistory.order.order.quoteTokenLogoURI,
-                    )}
+                    src={uriToHttp(hoveredOrderHistory.order.quoteTokenLogoURI)}
                     alt='base token'
                     style={{ width: '18px' }}
                 />
@@ -218,14 +214,12 @@ export default function OrderHistoryTooltip(props: {
     const historicalTypeText = (
         <StyledHeader color={'var(--text1)'} size={'15px'}>
             {(denomInBase
-                ? hoveredOrderHistory.order.order.highRangeShortDisplayInBase
-                : hoveredOrderHistory.order.order
-                      .highRangeShortDisplayInQuote) +
+                ? hoveredOrderHistory.order.highRangeShortDisplayInBase
+                : hoveredOrderHistory.order.highRangeShortDisplayInQuote) +
                 ' - ' +
                 (denomInBase
-                    ? hoveredOrderHistory.order.order.lowRangeShortDisplayInBase
-                    : hoveredOrderHistory.order.order
-                          .lowRangeShortDisplayInQuote)}
+                    ? hoveredOrderHistory.order.lowRangeShortDisplayInBase
+                    : hoveredOrderHistory.order.lowRangeShortDisplayInQuote)}
         </StyledHeader>
     );
 
