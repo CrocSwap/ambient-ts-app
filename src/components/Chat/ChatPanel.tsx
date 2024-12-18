@@ -135,6 +135,8 @@ function ChatPanel(props: propsIF) {
         setShowVerifyWalletConfirmationInDelete,
     ] = useState(false);
 
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
     // some tricky date set for old messages verification. if it is not changed by confirmation panel, some future date will be used to not verify any messages
     const [verifyOldMessagesStartDate, setVerifyOldMessagesStartDate] =
         useState(new Date(new Date().getTime() + 1000 * 60 * 60 * 100));
@@ -380,16 +382,24 @@ function ChatPanel(props: propsIF) {
             clearInterval(notConnectedUserInterval);
         }
 
-        if (userAddress == undefined) {
-            if (isChatOpen == false) return;
+        if (userAddress === undefined) {
+            if (!isChatOpen) {
+                return;
+            }
+
+            if (page > 0) {
+                return;
+            }
+
             const interval = setInterval(() => {
                 fetchForNotConnectedUser();
             }, 10000);
+
             setNotConnectedUserInterval(interval);
         }
 
         return clearInterval(notConnectedUserInterval);
-    }, [userAddress, room, isChatOpen]);
+    }, [userAddress, room, isChatOpen, page]);
 
     useEffect(() => {
         if (
@@ -421,6 +431,7 @@ function ChatPanel(props: propsIF) {
     }, [lastMessage]);
 
     useEffect(() => {
+        setPage(0);
         setScrollDirection('Scroll Down');
         if (userAddress && isChatOpen) {
             if (ens === null || ens === undefined) {
@@ -856,6 +867,7 @@ function ChatPanel(props: propsIF) {
     const header = (
         <div
             className={styles.chat_header}
+            id='chat-header'
             onClick={() => {
                 setIsChatOpen(!isChatOpen);
                 // dismissSideBannerPopup && dismissSideBannerPopup();
@@ -909,7 +921,10 @@ function ChatPanel(props: propsIF) {
                 </div>
             )}
 
-            <section style={{ paddingRight: '10px' }}>
+            <section
+                id='chat-open-close-trollbox'
+                style={{ paddingRight: '10px' }}
+            >
                 {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
@@ -1151,19 +1166,21 @@ function ChatPanel(props: propsIF) {
                         />
                     </span>
                 ) : (
-                    <span>
+                    <div
+                        id='chat-scroll-bottom'
+                        role='button'
+                        tabIndex={0}
+                        onClick={scrollToBottomButton}
+                        style={{ cursor: 'pointer' }}
+                        title='Scroll To Bottom'
+                    >
                         <RiArrowDownDoubleLine
-                            role='button'
                             size={27}
                             color='var(--accent1)'
-                            onClick={() => scrollToBottomButton()}
-                            tabIndex={0}
-                            aria-label='Scroll to bottom zzzz'
-                            style={{ cursor: 'pointer' }}
-                            title={'Scroll To Bottom'}
+                            aria-label='Scroll to bottom'
                             className={styles.scroll_to_icon}
                         />
-                    </span>
+                    </div>
                 )
             ) : (
                 ''
@@ -1172,11 +1189,14 @@ function ChatPanel(props: propsIF) {
     );
 
     const sendingLink = (
-        <div className={styles.pop_up}>
-            <p>{popUpText}</p>
-            <div className={styles.close_button}>
+        <div className={styles.pop_up} id='chat-popup'>
+            <p id='chat-popup-text'>{popUpText}</p>
+            <div
+                className={styles.close_button}
+                id='chat-close-popup-button'
+                onClick={() => closePopUp()}
+            >
                 <IoIosClose
-                    onClick={() => closePopUp()}
                     size={20}
                     role='button'
                     tabIndex={0}
@@ -1221,6 +1241,8 @@ function ChatPanel(props: propsIF) {
             isMobile={isMobile}
             userMap={userMap}
             chainId={activeNetwork.chainId}
+            showEmojiPicker={showEmojiPicker}
+            setShowEmojiPicker={setShowEmojiPicker}
         />
     );
 
@@ -1228,7 +1250,7 @@ function ChatPanel(props: propsIF) {
         if (mentions.length > 0 && isChatOpen && isFocusMentions) {
             return (
                 <>
-                    {showPrevMents && (
+                    {showPrevMents && !showEmojiPicker && (
                         <div
                             className={styles.ment_skip_button}
                             onClick={() => {
@@ -1239,7 +1261,7 @@ function ChatPanel(props: propsIF) {
                             <IoIosArrowUp size={22} />
                         </div>
                     )}
-                    {showNextMents && (
+                    {showNextMents && !showEmojiPicker && (
                         <div
                             className={styles.ment_skip_button_down}
                             onClick={() => {
@@ -1250,7 +1272,7 @@ function ChatPanel(props: propsIF) {
                             <IoIosArrowDown size={22} />
                         </div>
                     )}
-                    {showNextMents && (
+                    {showNextMents && !showEmojiPicker && (
                         <div
                             className={styles.ment_skip_button_last}
                             onClick={() => {
@@ -1280,23 +1302,27 @@ function ChatPanel(props: propsIF) {
 
     const rndPreviousMessagesButton = () => {
         return (
-            <div className={styles.scroll_up}>
-                {showPreviousMessagesButton ? (
+            <span
+                id='chat-previous-messages'
+                className={styles.scroll_up}
+                role='button'
+                tabIndex={0}
+                onClick={() => getPreviousMessages()}
+                style={{ cursor: 'pointer' }}
+                title='Show previous messages'
+            >
+                {showPreviousMessagesButton && !showEmojiPicker ? (
                     <RiArrowUpDoubleLine
                         role='button'
                         size={27}
                         color='var(--accent1)'
-                        onClick={() => getPreviousMessages()}
-                        tabIndex={0}
                         aria-label='Show previous messages'
-                        style={{ cursor: 'pointer' }}
-                        title='Show previous messages'
                         className={styles.scroll_to_icon}
                     />
                 ) : (
                     ''
                 )}
-            </div>
+            </span>
         );
     };
 
@@ -1390,6 +1416,7 @@ function ChatPanel(props: propsIF) {
             >
                 <div className={styles.chat_body}>
                     <div
+                        id='chat-go-to-chart-button'
                         className={`${styles.btn_go_to_chart} ${
                             goToChartParams != undefined ? styles.active : ''
                         }`}
@@ -1441,7 +1468,7 @@ function ChatPanel(props: propsIF) {
                         </div>
                     )}
                     {messageInput}
-                    <div id='thelastmessage' />
+                    <div id='chat-thelastmessage' />
                 </div>
             </div>
 
