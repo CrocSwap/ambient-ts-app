@@ -1183,39 +1183,6 @@ function Orders(props: propsIF) {
                 position: 'relative',
             }}
         >
-            {/* <DebugDiv 
-            title='unindexed orders'
-            left={100}
-            top={100}
-                >
-            {
-                unindexedUpdatedOrders.map((tx, idx) => (                 
-                    <div key={`unindexed-${idx}`} style={{display: 'block', background: 'var(--dark3)'}}>{tx.positionHash.substring(0,6)} {tx.totalValueUSD}</div>
-                ))
-            }
-            </DebugDiv>
-
-            <DebugDiv title='updated hashes'
-            left={500}
-            top={100}
-            >
-                {
-                    unindexedUpdatedOrderHashes.map((tx, idx) => (                 
-                        <div key={`updated-${idx}`}> {tx.substring(0,6)}</div>
-                    ))
-                }
-            </DebugDiv>
-
-            <DebugDiv title= 'recently updated positions'
-            left={700}
-            top={100}
-            >
-                {
-                    listOfRecentlyUpdatedOrders.map((tx, idx) => (                 
-                        <div key={`updated-${idx}`}> {tx.type} {tx.action} {tx.order.positionHash.substring(0,6)} {tx.order.totalValueUSD} </div>
-                    ))
-                }
-            </DebugDiv> */}
             <div>{headerColumnsDisplay}</div>
 
             <div
