@@ -91,6 +91,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
         };
 
         if (provider && txBlockNumber) {
+            fetchBlockTime();
             // Start polling every 2 seconds
             intervalId = setInterval(fetchBlockTime, pollingInterval);
 
