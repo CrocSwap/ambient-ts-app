@@ -141,9 +141,23 @@ export default function Explore(props: ExploreIF) {
             ),
     );
 
+    const filteredPoolsNoHiddenTokens = filteredPoolsNoExcludedTokens.filter(
+        (p) => {
+            // check if pool contains tokenin hidden token list
+            return !hiddenTokens.some(
+                (excluded) =>
+                    (excluded.address.toLowerCase() ===
+                        p.base.address.toLowerCase() ||
+                        excluded.address.toLowerCase() ===
+                            p.quote.address.toLowerCase()) &&
+                    excluded.chainId === parseInt(p.chainId),
+            );
+        },
+    );
+
     const filteredPools =
         searchQueryPool.length >= 2
-            ? filteredPoolsNoExcludedTokens.filter((pool: PoolIF) => {
+            ? filteredPoolsNoHiddenTokens.filter((pool: PoolIF) => {
                   const lowerCaseQuery = searchQueryPool.toLowerCase();
                   return (
                       pool.base.name.toLowerCase().includes(lowerCaseQuery) ||
@@ -152,7 +166,7 @@ export default function Explore(props: ExploreIF) {
                       pool.quote.symbol.toLowerCase().includes(lowerCaseQuery)
                   );
               })
-            : filteredPoolsNoExcludedTokens;
+            : filteredPoolsNoHiddenTokens;
 
     const filteredTokens =
         searchQueryToken.length >= 2
@@ -169,7 +183,7 @@ export default function Explore(props: ExploreIF) {
                       );
                   })
                   .filter((t) => {
-                      // check if token is in exclusion list
+                      // check if token is in hidden token list
                       return !hiddenTokens.some(
                           (excluded) =>
                               excluded.address.toLowerCase() ===
