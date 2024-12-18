@@ -1000,13 +1000,6 @@ function Ranges(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
-    useEffect(() => {
-        console.log(
-            '>>> relevantTransactionsByType',
-            relevantTransactionsByType,
-        );
-    }, [relevantTransactionsByType]);
-
     type RecentlyUpdatedPosition = {
         posHash: string;
         timestamp: number;
@@ -1072,8 +1065,6 @@ function Ranges(props: propsIF) {
                         return {} as PositionIF;
                     const liqBigInt = position.liq;
                     const liqNum = bigIntToFloat(liqBigInt);
-
-                    console.log('>>>> RANGES | liqNum', liqNum);
                     if (pendingPositionUpdate.txDetails.isAmbient) {
                         positionLiqBase =
                             liqNum * Math.sqrt(poolPriceNonDisplay);
@@ -1135,8 +1126,6 @@ function Ranges(props: propsIF) {
                     if (onChainLiqDifferentThanMatchingPositionLiq) {
                         addPositionHash(posHash);
                     }
-
-                    console.log('>>> posHash', posHash);
 
                     const mockServerPosition: PositionServerIF = {
                         positionId: posHash,

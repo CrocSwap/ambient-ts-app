@@ -1,5 +1,4 @@
 /* eslint-disable no-irregular-whitespace */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
     LimitOrderIF,
@@ -40,7 +39,6 @@ import {
     quoteTokenForConcLiq,
     tickToPrice,
 } from '@crocswap-libs/sdk';
-import DebugDiv from '../../../Chat/DomDebugger/Draggable/DebugDiv';
 
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
@@ -123,10 +121,6 @@ function Orders(props: propsIF) {
     const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
     const moreDataAvailableRef = useRef<boolean>();
     moreDataAvailableRef.current = moreDataAvailable;
-
-    const [unindexedUpdatedOrders, setUnindexedUpdatedOrders] = useState<
-        LimitOrderIF[]
-    >([]);
 
     const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
 
@@ -556,23 +550,8 @@ function Orders(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getPositionHashByRelevantTx = (tx: any) => {
-        if (tx.txDetails) {
-            return getPositionHash(undefined, {
-                isPositionTypeAmbient: false,
-                user: tx.userAddress,
-                baseAddress: tx.txDetails.baseAddress,
-                quoteAddress: tx.txDetails.quoteAddress,
-                poolIdx: tx.txDetails.poolIdx,
-                bidTick: tx.txDetails.lowTick || 0,
-                askTick: tx.txDetails.highTick || 0,
-            });
-        }
-    };
-
     type RecentlyUpdatedPosition = {
-        posHash: string;
+        positionHash: string;
         timestamp: number;
         order: LimitOrderIF;
         type: string;
@@ -580,7 +559,7 @@ function Orders(props: propsIF) {
     };
 
     // list of recently updated positions
-    const [listOfRecentlyUpdatedPositions, setListOfRecentlyUpdatedPositions] =
+    const [listOfRecentlyUpdatedOrders, setListOfRecentlyUpdatedOrders] =
         useState<RecentlyUpdatedPosition[]>([]);
 
     const addRecentlyUpdatedOrder = (
@@ -589,12 +568,12 @@ function Orders(props: propsIF) {
         order: LimitOrderIF,
         timestamp: number,
     ) => {
-        setListOfRecentlyUpdatedPositions((prev) => {
+        setListOfRecentlyUpdatedOrders((prev) => {
             return [
-                ...prev.filter((e) => e.posHash !== order.positionHash),
+                ...prev.filter((e) => e.positionHash !== order.positionHash),
                 {
-                    posHash: order.positionHash,
-                    timestamp: Math.floor(Date.now() / 1000),
+                    positionHash: order.positionHash,
+                    timestamp: timestamp,
                     order: order,
                     type: type,
                     action: action,
@@ -605,16 +584,15 @@ function Orders(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            if (relevantTransactionsByType.length === 0) {
-                setUnindexedUpdatedOrders([]);
-            }
+            // if (relevantTransactionsByType.length === 0) {
+            //     setUnindexedUpdatedOrders([]);
+            // }
 
             const pendingOrders = relevantTransactionsByType.filter((tx) => {
-                // return (tx.txAction === 'Buy' || tx.txAction === 'Sell');
                 return tx.txType === 'Limit';
             });
 
-            const updatedOrders = await Promise.all(
+            await Promise.all(
                 pendingOrders.map(async (pendingOrder) => {
                     if (!crocEnv || !pendingOrder.txDetails)
                         return {} as LimitOrderIF;
@@ -685,17 +663,6 @@ function Orders(props: propsIF) {
                         askTick: pendingOrder.txDetails.highTick || 0,
                     });
 
-                    const matchingPosition = activeUserLimitOrdersByPool.find(
-                        (order) => order.positionHash === positionHash,
-                    );
-
-                    // const onChainLiqDifferentThanMatchingPositionLiq =
-                    //     liqBigInt > BigInt(matchingPosition?.positionLiq || 0);
-
-                    // if (onChainLiqDifferentThanMatchingPositionLiq) {
-                    //     addPositionHash(positionHash);
-                    // }
-
                     const mockServerOrder: LimitOrderServerIF = {
                         chainId: chainId,
                         limitOrderId: positionHash,
@@ -727,6 +694,8 @@ function Orders(props: propsIF) {
                     );
 
                     const totalValueUSD = limitOrderData.totalValueUSD;
+
+                    console.log('>>>> usdValue', usdValue);
 
                     const onChainOrder: LimitOrderIF = {
                         positionLiq: liqNum,
@@ -821,24 +790,19 @@ function Orders(props: propsIF) {
                         pendingOrder.txType || '',
                         pendingOrder.txAction || '',
                         onChainOrder,
-                        Math.floor(Date.now() / 1000),
+                        Date.now(),
                     );
 
                     return onChainOrder;
                 }),
             );
 
-            setUnindexedUpdatedOrders([...updatedOrders]);
+            // setUnindexedUpdatedOrders([...updatedOrders]);
         })();
-        // }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
-    }, [JSON.stringify(relevantTransactionsByType)]);
+    }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
 
-    const unindexedUpdatedOrderHashes = unindexedUpdatedOrders.map(
-        (pos) => pos.positionHash,
-    );
-
-    const pendingPositionsToDisplayPlaceholder =
-        relevantTransactionsByType.filter((pos) => {
+    const pendingPositionsToDisplayPlaceholder = useMemo(() => {
+        return relevantTransactionsByType.filter((pos) => {
             const pendingPosHash = getPositionHash(undefined, {
                 isPositionTypeAmbient: false,
                 user: pos.userAddress,
@@ -848,26 +812,15 @@ function Orders(props: propsIF) {
                 bidTick: pos.txDetails?.lowTick || 0,
                 askTick: pos.txDetails?.highTick || 0,
             });
-            const matchingPosition = unindexedUpdatedOrders.find(
-                (unindexedPosition) => {
-                    return pendingPosHash === unindexedPosition.positionHash;
+
+            const matchingPosition = listOfRecentlyUpdatedOrders.find(
+                (recentlyUpdatedOrder) => {
+                    return pendingPosHash === recentlyUpdatedOrder.positionHash;
                 },
             );
-            const matchingPositionUpdatedInLastMinute =
-                !!matchingPosition &&
-                listOfRecentlyUpdatedPositions.some(
-                    (recentlyUpdatedPosition) =>
-                        recentlyUpdatedPosition.posHash ===
-                            matchingPosition.positionHash &&
-                        recentlyUpdatedPosition.timestamp >
-                            Date.now() / 1000 - 60,
-                );
-
-            // identify completed adds when update time in last minute (does not work for removes)
-            return !unindexedUpdatedOrderHashes.includes(pendingPosHash);
-            // || (matchingPosition && !matchingPositionUpdatedInLastMinute)
-            // show pulsing placeholder until existing position is updated
+            return !matchingPosition;
         });
+    }, [relevantTransactionsByType, listOfRecentlyUpdatedOrders]);
 
     const shouldDisplayNoTableData =
         !isLoading &&
@@ -890,12 +843,17 @@ function Orders(props: propsIF) {
         const updatedHashes = new Set();
         const recentlyUpdatedToShow: LimitOrderIF[] = [];
 
-        listOfRecentlyUpdatedPositions.forEach((e) => {
+        listOfRecentlyUpdatedOrders.forEach((e) => {
+            const isFresh =
+                Math.floor(e.timestamp / 1000) - Math.floor(Date.now() / 1000) <
+                60;
             // if(e.action !== 'Remove' && e.timestamp < Date.now() / 1000 - 60) {
-            if (e.action !== 'Remove') {
-                recentlyUpdatedToShow.push(e.order);
+            if (isFresh) {
+                if (e.action !== 'Remove') {
+                    recentlyUpdatedToShow.push(e.order);
+                }
+                updatedHashes.add(e.positionHash);
             }
-            updatedHashes.add(e.posHash);
         });
 
         const mergedList: LimitOrderIF[] = [
@@ -914,7 +872,7 @@ function Orders(props: propsIF) {
         sortedLimits,
         pagesVisible,
         isAccountView,
-        listOfRecentlyUpdatedPositions,
+        listOfRecentlyUpdatedOrders,
     ]);
 
     // -----------------------------------------------------------------------------------------------------------------------------
@@ -1235,18 +1193,6 @@ function Orders(props: propsIF) {
             }
             </DebugDiv>
 
-            <DebugDiv
-                title='relevant transactions'
-            left={300}
-            top={100}
-            >
-                {
-                    relevantTransactionsByType.map((tx, idx) => (                 
-                        <div key={`relevant-${idx}`}> {getPositionHashByRelevantTx(tx)?.substring(0,6)} {tx.txAction}</div>
-                    ))
-                }
-            </DebugDiv>
-
             <DebugDiv title='updated hashes'
             left={500}
             top={100}
@@ -1263,7 +1209,7 @@ function Orders(props: propsIF) {
             top={100}
             >
                 {
-                    listOfRecentlyUpdatedPositions.map((tx, idx) => (                 
+                    listOfRecentlyUpdatedOrders.map((tx, idx) => (                 
                         <div key={`updated-${idx}`}> {tx.type} {tx.action} {tx.order.positionHash.substring(0,6)} {tx.order.totalValueUSD} </div>
                     ))
                 }
