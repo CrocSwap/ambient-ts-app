@@ -1183,6 +1183,16 @@ function Orders(props: propsIF) {
                 position: 'relative',
             }}
         >
+            {/* <DebugDiv title= 'recently updated positions'
+            left={700}
+            top={100}
+            >
+                {
+                    listOfRecentlyUpdatedOrders.map((tx, idx) => (                 
+                        <div key={`updated-${idx}`}> {tx.type} {tx.action} {tx.order.positionHash.substring(0,6)} {tx.order.totalValueUSD} </div>
+                    ))
+                }
+            </DebugDiv> */}
             <div>{headerColumnsDisplay}</div>
 
             <div
