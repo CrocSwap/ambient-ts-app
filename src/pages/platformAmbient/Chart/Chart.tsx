@@ -742,8 +742,14 @@ export default function Chart(props: propsIF) {
                 mergedTx: Array<TransactionIF>;
             }> = [];
 
-            const leftDomain = d3.min(visibleCandleData, (d) => d.time);
-            const rightDomain = d3.max(visibleCandleData, (d) => d.time);
+            const leftDomain =
+                visibleCandleData.length > 1
+                    ? d3.min(visibleCandleData, (d) => d.time)
+                    : scaleData.xScale.domain()[0] / 1000;
+            const rightDomain =
+                visibleCandleData.length > 1
+                    ? d3.max(visibleCandleData, (d) => d.time)
+                    : scaleData.xScale.domain()[1] / 1000;
 
             const userSwaps = userTransactionData.filter(
                 (transaction) => transaction.entityType === 'swap',
