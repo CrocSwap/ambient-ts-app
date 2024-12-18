@@ -531,6 +531,14 @@
             "logoURI": ""
         },
         {
+            "name": "uBTC",
+            "address": "0xFA3198ecF05303a6d96E57a45E6c815055D255b1",
+            "symbol": "uBTC",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": ""
+        },
+        {
             "name": "Native Ether",
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",

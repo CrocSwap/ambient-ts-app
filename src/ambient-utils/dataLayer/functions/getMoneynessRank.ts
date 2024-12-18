@@ -40,6 +40,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         WBTC: 60,
         SOLVBTC: 55,
         TBTC: 55,
+        UBTC: 55,
         SWELL: 52,
         ETH: 50,
         RSWETH: 48,

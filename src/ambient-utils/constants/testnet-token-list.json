@@ -161,6 +161,14 @@
             "decimals": 6,
             "chainId": 84532,
             "logoURI": ""
+        },
+        {
+            "name": "Wolski Test Token",
+            "address": "0xfefd8bcb0034a2b0e3cc22e2f5a59279fae67128",
+            "symbol": "WTT",
+            "decimals": 6,
+            "chainId": 84532,
+            "logoURI": ""
         }
     ]
 }
