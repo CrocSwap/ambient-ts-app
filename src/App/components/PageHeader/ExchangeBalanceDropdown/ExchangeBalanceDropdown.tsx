@@ -64,7 +64,7 @@ export const ExchangeBalanceDropdown = () => {
             {showMobileVersion ? (
                 modalVersion
             ) : (
-                <div className={styles.container}>
+                <div className={styles.exchange_balance_dropdown}>
                     <ExchangeBalance
                         fullLayoutActive={fullLayoutActive}
                         setFullLayoutActive={setFullLayoutActive}

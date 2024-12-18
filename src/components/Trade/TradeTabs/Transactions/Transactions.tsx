@@ -397,6 +397,7 @@ function Transactions(props: propsIF) {
 
     const unindexedNonFailedTransactions = transactionsByType.filter(
         (tx) =>
+            !tx.isRemoved &&
             unindexedNonFailedSessionTransactionHashes.includes(tx.txHash) &&
             tx.txDetails?.baseAddress.toLowerCase() ===
                 baseToken.address.toLowerCase() &&
