@@ -1,3 +1,5 @@
-export const getReceiptTxHashes = (sessionReceipts: string[]) => {
-    return sessionReceipts.map((receipt) => JSON.parse(receipt).hash);
+import { TransactionReceipt } from 'ethers';
+
+export const getReceiptTxHashes = (sessionReceipts: TransactionReceipt[]) => {
+    return sessionReceipts.map((receipt) => receipt.hash);
 };

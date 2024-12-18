@@ -150,6 +150,7 @@ export default function TabComponent(props: TabPropsIF) {
                     'liquidity',
                     'wallet balances',
                     'exchange balances',
+                    'dex balances',
                 ].includes(currentTabData.label.toLowerCase())
             ) {
                 setActiveTradeTab(currentTabData.label.toLowerCase());

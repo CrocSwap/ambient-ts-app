@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
-import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import { waitForTransaction } from '../../ambient-utils/dataLayer';
 import {
     AllVaultsServerIF,
     TokenIF,
@@ -11,11 +11,6 @@ import { AppStateContext } from '../../contexts';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../utils/TransactionError';
 
 export function useApprove() {
     const {
@@ -30,7 +25,7 @@ export function useApprove() {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const { crocEnv } = useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     // TODO: useTokenBalancesAndAllowances replaces this in the init page branch
     // const {
     //     tradeData: { baseToken, quoteToken },
@@ -60,33 +55,23 @@ export function useApprove() {
                     txType: 'Approve',
                     txDescription: `Approval of ${tokenSymbol}`,
                 });
-
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used 'speed up' or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    removePendingTx(error.hash);
-
-                    const newTransactionHash = error.receipt.hash;
-                    addPendingTx(newTransactionHash);
-
-                    updateTransactionHash(error.hash, error.receipt.hash);
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    console.error({ error });
-                    receipt = error.receipt;
+            if (tx) {
+                let receipt;
+                try {
+                    receipt = await waitForTransaction(
+                        provider,
+                        tx.hash,
+                        removePendingTx,
+                        addPendingTx,
+                        updateTransactionHash,
+                    );
+                } catch (e) {
+                    console.error({ e });
                 }
-            }
-            if (receipt) {
-                addReceipt(JSON.stringify(receipt));
-                removePendingTx(receipt.hash);
+                if (receipt) {
+                    addReceipt(receipt);
+                    removePendingTx(receipt.hash);
+                }
             }
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
@@ -126,33 +111,23 @@ export function useApprove() {
                     txType: 'Approve',
                     txDescription: `Approve ${mainAsset.symbol}/${secondaryAsset.symbol}`,
                 });
-
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used 'speed up' or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    removePendingTx(error.hash);
-
-                    const newTransactionHash = error.receipt.hash;
-                    addPendingTx(newTransactionHash);
-
-                    updateTransactionHash(error.hash, error.receipt.hash);
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    console.error({ error });
-                    receipt = error.receipt;
+            if (tx) {
+                let receipt;
+                try {
+                    receipt = await waitForTransaction(
+                        provider,
+                        tx.hash,
+                        removePendingTx,
+                        addPendingTx,
+                        updateTransactionHash,
+                    );
+                } catch (e) {
+                    console.error({ e });
                 }
-            }
-            if (receipt) {
-                addReceipt(JSON.stringify(receipt));
-                removePendingTx(receipt.hash);
+                if (receipt) {
+                    addReceipt(receipt);
+                    removePendingTx(receipt.hash);
+                }
             }
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
