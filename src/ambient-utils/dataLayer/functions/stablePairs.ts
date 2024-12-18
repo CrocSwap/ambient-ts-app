@@ -56,6 +56,7 @@ import {
     sepoliaWBTC,
     swellSepoliaUSDC,
     swellSepoliaUSDT,
+    swellUBTC,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -200,6 +201,7 @@ export const USD_EXCLUDED_TOKENS = [mainnetSWELL.address].map((x) =>
 export const STAKED_BTC_TOKENS = [
     scrollSOLVBTC.address,
     mainnetTBTC.address,
+    swellUBTC.address,
 ].map((x) => x.toLowerCase());
 
 export const WRAPPED_NATIVE_TOKENS = [

@@ -44,6 +44,7 @@ import SWELL from './SWELL.png';
 import SWETH from './SWETH.svg';
 import SYN from './SYN.svg';
 import TBTC from './TBTC.svg';
+import UBTC from './UBTC.webp';
 import UNI from './UNI.webp';
 import UNIETH from './UNIETH.png';
 import USDPLUS from './USD+.png';
@@ -108,6 +109,7 @@ export {
     SWETH,
     SYN,
     TBTC,
+    UBTC,
     UNI,
     UNIETH,
     USDB,

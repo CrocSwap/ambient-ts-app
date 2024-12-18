@@ -2,7 +2,7 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
-import { swellETH, swellWTT } from '../defaultTokens';
+import { swellETH, swellUBTC, swellWTT } from '../defaultTokens';
 import { GCGO_SWELL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -30,14 +30,14 @@ export const swellMainnet: NetworkIF = {
     GCGO_URL: GCGO_SWELL_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [swellETH, swellWTT],
+    defaultPair: [swellETH, swellUBTC],
     defaultPairFuta: [swellETH, swellWTT],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Swell',
     tokenPriceQueryAssetPlatform: 'swell',
-    topPools: [new TopPool(swellETH, swellWTT, chainSpecFromSDK.poolIndex)],
+    topPools: [new TopPool(swellETH, swellUBTC, chainSpecFromSDK.poolIndex)],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (

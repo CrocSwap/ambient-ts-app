@@ -862,6 +862,15 @@ export const swellWTT: TokenIF = registerToken({
     logoURI: '',
 });
 
+export const swellUBTC: TokenIF = registerToken({
+    name: 'uBTC',
+    address: '0xFA3198ecF05303a6d96E57a45E6c815055D255b1',
+    symbol: 'uBTC',
+    decimals: 18,
+    chainId: 1923,
+    logoURI: '',
+});
+
 export const plumeNativeETH: TokenIF = registerToken({
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
@@ -930,6 +939,15 @@ export const baseSepoliaUSDT: TokenIF = registerToken({
     name: 'Ambient USDT',
     address: '0x868cFD46ad326354AD214bEA9f08fD8EfBfac3b9',
     symbol: 'USDT',
+    decimals: 6,
+    chainId: 84532,
+    logoURI: '',
+});
+
+export const baseSepoliaWTT: TokenIF = registerToken({
+    name: 'Wolski Test Token',
+    address: '0xfefd8bcb0034a2b0e3cc22e2f5a59279fae67128',
+    symbol: 'WTT',
     decimals: 6,
     chainId: 84532,
     logoURI: '',
