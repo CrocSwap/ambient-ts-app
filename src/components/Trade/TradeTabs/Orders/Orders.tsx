@@ -604,15 +604,6 @@ function Orders(props: propsIF) {
     };
 
     useEffect(() => {
-        if (relevantTransactionsByType.length > 0) {
-            console.log(
-                '>>> relevantTransactionsByType',
-                getPositionHashByRelevantTx(
-                    relevantTransactionsByType[0],
-                )?.substring(0, 6),
-            );
-        }
-
         (async () => {
             if (relevantTransactionsByType.length === 0) {
                 setUnindexedUpdatedOrders([]);
@@ -658,8 +649,6 @@ function Orders(props: propsIF) {
                     const highTickPrice = tickToPrice(
                         pendingOrder.txDetails.highTick || 0,
                     );
-
-                    console.log('>>> isBid', pendingOrder.txDetails.isBid);
 
                     const usdValue = pendingOrder.txDetails.isBid
                         ? (1 / poolPriceNonDisplay) *
@@ -737,11 +726,17 @@ function Orders(props: propsIF) {
                         cachedEnsResolve,
                     );
 
+                    const totalValueUSD = limitOrderData.totalValueUSD;
+
                     const onChainOrder: LimitOrderIF = {
                         positionLiq: liqNum,
                         positionLiqBase: positionLiqBase,
                         positionLiqQuote: positionLiqQuote,
-                        totalValueUSD: usdValue || 0,
+                        totalValueUSD:
+                            usdValue + (totalValueUSD ? totalValueUSD : 0) ||
+                            totalValueUSD
+                                ? totalValueUSD
+                                : 0,
                         base: pendingOrder.txDetails.baseAddress,
                         quote: pendingOrder.txDetails.quoteAddress,
                         baseDecimals:
@@ -891,10 +886,6 @@ function Orders(props: propsIF) {
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
 
     const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
-        // sortedLimits.map((limit) => {
-        //     console.log('>>> limit', limit.positionHash, limit.id);
-        // });
-
         // merge with recently updated data
         const updatedHashes = new Set();
         const recentlyUpdatedToShow: LimitOrderIF[] = [];
