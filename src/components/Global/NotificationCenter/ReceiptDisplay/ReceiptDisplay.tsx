@@ -132,8 +132,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
               ? 'Pending...'
               : '';
 
-    const ariaLabel = `${status} transaction of ${txType}`;
-    const newDisplay = (
+    return (
         <div className={styles.nContainer}>
             <a
                 href={EtherscanTx}
@@ -181,58 +180,5 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                 </a>
             </div>
         </div>
-    );
-
-    return (
-        <>{newDisplay}</>
-        // <div
-        //     className={styles.container}
-        //     tabIndex={0}
-        //     role='listitem'
-        //     aria-label={ariaLabel}
-        // >
-        //     <div className={styles.status}>{handleStatusDisplay(status)}</div>
-        //     <div className={styles.content}>
-        //         <div className={styles.info}>
-        //             <div className={styles.row}>
-        //                 {`${
-        //                     txType ? txType : 'Transaction'
-        //                 } (${txHashTruncated})`}
-        //                 <button
-        //                     style={{
-        //                         cursor: 'pointer',
-        //                         background: 'transparent',
-        //                         outline: 'none',
-        //                         border: 'none',
-        //                     }}
-        //                     tabIndex={0}
-        //                     aria-label='Remove from notification center'
-        //                 >
-        //                     <VscClose
-        //                         onClick={() => {
-        //                             removeReceipt(hash);
-        //                         }}
-        //                         size={20}
-        //                     />
-        //                 </button>
-        //             </div>
-        //         </div>
-        //         <div className={styles.row}>
-        //             <p>{`${handleTxTextDisplay(
-        //                 status,
-        //             )}  ${elapsedTimeString}`}</p>
-        //             <a
-        //                 href={EtherscanTx}
-        //                 className={styles.action}
-        //                 target='_blank'
-        //                 rel='noreferrer'
-        //                 tabIndex={0}
-        //                 aria-label='View on Block Explorer'
-        //             >
-        //                 <RiExternalLinkLine size={20} color='var(--accent1)' />
-        //             </a>
-        //         </div>
-        //     </div>
-        // </div>
     );
 }
