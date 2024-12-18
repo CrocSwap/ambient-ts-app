@@ -781,10 +781,23 @@ export default function Chart(props: propsIF) {
                                     mergedTransactionArray.length - 1
                                 ];
 
-                            const diff = Math.abs(
-                                nearest.time - latestElement.order.txTime,
+                            const diffInPixel = Math.abs(
+                                scaleData.xScale(nearest.time) -
+                                    scaleData.xScale(
+                                        latestElement.order.txTime,
+                                    ),
                             );
-                            const shouldMerge = diff < period / 2;
+                            const diffInPeriod = Math.abs(
+                                scaleData.xScale(new Date().getMilliseconds()) -
+                                    scaleData.xScale(
+                                        new Date().getMilliseconds() -
+                                            period / 2,
+                                    ),
+                            );
+
+                            const shouldMerge =
+                                diffInPixel < 0.007 &&
+                                diffInPixel < diffInPeriod;
 
                             const isSameDirection =
                                 (transaction.isBuy &&
@@ -810,18 +823,20 @@ export default function Chart(props: propsIF) {
                 });
             }
 
-            if (mergedTransactionArray.length > 0) {
-                const top20TotalValue = mergedTransactionArray
-                    ?.sort((a, b) =>
-                        d3.descending(
-                            a.order.totalValueUSD,
-                            b.order.totalValueUSD,
-                        ),
-                    )
-                    .slice(0, 20);
+            // if (mergedTransactionArray.length > 0) {
+            //     const top20TotalValue = mergedTransactionArray
+            //         ?.sort((a, b) =>
+            //             d3.descending(
+            //                 a.order.totalValueUSD,
+            //                 b.order.totalValueUSD,
+            //             ),
+            //         )
+            //         .slice(0, 20);
 
-                return top20TotalValue;
-            }
+            //     return top20TotalValue;
+            // }
+
+            return mergedTransactionArray;
         }
 
         return undefined;
