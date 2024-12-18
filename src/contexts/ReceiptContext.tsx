@@ -54,7 +54,7 @@ interface TransactionByType {
         gridSize?: number;
         originalLowTick?: number;
         originalHighTick?: number;
-        baseTokenQty?: string;
+        initialTokenQty?: string;
     };
     isRemoved?: boolean;
 }

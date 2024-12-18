@@ -630,10 +630,12 @@ function Orders(props: propsIF) {
 
                     const usdValue = pendingOrder.txDetails.isBid
                         ? (1 / poolPriceNonDisplay) *
-                          parseFloat(pendingOrder.txDetails.baseTokenQty || '1')
+                          parseFloat(
+                              pendingOrder.txDetails.initialTokenQty || '1',
+                          )
                         : (1 / highTickPrice) *
                           parseFloat(
-                              pendingOrder.txDetails.baseTokenQty || '1',
+                              pendingOrder.txDetails.initialTokenQty || '1',
                           );
 
                     const positionLiqBase = bigIntToFloat(

@@ -761,7 +761,7 @@ export default function Limit() {
                         ? limitTick + gridSize
                         : limitTick,
                     isBid: isSellTokenBase,
-                    baseTokenQty: isSellTokenBase
+                    initialTokenQty: isSellTokenBase
                         ? tokenAInputQtyNoExponentString
                         : tokenBInputQtyNoExponentString,
                 },
