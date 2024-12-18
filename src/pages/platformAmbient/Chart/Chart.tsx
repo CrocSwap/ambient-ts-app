@@ -444,6 +444,8 @@ export default function Chart(props: propsIF) {
     const [selectedOrderHistory, setSelectedOrderHistory] = useState<{
         type: string;
         id: string;
+        totalValueUSD: number;
+        tokenFlowDecimalCorrected: number;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         order: any;
     }>();
@@ -6518,19 +6520,17 @@ export default function Chart(props: propsIF) {
                     setSelectedOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
-                                ? selectedOrderHistory.order
+                                ? selectedOrderHistory.order.order
                                       .swapInvPriceDecimalCorrected
-                                : selectedOrderHistory.order
+                                : selectedOrderHistory.order.order
                                       .swapPriceDecimalCorrected,
                         );
                         const left =
                             scaleData?.xScale(
-                                selectedOrderHistory.order.txTime * 1000,
+                                selectedOrderHistory.order.order.txTime * 1000,
                             ) +
                             scale(
-                                circleScale(
-                                    selectedOrderHistory.order.totalValueUSD,
-                                ),
+                                circleScale(selectedOrderHistory.totalValueUSD),
                             );
 
                         return { top, left, isOnLeftSide: false };
@@ -6544,23 +6544,22 @@ export default function Chart(props: propsIF) {
                     setSelectedOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
-                                ? selectedOrderHistory.order
+                                ? selectedOrderHistory.order.order
                                       .invLimitPriceDecimalCorrected
-                                : selectedOrderHistory.order
+                                : selectedOrderHistory.order.order
                                       .limitPriceDecimalCorrected,
                         );
 
                         const time =
-                            selectedOrderHistory.order.claimableLiq === 0
-                                ? selectedOrderHistory.order.timeFirstMint
-                                : selectedOrderHistory.order.crossTime;
+                            selectedOrderHistory.order.order.claimableLiq === 0
+                                ? selectedOrderHistory.order.order.timeFirstMint
+                                : selectedOrderHistory.order.order.crossTime;
 
                         const distance =
-                            selectedOrderHistory.order.claimableLiq > 0
+                            selectedOrderHistory.order.order.claimableLiq > 0
                                 ? scale(
                                       circleScaleLimitOrder(
-                                          selectedOrderHistory.order
-                                              .totalValueUSD,
+                                          selectedOrderHistory.totalValueUSD,
                                       ),
                                   )
                                 : 55;
@@ -6573,15 +6572,15 @@ export default function Chart(props: propsIF) {
 
                 if (selectedOrderHistory.type === 'historical') {
                     const minPrice = denomInBase
-                        ? selectedOrderHistory.order
+                        ? selectedOrderHistory.order.order
                               .bidTickInvPriceDecimalCorrected
-                        : selectedOrderHistory.order
+                        : selectedOrderHistory.order.order
                               .bidTickPriceDecimalCorrected;
 
                     const maxPrice = denomInBase
-                        ? selectedOrderHistory.order
+                        ? selectedOrderHistory.order.order
                               .askTickInvPriceDecimalCorrected
-                        : selectedOrderHistory.order
+                        : selectedOrderHistory.order.order
                               .askTickPriceDecimalCorrected;
 
                     const diff = Math.abs(maxPrice - minPrice) / 2;
@@ -6592,7 +6591,8 @@ export default function Chart(props: propsIF) {
                         const top = scaleData.yScale(pricePlacement);
 
                         const left = scaleData?.xScale(
-                            selectedOrderHistory.order.latestUpdateTime * 1000,
+                            selectedOrderHistory.order.order.latestUpdateTime *
+                                1000,
                         );
 
                         return {
