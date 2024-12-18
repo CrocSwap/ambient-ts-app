@@ -1,3 +1,4 @@
+import { Provider } from 'ethers';
 import { useContext, useEffect, useState } from 'react';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { MdErrorOutline } from 'react-icons/md';
@@ -9,7 +10,6 @@ import {
 } from '../../../../ambient-utils/dataLayer';
 import { AppStateContext } from '../../../../contexts';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import Spinner from '../../Spinner/Spinner';
 import styles from './ReceiptDisplay.module.css';
@@ -17,14 +17,14 @@ import styles from './ReceiptDisplay.module.css';
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
     hash: string;
+    provider?: Provider;
     txBlockNumber?: number;
     txType: string | undefined;
     chainId: string | undefined;
 }
 
 export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
-    const { status, hash, txBlockNumber, txType, chainId } = props;
-    const { provider } = useContext(CrocEnvContext);
+    const { status, hash, txBlockNumber, provider, txType, chainId } = props;
     const {
         activeNetwork: { chainId: currentChainId },
     } = useContext(AppStateContext);
@@ -71,14 +71,43 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const [blockTime, setBlockTime] = useState<number | undefined>();
 
     useEffect(() => {
-        (async () => {
+        let intervalId: NodeJS.Timeout;
+        let timeoutId: NodeJS.Timeout;
+
+        const maxDuration = 30000; // 30 seconds in milliseconds
+        const pollingInterval = 2000; // 2 seconds in milliseconds
+
+        const fetchBlockTime = async () => {
             const blockTime =
                 provider && txBlockNumber
                     ? await cachedFetchBlockTime(provider, txBlockNumber)
                     : undefined;
-            if (blockTime) setBlockTime(blockTime);
-        })();
-    }, [provider, txBlockNumber]);
+
+            if (blockTime !== undefined) {
+                setBlockTime(blockTime);
+                clearInterval(intervalId); // Stop polling
+                clearTimeout(timeoutId); // Clear the timeout
+            }
+        };
+
+        if (provider && txBlockNumber) {
+            fetchBlockTime();
+            // Start polling every 2 seconds
+            intervalId = setInterval(fetchBlockTime, pollingInterval);
+
+            // Set a timeout to stop polling after 30 seconds
+            timeoutId = setTimeout(() => {
+                clearInterval(intervalId);
+                console.log('Stopped polling: maximum duration reached.');
+            }, maxDuration);
+        }
+
+        // Cleanup to prevent memory leaks
+        return () => {
+            clearInterval(intervalId);
+            clearTimeout(timeoutId);
+        };
+    }, [provider, txBlockNumber, cachedFetchBlockTime]);
 
     const elapsedTimeInSecondsNum = blockTime
         ? Date.now() / 1000 - blockTime
@@ -99,7 +128,9 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                         : elapsedTimeInSecondsNum < 172800
                           ? '1 day ago'
                           : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago `
-            : 'Pending...';
+            : status === 'pending'
+              ? 'Pending...'
+              : '';
 
     const ariaLabel = `${status} transaction of ${txType}`;
 

@@ -987,6 +987,7 @@ function Ranges(props: propsIF) {
 
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>
+            !tx.isRemoved &&
             unindexedNonFailedSessionPositionUpdates.some(
                 (update) => update.txHash === tx.txHash,
             ) &&

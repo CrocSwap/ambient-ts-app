@@ -336,7 +336,10 @@ export default function NetworkSelector(props: propsIF) {
                 borderRadius: props.customBR ? props.customBR : '4px',
             }}
         >
-            <div className={styles.dropdownMenuContainer}>
+            <div
+                className={styles.dropdownMenuContainer}
+                style={{ cursor: networks.length > 1 ? 'pointer' : 'default' }}
+            >
                 <DropdownMenu2
                     marginTop={'50px'}
                     marginRight={smallScreen ? '70px' : ''}
