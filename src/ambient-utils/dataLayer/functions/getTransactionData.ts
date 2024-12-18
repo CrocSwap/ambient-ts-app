@@ -32,16 +32,8 @@ export const getTransactionData = async (
         Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
     );
 
-    const basePricePromise = cachedFetchTokenPrice(
-        baseTokenAddress,
-        chainId,
-        crocEnv,
-    );
-    const quotePricePromise = cachedFetchTokenPrice(
-        quoteTokenAddress,
-        chainId,
-        crocEnv,
-    );
+    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
 
     newTx.ensResolution = skipENSFetch
         ? ''

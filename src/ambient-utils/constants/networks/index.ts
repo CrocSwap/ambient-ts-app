@@ -27,7 +27,7 @@ import { swellSepolia } from './swellSepolia';
 export const brand: string | undefined =
     import.meta.env.VITE_BRAND_ASSET_SET ?? '';
 
-const allNetworks: NetworkIF[] = [
+const networkDefinitions: NetworkIF[] = [
     ethereumMainnet,
     scrollMainnet,
     blastMainnet,
@@ -46,7 +46,7 @@ function getNetworks(chns: (string | chainHexIds)[]): {
 } {
     const networksToShow: NetworkIF[] = chns
         .map((c: string) => {
-            const network: NetworkIF | undefined = allNetworks.find(
+            const network: NetworkIF | undefined = networkDefinitions.find(
                 (n: NetworkIF) => n.chainId.toLowerCase() === c,
             );
             return network;
@@ -56,6 +56,10 @@ function getNetworks(chns: (string | chainHexIds)[]): {
     networksToShow.forEach((n: NetworkIF) => (output[n.chainId] = n));
     return output;
 }
+
+export const allNetworks: { [x: string]: NetworkIF } = getNetworks(
+    Object.keys(defaultBrandAssets.networks),
+);
 
 export const supportedNetworks: { [x: string]: NetworkIF } =
     brand === 'ambientProduction'

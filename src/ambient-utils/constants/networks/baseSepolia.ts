@@ -40,6 +40,7 @@ export const baseSepolia: NetworkIF = {
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,
+    tokenPriceQueryAssetPlatform: undefined,
     topPools: [
         new TopPool(
             baseSepoliaETH,

@@ -89,41 +89,33 @@ export const useProcessTransaction = (
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (crocEnv) {
-            const fetchTokenPrice = async () => {
-                const baseTokenPrice =
-                    (await cachedFetchTokenPrice(tx.base, tx.chainId, crocEnv))
-                        ?.usdPrice || 0.0;
-                const quoteTokenPrice =
-                    (await cachedFetchTokenPrice(tx.quote, tx.chainId, crocEnv))
-                        ?.usdPrice || 0.0;
+        const fetchTokenPrice = async () => {
+            const baseTokenPrice =
+                (await cachedFetchTokenPrice(tx.base, tx.chainId))?.usdPrice ||
+                0.0;
+            const quoteTokenPrice =
+                (await cachedFetchTokenPrice(tx.quote, tx.chainId))?.usdPrice ||
+                0.0;
 
-                if (baseTokenPrice) {
-                    setBasePrice(baseTokenPrice);
-                } else if (quoteTokenPrice && tx.curentPoolPriceDisplayNum) {
-                    // this may be backwards
-                    const estimatedBasePrice =
-                        quoteTokenPrice / tx.curentPoolPriceDisplayNum;
-                    setBasePrice(estimatedBasePrice);
-                }
-                if (quoteTokenPrice) {
-                    setQuotePrice(quoteTokenPrice);
-                } else if (baseTokenPrice && tx.curentPoolPriceDisplayNum) {
-                    const estimatedQuotePrice =
-                        baseTokenPrice * tx.curentPoolPriceDisplayNum;
-                    setQuotePrice(estimatedQuotePrice);
-                }
-            };
+            if (baseTokenPrice) {
+                setBasePrice(baseTokenPrice);
+            } else if (quoteTokenPrice && tx.curentPoolPriceDisplayNum) {
+                // this may be backwards
+                const estimatedBasePrice =
+                    quoteTokenPrice / tx.curentPoolPriceDisplayNum;
+                setBasePrice(estimatedBasePrice);
+            }
+            if (quoteTokenPrice) {
+                setQuotePrice(quoteTokenPrice);
+            } else if (baseTokenPrice && tx.curentPoolPriceDisplayNum) {
+                const estimatedQuotePrice =
+                    baseTokenPrice * tx.curentPoolPriceDisplayNum;
+                setQuotePrice(estimatedQuotePrice);
+            }
+        };
 
-            fetchTokenPrice();
-        }
-    }, [
-        tx.base,
-        tx.quote,
-        tx.chainId,
-        crocEnv !== undefined,
-        tx.curentPoolPriceDisplayNum,
-    ]);
+        fetchTokenPrice();
+    }, [tx.base, tx.quote, tx.chainId, tx.curentPoolPriceDisplayNum]);
 
     let displayPriceNumInUsd;
     let lowDisplayPriceInUsd;

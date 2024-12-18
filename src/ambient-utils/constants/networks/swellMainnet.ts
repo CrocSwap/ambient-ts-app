@@ -36,6 +36,7 @@ export const swellMainnet: NetworkIF = {
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Swell',
+    tokenPriceQueryAssetPlatform: 'swell',
     topPools: [new TopPool(swellETH, swellWTT, chainSpecFromSDK.poolIndex)],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

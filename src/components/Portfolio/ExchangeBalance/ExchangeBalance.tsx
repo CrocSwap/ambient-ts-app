@@ -262,32 +262,26 @@ export default function ExchangeBalance(props: propsIF) {
     );
 
     return (
-        <>
-            <div className={styles.portfolio_motion_container}>
-                <div
-                    className={styles.portfolio_motion_sub_container}
-                    id='subcont'
-                >
-                    <div className={styles.tab_component_container}>
-                        {(!fullLayoutActive || isModalView) && (
-                            <TabComponent
-                                data={accountData}
-                                rightTabOptions={false}
-                                isModalView={isModalView}
-                                shouldSyncWithTradeModules={false}
-                            />
-                        )}
-                        {!isModalView && exchangeControl}
-                    </div>
+        <div className={styles.portfolio_motion_container}>
+            <div className={styles.portfolio_motion_sub_container} id='subcont'>
+                <div className={styles.tab_component_container}>
+                    {(!fullLayoutActive || isModalView) && (
+                        <TabComponent
+                            data={accountData}
+                            rightTabOptions={false}
+                            isModalView={isModalView}
+                            shouldSyncWithTradeModules={false}
+                        />
+                    )}
+                    {!isModalView && exchangeControl}
                 </div>
-                {(!fullLayoutActive || isModalView) && (
-                    <p className={styles.portfolio_info_text}>
-                        Collateral deposited into the Ambient Finance exchange
-                        can be traded at lower gas costs and withdrawn at any
-                        time.
-                    </p>
-                )}
             </div>
-        </>
+            {(!fullLayoutActive || isModalView) && (
+                <p className={styles.portfolio_info_text}>
+                    Collateral deposited into the Ambient Finance exchange can
+                    be traded at lower gas costs and withdrawn at any time.
+                </p>
+            )}
+        </div>
     );
 }
