@@ -10,8 +10,8 @@ import {
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
     getFormattedNumber,
-    getTxReceipt,
     submitLimitOrder,
+    waitForTransaction,
 } from '../../../../ambient-utils/dataLayer';
 import { useTradeData } from '../../../../App/hooks/useTradeData';
 import Button from '../../../../components/Form/Button';
@@ -58,7 +58,8 @@ import {
 import { limitTutorialSteps } from '../../../../utils/tutorial/Limit';
 
 export default function Limit() {
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
 
     const {
         activeNetwork: { chainId, gridSize, poolIndex },
@@ -549,7 +550,7 @@ export default function Limit() {
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(
-            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
         );
     }, [tokenADexBalance]);
 
@@ -737,6 +738,7 @@ export default function Limit() {
             addPendingTx(tx?.hash);
             setNewLimitOrderTransactionHash(tx.hash);
             addTransactionByType({
+                chainId: chainId,
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txAction:
@@ -775,7 +777,15 @@ export default function Limit() {
 
         let receipt;
         try {
-            if (tx) receipt = await getTxReceipt(tx);
+            if (tx)
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewLimitOrderTransactionHash,
+                );
         } catch (e) {
             const error = e as TransactionError;
             console.error({ error });
@@ -804,7 +814,7 @@ export default function Limit() {
         }
 
         if (receipt) {
-            addReceipt(JSON.stringify(receipt));
+            addReceipt(receipt);
             removePendingTx(receipt.hash);
         }
     };
@@ -962,7 +972,8 @@ export default function Limit() {
                     }}
                     tokenBInputQty={{
                         value:
-                            tokenBInputQtyNoExponentString !== '0.0'
+                            tokenBInputQtyNoExponentString !== '0.0' ||
+                            !isTokenAPrimary
                                 ? tokenBInputQty
                                 : '0',
                         set: setTokenBInputQty,

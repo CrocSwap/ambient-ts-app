@@ -266,7 +266,8 @@ const PageHeader = function () {
     ).getFullURL(swapParams);
 
     const activeTradeTabSlug =
-        activeTradeTab.toLowerCase() === 'exchange balances'
+        activeTradeTab.toLowerCase() === 'exchange balances' ||
+        activeTradeTab.toLowerCase() === 'dex balances'
             ? 'exchange-balances'
             : activeTradeTab.toLowerCase() === 'wallet balances'
               ? 'wallet-balances'

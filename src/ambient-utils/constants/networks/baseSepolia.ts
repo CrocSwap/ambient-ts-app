@@ -6,6 +6,7 @@ import {
     baseSepoliaETH,
     baseSepoliaUSDC,
     baseSepoliaUSDT,
+    baseSepoliaWTT,
 } from '../defaultTokens';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
@@ -40,6 +41,7 @@ export const baseSepolia: NetworkIF = {
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,
+    tokenPriceQueryAssetPlatform: undefined,
     topPools: [
         new TopPool(
             baseSepoliaETH,
@@ -51,6 +53,7 @@ export const baseSepolia: NetworkIF = {
             baseSepoliaUSDT,
             chainSpecFromSDK.poolIndex,
         ),
+        new TopPool(baseSepoliaETH, baseSepoliaWTT, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

@@ -4,17 +4,17 @@ import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../../../ambient-utils/types';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import styles from './WalletDropdown.module.css';
 
-import { toDisplayQty } from '@crocswap-libs/sdk';
+import { toDisplayPrice, toDisplayQty } from '@crocswap-libs/sdk';
 import { Link } from 'react-router-dom';
 import {
+    CACHE_UPDATE_FREQ_IN_MS,
     ZERO_ADDRESS,
     supportedNetworks,
 } from '../../../../../ambient-utils/constants';
 import processLogoSrc from '../../../../../components/Global/TokenIcon/processLogoSrc';
-import { TokenContext } from '../../../../../contexts';
+import { CrocEnvContext, TokenContext } from '../../../../../contexts';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
@@ -33,6 +33,7 @@ interface propsIF {
 interface TokenAmountDisplayPropsIF {
     logoUri: string;
     symbol: string;
+    address: string;
     amount: string;
     value?: string;
 }
@@ -52,6 +53,7 @@ export default function WalletDropdown(props: propsIF) {
     } = useContext(AppStateContext);
 
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { tokens } = useContext(TokenContext);
 
@@ -69,10 +71,12 @@ export default function WalletDropdown(props: propsIF) {
         );
     }, [tokenBalances]);
 
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
+        useContext(CachedDataContext);
 
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF): JSX.Element {
-        const { logoUri, symbol, amount, value } = props;
+        const { logoUri, symbol, address, amount, value } = props;
+        const token = tokens.getTokenByAddress(address);
         const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${value} dollars`;
         return (
             <section
@@ -83,10 +87,7 @@ export default function WalletDropdown(props: propsIF) {
                 <div className={styles.logoName}>
                     <img
                         src={processLogoSrc({
-                            token: tokens.getTokensByNameOrSymbol(
-                                symbol,
-                                chainId,
-                            )[0],
+                            token: token,
                             symbol: symbol,
                             sourceURI: logoUri,
                         })}
@@ -96,7 +97,7 @@ export default function WalletDropdown(props: propsIF) {
                 </div>
                 <div className={styles.tokenAmount}>
                     <h3>{amount}</h3>
-                    <h6>{value !== undefined ? value : '...'}</h6>
+                    <h6>{value !== '$0.00' ? value : '...'}</h6>
                 </div>
             </section>
         );
@@ -109,11 +110,7 @@ export default function WalletDropdown(props: propsIF) {
         string | undefined
     >();
 
-    const { crocEnv } = useContext(CrocEnvContext);
-
     useEffect(() => {
-        if (!crocEnv) return;
-
         if (secondDefaultTokenData === undefined) {
             setSecondTokenUsdValueForDom(undefined);
             setSecondTokenBalanceForDom(undefined);
@@ -149,28 +146,48 @@ export default function WalletDropdown(props: propsIF) {
 
         setSecondTokenBalanceForDom(secondTokenCombinedBalanceDisplayTruncated);
         Promise.resolve(
-            cachedFetchTokenPrice(
-                secondDefaultTokenData.address,
-                chainId,
-                crocEnv,
-            ),
+            cachedFetchTokenPrice(secondDefaultTokenData.address, chainId),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
-                    (price &&
-                        price?.usdPrice *
-                            (secondTokenCombinedBalanceDisplayNum ?? 0)) ??
-                    0;
+                    price.usdPrice *
+                    (secondTokenCombinedBalanceDisplayNum ?? 0);
                 const usdValueTruncated = getFormattedNumber({
                     value: usdValueNum,
                     isUSD: true,
                 });
                 setSecondTokenUsdValueForDom(usdValueTruncated);
             } else {
-                setSecondTokenUsdValueForDom(undefined);
+                if (!crocEnv || !nativeTokenUsdPrice) return;
+
+                cachedQuerySpotPrice(
+                    crocEnv,
+                    ZERO_ADDRESS,
+                    secondDefaultTokenData.address,
+                    chainId,
+                    Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+                ).then((ethPoolPriceNonDisplay) => {
+                    if (!ethPoolPriceNonDisplay)
+                        setSecondTokenUsdValueForDom(undefined);
+
+                    const ethPoolPriceDisplay = toDisplayPrice(
+                        ethPoolPriceNonDisplay,
+                        18,
+                        secondDefaultTokenData.decimals,
+                    );
+                    const usdValueNum: number =
+                        ethPoolPriceDisplay *
+                        nativeTokenUsdPrice *
+                        (secondTokenCombinedBalanceDisplayNum ?? 0);
+                    const usdValueTruncated = getFormattedNumber({
+                        value: usdValueNum,
+                        isUSD: true,
+                    });
+                    setSecondTokenUsdValueForDom(usdValueTruncated);
+                });
             }
         });
-    }, [crocEnv, chainId, JSON.stringify(secondDefaultTokenData)]);
+    }, [chainId, JSON.stringify(secondDefaultTokenData)]);
 
     const nativeCombinedBalance =
         nativeData?.walletBalance !== undefined
@@ -214,21 +231,21 @@ export default function WalletDropdown(props: propsIF) {
 
     const tokensData = [
         {
-            symbol: defaultPair[0]?.symbol || 'ETH',
+            symbol: defaultPair[0]?.symbol,
+            address: defaultPair[0]?.address,
             amount: nativeCombinedBalanceTruncated
                 ? nativeData?.symbol === 'ETH'
                     ? 'Ξ ' + nativeCombinedBalanceTruncated
                     : nativeCombinedBalanceTruncated
                 : '...',
             value: nativeTokenMainnetUsdValueTruncated,
-            logoUri:
-                defaultPair[0]?.logoURI ||
-                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+            logoUri: defaultPair[0]?.logoURI || '',
         },
     ];
 
     tokensData.push({
-        symbol: defaultPair[1]?.symbol || 'USDC',
+        symbol: defaultPair[1]?.symbol,
+        address: defaultPair[1]?.address,
         amount: secondTokenBalanceForDom
             ? parseFloat(secondTokenBalanceForDom ?? '0') === 0
                 ? '0.00'
@@ -269,6 +286,7 @@ export default function WalletDropdown(props: propsIF) {
                         }
                         value={tokenData.value}
                         symbol={tokenData.symbol}
+                        address={tokenData.address}
                         logoUri={tokenData.logoUri}
                         key={JSON.stringify(tokenData)}
                     />
