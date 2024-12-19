@@ -13,8 +13,7 @@ export const mainnetETH: TokenIF = registerToken({
     address: '0x0000000000000000000000000000000000000000',
     chainId: 1,
     decimals: 18,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
     name: 'Ether',
     symbol: 'ETH',
 });
@@ -62,7 +61,8 @@ export const mainnetRSETH: TokenIF = registerToken({
     address: '0xa1290d69c65a6fe4df752f95823fae25cb99e5a7',
     chainId: 1,
     decimals: 18,
-    logoURI: 'https://etherscan.io/token/images/kelprseth_32.png',
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/e1522c29a42749fd5ec81.svg',
     name: 'Kelp DAO Restaked ETH',
     symbol: 'rsETH',
 });
@@ -219,8 +219,7 @@ export const blastETH: TokenIF = registerToken({
     address: '0x0000000000000000000000000000000000000000',
     chainId: 81457,
     decimals: 18,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
     name: 'Ether',
     symbol: 'ETH',
 });
@@ -403,8 +402,7 @@ export const blastSepoliaETH: TokenIF = registerToken({
     address: '0x0000000000000000000000000000000000000000',
     chainId: 168587773,
     decimals: 18,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
     name: 'Ether',
     symbol: 'ETH',
 });
@@ -425,8 +423,7 @@ export const sepoliaETH: TokenIF = registerToken({
     symbol: 'ETH',
     decimals: 18,
     chainId: 11155111,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
 });
 
 export const sepoliaUSDC: TokenIF = registerToken({
@@ -465,8 +462,7 @@ export const scrollETH: TokenIF = registerToken({
     symbol: 'ETH',
     decimals: 18,
     chainId: 534352,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
 });
 
 export const scrollWstETH: TokenIF = registerToken({
@@ -578,7 +574,8 @@ export const scrollRsETH: TokenIF = registerToken({
     symbol: 'rsETH',
     decimals: 18,
     chainId: 534352,
-    logoURI: '',
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/e1522c29a42749fd5ec81.svg',
 });
 
 export const scrollSTONE: TokenIF = registerToken({
@@ -587,7 +584,7 @@ export const scrollSTONE: TokenIF = registerToken({
     symbol: 'STONE',
     decimals: 18,
     chainId: 534352,
-    logoURI: '',
+    logoURI: 'https://etherscan.io/token/images/stakestone_32.png',
 });
 
 export const scrollUniETH: TokenIF = registerToken({
@@ -642,7 +639,7 @@ export const scrollBalancer: TokenIF = registerToken({
     symbol: 'BAL',
     decimals: 18,
     chainId: 534352,
-    logoURI: '',
+    logoURI: 'https://scrollscan.com/token/images/balancer_ofc_32.png',
 });
 
 export const scrollDODO: TokenIF = registerToken({
@@ -752,8 +749,7 @@ export const scrollSepoliaETH: TokenIF = registerToken({
     symbol: 'ETH',
     decimals: 18,
     chainId: 534351,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
 });
 
 export const scrollSepoliaUSDC: TokenIF = registerToken({
@@ -772,8 +768,7 @@ export const plumeSepoliaETH: TokenIF = registerToken({
     symbol: 'ETH',
     decimals: 18,
     chainId: 98864,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
 });
 
 export const plumeSepoliaUSD: TokenIF = registerToken({
@@ -800,8 +795,7 @@ export const swellSepoliaETH: TokenIF = registerToken({
     symbol: 'ETH',
     decimals: 18,
     chainId: 1924,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
 });
 
 export const swellSepoliaUSDC: TokenIF = registerToken({
@@ -829,8 +823,7 @@ export const baseSepoliaETH: TokenIF = registerToken({
     symbol: 'ETH',
     decimals: 18,
     chainId: 84532,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
 });
 
 export const baseSepoliaUSDC: TokenIF = registerToken({
@@ -849,27 +842,154 @@ export const swellETH: TokenIF = registerToken({
     symbol: 'ETH',
     decimals: 18,
     chainId: 1923,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
 });
 
-export const swellWTT: TokenIF = registerToken({
-    name: 'Wolski Test Token',
-    address: '0x83CA2E0018cBa6CD1149F2BB059d2Fc6D0fDf456',
-    symbol: 'WTT',
-    decimals: 6,
+export const swellUBTC: TokenIF = registerToken({
+    name: 'uBTC',
+    address: '0xFA3198ecF05303a6d96E57a45E6c815055D255b1',
+    symbol: 'uBTC',
+    decimals: 18,
     chainId: 1923,
-    logoURI: '',
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/bsquared.svg',
 });
 
-export const plumeETH: TokenIF = registerToken({
+export const swellWSTETH: TokenIF = registerToken({
+    name: 'Wrapped liquid staked Ether 2.0',
+    address: '0x7c98E0779EB5924b3ba8cE3B17648539ed5b0Ecc',
+    symbol: 'wstETH',
+    decimals: 18,
+    chainId: 1923,
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/61bd908177ce4eef8d4a9.png',
+});
+
+export const swellPZETH: TokenIF = registerToken({
+    name: 'Renzo Restaked LST',
+    address: '0x9cb41CD74D01ae4b4f640EC40f7A60cA1bCF83E7',
+    symbol: 'pzETH',
+    decimals: 18,
+    chainId: 1923,
+    logoURI:
+        'https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/refs/heads/main/deployments/warp_routes/PZETH/logo.svg',
+});
+
+export const swellEZETH: TokenIF = registerToken({
+    name: 'Renzo Restaked ETH',
+    address: '0x2416092f143378750bb29b79eD961ab195CcEea5',
+    symbol: 'ezETH',
+    decimals: 18,
+    chainId: 1923,
+    logoURI:
+        'https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/refs/heads/main/deployments/warp_routes/EZETH/logo.svg',
+});
+
+export const swellRSWELL: TokenIF = registerToken({
+    name: 'rSWELL',
+    address: '0x939f1cC163fDc38a77571019eb4Ad1794873bf8c',
+    symbol: 'rSWELL',
+    decimals: 18,
+    chainId: 1923,
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/bafadce2c7f8b374f127b.svg',
+});
+
+export const swellSWBTC: TokenIF = registerToken({
+    name: 'swBTC',
+    address: '0x1cf7b5f266A0F39d6f9408B90340E3E71dF8BF7B',
+    symbol: 'swBTC',
+    decimals: 8,
+    chainId: 1923,
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/64b0af65ae04a5d71ccee.svg',
+});
+
+export const swellSWELL: TokenIF = registerToken({
+    name: 'Swell Governance Token',
+    address: '0x2826D136F5630adA89C1678b64A61620Aab77Aea',
+    symbol: 'SWELL',
+    decimals: 18,
+    chainId: 1923,
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/4b0af65ae04a5d71cceeb.svg',
+});
+
+export const swellRSWETH: TokenIF = registerToken({
+    name: 'rswETH',
+    address: '0x18d33689AE5d02649a859A1CF16c9f0563975258',
+    symbol: 'rswETH',
+    decimals: 18,
+    chainId: 1923,
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/a53e1522c29a42749fd5e.svg',
+});
+
+export const swellSTBTC: TokenIF = registerToken({
+    name: 'Lorenzo stBTC',
+    address: '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3',
+    symbol: 'stBTC',
+    decimals: 18,
+    chainId: 1923,
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/1bd908177ce4eef8d4a90.svg',
+});
+
+export const swellWEETH: TokenIF = registerToken({
+    name: 'Wrapped eETH',
+    address: '0xA6cB988942610f6731e664379D15fFcfBf282b44',
+    symbol: 'weETH',
+    decimals: 18,
+    chainId: 1923,
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/2305e6804e5346fb5545e.png',
+});
+
+export const swellRSETH: TokenIF = registerToken({
+    name: 'KelpDao Restaked ETH',
+    address: '0xc3eACf0612346366Db554C991D7858716db09f58',
+    symbol: 'rsETH',
+    decimals: 18,
+    chainId: 1923,
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/e1522c29a42749fd5ec81.svg',
+});
+
+export const swellSWETH: TokenIF = registerToken({
+    name: 'swETH',
+    address: '0x09341022ea237a4DB1644DE7CCf8FA0e489D85B7',
+    symbol: 'swETH',
+    decimals: 18,
+    chainId: 1923,
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/971f401121cc90314670c.svg',
+});
+
+export const plumeNativeETH: TokenIF = registerToken({
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
     symbol: 'ETH',
     decimals: 18,
     chainId: 98865,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
+});
+
+export const plumePETH: TokenIF = registerToken({
+    name: 'plumeETH',
+    address: '0x11476323D8DFCBAFac942588E2f38823d2Dd308e',
+    symbol: 'pETH',
+    decimals: 18,
+    chainId: 98865,
+    logoURI: '',
+});
+
+export const plumeUSDC: TokenIF = registerToken({
+    name: 'Bridged USDC (Stargate)',
+    address: '0x3938A812c54304fEffD266C7E2E70B48F9475aD6',
+    symbol: 'USDC.e',
+    decimals: 6,
+    chainId: 98865,
+    logoURI: '',
 });
 
 export const plumeWTT: TokenIF = registerToken({
@@ -881,7 +1001,7 @@ export const plumeWTT: TokenIF = registerToken({
     logoURI: '',
 });
 
-export const plumeUSD: TokenIF = registerToken({
+export const plumePUSD: TokenIF = registerToken({
     name: 'Plume USD',
     address: '0x360822f796975cEccD8095c10720c57567b4199f',
     symbol: 'pUSD',
@@ -912,6 +1032,15 @@ export const baseSepoliaUSDT: TokenIF = registerToken({
     name: 'Ambient USDT',
     address: '0x868cFD46ad326354AD214bEA9f08fD8EfBfac3b9',
     symbol: 'USDT',
+    decimals: 6,
+    chainId: 84532,
+    logoURI: '',
+});
+
+export const baseSepoliaWTT: TokenIF = registerToken({
+    name: 'Wolski Test Token',
+    address: '0xfefd8bcb0034a2b0e3cc22e2f5a59279fae67128',
+    symbol: 'WTT',
     decimals: 6,
     chainId: 84532,
     logoURI: '',
