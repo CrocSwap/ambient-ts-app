@@ -31,7 +31,6 @@ import PUNKETH20 from './PUNKETH-20.jpeg';
 import PUSD from './PUSD.svg';
 import PXETH from './PXETH.png';
 import RPL from './RPL.png';
-import RSETH from './RSETH.webp';
 import RSWETH from './RSWETH.svg';
 import SCR from './SCR.svg';
 import SCRIBES from './SCRIBES.png';
@@ -44,7 +43,7 @@ import SWELL from './SWELL.png';
 import SWETH from './SWETH.svg';
 import SYN from './SYN.svg';
 import TBTC from './TBTC.svg';
-import UBTC from './UBTC.webp';
+import UBTC from './UBTC.svg';
 import UNI from './UNI.webp';
 import UNIETH from './UNIETH.png';
 import USDPLUS from './USD+.png';
@@ -96,7 +95,6 @@ export {
     PUSD,
     PXETH,
     RPL,
-    RSETH,
     RSWETH,
     SCR,
     SCRIBES,

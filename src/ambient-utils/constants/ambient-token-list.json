@@ -16,7 +16,7 @@
             "symbol": "ETH",
             "decimals": 18,
             "chainId": 1,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
         },
         {
             "name": "USDC",
@@ -43,11 +43,11 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
         },
         {
-            "name": "Swell Ethereum",
+            "name": "swETH",
             "address": "0xf951e335afb289353dc249e82926178eac7ded78",
             "chainId": 1,
             "decimals": 18,
-            "logoURI": "https://etherscan.io/token/images/swellnetwork_32.png",
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/971f401121cc90314670c.svg",
             "symbol": "swETH"
         },
         {
@@ -79,7 +79,7 @@
             "address": "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7",
             "chainId": 1,
             "decimals": 18,
-            "logoURI": "https://etherscan.io/token/images/kelprseth_32.png",
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/e1522c29a42749fd5ec81.svg",
             "symbol": "rsETH"
         },
         {
@@ -136,7 +136,7 @@
             "symbol": "ETH",
             "decimals": 18,
             "chainId": 81457,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
         },
         {
             "name": "USDB",
@@ -296,7 +296,7 @@
             "decimals": 18,
             "name": "Renzo Restaked ETH",
             "symbol": "ezETH",
-            "logoURI": "https://etherscan.io/token/images/ezETHv2_32.png"
+            "logoURI": "https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/refs/heads/main/deployments/warp_routes/EZETH/logo.svg"
         },
         {
             "address": "0xb9dfCd4CF589bB8090569cb52FaC1b88Dbe4981F",
@@ -312,7 +312,7 @@
             "symbol": "ETH",
             "decimals": 18,
             "chainId": 534352,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
         },
         {
             "name": "Bridged USD Coin",
@@ -367,7 +367,7 @@
             "address": "0x65421ba909200b81640d98b979d07487c9781b66",
             "chainId": 534352,
             "decimals": 18,
-            "logoURI": "https://etherscan.io/token/images/kelprseth_32.png",
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/e1522c29a42749fd5ec81.svg",
             "symbol": "rsETH"
         },
         {
@@ -488,7 +488,7 @@
             "symbol": "wstETH",
             "decimals": 18,
             "chainId": 534352,
-            "logoURI": "https://scroll-tech.github.io/token-list/data/wstETH/logo.svg"
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/61bd908177ce4eef8d4a9.png"
         },
         {
             "name": "PufferVault",
@@ -520,15 +520,7 @@
             "symbol": "ETH",
             "decimals": 18,
             "chainId": 1923,
-            "logoURI": ""
-        },
-        {
-            "name": "Wolski Test Token",
-            "address": "0x83CA2E0018cBa6CD1149F2BB059d2Fc6D0fDf456",
-            "symbol": "WTT",
-            "decimals": 6,
-            "chainId": 1923,
-            "logoURI": ""
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
         },
         {
             "name": "uBTC",
@@ -536,7 +528,95 @@
             "symbol": "uBTC",
             "decimals": 18,
             "chainId": 1923,
-            "logoURI": ""
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/bsquared.svg"
+        },
+        {
+            "name": "Wrapped liquid staked Ether 2.0",
+            "address": "0x7c98E0779EB5924b3ba8cE3B17648539ed5b0Ecc",
+            "symbol": "wstETH",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/61bd908177ce4eef8d4a9.png"
+        },
+        {
+            "name": "Renzo Restaked LST",
+            "address": "0x9cb41CD74D01ae4b4f640EC40f7A60cA1bCF83E7",
+            "symbol": "pzETH",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": "https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/refs/heads/main/deployments/warp_routes/PZETH/logo.svg"
+        },
+        {
+            "name": "Renzo Restaked ETH",
+            "address": "0x2416092f143378750bb29b79eD961ab195CcEea5",
+            "symbol": "ezETH",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": "https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/refs/heads/main/deployments/warp_routes/EZETH/logo.svg"
+        },
+        {
+            "name": "rSWELL",
+            "address": "0x939f1cC163fDc38a77571019eb4Ad1794873bf8c",
+            "symbol": "rSWELL",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/bafadce2c7f8b374f127b.svg"
+        },
+        {
+            "name": "swBTC",
+            "address": "0x1cf7b5f266A0F39d6f9408B90340E3E71dF8BF7B",
+            "symbol": "swBTC",
+            "decimals": 8,
+            "chainId": 1923,
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/64b0af65ae04a5d71ccee.svg"
+        },
+        {
+            "name": "Swell Governance Token",
+            "address": "0x2826D136F5630adA89C1678b64A61620Aab77Aea",
+            "symbol": "SWELL",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/4b0af65ae04a5d71cceeb.svg"
+        },
+        {
+            "name": "rswETH",
+            "address": "0x18d33689AE5d02649a859A1CF16c9f0563975258",
+            "symbol": "rswETH",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/a53e1522c29a42749fd5e.svg"
+        },
+        {
+            "name": "Lorenzo stBTC",
+            "address": "0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3",
+            "symbol": "stBTC",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/1bd908177ce4eef8d4a90.svg"
+        },
+        {
+            "name": "Wrapped eETH",
+            "address": "0xA6cB988942610f6731e664379D15fFcfBf282b44",
+            "symbol": "weETH",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/2305e6804e5346fb5545e.png"
+        },
+        {
+            "name": "KelpDao Restaked ETH",
+            "address": "0xc3eACf0612346366Db554C991D7858716db09f58",
+            "symbol": "rsETH",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/e1522c29a42749fd5ec81.svg"
+        },
+        {
+            "name": "swETH",
+            "address": "0x09341022ea237a4DB1644DE7CCf8FA0e489D85B7",
+            "symbol": "swETH",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/971f401121cc90314670c.svg"
         },
         {
             "name": "Native Ether",
@@ -544,7 +624,7 @@
             "symbol": "ETH",
             "decimals": 18,
             "chainId": 98865,
-            "logoURI": ""
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
         },
         {
             "name": "plumeETH",
