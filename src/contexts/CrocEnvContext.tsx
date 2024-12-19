@@ -16,6 +16,7 @@ import {
     ethereumMainnet,
     getDefaultPairForChain,
     scrollMainnet,
+    swellMainnet,
 } from '../ambient-utils/constants';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { PoolIF, TokenIF } from '../ambient-utils/types';
@@ -50,6 +51,7 @@ export interface CrocEnvContextIF {
     provider: Provider;
     mainnetProvider: Provider | undefined;
     scrollProvider: Provider | undefined;
+    swellProvider: Provider | undefined;
     blastProvider: Provider | undefined;
 }
 
@@ -61,10 +63,16 @@ const mainnetProvider = new BatchedJsonRpcProvider(
         staticNetwork: true,
     },
 );
-
 const scrollProvider = new BatchedJsonRpcProvider(
     scrollMainnet.evmRpcUrl,
     parseInt(scrollMainnet.chainId),
+    {
+        staticNetwork: true,
+    },
+);
+const swellProvider = new BatchedJsonRpcProvider(
+    swellMainnet.evmRpcUrl,
+    parseInt(swellMainnet.chainId),
     {
         staticNetwork: true,
     },
@@ -242,6 +250,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         provider,
         mainnetProvider,
         scrollProvider,
+        swellProvider,
         blastProvider,
     };
 
