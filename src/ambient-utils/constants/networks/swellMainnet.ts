@@ -2,7 +2,7 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
-import { swellETH, swellUBTC, swellWTT } from '../defaultTokens';
+import { swellETH, swellUBTC } from '../defaultTokens';
 import { GCGO_SWELL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -31,7 +31,7 @@ export const swellMainnet: NetworkIF = {
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [swellETH, swellUBTC],
-    defaultPairFuta: [swellETH, swellWTT],
+    defaultPairFuta: [swellETH, swellUBTC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
