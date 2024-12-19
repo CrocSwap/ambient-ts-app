@@ -150,6 +150,17 @@ export default function NetworkSelector(props: propsIF) {
             condition: chainMap.has('0x82750'),
         },
         {
+            id: 'swell_network_selector',
+            chainId: '0x783',
+            name: 'Swell',
+            logo: swellLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: false,
+            link: '',
+            condition: chainMap.has('0x783'),
+        },
+        {
             id: 'blast_network_selector',
             chainId: '0x13e31',
             name: 'Blast',
@@ -170,17 +181,6 @@ export default function NetworkSelector(props: propsIF) {
             testnet: false,
             link: '',
             condition: chainMap.has('0x18231'),
-        },
-        {
-            id: 'swell_network_selector',
-            chainId: '0x783',
-            name: 'Swell',
-            logo: swellLogo,
-            custom: 0,
-            isExternal: false,
-            testnet: false,
-            link: '',
-            condition: chainMap.has('0x783'),
         },
         {
             id: 'canto_network_selector',
@@ -336,7 +336,10 @@ export default function NetworkSelector(props: propsIF) {
                 borderRadius: props.customBR ? props.customBR : '4px',
             }}
         >
-            <div className={styles.dropdownMenuContainer}>
+            <div
+                className={styles.dropdownMenuContainer}
+                style={{ cursor: networks.length > 1 ? 'pointer' : 'default' }}
+            >
                 <DropdownMenu2
                     marginTop={'50px'}
                     marginRight={smallScreen ? '70px' : ''}
