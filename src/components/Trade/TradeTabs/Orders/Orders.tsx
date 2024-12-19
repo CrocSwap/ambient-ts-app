@@ -840,12 +840,14 @@ function Orders(props: propsIF) {
 
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
 
-    const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
-        // merge with recently updated data
+    const mergeDataWithPendingOrders = (
+        data: LimitOrderIF[],
+        pendingOrders: RecentlyUpdatedPosition[],
+    ): { mergedList: LimitOrderIF[]; recentlyUpdatedCount: number } => {
         const updatedHashes = new Set();
         const recentlyUpdatedToShow: LimitOrderIF[] = [];
 
-        listOfRecentlyUpdatedOrders.forEach((e) => {
+        pendingOrders.forEach((e) => {
             const isFresh =
                 Math.floor(e.timestamp / 1000) - Math.floor(Date.now() / 1000) <
                 60;
@@ -860,15 +862,26 @@ function Orders(props: propsIF) {
 
         const mergedList: LimitOrderIF[] = [
             ...recentlyUpdatedToShow.reverse(),
-            ...sortedLimits.filter((e) => !updatedHashes.has(e.positionHash)),
+            ...data.filter((e) => !updatedHashes.has(e.positionHash)),
         ];
 
-        // ----------------------------
+        return {
+            mergedList,
+            recentlyUpdatedCount: recentlyUpdatedToShow.length,
+        };
+    };
+
+    const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
+        const { mergedList, recentlyUpdatedCount } = mergeDataWithPendingOrders(
+            sortedLimits,
+            listOfRecentlyUpdatedOrders,
+        );
+
         return isAccountView
             ? mergedList
             : mergedList.slice(
                   getIndexForPages(true),
-                  getIndexForPages(false, recentlyUpdatedToShow.length),
+                  getIndexForPages(false, recentlyUpdatedCount),
               );
     }, [
         sortedLimits,
@@ -876,6 +889,14 @@ function Orders(props: propsIF) {
         isAccountView,
         listOfRecentlyUpdatedOrders,
     ]);
+
+    const sortedLimitsToDisplayAccount = useMemo(() => {
+        const { mergedList } = mergeDataWithPendingOrders(
+            sortedLimits,
+            listOfRecentlyUpdatedOrders,
+        );
+        return mergedList;
+    }, [sortedLimits, listOfRecentlyUpdatedOrders]);
 
     // -----------------------------------------------------------------------------------------------------------------------------
 
@@ -1146,8 +1167,8 @@ function Orders(props: propsIF) {
                 ) : (
                     <TableRows
                         type='Order'
-                        data={sortedLimits}
-                        fullData={sortedLimits}
+                        data={sortedLimitsToDisplayAccount}
+                        fullData={sortedLimitsToDisplayAccount}
                         tableView={tableView}
                         isAccountView={isAccountView}
                     />
