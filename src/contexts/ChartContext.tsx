@@ -56,14 +56,6 @@ export interface ChartContextIF {
     isChangeScaleChart: boolean;
     setIsChangeScaleChart: React.Dispatch<boolean>;
     isCandleDataNull: boolean;
-    setNumCandlesFetched: React.Dispatch<{
-        candleCount: number | undefined;
-        switchPeriodFlag: boolean;
-    }>;
-    numCandlesFetched: {
-        candleCount: number | undefined;
-        switchPeriodFlag: boolean;
-    };
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
     isToolbarOpen: boolean;
     setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -348,20 +340,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const [isToolbarOpen, setIsToolbarOpen] =
         useState<boolean>(initialIsToolbarOpen);
 
-    const [numCandlesFetched, setNumCandlesFetched] = useState<{
-        candleCount: number | undefined;
-        switchPeriodFlag: boolean;
-    }>({ candleCount: undefined, switchPeriodFlag: true });
-
-    const currentPoolString =
-        undoRedoOptions.currentPool.tokenA.address +
-        '/' +
-        undoRedoOptions.currentPool.tokenB.address;
-
-    const chartSettings = useChartSettings(
-        numCandlesFetched,
-        currentPoolString,
-    );
+    const chartSettings = useChartSettings();
 
     const chartContext = {
         chartSettings,
@@ -393,8 +372,6 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setIsChartHeightMinimum,
         isMagnetActiveLocal,
         setIsMagnetActiveLocal,
-        numCandlesFetched,
-        setNumCandlesFetched,
         chartThemeColors,
         setChartThemeColors,
         colorChangeTrigger,
