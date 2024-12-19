@@ -261,88 +261,90 @@ export default function SearchableTicker(props: propsIF) {
 
     const headerDisplay = (
         <div className={styles.header}>
-            <div className={styles.text_search_box}>
-                <BiSearch
-                    size={20}
-                    color='var(--text2)'
-                    id='searchable_ticker_input'
-                    onClick={() => focusInput()}
-                />
-                <input
-                    type='text'
-                    id={INPUT_DOM_ID}
-                    value={searchInputRaw}
-                    onChange={(e) => setSearchInputRaw(e.target.value)}
-                    placeholder='SEARCH...'
-                    spellCheck={false}
-                    autoComplete='off'
-                    tabIndex={1}
-                />
-                {searchInputRaw && (
-                    <MdClose
+            <div className={styles.search_and_sort}>
+                <div className={styles.text_search_box}>
+                    <BiSearch
                         size={20}
                         color='var(--text2)'
-                        onClick={() => clearInput()}
+                        id='searchable_ticker_input'
+                        onClick={() => focusInput()}
                     />
-                )}
-            </div>
-            <div className={styles.filters} ref={timeDropdownRef}>
-                <div className={styles.timeDropdownContent}>
-                    <div
-                        className={styles.timeDropdownButton}
-                        onClick={() =>
-                            setIsSortDropdownOpen(!isSortDropdownOpen)
-                        }
-                    >
-                        <p>{activeSortOption.label}</p>
-                        {isSortDropdownOpen ? (
-                            <IoIosArrowUp color='var(--accent1)' />
-                        ) : (
-                            <IoIosArrowDown color='var(--accent1)' />
-                        )}
-                    </div>
-
-                    <div
-                        className={styles.sort_direction}
-                        onClick={() => auctions.reverse()}
-                    >
-                        <IoIosArrowUp
-                            size={14}
-                            color={
-                                getArrowDirection() === 'up'
-                                    ? 'var(--accent1)'
-                                    : ''
-                            }
+                    <input
+                        type='text'
+                        id={INPUT_DOM_ID}
+                        value={searchInputRaw}
+                        onChange={(e) => setSearchInputRaw(e.target.value)}
+                        placeholder='SEARCH...'
+                        spellCheck={false}
+                        autoComplete='off'
+                        tabIndex={1}
+                    />
+                    {searchInputRaw && (
+                        <MdClose
+                            size={20}
+                            color='var(--text2)'
+                            onClick={() => clearInput()}
                         />
-
-                        <IoIosArrowDown
-                            size={14}
-                            color={
-                                getArrowDirection() === 'down'
-                                    ? 'var(--accent1)'
-                                    : ''
-                            }
-                        />
-                    </div>
+                    )}
                 </div>
+                <div className={styles.sort_clickable} ref={timeDropdownRef}>
+                    <div className={styles.sort_selection}>
+                        <div
+                            className={styles.timeDropdownButton}
+                            onClick={() =>
+                                setIsSortDropdownOpen(!isSortDropdownOpen)
+                            }
+                        >
+                            <p>{activeSortOption.label}</p>
+                            {isSortDropdownOpen ? (
+                                <IoIosArrowUp color='var(--accent1)' />
+                            ) : (
+                                <IoIosArrowDown color='var(--accent1)' />
+                            )}
+                        </div>
+                        <div
+                            className={styles.sort_direction}
+                            onClick={() => auctions.reverse()}
+                        >
+                            <IoIosArrowUp
+                                size={14}
+                                color={
+                                    getArrowDirection() === 'up'
+                                        ? 'var(--accent1)'
+                                        : ''
+                                }
+                            />
 
-                {isSortDropdownOpen && (
-                    <div className={styles.dropdown}>
-                        {sortDropdownOptions.map((item, idx) => (
-                            <p
-                                className={styles.timeItem}
-                                key={idx}
-                                onClick={() => {
-                                    setActiveSortOption(item);
-                                    setIsSortDropdownOpen(false);
-                                    auctions.update(item.slug as auctionSorts);
-                                }}
-                            >
-                                {item.label}
-                            </p>
-                        ))}
+                            <IoIosArrowDown
+                                size={14}
+                                color={
+                                    getArrowDirection() === 'down'
+                                        ? 'var(--accent1)'
+                                        : ''
+                                }
+                            />
+                        </div>
                     </div>
-                )}
+                    {isSortDropdownOpen && (
+                        <div className={styles.dropdown}>
+                            {sortDropdownOptions.map((item, idx) => (
+                                <p
+                                    className={styles.timeItem}
+                                    key={idx}
+                                    onClick={() => {
+                                        setActiveSortOption(item);
+                                        setIsSortDropdownOpen(false);
+                                        auctions.update(
+                                            item.slug as auctionSorts,
+                                        );
+                                    }}
+                                >
+                                    {item.label}
+                                </p>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
             <button
                 onClick={() => setShowComplete(!showComplete)}

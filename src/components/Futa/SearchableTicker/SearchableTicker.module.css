@@ -10,21 +10,29 @@
 .header {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    gap: 8px;
+    gap: 18px;
     width: 100%;
     outline: 1px solid salmon;
 }
 
+.search_and_sort {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+}
+
 /* wrapper for search input icon, text field, and 'clear' button */
+/* WHY DOES THIS NOT EXPAND TO FULL HEIGHT OF THE PARENT?? */
 .text_search_box {
     display: flex;
     flex-direction: row;
     align-items: center;
     width: 100%;
-    height: 100%;
-    padding: 0px 4px 0px 8px;
+    max-width: 400px;
     gap: 4px;
     background-color: var(--dark2);
 }
@@ -43,9 +51,8 @@
     font-size: 12px;
 }
 
-.buttonOn,
-.buttonOff {
-    width: 110px;
+.header > button {
+    min-width: 110px;
     height: 25px;
     border: 1px solid var(--dark3);
     background: var(--dark3);
@@ -60,8 +67,7 @@
     outline: none;
 }
 
-.buttonOn,
-.buttonOff:hover {
+.header > button:hover {
     transition: all var(--animation-speed) ease-in-out;
     color: var(--accent1);
     border: 1px solid var(--accent1);
@@ -72,27 +78,25 @@
     color: var(--accent1);
 }
 
-.filters {
+.sort_clickable {
     position: relative;
-    width: 210px;
+    width: 220px;
 }
 
-.timeDropdownContent {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 180px 25px;
-    align-items: center;
+.sort_selection {
+    display: flex;
+    gap: 4px;
 }
+
 .timeDropdownButton {
     border-left: 4px solid var(--accent1, #62ebf1);
-    background: var(--dark2);
+    background-color: var(--dark2);
     display: flex;
     padding: 4px 4px 4px 8px;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    height: 25px;
-    width: 100%;
+    width: 160px;
     text-transform: uppercase;
 }
 
@@ -370,8 +374,11 @@
 
 
 @media (max-width: 400px) {
-    /**
-    *       @Junior: any idea why I needed to put `!important` on all three
-    *       @Junior: ... of these properties to get them consumed?
-    */
+    .header {
+        display: grid;
+        grid-template-areas: 
+            'top'
+            'bottom';
+    }
+
 }
