@@ -735,86 +735,171 @@ export default function Chart(props: propsIF) {
         isCondensedModeEnabled,
     ]);
 
+    const closestValue = (
+        data: Array<{ order: TransactionIF; mergedTx: Array<TransactionIF> }>,
+        point: number,
+    ) => {
+        const xScale = scaleData?.xScale;
+        if (xScale) {
+            const accessor = (d: TransactionIF) =>
+                Math.abs(point - xScale(d.txTime * 1000));
+
+            return data
+                .map(function (dataPoint: {
+                    order: TransactionIF;
+                    mergedTx: Array<TransactionIF>;
+                }) {
+                    return [accessor(dataPoint.order), dataPoint];
+                })
+                .reduce(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    function (accumulator: any, dataPoint: any) {
+                        return accumulator[0] > dataPoint[0]
+                            ? dataPoint
+                            : accumulator;
+                    },
+                    [Number.MAX_VALUE, null],
+                );
+        }
+    };
+
     const filteredTransactionalData = useMemo(() => {
         if (userTransactionData && showSwap) {
-            const mergedTransactionArray: Array<{
+            const mergedSellArray: Array<{
+                order: TransactionIF;
+                mergedTx: Array<TransactionIF>;
+            }> = [];
+            const mergedBuyArray: Array<{
                 order: TransactionIF;
                 mergedTx: Array<TransactionIF>;
             }> = [];
 
-            const leftDomain =
-                visibleCandleData.length > 3
-                    ? d3.min(visibleCandleData, (d) => d.time)
-                    : scaleData.xScale.domain()[0] / 1000;
-            const rightDomain =
-                visibleCandleData.length > 3
-                    ? d3.max(visibleCandleData, (d) => d.time)
-                    : scaleData.xScale.domain()[1] / 1000;
+            const leftDomain = scaleData.xScale.domain()[0] / 1000;
+            const rightDomain = scaleData.xScale.domain()[1] / 1000;
 
             const userSwaps = userTransactionData.filter(
                 (transaction) => transaction.entityType === 'swap',
             );
 
-            const buySwaps = userSwaps.filter(
-                (transaction) => transaction.isBuy,
-            );
-            const sortedBuySwaps = buySwaps.sort((a, b) =>
+            const sortedUserSwaps = userSwaps.sort((a, b) =>
                 d3.descending(a.txTime, b.txTime),
             );
-
-            const sellSwaps = userSwaps.filter(
-                (transaction) => !transaction.isBuy,
-            );
-            const sortedSellSwap = sellSwaps.sort((a, b) =>
-                d3.descending(a.txTime, b.txTime),
-            );
-
-            const mergedSwap = sortedBuySwaps.concat(sortedSellSwap);
 
             if (leftDomain !== undefined && rightDomain !== undefined) {
-                mergedSwap.map((transaction, index) => {
-                    if (
-                        transaction.txTime > leftDomain &&
-                        transaction.txTime < rightDomain
-                    ) {
-                        if (mergedTransactionArray.length > 0) {
-                            const latestElement =
-                                mergedTransactionArray[
-                                    mergedTransactionArray.length - 1
-                                ];
+                sortedUserSwaps.map((swap) => {
+                    if (swap.txTime > leftDomain && swap.txTime < rightDomain) {
+                        const selectedArray = swap.isBuy
+                            ? mergedBuyArray
+                            : mergedSellArray;
+
+                        if (selectedArray.length > 0) {
+                            const nearestSwap = closestValue(
+                                selectedArray,
+                                scaleData.xScale(swap.txTime),
+                            );
 
                             const diffInPixel = Math.abs(
-                                scaleData.xScale(transaction.txTime) -
+                                scaleData.xScale(swap.txTime * 1000) -
                                     scaleData.xScale(
-                                        latestElement.order.txTime,
+                                        nearestSwap[1].order.txTime * 1000,
                                     ),
                             );
 
-                            const shouldMerge = diffInPixel < 0.03;
+                            const pricePoint = denomInBase
+                                ? swap.swapInvPriceDecimalCorrected
+                                : swap.swapPriceDecimalCorrected;
+                            const nearestPricePoint = denomInBase
+                                ? nearestSwap[1].order
+                                      .swapInvPriceDecimalCorrected
+                                : nearestSwap[1].order
+                                      .swapPriceDecimalCorrected;
 
-                            const isSameDirection =
-                                (transaction.isBuy &&
-                                    mergedSwap[index - 1].isBuy) ||
-                                (!transaction.isBuy &&
-                                    !mergedSwap[index - 1].isBuy);
+                            const priceDiffInPixel = Math.abs(
+                                scaleData.yScale(pricePoint) -
+                                    scaleData.yScale(nearestPricePoint),
+                            );
 
-                            if (shouldMerge && isSameDirection) {
-                                latestElement.mergedTx.push(transaction);
+                            const shouldMerge =
+                                diffInPixel < 10 && priceDiffInPixel < 20;
+
+                            if (shouldMerge) {
+                                nearestSwap[1].mergedTx.push(swap);
                             } else {
-                                mergedTransactionArray.push({
-                                    order: transaction,
+                                selectedArray.push({
+                                    order: swap,
                                     mergedTx: [],
                                 });
                             }
                         } else {
-                            mergedTransactionArray.push({
-                                order: transaction,
+                            selectedArray.push({
+                                order: swap,
                                 mergedTx: [],
                             });
                         }
                     }
                 });
             }
+
+            // const buySwaps = userSwaps.filter(
+            //     (transaction) => transaction.isBuy,
+            // );
+            // const sortedBuySwaps = buySwaps.sort((a, b) =>
+            //     d3.descending(a.txTime, b.txTime),
+            // );
+
+            // const sellSwaps = userSwaps.filter(
+            //     (transaction) => !transaction.isBuy,
+            // );
+            // const sortedSellSwap = sellSwaps.sort((a, b) =>
+            //     d3.descending(a.txTime, b.txTime),
+            // );
+
+            // const mergedSwap = sortedBuySwaps.concat(sortedSellSwap);
+
+            // if (leftDomain !== undefined && rightDomain !== undefined) {
+            //     mergedSwap.map((transaction, index) => {
+            //         if (
+            //             transaction.txTime > leftDomain &&
+            //             transaction.txTime < rightDomain
+            //         ) {
+            //             if (mergedTransactionArray.length > 0) {
+            //                 const latestElement =
+            //                     mergedTransactionArray[
+            //                         mergedTransactionArray.length - 1
+            //                     ];
+
+            //                 const diffInPixel = Math.abs(
+            //                     scaleData.xScale(transaction.txTime) -
+            //                         scaleData.xScale(
+            //                             latestElement.order.txTime,
+            //                         ),
+            //                 );
+
+            //                 const shouldMerge = diffInPixel < 0.03;
+
+            //                 const isSameDirection =
+            //                     (transaction.isBuy &&
+            //                         mergedSwap[index - 1].isBuy) ||
+            //                     (!transaction.isBuy &&
+            //                         !mergedSwap[index - 1].isBuy);
+
+            //                 if (shouldMerge && isSameDirection) {
+            //                     latestElement.mergedTx.push(transaction);
+            //                 } else {
+            //                     mergedTransactionArray.push({
+            //                         order: transaction,
+            //                         mergedTx: [],
+            //                     });
+            //                 }
+            //             } else {
+            //                 mergedTransactionArray.push({
+            //                     order: transaction,
+            //                     mergedTx: [],
+            //                 });
+            //             }
+            //         }
+            //     });
+            // }
 
             // if (mergedTransactionArray.length > 0) {
             //     const top20TotalValue = mergedTransactionArray
@@ -829,7 +914,7 @@ export default function Chart(props: propsIF) {
             //     return top20TotalValue;
             // }
 
-            return mergedTransactionArray;
+            return mergedBuyArray.concat(mergedSellArray);
         }
 
         return undefined;
