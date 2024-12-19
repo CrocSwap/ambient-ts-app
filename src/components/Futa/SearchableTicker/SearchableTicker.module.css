@@ -73,7 +73,17 @@
     border: 1px solid var(--accent1);
 }
 
-.eyeOn {
+/* add border to header buttons when state is active */
+.button_on {
+    border: 1px solid var(--accent1) !important;
+}
+
+/* change color of button contents when state is active */
+.button_on * {
+    color: var(--accent1);
+}
+
+.eye_on {
     transition: all var(--animation-speed) ease-in-out;
     color: var(--accent1);
 }
@@ -289,8 +299,6 @@
     outline: none;
     background: var(--accent1, #0ccdff);
     color: var(--dark1);
-    border: none;
-    cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
     margin: 0 auto;
     text-transform: uppercase;

@@ -257,6 +257,7 @@ export default function SearchableTicker(props: propsIF) {
         return output;
     }
 
+    // apply a consistent size to all icons inside buttons
     const BUTTON_ICON_SIZE = 17;
 
     const headerDisplay = (
@@ -348,31 +349,24 @@ export default function SearchableTicker(props: propsIF) {
             </div>
             <button
                 onClick={() => setShowComplete(!showComplete)}
-                className={showComplete ? styles.buttonOn : styles.buttonOff}
+                className={styles[showComplete ? 'button_on' : '']}
             >
                 <LuCheck size={BUTTON_ICON_SIZE} />
                 <div>COMPLETED</div>
             </button>
             <button
                 onClick={() => watchlists.toggle()}
-                className={
-                    styles[watchlists.shouldDisplay ? 'buttonOn' : 'buttonOff']
-                }
+                className={styles[watchlists.shouldDisplay ? 'button_on' : '']}
             >
-                <FaEye
-                    size={BUTTON_ICON_SIZE}
-                    className={
-                        styles[watchlists.shouldDisplay ? 'eyeOn' : 'eyeOff']
-                    }
-                />
-                WATCHLIST
+                <FaEye size={BUTTON_ICON_SIZE} />
+                <div>WATCHLIST</div>
             </button>
             {isAccount ? (
                 <button
                     className={
-                        dataState?.active === 'created'
-                            ? styles.buttonOn
-                            : styles.buttonOff
+                        styles[
+                            dataState?.active === 'created' ? 'button_on' : ''
+                        ]
                     }
                     onClick={() => dataState?.toggle && dataState.toggle()}
                 >
