@@ -25,6 +25,7 @@ import {
     GCGO_BLAST_URL,
     GCGO_ETHEREUM_URL,
     GCGO_SCROLL_URL,
+    GCGO_SWELL_URL,
     hiddenTokens,
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
@@ -112,6 +113,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         mainnetProvider,
         scrollProvider,
         blastProvider,
+        swellProvider,
     } = useContext(CrocEnvContext);
     const {
         cachedFetchAmbientListWalletBalances,
@@ -641,6 +643,12 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         [scrollProvider !== undefined],
     );
 
+    const swellCrocEnv = useMemo(
+        () =>
+            swellProvider ? new CrocEnv(swellProvider, undefined) : undefined,
+        [swellProvider !== undefined],
+    );
+
     const blastCrocEnv = useMemo(
         () =>
             blastProvider ? new CrocEnv(blastProvider, undefined) : undefined,
@@ -652,6 +660,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             showDexStats &&
             mainnetCrocEnv !== undefined &&
             scrollCrocEnv !== undefined &&
+            swellCrocEnv !== undefined &&
             blastCrocEnv !== undefined &&
             allDefaultTokens.length > 0
         ) {
@@ -659,7 +668,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 volumeTotalUsd = 0,
                 feesTotalUsd = 0;
 
-            const numChainsToAggregate = 3;
+            const numChainsToAggregate = 4;
             let resultsReceived = 0;
 
             getChainStats(
@@ -723,6 +732,48 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 feesTotalUsd += dexStats.feesTotalUsd;
                 resultsReceived += 1;
 
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                }
+            });
+
+            getChainStats(
+                'cumulative',
+                '0x783',
+                swellCrocEnv,
+                GCGO_SWELL_URL,
+                cachedFetchTokenPrice,
+                10,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
+                resultsReceived += 1;
                 if (resultsReceived === numChainsToAggregate) {
                     setTotalTvlString(
                         getFormattedNumber({
