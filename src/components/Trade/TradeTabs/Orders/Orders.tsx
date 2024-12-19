@@ -39,6 +39,7 @@ import {
     quoteTokenForConcLiq,
     tickToPrice,
 } from '@crocswap-libs/sdk';
+// import DebugDiv from '../../../Chat/DomDebugger/Draggable/DebugDiv';
 
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
@@ -803,6 +804,19 @@ function Orders(props: propsIF) {
         })();
     }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+    const getPositionHashFromRelevantTransactions = (pos: any) => {
+        return getPositionHash(undefined, {
+            isPositionTypeAmbient: false,
+            user: pos.userAddress,
+            baseAddress: pos.txDetails?.baseAddress || '',
+            quoteAddress: pos.txDetails?.quoteAddress || '',
+            poolIdx: pos.txDetails?.poolIdx || 0,
+            bidTick: pos.txDetails?.lowTick || 0,
+            askTick: pos.txDetails?.highTick || 0,
+        });
+    };
+
     const pendingPositionsToDisplayPlaceholder = useMemo(() => {
         return relevantTransactionsByType.filter((pos) => {
             const pendingPosHash = getPositionHash(undefined, {
@@ -1204,13 +1218,13 @@ function Orders(props: propsIF) {
                 position: 'relative',
             }}
         >
-            {/* <DebugDiv title= 'recently updated positions'
+            {/* <DebugDiv title= 'relevant transactions'
             left={700}
             top={100}
             >
                 {
-                    listOfRecentlyUpdatedOrders.map((tx, idx) => (                 
-                        <div key={`updated-${idx}`}> {tx.type} {tx.action} {tx.order.positionHash.substring(0,6)} {tx.order.totalValueUSD} </div>
+                    relevantTransactionsByType.map((tx, idx) => (                 
+                        <div key={`updated-${idx}`}> {getPositionHashFromRelevantTransactions(tx).substring(0,6)} {tx.txAction} </div>
                     ))
                 }
             </DebugDiv> */}
