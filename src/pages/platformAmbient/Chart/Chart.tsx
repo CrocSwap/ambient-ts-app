@@ -126,6 +126,7 @@ import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
 import RangeLinesChart from './RangeLine/RangeLinesChart';
 import TvlChart from './Tvl/TvlChart';
 import VolumeBarCanvas from './Volume/VolumeBarCanvas';
+import { GraphDataContext } from '../../../contexts';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -300,6 +301,9 @@ export default function Chart(props: propsIF) {
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
 
+    const { userPositionsByPool, userLimitOrdersByPool } =
+        useContext(GraphDataContext);
+
     const [isChartZoom, setIsChartZoom] = useState(false);
     const [cursorStyleTrigger, setCursorStyleTrigger] = useState(false);
 
@@ -422,8 +426,14 @@ export default function Chart(props: propsIF) {
         selectedDrawnData | undefined
     >(undefined);
 
-    const [hoveredOrderHistory, setHoveredOrderHistory] =
-        useState<TransactionIF>();
+    const [hoveredOrderHistory, setHoveredOrderHistory] = useState<{
+        type: string;
+        id: string;
+        totalValueUSD: number;
+        tokenFlowDecimalCorrected: number;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        order: any;
+    }>();
 
     const [isHoveredOrderHistory, setIsHoveredOrderHistory] =
         useState<boolean>(false);
@@ -431,8 +441,14 @@ export default function Chart(props: propsIF) {
     const [isSelectedOrderHistory, setIsSelectedOrderHistory] =
         useState<boolean>(false);
 
-    const [selectedOrderHistory, setSelectedOrderHistory] =
-        useState<TransactionIF>();
+    const [selectedOrderHistory, setSelectedOrderHistory] = useState<{
+        type: string;
+        id: string;
+        totalValueUSD: number;
+        tokenFlowDecimalCorrected: number;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        order: any;
+    }>();
 
     const [hoverOHTooltip, setHoverOHTooltip] = useState<boolean>(true);
 
@@ -442,6 +458,9 @@ export default function Chart(props: propsIF) {
         useState<{ top: number; left: number; isOnLeftSide: boolean }>();
 
     const [circleScale, setCircleScale] =
+        useState<d3.ScaleLinear<number, number>>();
+
+    const [circleScaleLimitOrder, setCircleScaleLimitOrder] =
         useState<d3.ScaleLinear<number, number>>();
 
     const [shouldDisableChartSettings, setShouldDisableChartSettings] =
@@ -584,6 +603,41 @@ export default function Chart(props: propsIF) {
         );
     };
 
+    const minimum = (data: CandleDataIF[], mouseX: number) => {
+        const xScale = scaleData?.xScale;
+        if (xScale) {
+            const accessor = (d: CandleDataIF) =>
+                Math.abs(mouseX - xScale(d.time * 1000));
+
+            return data
+                .map(function (dataPoint: CandleDataIF) {
+                    return [accessor(dataPoint), dataPoint];
+                })
+                .reduce(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    function (accumulator: any, dataPoint: any) {
+                        return accumulator[0] > dataPoint[0]
+                            ? dataPoint
+                            : accumulator;
+                    },
+                    [Number.MAX_VALUE, null],
+                );
+        }
+    };
+
+    // finds candle closest to the mouse
+    const snapForCandle = (point: number, filtered: Array<CandleDataIF>) => {
+        if (scaleData) {
+            if (point == undefined) return [];
+            if (filtered.length > 1) {
+                const nearest = minimum(filtered, point)[1];
+                return nearest;
+            }
+        }
+
+        return filtered[0];
+    };
+
     const unparsedCandleData = useMemo(() => {
         const data = filterCandleWithTransaction(
             unparsedData.candles,
@@ -680,6 +734,117 @@ export default function Chart(props: propsIF) {
         unparsedCandleData,
         isCondensedModeEnabled,
     ]);
+
+    const closestValue = (
+        data: Array<{ order: TransactionIF; mergedTx: Array<TransactionIF> }>,
+        point: number,
+    ) => {
+        const xScale = scaleData?.xScale;
+        if (xScale) {
+            const accessor = (d: TransactionIF) =>
+                Math.abs(point - xScale(d.txTime * 1000));
+
+            return data
+                .map(function (dataPoint: {
+                    order: TransactionIF;
+                    mergedTx: Array<TransactionIF>;
+                }) {
+                    return [accessor(dataPoint.order), dataPoint];
+                })
+                .reduce(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    function (accumulator: any, dataPoint: any) {
+                        return accumulator[0] > dataPoint[0]
+                            ? dataPoint
+                            : accumulator;
+                    },
+                    [Number.MAX_VALUE, null],
+                );
+        }
+    };
+
+    const filteredTransactionalData = useMemo(() => {
+        if (userTransactionData && showSwap) {
+            const mergedSellArray: Array<{
+                order: TransactionIF;
+                mergedTx: Array<TransactionIF>;
+            }> = [];
+            const mergedBuyArray: Array<{
+                order: TransactionIF;
+                mergedTx: Array<TransactionIF>;
+            }> = [];
+
+            const leftDomain = scaleData.xScale.domain()[0] / 1000;
+            const rightDomain = scaleData.xScale.domain()[1] / 1000;
+
+            const userSwaps = userTransactionData.filter(
+                (transaction) => transaction.entityType === 'swap',
+            );
+
+            const sortedUserSwaps = userSwaps.sort((a, b) =>
+                d3.descending(a.txTime, b.txTime),
+            );
+
+            if (leftDomain !== undefined && rightDomain !== undefined) {
+                sortedUserSwaps.map((swap) => {
+                    if (swap.txTime > leftDomain && swap.txTime < rightDomain) {
+                        const selectedArray = swap.isBuy
+                            ? mergedBuyArray
+                            : mergedSellArray;
+
+                        if (selectedArray.length > 0) {
+                            const nearestSwap = closestValue(
+                                selectedArray,
+                                scaleData.xScale(swap.txTime),
+                            );
+
+                            const diffInPixel = Math.abs(
+                                scaleData.xScale(swap.txTime * 1000) -
+                                    scaleData.xScale(
+                                        nearestSwap[1].order.txTime * 1000,
+                                    ),
+                            );
+
+                            const pricePoint = denomInBase
+                                ? swap.swapInvPriceDecimalCorrected
+                                : swap.swapPriceDecimalCorrected;
+                            const nearestPricePoint = denomInBase
+                                ? nearestSwap[1].order
+                                      .swapInvPriceDecimalCorrected
+                                : nearestSwap[1].order
+                                      .swapPriceDecimalCorrected;
+
+                            const priceDiffInPixel = Math.abs(
+                                scaleData.yScale(pricePoint) -
+                                    scaleData.yScale(nearestPricePoint),
+                            );
+
+                            const shouldMerge =
+                                diffInPixel < 10 && priceDiffInPixel < 20;
+
+                            if (shouldMerge) {
+                                nearestSwap[1].mergedTx.push(swap);
+                            } else {
+                                selectedArray.push({
+                                    order: swap,
+                                    mergedTx: [],
+                                });
+                            }
+                        } else {
+                            selectedArray.push({
+                                order: swap,
+                                mergedTx: [],
+                            });
+                        }
+                    }
+                });
+            }
+
+            return mergedBuyArray.concat(mergedSellArray);
+        }
+
+        return undefined;
+    }, [userTransactionData, diffHashSigScaleData(scaleData, 'x')]);
 
     const lastCandleData = unparsedData.candles?.reduce(
         function (prev, current) {
@@ -1116,19 +1281,6 @@ export default function Chart(props: propsIF) {
         // auto zoom active
         setRescale(true);
     }, [location.pathname, period, denomInBase]);
-
-    // finds candle closest to the mouse
-    const snapForCandle = (point: number, filtered: Array<CandleDataIF>) => {
-        if (scaleData) {
-            if (point == undefined) return [];
-            if (filtered.length > 1) {
-                const nearest = minimum(filtered, point)[1];
-                return nearest;
-            }
-        }
-
-        return filtered[0];
-    };
 
     // calculates first fetch candle domain for time and pool change
     useEffect(() => {
@@ -4590,6 +4742,7 @@ export default function Chart(props: propsIF) {
         tokenA,
         tokenB,
         showSwap,
+        showHistorical,
         isCondensedModeEnabled,
     ]);
 
@@ -4679,7 +4832,7 @@ export default function Chart(props: propsIF) {
                 }
 
                 let isOrderHistorySelected = undefined;
-                if (showSwap) {
+                if (showSwap || showHistorical || showLiquidity) {
                     isOrderHistorySelected = orderHistoryHoverStatus(
                         event.offsetX,
                         event.offsetY,
@@ -4829,6 +4982,8 @@ export default function Chart(props: propsIF) {
         isSelectedOrderHistory,
         selectedOrderHistory,
         showSwap,
+        showHistorical,
+        showLiquidity,
     ]);
 
     function checkLineLocation(
@@ -4943,12 +5098,15 @@ export default function Chart(props: propsIF) {
         mouseX: number,
         mouseY: number,
         diameter: number,
+        isTriangle = false,
     ) {
         if (scaleData && circleScale) {
             const startX = scaleData.xScale(element[0].x);
             const startY = scaleData.yScale(element[0].y);
 
-            const circleDiameter = Math.sqrt(circleScale(diameter) / Math.PI);
+            const circleDiameter = Math.sqrt(
+                (isTriangle ? 1000 : circleScale(diameter)) / Math.PI,
+            );
 
             let distance = false;
 
@@ -5204,12 +5362,36 @@ export default function Chart(props: propsIF) {
         }
     }, [userTransactionData, denomInBase]);
 
-    const handleCardClick = (tx: TransactionIF): void => {
+    useEffect(() => {
+        if (userTransactionData) {
+            const domainRight = d3.max(
+                userLimitOrdersByPool.limitOrders,
+                (data) => data.totalValueUSD,
+            );
+            const domainLeft = d3.min(
+                userLimitOrdersByPool.limitOrders,
+                (data) => data.totalValueUSD,
+            );
+
+            if (domainRight && domainLeft) {
+                const scale = d3
+                    .scaleLinear()
+                    .range([1000, 3000])
+                    .domain([domainLeft, domainRight]);
+
+                setCircleScaleLimitOrder(() => {
+                    return scale;
+                });
+            }
+        }
+    }, [userTransactionData, denomInBase]);
+
+    const handleCardClick = (id: string): void => {
         setSelectedDate(undefined);
         setOutsideControl(true);
         setSelectedOutsideTab(0);
         setShowAllData(false);
-        setCurrentTxActiveInTransactions(tx.txId);
+        setCurrentTxActiveInTransactions(id);
     };
 
     useEffect(() => {
@@ -5227,30 +5409,193 @@ export default function Chart(props: propsIF) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let resElement: any = undefined;
 
-        if (scaleData && userTransactionData) {
-            userTransactionData.forEach((element) => {
-                if (element.entityType === 'swap' && showSwap) {
-                    const swapOrderData = [
-                        {
-                            x: element.txTime * 1000,
-                            y: denomInBase
-                                ? element.swapInvPriceDecimalCorrected
-                                : element.swapPriceDecimalCorrected,
-                            denomInBase: denomInBase,
-                        },
-                    ];
-                    if (
-                        checkSwapLoation(
-                            swapOrderData,
-                            mouseX,
-                            mouseY,
-                            element.totalValueUSD,
-                        )
-                    ) {
-                        resElement = element;
+        if (scaleData) {
+            if (userPositionsByPool && showHistorical) {
+                userPositionsByPool.positions.forEach((position) => {
+                    if (position.positionLiq === 0) {
+                        const rectLocation = [
+                            {
+                                x: position?.timeFirstMint * 1000,
+                                y: denomInBase
+                                    ? position.bidTickInvPriceDecimalCorrected
+                                    : position.bidTickPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                            {
+                                x: position?.latestUpdateTime * 1000,
+                                y: denomInBase
+                                    ? position.askTickInvPriceDecimalCorrected
+                                    : position.askTickPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkRectLocation(
+                                rectLocation,
+                                mouseX,
+                                mouseY,
+                                denomInBase,
+                            )
+                        ) {
+                            resElement = {
+                                id: position.positionId,
+                                type: 'historical',
+                                order: position,
+                                totalValue: position.totalValueUSD,
+                                tokenFlowDecimalCorrected: 0,
+                            };
+                        }
                     }
-                }
-            });
+                });
+            }
+
+            if (userLimitOrdersByPool && showLiquidity) {
+                userLimitOrdersByPool.limitOrders.forEach((limitOrder) => {
+                    const tokenFlowDecimalCorrected = denomInBase
+                        ? limitOrder.isBid
+                            ? limitOrder.originalPositionLiqBaseDecimalCorrected
+                            : limitOrder.expectedPositionLiqBaseDecimalCorrected
+                        : limitOrder.isBid
+                          ? limitOrder.expectedPositionLiqQuoteDecimalCorrected
+                          : limitOrder.originalPositionLiqQuoteDecimalCorrected;
+
+                    if (limitOrder.claimableLiq > 0) {
+                        const swapOrderData = [
+                            {
+                                x: limitOrder.crossTime * 1000,
+                                y: denomInBase
+                                    ? limitOrder.invLimitPriceDecimalCorrected
+                                    : limitOrder.limitPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkSwapLoation(
+                                swapOrderData,
+                                mouseX,
+                                mouseY,
+                                limitOrder.totalValueUSD,
+                            )
+                        ) {
+                            resElement = {
+                                id: limitOrder.positionHash,
+                                type: 'limitCircle',
+                                order: limitOrder,
+                                totalValueUSD: limitOrder.totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
+                            };
+                        }
+                    } else if (limitOrder.claimableLiq === 0) {
+                        const swapOrderData = [
+                            {
+                                x: limitOrder.timeFirstMint * 1000,
+                                y: denomInBase
+                                    ? limitOrder.invLimitPriceDecimalCorrected
+                                    : limitOrder.limitPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkSwapLoation(
+                                swapOrderData,
+                                mouseX,
+                                mouseY,
+                                limitOrder.totalValueUSD,
+                                true,
+                            )
+                        ) {
+                            resElement = {
+                                id: limitOrder.positionHash,
+                                type: 'limitCircle',
+                                order: limitOrder,
+                                totalValueUSD: limitOrder.totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
+                            };
+                        }
+
+                        const line = [
+                            ...swapOrderData,
+                            {
+                                x: new Date().getTime() + 5 * 86400 * 1000,
+                                y: denomInBase
+                                    ? limitOrder.invLimitPriceDecimalCorrected
+                                    : limitOrder.limitPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkLineLocation(line, mouseX, mouseY, denomInBase)
+                        ) {
+                            resElement = {
+                                id: limitOrder.positionHash,
+                                type: 'limitCircle',
+                                order: limitOrder,
+                                totalValueUSD: limitOrder.totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
+                            };
+                        }
+                    }
+                });
+            }
+
+            if (filteredTransactionalData && showSwap) {
+                filteredTransactionalData.forEach((element) => {
+                    if (element.order.entityType === 'swap' && showSwap) {
+                        const swapOrderData = [
+                            {
+                                x: element.order.txTime * 1000,
+                                y: denomInBase
+                                    ? element.order.swapInvPriceDecimalCorrected
+                                    : element.order.swapPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+
+                        let totalValueUSD = element.order.totalValueUSD;
+                        let tokenFlowDecimalCorrected = denomInBase
+                            ? element.order.baseFlowDecimalCorrected
+                            : element.order.quoteFlowDecimalCorrected;
+
+                        if (element.mergedTx.length > 0) {
+                            element.mergedTx.map((merged) => {
+                                totalValueUSD =
+                                    totalValueUSD + merged.totalValueUSD;
+
+                                tokenFlowDecimalCorrected =
+                                    tokenFlowDecimalCorrected +
+                                    (denomInBase
+                                        ? merged.baseFlowDecimalCorrected
+                                        : merged.quoteFlowDecimalCorrected);
+                            });
+                        }
+
+                        if (
+                            checkSwapLoation(
+                                swapOrderData,
+                                mouseX,
+                                mouseY,
+                                totalValueUSD,
+                            )
+                        ) {
+                            resElement = {
+                                id: element.order.txId,
+                                type: 'swap',
+                                order: element,
+                                totalValueUSD: totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
+                            };
+                        }
+                    }
+                });
+            }
 
             if (resElement && scaleData) {
                 setHoveredOrderHistory(() => {
@@ -5268,10 +5613,10 @@ export default function Chart(props: propsIF) {
             if (onClick && scaleData) {
                 if (resElement) {
                     const shouldSelect = selectedOrderHistory
-                        ? resElement.txId !== selectedOrderHistory?.txId
+                        ? resElement.id !== selectedOrderHistory?.id
                         : true;
 
-                    shouldSelect && handleCardClick(resElement);
+                    shouldSelect && handleCardClick(resElement.id);
 
                     setSelectedOrderHistory(() => {
                         return shouldSelect ? resElement : undefined;
@@ -5537,28 +5882,6 @@ export default function Chart(props: propsIF) {
         }
     };
 
-    const minimum = (data: CandleDataIF[], mouseX: number) => {
-        const xScale = scaleData?.xScale;
-        if (xScale) {
-            const accessor = (d: CandleDataIF) =>
-                Math.abs(mouseX - xScale(d.time * 1000));
-
-            return data
-                .map(function (dataPoint: CandleDataIF) {
-                    return [accessor(dataPoint), dataPoint];
-                })
-                .reduce(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    function (accumulator: any, dataPoint: any) {
-                        return accumulator[0] > dataPoint[0]
-                            ? dataPoint
-                            : accumulator;
-                    },
-                    [Number.MAX_VALUE, null],
-                );
-        }
-    };
-
     useEffect(() => {
         d3.select(d3CanvasCrosshair.current).style(
             'visibility',
@@ -5618,7 +5941,7 @@ export default function Chart(props: propsIF) {
 
                 let isOrderHistorySelected = undefined;
                 if (
-                    showSwap &&
+                    (showSwap || showHistorical || showLiquidity) &&
                     !isDragActive &&
                     activeDrawingType === 'Cross'
                 ) {
@@ -5911,84 +6234,371 @@ export default function Chart(props: propsIF) {
         isUpdatingShape,
     };
 
+    const isShapeOverlaps = (
+        tempLeft: number,
+        tempTop: number,
+        selectedLeft: number,
+        selectedTop: number,
+    ) => {
+        const isOverLeft =
+            isSelectedOrderHistory &&
+            selectedOrderTooltipPlacement &&
+            ((tempLeft + 75 <= selectedLeft + 75 &&
+                tempLeft + 75 >= selectedLeft - 75) ||
+                (tempLeft - 75 <= selectedLeft + 75 &&
+                    tempLeft - 75 >= selectedLeft - 75));
+
+        const isOverTop =
+            isSelectedOrderHistory &&
+            selectedOrderTooltipPlacement &&
+            ((selectedTop - 35 <= tempTop + 35 &&
+                selectedTop - 35 >= tempTop - 35) ||
+                (selectedTop + 35 >= tempTop - 35 &&
+                    selectedTop + 35 <= tempTop + 35));
+
+        return { isOverLeft, isOverTop };
+    };
+
     const calculateOrderHistoryTooltipPlacements = (scaleData: scaleData) => {
-        if (scaleData && circleScale) {
+        if (scaleData) {
             const scale = d3.scaleLinear().range([60, 75]).domain([1000, 3000]);
 
+            const canvas = d3
+                .select(d3CanvasMain.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const rectCanvas = canvas.getBoundingClientRect();
+            const canvasRightEnd = rectCanvas.right;
+
             if (isHoveredOrderHistory && hoveredOrderHistory) {
-                setHoveredOrderTooltipPlacement(() => {
-                    const top = scaleData.yScale(
-                        denomInBase
-                            ? hoveredOrderHistory.swapInvPriceDecimalCorrected
-                            : hoveredOrderHistory.swapPriceDecimalCorrected,
-                    );
+                if (hoveredOrderHistory.type === 'swap' && circleScale) {
+                    setHoveredOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? hoveredOrderHistory.order.order
+                                      .swapInvPriceDecimalCorrected
+                                : hoveredOrderHistory.order.order
+                                      .swapPriceDecimalCorrected,
+                        );
 
-                    const tempPlace =
-                        scaleData?.xScale(hoveredOrderHistory.txTime * 1000) +
-                        scale(circleScale(hoveredOrderHistory.totalValueUSD));
+                        let left =
+                            scaleData?.xScale(
+                                hoveredOrderHistory.order.order.txTime * 1000,
+                            ) +
+                            scale(
+                                circleScale(hoveredOrderHistory.totalValueUSD),
+                            );
 
-                    const isOverLeft =
-                        isSelectedOrderHistory &&
-                        selectedOrderTooltipPlacement &&
-                        ((tempPlace + 75 <
-                            selectedOrderTooltipPlacement.left + 75 &&
-                            tempPlace + 75 >
-                                selectedOrderTooltipPlacement.left - 75) ||
-                            (tempPlace - 75 <
-                                selectedOrderTooltipPlacement.left + 75 &&
-                                tempPlace - 75 >
-                                    selectedOrderTooltipPlacement.left - 75));
+                        let isOnLeftSide = false;
+                        if (
+                            isSelectedOrderHistory &&
+                            selectedOrderTooltipPlacement
+                        ) {
+                            const { isOverLeft, isOverTop } = isShapeOverlaps(
+                                left,
+                                top,
+                                selectedOrderTooltipPlacement.left,
+                                selectedOrderTooltipPlacement.top,
+                            );
 
-                    const isOverTop =
-                        isSelectedOrderHistory &&
-                        selectedOrderTooltipPlacement &&
-                        ((selectedOrderTooltipPlacement.top - 35 < top + 35 &&
-                            selectedOrderTooltipPlacement.top - 35 >
-                                top - 35) ||
-                            (selectedOrderTooltipPlacement.top + 35 >
-                                top - 35 &&
-                                selectedOrderTooltipPlacement.top + 35 <
-                                    top + 35));
+                            isOnLeftSide = !!(isOverLeft && isOverTop);
 
-                    const left =
-                        scaleData?.xScale(hoveredOrderHistory.txTime * 1000) +
-                        (isOverLeft && isOverTop
-                            ? -scale(
-                                  circleScale(
-                                      hoveredOrderHistory.totalValueUSD,
-                                  ),
-                              ) +
-                              (circleScale(hoveredOrderHistory.totalValueUSD) <
-                              1500
-                                  ? -105
-                                  : -90)
-                            : +scale(
-                                  circleScale(
-                                      hoveredOrderHistory.totalValueUSD,
-                                  ),
-                              ));
+                            left =
+                                scaleData?.xScale(
+                                    hoveredOrderHistory.order.order.txTime *
+                                        1000,
+                                ) +
+                                (isOverLeft && isOverTop
+                                    ? -scale(
+                                          circleScale(
+                                              hoveredOrderHistory.totalValueUSD,
+                                          ),
+                                      ) +
+                                      (circleScale(
+                                          hoveredOrderHistory.totalValueUSD,
+                                      ) < 1500
+                                          ? -105
+                                          : -90)
+                                    : +scale(
+                                          circleScale(
+                                              hoveredOrderHistory.totalValueUSD,
+                                          ),
+                                      ));
+                        }
 
-                    return {
-                        top,
-                        left,
-                        isOnLeftSide: !!(isOverLeft && isOverTop),
-                    };
-                });
+                        return {
+                            top,
+                            left,
+                            isOnLeftSide,
+                        };
+                    });
+                }
+
+                if (hoveredOrderHistory.type === 'historical') {
+                    const minPrice = denomInBase
+                        ? hoveredOrderHistory.order
+                              .bidTickInvPriceDecimalCorrected
+                        : hoveredOrderHistory.order
+                              .bidTickPriceDecimalCorrected;
+
+                    const maxPrice = denomInBase
+                        ? hoveredOrderHistory.order
+                              .askTickInvPriceDecimalCorrected
+                        : hoveredOrderHistory.order
+                              .askTickPriceDecimalCorrected;
+
+                    const diff = Math.abs(maxPrice - minPrice) / 2;
+
+                    const pricePlacement = minPrice + diff;
+
+                    setHoveredOrderTooltipPlacement(() => {
+                        let top = scaleData.yScale(pricePlacement);
+
+                        const left = scaleData?.xScale(
+                            hoveredOrderHistory.order.latestUpdateTime * 1000,
+                        );
+
+                        if (
+                            isSelectedOrderHistory &&
+                            selectedOrderTooltipPlacement
+                        ) {
+                            const { isOverLeft, isOverTop } = isShapeOverlaps(
+                                left,
+                                top,
+                                selectedOrderTooltipPlacement.left,
+                                selectedOrderTooltipPlacement.top,
+                            );
+
+                            if (isOverLeft && isOverTop) {
+                                const direction =
+                                    selectedOrderTooltipPlacement.top - top < 0
+                                        ? -1
+                                        : 1;
+
+                                const diff =
+                                    90 -
+                                    Math.abs(
+                                        selectedOrderTooltipPlacement.top - top,
+                                    );
+
+                                top = top - diff * direction;
+                            }
+                        }
+
+                        return {
+                            top: top < 0 ? 10 : top,
+                            left:
+                                left > canvasRightEnd
+                                    ? canvasRightEnd - 150
+                                    : left,
+                            isOnLeftSide: false,
+                        };
+                    });
+                }
+
+                if (
+                    hoveredOrderHistory.type === 'limitCircle' &&
+                    circleScaleLimitOrder
+                ) {
+                    setHoveredOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? hoveredOrderHistory.order
+                                      .invLimitPriceDecimalCorrected
+                                : hoveredOrderHistory.order
+                                      .limitPriceDecimalCorrected,
+                        );
+
+                        const time =
+                            hoveredOrderHistory.order.claimableLiq === 0
+                                ? hoveredOrderHistory.order.timeFirstMint
+                                : hoveredOrderHistory.order.crossTime;
+
+                        if (hoveredOrderHistory.order.claimableLiq === 0) {
+                            const left = scaleData?.xScale(time * 1000) + 55;
+
+                            let topPlacement = top;
+
+                            if (
+                                isSelectedOrderHistory &&
+                                selectedOrderTooltipPlacement
+                            ) {
+                                const { isOverLeft, isOverTop } =
+                                    isShapeOverlaps(
+                                        left,
+                                        top,
+                                        selectedOrderTooltipPlacement.left,
+                                        selectedOrderTooltipPlacement.top,
+                                    );
+
+                                if (isOverLeft && isOverTop) {
+                                    const direction =
+                                        selectedOrderTooltipPlacement.top -
+                                            top <
+                                        0
+                                            ? -1
+                                            : 1;
+
+                                    const diff =
+                                        90 -
+                                        Math.abs(
+                                            selectedOrderTooltipPlacement.top -
+                                                top,
+                                        );
+
+                                    topPlacement = top - diff * direction;
+                                }
+                            }
+
+                            return {
+                                top: topPlacement,
+                                left,
+                                isOnLeftSide: false,
+                            };
+                        } else {
+                            let left =
+                                scaleData?.xScale(time * 1000) +
+                                scale(
+                                    circleScaleLimitOrder(
+                                        hoveredOrderHistory.totalValueUSD,
+                                    ),
+                                );
+
+                            let isOnLeftSide = false;
+                            if (
+                                isSelectedOrderHistory &&
+                                selectedOrderTooltipPlacement
+                            ) {
+                                const { isOverLeft, isOverTop } =
+                                    isShapeOverlaps(
+                                        left,
+                                        top,
+                                        selectedOrderTooltipPlacement.left,
+                                        selectedOrderTooltipPlacement.top,
+                                    );
+
+                                left =
+                                    scaleData?.xScale(time * 1000) +
+                                    (isOverLeft && isOverTop
+                                        ? -scale(
+                                              circleScaleLimitOrder(
+                                                  hoveredOrderHistory.totalValueUSD,
+                                              ),
+                                          ) +
+                                          (circleScaleLimitOrder(
+                                              hoveredOrderHistory.totalValueUSD,
+                                          ) < 1500
+                                              ? -105
+                                              : -90)
+                                        : +scale(
+                                              circleScaleLimitOrder(
+                                                  hoveredOrderHistory.totalValueUSD,
+                                              ),
+                                          ));
+
+                                isOnLeftSide = !!(isOverLeft && isOverTop);
+                            }
+
+                            return {
+                                top: top,
+                                left,
+                                isOnLeftSide,
+                            };
+                        }
+                    });
+                }
             }
 
             if (isSelectedOrderHistory && selectedOrderHistory) {
-                setSelectedOrderTooltipPlacement(() => {
-                    const top = scaleData.yScale(
-                        denomInBase
-                            ? selectedOrderHistory.swapInvPriceDecimalCorrected
-                            : selectedOrderHistory.swapPriceDecimalCorrected,
-                    );
-                    const left =
-                        scaleData?.xScale(selectedOrderHistory.txTime * 1000) +
-                        scale(circleScale(selectedOrderHistory.totalValueUSD));
+                if (selectedOrderHistory.type === 'swap' && circleScale) {
+                    setSelectedOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? selectedOrderHistory.order.order
+                                      .swapInvPriceDecimalCorrected
+                                : selectedOrderHistory.order.order
+                                      .swapPriceDecimalCorrected,
+                        );
+                        const left =
+                            scaleData?.xScale(
+                                selectedOrderHistory.order.order.txTime * 1000,
+                            ) +
+                            scale(
+                                circleScale(selectedOrderHistory.totalValueUSD),
+                            );
 
-                    return { top, left, isOnLeftSide: false };
-                });
+                        return { top, left, isOnLeftSide: false };
+                    });
+                }
+
+                if (
+                    selectedOrderHistory.type === 'limitCircle' &&
+                    circleScaleLimitOrder
+                ) {
+                    setSelectedOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? selectedOrderHistory.order
+                                      .invLimitPriceDecimalCorrected
+                                : selectedOrderHistory.order
+                                      .limitPriceDecimalCorrected,
+                        );
+
+                        const time =
+                            selectedOrderHistory.order.claimableLiq === 0
+                                ? selectedOrderHistory.order.timeFirstMint
+                                : selectedOrderHistory.order.crossTime;
+
+                        const distance =
+                            selectedOrderHistory.order.claimableLiq > 0
+                                ? scale(
+                                      circleScaleLimitOrder(
+                                          selectedOrderHistory.totalValueUSD,
+                                      ),
+                                  )
+                                : 55;
+
+                        const left = scaleData?.xScale(time * 1000) + distance;
+
+                        return { top, left, isOnLeftSide: false };
+                    });
+                }
+
+                if (selectedOrderHistory.type === 'historical') {
+                    const minPrice = denomInBase
+                        ? selectedOrderHistory.order
+                              .bidTickInvPriceDecimalCorrected
+                        : selectedOrderHistory.order
+                              .bidTickPriceDecimalCorrected;
+
+                    const maxPrice = denomInBase
+                        ? selectedOrderHistory.order
+                              .askTickInvPriceDecimalCorrected
+                        : selectedOrderHistory.order
+                              .askTickPriceDecimalCorrected;
+
+                    const diff = Math.abs(maxPrice - minPrice) / 2;
+
+                    const pricePlacement = minPrice + diff;
+
+                    setSelectedOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(pricePlacement);
+
+                        const left = scaleData?.xScale(
+                            selectedOrderHistory.order.latestUpdateTime * 1000,
+                        );
+
+                        return {
+                            top: top < 0 ? 10 : top,
+                            left:
+                                left > canvasRightEnd
+                                    ? canvasRightEnd - 150
+                                    : left,
+                            isOnLeftSide: false,
+                        };
+                    });
+                }
             }
         }
     };
@@ -6117,6 +6727,7 @@ export default function Chart(props: propsIF) {
 
                 {(showSwap || showLiquidity || showHistorical) &&
                     circleScale &&
+                    circleScaleLimitOrder &&
                     scaleData && (
                         <OrderHistoryCanvas
                             scaleData={scaleData}
@@ -6127,8 +6738,11 @@ export default function Chart(props: propsIF) {
                             hoveredOrderHistory={hoveredOrderHistory}
                             isHoveredOrderHistory={isHoveredOrderHistory}
                             drawSettings={drawSettings}
-                            userTransactionData={userTransactionData}
+                            filteredTransactionalData={
+                                filteredTransactionalData
+                            }
                             circleScale={circleScale}
+                            circleScaleLimitOrder={circleScaleLimitOrder}
                             isSelectedOrderHistory={isSelectedOrderHistory}
                             selectedOrderHistory={selectedOrderHistory}
                         />
@@ -6350,9 +6964,9 @@ export default function Chart(props: propsIF) {
             )}
 
             {scaleData &&
-                showSwap &&
+                (showSwap || showLiquidity || showHistorical) &&
                 hoveredOrderHistory &&
-                hoveredOrderHistory.txId !== selectedOrderHistory?.txId &&
+                hoveredOrderHistory.id !== selectedOrderHistory?.id &&
                 hoveredOrderTooltipPlacement && (
                     <OrderHistoryTooltip
                         hoveredOrderHistory={hoveredOrderHistory}
@@ -6372,7 +6986,7 @@ export default function Chart(props: propsIF) {
                 )}
 
             {scaleData &&
-                showSwap &&
+                (showSwap || showLiquidity || showHistorical) &&
                 selectedOrderHistory &&
                 selectedOrderTooltipPlacement && (
                     <OrderHistoryTooltip
