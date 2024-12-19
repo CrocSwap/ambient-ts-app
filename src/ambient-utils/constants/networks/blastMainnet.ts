@@ -5,7 +5,6 @@ import { NetworkIF } from '../../types/NetworkIF';
 import {
     blastBLAST,
     blastETH,
-    blastEzETH,
     blastUSDB,
     blastUSDPLUS,
 } from '../defaultTokens';
@@ -45,7 +44,6 @@ export const blastMainnet: NetworkIF = {
     topPools: [
         new TopPool(blastETH, blastUSDB, chainSpecFromSDK.poolIndex),
         new TopPool(blastBLAST, blastETH, chainSpecFromSDK.poolIndex),
-        new TopPool(blastEzETH, blastETH, chainSpecFromSDK.poolIndex),
         new TopPool(blastUSDPLUS, blastUSDB, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {

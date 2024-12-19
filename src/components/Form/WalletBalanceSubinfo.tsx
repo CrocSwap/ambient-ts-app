@@ -92,7 +92,7 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                         ? 'Use Wallet and Exchange Balance'
                         : 'Send to Exchange Balance'
                 }`}
-                placement='bottom'
+                placement='right'
             >
                 <div
                     style={{
@@ -169,7 +169,7 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                     </p>
                 )
             }
-            placement={'bottom'}
+            placement={'left'}
             arrow
             enterDelay={700}
             leaveDelay={200}

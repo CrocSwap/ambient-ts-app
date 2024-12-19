@@ -17,13 +17,11 @@ export const fetchTokenPrice = async (
     _lastTime: number,
 ) => {
     const address = translateToken(dispToken, chain);
-    const activeNetwork = allNetworks[chain];
+    const assetPlatform = allNetworks[chain]?.tokenPriceQueryAssetPlatform;
     try {
         const body = {
             config_path: 'price',
-            asset_platform: activeNetwork?.tokenPriceQueryAssetPlatform
-                ? activeNetwork.tokenPriceQueryAssetPlatform
-                : 'ethereum',
+            asset_platform: assetPlatform ? assetPlatform : 'ethereum',
             token_address: address,
         };
 
@@ -38,8 +36,6 @@ export const fetchTokenPrice = async (
         }
         return response.value;
     } catch (error) {
-        const defaultPair = activeNetwork.defaultPair;
-        if (!defaultPair) return;
         if (
             // if token is ETH, return current value of mainnet ETH
             dispToken.toLowerCase() === ZeroAddress

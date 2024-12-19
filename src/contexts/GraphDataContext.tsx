@@ -334,8 +334,8 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     );
 
     const failedSessionTransactionHashes = allReceipts
-        .filter((r) => JSON.parse(r).status === 0)
-        .map((r) => JSON.parse(r).hash);
+        .filter((r) => r.status === 0)
+        .map((r) => r.hash);
 
     const unixTimeOffset = 10; // 10s offset needed to account for system clock differences
 
@@ -371,7 +371,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                 (positionUpdate) =>
                     positionUpdate.isLimit === false &&
                     !failedSessionTransactionHashes.includes(
-                        positionUpdate.txHash,
+                        positionUpdate.txHash ?? '',
                     ) &&
                     !removedPositionUpdateTxHashes.includes(
                         positionUpdate.txHash,
@@ -399,7 +399,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                 (positionUpdate) =>
                     positionUpdate.isLimit === true &&
                     !failedSessionTransactionHashes.includes(
-                        positionUpdate.txHash,
+                        positionUpdate.txHash ?? '',
                     ) &&
                     !removedPositionUpdateTxHashes.includes(
                         positionUpdate.txHash,
