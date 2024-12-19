@@ -17,6 +17,10 @@
     outline: 1px solid salmon;
 }
 
+.foo {
+    background-color: brown !important;
+}
+
 .search_and_sort {
     display: flex;
     flex-direction: row;
@@ -51,7 +55,13 @@
     font-size: 12px;
 }
 
-.header > button {
+.filters {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.filters > button {
     min-width: 110px;
     height: 25px;
     border: 1px solid var(--dark3);
@@ -67,7 +77,7 @@
     outline: none;
 }
 
-.header > button:hover {
+.filters > button:hover {
     transition: all var(--animation-speed) ease-in-out;
     color: var(--accent1);
     border: 1px solid var(--accent1);
@@ -384,4 +394,11 @@
             'bottom';
     }
 
+    .search_and_sort {
+        grid-area: top;
+    }
+
+    .filters {
+        grid-area: bottom;
+    }
 }

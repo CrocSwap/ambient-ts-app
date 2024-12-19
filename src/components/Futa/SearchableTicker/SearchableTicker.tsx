@@ -260,6 +260,8 @@ export default function SearchableTicker(props: propsIF) {
     // apply a consistent size to all icons inside buttons
     const BUTTON_ICON_SIZE = 17;
 
+    const smallScreen: boolean = useMediaQuery('(max-width: 400px)');
+
     const headerDisplay = (
         <div className={styles.header}>
             <div className={styles.search_and_sort}>
@@ -347,33 +349,40 @@ export default function SearchableTicker(props: propsIF) {
                     )}
                 </div>
             </div>
-            <button
-                onClick={() => setShowComplete(!showComplete)}
-                className={styles[showComplete ? 'button_on' : '']}
-            >
-                <LuCheck size={BUTTON_ICON_SIZE} />
-                <div>COMPLETED</div>
-            </button>
-            <button
-                onClick={() => watchlists.toggle()}
-                className={styles[watchlists.shouldDisplay ? 'button_on' : '']}
-            >
-                <FaEye size={BUTTON_ICON_SIZE} />
-                <div>WATCHLIST</div>
-            </button>
-            {isAccount ? (
+            <div className={styles.filters}>
                 <button
-                    className={
-                        styles[
-                            dataState?.active === 'created' ? 'button_on' : ''
-                        ]
-                    }
-                    onClick={() => dataState?.toggle && dataState.toggle()}
+                    onClick={() => setShowComplete(!showComplete)}
+                    className={styles[showComplete ? 'button_on' : '']}
                 >
-                    <LuPencil size={BUTTON_ICON_SIZE} />
-                    <div>CREATED</div>
+                    <LuCheck size={BUTTON_ICON_SIZE} />
+                    <div>COMPLETED</div>
                 </button>
-            ) : null}
+                <button
+                    onClick={() => watchlists.toggle()}
+                    className={[
+                        styles[watchlists.shouldDisplay ? 'button_on' : ''],
+                        styles.foo,
+                    ].join(' ')}
+                >
+                    <FaEye size={BUTTON_ICON_SIZE} />
+                    <div>WATCHLIST</div>
+                </button>
+                {isAccount && !smallScreen ? (
+                    <button
+                        className={
+                            styles[
+                                dataState?.active === 'created'
+                                    ? 'button_on'
+                                    : ''
+                            ]
+                        }
+                        onClick={() => dataState?.toggle && dataState.toggle()}
+                    >
+                        <LuPencil size={BUTTON_ICON_SIZE} />
+                        <div>CREATED</div>
+                    </button>
+                ) : null}
+            </div>
         </div>
     );
 
