@@ -12,13 +12,9 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    gap: 18px;
+    margin-bottom: 8px;
+    gap: 8px;
     width: 100%;
-    outline: 1px solid salmon;
-}
-
-.foo {
-    background-color: brown !important;
 }
 
 .search_and_sort {
