@@ -178,15 +178,18 @@ export default function VaultRow(props: propsIF) {
         </FlexContainer>
     );
 
-    const formattedAPR = getFormattedNumber({
-        value: parseFloat(vault.apr) * 100,
-        prefix: '',
-        suffix: '%',
-        minFracDigits: 2,
-        maxFracDigits: 2,
-        isPercentage: true,
-    });
+    const isAprUnknown = !(parseFloat(vault.apr) > 0);
 
+    const formattedAPR = isAprUnknown
+        ? '...'
+        : getFormattedNumber({
+              value: parseFloat(vault.apr) * 100,
+              prefix: '',
+              suffix: '%',
+              minFracDigits: 2,
+              maxFracDigits: 2,
+              isPercentage: true,
+          });
     function handleOpenWithdrawModal() {
         setType('Withdraw');
         openModal();
@@ -264,15 +267,21 @@ export default function VaultRow(props: propsIF) {
 
                         <p
                             className={`${styles.aprDisplay} ${!isUserConnected && styles.showAprOnMobile}`}
-                            style={{ color: 'var(--other-green' }}
+                            style={{
+                                color: isAprUnknown
+                                    ? 'var(--text1'
+                                    : 'var(--other-green',
+                                paddingRight: isAprUnknown ? '0.5rem' : '',
+                            }}
                         >
                             {formattedAPR}
-                            {(isUserConnected || !showPhoneVersion) && (
-                                <TooltipComponent
-                                    placement='top-end'
-                                    title='APR estimates provided by vault provider.'
-                                />
-                            )}
+                            {!isAprUnknown &&
+                                (isUserConnected || !showPhoneVersion) && (
+                                    <TooltipComponent
+                                        placement='top-end'
+                                        title='APR estimates provided by vault provider.'
+                                    />
+                                )}
                         </p>
                         <div className={styles.actionButtonContainer}>
                             <button
