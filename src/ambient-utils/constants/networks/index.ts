@@ -95,7 +95,7 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
 export const vaultSupportedNetworkIds = [
     '0x1', // ethereum mainnet
     '0x82750', // scroll mainnet
-    // '0x783', // swell mainnet
+    '0x783', // swell mainnet
 ];
 export const vaultSupportedNetworks = getNetworks(vaultSupportedNetworkIds);
 
