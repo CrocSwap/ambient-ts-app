@@ -45,9 +45,9 @@ export const swellMainnet: NetworkIF = {
     displayName: 'Swell',
     tokenPriceQueryAssetPlatform: 'swell',
     topPools: [
-        new TopPool(swellETH, swellUBTC, chainSpecFromSDK.poolIndex),
-        new TopPool(swellETH, swellRSETH, chainSpecFromSDK.poolIndex),
         new TopPool(swellETH, swellUSDE, chainSpecFromSDK.poolIndex),
+        new TopPool(swellETH, swellRSETH, chainSpecFromSDK.poolIndex),
+        new TopPool(swellETH, swellUBTC, chainSpecFromSDK.poolIndex),
         new TopPool(swellETH, swellRSWETH, chainSpecFromSDK.poolIndex),
         new TopPool(swellETH, swellWEETH, chainSpecFromSDK.poolIndex),
     ],
