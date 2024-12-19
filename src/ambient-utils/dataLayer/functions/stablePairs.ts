@@ -63,6 +63,7 @@ import {
     swellSepoliaUSDC,
     swellSepoliaUSDT,
     swellUBTC,
+    swellUSDE,
     swellWEETH,
     swellWSTETH,
 } from '../../constants/defaultTokens';
@@ -165,6 +166,7 @@ export const STABLE_USD_TOKENS = [
     plumeSepoliaUSD,
     plumeSepoliaNEV,
     swellSepoliaUSDT,
+    swellUSDE,
     baseSepoliaUSDT,
 ]
     .map((x) => x.address.toLowerCase())
