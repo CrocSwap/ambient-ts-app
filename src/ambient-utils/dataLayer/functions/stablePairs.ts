@@ -54,9 +54,17 @@ import {
     scrollsUSDe,
     sepoliaUSDC,
     sepoliaWBTC,
+    swellEZETH,
+    swellPZETH,
+    swellRSETH,
+    swellSTBTC,
+    swellSWBTC,
+    swellSWETH,
     swellSepoliaUSDC,
     swellSepoliaUSDT,
     swellUBTC,
+    swellWEETH,
+    swellWSTETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -131,78 +139,84 @@ export function remapTokenIfWrappedNative(addr: string): string {
 
 // USDC prioritized in some lists
 export const USDC_TOKENS = [
-    mainnetUSDC.address,
-    blastUSDB.address,
-    plumeUSDC.address,
-    sepoliaUSDC.address,
-    blastSepoliaUSDB.address,
-    scrollSepoliaUSDC.address,
-    scrollUSDC.address,
-    swellSepoliaUSDC.address,
-    baseSepoliaUSDC.address,
-].map((x) => x.toLowerCase());
+    mainnetUSDC,
+    blastUSDB,
+    plumeUSDC,
+    sepoliaUSDC,
+    blastSepoliaUSDB,
+    scrollSepoliaUSDC,
+    scrollUSDC,
+    swellSepoliaUSDC,
+    baseSepoliaUSDC,
+].map((x) => x.address.toLowerCase());
 
 export const STABLE_USD_TOKENS = [
-    mainnetDAI.address,
-    mainnetUSDT.address,
-    mainnetLUSD.address,
-    plumeNEV.address,
-    plumePUSD.address,
-    blastUSDPLUS.address,
-    scrollUSDT.address,
-    scrollDAI.address,
-    scrollAxlUSDC.address,
-    scrollUSDE.address,
-    scrollsUSDe.address,
-    plumeSepoliaUSD.address,
-    plumeSepoliaNEV.address,
-    swellSepoliaUSDT.address,
-    baseSepoliaUSDT.address,
+    mainnetDAI,
+    mainnetUSDT,
+    mainnetLUSD,
+    plumeNEV,
+    plumePUSD,
+    blastUSDPLUS,
+    scrollUSDT,
+    scrollDAI,
+    scrollAxlUSDC,
+    scrollUSDE,
+    scrollsUSDe,
+    plumeSepoliaUSD,
+    plumeSepoliaNEV,
+    swellSepoliaUSDT,
+    baseSepoliaUSDT,
 ]
-    .concat(USDC_TOKENS)
-    .map((x) => x.toLowerCase());
+    .map((x) => x.address.toLowerCase())
+    .concat(USDC_TOKENS);
 
 export const BLAST_REWARD_TOKENS = [blastBLAST.address].map((x) =>
     x.toLowerCase(),
 );
 
-export const WBTC_TOKENS = [
-    mainnetWBTC.address,
-    scrollWBTC.address,
-    sepoliaWBTC.address,
-].map((x) => x.toLowerCase());
+export const WBTC_TOKENS = [mainnetWBTC, scrollWBTC, sepoliaWBTC].map((x) =>
+    x.address.toLowerCase(),
+);
 
 export const STAKED_ETH_TOKENS = [
-    mainnetWstETH.address,
-    mainnetSWETH.address,
-    mainnetRSETH.address,
-    mainnetRSWETH.address,
-    mainnetSTONE.address,
-    scrollWstETH.address,
-    scrollWrsETH.address,
-    scrollRsETH.address,
-    scrollRswETH.address,
-    scrollSTONE.address,
-    scrollUniETH.address,
-    scrollWeETH.address,
-    scrollPxETH.address,
-    scrollPufETH.address,
-    scrollRocketPoolETH.address,
-    blastWrsETH.address,
-    blastEzETH.address,
-    blastWEETH.address,
-    plumePETH.address,
-].map((x) => x.toLowerCase());
+    mainnetWstETH,
+    mainnetSWETH,
+    mainnetRSETH,
+    mainnetRSWETH,
+    mainnetSTONE,
+    scrollWstETH,
+    scrollWrsETH,
+    scrollRsETH,
+    scrollRswETH,
+    scrollSTONE,
+    scrollUniETH,
+    scrollWeETH,
+    scrollPxETH,
+    scrollPufETH,
+    scrollRocketPoolETH,
+    blastWrsETH,
+    blastEzETH,
+    blastWEETH,
+    plumePETH,
+    swellWSTETH,
+    swellPZETH,
+    swellEZETH,
+    swellWEETH,
+    swellRSETH,
+    swellSWETH,
+].map((x) => x.address.toLowerCase());
 
 export const USD_EXCLUDED_TOKENS = [mainnetSWELL.address].map((x) =>
     x.toLowerCase(),
 );
 
 export const STAKED_BTC_TOKENS = [
-    scrollSOLVBTC.address,
-    mainnetTBTC.address,
-    swellUBTC.address,
-].map((x) => x.toLowerCase());
+    scrollSOLVBTC,
+    mainnetTBTC,
+    swellUBTC,
+    swellSWBTC,
+    swellSTBTC,
+].map((x) => x.address.toLowerCase());
 
 export const WRAPPED_NATIVE_TOKENS = [
     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // Mainnet
