@@ -4436,6 +4436,8 @@ export default function Chart(props: propsIF) {
                         ];
 
                         setYaxisDomain(domain[0], domain[1]);
+                    } else {
+                        changeScaleSwap(isTriggeredByZoom);
                     }
                 } else {
                     const lowTick =
@@ -4464,7 +4466,7 @@ export default function Chart(props: propsIF) {
                         Math.max(low, high) + bufferForRange / 2,
                     ];
 
-                    scaleData?.yScale.domain(domain);
+                    setYaxisDomain(domain[0], domain[1]);
                 }
             }
         }
@@ -4537,7 +4539,11 @@ export default function Chart(props: propsIF) {
 
     function setYaxisDomain(minDomain: number, maxDomain: number) {
         if (scaleData) {
-            if (minDomain === maxDomain) {
+            if (
+                minDomain === maxDomain ||
+                minDomain === poolPriceDisplay ||
+                maxDomain === poolPriceDisplay
+            ) {
                 const delta = minDomain / 8;
                 const tempMinDomain = minDomain - delta;
                 const tempMaxDomain = minDomain + delta;
