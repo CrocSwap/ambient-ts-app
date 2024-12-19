@@ -29,7 +29,11 @@ import { TokenContext } from './TokenContext';
 export interface ExploreContextIF {
     pools: {
         all: Array<PoolDataIF>;
-        getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
+        getAllPools: (
+            poolList: PoolIF[],
+            crocEnv: CrocEnv,
+            chainId: string,
+        ) => void;
 
         reset: () => void;
     };
@@ -56,17 +60,16 @@ export interface PoolDataIF extends PoolIF {
     usdPriceMoneynessBased: number;
 }
 
-export const ExploreContext = createContext<ExploreContextIF>(
-    {} as ExploreContextIF,
-);
+export const ExploreContext = createContext({} as ExploreContextIF);
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { activeNetwork } = useContext(AppStateContext);
+    const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { allPoolStats } = useContext(ChainDataContext);
+    const { allPoolStats, isActiveNetworkPlume, isActiveNetworkSwell } =
+        useContext(ChainDataContext);
     const { poolList } = useContext(PoolContext);
 
     const [allPools, setAllPools] = useState<Array<PoolDataIF>>([]);
@@ -117,6 +120,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     useEffect(() => {
         (async () => {
             if (
+                isUserOnline &&
                 crocEnv !== undefined &&
                 poolList.length > 0 &&
                 (await crocEnv.context).chain.chainId === activeNetwork.chainId
@@ -124,7 +128,12 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 getAllPools();
             }
         })();
-    }, [JSON.stringify(poolList)]);
+    }, [
+        isUserOnline,
+        JSON.stringify(poolList),
+        crocEnv,
+        activeNetwork.chainId,
+    ]);
 
     // fn to get data on a single pool
     async function getPoolData(
@@ -219,8 +228,18 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 ? shouldInvert
                     ? ydayPrice / nowPrice - 1.0
                     : nowPrice / ydayPrice - 1.0
-                : 0.0;
-        if (!expandedPoolStatsNow || expandedPoolStatsNow.tvlTotalUsd < 100) {
+                : undefined;
+
+        const minimumPoolTvl = isActiveNetworkSwell
+            ? 20
+            : isActiveNetworkPlume
+              ? 50
+              : 100;
+
+        if (
+            !expandedPoolStatsNow ||
+            expandedPoolStatsNow.tvlTotalUsd < minimumPoolTvl
+        ) {
             // return early
             const poolData: PoolDataIF = {
                 ...pool,
@@ -266,7 +285,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // human readable price change over last 24 hours
         let priceChangePercent: string;
 
-        if (!priceChangeRaw) {
+        if (priceChangeRaw === undefined || volumeChange24h === 0) {
             priceChangePercent = '';
         } else if (priceChangeRaw * 100 >= 0.01) {
             priceChangePercent =
@@ -293,20 +312,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             : toDisplayPrice(nowPrice, pool.base.decimals, pool.quote.decimals);
 
         const tokenPriceForUsd = shouldInvert
-            ? (
-                  await cachedFetchTokenPrice(
-                      pool.quote.address,
-                      pool.chainId,
-                      crocEnv,
-                  )
-              )?.usdPrice || 0
-            : (
-                  await cachedFetchTokenPrice(
-                      pool.base.address,
-                      pool.chainId,
-                      crocEnv,
-                  )
-              )?.usdPrice || 0;
+            ? (await cachedFetchTokenPrice(pool.quote.address, pool.chainId))
+                  ?.usdPrice || 0
+            : (await cachedFetchTokenPrice(pool.base.address, pool.chainId))
+                  ?.usdPrice || 0;
 
         const usdPriceMoneynessBased = displayPrice * tokenPriceForUsd;
 
@@ -363,7 +372,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const dexTokens: useTokenStatsIF = useTokenStats(
         activeNetwork.chainId,
         crocEnv,
-        activeNetwork.graphCacheUrl,
+        activeNetwork.GCGO_URL,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         tokens,
@@ -373,7 +382,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const exploreContext: ExploreContextIF = {
         pools: {
             all: allPools,
-            getAll: getAllPools,
+            getAllPools: getAllPools,
             reset: () => {
                 setIntermediaryPoolData([]);
             },

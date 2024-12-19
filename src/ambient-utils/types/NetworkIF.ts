@@ -14,7 +14,7 @@ export interface ChainSpecForWeb3Modal {
 
 export interface NetworkIF {
     chainId: string;
-    graphCacheUrl: string;
+    GCGO_URL: string;
     chainSpecForWalletConnector: ChainSpecForWeb3Modal;
     evmRpcUrl: string;
     poolIndex: number;
@@ -24,6 +24,7 @@ export interface NetworkIF {
     topPools: TopPool[];
     blockExplorer: string;
     displayName: string;
+    tokenPriceQueryAssetPlatform: string | undefined;
     chainSpec: ChainSpec;
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
 }

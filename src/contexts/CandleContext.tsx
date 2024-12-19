@@ -22,10 +22,10 @@ import {
 } from '../ambient-utils/types';
 import { chartSettingsIF } from '../App/hooks/useChartSettings';
 import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
-import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
-import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
+import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { UserDataContext } from './UserDataContext';
 
@@ -53,15 +53,15 @@ export interface CandleContextIF {
     setShowFutaCandles: Dispatch<SetStateAction<boolean>>;
 }
 
-export const CandleContext = createContext<CandleContextIF>(
-    {} as CandleContextIF,
-);
+export const CandleContext = createContext({} as CandleContextIF);
 
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
-        server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+        server: { isEnabled: isServerEnabled },
+        isUserOnline,
         isUserIdle,
     } = useContext(AppStateContext);
+
     const {
         chartSettings,
         isEnabled: isChartEnabled,
@@ -71,9 +71,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setNumCandlesFetched,
     } = useContext(ChartContext);
     const {
-        activeNetwork: { chainId, poolIndex, graphCacheUrl },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+        activeNetwork: { chainId, poolIndex, GCGO_URL },
+    } = useContext(AppStateContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { isUserConnected } = useContext(UserDataContext);
     const {
@@ -200,19 +200,22 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [isFirstFetch]);
 
     useEffect(() => {
+        setCandleData(undefined);
+        setTimeOfEndCandle(undefined);
+        setIsCondensedModeEnabled(true);
+    }, [baseTokenAddress + quoteTokenAddress]);
+
+    useEffect(() => {
         (async () => {
             const isChangeUserConnected =
                 checkUserConnected.current === isUserConnected;
 
             if (
                 crocEnv &&
+                isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
                 isChangeUserConnected
             ) {
-                setCandleData(undefined);
-                setTimeOfEndCandle(undefined);
-                setIsCondensedModeEnabled(true);
-
                 isChartEnabled && isUserOnline && fetchCandles(true);
                 if (isManualCandleFetchRequested)
                     setIsManualCandleFetchRequested(false);
@@ -222,16 +225,16 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [
         isManualCandleFetchRequested,
         isChartEnabled,
+        crocEnv,
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
         isPoolInitialized,
-        crocEnv,
         chainId,
     ]);
 
     // only works when the period changes
     useEffect(() => {
-        isChartEnabled && isUserOnline && fetchCandles();
+        fetchCandles();
     }, [candleScale?.isFetchForTimeframe]);
 
     useEffect(() => {
@@ -250,7 +253,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [
         isChartEnabled,
         isUserOnline,
-
         isUserIdle
             ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
             : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
@@ -287,6 +289,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const fetchCandles = (bypassSpinner = false) => {
         if (
+            isChartEnabled &&
             isServerEnabled &&
             isUserOnline &&
             baseTokenAddress &&
@@ -318,7 +321,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 true,
                 chainId,
                 poolIndex,
-                graphCacheUrl,
+                GCGO_URL,
                 candleTimeLocal || defaultCandleDuration,
                 baseTokenAddress,
                 quoteTokenAddress,
@@ -431,7 +434,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             true,
             chainId,
             poolIndex,
-            graphCacheUrl,
+            GCGO_URL,
             candleTimeLocal,
             baseTokenAddress,
             quoteTokenAddress,

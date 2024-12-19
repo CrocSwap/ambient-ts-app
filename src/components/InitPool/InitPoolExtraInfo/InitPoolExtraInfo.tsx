@@ -1,9 +1,5 @@
-// START: Import React and Dongles
 import { Dispatch, SetStateAction, useContext, useState } from 'react';
-// import{ FaGasPump } from 'react-icons/fa';
-// import{ RiArrowDownSLine } from 'react-icons/ri';
 
-// START: Import Local Files
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import { AppStateContext } from '../../../contexts';

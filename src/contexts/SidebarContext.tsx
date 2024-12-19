@@ -13,7 +13,7 @@ import {
 } from '../App/hooks/useRecentPools';
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
-import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
+import { diffHashSig } from '../ambient-utils/dataLayer';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { AppStateContext } from './AppStateContext';
 import { ReceiptContext } from './ReceiptContext';
@@ -27,9 +27,7 @@ export interface SidebarContextIF {
     isPoolDropdownOpen: boolean;
 }
 
-export const SidebarContext = createContext<SidebarContextIF>(
-    {} as SidebarContextIF,
-);
+export const SidebarContext = createContext({} as SidebarContextIF);
 
 export const SidebarContextProvider = (props: { children: ReactNode }) => {
     // logic to open a snackbar notification
@@ -43,9 +41,7 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
 
     // parsed JSON on the most recent receipt in the stack
     const lastReceipt: TransactionReceipt | null =
-        allReceipts.length > 0 && isJsonString(allReceipts[0])
-            ? JSON.parse(allReceipts[0])
-            : null;
+        allReceipts.length > 0 ? allReceipts[0] : null;
 
     // boolean representing whether most recent receipt parsed successfully
     const isLastReceiptSuccess: boolean = lastReceipt?.status === 1;

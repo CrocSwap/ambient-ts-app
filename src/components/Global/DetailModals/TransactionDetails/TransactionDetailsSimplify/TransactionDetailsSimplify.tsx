@@ -5,18 +5,9 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import { getElapsedTime } from '../../../../../ambient-utils/dataLayer';
 import { TransactionIF } from '../../../../../ambient-utils/types';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../../contexts/AppStateContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../../contexts/CrocEnvContext';
-import {
-    UserDataContext,
-    UserDataContextIF,
-} from '../../../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import InfoRow from '../../../InfoRow';
 import styles from './TransactionDetailsSimplify.module.css';
@@ -30,9 +21,9 @@ interface TransactionDetailsSimplifyPropsIF {
 // TODO: refactor to using styled-components
 function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
     const { tx, isAccountView, timeFirstMintMemo } = props;
-    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
-    const { userAddress } = useContext<UserDataContextIF>(UserDataContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { activeNetwork } = useContext(AppStateContext);
+    const { userAddress } = useContext(UserDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const {
         ensName,

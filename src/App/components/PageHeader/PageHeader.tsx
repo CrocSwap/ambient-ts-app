@@ -5,6 +5,7 @@ import {
     chainNumToString,
     checkEoaHexAddress,
     getFormattedNumber,
+    someSupportedNetworkIsVaultSupportedNetwork,
     trimString,
 } from '../../../ambient-utils/dataLayer';
 import logo from '../../../assets/images/logos/logo_mark.svg';
@@ -265,7 +266,8 @@ const PageHeader = function () {
     ).getFullURL(swapParams);
 
     const activeTradeTabSlug =
-        activeTradeTab.toLowerCase() === 'exchange balances'
+        activeTradeTab.toLowerCase() === 'exchange balances' ||
+        activeTradeTab.toLowerCase() === 'dex balances'
             ? 'exchange-balances'
             : activeTradeTab.toLowerCase() === 'wallet balances'
               ? 'wallet-balances'
@@ -300,7 +302,7 @@ const PageHeader = function () {
         {
             title: 'Vaults',
             destination: '/vaults',
-            shouldDisplay: true,
+            shouldDisplay: someSupportedNetworkIsVaultSupportedNetwork,
         },
         {
             title: 'Account',

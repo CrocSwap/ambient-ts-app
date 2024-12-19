@@ -60,6 +60,13 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
     const { isDenomBase } = useContext(TradeDataContext);
 
+    const liquidityProviderFeeString = liquidityFee
+        ? (liquidityFee * 100).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          }) + '%'
+        : '...';
+
     const usdRemovalValue = useMemo(
         () =>
             getFormattedNumber({
@@ -103,7 +110,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                 isDenomBase ? baseSymbol : quoteSymbol
             } / ${isDenomBase ? quoteSymbol : baseSymbol} liquidity providers.`,
             // eslint-disable-next-line no-irregular-whitespace
-            data: `${liquidityFee * 100} %`,
+            data: liquidityProviderFeeString,
             placement: 'bottom',
         },
     ];

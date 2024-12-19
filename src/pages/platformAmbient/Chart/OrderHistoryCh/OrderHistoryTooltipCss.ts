@@ -97,10 +97,10 @@ const StyledLink = styled.div<{ color: string; size: string }>`
 `;
 
 export {
+    OrderHistoryBody,
     OrderHistoryContainer,
     OrderHistoryHeader,
-    StyledHeader,
-    OrderHistoryBody,
-    StyledLink,
     OrderHistoryHover,
+    StyledHeader,
+    StyledLink,
 };

@@ -15,7 +15,7 @@ const chainSpecFromSDK = lookupChain(chainIdHex);
 
 const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
-    name: 'Scroll Sepolia',
+    name: 'Scroll Sepolia Testnet',
     currency: 'ETH',
     rpcUrl: 'https://sepolia-rpc.scroll.io/',
     explorerUrl: 'https://sepolia.scrollscan.dev/',
@@ -24,14 +24,15 @@ const chainSpecForWalletConnector = {
 export const scrollSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    graphCacheUrl: GCGO_TESTNET_URL,
+    GCGO_URL: GCGO_TESTNET_URL,
     evmRpcUrl: chainSpecForWalletConnector.rpcUrl,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [scrollSepoliaETH, scrollSepoliaUSDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: chainSpecForWalletConnector.name,
+    displayName: 'Scroll Testnet',
+    tokenPriceQueryAssetPlatform: undefined,
     topPools: [
         new TopPool(
             scrollSepoliaETH,

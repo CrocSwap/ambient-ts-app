@@ -191,16 +191,42 @@ export const formatTokenInput = (
 };
 
 export function stringToBigInt(tokenString: string, decimals: number) {
-    // Split the token string into integer and decimal parts
+    // Validate input before processing
+    if (!isValidNumberString(tokenString)) {
+        return 0n;
+    }
+
+    // Normalize tokenString to handle exponential formats like "1e-2"
+    const normalizedString = normalizeExponential(tokenString, decimals);
+
+    // Split the normalized string into integer and decimal parts
     // eslint-disable-next-line prefer-const
-    let [integerPart, decimalPart = ''] = tokenString.split('.');
-    // Ensure the decimal part is 18 digits long by appending zeros or truncating
+    let [integerPart, decimalPart = ''] = normalizedString.split('.');
+
+    // Ensure the decimal part is 'decimals' long by padding or truncating
     decimalPart = decimalPart.padEnd(decimals, '0').substring(0, decimals);
 
-    // Combine the integer and decimal parts into one string
+    // Combine the integer and decimal parts into a single string
     const combined = `${integerPart}${decimalPart}`;
+
     // Convert to a BigInt
     const tokenQuantity = BigInt(combined);
+
     // Return the BigInt representation
     return tokenQuantity;
+}
+
+// Helper function to validate the number string
+export function isValidNumberString(value: string): boolean {
+    // Check if the string is a valid number or exponential notation
+    return /^-?\d+(\.\d+)?(e[-+]?\d+)?$/i.test(value.trim());
+}
+
+// Helper function to normalize exponential numbers
+export function normalizeExponential(value: string, decimals: number): string {
+    const num = Number(value);
+    if (!isNaN(num) && isFinite(num)) {
+        return num.toFixed(decimals).replace(/\.?0+$/, ''); // High precision to avoid rounding errors
+    }
+    throw new Error(`Invalid or non-finite number: "${value}"`);
 }

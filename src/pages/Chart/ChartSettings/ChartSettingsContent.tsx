@@ -35,8 +35,8 @@ import {
     ColorPickerContainer,
     ContextMenuContextText,
     ContextMenuFooter,
-    ConxtextOptions,
-    ConxtextOptionsSection,
+    ContextOptions,
+    ContextOptionsSection,
     FooterButtons,
     FooterContextText,
     Icon,
@@ -479,23 +479,23 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
     );
 
     const extendedOptions = (
-        <ConxtextOptions>
+        <ContextOptions>
             <Divider></Divider>
 
-            <ConxtextOptionsSection>
+            <ContextOptionsSection>
                 <OptionsHeader>Chart Scale:</OptionsHeader>
                 <OptionsContent>{resetAndRescaleMobileDisplay}</OptionsContent>
-            </ConxtextOptionsSection>
+            </ContextOptionsSection>
 
             <Divider></Divider>
 
-            <ConxtextOptionsSection>
+            <ContextOptionsSection>
                 <OptionsHeader>Curve/Depth:</OptionsHeader>
                 <OptionsContent>
                     <CurveDepth overlayMethods={chartSettings.poolOverlay} />
                 </OptionsContent>
-            </ConxtextOptionsSection>
-        </ConxtextOptions>
+            </ContextOptionsSection>
+        </ContextOptions>
     );
 
     return (

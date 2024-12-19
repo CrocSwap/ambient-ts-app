@@ -25,7 +25,7 @@ const chainSpecForWalletConnector = {
 export const ethereumSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    graphCacheUrl: GCGO_TESTNET_URL,
+    GCGO_URL: GCGO_TESTNET_URL,
     evmRpcUrl: SEPOLIA_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [sepoliaETH, sepoliaUSDC],
@@ -33,7 +33,8 @@ export const ethereumSepolia: NetworkIF = {
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: chainSpecForWalletConnector.name,
+    displayName: 'Sepolia',
+    tokenPriceQueryAssetPlatform: undefined,
     topPools: [
         new TopPool(sepoliaETH, sepoliaUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(sepoliaETH, sepoliaWBTC, chainSpecFromSDK.poolIndex),

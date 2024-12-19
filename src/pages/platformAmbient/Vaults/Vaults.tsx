@@ -5,12 +5,14 @@ import {
     UserVaultsServerIF,
     VaultIF,
 } from '../../../ambient-utils/types';
+import TokenRowSkeleton from '../../../components/Global/Explore/TokenRow/TokenRowSkeleton';
 import {
     AppStateContext,
+    ChainDataContext,
     ReceiptContext,
     UserDataContext,
 } from '../../../contexts';
-import { placeholderVaultsListData } from './placeholderVaultsData';
+import { fallbackVaultsList } from './fallbackVaultsList';
 import { Vault } from './Vault';
 import VaultRow from './VaultRow/VaultRow';
 import styles from './Vaults.module.css';
@@ -26,7 +28,10 @@ function Vaults() {
     } = useContext(AppStateContext);
     const { sessionReceipts } = useContext(ReceiptContext);
 
-    const { userAddress, isUserConnected } = useContext(UserDataContext);
+    const { allVaultsData, setAllVaultsData } = useContext(ChainDataContext);
+
+    const { userAddress, isUserConnected, userVaultData, setUserVaultData } =
+        useContext(UserDataContext);
 
     const vaultHeader = (
         <div className={styles.vaultHeader}>
@@ -47,26 +52,52 @@ function Vaults() {
         </div>
     );
 
-    // vault data from tempest API
-    const [allVaultsData, setAllVaultsData] = useState<
-        AllVaultsServerIF[] | null | undefined
-    >(null);
-
     async function getAllVaultsData(): Promise<void> {
-        const endpoint = `${VAULTS_API_URL}/vaults`;
-        const response = await fetch(endpoint);
-        const { data } = await response.json();
-        const sorted: AllVaultsServerIF[] = data.vaults.sort(
-            (a: AllVaultsServerIF, b: AllVaultsServerIF) =>
-                parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
-        );
-        setAllVaultsData(sorted);
-    }
+        const allVaultsEndpoint = `${VAULTS_API_URL}/vaults`;
+        const chainVaultsEndpoint = `${VAULTS_API_URL}/vaults?chainId=${parseInt(chainId)}`;
 
-    // hooks to fetch and hold user vault data
-    const [userVaultData, setUserVaultData] = useState<
-        UserVaultsServerIF[] | undefined
-    >();
+        const fetchData = async () => {
+            try {
+                const allVaultsResponse = await fetch(allVaultsEndpoint);
+                const chainVaultsResponse = await fetch(chainVaultsEndpoint);
+                const { data: allVaultsData } = await allVaultsResponse.json();
+                const { data: chainVaultsData } =
+                    await chainVaultsResponse.json();
+                const uniqueVaults = new Map<string, AllVaultsServerIF>();
+
+                // Combine vaults and filter for uniqueness based on the 'ID' property
+                allVaultsData?.vaults
+                    .concat(chainVaultsData?.vaults)
+                    .forEach((vault: AllVaultsServerIF) => {
+                        if (vault.id && !uniqueVaults.has(vault.id)) {
+                            uniqueVaults.set(vault.id, vault);
+                        }
+                    });
+
+                // Convert the map back to an array and sort it
+                const sorted: AllVaultsServerIF[] = Array.from(
+                    uniqueVaults.values(),
+                ).sort(
+                    (a: AllVaultsServerIF, b: AllVaultsServerIF) =>
+                        parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
+                );
+                setAllVaultsData(sorted ?? undefined);
+            } catch (error) {
+                console.log({ error });
+                setAllVaultsData(undefined);
+                setServerErrorReceived(true);
+                return;
+            }
+        };
+
+        const timeout = new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 2000);
+        });
+
+        await Promise.race([fetchData(), timeout]);
+    }
 
     const [serverErrorReceived, setServerErrorReceived] =
         useState<boolean>(false);
@@ -98,13 +129,16 @@ function Vaults() {
         });
 
         await Promise.race([fetchData(), timeout]);
-
-        fetchData();
     }
 
     useEffect(() => {
-        if (userAddress && chainId) getUserVaultData();
-    }, [chainId, userAddress, sessionReceipts.length]);
+        if (userAddress && chainId) {
+            getUserVaultData();
+            const period = isUserIdle ? 600000 : 60000; // 10 minutes while idle, 1 minute while active
+            const interval = setInterval(getUserVaultData, period);
+            return () => clearInterval(interval);
+        }
+    }, [chainId, userAddress, isUserIdle]);
 
     // logic to fetch vault data from API
     useEffect(() => {
@@ -115,7 +149,36 @@ function Vaults() {
         const interval = setInterval(getAllVaultsData, period);
         // clear the interval when this component dismounts
         return () => clearInterval(interval);
-    }, [sessionReceipts.length, isUserIdle]);
+    }, [isUserIdle, chainId]);
+
+    useEffect(() => {
+        // also run the user data fetch after a receipt is received
+        if (sessionReceipts.length === 0) return;
+        getUserVaultData();
+        // and repeat after a delay
+        setTimeout(() => {
+            getUserVaultData();
+        }, 5000);
+        setTimeout(() => {
+            getUserVaultData();
+        }, 15000);
+        setTimeout(() => {
+            getUserVaultData();
+        }, 30000);
+    }, [sessionReceipts.length]);
+
+    const tempItems = [1, 2, 3, 4, 5];
+
+    const skeletonDisplay = tempItems.map((item, idx) => (
+        <TokenRowSkeleton key={idx} />
+    ));
+
+    const vaultsOnCurrentChain =
+        allVaultsData !== undefined
+            ? allVaultsData?.filter(
+                  (vault) => Number(vault.chainId) === Number(chainId),
+              )
+            : undefined;
 
     return (
         <div data-testid={'vaults'} className={styles.container}>
@@ -132,39 +195,49 @@ function Vaults() {
                 <div
                     className={`${styles.scrollableContainer} custom_scroll_ambient`}
                 >
-                    {(allVaultsData ?? placeholderVaultsListData) &&
-                        (allVaultsData ?? placeholderVaultsListData)
-                            .sort(
-                                (
-                                    a: VaultIF | AllVaultsServerIF,
-                                    b: VaultIF | AllVaultsServerIF,
-                                ) =>
-                                    parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
-                            )
-                            .filter(
-                                (vault) =>
-                                    Number(vault.chainId) === Number(chainId),
-                            )
-                            .map((vault: VaultIF | AllVaultsServerIF) => {
-                                const KEY_SLUG = 'vault_row_';
-                                return (
-                                    <VaultRow
-                                        key={KEY_SLUG + vault.address}
-                                        idForDOM={KEY_SLUG + vault.address}
-                                        vault={
-                                            new Vault(
-                                                vault,
-                                                userVaultData?.find(
-                                                    (uV: UserVaultsServerIF) =>
-                                                        uV.vaultAddress.toLowerCase() ===
-                                                        vault.address.toLowerCase(),
-                                                ),
-                                            )
-                                        }
-                                        needsFallbackQuery={serverErrorReceived}
-                                    />
-                                );
-                            })}
+                    {allVaultsData === null ||
+                    (vaultsOnCurrentChain !== undefined &&
+                        vaultsOnCurrentChain.length === 0)
+                        ? skeletonDisplay
+                        : (vaultsOnCurrentChain && vaultsOnCurrentChain.length
+                              ? vaultsOnCurrentChain
+                              : fallbackVaultsList
+                          )
+                              .sort(
+                                  (
+                                      a: VaultIF | AllVaultsServerIF,
+                                      b: VaultIF | AllVaultsServerIF,
+                                  ) =>
+                                      parseFloat(b.tvlUsd) -
+                                      parseFloat(a.tvlUsd),
+                              )
+
+                              .map((vault: VaultIF | AllVaultsServerIF) => {
+                                  const KEY_SLUG = 'vault_row_';
+                                  return (
+                                      <VaultRow
+                                          key={KEY_SLUG + vault.address}
+                                          idForDOM={KEY_SLUG + vault.address}
+                                          vault={
+                                              new Vault(
+                                                  vault,
+                                                  userVaultData?.find(
+                                                      (
+                                                          uV: UserVaultsServerIF,
+                                                      ) =>
+                                                          uV.vaultAddress.toLowerCase() ===
+                                                              vault.address.toLowerCase() &&
+                                                          uV.chainId ===
+                                                              vault.chainId,
+                                                  ),
+                                              )
+                                          }
+                                          needsFallbackQuery={
+                                              serverErrorReceived
+                                          }
+                                      />
+                                  );
+                              })}
                 </div>
             </div>
         </div>

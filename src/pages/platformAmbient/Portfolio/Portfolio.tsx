@@ -1,14 +1,11 @@
-// START: Import React and Dongles
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 
-// START: Import JSX Components
 import Button from '../../../components/Form/Button';
 import ExchangeBalance from '../../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import PortfolioBanner from '../../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../../components/Portfolio/PortfolioTabs/PortfolioTabs';
 import ProfileSettings from '../../../components/Portfolio/ProfileSettings/ProfileSettings';
 
-// START: Import Other Local Files
 import { Navigate, useParams } from 'react-router-dom';
 import {
     expandTokenBalances,
@@ -52,7 +49,7 @@ function Portfolio(props: propsIF) {
 
     const {
         walletModal: { open: openModalWallet },
-        activeNetwork: { chainId, graphCacheUrl },
+        activeNetwork: { chainId, GCGO_URL },
     } = useContext(AppStateContext);
     const {
         userAddress,
@@ -299,7 +296,7 @@ function Portfolio(props: propsIF) {
                         address: resolvedAddress,
                         chain: chainId,
                         crocEnv: crocEnv,
-                        graphCacheUrl: graphCacheUrl,
+                        GCGO_URL: GCGO_URL,
                         _refreshTime: everyFiveMinutes,
                     });
 
@@ -371,7 +368,7 @@ function Portfolio(props: propsIF) {
         chainId,
         everyFiveMinutes,
         connectedAccountActive,
-        graphCacheUrl,
+        GCGO_URL,
     ]);
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);

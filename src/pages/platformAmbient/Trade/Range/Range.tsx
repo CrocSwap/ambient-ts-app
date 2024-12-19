@@ -38,6 +38,10 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { rangeTutorialSteps } from '../../../../utils/tutorial/Range';
 
 import {
+    estimateBalancedRangeAprFromPoolApr,
+    estimateUnbalancedRangeAprFromPoolApr,
+} from '../../../../ambient-utils/api';
+import {
     GAS_DROPS_ESTIMATE_POOL,
     IS_LOCAL_ENV,
     NUM_GWEI_IN_ETH,
@@ -68,7 +72,11 @@ function Range() {
         isActiveNetworkScroll,
         isActiveNetworkPlume,
     } = useContext(ChainDataContext);
-    const { poolPriceDisplay, dailyVol } = useContext(PoolContext);
+    const {
+        poolPriceDisplay,
+        dailyVol,
+        poolData: { poolAmbientAprEstimate },
+    } = useContext(PoolContext);
     const {
         advancedHighTick,
         advancedLowTick,
@@ -291,6 +299,16 @@ function Range() {
         [userPositions, isAmbient, defaultLowTick, defaultHighTick],
     );
 
+    const { isTokenAInputDisabled, isTokenBInputDisabled } =
+        useRangeInputDisable(
+            isAmbient,
+            isTokenABase,
+            currentPoolPriceTick,
+            defaultLowTick,
+            defaultHighTick,
+            isDenomBase,
+        );
+
     const tokenASurplusMinusTokenARemainderNum =
         fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
         fromDisplayQty(tokenAInputQtyNoExponentString || '0', tokenA.decimals);
@@ -298,21 +316,26 @@ function Range() {
         fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) -
         fromDisplayQty(tokenBInputQtyNoExponentString || '0', tokenB.decimals);
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
-        ? tokenASurplusMinusTokenARemainderNum < 0
+        ? tokenASurplusMinusTokenARemainderNum < 0 && !isTokenAInputDisabled
             ? tokenASurplusMinusTokenARemainderNum * -1n
             : 0n
-        : fromDisplayQty(
-              tokenAInputQtyNoExponentString || '0',
-              tokenA.decimals,
-          );
+        : !isTokenAInputDisabled
+          ? fromDisplayQty(
+                tokenAInputQtyNoExponentString || '0',
+                tokenA.decimals,
+            )
+          : 0n;
     const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
-        ? tokenBSurplusMinusTokenBRemainderNum < 0
+        ? tokenBSurplusMinusTokenBRemainderNum < 0 && !isTokenBInputDisabled
             ? tokenBSurplusMinusTokenBRemainderNum * -1n
             : 0n
-        : fromDisplayQty(
-              tokenBInputQtyNoExponentString || '0',
-              tokenB.decimals,
-          );
+        : !isTokenBInputDisabled
+          ? fromDisplayQty(
+                tokenBInputQtyNoExponentString || '0',
+                tokenB.decimals,
+            )
+          : 0n;
+
     const isQtyEntered =
         tokenAInputQtyNoExponentString !== '' &&
         tokenBInputQtyNoExponentString !== '';
@@ -330,7 +353,7 @@ function Range() {
     const depositSkew = useMemo(
         () =>
             concDepositSkew(
-                poolPriceNonDisplay ?? 0,
+                poolPriceNonDisplay,
                 rangeLowBoundNonDisplayPrice,
                 rangeHighBoundNonDisplayPrice,
             ),
@@ -440,14 +463,6 @@ function Range() {
         ],
     );
 
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        undefined,
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
-
     const isTokenAWalletBalanceSufficient =
         fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=
         tokenAQtyCoveredByWalletBalance;
@@ -496,7 +511,7 @@ function Range() {
     }, [rangeWidthPercentage]);
 
     useEffect(() => {
-        setNewRangeTransactionHash('');
+        resetConfirmation();
         setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
 
@@ -505,16 +520,6 @@ function Range() {
             setCurrentRangeInAdd('');
         }
     }, [isAdd]);
-
-    const { isTokenAInputDisabled, isTokenBInputDisabled } =
-        useRangeInputDisable(
-            isAmbient,
-            isTokenABase,
-            currentPoolPriceTick,
-            defaultLowTick,
-            defaultHighTick,
-            isDenomBase,
-        );
 
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
@@ -1028,6 +1033,24 @@ function Range() {
         needConfirmTokenB && tokens.acknowledge(tokenB);
     };
 
+    const estRangeApr = poolAmbientAprEstimate
+        ? !advancedMode && rangeWidthPercentage
+            ? estimateBalancedRangeAprFromPoolApr(
+                  poolAmbientAprEstimate,
+                  rangeWidthPercentage / 100,
+              )
+            : poolPriceNonDisplay &&
+                rangeLowBoundNonDisplayPrice &&
+                rangeHighBoundNonDisplayPrice
+              ? estimateUnbalancedRangeAprFromPoolApr(
+                    poolAmbientAprEstimate,
+                    poolPriceNonDisplay,
+                    rangeLowBoundNonDisplayPrice,
+                    rangeHighBoundNonDisplayPrice,
+                )
+              : 0
+        : 0;
+
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
@@ -1076,12 +1099,13 @@ function Range() {
             value: displayPriceWithDenom,
         }),
         slippageTolerance: slippageTolerancePercentage,
-        liquidityProviderFeeString: liquidityProviderFeeString,
+        liquidityFee: liquidityFee,
         quoteTokenIsBuy: true,
         isTokenABase: isTokenABase,
         showExtraInfoDropdown: showExtraInfoDropdown,
         isBalancedMode: !advancedMode,
         // aprPercentage: aprPercentage,
+        estRangeApr: estRangeApr,
         daysInRange: daysInRange,
     };
 
@@ -1262,8 +1286,18 @@ function Range() {
                                 tokenA.symbol,
                                 undefined,
                                 isActiveNetworkPlume
-                                    ? tokenAQtyCoveredByWalletBalance
-                                    : undefined,
+                                    ? isTokenAPrimary
+                                        ? tokenAQtyCoveredByWalletBalance
+                                        : // add 1% buffer to avoid rounding errors
+                                          (tokenAQtyCoveredByWalletBalance *
+                                              101n) /
+                                          100n
+                                    : tokenABalance
+                                      ? fromDisplayQty(
+                                            tokenABalance,
+                                            tokenA.decimals,
+                                        )
+                                      : undefined,
                             );
                         }}
                         flat={true}
@@ -1287,8 +1321,18 @@ function Range() {
                                 tokenB.symbol,
                                 undefined,
                                 isActiveNetworkPlume
-                                    ? tokenBQtyCoveredByWalletBalance
-                                    : undefined,
+                                    ? !isTokenAPrimary
+                                        ? tokenBQtyCoveredByWalletBalance
+                                        : // add 1% buffer to avoid rounding errors
+                                          (tokenBQtyCoveredByWalletBalance *
+                                              101n) /
+                                          100n
+                                    : tokenBBalance
+                                      ? fromDisplayQty(
+                                            tokenBBalance,
+                                            tokenB.decimals,
+                                        )
+                                      : undefined,
                             );
                         }}
                         flat={true}

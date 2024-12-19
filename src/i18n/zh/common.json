@@ -1,9 +1,14 @@
 {
     "title": "Welcome to react using react-i18next and typescript 4.1",
+    "description": {
+        "part1": "这是一个使用多个命名空间的示例。",
+        "part2": "😉"
+    },
     "marketCTA": "立即交易",
     "homeTitle": "主页",
     "swapTitle": "交换",
     "tradeTitle": "贸易",
+    "poolTitle": "资金",
     "orderPool": "集资",
     "exploreTitle": "探索",
     "accountTitle": "帐户",

@@ -5,7 +5,6 @@ import {
     fetchPoolRecentChanges,
 } from '../../ambient-utils/api';
 import { fetchPoolLimitOrders } from '../../ambient-utils/api/fetchPoolLimitOrders';
-import { GCGO_OVERRIDE_URL } from '../../ambient-utils/constants';
 import {
     filterLimitArray,
     getLimitOrderData,
@@ -45,7 +44,8 @@ export function usePoolMetadata() {
     const { userAddress } = useContext(UserDataContext);
     const {
         isUserIdle,
-        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+        isUserOnline,
+        activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
     const {
         setAdvancedLowTick,
@@ -65,12 +65,14 @@ export function usePoolMetadata() {
         positionsByPool,
         limitOrdersByPool,
     } = useContext(GraphDataContext);
+
     const {
         tokenA,
         tokenB,
         defaultRangeWidthForActivePool,
         currentPoolPriceTick,
     } = useContext(TradeDataContext);
+
     const {
         cachedQuerySpotPrice,
         cachedQuerySpotTick,
@@ -146,12 +148,7 @@ export function usePoolMetadata() {
 
     // Token and range housekeeping when switching pairs
     useEffect(() => {
-        if (
-            contextMatchesParams &&
-            crocEnv &&
-            tokenA.address &&
-            tokenB.address
-        ) {
+        if (contextMatchesParams && tokenA.address && tokenB.address) {
             if (!ticksInParams) {
                 setAdvancedLowTick(0);
                 setAdvancedHighTick(0);
@@ -203,10 +200,12 @@ export function usePoolMetadata() {
                         );
                     // Sort and remove the oldest transactions if necessary
                     const prevChangesCopy = [...prev.changes]; // Create a copy to avoid mutating state directly
-                    if (newUniqueTxByPoolData.length > 0) {
-                        prevChangesCopy.sort((a, b) => a.txTime - b.txTime);
-                        prevChangesCopy.splice(0, newUniqueTxByPoolData.length);
-                    }
+
+                    // splite action disabled for infinite scroll, was triggering redundant page skip issue
+                    // if (newUniqueTxByPoolData.length > 0) {
+                    //     prevChangesCopy.sort((a, b) => a.txTime - b.txTime);
+                    //     prevChangesCopy.splice(0, newUniqueTxByPoolData.length);
+                    // }
 
                     const newTxsArray = [
                         ...prevChangesCopy,
@@ -284,14 +283,18 @@ export function usePoolMetadata() {
                 poolStat.quote.toLowerCase() ===
                     quoteTokenAddress.toLowerCase(),
         );
-
-        setLiquidityFee(currentPoolData?.feeRate || 0);
-    }, [allPoolStats]);
+        setLiquidityFee(
+            currentPoolData?.feeRate !== undefined
+                ? currentPoolData.feeRate
+                : undefined,
+        );
+    }, [allPoolStats, baseTokenAddress, quoteTokenAddress]);
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
         (async () => {
             if (
+                isUserOnline &&
                 contextMatchesParams &&
                 crocEnv &&
                 provider &&
@@ -300,9 +303,7 @@ export function usePoolMetadata() {
                 (await crocEnv.context).chain.chainId === chainId
             ) {
                 // retrieve pool_positions
-                const allPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-                    ? GCGO_OVERRIDE_URL + '/pool_positions?'
-                    : graphCacheUrl + '/pool_positions?';
+                const allPositionsCacheEndpoint = GCGO_URL + '/pool_positions?';
                 fetch(
                     allPositionsCacheEndpoint +
                         new URLSearchParams({
@@ -379,7 +380,7 @@ export function usePoolMetadata() {
                     chainId: chainId,
                     n: 100,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -414,7 +415,7 @@ export function usePoolMetadata() {
                     chainId: chainId,
                     n: 100,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -444,9 +445,8 @@ export function usePoolMetadata() {
                     })
                     .catch(console.error);
                 if (userAddress) {
-                    const userPoolTransactionsCacheEndpoint = GCGO_OVERRIDE_URL
-                        ? GCGO_OVERRIDE_URL + '/user_pool_txs?'
-                        : graphCacheUrl + '/user_pool_txs?';
+                    const userPoolTransactionsCacheEndpoint =
+                        GCGO_URL + '/user_pool_txs?';
                     fetch(
                         userPoolTransactionsCacheEndpoint +
                             new URLSearchParams({
@@ -508,9 +508,8 @@ export function usePoolMetadata() {
                         .catch(console.error);
 
                     // retrieve user_pool_positions
-                    const userPoolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-                        ? GCGO_OVERRIDE_URL + '/user_pool_positions?'
-                        : graphCacheUrl + '/user_pool_positions?';
+                    const userPoolPositionsCacheEndpoint =
+                        GCGO_URL + '/user_pool_positions?';
                     const forceOnchainLiqUpdate = true;
                     fetch(
                         userPoolPositionsCacheEndpoint +
@@ -574,9 +573,8 @@ export function usePoolMetadata() {
                         .catch(console.error);
 
                     // retrieve user_pool_limit_orders
-                    const userPoolLimitOrdersCacheEndpoint = GCGO_OVERRIDE_URL
-                        ? GCGO_OVERRIDE_URL + '/user_pool_limit_orders?'
-                        : graphCacheUrl + '/user_pool_limit_orders?';
+                    const userPoolLimitOrdersCacheEndpoint =
+                        GCGO_URL + '/user_pool_limit_orders?';
                     fetch(
                         userPoolLimitOrdersCacheEndpoint +
                             new URLSearchParams({
@@ -639,6 +637,7 @@ export function usePoolMetadata() {
             }
         })();
     }, [
+        isUserOnline,
         userAddress,
         contextMatchesParams,
         crocEnv,
@@ -673,7 +672,7 @@ export function usePoolMetadata() {
                 crocEnv &&
                 currentPoolPriceTick &&
                 totalPositionLiq &&
-                graphCacheUrl &&
+                GCGO_URL &&
                 Math.abs(currentPoolPriceTick) !== Infinity &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
@@ -693,7 +692,7 @@ export function usePoolMetadata() {
                     quoteTokenDecimals,
                     poolIndex,
                     crocEnv,
-                    graphCacheUrl,
+                    GCGO_URL,
                     cachedFetchTokenPrice,
                     cachedQuerySpotTick,
                     currentPoolPriceTick,
@@ -716,7 +715,7 @@ export function usePoolMetadata() {
         baseTokenDecimals,
         quoteTokenDecimals,
         poolIndex,
-        graphCacheUrl,
+        GCGO_URL,
     ]);
     return {
         contextMatchesParams,

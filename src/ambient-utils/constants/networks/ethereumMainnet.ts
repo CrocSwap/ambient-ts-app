@@ -5,15 +5,15 @@ import { NetworkIF } from '../../types/NetworkIF';
 import {
     mainnetETH,
     mainnetRSWETH,
+    mainnetSWELL,
     mainnetTBTC,
     mainnetUSDC,
     mainnetUSDT,
-    mainnetWBTC,
 } from '../defaultTokens';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const PUBLIC_RPC_URL = 'https://eth.llamarpc.com';
+export const PUBLIC_RPC_URL = 'https://ethereum-rpc.publicnode.com';
 
 export const RESTRICTED_RPC_URL =
     import.meta.env.VITE_MAINNET_RPC_URL !== undefined
@@ -34,20 +34,21 @@ const chainSpecForWalletConnector = {
 export const ethereumMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    graphCacheUrl: GCGO_ETHEREUM_URL,
+    GCGO_URL: GCGO_ETHEREUM_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [mainnetETH, mainnetUSDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: chainSpecForWalletConnector.name,
+    displayName: 'Ethereum',
+    tokenPriceQueryAssetPlatform: 'ethereum',
     topPools: [
         new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetTBTC, mainnetETH, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetRSWETH, mainnetETH, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetETH, mainnetWBTC, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetETH, mainnetTBTC, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetUSDT, mainnetUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetUSDT, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetRSWETH, mainnetSWELL, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

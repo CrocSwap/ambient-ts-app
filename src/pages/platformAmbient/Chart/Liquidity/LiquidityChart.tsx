@@ -449,7 +449,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         ctx.clip();
     };
 
-    const clipHighlightedLines = (canvas: HTMLCanvasElement) => {
+    const clipHighlightedLines = (
+        canvas: HTMLCanvasElement,
+        liqType: 'bid' | 'ask',
+    ) => {
         const _low = ranges.filter(
             (target: lineValue) => target.name === 'Min',
         )[0].value;
@@ -460,8 +463,31 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         const low = _low > _high ? _high : _low;
         const high = _low > _high ? _low : _high;
 
+        const advancedLow = low > poolPriceDisplay ? low : poolPriceDisplay;
+        const advancedHigh = high < poolPriceDisplay ? high : poolPriceDisplay;
+
+        const lastLow =
+            liqType === 'bid'
+                ? advancedMode
+                    ? advancedLow
+                    : poolPriceDisplay
+                : low;
+
+        const lastHigh =
+            liqType === 'bid'
+                ? high
+                : advancedMode
+                  ? advancedHigh
+                  : poolPriceDisplay;
+
         if (scaleData) {
-            clipCanvas(scaleData?.yScale(low), scaleData?.yScale(high), canvas);
+            if (!Number.isNaN(lastLow) && !Number.isNaN(lastHigh)) {
+                clipCanvas(
+                    scaleData?.yScale(lastLow),
+                    scaleData?.yScale(lastHigh),
+                    canvas,
+                );
+            }
         }
     };
 
@@ -473,24 +499,76 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     }, [liqBidSeries, liqAskSeries, liqDepthBidSeries, liqDepthAskSeries]);
 
     const drawCurveLines = (canvas: HTMLCanvasElement) => {
+        const ctx = canvas.getContext('2d');
+
         const isRange =
             location.pathname.includes('pool') ||
             location.pathname.includes('reposition');
+
+        const allData =
+            liqMode === 'curve'
+                ? liqDataBid.concat(liqDataAsk)
+                : liqDataDepthBid.concat(liqDataDepthAsk);
+
+        const _low = ranges.filter(
+            (target: lineValue) => target.name === 'Min',
+        )[0].value;
+        const _high = ranges.filter(
+            (target: lineValue) => target.name === 'Max',
+        )[0].value;
+
+        const low = _low > _high ? _high : _low;
+        const high = _low > _high ? _low : _high;
+
         if (isRange) {
-            clipHighlightedLines(canvas);
-            lineLiqAskSeries(liqDataAsk);
-            lineLiqBidSeries(liqDataBid);
+            if (!advancedMode || (advancedMode && high > poolPriceDisplay)) {
+                clipHighlightedLines(canvas, 'bid');
+                lineLiqBidSeries(allData.slice().reverse());
+                ctx?.restore();
+            }
+
+            if (!advancedMode || (advancedMode && low < poolPriceDisplay)) {
+                clipHighlightedLines(canvas, 'ask');
+                lineLiqAskSeries(allData);
+                ctx?.restore();
+            }
         }
     };
 
     const drawDepthLines = (canvas: HTMLCanvasElement) => {
+        const ctx = canvas.getContext('2d');
+
+        const allData =
+            liqMode === 'curve'
+                ? liqDataBid.concat(liqDataAsk)
+                : liqDataDepthBid.concat(liqDataDepthAsk);
+
         const isRange =
             location.pathname.includes('pool') ||
             location.pathname.includes('reposition');
+
+        const _low = ranges.filter(
+            (target: lineValue) => target.name === 'Min',
+        )[0].value;
+        const _high = ranges.filter(
+            (target: lineValue) => target.name === 'Max',
+        )[0].value;
+
+        const low = _low > _high ? _high : _low;
+        const high = _low > _high ? _low : _high;
+
         if (isRange) {
-            clipHighlightedLines(canvas);
-            lineLiqDepthAskSeries(liqDataDepthAsk);
-            lineLiqDepthBidSeries(liqDataDepthBid);
+            if (!advancedMode || (advancedMode && high > poolPriceDisplay)) {
+                clipHighlightedLines(canvas, 'bid');
+                lineLiqDepthBidSeries(allData.slice().reverse());
+                ctx?.restore();
+            }
+
+            if (!advancedMode || (advancedMode && low < poolPriceDisplay)) {
+                clipHighlightedLines(canvas, 'ask');
+                lineLiqDepthAskSeries(allData);
+                ctx?.restore();
+            }
         }
     };
 
@@ -572,6 +650,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             .select('canvas')
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
+
+        const allData =
+            liqMode === 'curve'
+                ? liqDataBid.concat(liqDataAsk)
+                : liqDataDepthBid.concat(liqDataDepthAsk);
         if (
             liqBidSeries &&
             liqAskSeries &&
@@ -585,13 +668,48 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     if (liqMode === 'curve') {
-                        liqAskSeries(liqDataAsk);
-                        liqBidSeries(liqDataBid);
+                        clipCanvas(
+                            scaleData?.yScale(poolPriceDisplay),
+                            0,
+                            canvas,
+                        );
+
+                        liqBidSeries(allData.slice().reverse());
+
+                        ctx?.restore();
+
+                        clipCanvas(
+                            scaleData?.yScale(0),
+                            scaleData?.yScale(poolPriceDisplay),
+                            canvas,
+                        );
+
+                        liqAskSeries(allData);
+                        ctx?.restore();
+
                         drawCurveLines(canvas);
                     }
                     if (liqMode === 'depth') {
-                        liqDepthBidSeries(liqDataDepthBid);
+                        clipCanvas(
+                            scaleData?.yScale(poolPriceDisplay),
+                            0,
+                            canvas,
+                        );
+
+                        liqDepthBidSeries(allData.slice().reverse());
+
+                        ctx?.restore();
+
+                        clipCanvas(
+                            scaleData?.yScale(0),
+                            scaleData?.yScale(poolPriceDisplay),
+                            canvas,
+                        );
+
                         liqDepthAskSeries(liqDataDepthAsk);
+
+                        ctx?.restore();
+
                         drawDepthLines(canvas);
                     }
                 })
@@ -639,6 +757,12 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             liqMode === 'curve'
                 ? liquidityData?.liqTransitionPointforCurve
                 : liquidityData?.liqTransitionPointforDepth;
+
+        const allData =
+            liqMode === 'curve'
+                ? liqDataBid.concat(liqDataAsk)
+                : liqDataDepthBid.concat(liqDataDepthAsk);
+
         const canvas = d3
             .select(d3CanvasLiqHover.current)
             .select('canvas')
@@ -663,11 +787,12 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                             );
 
                             if (liqMode === 'curve') {
-                                highlightedAskAreaCurveSeries(liqDataAsk);
+                                highlightedAskAreaCurveSeries(allData);
                             }
                             if (liqMode === 'depth') {
-                                highlightedAreaAskSeries(liqDataDepthAsk);
+                                highlightedAreaAskSeries(allData);
                             }
+                            ctx?.restore();
                         }
                         if (liquidityMouseMoveActive === 'bid') {
                             clipCanvas(
@@ -676,12 +801,17 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                                 canvas,
                             );
                             if (liqMode === 'curve') {
-                                highlightedBidAreaCurveSeries(liqDataBid);
+                                highlightedBidAreaCurveSeries(
+                                    allData.slice().reverse(),
+                                );
                             }
 
                             if (liqMode === 'depth') {
-                                highlightedAreaBidSeries(liqDataDepthBid);
+                                highlightedAreaBidSeries(
+                                    allData.slice().reverse(),
+                                );
                             }
+                            ctx?.restore();
                         }
                     }
                 })

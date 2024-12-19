@@ -16,6 +16,7 @@ import {
 } from '../../../App/functions/localStorage';
 import { getAvatarComponent } from '../../../components/Chat/ChatRenderUtils';
 import { getAvatarRest } from '../../../components/Chat/ChatUtilsHelper';
+import { AppStateContext } from '../../../contexts';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { XpLeadersContext } from '../../../contexts/XpLeadersContext';
 
@@ -41,6 +42,7 @@ export default function Level(props: propsIF) {
         setIsViewMoreActive,
     } = props;
     const { userAddress } = useContext(UserDataContext);
+    const { isUserOnline } = useContext(AppStateContext);
     const {
         connectedUserXp,
         // isActiveNetworkBlast
@@ -51,16 +53,20 @@ export default function Level(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            const walletID = resolvedAddress
-                ? resolvedAddress
-                : userAddress
-                  ? userAddress
-                  : '';
-            const avatarData = await getAvatarRest(walletID);
+            if (isUserOnline) {
+                const walletID = resolvedAddress
+                    ? resolvedAddress
+                    : userAddress
+                      ? userAddress
+                      : '';
+                const avatarData = await getAvatarRest(walletID);
 
-            setShownAvatar(getAvatarComponent(walletID, avatarData, 50, true));
+                setShownAvatar(
+                    getAvatarComponent(walletID, avatarData, 50, true),
+                );
+            }
         })();
-    }, [resolvedAddress, userAddress]);
+    }, [resolvedAddress, userAddress, isUserOnline]);
 
     const isUserPage = userAddress === resolvedAddress;
 

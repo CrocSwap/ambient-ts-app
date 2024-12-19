@@ -57,9 +57,7 @@ export interface CachedDataContextIF {
     cachedFetchNFT: NFTQueryFn;
 }
 
-export const CachedDataContext = createContext<CachedDataContextIF>(
-    {} as CachedDataContextIF,
-);
+export const CachedDataContext = createContext({} as CachedDataContextIF);
 
 // TODO: refactor to cache in context and use other contexts as dependencies
 export const CachedDataContextProvider = (props: {

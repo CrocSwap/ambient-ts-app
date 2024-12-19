@@ -1,4 +1,4 @@
-// START: Import React and Dongles
+import { AnimateSharedLayout, motion } from 'framer-motion';
 import {
     cloneElement,
     Dispatch,
@@ -9,10 +9,7 @@ import {
     useEffect,
     useState,
 } from 'react';
-// eslint-disable-next-line
-import { AnimateSharedLayout, motion } from 'framer-motion';
 
-// START: Import Local Files
 import { useNavigate } from 'react-router-dom';
 import '../../../App/App.css';
 import { ChartContext } from '../../../contexts/ChartContext';
@@ -114,6 +111,7 @@ export default function TabComponent(props: TabPropsIF) {
                 'limits',
                 'liquidity',
                 'exchange balances',
+                'dex balances',
                 'wallet balances',
                 'points',
             ].includes(item.label.toLowerCase())
@@ -128,7 +126,8 @@ export default function TabComponent(props: TabPropsIF) {
                         ? navigate(`${pathNoType}liquidity`)
                         : item.label.toLowerCase() === 'points'
                           ? navigate(`${pathNoType}points`)
-                          : item.label.toLowerCase() === 'exchange balances'
+                          : item.label.toLowerCase() === 'exchange balances' ||
+                              item.label.toLowerCase() === 'dex balances'
                             ? navigate(`${pathNoType}exchange-balances`)
                             : item.label.toLowerCase() === 'wallet balances'
                               ? navigate(`${pathNoType}wallet-balances`)
@@ -151,6 +150,7 @@ export default function TabComponent(props: TabPropsIF) {
                     'liquidity',
                     'wallet balances',
                     'exchange balances',
+                    'dex balances',
                 ].includes(currentTabData.label.toLowerCase())
             ) {
                 setActiveTradeTab(currentTabData.label.toLowerCase());

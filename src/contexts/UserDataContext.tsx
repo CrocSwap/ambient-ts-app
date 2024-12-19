@@ -3,21 +3,26 @@ import React, {
     Dispatch,
     SetStateAction,
     createContext,
+    useContext,
     useEffect,
     useState,
 } from 'react';
 import { fetchEnsAddress } from '../ambient-utils/api';
 import { checkBlacklist } from '../ambient-utils/constants';
-import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
+import {
+    BlastUserXpIF,
+    UserVaultsServerIF,
+    UserXpIF,
+} from '../ambient-utils/types';
 import { UserAvatarDataIF } from '../components/Chat/ChatIFs';
 import { getAvatarRest } from '../components/Chat/ChatUtilsHelper';
+import { AppStateContext } from './AppStateContext';
 
 export interface UserDataContextIF {
     isUserConnected: boolean | undefined;
     userAddress: `0x${string}` | undefined;
     walletChain: number | undefined;
     disconnectUser: () => void;
-
     ensName: string | null | undefined;
     resolvedAddressFromContext: string;
     setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
@@ -38,6 +43,10 @@ export interface UserDataContextIF {
         walletID: string,
         avatarData: UserAvatarDataIF,
     ) => void;
+    userVaultData: UserVaultsServerIF[] | undefined;
+    setUserVaultData: React.Dispatch<
+        React.SetStateAction<UserVaultsServerIF[] | undefined>
+    >;
 }
 
 export interface UserXpDataIF {
@@ -54,9 +63,7 @@ export interface BlastUserXpDataIF {
     data: BlastUserXpIF | undefined;
 }
 
-export const UserDataContext = createContext<UserDataContextIF>(
-    {} as UserDataContextIF,
-);
+export const UserDataContext = createContext({} as UserDataContextIF);
 
 export const UserDataContextProvider = (props: {
     children: React.ReactNode;
@@ -71,6 +78,9 @@ export const UserDataContextProvider = (props: {
         isConnected: isUserConnected,
         chainId: walletChain,
     } = useWeb3ModalAccount();
+
+    const { isUserOnline } = useContext(AppStateContext);
+
     const { disconnect: disconnectUser } = useDisconnect();
     const isBlacklisted = userAddress ? checkBlacklist(userAddress) : false;
     if (isBlacklisted) disconnectUser();
@@ -99,27 +109,33 @@ export const UserDataContextProvider = (props: {
         UserAvatarDataIF | undefined
     >();
 
+    const [userVaultData, setUserVaultData] = useState<
+        UserVaultsServerIF[] | undefined
+    >();
+
     // check for ENS name account changes
     useEffect(() => {
-        (async () => {
-            if (userAddress) {
-                try {
-                    const ensResult = await fetchEnsAddress(userAddress);
-                    if (ensResult) setEnsName(ensResult);
-                    else setEnsName('');
-                } catch (error) {
-                    setEnsName('');
-                    console.error({ error });
+        if (isUserOnline) {
+            (async () => {
+                if (userAddress) {
+                    try {
+                        const ensResult = await fetchEnsAddress(userAddress);
+                        if (ensResult) setEnsName(ensResult);
+                        else setEnsName('');
+                    } catch (error) {
+                        setEnsName('');
+                        console.error({ error });
+                    }
                 }
-            }
 
-            // fetch user avatar
-            if (userAddress) {
-                const resp = await getAvatarRest(userAddress);
-                setUserAvatarData(resp);
-            }
-        })();
-    }, [userAddress]);
+                // fetch user avatar
+                if (userAddress) {
+                    const resp = await getAvatarRest(userAddress);
+                    setUserAvatarData(resp);
+                }
+            })();
+        }
+    }, [userAddress, isUserOnline]);
 
     const updateUserAvatarData = (
         walletID: string,
@@ -152,6 +168,8 @@ export const UserDataContextProvider = (props: {
         setNftTestWalletAddress,
         userAvatarData,
         updateUserAvatarData,
+        userVaultData,
+        setUserVaultData,
     };
 
     return (

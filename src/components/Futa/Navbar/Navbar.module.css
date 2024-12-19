@@ -4,8 +4,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    height: 56px;
-    padding: 8px 16px 8px 16px;
+    height: 38px;
+    padding: 8px 16px 0px 16px;
     position: relative;
     font-family: 'Roboto Mono';
 }
@@ -109,6 +109,16 @@
     gap: 32px;
 }
 
+.logoContainer h3 {
+    color: var(--text1, #aacfd1);
+    text-align: center;
+    font-family: 'Fira Mono';
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
 .desktopLinksContainer {
     display: flex;
     flex-direction: row;
@@ -126,9 +136,13 @@
 }
 
 @media (min-width: 768px) {
-    .container {
-        position: sticky;
+    .fixedPositioned {
+        position: fixed;
         top: 0;
+    }
+
+    .container {
+        width: 100%;
         z-index: 99;
     }
     .connectButton {
@@ -140,4 +154,83 @@
         left: auto;
         right: 16px;
     }
+}
+
+/* Slanted Tabs Styles */
+.navTabs {
+    list-style: none;
+
+    padding: 0;
+    text-align: center;
+    display: flex;
+    gap: 0px;
+    height: 32px;
+}
+
+.navItem {
+    display: inline-block;
+}
+
+.navLink {
+    background: transparent;
+    color: var(--text1);
+    text-transform: uppercase;
+    font-size: 20px;
+    font-weight: 400;
+    border: 2px solid #5c6f72;
+    display: block;
+    line-height: 1;
+    padding: 0.2em 1.5em;
+    position: relative;
+    text-decoration: none;
+    transform: skewX(25deg);
+    display: inline-block;
+    border-radius: 0;
+    transition:
+        background 0.3s,
+        color 0.3s;
+}
+
+.navTabs .navItem:first-child .navLink,
+.navTabs .navItem:first-child .navLink::before {
+    transition: all 0s ease-in-out;
+}
+
+.navTabs .navItem:first-child .navLink {
+    border-left: none;
+}
+
+.navTabs .navItem:first-child .navLink::before {
+    position: absolute;
+    left: -6%;
+    top: -2px;
+    width: 10%;
+    height: calc(100% + 4px);
+    transform: skewX(-25deg);
+    content: '';
+    background: transparent;
+    display: block;
+    border: 2px solid #5c6f72;
+    border-right: none;
+}
+.navTabs .navItem:first-child .navLink.active::before,
+.navTabs .navItem:first-child:hover .navLink::before {
+    background: var(--text1);
+}
+
+.slantedText {
+    transform: skewX(-27deg);
+    display: inline-block;
+}
+
+.navLink:hover,
+.navLink:focus {
+    background: var(--text1);
+    color: var(--dark1);
+    cursor: pointer;
+}
+
+.active {
+    background: var(--text1);
+    color: var(--dark1);
 }

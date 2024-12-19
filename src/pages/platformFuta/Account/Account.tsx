@@ -8,9 +8,7 @@ import {
     AuctionTxResponseIF,
     claimAndReturnAll,
 } from '../../../ambient-utils/dataLayer';
-import Divider from '../../../components/Futa/Divider/FutaDivider';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
-import Separator from '../../../components/Futa/Separator/Separator';
 import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
 import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -22,6 +20,7 @@ import {
     sortedAuctionsIF,
     useSortedAuctions,
 } from '../Auctions/useSortedAuctions';
+import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
 
 export default function Account() {
     const { accountData } = useContext(AuctionsContext);
@@ -230,18 +229,21 @@ export default function Account() {
     const desktopVersionWithClaimAll = (
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
-                <SearchableTicker
-                    auctions={sorted}
-                    title='account'
-                    isAccount={true}
-                />
+                <SearchableTicker auctions={sorted} title='' isAccount={true} />
             </div>
             <div className={styles.separatorContainer}>
-                <Separator dots={70} />
+                {
+                    /* <Separator dots={70} /> */
+                    // leaving parent container empty preserves
+                    // ... layout with CSS Grid styling
+                }
             </div>
 
             <div className={styles.rightLayout}>
-                <Divider count={2} />
+                <div>
+                    <p className={styles.label}>CLAIM</p>
+                    <FutaDivider2 />
+                </div>
                 {claimAllContainer}
             </div>
         </div>

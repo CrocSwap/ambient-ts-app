@@ -176,7 +176,7 @@ export interface LocalChartSettingsIF {
     showFeeRate: boolean;
 }
 
-export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
+export const ChartContext = createContext({} as ChartContextIF);
 
 export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const { skin, platformName } = useContext(BrandContext);
@@ -184,9 +184,12 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const isFuta = ['futa'].includes(platformName);
 
     // 2:1 ratio of the window height subtracted by main header and token info header
+    // 1:1 ratio, if the screen is less than 1000px in height
     const CHART_MAX_HEIGHT = window.innerHeight - 160;
     const CHART_MIN_HEIGHT = 4;
-    const CHART_DEFAULT_HEIGHT = Math.floor((CHART_MAX_HEIGHT * 2) / 3);
+    const CHART_DEFAULT_HEIGHT = Math.floor(
+        (CHART_MAX_HEIGHT * 2) / (window.innerHeight > 1000 ? 3 : 4),
+    );
     let CHART_SAVED_HEIGHT = CHART_DEFAULT_HEIGHT;
 
     // Fetch alternative default height from local storage if it exists

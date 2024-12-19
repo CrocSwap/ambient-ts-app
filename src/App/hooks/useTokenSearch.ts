@@ -131,7 +131,9 @@ export const useTokenSearch = (
                 chainId === '0x1'
                     ? patchLists(
                           tokens.getTokensFromList(tokenListURIs.ambient),
-                          tokens.getTokensFromList(tokenListURIs.uniswap),
+                          tokens.getTokensFromList(
+                              tokenListURIs.ethereumCoingecko,
+                          ),
                       )
                     : chainId === '0x82750'
                       ? patchLists(
@@ -153,7 +155,10 @@ export const useTokenSearch = (
                                 tokens.getTokensFromList(tokenListURIs.ambient),
                                 tokens.getTokensFromList(tokenListURIs.futa),
                             )
-                          : tokens.getTokensFromList(tokenListURIs.ambient);
+                          : patchLists(
+                                tokens.getTokensFromList(tokenListURIs.ambient),
+                                tokens.getTokensFromList(tokenListURIs.testnet),
+                            );
 
             // ERC-20 tokens from connected wallet subject to universe verification
             const verifiedWalletTokens: TokenIF[] = walletTokens.filter(

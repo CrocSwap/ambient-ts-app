@@ -41,13 +41,12 @@ function SelectedRange(props: propsIF) {
 
     const { liquidityFee } = useContext(GraphDataContext);
 
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        undefined,
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
+    const liquidityProviderFeeString = liquidityFee
+        ? (liquidityFee * 100).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : '...';
 
     const reverseDisplay =
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);

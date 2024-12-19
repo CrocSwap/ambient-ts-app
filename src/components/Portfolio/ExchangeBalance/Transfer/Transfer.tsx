@@ -9,11 +9,13 @@ import {
 } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import {
-    IS_LOCAL_ENV,
     ZERO_ADDRESS,
     checkBlacklist,
 } from '../../../../ambient-utils/constants';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    waitForTransaction,
+} from '../../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../../ambient-utils/types';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
@@ -24,11 +26,6 @@ import {
     MaxButton,
     SVGContainer,
 } from '../../../../styled/Components/Portfolio';
-import {
-    TransactionError,
-    isTransactionFailedError,
-    isTransactionReplacedError,
-} from '../../../../utils/TransactionError';
 import Button from '../../../Form/Button';
 import TransferAddressInput from './TransferAddressInput';
 
@@ -37,6 +34,7 @@ import {
     GAS_DROPS_ESTIMATE_TRANSFER_NATIVE,
     NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants/';
+import { AppStateContext } from '../../../../contexts';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import CurrencySelector from '../../../Form/CurrencySelector';
@@ -67,6 +65,10 @@ export default function Transfer(props: propsIF) {
     const { crocEnv, ethMainnetUsdPrice, provider } =
         useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
+    const {
+        isUserOnline,
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const { gasPriceInGwei, isActiveNetworkScroll, isActiveNetworkBlast } =
         useContext(ChainDataContext);
@@ -157,7 +159,10 @@ export default function Transfer(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     useEffect(() => {
-        if (isTransferPending) {
+        if (!isUserOnline) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Currently Offline');
+        } else if (isTransferPending) {
             setIsButtonDisabled(true);
             setIsAddressFieldDisabled(true);
             setIsCurrencyFieldDisabled(true);
@@ -192,6 +197,7 @@ export default function Transfer(props: propsIF) {
             setButtonMessage('Transfer');
         }
     }, [
+        isUserOnline,
         transferQtyNonDisplay,
         isTransferPending,
         isDexBalanceSufficient,
@@ -213,44 +219,34 @@ export default function Transfer(props: propsIF) {
                     .token(selectedToken.address)
                     .transfer(transferQtyDisplay, resolvedAddress);
                 addPendingTx(tx?.hash);
+
                 if (tx?.hash)
                     addTransactionByType({
+                        chainId: chainId,
                         userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Transfer',
                         txDescription: `Transfer ${selectedToken.symbol}`,
                     });
-                let receipt;
-                try {
-                    if (tx) receipt = await tx.wait();
-                } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && console.debug('repriced');
-                        removePendingTx(error.hash);
-
-                        const newTransactionHash = error.replacement.hash;
-                        addPendingTx(newTransactionHash);
-
-                        updateTransactionHash(
-                            error.hash,
-                            error.replacement.hash,
+                if (tx) {
+                    let receipt;
+                    try {
+                        receipt = await waitForTransaction(
+                            provider,
+                            tx.hash,
+                            removePendingTx,
+                            addPendingTx,
+                            updateTransactionHash,
                         );
-                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
-                        console.error({ error });
-                        receipt = error.receipt;
+                    } catch (e) {
+                        console.error({ e });
                     }
-                }
 
-                if (receipt) {
-                    addReceipt(JSON.stringify(receipt));
-                    removePendingTx(receipt.hash);
-                    resetTransferQty();
+                    if (receipt) {
+                        addReceipt(receipt);
+                        removePendingTx(receipt.hash);
+                        resetTransferQty();
+                    }
                 }
             } catch (error) {
                 if (

@@ -3,9 +3,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import { brand } from '../../../../../ambient-utils/constants';
 import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
-import completed from '../../../../../assets/animations/completed.json';
 import Button from '../../../../Form/Button';
-import Animation from '../../../../Global/Animation/Animation';
 import addTokenToWallet from './addTokenToWallet';
 import styles from './TransactionSubmitted.module.css';
 
@@ -66,7 +64,7 @@ export default function TransactionSubmitted(props: PropsIF) {
         <Button
             idForDOM='import_token_B_into_wallet_button'
             flat
-            title={`Import ${tokenBSymbol} into Connected Wallet`}
+            title={`import ${tokenBSymbol} into Connected Wallet`}
             action={handleAddToMetaMask}
             disabled={false}
         />
@@ -94,18 +92,6 @@ export default function TransactionSubmitted(props: PropsIF) {
                 noAnimation && styles.noAnimation_submitted
             }`}
         >
-            <div
-                style={{
-                    height: noAnimation ? 'auto' : '180px',
-                }}
-            >
-                {!noAnimation && (
-                    <div className={styles.completed_animation}>
-                        <Animation animData={completed} loop={false} />
-                    </div>
-                )}
-            </div>
-
             <h2 style={{ marginBottom: '15px' }}>
                 {type === 'Limit'
                     ? `Limit Order ${

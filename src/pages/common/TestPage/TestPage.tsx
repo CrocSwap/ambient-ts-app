@@ -1,35 +1,22 @@
-// import{ useContext } from 'react';
-// import{ BrandContext } from '../../contexts/BrandContext';
-
-import { useState } from 'react';
-import SwipeableTabs from '../../TestPage/SwipeableTabs';
+import FutaNewLanding from '../../platformFuta/Home/FutaLandings/NewLandings/FutaNewLanding';
 
 export default function TestPage() {
-    const [activeTab, setActiveTab] = useState(0);
+    // const [activeTab, setActiveTab] = useState(0);
 
-    const tabData = [
-        { label: 'Trade', content: <div>Content for Trade</div> },
-        { label: 'Explore', content: <div>Content for Explore</div> },
-        { label: 'Account', content: <div>Content for Account</div> },
-        { label: 'Chat', content: <div>Content for Chat</div> },
-    ];
+    // const tabData = [
+    //   { label: 'Trade', content: <div>Content for Trade</div> },
+    //   { label: 'Explore', content: <div>Content for Explore</div> },
+    //   { label: 'Account', content: <div>Content for Account</div> },
+    //   { label: 'Chat', content: <div>Content for Chat</div> },
+    // ];
 
     return (
-        <div>
-            {/* Control buttons in another component */}
-            <div>
-                <button onClick={() => setActiveTab(0)}>Go to Trade</button>
-                <button onClick={() => setActiveTab(1)}>Go to Explore</button>
-                <button onClick={() => setActiveTab(2)}>Go to Account</button>
-                <button onClick={() => setActiveTab(3)}>Go to Chat</button>
-            </div>
+        // <FlexContainer justifyContent='center' alignItems='center' style={{width: '100vw', height: '100vh'}}>
 
-            {/* Pass activeTab and setActiveTab to SwipeableTabs */}
-            <SwipeableTabs
-                tabs={tabData}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-            />
-        </div>
+        //   <FadingTextGrid/>
+        // </FlexContainer>
+
+        <FutaNewLanding />
+        // <FutaLandingNav/>
     );
 }

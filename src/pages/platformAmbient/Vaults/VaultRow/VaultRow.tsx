@@ -1,6 +1,3 @@
-import styles from './VaultRow.module.css';
-import tempestLogoColor from './tempestLogoColor.svg';
-// import tempestLogo from './tempestLogo.svg';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
@@ -8,7 +5,7 @@ import {
     getFormattedNumber,
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
-import { VaultIF } from '../../../../ambient-utils/types';
+import { VaultIF, VaultStrategy } from '../../../../ambient-utils/types';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
@@ -27,6 +24,8 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { formatDollarAmount } from '../../../../utils/numbers';
 import VaultDeposit from '../VaultActionModal/VaultDeposit/VaultDeposit';
 import VaultWithdraw from '../VaultActionModal/VaultWithdraw/VaultWithdraw';
+import styles from './VaultRow.module.css';
+import tempestLogoColor from './tempestLogoColor.svg';
 
 interface propsIF {
     idForDOM: string;
@@ -64,6 +63,8 @@ export default function VaultRow(props: propsIF) {
 
     const [crocEnvBal, setCrocEnvBal] = useState<bigint>();
 
+    const strategy = vault.strategy as VaultStrategy;
+
     async function getCrocEnvBalance(): Promise<void> {
         if (
             crocEnv &&
@@ -74,6 +75,7 @@ export default function VaultRow(props: propsIF) {
             const tempestVault = crocEnv.tempestVault(
                 vault.address,
                 vault.mainAsset,
+                strategy,
             );
             setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
         }
@@ -157,7 +159,7 @@ export default function VaultRow(props: propsIF) {
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                 {balDisplay}
-                {!!crocEnvBal && !!userAddress && (
+                {!!(vault.balance ?? crocEnvBal) && !!userAddress && (
                     <>
                         <TokenIcon
                             token={mainAsset}
@@ -206,6 +208,7 @@ export default function VaultRow(props: propsIF) {
                 secondaryAsset={secondaryAsset}
                 vault={vault}
                 onClose={handleModalClose}
+                strategy={strategy}
             />
         ) : (
             <VaultWithdraw
@@ -219,7 +222,8 @@ export default function VaultRow(props: propsIF) {
                 }
                 mainAssetBalanceDisplayQty={balDisplay}
                 secondaryAssetBalanceDisplayQty={balDisplay}
-                onClose={closeModal}
+                onClose={handleModalClose}
+                strategy={strategy}
             />
         );
     function navigateExternal(): void {

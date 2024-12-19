@@ -1,13 +1,9 @@
-/** ***** Import React and Dongles *******/
 import { useContext, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
-/** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
-// import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
 
-/** * **** Import Local Files *******/
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { AppStateContext } from '../contexts/AppStateContext';
@@ -20,7 +16,6 @@ import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useKeyPress from './hooks/useKeyPress';
 
 import FooterNav from '../components/Global/FooterNav/FooterNav';
-import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 import { FlexContainer } from '../styled/Common';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 
@@ -47,10 +42,8 @@ export default function App() {
         },
         walletModal: { isOpen: isWalletModalOpen },
         appHeaderDropdown,
-        showPointSystemPopup,
-        dismissPointSystemPopup,
     } = useContext(AppStateContext);
-    const { platformName, skin, showPoints } = useContext(BrandContext);
+    const { platformName, skin } = useContext(BrandContext);
     const {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
@@ -116,6 +109,7 @@ export default function App() {
                 currentLocation !== '/privacy' &&
                 currentLocation !== '/faq' &&
                 !currentLocation.includes('/chat') &&
+                platformName !== 'futa' &&
                 isChatEnabled &&
                 !isFullScreen && <ChatPanel isFullScreen={false} />}
         </div>
@@ -166,17 +160,10 @@ export default function App() {
                             : '100dvh',
                 }}
             >
-                {showPoints && showPointSystemPopup && (
-                    <PointSystemPopup
-                        dismissPointSystemPopup={dismissPointSystemPopup}
-                    />
-                )}
                 <AppOverlay />
-                {platformName === 'futa' ? (
-                    <Navbar />
-                ) : (
-                    location.pathname !== '/' && <PageHeader />
-                )}
+                {platformName === 'futa'
+                    ? location.pathname !== '/' && <Navbar />
+                    : location.pathname !== '/' && <PageHeader />}
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
 

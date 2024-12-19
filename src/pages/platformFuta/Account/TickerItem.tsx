@@ -13,7 +13,7 @@ export default function TickerItem({ tickerItem }: PropsIF) {
 
     return (
         <div className={styles.tickerItemContainer}>
-            <p>{ticker}</p>
+            <p className={styles.tickName}>{ticker}</p>
             <p>{marketCap}</p>
             <p style={{ color: status ? status : 'var(--text1)' }}>
                 {remaining}

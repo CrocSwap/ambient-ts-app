@@ -1,43 +1,46 @@
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Provider } from 'ethers';
+import { NetworkIF } from '../../types/NetworkIF';
 import {
     swellSepoliaETH,
     swellSepoliaUSDC,
     swellSepoliaUSDT,
 } from '../defaultTokens';
-import { NetworkIF } from '../../types/NetworkIF';
-import { TopPool } from './TopPool';
-import { Provider } from 'ethers';
 import { GCGO_TESTNET_URL } from '../gcgo';
-import { bigIntToFloat } from '@crocswap-libs/sdk';
+import { TopPool } from './TopPool';
 
-export const SWELL_SEPOLIA_RPC_URL =
+export const PUBLIC_RPC_URL = 'https://swell-testnet.alt.technology';
+
+export const RESTRICTED_RPC_URL =
     import.meta.env.VITE_SWELL_SEPOLIA_RPC_URL !== undefined
         ? import.meta.env.VITE_SWELL_SEPOLIA_RPC_URL
-        : 'https://swell-testnet.alt.technology';
+        : PUBLIC_RPC_URL;
 
 const chainIdHex = '0x784';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
 const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
-    name: 'Swell Testnet',
+    name: 'Swellchain Testnet',
     currency: 'ETH',
-    rpcUrl: SWELL_SEPOLIA_RPC_URL,
+    rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://swell-testnet-explorer.alt.technology/',
 };
 
 export const swellSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    graphCacheUrl: GCGO_TESTNET_URL,
-    evmRpcUrl: SWELL_SEPOLIA_RPC_URL,
+    GCGO_URL: GCGO_TESTNET_URL,
+    evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [swellSepoliaETH, swellSepoliaUSDC],
     defaultPairFuta: [swellSepoliaETH, swellSepoliaUSDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: chainSpecForWalletConnector.name,
+    displayName: 'Swell Testnet',
+    tokenPriceQueryAssetPlatform: undefined,
     topPools: [
         new TopPool(
             swellSepoliaETH,

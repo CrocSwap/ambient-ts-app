@@ -1,10 +1,6 @@
-// START: Import React and Dongles
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-// START: Import JSX Components
 import InitPoolExtraInfo from '../../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
-
-// START: Import Local Files
 
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -45,6 +41,7 @@ import {
     roundDownTick,
     roundUpTick,
     truncateDecimals,
+    waitForTransaction,
 } from '../../../ambient-utils/dataLayer';
 import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { CurrencyQuantityInput } from '../../../styled/Components/TradeModules';
@@ -81,12 +78,7 @@ import { AppStateContext } from '../../../contexts';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import {
-    isTransactionDeniedError,
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../utils/TransactionError';
+import { isTransactionDeniedError } from '../../../utils/TransactionError';
 // react functional component
 export default function InitPool() {
     const { crocEnv, provider, ethMainnetUsdPrice } =
@@ -133,6 +125,7 @@ export default function InitPool() {
         quoteToken,
         setIsTokenAPrimary,
         setPrimaryQuantity,
+        isTokenAPrimary,
     } = useContext(TradeDataContext);
 
     useEffect(() => {
@@ -488,16 +481,14 @@ export default function InitPool() {
         useState(false);
 
     const refreshReferencePrice = async () => {
-        if (tradeDataMatchesURLParams && crocEnv) {
+        if (tradeDataMatchesURLParams) {
             const basePricePromise = cachedFetchTokenPrice(
                 baseToken.address,
                 chainId,
-                crocEnv,
             );
             const quotePricePromise = cachedFetchTokenPrice(
                 quoteToken.address,
                 chainId,
-                crocEnv,
             );
 
             const basePrice = await basePricePromise;
@@ -563,7 +554,6 @@ export default function InitPool() {
     useEffect(() => {
         refreshReferencePrice();
     }, [
-        crocEnv,
         baseToken,
         quoteToken,
         isDenomBase,
@@ -864,6 +854,17 @@ export default function InitPool() {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, isMintLiqEnabled]);
 
+    const { isTokenAInputDisabled, isTokenBInputDisabled } =
+        useRangeInputDisable(
+            isAmbient,
+            isTokenABase,
+            selectedPoolPriceTick, // Took place of: selectedPoolPriceTick,
+            defaultLowTick,
+            defaultHighTick,
+            isDenomBase,
+            isMintLiqEnabled,
+        );
+
     const tokenASurplusMinusTokenARemainderNum =
         fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
         fromDisplayQty(tokenACollateral || '0', tokenA.decimals);
@@ -871,29 +872,35 @@ export default function InitPool() {
         fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) -
         fromDisplayQty(tokenBCollateral || '0', tokenB.decimals);
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
-        ? tokenASurplusMinusTokenARemainderNum < 0
+        ? tokenASurplusMinusTokenARemainderNum < 0 && !isTokenAInputDisabled
             ? tokenASurplusMinusTokenARemainderNum * -1n
             : 0n
-        : fromDisplayQty(tokenACollateral || '0', tokenA.decimals);
+        : !isTokenAInputDisabled
+          ? fromDisplayQty(tokenACollateral || '0', tokenA.decimals)
+          : 0n;
+
     const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
-        ? tokenBSurplusMinusTokenBRemainderNum < 0
+        ? tokenBSurplusMinusTokenBRemainderNum < 0 && !isTokenBInputDisabled
             ? tokenBSurplusMinusTokenBRemainderNum * -1n
             : 0n
-        : fromDisplayQty(tokenBCollateral || '0', tokenB.decimals);
+        : !isTokenBInputDisabled
+          ? fromDisplayQty(tokenBCollateral || '0', tokenB.decimals)
+          : 0n;
 
-    // if liquidity miniting is enabled, tthen oken allowance must be greater than the amount of tokens the user is depositing,
+    // if liquidity miniting is enabled, then token allowance must be greater than the amount of tokens the user is depositing,
     // plus a small amount for the initialization transactions
-    // if liquidity minting is disabled, then token allowance must be greater than 0
+    // if liquidity minting is disabled, then token allowance must be greater than 0.1 of the token
     const isTokenAAllowanceSufficient =
         tokenAAllowance === undefined
             ? true
-            : isMintLiqEnabled
+            : isMintLiqEnabled && !isTokenAInputDisabled
               ? tokenAAllowance > tokenAQtyCoveredByWalletBalance
               : tokenAAllowance >= fromDisplayQty('0.1', tokenA.decimals);
+
     const isTokenBAllowanceSufficient =
         tokenBAllowance === undefined
             ? true
-            : isMintLiqEnabled
+            : isMintLiqEnabled && !isTokenBInputDisabled
               ? tokenBAllowance > tokenBQtyCoveredByWalletBalance
               : tokenBAllowance >= fromDisplayQty('0.1', tokenB.decimals);
 
@@ -971,12 +978,10 @@ export default function InitPool() {
     // default low tick to seed in the DOM (range lower value)
     // initialPriceInBaseDenom
 
-    const [newInitTransactionHash, setNewInitTransactionHash] = useState<
-        undefined | string
-    >('');
-    const [newRangeTransactionHash, setNewRangeTransactionHash] = useState<
-        undefined | string
-    >('');
+    const [newInitTransactionHash, setNewInitTransactionHash] =
+        useState<string>('');
+    const [newRangeTransactionHash, setNewRangeTransactionHash] =
+        useState<string>('');
     const [txError, setTxError] = useState<Error>();
 
     const [isInitPending, setIsInitPending] = useState(false);
@@ -1019,17 +1024,6 @@ export default function InitPool() {
         setTxError,
         resetConfirmation,
     );
-
-    const { isTokenAInputDisabled, isTokenBInputDisabled } =
-        useRangeInputDisable(
-            isAmbient,
-            isTokenABase,
-            selectedPoolPriceTick, // Took place of: selectedPoolPriceTick,
-            defaultLowTick,
-            defaultHighTick,
-            isDenomBase,
-            isMintLiqEnabled,
-        );
 
     useEffect(() => {
         if (isTokenAInputDisabled) setIsTokenAPrimary(false);
@@ -1140,6 +1134,9 @@ export default function InitPool() {
         selectedPoolPriceTick,
         tokenAQtyCoveredByWalletBalance,
         tokenBQtyCoveredByWalletBalance,
+        isTokenAPrimary,
+        tokenABalance,
+        tokenBBalance,
     };
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
@@ -1638,6 +1635,7 @@ export default function InitPool() {
 
                     if (tx?.hash) {
                         addTransactionByType({
+                            chainId: chainId,
                             userAddress: userAddress || '',
                             txHash: tx.hash,
                             txType: 'Withdraw',
@@ -1645,36 +1643,24 @@ export default function InitPool() {
                         });
                     }
 
-                    let receipt;
-                    try {
-                        if (tx) receipt = await tx.wait();
-                    } catch (e) {
-                        const error = e as TransactionError;
-                        console.error({ error });
-
-                        if (isTransactionReplacedError(error)) {
-                            IS_LOCAL_ENV && console.debug('repriced');
-                            removePendingTx(error.hash);
-
-                            const newTransactionHash = error.replacement.hash;
-                            addPendingTx(newTransactionHash);
-
-                            updateTransactionHash(
-                                error.hash,
-                                error.replacement.hash,
+                    if (tx) {
+                        let receipt;
+                        try {
+                            receipt = await waitForTransaction(
+                                provider,
+                                tx.hash,
+                                removePendingTx,
+                                addPendingTx,
+                                updateTransactionHash,
                             );
-                            IS_LOCAL_ENV &&
-                                console.debug({ newTransactionHash });
-                            receipt = error.receipt;
-                        } else if (isTransactionFailedError(error)) {
-                            console.error({ error });
-                            receipt = error.receipt;
+                        } catch (e) {
+                            console.error({ e });
                         }
-                    }
 
-                    if (receipt) {
-                        addReceipt(JSON.stringify(receipt));
-                        removePendingTx(receipt.hash);
+                        if (receipt) {
+                            addReceipt(receipt);
+                            removePendingTx(receipt.hash);
+                        }
                     }
                 } finally {
                     setIsWithdrawPending(false);

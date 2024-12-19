@@ -1,4 +1,3 @@
-// START: Import React and Dongles
 import { Snackbar } from '@material-ui/core';
 import { Alert, AlertProps } from '@mui/material';
 import { motion } from 'framer-motion';

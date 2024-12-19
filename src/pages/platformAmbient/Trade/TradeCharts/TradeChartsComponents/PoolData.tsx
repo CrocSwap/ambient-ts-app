@@ -41,13 +41,12 @@ export default function PoolData(props: PoolDataIF) {
     const { liquidityFee } = useContext(GraphDataContext);
 
     const { poolTvl, poolFeesTotal, poolVolume24h } = poolData;
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        'en-US',
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
+    const liquidityProviderFeeString = liquidityFee
+        ? (liquidityFee * 100).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          }) + '%'
+        : '...';
 
     const {
         poolPrice,
@@ -110,7 +109,7 @@ export default function PoolData(props: PoolDataIF) {
         },
         {
             label: 'Fee Rate',
-            value: `${liquidityProviderFeeString?.toString() || '...'}%`,
+            value: `${liquidityProviderFeeString?.toString()}`,
         },
 
         {

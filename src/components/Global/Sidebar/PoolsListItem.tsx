@@ -4,7 +4,7 @@ import { getMoneynessRank, uriToHttp } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import { AppStateContext } from '../../../contexts';
-import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
+import { BrandContext } from '../../../contexts/BrandContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
@@ -36,7 +36,7 @@ export default function PoolsListItem(props: propsIF) {
         activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
     const { favePools } = useContext(UserPreferenceContext);
-    const { platformName } = useContext<BrandContextIF>(BrandContext);
+    const { platformName } = useContext(BrandContext);
     const isFuta = platformName.toLowerCase() === 'futa';
 
     const isBaseTokenMoneynessGreaterOrEqual =

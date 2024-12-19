@@ -38,6 +38,16 @@ export function lookupChainId(
         case '0x82750':
             chainIdHex = '0x82750';
             break;
+        case 'swell':
+        case '1923':
+        case '0x783':
+            chainIdHex = '0x783';
+            break;
+        case 'plume':
+        case '98865':
+        case '0x18231':
+            chainIdHex = '0x18231';
+            break;
         case 'blast':
         case '81457':
         case '0x13e31':
@@ -57,6 +67,21 @@ export function lookupChainId(
         case '1924':
         case '0x784':
             chainIdHex = '0x784';
+            break;
+        case 'blastsepolia':
+        case '168587773':
+        case '0xa0c71fd':
+            chainIdHex = '0xa0c71fd';
+            break;
+        case 'scrollsepolia':
+        case '534351':
+        case '0x8274f':
+            chainIdHex = '0x8274f';
+            break;
+        case 'basesepolia':
+        case '84532':
+        case '0x14a34':
+            chainIdHex = '0x14a34';
             break;
     }
     // output variable

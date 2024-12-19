@@ -14,7 +14,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { getFormattedNumber, uriToHttp } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts';
-import { BrandContext, BrandContextIF } from '../../contexts/BrandContext';
+import { BrandContext } from '../../contexts/BrandContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { useModal } from '../Global/Modal/useModal';
@@ -72,7 +72,7 @@ function TokenInputQuantity(props: propsIF) {
         percentDiffUsdValue,
     } = props;
 
-    const { platformName } = useContext<BrandContextIF>(BrandContext);
+    const { platformName } = useContext(BrandContext);
 
     const location = useLocation();
 
@@ -117,7 +117,13 @@ function TokenInputQuantity(props: propsIF) {
             .replace(/,/g, '.') // Replace commas with dots
             .replace(/\s+/g, ''); // Remove any spaces
 
-        if (inputStringNoCommas === '.') inputStringNoCommas = '0.';
+        if (inputStringNoCommas === '.') {
+            inputStringNoCommas = '0.';
+        } else if (inputStringNoCommas === 'e') {
+            inputStringNoCommas = '1e';
+        } else if (inputStringNoCommas.startsWith('e')) {
+            return;
+        }
 
         const inputStringNoUnfinishedExponent = isNaN(+inputStringNoCommas)
             ? inputStringNoCommas.replace(

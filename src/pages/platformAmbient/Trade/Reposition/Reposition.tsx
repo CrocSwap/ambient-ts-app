@@ -1,23 +1,19 @@
-// START: Import React and Dongles
 import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 
-// START: Import JSX Components
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
 import Button from '../../../../components/Form/Button';
 import ConfirmRepositionModal from '../../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import RepositionHeader from '../../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
-// START: Import Other Local Files
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
 import styles from './Reposition.module.css';
 
 import { FiExternalLink } from 'react-icons/fi';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import {
     GAS_DROPS_ESTIMATE_REPOSITION,
-    GCGO_OVERRIDE_URL,
     IS_LOCAL_ENV,
     NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants';
@@ -27,6 +23,7 @@ import {
     getPositionData,
     isStablePair,
     trimString,
+    waitForTransaction,
 } from '../../../../ambient-utils/dataLayer';
 import RangeWidth from '../../../../components/Form/RangeWidth/RangeWidth';
 import { useModal } from '../../../../components/Global/Modal/useModal';
@@ -35,11 +32,6 @@ import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../../utils/TransactionError';
 import {
     linkGenMethodsIF,
     useLinkGen,
@@ -69,7 +61,7 @@ function Reposition() {
         useContext(CrocEnvContext);
 
     const {
-        activeNetwork: { blockExplorer },
+        activeNetwork: { blockExplorer, chainId },
     } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
@@ -121,6 +113,8 @@ function Reposition() {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const { position } = (locationState || {}) as { position?: PositionIF };
+
+    const posHash = getPositionHash(position);
 
     const slippageTolerancePercentage = position
         ? isStablePair(position.base, position.quote)
@@ -278,7 +272,7 @@ function Reposition() {
         setNewValueNum(undefined);
         setNewBaseQtyDisplay('...');
         setNewQuoteQtyDisplay('...');
-    }, [position, rangeWidthPercentage]);
+    }, [position?.positionId, rangeWidthPercentage]);
 
     useEffect(() => {
         if (!position) {
@@ -347,6 +341,7 @@ function Reposition() {
             addPendingTx(tx?.hash);
             if (tx?.hash) {
                 addTransactionByType({
+                    chainId: chainId,
                     userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction: 'Reposition',
@@ -368,7 +363,6 @@ function Reposition() {
                         isBid: position.positionLiqQuote === 0,
                     },
                 });
-                const posHash = getPositionHash(position);
                 addPositionUpdate({
                     txHash: tx.hash,
                     positionID: posHash,
@@ -383,38 +377,26 @@ function Reposition() {
             setTxError(error);
         }
 
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                removePendingTx(error.hash);
-                const newTransactionHash = error.replacement.hash;
-                addPendingTx(newTransactionHash);
-
-                updateTransactionHash(error.hash, error.replacement.hash);
-                setNewRepositionTransactionHash(newTransactionHash);
-                const posHash = getPositionHash(position);
-                addPositionUpdate({
-                    txHash: newTransactionHash,
-                    positionID: posHash,
-                    isLimit: false,
-                    unixTimeAdded: Math.floor(Date.now() / 1000),
-                });
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
-                receipt = error.receipt;
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewRepositionTransactionHash,
+                    posHash,
+                    addPositionUpdate,
+                );
+            } catch (e) {
+                console.error({ e });
             }
-        }
-        if (receipt) {
-            addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.hash);
+            if (receipt) {
+                addReceipt(receipt);
+                removePendingTx(receipt.hash);
+            }
         }
     };
 
@@ -473,9 +455,8 @@ function Reposition() {
         setCurrentQuoteQtyDisplayTruncated,
     ] = useState<string>(position?.positionLiqQuoteTruncated || '...');
 
-    const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/position_stats?'
-        : activeNetwork.graphCacheUrl + '/position_stats?';
+    const positionStatsCacheEndpoint =
+        activeNetwork.GCGO_URL + '/position_stats?';
     const poolIndex = position ? lookupChain(position.chainId).poolIndex : 0;
 
     const fetchCurrentCollateral = () => {
@@ -582,16 +563,14 @@ function Reposition() {
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (!crocEnv || !position) return;
+        if (!position) return;
         const basePricePromise = cachedFetchTokenPrice(
             position.base,
             position.chainId,
-            crocEnv,
         );
         const quotePricePromise = cachedFetchTokenPrice(
             position.quote,
             position.chainId,
-            crocEnv,
         );
         Promise.all([basePricePromise, quotePricePromise]).then(
             ([basePrice, quotePrice]) => {
@@ -599,7 +578,7 @@ function Reposition() {
                 setQuotePrice(quotePrice?.usdPrice);
             },
         );
-    }, [position, crocEnv !== undefined]);
+    }, [position]);
 
     const calcNewValue = async () => {
         if (

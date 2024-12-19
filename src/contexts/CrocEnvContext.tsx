@@ -10,10 +10,11 @@ import {
     useState,
 } from 'react';
 import {
+    PRICE_WINDOW_GRANULARITY,
+    ZERO_ADDRESS,
     blastMainnet,
     ethereumMainnet,
     getDefaultPairForChain,
-    mainnetETH,
     scrollMainnet,
 } from '../ambient-utils/constants';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
@@ -52,9 +53,7 @@ export interface CrocEnvContextIF {
     blastProvider: Provider | undefined;
 }
 
-export const CrocEnvContext = createContext<CrocEnvContextIF>(
-    {} as CrocEnvContextIF,
-);
+export const CrocEnvContext = createContext({} as CrocEnvContextIF);
 const mainnetProvider = new BatchedJsonRpcProvider(
     ethereumMainnet.evmRpcUrl,
     parseInt(ethereumMainnet.chainId),
@@ -82,6 +81,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         activeNetwork: { chainId, evmRpcUrl },
+        isUserOnline,
     } = useContext(AppStateContext);
 
     const { userAddress } = useContext(UserDataContext);
@@ -184,7 +184,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             new BatchedJsonRpcProvider(evmRpcUrl, parseInt(chainId), {
                 staticNetwork: true,
             }),
-        [chainId],
+        [chainId, evmRpcUrl],
     );
 
     useBlacklist(userAddress);
@@ -206,23 +206,28 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             setCrocEnv(newCrocEnv);
         }
     };
-    useEffect(() => {
-        setNewCrocEnv();
-    }, [provider, walletProvider]);
 
     useEffect(() => {
-        if (provider && crocEnv) {
-            (async () => {
-                const mainnetEthPrice = await cachedFetchTokenPrice(
-                    mainnetETH.address,
-                    ethereumMainnet.chainId,
-                    crocEnv,
-                );
-                const usdPrice = mainnetEthPrice?.usdPrice;
-                usdPrice !== Infinity && setEthMainnetUsdPrice(usdPrice);
-            })();
-        }
-    }, [crocEnv, provider]);
+        if (isUserOnline) setNewCrocEnv();
+    }, [provider, walletProvider, isUserOnline, userAddress]);
+
+    const fetchMainnetEthPrice = async () => {
+        const mainnetEthPrice = (
+            await cachedFetchTokenPrice(ZERO_ADDRESS, '0x1')
+        )?.usdPrice;
+        setEthMainnetUsdPrice(mainnetEthPrice);
+    };
+
+    useEffect(() => {
+        fetchMainnetEthPrice();
+
+        const interval = setInterval(() => {
+            fetchMainnetEthPrice();
+        }, PRICE_WINDOW_GRANULARITY);
+
+        return () => clearInterval(interval);
+    }, []);
+
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainId));
     }, [chainId]);

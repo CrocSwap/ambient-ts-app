@@ -7,10 +7,7 @@ import {
 } from '@crocswap-libs/sdk';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { fetchPositionRewardsData } from '../../../../../ambient-utils/api/fetchPositionRewards';
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    GCGO_OVERRIDE_URL,
-} from '../../../../../ambient-utils/constants';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../../ambient-utils/constants';
 import {
     getFormattedNumber,
     getPositionData,
@@ -89,7 +86,7 @@ function RangeDetailsModal(props: propsIF) {
     >();
 
     const {
-        activeNetwork: { graphCacheUrl, chainId, poolIndex },
+        activeNetwork: { GCGO_URL, chainId, poolIndex },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
@@ -148,8 +145,11 @@ function RangeDetailsModal(props: propsIF) {
 
     const updateLiq = async () => {
         try {
-            if (!crocEnv || !position) return;
-            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+            if (
+                !position ||
+                !crocEnv ||
+                (await crocEnv.context).chain.chainId !== chainId
+            )
                 return;
             const pos = crocEnv.positions(
                 position.base,
@@ -160,12 +160,10 @@ function RangeDetailsModal(props: propsIF) {
             const basePricePromise = cachedFetchTokenPrice(
                 baseTokenAddress,
                 chainId,
-                crocEnv,
             );
             const quotePricePromise = cachedFetchTokenPrice(
                 quoteTokenAddress,
                 chainId,
-                crocEnv,
             );
 
             const poolPriceNonDisplay = await cachedQuerySpotPrice(
@@ -367,9 +365,7 @@ function RangeDetailsModal(props: propsIF) {
     };
 
     useEffect(() => {
-        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
-            ? GCGO_OVERRIDE_URL + '/position_stats?'
-            : graphCacheUrl + '/position_stats?';
+        const positionStatsCacheEndpoint = GCGO_URL + '/position_stats?';
 
         updateLiq();
 
@@ -515,7 +511,6 @@ function RangeDetailsModal(props: propsIF) {
                     <TransactionDetailsGraph {...GraphProps} />
                 </div>
             </div>
-            <p className={styles.ambi_copyright}>ambient.finance</p>
         </div>
     );
     const shareComponentMobile = (

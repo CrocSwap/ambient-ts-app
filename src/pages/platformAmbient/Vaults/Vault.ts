@@ -11,6 +11,7 @@ export class Vault implements VaultIF {
     createdBy: string;
     updatedBy: string;
     protocol: string;
+    feeRecipientAddress: string;
     chainId: string;
     address: `0x${string}`;
     strategy: string;
@@ -56,6 +57,7 @@ export class Vault implements VaultIF {
         this.createdBy = v.createdBy;
         this.updatedBy = v.updatedBy;
         this.protocol = v.protocol;
+        this.feeRecipientAddress = v.feeRecipientAddress;
         this.chainId = v.chainId;
         this.address = v.address;
         this.strategy = v.strategy;

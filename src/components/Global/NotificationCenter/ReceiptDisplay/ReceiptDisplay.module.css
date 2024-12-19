@@ -1,18 +1,8 @@
-.container {
-    width: 100%;
-    background: var(--dark2);
 
-    border-radius: 5px;
-    padding: 0.4rem 8px;
-    display: grid;
-    grid-template-columns: 40px auto;
-}
-
-.container:focus-visible,
-.row button:focus-visible,
-.row a:focus-visible,
+.ncontainer:focus-visible,
 .info button:focus-visible,
-.row svg:focus-visible {
+.column button:focus-visible,
+.column a:focus-visible {
     outline: 1px solid white;
 }
 .content {
@@ -40,14 +30,40 @@
     color: var(--text2);
 }
 
-.row {
-    width: 100%;
+
+
+.column p {
+    color: var(--text2);
+}
+
+
+.nContainer{
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    width: 100%;
+    background: var(--dark2);
+
+    border-radius: 5px;
+    padding: 0.4rem 8px;
+
+    display: grid;
+    grid-template-columns: 1fr 50px;
+    gap: 4px;
 }
 
-.row p {
-    color: var(--text2);
+.leftSide{
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    align-items: center;
+    cursor: pointer;
+}
+
+.column{
+    display: flex;
+    flex-direction: column;
+}
+.alignEnd{
+    display: flex;
+    align-items: flex-end;
 }

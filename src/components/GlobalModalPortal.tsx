@@ -1,14 +1,14 @@
 import { ReactNode, ReactPortal, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import { GLOBAL_MODAL_PORTAL_ID } from '../ambient-utils/constants';
-import { BrandContext, BrandContextIF } from '../contexts/BrandContext';
+import { BrandContext } from '../contexts/BrandContext';
 
 interface propsIF {
     children: ReactNode;
 }
 
 export default function GlobalModalPortal(props: propsIF) {
-    const { skin } = useContext<BrandContextIF>(BrandContext);
+    const { skin } = useContext(BrandContext);
     const { children } = props;
 
     const getGlobalModalPortal = (elem: ReactNode): ReactPortal => {

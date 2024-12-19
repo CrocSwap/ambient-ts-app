@@ -1,7 +1,5 @@
-// START: Import React and Dongles
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-// START: Import Local Files
 import {
     baseTokenForConcLiq,
     bigIntToFloat,
@@ -27,10 +25,7 @@ import {
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
-import {
-    TokenContext,
-    TokenContextIF,
-} from '../../../../contexts/TokenContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
@@ -78,7 +73,7 @@ function Ranges(props: propsIF) {
     const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
-        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+        activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
 
     const {
@@ -166,7 +161,7 @@ function Ranges(props: propsIF) {
 
     const {
         tokens: { tokenUniv: tokenList },
-    } = useContext<TokenContextIF>(TokenContext);
+    } = useContext(TokenContext);
 
     const EXTRA_REQUEST_CREDIT_COUNT = 10;
 
@@ -412,41 +407,6 @@ function Ranges(props: propsIF) {
         }
     }, [pagesVisible[0]]);
 
-    useEffect(() => {
-        // clear fetched transactions when switching pools
-        if (positionsByPool.positions.length === 0) {
-            setFetchedTransactions({
-                dataReceived: true,
-                positions: [],
-            });
-        } else {
-            const existingChanges = new Set(
-                fetchedTransactions.positions.map(
-                    (change) => change.positionId,
-                ),
-            ); // Adjust if using a different unique identifier
-
-            const newPositions = positionsByPool.positions.filter(
-                (change) =>
-                    !existingChanges.has(change.positionId) &&
-                    change.positionLiq !== 0,
-            );
-
-            if (pagesVisible[0] === 0) {
-                setFetchedTransactions({
-                    dataReceived: true,
-                    positions: [...newPositions, ...positionsByPool.positions],
-                });
-
-                if (positionsByPool.positions.length > 0) {
-                    setPageDataCount(getInitialDataPageCounts());
-                }
-            } else if (newPositions.length > 0) {
-                updateHotTransactions(newPositions);
-            }
-        }
-    }, [positionsByPool]);
-
     // const fetchNewData = async(OLDEST_TIME:number, signal: AbortSignal):Promise<PositionIF[]> => {
     const fetchNewData = async (OLDEST_TIME: number): Promise<PositionIF[]> => {
         return new Promise((resolve) => {
@@ -461,7 +421,7 @@ function Ranges(props: propsIF) {
                     n: dataPerPage,
                     timeBefore: OLDEST_TIME,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -657,6 +617,7 @@ function Ranges(props: propsIF) {
             fetchedTransactions.positions.length > 0
         ) {
             setPagesVisible([0, 1]);
+            // update page data counts once token pair changes
             setPageDataCount(getInitialDataPageCounts());
             setPageDataCountShouldReset(false);
             setInfiniteScrollLock(true);
@@ -677,6 +638,7 @@ function Ranges(props: propsIF) {
             fetchedTransactionsRef.current &&
             fetchedTransactionsRef.current.positions.length > 0
         ) {
+            // update page data counts once position data has filled and current data count vals are 0
             setPageDataCount(getInitialDataPageCounts());
         } else {
             setInfiniteScrollLock(false);
@@ -738,6 +700,47 @@ function Ranges(props: propsIF) {
         isAccountView,
         unindexedUpdatedPositions,
     ]);
+
+    useEffect(() => {
+        // clear fetched transactions when switching pools
+        if (positionsByPool.positions.length === 0) {
+            setFetchedTransactions({
+                dataReceived: true,
+                positions: [],
+            });
+        } else {
+            const existingChanges = new Set(
+                fetchedTransactions.positions.map(
+                    (change) => change.positionId,
+                ),
+            ); // Adjust if using a different unique identifier
+
+            const newPositions = positionsByPool.positions.filter(
+                (change) =>
+                    !existingChanges.has(change.positionId) &&
+                    change.positionLiq !== 0,
+            );
+
+            if (pagesVisible[0] === 0) {
+                const currentPositions = getUniqueSortedPositions(
+                    sortedPositions.filter((e) => e.positionLiq !== 0),
+                );
+                setFetchedTransactions({
+                    dataReceived: true,
+                    positions: [...newPositions, ...currentPositions],
+                });
+
+                if (currentPositions.length > 0) {
+                    // set page data counts once position data has filled and counts are on initial state (counts.len == 2)
+                    if (pageDataCountRef.current?.counts.length === 2) {
+                        setPageDataCount(getInitialDataPageCounts());
+                    }
+                }
+            } else if (newPositions.length > 0) {
+                updateHotTransactions(newPositions);
+            }
+        }
+    }, [positionsByPool]);
 
     // -----------------------------------------------------------------------------------------------------------------------------
 
@@ -984,6 +987,7 @@ function Ranges(props: propsIF) {
 
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>
+            !tx.isRemoved &&
             unindexedNonFailedSessionPositionUpdates.some(
                 (update) => update.txHash === tx.txHash,
             ) &&
