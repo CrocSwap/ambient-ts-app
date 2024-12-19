@@ -164,8 +164,6 @@ interface propsIF {
     updateURL: (changes: updatesIF) => void;
     userTransactionData: Array<TransactionIF> | undefined;
     setPrevCandleCount: React.Dispatch<React.SetStateAction<number>>;
-    isFetchingEnoughData: boolean;
-    setIsFetchingEnoughData: React.Dispatch<React.SetStateAction<boolean>>;
     isCompletedFetchData: boolean;
     setIsCompletedFetchData: React.Dispatch<React.SetStateAction<boolean>>;
     setChartResetStatus: React.Dispatch<
@@ -4299,7 +4297,7 @@ export default function Chart(props: propsIF) {
         if (scaleData) {
             if (
                 unparsedCandleData !== undefined &&
-                (!isTriggeredByZoom || unparsedCandleData.length > 10) &&
+                !isTriggeredByZoom &&
                 poolPriceWithoutDenom
             ) {
                 const isLine = ['futa'].includes(platformName);
