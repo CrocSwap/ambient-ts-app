@@ -20,7 +20,7 @@
     Access-Control-Allow-Origin = "*"
 
 [[headers]]
-  for = "/rings_192.png"
+  for = "/icons/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
 
