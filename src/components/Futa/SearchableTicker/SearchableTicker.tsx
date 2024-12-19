@@ -23,12 +23,13 @@ import Typewriter from '../TypeWriter/TypeWriter';
 import styles from './SearchableTicker.module.css';
 import TickerItem from './TickerItem';
 import { auctionDataSets } from '../../../pages/platformFuta/Account/Account';
+import { LuCheck, LuPencil } from 'react-icons/lu';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
     dataState?: {
         active: auctionDataSets;
-        toggle: (set: auctionDataSets) => void;
+        toggle: (set?: auctionDataSets) => void;
     };
     isAccount?: boolean;
     placeholderTicker?: boolean | undefined;
@@ -256,157 +257,127 @@ export default function SearchableTicker(props: propsIF) {
         return output;
     }
 
+    const BUTTON_ICON_SIZE = 17;
+
     const headerDisplay = (
         <div className={styles.header}>
-            <div className={styles.filter_options}>
-                {isAccount ? (
-                    <div className={styles.data_set_toggles}>
-                        <button
-                            className={
-                                dataState?.active === 'bids'
-                                    ? styles.button_active
-                                    : null
-                            }
-                            onClick={() =>
-                                dataState?.toggle && dataState.toggle('bids')
-                            }
-                        >
-                            BIDS
-                        </button>
-                        <button
-                            className={
-                                dataState?.active === 'created'
-                                    ? styles.button_active
-                                    : null
-                            }
-                            onClick={() =>
-                                dataState?.toggle && dataState.toggle('created')
-                            }
-                        >
-                            CREATED
-                        </button>
-                    </div>
-                ) : null}
-                <div className={styles.search_and_filter}>
-                    <div className={styles.text_search_box}>
-                        <BiSearch
-                            size={20}
-                            color='var(--text2)'
-                            id='searchable_ticker_input'
-                            onClick={() => focusInput()}
-                        />
-                        <input
-                            type='text'
-                            id={INPUT_DOM_ID}
-                            value={searchInputRaw}
-                            onChange={(e) => setSearchInputRaw(e.target.value)}
-                            placeholder='SEARCH...'
-                            spellCheck={false}
-                            autoComplete='off'
-                            tabIndex={1}
-                        />
-                        {searchInputRaw && (
-                            <MdClose
-                                size={20}
-                                color='var(--text2)'
-                                onClick={() => clearInput()}
-                            />
-                        )}
-                    </div>
-                    <div className={styles.filters} ref={timeDropdownRef}>
-                        <div className={styles.timeDropdownContent}>
-                            <div
-                                className={styles.timeDropdownButton}
-                                onClick={() =>
-                                    setIsSortDropdownOpen(!isSortDropdownOpen)
-                                }
-                            >
-                                <p>{activeSortOption.label}</p>
-                                {isSortDropdownOpen ? (
-                                    <IoIosArrowUp color='var(--accent1)' />
-                                ) : (
-                                    <IoIosArrowDown color='var(--accent1)' />
-                                )}
-                            </div>
-
-                            <div
-                                className={styles.sort_direction}
-                                onClick={() => auctions.reverse()}
-                            >
-                                <IoIosArrowUp
-                                    size={14}
-                                    color={
-                                        getArrowDirection() === 'up'
-                                            ? 'var(--accent1)'
-                                            : ''
-                                    }
-                                />
-
-                                <IoIosArrowDown
-                                    size={14}
-                                    color={
-                                        getArrowDirection() === 'down'
-                                            ? 'var(--accent1)'
-                                            : ''
-                                    }
-                                />
-                            </div>
-                        </div>
-
-                        {isSortDropdownOpen && (
-                            <div className={styles.dropdown}>
-                                {sortDropdownOptions.map((item, idx) => (
-                                    <p
-                                        className={styles.timeItem}
-                                        key={idx}
-                                        onClick={() => {
-                                            setActiveSortOption(item);
-                                            setIsSortDropdownOpen(false);
-                                            auctions.update(
-                                                item.slug as auctionSorts,
-                                            );
-                                        }}
-                                    >
-                                        {item.label}
-                                    </p>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-                <div className={styles.sort_toggles}>
-                    <button
-                        onClick={() => setShowComplete(!showComplete)}
-                        className={
-                            showComplete ? styles.buttonOn : styles.buttonOff
-                        }
-                    >
-                        SHOW COMPLETE
-                    </button>
-                    <button
-                        onClick={() => watchlists.toggle()}
-                        className={
-                            styles[
-                                watchlists.shouldDisplay
-                                    ? 'buttonOn'
-                                    : 'buttonOff'
-                            ]
-                        }
-                    >
-                        <FaEye
-                            size={17}
-                            className={
-                                styles[
-                                    watchlists.shouldDisplay
-                                        ? 'eyeOn'
-                                        : 'eyeOff'
-                                ]
-                            }
-                        />
-                        WATCHLIST
-                    </button>
-                </div>
+            <div className={styles.text_search_box}>
+                <BiSearch
+                    size={20}
+                    color='var(--text2)'
+                    id='searchable_ticker_input'
+                    onClick={() => focusInput()}
+                />
+                <input
+                    type='text'
+                    id={INPUT_DOM_ID}
+                    value={searchInputRaw}
+                    onChange={(e) => setSearchInputRaw(e.target.value)}
+                    placeholder='SEARCH...'
+                    spellCheck={false}
+                    autoComplete='off'
+                    tabIndex={1}
+                />
+                {searchInputRaw && (
+                    <MdClose
+                        size={20}
+                        color='var(--text2)'
+                        onClick={() => clearInput()}
+                    />
+                )}
             </div>
+            <div className={styles.filters} ref={timeDropdownRef}>
+                <div className={styles.timeDropdownContent}>
+                    <div
+                        className={styles.timeDropdownButton}
+                        onClick={() =>
+                            setIsSortDropdownOpen(!isSortDropdownOpen)
+                        }
+                    >
+                        <p>{activeSortOption.label}</p>
+                        {isSortDropdownOpen ? (
+                            <IoIosArrowUp color='var(--accent1)' />
+                        ) : (
+                            <IoIosArrowDown color='var(--accent1)' />
+                        )}
+                    </div>
+
+                    <div
+                        className={styles.sort_direction}
+                        onClick={() => auctions.reverse()}
+                    >
+                        <IoIosArrowUp
+                            size={14}
+                            color={
+                                getArrowDirection() === 'up'
+                                    ? 'var(--accent1)'
+                                    : ''
+                            }
+                        />
+
+                        <IoIosArrowDown
+                            size={14}
+                            color={
+                                getArrowDirection() === 'down'
+                                    ? 'var(--accent1)'
+                                    : ''
+                            }
+                        />
+                    </div>
+                </div>
+
+                {isSortDropdownOpen && (
+                    <div className={styles.dropdown}>
+                        {sortDropdownOptions.map((item, idx) => (
+                            <p
+                                className={styles.timeItem}
+                                key={idx}
+                                onClick={() => {
+                                    setActiveSortOption(item);
+                                    setIsSortDropdownOpen(false);
+                                    auctions.update(item.slug as auctionSorts);
+                                }}
+                            >
+                                {item.label}
+                            </p>
+                        ))}
+                    </div>
+                )}
+            </div>
+            <button
+                onClick={() => setShowComplete(!showComplete)}
+                className={showComplete ? styles.buttonOn : styles.buttonOff}
+            >
+                <LuCheck size={BUTTON_ICON_SIZE} />
+                <div>COMPLETED</div>
+            </button>
+            <button
+                onClick={() => watchlists.toggle()}
+                className={
+                    styles[watchlists.shouldDisplay ? 'buttonOn' : 'buttonOff']
+                }
+            >
+                <FaEye
+                    size={BUTTON_ICON_SIZE}
+                    className={
+                        styles[watchlists.shouldDisplay ? 'eyeOn' : 'eyeOff']
+                    }
+                />
+                WATCHLIST
+            </button>
+            {isAccount ? (
+                <button
+                    className={
+                        dataState?.active === 'created'
+                            ? styles.buttonOn
+                            : styles.buttonOff
+                    }
+                    onClick={() => dataState?.toggle && dataState.toggle()}
+                >
+                    <LuPencil size={BUTTON_ICON_SIZE} />
+                    <div>CREATED</div>
+                </button>
+            ) : null}
         </div>
     );
 
