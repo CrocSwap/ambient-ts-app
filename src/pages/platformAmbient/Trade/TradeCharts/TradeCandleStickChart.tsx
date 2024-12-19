@@ -1017,13 +1017,7 @@ function TradeCandleStickChart(props: propsIF) {
             setFetchCountForEnoughData(maxRequestCountForCondensed);
             setIsFetchingEnoughData(false);
         }
-    }, [
-        unparsedCandleData,
-        period === undefined,
-        isCondensedModeEnabled,
-        isDenomBase,
-        candleDomains.isResetRequest,
-    ]);
+    }, [unparsedCandleData, isCondensedModeEnabled]);
 
     const isOpenChart =
         !isLoading &&

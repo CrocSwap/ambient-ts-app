@@ -222,6 +222,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isChartEnabled,
         crocEnv,
         isUserOnline,
+        baseTokenAddress + quoteTokenAddress,
         isPoolInitialized,
         chainId,
         poolPriceDisplay === 0,
