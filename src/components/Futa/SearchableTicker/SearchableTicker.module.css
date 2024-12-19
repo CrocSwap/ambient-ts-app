@@ -83,11 +83,6 @@
     color: var(--accent1);
 }
 
-.eye_on {
-    transition: all var(--animation-speed) ease-in-out;
-    color: var(--accent1);
-}
-
 .sort_clickable {
     position: relative;
     width: 220px;
