@@ -574,7 +574,8 @@ export const scrollRsETH: TokenIF = registerToken({
     symbol: 'rsETH',
     decimals: 18,
     chainId: 534352,
-    logoURI: '',
+    logoURI:
+        'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/e1522c29a42749fd5ec81.svg',
 });
 
 export const scrollSTONE: TokenIF = registerToken({
@@ -583,7 +584,7 @@ export const scrollSTONE: TokenIF = registerToken({
     symbol: 'STONE',
     decimals: 18,
     chainId: 534352,
-    logoURI: '',
+    logoURI: 'https://etherscan.io/token/images/stakestone_32.png',
 });
 
 export const scrollUniETH: TokenIF = registerToken({
@@ -638,7 +639,7 @@ export const scrollBalancer: TokenIF = registerToken({
     symbol: 'BAL',
     decimals: 18,
     chainId: 534352,
-    logoURI: '',
+    logoURI: 'https://scrollscan.com/token/images/balancer_ofc_32.png',
 });
 
 export const scrollDODO: TokenIF = registerToken({
