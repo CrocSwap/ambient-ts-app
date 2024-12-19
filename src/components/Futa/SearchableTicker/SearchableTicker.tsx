@@ -461,6 +461,7 @@ export default function SearchableTicker(props: propsIF) {
                               key={JSON.stringify(auction)}
                               auction={auction}
                               isAccount={isAccount}
+                              isMobile={smallScreen}
                               selectedTicker={selectedTicker}
                               setSelectedTicker={setSelectedTicker}
                               setShowComplete={setShowComplete}

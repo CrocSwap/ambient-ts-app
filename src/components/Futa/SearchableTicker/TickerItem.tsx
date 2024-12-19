@@ -20,6 +20,7 @@ interface PropsIF {
     setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
     selectedTicker: string | undefined;
     isAccount: boolean | undefined;
+    isMobile: boolean;
     setShowComplete: Dispatch<SetStateAction<boolean>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useRefTicker: MutableRefObject<any>;
@@ -30,6 +31,7 @@ export default function TickerItem(props: PropsIF) {
         selectedTicker,
         setSelectedTicker,
         isAccount,
+        isMobile,
         setShowComplete,
         useRefTicker,
     } = props;
@@ -183,9 +185,11 @@ export default function TickerItem(props: PropsIF) {
             }}
         >
             <div className={styles.ticker_name}>
-                <span className={styles.ticker_name_arrow}>
-                    <GoChevronRight />
-                </span>
+                {isMobile || (
+                    <span className={styles.ticker_name_arrow}>
+                        <GoChevronRight />
+                    </span>
+                )}
                 <p className={styles.tick_name}>{ticker}</p>
             </div>
             <p className={styles.marketCap}>{formattedMarketCap}</p>
