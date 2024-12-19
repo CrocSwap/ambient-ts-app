@@ -965,6 +965,15 @@ export const swellSWETH: TokenIF = registerToken({
         'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/971f401121cc90314670c.svg',
 });
 
+export const swellUSDE: TokenIF = registerToken({
+    name: 'USDe',
+    address: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
+    symbol: 'USDe',
+    decimals: 18,
+    chainId: 1923,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29470.png',
+});
+
 export const plumeNativeETH: TokenIF = registerToken({
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
