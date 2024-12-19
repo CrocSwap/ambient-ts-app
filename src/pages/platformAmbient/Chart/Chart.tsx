@@ -772,17 +772,11 @@ export default function Chart(props: propsIF) {
             const mergedSwap = sortedBuySwaps.concat(sortedSellSwap);
 
             if (leftDomain !== undefined && rightDomain !== undefined) {
-                mergedSwap.map((transaction) => {
+                mergedSwap.map((transaction, index) => {
                     if (
                         transaction.txTime > leftDomain &&
                         transaction.txTime < rightDomain
                     ) {
-                        const point = scaleData.xScale(
-                            transaction.txTime * 1000,
-                        );
-
-                        const nearest = snapForCandle(point, visibleCandleData);
-
                         if (mergedTransactionArray.length > 0) {
                             const latestElement =
                                 mergedTransactionArray[
@@ -790,28 +784,19 @@ export default function Chart(props: propsIF) {
                                 ];
 
                             const diffInPixel = Math.abs(
-                                scaleData.xScale(nearest.time) -
+                                scaleData.xScale(transaction.txTime) -
                                     scaleData.xScale(
                                         latestElement.order.txTime,
                                     ),
                             );
-                            const diffInPeriod = Math.abs(
-                                scaleData.xScale(new Date().getMilliseconds()) -
-                                    scaleData.xScale(
-                                        new Date().getMilliseconds() -
-                                            period / 2,
-                                    ),
-                            );
 
-                            const shouldMerge =
-                                diffInPixel < 0.007 &&
-                                diffInPixel < diffInPeriod;
+                            const shouldMerge = diffInPixel < 0.03;
 
                             const isSameDirection =
                                 (transaction.isBuy &&
-                                    latestElement.order.isBuy) ||
+                                    mergedSwap[index - 1].isBuy) ||
                                 (!transaction.isBuy &&
-                                    !latestElement.order.isBuy);
+                                    !mergedSwap[index - 1].isBuy);
 
                             if (shouldMerge && isSameDirection) {
                                 latestElement.mergedTx.push(transaction);
