@@ -48,7 +48,7 @@ export default function VaultRow(props: propsIF) {
     // const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
 
     const {
-        activeNetwork: { chainId },
+        activeNetwork: { chainId, tempestApiNetworkName },
     } = useContext(AppStateContext);
 
     const mainAsset = tokens.getTokenByAddress(vault.mainAsset);
@@ -229,16 +229,8 @@ export default function VaultRow(props: propsIF) {
         );
     function navigateExternal(): void {
         const goToExternal = (url: string) => window.open(url, '_blank');
-        if (Number(vault.chainId) === 534352) {
-            const destination: string =
-                'https://app.tempestfinance.xyz/vaults/scroll/' + vault.address;
-            goToExternal(destination);
-        } else if (Number(vault.chainId) === 1) {
-            const destination: string =
-                'https://app.tempestfinance.xyz/vaults/ethereum/' +
-                vault.address;
-            goToExternal(destination);
-        }
+        const destination = `https://app.tempestfinance.xyz/vaults/${tempestApiNetworkName}/${vault.address}`;
+        goToExternal(destination);
     }
 
     return (

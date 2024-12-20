@@ -42,6 +42,8 @@ export const scrollMainnet: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Scroll',
     tokenPriceQueryAssetPlatform: 'scroll',
+    vaultsEnabled: true,
+    tempestApiNetworkName: 'scroll',
     topPools: [
         new TopPool(scrollETH, scrollUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(scrollSCR, scrollETH, chainSpecFromSDK.poolIndex),

@@ -41,6 +41,7 @@ export const swellSepolia: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Swell Testnet',
     tokenPriceQueryAssetPlatform: undefined,
+    vaultsEnabled: false,
     topPools: [
         new TopPool(
             swellSepoliaETH,

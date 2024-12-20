@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.12.14",
+    "version": "2.12.15",
     "private": true,
     "type": "module",
     "dependencies": {
