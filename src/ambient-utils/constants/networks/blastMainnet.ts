@@ -2,7 +2,12 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
-import { blastBLAST, blastETH, blastUSDB, blastWEETH } from '../defaultTokens';
+import {
+    blastBLAST,
+    blastETH,
+    blastUSDB,
+    blastUSDPLUS,
+} from '../defaultTokens';
 import { GCGO_BLAST_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -36,10 +41,12 @@ export const blastMainnet: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,
     tokenPriceQueryAssetPlatform: 'blast',
+    vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         new TopPool(blastETH, blastUSDB, chainSpecFromSDK.poolIndex),
         new TopPool(blastBLAST, blastETH, chainSpecFromSDK.poolIndex),
-        new TopPool(blastWEETH, blastETH, chainSpecFromSDK.poolIndex),
+        new TopPool(blastUSDPLUS, blastUSDB, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

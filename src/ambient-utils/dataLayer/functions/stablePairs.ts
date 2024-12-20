@@ -57,12 +57,14 @@ import {
     swellEZETH,
     swellPZETH,
     swellRSETH,
+    swellRSWETH,
     swellSTBTC,
     swellSWBTC,
     swellSWETH,
     swellSepoliaUSDC,
     swellSepoliaUSDT,
     swellUBTC,
+    swellUSDE,
     swellWEETH,
     swellWSTETH,
 } from '../../constants/defaultTokens';
@@ -165,6 +167,7 @@ export const STABLE_USD_TOKENS = [
     plumeSepoliaUSD,
     plumeSepoliaNEV,
     swellSepoliaUSDT,
+    swellUSDE,
     baseSepoliaUSDT,
 ]
     .map((x) => x.address.toLowerCase())
@@ -204,6 +207,7 @@ export const STAKED_ETH_TOKENS = [
     swellWEETH,
     swellRSETH,
     swellSWETH,
+    swellRSWETH,
 ].map((x) => x.address.toLowerCase());
 
 export const USD_EXCLUDED_TOKENS = [mainnetSWELL.address].map((x) =>

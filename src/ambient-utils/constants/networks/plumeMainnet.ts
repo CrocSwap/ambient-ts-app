@@ -37,6 +37,8 @@ export const plumeMainnet: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Plume',
     tokenPriceQueryAssetPlatform: 'plume',
+    vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         // new TopPool(plumePETH, plumePUSD, chainSpecFromSDK.poolIndex),
         // new TopPool(plumeNEV, plumePUSD, chainSpecFromSDK.poolIndex),
