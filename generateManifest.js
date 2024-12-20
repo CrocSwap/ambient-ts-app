@@ -56,6 +56,11 @@ const manifest = {
             type: 'image/png',
             purpose: 'maskable',
         },
+        { id: '/' },
+        {
+            display_override: ['fullscreen', 'minimal-ui'],
+            display: 'standalone',
+        },
     ],
     start_url: '/',
     display: 'standalone',
