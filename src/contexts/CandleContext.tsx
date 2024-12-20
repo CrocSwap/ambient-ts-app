@@ -26,9 +26,9 @@ import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
+import { TradeDataContext } from './TradeDataContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { UserDataContext } from './UserDataContext';
-import { TradeDataContext } from './TradeDataContext';
 
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
@@ -209,9 +209,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
                 isChangeUserConnected &&
-                poolPriceDisplay
+                poolPriceDisplay &&
+                isChartEnabled
             ) {
-                isChartEnabled && isUserOnline && fetchCandles(true);
+                fetchCandles(true);
                 if (isManualCandleFetchRequested)
                     setIsManualCandleFetchRequested(false);
             }
@@ -226,6 +227,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isPoolInitialized,
         chainId,
         poolPriceDisplay === 0,
+        isUserConnected,
     ]);
 
     // only works when the period changes
