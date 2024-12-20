@@ -12,7 +12,7 @@ import {
 import { GCGO_SCROLL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const PUBLIC_RPC_URL = 'https://rpc.scroll.io';
+export const PUBLIC_RPC_URL = 'https://scroll-rpc.publicnode.com';
 
 export const RESTRICTED_RPC_URL =
     import.meta.env.VITE_SCROLL_RPC_URL !== undefined
