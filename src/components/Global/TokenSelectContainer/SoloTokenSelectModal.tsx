@@ -15,19 +15,10 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import { AppStateContext } from '../../../contexts';
-import {
-    CachedDataContext,
-    CachedDataContextIF,
-} from '../../../contexts/CachedDataContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../contexts/CrocEnvContext';
-import { TokenContext, TokenContextIF } from '../../../contexts/TokenContext';
-import {
-    TradeDataContext,
-    TradeDataContextIF,
-} from '../../../contexts/TradeDataContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import Modal from '../Modal/Modal';
@@ -57,9 +48,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         platform = 'ambient',
     } = props;
 
-    const { cachedTokenDetails } =
-        useContext<CachedDataContextIF>(CachedDataContext);
-    const { provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { cachedTokenDetails } = useContext(CachedDataContext);
+    const { provider } = useContext(CrocEnvContext);
 
     const {
         activeNetwork: { chainId },
@@ -74,10 +64,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         searchType,
         addRecentToken,
         getRecentTokens,
-    } = useContext<TokenContextIF>(TokenContext);
+    } = useContext(TokenContext);
 
-    const { tokenA, tokenB, setSoloToken } =
-        useContext<TradeDataContextIF>(TradeDataContext);
+    const { tokenA, tokenB, setSoloToken } = useContext(TradeDataContext);
 
     // hook to generate a navigation action for when modal is closed
     // no arg ➡ hook will infer destination from current URL path

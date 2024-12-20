@@ -10,6 +10,7 @@ import {
     scrollMainnet,
     scrollSepolia,
     supportedNetworks,
+    swellMainnet,
     swellSepolia,
 } from '../../ambient-utils/constants';
 import {
@@ -189,6 +190,8 @@ export const useAppChain = (): {
                                 nextNetwork = plumeSepolia;
                             } else if (incomingChainFromWallet === '0x784') {
                                 nextNetwork = swellSepolia;
+                            } else if (incomingChainFromWallet === '0x783') {
+                                nextNetwork = swellMainnet;
                             } else if (incomingChainFromWallet === '0x14a34') {
                                 nextNetwork = baseSepolia;
                             }

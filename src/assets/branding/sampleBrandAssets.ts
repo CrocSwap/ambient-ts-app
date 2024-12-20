@@ -8,7 +8,6 @@ export const sampleBrandAssets: brandIF = {
             // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
-            hero: [{ content: 'futa', processAs: 'text' }],
         },
     },
     platformName: 'futa',

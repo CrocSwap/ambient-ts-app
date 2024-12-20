@@ -352,6 +352,7 @@ const useFetchPoolStats = (
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
                 tokens.allDefaultTokens,
+                localPoolPriceNonDisplay[1],
                 enableTotalSupply,
             );
 

@@ -27,9 +27,7 @@ export interface SidebarContextIF {
     isPoolDropdownOpen: boolean;
 }
 
-export const SidebarContext = createContext<SidebarContextIF>(
-    {} as SidebarContextIF,
-);
+export const SidebarContext = createContext({} as SidebarContextIF);
 
 export const SidebarContextProvider = (props: { children: ReactNode }) => {
     // logic to open a snackbar notification

@@ -2,19 +2,18 @@ import { Dispatch, memo, SetStateAction } from 'react';
 import checkPoolForWETH from '../../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../../ambient-utils/types';
 import { PoolDataIF } from '../../../../contexts/ExploreContext';
-import PoolRow from '../PoolRow/PoolRow';
-import {
-    SortedPoolMethodsIF,
-    sortType,
-    useSortedPools,
-} from '../useSortedPools';
-// import Spinner from '../../Spinner/Spinner';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
 import AssignSort from '../AssignSort';
 import ExploreToggle from '../ExploreToggle/ExploreToggle';
+import PoolRow from '../PoolRow/PoolRow';
 import PoolRowSkeleton from '../PoolRow/PoolRowSkeleton';
+import {
+    SortedPoolMethodsIF,
+    sortType,
+    useSortedPools,
+} from '../useSortedPools';
 import styles from './TopPools.module.css';
 
 export type HeaderItem = {

@@ -1,7 +1,5 @@
-// START: Import React and Dongles
 import { useContext } from 'react';
 
-// START: Import Local Files
 import Button from '../../../components/Form/Button';
 import Modal from '../../../components/Global/Modal/Modal';
 import styles from './GateWalletModal.module.css';

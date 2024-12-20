@@ -14,7 +14,7 @@ import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
 import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import {
     GAS_DROPS_ESTIMATE_RANGE_HARVEST,
     GAS_DROPS_ESTIMATE_RANGE_REMOVAL,
@@ -26,10 +26,7 @@ import {
     isStablePair,
 } from '../../ambient-utils/dataLayer';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../contexts/AppStateContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -59,8 +56,8 @@ interface propsIF {
 function RangeActionModal(props: propsIF) {
     const { type, position, onClose, isAccountView } = props;
     const {
-        activeNetwork: { graphCacheUrl, chainId, poolIndex },
-    } = useContext<AppStateContextIF>(AppStateContext);
+        activeNetwork: { GCGO_URL, chainId, poolIndex },
+    } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const { crocEnv, provider, ethMainnetUsdPrice } =
         useContext(CrocEnvContext);
@@ -126,9 +123,7 @@ function RangeActionModal(props: propsIF) {
         (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
         0;
 
-    const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/position_stats?'
-        : graphCacheUrl + '/position_stats?';
+    const positionStatsCacheEndpoint = GCGO_URL + '/position_stats?';
 
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined

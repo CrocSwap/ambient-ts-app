@@ -95,13 +95,11 @@ function normalizeAddr(addr: string): string {
     return caseAddr.startsWith('0x') ? caseAddr : '0x' + caseAddr;
 }
 
-export const GraphDataContext = createContext<GraphDataContextIF>(
-    {} as GraphDataContextIF,
-);
+export const GraphDataContext = createContext({} as GraphDataContextIF);
 
 export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { graphCacheUrl, chainId },
+        activeNetwork: { GCGO_URL, chainId },
         server: { isEnabled: isServerEnabled },
         isUserIdle,
         isUserOnline,
@@ -456,7 +454,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                         recordType: recordTargets[i],
                         user: userAddress,
                         chainId: chainId,
-                        gcUrl: graphCacheUrl,
+                        gcUrl: GCGO_URL,
                         provider,
                         tokenUniv: tokens.tokenUniv,
                         crocEnv,
@@ -497,7 +495,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                     user: userAddress,
                     chainId: chainId,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider,
                     n: 100, // fetch last 100 changes,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,

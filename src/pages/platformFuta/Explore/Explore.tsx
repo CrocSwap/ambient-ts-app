@@ -1,4 +1,3 @@
-import React from 'react';
 import PlaceholderPage from '../../../components/Futa/PlaceholderPage/PlaceholderPage';
 
 function Explore() {

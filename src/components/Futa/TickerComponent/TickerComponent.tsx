@@ -26,10 +26,7 @@ import {
 import { TokenIF } from '../../../ambient-utils/types';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import {
-    AuctionsContext,
-    AuctionsContextIF,
-} from '../../../contexts/AuctionsContext';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
@@ -61,7 +58,7 @@ const useAuctionContexts = () => {
         getFreshAuctionData,
         freshAuctionStatusData,
         setSelectedTicker,
-    } = useContext<AuctionsContextIF>(AuctionsContext);
+    } = useContext(AuctionsContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
     const { isUserConnected } = useContext(UserDataContext);

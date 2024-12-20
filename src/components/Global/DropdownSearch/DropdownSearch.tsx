@@ -19,10 +19,7 @@ import {
     sidebarSearchIF,
     useSidebarSearch,
 } from '../../../App/hooks/useSidebarSearch';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
@@ -50,7 +47,7 @@ interface optionItem {
 const DropdownSearch = () => {
     const {
         activeNetwork: { chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =

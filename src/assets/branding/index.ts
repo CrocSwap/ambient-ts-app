@@ -7,4 +7,5 @@ export { futaBrandAssets } from './futaBrandAssets';
 export { plumeSepoliaBrandAssets } from './plumeSepoliaBrandAssets';
 export { sampleBrandAssets } from './sampleBrandAssets';
 export { scrollBrandAssets } from './scrollBrandAssets';
+export { swellBrandAssets } from './swellBrandAssets';
 export { swellSepoliaBrandAssets } from './swellSepoliaBrandAssets';

@@ -13,80 +13,61 @@ export const defaultBrandAssets: brandIF = {
             // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: scrollLogo, processAs: 'image' },
-            ],
+            cobrandingLogo: scrollLogo,
+        },
+        // swell mainnet
+        '0x783': {
+            // first value in array is default color scheme
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
+            premiumColor: [],
+            cobrandingLogo: swellLogo,
         },
         // blast mainnet
         '0x13e31': {
             // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: blastLogo, processAs: 'image' },
-            ],
+            cobrandingLogo: blastLogo,
         },
         // ethereum mainnet
         '0x1': {
             // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
-            hero: [{ content: 'ambient', processAs: 'text' }],
         },
         // ethereum sepolia
         '0xaa36a7': {
             // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
-            hero: [{ content: 'ambient', processAs: 'text' }],
         },
         // plume sepolia
         '0x18230': {
             // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: plumeLogo, processAs: 'image' },
-            ],
+            cobrandingLogo: plumeLogo,
         },
         // swell sepolia
         '0x784': {
             // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: swellLogo, processAs: 'image' },
-            ],
+            cobrandingLogo: swellLogo,
         },
         // base sepolia
         '0x14a34': {
             // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: baseLogo, processAs: 'image' },
-            ],
+            cobrandingLogo: baseLogo,
         },
         // blast sepolia
         '0xa0c71fd': {
             // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: blastLogo, processAs: 'image' },
-            ],
+            cobrandingLogo: blastLogo,
         },
     },
     platformName: 'ambient',

@@ -8,22 +8,10 @@ import {
     BlastRewardsDataIF,
     PositionIF,
 } from '../../../../../ambient-utils/types';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../../contexts/AppStateContext';
-import {
-    ChainDataContext,
-    ChainDataContextIF,
-} from '../../../../../contexts/ChainDataContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../../contexts/CrocEnvContext';
-import {
-    UserDataContext,
-    UserDataContextIF,
-} from '../../../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import InfoRow from '../../../InfoRow';
@@ -55,11 +43,10 @@ function RangeDetailsSimplify(props: propsIF) {
         activeNetwork: {
             chainSpec: { addrs },
         },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { userAddress } = useContext<UserDataContextIF>(UserDataContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { isActiveNetworkBlast } =
-        useContext<ChainDataContextIF>(ChainDataContext);
+    } = useContext(AppStateContext);
+    const { userAddress } = useContext(UserDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
     const {
         ensName,

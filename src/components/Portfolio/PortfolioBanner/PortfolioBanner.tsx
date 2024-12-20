@@ -1,10 +1,7 @@
-// START: Import React and Dongles
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
-// START: Import JSX Components
 import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAccount';
 
-// START: Import Other Local Files
 import { trimString } from '../../../ambient-utils/dataLayer';
 
 import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';

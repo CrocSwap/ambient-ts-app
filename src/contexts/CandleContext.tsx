@@ -22,10 +22,10 @@ import {
 } from '../ambient-utils/types';
 import { chartSettingsIF } from '../App/hooks/useChartSettings';
 import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
-import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
-import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
+import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { UserDataContext } from './UserDataContext';
 
@@ -53,9 +53,7 @@ export interface CandleContextIF {
     setShowFutaCandles: Dispatch<SetStateAction<boolean>>;
 }
 
-export const CandleContext = createContext<CandleContextIF>(
-    {} as CandleContextIF,
-);
+export const CandleContext = createContext({} as CandleContextIF);
 
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
@@ -73,9 +71,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setNumCandlesFetched,
     } = useContext(ChartContext);
     const {
-        activeNetwork: { chainId, poolIndex, graphCacheUrl },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+        activeNetwork: { chainId, poolIndex, GCGO_URL },
+    } = useContext(AppStateContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { isUserConnected } = useContext(UserDataContext);
     const {
@@ -323,7 +321,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 true,
                 chainId,
                 poolIndex,
-                graphCacheUrl,
+                GCGO_URL,
                 candleTimeLocal || defaultCandleDuration,
                 baseTokenAddress,
                 quoteTokenAddress,
@@ -436,7 +434,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             true,
             chainId,
             poolIndex,
-            graphCacheUrl,
+            GCGO_URL,
             candleTimeLocal,
             baseTokenAddress,
             quoteTokenAddress,

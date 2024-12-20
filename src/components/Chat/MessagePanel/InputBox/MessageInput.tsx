@@ -18,11 +18,6 @@ import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import CircularProgressBarForChat from '../../../Global/OpenOrderStatus/CircularProgressBarForChat';
 import {
-    ALLOW_MENTIONS,
-    CUSTOM_EMOJI_BLACKLIST_CHARACTERS,
-} from '../../ChatConstants/ChatConstants';
-import { getSingleEmoji } from '../../ChatRenderUtils';
-import {
     filterMessage,
     formatURL,
     getEmojiFromUnifiedCode,
@@ -30,11 +25,17 @@ import {
     isLinkInCrocodileLabsLinks,
     isLinkInCrocodileLabsLinksForInput,
 } from '../../ChatUtils';
-import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
-import { emojiMeta } from '../../EmojiMeta';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
+import {
+    ALLOW_MENTIONS,
+    CUSTOM_EMOJI_BLACKLIST_CHARACTERS,
+} from '../../ChatConstants/ChatConstants';
+import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
+import { emojiMeta } from '../../EmojiMeta';
+import { getSingleEmoji } from '../../ChatRenderUtils';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface MessageInputProps {
     currentUser: string;
@@ -100,6 +101,7 @@ export default function MessageInput(props: MessageInputProps) {
     const roomId = props.room;
 
     const { showEmojiPicker, setShowEmojiPicker } = props;
+    const showMobileVersion = useMediaQuery('(max-width: 800px)');
 
     const isRoomAdmins = roomId === 'Admins';
 
@@ -182,6 +184,9 @@ export default function MessageInput(props: MessageInputProps) {
     const handleEmojiPickerHideShow = () => {
         if (!isUserConnected && !userAddress) {
             setShowEmojiPicker(false);
+        } else if (showMobileVersion) {
+            setShowEmojiPicker(false);
+            inputRef?.current?.focus();
         } else {
             setShowEmojiPicker(!showEmojiPicker);
         }
@@ -879,31 +884,40 @@ export default function MessageInput(props: MessageInputProps) {
                                     style={{ cursor: 'pointer' }}
                                 />
                             </span>
-                            <span
-                                id='chat-info-button'
-                                className={styles.emoji_close_button}
-                                onClick={() => setIsInfoPressed(!isInfoPressed)}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <RiInformationLine title='Info' />
-                            </span>
+                            {!showMobileVersion && (
+                                <span
+                                    id='chat-info-button'
+                                    className={styles.emoji_close_button}
+                                    onClick={() =>
+                                        setIsInfoPressed(!isInfoPressed)
+                                    }
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <RiInformationLine title='Info' />
+                                </span>
+                            )}
                             {isInfoPressed ? (
-                                <ul>
-                                    <h5>Keyboard Shortcuts</h5>
-                                    <hr></hr>
-                                    <li>Ctrl + Alt + C - opens/closes chat</li>
-                                    <li>Esc- closes chat</li>
-                                    <li>
-                                        Alt + X - opens emoji panel when chat is
-                                        open
-                                    </li>
-                                    <li>Alt+ Q - close emoji panel</li>
-                                    <li>Ctrl + M - opens info</li>
-                                    <li>Enter - sends message directly</li>
-                                </ul>
+                                <div style={{ marginLeft: '6px' }}>
+                                    <ul>
+                                        <h5>Keyboard Shortcuts</h5>
+                                        <hr></hr>
+                                        <li>
+                                            Ctrl + Alt + C - opens/closes chat
+                                        </li>
+                                        <li>Esc- closes chat</li>
+                                        <li>
+                                            Alt + X - opens emoji panel when
+                                            chat is open
+                                        </li>
+                                        <li>Alt+ Q - close emoji panel</li>
+                                        <li>Ctrl + M - opens info</li>
+                                        <li>Enter - sends message directly</li>
+                                    </ul>
+                                </div>
                             ) : (
                                 <Picker
                                     theme={Theme.DARK}
+                                    searchDisabled={true}
                                     style={{
                                         width: '100%',
                                     }}

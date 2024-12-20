@@ -15,35 +15,18 @@ import {
     supportedNetworks,
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
-import blastLogo from './assets/images/networks/blast_logo.png';
-import ethLogo from './assets/images/networks/ethereum_logo.svg';
-import scrollLogo from './assets/images/networks/scroll_logo.webp';
-import { GlobalContexts } from './contexts/GlobalContexts';
-// import plumeLogo from './assets/images/networks/plume_mainnet_logo.webp';
-import sepoliaLogo from './assets/images/networks/sepolia_logo.webp';
-// import plumeSepoliaLogo from './assets/images/networks/plume_sepolia_network_logo.webp';
 import { getLocalStorageItem } from './ambient-utils/dataLayer';
 import baseSepoliaLogo from './assets/images/networks/base_network_logo_with_margin.webp';
+import blastLogo from './assets/images/networks/blast_logo.png';
 import blastSepoliaLogo from './assets/images/networks/blast_sepolia_logo.webp';
+import ethLogo from './assets/images/networks/ethereum_logo.svg';
 import plumeSepoliaLogo from './assets/images/networks/plume_mainnet_logo_small.webp';
+import scrollLogo from './assets/images/networks/scroll_logo.webp';
 import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia_logo.webp';
-import swellSepoliaLogo from './assets/images/networks/swell_network_logo_with_margin.webp';
-
-// /* Perform a single forcible reload when the page first loads. Without this, there
-//  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
-//  * cost of higher load times, especially when pre-loading isn't happening. See:
-//  * https://community.metamask.io/t/google-chrome-page-preload-causes-weirdness-with-metamask/24042
-//  *
-//  * Still happening as of May 2024 using Metamask v11.15.4 on Chrome 124. */
-// const doReload =
-//     JSON.parse(localStorage.getItem('ambiAppReloadTrigger') || 'true') &&
-//     navigator.userAgent.includes('Chrome');
-// if (doReload) {
-//     localStorage.setItem('ambiAppReloadTrigger', 'false');
-//     location.reload();
-// } else {
-//     localStorage.setItem('ambiAppReloadTrigger', 'true');
-// }
+import sepoliaLogo from './assets/images/networks/sepolia_logo.webp';
+import swellLogo from './assets/images/networks/swell_network_logo_with_margin.webp';
+import swellSepoliaLogo from './assets/images/networks/swell_sepolia.webp';
+import { GlobalContexts } from './contexts/GlobalContexts';
 
 const metadata = {
     name: 'Ambient Finance',
@@ -85,6 +68,7 @@ const modal = createWeb3Modal({
         534352: scrollLogo,
         11155111: sepoliaLogo,
         98864: plumeSepoliaLogo,
+        1923: swellLogo,
         1924: swellSepoliaLogo,
         84532: baseSepoliaLogo,
     },
@@ -111,6 +95,7 @@ modal.subscribeEvents(async (event) => {
     );
 
     if (event.data.event === 'CONNECT_SUCCESS') {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         const currentChainId = modal.getState().selectedNetworkId as number;
 
         const lastUsedNetworkIdString = getLocalStorageItem(
@@ -121,16 +106,39 @@ modal.subscribeEvents(async (event) => {
             ? parseInt(lastUsedNetworkIdString)
             : defaultChainIdInteger;
 
+        const currentNetworkIsSupported = networkIds.includes(
+            modal.getState().selectedNetworkId as number,
+        );
+
+        // console.log({
+        //     currentNetworkIsSupported,
+        //     currentChainId,
+        //     desiredChainId,
+        //     lastUsedNetworkIdString,
+        //     defaultChainIdInteger,
+        //     connected: modal.getIsConnected(),
+        // });
         if (currentChainId !== desiredChainId) {
             try {
+                if (!currentNetworkIsSupported) return;
                 await modal.switchNetwork(desiredChainId); // Pass the number directly
 
                 // Wait for the switch to complete
-                await new Promise((resolve) => setTimeout(resolve, 2000));
+                await new Promise((resolve) => setTimeout(resolve, 5000));
 
                 const newChainId = modal.getState().selectedNetworkId as number;
-
-                if (newChainId !== desiredChainId && !modal.getState().open) {
+                // console.log({
+                //     newChainId,
+                //     desiredChainId,
+                //     state: modal.getState(),
+                // });
+                if (newChainId !== desiredChainId && modal.getState().open) {
+                    //    console.log('returning')
+                    return;
+                } else if (
+                    newChainId !== desiredChainId &&
+                    !modal.getState().open
+                ) {
                     try {
                         await modal.switchNetwork(desiredChainId);
                         await new Promise((resolve) =>
@@ -138,18 +146,38 @@ modal.subscribeEvents(async (event) => {
                         );
                         const finalChainId = modal.getState()
                             .selectedNetworkId as number;
+                        // console.log({ finalChainId, desiredChainId });
                         if (finalChainId !== desiredChainId) {
+                            // console.log('disconnecting');
                             modal.disconnect();
                         }
                     } catch (retryError) {
-                        console.error('Retry failed:', retryError);
+                        // console.log('disconnecting');
                         modal.disconnect();
                     }
+                } else if (
+                    newChainId === desiredChainId &&
+                    modal.getState().open &&
+                    modal.getIsConnected()
+                ) {
+                    // console.log('closing modal');
+                    modal.close();
+                } else if (modal.getIsConnected()) {
+                    // console.log('connected');
                 }
             } catch (error) {
-                console.error('Failed to switch network:', error);
+                // console.log('disconnecting');
                 modal.disconnect();
             }
+        } else if (
+            currentChainId === desiredChainId &&
+            modal.getState().open &&
+            modal.getIsConnected()
+        ) {
+            // console.log('closing');
+            modal.close();
+        } else if (modal.getIsConnected()) {
+            // console.log('connected');
         }
     }
 
@@ -161,6 +189,7 @@ modal.subscribeEvents(async (event) => {
         if (
             !networkIds.includes(modal.getState().selectedNetworkId as number)
         ) {
+            // console.log('disconnecting');
             modal.disconnect();
         }
     }

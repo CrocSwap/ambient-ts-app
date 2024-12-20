@@ -238,3 +238,7 @@ aside.emoji-picker-react {
     background: var(--dark2) !important;
     font-size: 0.8rem !important;
 }
+.epr-body{
+    scroll-behavior: auto !important;
+    max-height: calc(100% - 15rem);
+}

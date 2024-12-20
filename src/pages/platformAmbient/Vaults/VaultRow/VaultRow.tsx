@@ -1,6 +1,3 @@
-import styles from './VaultRow.module.css';
-import tempestLogoColor from './tempestLogoColor.svg';
-// import tempestLogo from './tempestLogo.svg';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
@@ -27,6 +24,8 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { formatDollarAmount } from '../../../../utils/numbers';
 import VaultDeposit from '../VaultActionModal/VaultDeposit/VaultDeposit';
 import VaultWithdraw from '../VaultActionModal/VaultWithdraw/VaultWithdraw';
+import styles from './VaultRow.module.css';
+import tempestLogoColor from './tempestLogoColor.svg';
 
 interface propsIF {
     idForDOM: string;

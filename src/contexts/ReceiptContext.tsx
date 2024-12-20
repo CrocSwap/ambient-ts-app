@@ -65,9 +65,7 @@ export interface PositionUpdateIF {
     unixTimeReceipt?: number;
 }
 
-export const ReceiptContext = createContext<ReceiptContextIF>(
-    {} as ReceiptContextIF,
-);
+export const ReceiptContext = createContext({} as ReceiptContextIF);
 
 export const ReceiptContextProvider = (props: {
     children: React.ReactNode;

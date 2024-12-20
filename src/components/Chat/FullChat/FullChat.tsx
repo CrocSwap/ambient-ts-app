@@ -245,7 +245,6 @@ function FullChat(props: FullChatPropsIF) {
         rooms.length === 0,
     ]);
 
-
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
         const roomName = pool.base.symbol + ' / ' + pool.quote.symbol;

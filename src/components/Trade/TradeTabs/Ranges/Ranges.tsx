@@ -1,7 +1,5 @@
-// START: Import React and Dongles
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-// START: Import Local Files
 import {
     baseTokenForConcLiq,
     bigIntToFloat,
@@ -27,10 +25,7 @@ import {
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
-import {
-    TokenContext,
-    TokenContextIF,
-} from '../../../../contexts/TokenContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
@@ -78,7 +73,7 @@ function Ranges(props: propsIF) {
     const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
-        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+        activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
 
     const {
@@ -166,7 +161,7 @@ function Ranges(props: propsIF) {
 
     const {
         tokens: { tokenUniv: tokenList },
-    } = useContext<TokenContextIF>(TokenContext);
+    } = useContext(TokenContext);
 
     const EXTRA_REQUEST_CREDIT_COUNT = 10;
 
@@ -426,7 +421,7 @@ function Ranges(props: propsIF) {
                     n: dataPerPage,
                     timeBefore: OLDEST_TIME,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,

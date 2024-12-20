@@ -22,11 +22,11 @@ import {
     mainnetSTONE,
     mainnetSWELL,
     mainnetSWETH,
+    mainnetTBTC,
     mainnetUSDC,
     mainnetUSDT,
     mainnetWBTC,
     mainnetWstETH,
-    plumeSepoliaETH,
     plumeSepoliaNEV,
     plumeSepoliaUSD,
     scrollAxlUSDC,
@@ -80,7 +80,7 @@ export function isETHorStakedEthToken(addr: string): boolean {
     );
 }
 
-export function isWBTCorStakedBTCToken(addr: string): boolean {
+export function isWbtcOrStakedBTCToken(addr: string): boolean {
     return isWbtcToken(addr) || STAKED_BTC_TOKENS.includes(addr.toLowerCase());
 }
 
@@ -89,7 +89,7 @@ export function isETHPair(addr1: string, addr2: string): boolean {
 }
 
 export function isBtcPair(addr1: string, addr2: string): boolean {
-    return isWBTCorStakedBTCToken(addr1) && isWBTCorStakedBTCToken(addr2);
+    return isWbtcOrStakedBTCToken(addr1) && isWbtcOrStakedBTCToken(addr2);
 }
 
 export function isWbtcToken(addr: string): boolean {
@@ -184,16 +184,16 @@ export const STAKED_ETH_TOKENS = [
     blastWrsETH.address,
     blastEzETH.address,
     blastWEETH.address,
-    plumeSepoliaETH.address,
 ].map((x) => x.toLowerCase());
 
 export const USD_EXCLUDED_TOKENS = [mainnetSWELL.address].map((x) =>
     x.toLowerCase(),
 );
 
-export const STAKED_BTC_TOKENS = [scrollSOLVBTC.address].map((x) =>
-    x.toLowerCase(),
-);
+export const STAKED_BTC_TOKENS = [
+    scrollSOLVBTC.address,
+    mainnetTBTC.address,
+].map((x) => x.toLowerCase());
 
 export const WRAPPED_NATIVE_TOKENS = [
     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // Mainnet

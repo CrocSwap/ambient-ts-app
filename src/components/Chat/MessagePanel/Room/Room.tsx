@@ -168,8 +168,10 @@ export default function Room(props: propsIF) {
                 baseToken.symbol,
                 quoteToken.symbol,
             );
-            currentPoolRoomObj.shownName =
-                getRoomNameFromBaseQuote(baseToken.symbol, quoteToken.symbol);
+            currentPoolRoomObj.shownName = getRoomNameFromBaseQuote(
+                baseToken.symbol,
+                quoteToken.symbol,
+            );
             newRoomList.push(currentPoolRoomObj);
         }
 
@@ -198,6 +200,7 @@ export default function Room(props: propsIF) {
     useEffect(() => {
         processRoomList();
         handlePoolRedirect(props.room);
+        console.log(props.selectedRoom);
     }, [
         isCurrentPool,
         baseToken.symbol,

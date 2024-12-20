@@ -62,9 +62,7 @@ export interface TradeDataContextIF {
     addToBlackList: (tokenPair: string, timeParam: number) => void;
 }
 
-export const TradeDataContext = createContext<TradeDataContextIF>(
-    {} as TradeDataContextIF,
-);
+export const TradeDataContext = createContext({} as TradeDataContextIF);
 // Have to set these values to something on load, so we use default pair
 // for default chain. Don't worry if user is coming in to another chain,
 // since these will get updated by useUrlParams() in any context where a

@@ -14,7 +14,7 @@ export type networkPrefs = Partial<
         {
             color: skins[];
             premiumColor: skins[];
-            hero: heroItem[];
+            cobrandingLogo?: string;
         }
     >
 >;
@@ -27,4 +27,5 @@ export interface brandIF {
     showDexStats: boolean;
     headerImage: string;
     includeCanto: boolean;
+    cobrandingLogo?: string;
 }

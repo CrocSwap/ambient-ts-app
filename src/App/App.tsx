@@ -1,13 +1,9 @@
-/** ***** Import React and Dongles *******/
 import { useContext, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
-/** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
-// import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
 
-/** * **** Import Local Files *******/
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { AppStateContext } from '../contexts/AppStateContext';
@@ -116,6 +112,7 @@ export default function App() {
                 currentLocation !== '/privacy' &&
                 currentLocation !== '/faq' &&
                 !currentLocation.includes('/chat') &&
+                platformName !== 'futa' &&
                 isChatEnabled &&
                 !isFullScreen && <ChatPanel isFullScreen={false} />}
         </div>
@@ -172,11 +169,9 @@ export default function App() {
                     />
                 )}
                 <AppOverlay />
-                {platformName === 'futa' ? (
-                    <Navbar />
-                ) : (
-                    location.pathname !== '/' && <PageHeader />
-                )}
+                {platformName === 'futa'
+                    ? location.pathname !== '/' && <Navbar />
+                    : location.pathname !== '/' && <PageHeader />}
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
 

@@ -1,7 +1,7 @@
 .mainSection {
     display: grid;
-    gap: 8px;
-    grid-template-columns: auto 4px 390px;
+    gap: 4px;
+    grid-template-columns: auto 0px 390px;
     padding: 0 8px;
     height: 100%;
     height: calc(100dvh - 75px);
@@ -57,12 +57,11 @@
 
 .mobile_tabs_container {
     padding: 0 1rem;
-
     display: grid;
-
     align-items: center;
     gap: 8px;
 }
+
 .mobile_tabs_container button {
     width: 100%;
     background: var(--dark3);

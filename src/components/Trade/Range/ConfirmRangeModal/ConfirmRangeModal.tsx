@@ -1,11 +1,8 @@
-// START: Import React and Dongles
 import { memo, useContext, useEffect, useState } from 'react';
 
-// START: Import JSX Functional Components
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from './SelectedRange/SelectedRange';
 
-// START: Import Local Files
 import {
     getUnicodeCharacter,
     uriToHttp,

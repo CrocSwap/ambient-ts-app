@@ -34,7 +34,7 @@ const chainSpecForWalletConnector = {
 export const scrollMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    graphCacheUrl: GCGO_SCROLL_URL,
+    GCGO_URL: GCGO_SCROLL_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [scrollETH, scrollUSDC],

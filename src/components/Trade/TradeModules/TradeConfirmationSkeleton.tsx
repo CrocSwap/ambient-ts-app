@@ -1,10 +1,7 @@
-// START: Import React and Dongles
 import { useContext, useState } from 'react';
 
-// START: Import JSX Components
 import Button from '../../Form/Button';
 
-// START: Import Other Local Files
 import {
     getFormattedNumber,
     uriToHttp,

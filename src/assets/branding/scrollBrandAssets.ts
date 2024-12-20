@@ -9,11 +9,7 @@ export const scrollBrandAssets: brandIF = {
             // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: scrollLogo, processAs: 'image' },
-            ],
+            cobrandingLogo: scrollLogo,
         },
     },
     platformName: 'scroll',

@@ -37,6 +37,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         FRAX: 70,
         WBTC: 60,
         SOLVBTC: 55,
+        TBTC: 55,
         SWELL: 52,
         ETH: 50,
         RSWETH: 48,

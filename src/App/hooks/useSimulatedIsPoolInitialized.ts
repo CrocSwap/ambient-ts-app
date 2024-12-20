@@ -1,17 +1,14 @@
 import { useContext, useEffect, useState } from 'react';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../contexts/AppStateContext';
-import { PoolContext, PoolContextIF } from '../../contexts/PoolContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
+import { PoolContext } from '../../contexts/PoolContext';
 
 // Custom hook to simulate isPoolInitialized for the first 2 seconds
 export const useSimulatedIsPoolInitialized = () => {
     const {
         activeNetwork: { chainId },
         isUserOnline,
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const poolContext = useContext<PoolContextIF>(PoolContext);
+    } = useContext(AppStateContext);
+    const poolContext = useContext(PoolContext);
     const [simulatedIsPoolInitialized, setSimulatedIsPoolInitialized] =
         useState<boolean>(true);
 

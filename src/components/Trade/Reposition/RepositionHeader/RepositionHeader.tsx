@@ -1,13 +1,10 @@
-// START: Import React and Dongles
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { VscClose } from 'react-icons/vsc';
 import { useNavigate } from 'react-router-dom';
 import settingsIcon from '../../../../assets/images/icons/settings.svg';
 
-// START: Import JSX Components
 import TransactionSettingsModal from '../../../Global/TransactionSettingsModal/TransactionSettingsModal';
 
-// START: Import Local Files
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';

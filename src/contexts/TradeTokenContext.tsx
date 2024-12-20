@@ -48,9 +48,7 @@ export interface TradeTokenContextIF {
     contextMatchesParams: boolean;
 }
 
-export const TradeTokenContext = createContext<TradeTokenContextIF>(
-    {} as TradeTokenContextIF,
-);
+export const TradeTokenContext = createContext({} as TradeTokenContextIF);
 
 export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
     const {

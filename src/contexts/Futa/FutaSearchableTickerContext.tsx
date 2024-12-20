@@ -29,10 +29,9 @@ interface FutaSearchableTickerContextIF {
     setIsSearchableTickerHeightMinimum: React.Dispatch<SetStateAction<boolean>>;
 }
 
-export const FutaSearchableTickerContext =
-    createContext<FutaSearchableTickerContextIF>(
-        {} as FutaSearchableTickerContextIF,
-    );
+export const FutaSearchableTickerContext = createContext(
+    {} as FutaSearchableTickerContextIF,
+);
 
 export const FutaSearchableTickerContextProvider = (props: {
     children: React.ReactNode;

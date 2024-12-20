@@ -1,4 +1,4 @@
-// START: Import React and Dongles
+import { AnimateSharedLayout, motion } from 'framer-motion';
 import {
     cloneElement,
     Dispatch,
@@ -9,10 +9,7 @@ import {
     useEffect,
     useState,
 } from 'react';
-// eslint-disable-next-line
-import { AnimateSharedLayout, motion } from 'framer-motion';
 
-// START: Import Local Files
 import { useNavigate } from 'react-router-dom';
 import '../../../App/App.css';
 import { ChartContext } from '../../../contexts/ChartContext';

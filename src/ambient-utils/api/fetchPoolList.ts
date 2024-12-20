@@ -1,25 +1,19 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
+import { IS_LOCAL_ENV } from '../constants';
 import { memoizeCacheQueryFn } from '../dataLayer';
 import { GCServerPoolIF } from '../types';
 
 export async function fetchPoolList(
     crocEnv: CrocEnv,
-    graphCacheUrl: string,
+    GCGO_URL: string,
 ): Promise<GCServerPoolIF[]> {
-    const ENDPOINT: string = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL +
-          '/pool_list?' +
-          new URLSearchParams({
-              chainId: (await crocEnv.context).chain.chainId,
-              poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
-          })
-        : graphCacheUrl +
-          '/pool_list?' +
-          new URLSearchParams({
-              chainId: (await crocEnv.context).chain.chainId,
-              poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
-          });
+    const ENDPOINT: string =
+        GCGO_URL +
+        '/pool_list?' +
+        new URLSearchParams({
+            chainId: (await crocEnv.context).chain.chainId,
+            poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
+        });
     return fetch(ENDPOINT)
         .then((response) => response.json())
         .then((json) => {

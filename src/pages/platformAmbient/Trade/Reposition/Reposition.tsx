@@ -1,23 +1,19 @@
-// START: Import React and Dongles
 import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 
-// START: Import JSX Components
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
 import Button from '../../../../components/Form/Button';
 import ConfirmRepositionModal from '../../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import RepositionHeader from '../../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
-// START: Import Other Local Files
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
 import styles from './Reposition.module.css';
 
 import { FiExternalLink } from 'react-icons/fi';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import {
     GAS_DROPS_ESTIMATE_REPOSITION,
-    GCGO_OVERRIDE_URL,
     IS_LOCAL_ENV,
     NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants';
@@ -473,9 +469,8 @@ function Reposition() {
         setCurrentQuoteQtyDisplayTruncated,
     ] = useState<string>(position?.positionLiqQuoteTruncated || '...');
 
-    const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/position_stats?'
-        : activeNetwork.graphCacheUrl + '/position_stats?';
+    const positionStatsCacheEndpoint =
+        activeNetwork.GCGO_URL + '/position_stats?';
     const poolIndex = position ? lookupChain(position.chainId).poolIndex : 0;
 
     const fetchCurrentCollateral = () => {

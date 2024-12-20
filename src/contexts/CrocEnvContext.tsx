@@ -52,9 +52,7 @@ export interface CrocEnvContextIF {
     blastProvider: Provider | undefined;
 }
 
-export const CrocEnvContext = createContext<CrocEnvContextIF>(
-    {} as CrocEnvContextIF,
-);
+export const CrocEnvContext = createContext({} as CrocEnvContextIF);
 const mainnetProvider = new BatchedJsonRpcProvider(
     ethereumMainnet.evmRpcUrl,
     parseInt(ethereumMainnet.chainId),
@@ -209,7 +207,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     };
     useEffect(() => {
         if (isUserOnline) setNewCrocEnv();
-    }, [provider, walletProvider, isUserOnline]);
+    }, [provider, walletProvider, isUserOnline, userAddress]);
 
     useEffect(() => {
         if (provider && crocEnv && isUserOnline) {

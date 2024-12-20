@@ -43,9 +43,7 @@ export interface TokenBalanceContextIF {
     >;
 }
 
-export const TokenBalanceContext = createContext<TokenBalanceContextIF>(
-    {} as TokenBalanceContextIF,
-);
+export const TokenBalanceContext = createContext({} as TokenBalanceContextIF);
 
 export const TokenBalanceContextProvider = (props: {
     children: React.ReactNode;

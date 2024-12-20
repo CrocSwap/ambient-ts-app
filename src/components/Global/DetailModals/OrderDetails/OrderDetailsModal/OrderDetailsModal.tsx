@@ -3,7 +3,6 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
-    GCGO_OVERRIDE_URL,
     IS_LOCAL_ENV,
 } from '../../../../../ambient-utils/constants';
 import {
@@ -118,9 +117,8 @@ export default function OrderDetailsModal(props: propsIF) {
     const isFillStarted = isLimitOrderPartiallyFilled || isOrderFilled;
 
     useEffect(() => {
-        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
-            ? GCGO_OVERRIDE_URL + '/limit_stats?'
-            : activeNetwork.graphCacheUrl + '/limit_stats?';
+        const positionStatsCacheEndpoint =
+            activeNetwork.GCGO_URL + '/limit_stats?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
         if (positionType && crocEnv && provider) {

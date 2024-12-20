@@ -15,23 +15,11 @@ import {
     pinTickToTickUpper,
 } from '../../../../ambient-utils/dataLayer/functions/pinTick';
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
-import { PoolContext, PoolContextIF } from '../../../../contexts/PoolContext';
-import {
-    TradeDataContext,
-    TradeDataContextIF,
-} from '../../../../contexts/TradeDataContext';
-import {
-    TradeTableContext,
-    TradeTableContextIF,
-} from '../../../../contexts/TradeTableContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { FlexContainer } from '../../../../styled/Common';
 import {
     LimitRateButton,
@@ -70,12 +58,11 @@ export default function LimitRate(props: propsIF) {
     const {
         activeNetwork: { gridSize, chainId },
         globalPopup: { open: openGlobalPopup },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    } = useContext(AppStateContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const { pool, usdPriceInverse, isTradeDollarizationEnabled, poolData } =
-        useContext<PoolContextIF>(PoolContext);
-    const { showOrderPulseAnimation } =
-        useContext<TradeTableContextIF>(TradeTableContext);
+        useContext(PoolContext);
+    const { showOrderPulseAnimation } = useContext(TradeTableContext);
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const {
@@ -88,7 +75,7 @@ export default function LimitRate(props: propsIF) {
         tokenB,
         isTokenABase: isBid,
         currentPoolPriceTick,
-    } = useContext<TradeDataContextIF>(TradeDataContext);
+    } = useContext(TradeDataContext);
 
     const { basePrice, quotePrice, poolPriceDisplay } = poolData;
 

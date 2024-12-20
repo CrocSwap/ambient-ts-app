@@ -9,11 +9,7 @@ export const baseSepoliaBrandAssets: brandIF = {
             // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: baseLogo, processAs: 'image' },
-            ],
+            cobrandingLogo: baseLogo,
         },
     },
     platformName: 'baseSepolia',

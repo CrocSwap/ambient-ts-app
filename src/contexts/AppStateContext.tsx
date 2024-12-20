@@ -63,9 +63,7 @@ export interface AppStateContextIF {
     };
 }
 
-export const AppStateContext = createContext<AppStateContextIF>(
-    {} as AppStateContextIF,
-);
+export const AppStateContext = createContext({} as AppStateContextIF);
 
 export const AppStateContextProvider = (props: {
     children: React.ReactNode;
