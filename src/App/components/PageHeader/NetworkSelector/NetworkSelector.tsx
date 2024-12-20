@@ -366,7 +366,11 @@ export default function NetworkSelector(props: propsIF) {
                     marginTop={'50px'}
                     marginRight={smallScreen ? '70px' : ''}
                     titleWidth={'80px'}
-                    title={networkSpec.displayName}
+                    title={
+                        isNetworkUpdateInProgress
+                            ? selectedNetworkDisplayName
+                            : networkSpec.displayName
+                    }
                     expandable={networks.length > 1}
                     logo={
                         networksData.find(

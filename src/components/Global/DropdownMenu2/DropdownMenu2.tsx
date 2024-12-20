@@ -98,10 +98,6 @@ export default function DropdownMenu2(props: propsIF) {
         </Modal>
     );
 
-    const yes = true;
-
-    console.log(loading);
-
     return (
         <div
             ref={dropdownRefItem}
@@ -128,7 +124,7 @@ export default function DropdownMenu2(props: propsIF) {
                                 cursor: expandable ? 'pointer' : 'default',
                             }}
                         >
-                            {yes ? (
+                            {loading ? (
                                 <span className={styles.loading} />
                             ) : (
                                 <img
@@ -150,18 +146,22 @@ export default function DropdownMenu2(props: propsIF) {
                             {title}
                         </div>
                     )}
-                    {!showFullMenu && (
-                        <img
-                            src={logo}
-                            alt={title}
-                            width='18px'
-                            height='18px'
-                            style={{
-                                cursor: expandable ? 'pointer' : 'default',
-                                borderRadius: '50%',
-                                marginLeft: '2px',
-                            }}
-                        />
+                    {loading ? (
+                        <span className={styles.loading} />
+                    ) : (
+                        !showFullMenu && (
+                            <img
+                                src={logo}
+                                alt={title}
+                                width='18px'
+                                height='18px'
+                                style={{
+                                    cursor: expandable ? 'pointer' : 'default',
+                                    borderRadius: '50%',
+                                    marginLeft: '2px',
+                                }}
+                            />
+                        )
                     )}
                 </div>
                 {expandable && !showMobileVersion && (
