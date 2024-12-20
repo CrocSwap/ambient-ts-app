@@ -34,6 +34,26 @@ fullWidth */
 .iconContainer img {
     margin-right: 0.5em;
 }
+
+.loading {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 3px solid var(--accent1);
+    border-radius: 50%;
+    border-top-color: var(--dark2);
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+    margin: 0 8px;
+  }
+
+  @keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+  @-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+
 @media only screen and (min-width: 769px) {
     .menuContainer {
         position: absolute;
