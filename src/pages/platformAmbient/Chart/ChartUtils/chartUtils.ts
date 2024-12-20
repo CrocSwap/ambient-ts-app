@@ -12,7 +12,6 @@ import {
 } from '../../../../ambient-utils/types';
 import { skins } from '../../../../App/hooks/useSkin';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
-import { getBidPriceValue } from '../Liquidity/LiquiditySeries/AreaSeries';
 import {
     LS_KEY_CHART_ANNOTATIONS,
     initialDisplayCandleCount,
@@ -249,78 +248,8 @@ export function standardDeviation(arr: any, usePopulation = false) {
     );
 }
 
-export function fillLiqAdvanced(
-    standardDeviation: number,
-    scaleData: scaleData,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    liquidityData: any,
-) {
-    const border = scaleData?.yScale.domain()[1];
-
-    const filledTickNumber = Math.min(border / standardDeviation, 150);
-
-    standardDeviation =
-        filledTickNumber === 150
-            ? (border - liquidityData?.liqBidData[0]?.liqPrices) / 150
-            : standardDeviation;
-
-    if (scaleData !== undefined) {
-        if (
-            border + standardDeviation >=
-            liquidityData?.liqBidData[0]?.liqPrices
-        ) {
-            for (let index = 0; index < filledTickNumber; index++) {
-                liquidityData?.liqBidData.unshift({
-                    activeLiq: 30,
-                    liqPrices:
-                        liquidityData?.liqBidData[0]?.liqPrices +
-                        standardDeviation,
-                    deltaAverageUSD: 0,
-                    cumAverageUSD: 0,
-                });
-
-                liquidityData?.depthLiqBidData.unshift({
-                    activeLiq: liquidityData?.depthLiqBidData[1]?.activeLiq,
-                    liqPrices:
-                        liquidityData?.depthLiqBidData[0]?.liqPrices +
-                        standardDeviation,
-                    deltaAverageUSD: 0,
-                    cumAverageUSD: 0,
-                });
-            }
-        }
-    }
-}
-
 export interface LiquidityRangeIFChart extends LiquidityRangeIF {
     isFakeData?: boolean;
-}
-
-export function fillLiqInfinity(
-    yScaleMaxDomain: number,
-    liquidityBidData: LiquidityRangeIFChart[],
-    isDenomBase: boolean,
-) {
-    if (liquidityBidData.length > 1) {
-        const newFakeValue = yScaleMaxDomain * 2;
-
-        const lastBidData = liquidityBidData[liquidityBidData.length - 1];
-        if (yScaleMaxDomain >= getBidPriceValue(lastBidData, isDenomBase)) {
-            if (isDenomBase) {
-                liquidityBidData.push({
-                    ...lastBidData,
-                    isFakeData: true,
-                    upperBoundInvPriceDecimalCorrected: newFakeValue,
-                });
-            } else {
-                liquidityBidData.push({
-                    ...lastBidData,
-                    isFakeData: true,
-                    lowerBoundPriceDecimalCorrected: newFakeValue,
-                });
-            }
-        }
-    }
 }
 
 export function formatTimeDifference(startDate: Date, endDate: Date): string {
