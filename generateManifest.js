@@ -10,10 +10,10 @@ config({ path: '.env.local' });
 const manifest = {
     short_name: process.env.MANIFEST_NAME || 'Ambient',
     name: process.env.MANIFEST_NAME || 'Ambient',
-    id: process.env.MANIFEST_ID || 'Ambient',
+    id: process.env.MANIFEST_ID || '/',
     start_url: '/',
-    display: 'standalone',
     display_override: ['fullscreen', 'minimal-ui'],
+    display: 'standalone',
     theme_color: process.env.MANIFEST_COLOR || '#7371fc',
     background_color: process.env.MANIFEST_COLOR || '#7371fc',
     icons: [
