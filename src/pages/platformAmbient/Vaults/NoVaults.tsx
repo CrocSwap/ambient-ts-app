@@ -1,6 +1,8 @@
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useContext } from 'react';
+import { Navigate } from 'react-router-dom';
 import { vaultSupportedNetworks } from '../../../ambient-utils/constants';
+import { someSupportedNetworkIsVaultSupportedNetwork } from '../../../ambient-utils/dataLayer';
 import { NetworkIF } from '../../../ambient-utils/types';
 import Button from '../../../components/Form/Button';
 import { AppStateContext } from '../../../contexts';
@@ -16,6 +18,10 @@ export default function NoVaults() {
         isConnected
             ? await switchNetwork(parseInt(n.chainId))
             : chooseNetwork(n);
+    }
+
+    if (!someSupportedNetworkIsVaultSupportedNetwork) {
+        return <Navigate to='/404' replace />;
     }
 
     return (

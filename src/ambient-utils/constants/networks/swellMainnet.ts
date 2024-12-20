@@ -2,7 +2,14 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
-import { swellETH, swellWTT } from '../defaultTokens';
+import {
+    swellETH,
+    swellRSETH,
+    swellRSWETH,
+    swellUBTC,
+    swellUSDE,
+    swellWEETH,
+} from '../defaultTokens';
 import { GCGO_SWELL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -18,7 +25,7 @@ const chainSpecFromSDK = lookupChain(chainIdHex);
 
 const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
-    name: 'Swell',
+    name: 'Swellchain',
     currency: 'ETH',
     rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://explorer.swellnetwork.io/',
@@ -30,13 +37,22 @@ export const swellMainnet: NetworkIF = {
     GCGO_URL: GCGO_SWELL_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [swellETH, swellWTT],
-    defaultPairFuta: [swellETH, swellWTT],
+    defaultPair: [swellETH, swellUSDE],
+    defaultPairFuta: [swellETH, swellUSDE],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: chainSpecForWalletConnector.name,
-    topPools: [new TopPool(swellETH, swellWTT, chainSpecFromSDK.poolIndex)],
+    displayName: 'Swell',
+    tokenPriceQueryAssetPlatform: 'swell',
+    vaultsEnabled: true,
+    tempestApiNetworkName: 'swell',
+    topPools: [
+        new TopPool(swellETH, swellUSDE, chainSpecFromSDK.poolIndex),
+        new TopPool(swellETH, swellRSETH, chainSpecFromSDK.poolIndex),
+        new TopPool(swellETH, swellUBTC, chainSpecFromSDK.poolIndex),
+        new TopPool(swellETH, swellRSWETH, chainSpecFromSDK.poolIndex),
+        new TopPool(swellETH, swellWEETH, chainSpecFromSDK.poolIndex),
+    ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (

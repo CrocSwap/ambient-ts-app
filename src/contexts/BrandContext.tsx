@@ -8,6 +8,7 @@ import {
     blastBrandAssets,
     defaultBrandAssets,
     futaBrandAssets,
+    plumeBrandAssets,
     plumeSepoliaBrandAssets,
     scrollBrandAssets,
     swellBrandAssets,
@@ -76,6 +77,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         switch (brand) {
             case 'blast':
                 return blastBrandAssets;
+            case 'plume':
+                return plumeBrandAssets;
             case 'scroll':
                 return scrollBrandAssets;
             case 'swell':

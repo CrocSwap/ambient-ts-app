@@ -26,7 +26,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
 import Chart from '../Chart/Chart';
-import Divider from '../Divider/FutaDivider';
+// import Divider from '../Divider/FutaDivider';
 import Typewriter from '../TypeWriter/TypeWriter';
 import styles from './SearchableTicker.module.css';
 import TickerItem from './TickerItem';
@@ -217,9 +217,16 @@ export default function SearchableTicker(props: propsIF) {
             tickerItemRefs.current[hoveredTicker] &&
             !isMouseEnter
         ) {
-            tickerItemRefs.current[hoveredTicker]?.scrollIntoView({
-                behavior: 'smooth',
-            });
+            // tickerItemRefs.current[hoveredTicker]?.scrollIntoView({
+            //     behavior: 'smooth',
+            // });
+            const itemRef = tickerItemRefs.current[hoveredTicker];
+            if (itemRef && containerRef.current) {
+                containerRef.current.scrollTo({
+                    top: itemRef.offsetTop,
+                    behavior: 'smooth',
+                });
+            }
         }
     }, [hoveredTicker, isMouseEnter]);
 
@@ -238,7 +245,7 @@ export default function SearchableTicker(props: propsIF) {
 
     const headerDisplay = (
         <div className={styles.header}>
-            <Divider count={2} />
+            {/* <Divider count={1} /> */}
             {title && (
                 <h3
                     className={styles.title}
@@ -428,8 +435,8 @@ export default function SearchableTicker(props: propsIF) {
             <header className={styles.tickerHeader}>
                 <p>TICKER</p>
                 <p className={styles.marketCapHeader}>MARKET CAP</p>
-                <p>REMAINING</p>
-                <div className={styles.statusContainer}>{/* <span /> */}</div>
+                <p>STATUS</p>
+                <p>TIME</p>
             </header>
             <div
                 className={styles.tickerTableContent}
@@ -560,15 +567,17 @@ export default function SearchableTicker(props: propsIF) {
             }}
             ref={canvasRef}
         >
-            {headerDisplay}
-
             <FlexContainer
                 flexDirection='column'
                 fullHeight
                 overflow='hidden'
                 className={styles.contentContainer}
             >
-                {isMobile ? searchableContent : resizableChart}
+                <div className={styles.mainBorder}>
+                    {headerDisplay}
+                    {isMobile ? searchableContent : resizableChart}
+                </div>
+
                 {!fullScreenTable && !isAccount && !isMobile && <Chart />}
             </FlexContainer>
         </div>

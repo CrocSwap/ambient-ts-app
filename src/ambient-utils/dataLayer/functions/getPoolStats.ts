@@ -146,13 +146,12 @@ export async function expandPoolStats(
     cachedFetchTokenPrice: TokenPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     tokenList: TokenIF[],
-    poolPriceNonDisplay?: number | undefined,
     enableTotalSupply?: boolean,
 ): Promise<PoolStatsIF> {
     const provider = (await crocEnv.context).provider;
 
-    const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
-    const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
+    const basePricePromise = cachedFetchTokenPrice(base, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
 
     const baseUsdPrice = (await basePricePromise)?.usdPrice;
     const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
@@ -205,7 +204,6 @@ export async function expandPoolStats(
         const mainnetEthPrice = await cachedFetchTokenPrice(
             mainnetETH.address,
             ethereumMainnet.chainId,
-            crocEnv,
         );
         return mainnetEthPrice?.usdPrice;
     };
@@ -213,7 +211,7 @@ export async function expandPoolStats(
     const lastPriceSwap = payload.lastPriceSwap;
 
     const displayPoolPrice = toDisplayPrice(
-        poolPriceNonDisplay ?? lastPriceSwap,
+        lastPriceSwap,
         baseDecimals,
         quoteDecimals,
     );
@@ -518,11 +516,9 @@ async function expandTokenStats(
         (t) => t.address.toLowerCase() === stats.tokenAddr.toLowerCase(),
     );
     const decimals = token?.decimals || crocEnv.token(stats.tokenAddr).decimals;
-    const usdPrice = cachedFetchTokenPrice(
-        stats.tokenAddr,
-        chainId,
-        crocEnv,
-    ).then((p) => p?.usdPrice || 0.0);
+    const usdPrice = cachedFetchTokenPrice(stats.tokenAddr, chainId).then(
+        (p) => p?.usdPrice || 0.0,
+    );
 
     const mult = (await usdPrice) / Math.pow(10, await decimals);
     return {

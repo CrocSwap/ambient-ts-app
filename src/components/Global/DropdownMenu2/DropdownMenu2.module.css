@@ -14,12 +14,10 @@ fullWidth */
     border-right: 4px solid transparent;
     transition: 0.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
     z-index: 999;
-    
 }
 
 .menuItem {
     display: flex;
-    cursor: pointer;
     z-index: 999;
     gap: 4px;
 }
@@ -27,7 +25,6 @@ fullWidth */
     width: 100%;
     display: flex;
     flex-direction: column;
-   
 }
 .iconContainer {
     display: flex;
@@ -41,7 +38,6 @@ fullWidth */
     .menuContainer {
         position: absolute;
         z-index: 999;
-       
     }
 }
 

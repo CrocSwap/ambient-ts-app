@@ -29,7 +29,11 @@ import { TokenContext } from './TokenContext';
 export interface ExploreContextIF {
     pools: {
         all: Array<PoolDataIF>;
-        getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
+        getAllPools: (
+            poolList: PoolIF[],
+            crocEnv: CrocEnv,
+            chainId: string,
+        ) => void;
 
         reset: () => void;
     };
@@ -64,7 +68,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { allPoolStats } = useContext(ChainDataContext);
+    const { allPoolStats, isActiveNetworkPlume, isActiveNetworkSwell } =
+        useContext(ChainDataContext);
     const { poolList } = useContext(PoolContext);
 
     const [allPools, setAllPools] = useState<Array<PoolDataIF>>([]);
@@ -223,8 +228,18 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 ? shouldInvert
                     ? ydayPrice / nowPrice - 1.0
                     : nowPrice / ydayPrice - 1.0
-                : 0.0;
-        if (!expandedPoolStatsNow || expandedPoolStatsNow.tvlTotalUsd < 100) {
+                : undefined;
+
+        const minimumPoolTvl = isActiveNetworkSwell
+            ? 20
+            : isActiveNetworkPlume
+              ? 50
+              : 100;
+
+        if (
+            !expandedPoolStatsNow ||
+            expandedPoolStatsNow.tvlTotalUsd < minimumPoolTvl
+        ) {
             // return early
             const poolData: PoolDataIF = {
                 ...pool,
@@ -270,7 +285,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // human readable price change over last 24 hours
         let priceChangePercent: string;
 
-        if (!priceChangeRaw) {
+        if (priceChangeRaw === undefined || volumeChange24h === 0) {
             priceChangePercent = '';
         } else if (priceChangeRaw * 100 >= 0.01) {
             priceChangePercent =
@@ -297,20 +312,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             : toDisplayPrice(nowPrice, pool.base.decimals, pool.quote.decimals);
 
         const tokenPriceForUsd = shouldInvert
-            ? (
-                  await cachedFetchTokenPrice(
-                      pool.quote.address,
-                      pool.chainId,
-                      crocEnv,
-                  )
-              )?.usdPrice || 0
-            : (
-                  await cachedFetchTokenPrice(
-                      pool.base.address,
-                      pool.chainId,
-                      crocEnv,
-                  )
-              )?.usdPrice || 0;
+            ? (await cachedFetchTokenPrice(pool.quote.address, pool.chainId))
+                  ?.usdPrice || 0
+            : (await cachedFetchTokenPrice(pool.base.address, pool.chainId))
+                  ?.usdPrice || 0;
 
         const usdPriceMoneynessBased = displayPrice * tokenPriceForUsd;
 
@@ -377,7 +382,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const exploreContext: ExploreContextIF = {
         pools: {
             all: allPools,
-            getAll: getAllPools,
+            getAllPools: getAllPools,
             reset: () => {
                 setIntermediaryPoolData([]);
             },

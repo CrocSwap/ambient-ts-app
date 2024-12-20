@@ -132,13 +132,7 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                     </div>
                 )}
                 {tableView === 'large' && <div>{id}</div>}
-                {tableView === 'large' && <div>{wallet}</div>}
-                {tableView !== 'large' && (
-                    <div>
-                        {id}
-                        {wallet}
-                    </div>
-                )}
+                <div>{wallet}</div>
                 {tableView !== 'small' && (
                     <FlexContainer justifyContent='flex-end'>
                         {isDenomBase
