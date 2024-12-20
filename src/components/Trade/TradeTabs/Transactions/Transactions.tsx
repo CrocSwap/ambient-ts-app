@@ -370,6 +370,8 @@ function Transactions(props: propsIF) {
                 datasetName: 'isCandleDataLoading',
                 loadingStatus: true,
             });
+        } else {
+            resetInfiniteScrollData();
         }
     }, [isCandleSelected]);
 
