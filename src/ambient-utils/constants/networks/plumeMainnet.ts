@@ -2,7 +2,7 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
-import { plumeETH, plumeNEV, plumeUSD } from '../defaultTokens';
+import { plumeNativeETH, plumeUSDC } from '../defaultTokens';
 import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -30,17 +30,19 @@ export const plumeMainnet: NetworkIF = {
     GCGO_URL: GCGO_PLUME_URL,
     evmRpcUrl: RESTRICTED_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [plumeETH, plumeUSD],
-    defaultPairFuta: [plumeETH, plumeUSD],
+    defaultPair: [plumeNativeETH, plumeUSDC],
+    defaultPairFuta: [plumeNativeETH, plumeUSDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Plume',
     tokenPriceQueryAssetPlatform: 'plume',
+    vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
-        new TopPool(plumeETH, plumeUSD, chainSpecFromSDK.poolIndex),
-        new TopPool(plumeNEV, plumeUSD, chainSpecFromSDK.poolIndex),
-        new TopPool(plumeETH, plumeNEV, chainSpecFromSDK.poolIndex),
+        // new TopPool(plumePETH, plumePUSD, chainSpecFromSDK.poolIndex),
+        // new TopPool(plumeNEV, plumePUSD, chainSpecFromSDK.poolIndex),
+        new TopPool(plumeUSDC, plumeNativeETH, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

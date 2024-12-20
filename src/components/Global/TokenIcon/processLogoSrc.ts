@@ -28,9 +28,15 @@ export default function processLogoSrc(args: argsIF): string {
         return '';
     }
 
-    if (localLogoLookupSymbol === 'USD+') localLogoLookupSymbol = 'USDPLUS';
-    if (localLogoLookupSymbol === 'PUNKETH-20')
+    if (localLogoLookupSymbol === 'PETH') {
+        localLogoLookupSymbol = 'ETH';
+    } else if (localLogoLookupSymbol === 'USD+') {
+        localLogoLookupSymbol = 'USDPLUS';
+    } else if (localLogoLookupSymbol === 'USDC.E') {
+        localLogoLookupSymbol = 'USDC';
+    } else if (localLogoLookupSymbol === 'PUNKETH-20') {
         localLogoLookupSymbol = 'PUNKETH20';
+    }
     // return a filepath (if local) or a URI string (if remote)
     return (
         localLogos[localLogoLookupSymbol as keyof typeof localLogos] ??

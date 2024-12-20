@@ -99,7 +99,7 @@ function TableRowsInfiniteScroll({
     const txSpanSelectorForScrollMethod = `#infinite_scroll_wrapper_${wrapperID} div[data-label='hidden-id'] > span`;
     const txSpanSelectorForBindMethod = 'div[data-label="hidden-id"]';
 
-    const debugMode = false;
+    const debugMode = true;
     const markRows = false;
     const [manualMode, setManualMode] = useState(false);
     const manualModeRef = useRef<boolean>();

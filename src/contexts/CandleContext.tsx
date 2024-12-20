@@ -26,6 +26,7 @@ import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
+import { TradeDataContext } from './TradeDataContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { UserDataContext } from './UserDataContext';
 
@@ -67,14 +68,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isEnabled: isChartEnabled,
         isCandleDataNull,
         setIsCandleDataNull,
-        numCandlesFetched,
-        setNumCandlesFetched,
     } = useContext(ChartContext);
     const {
         activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
+    const { poolPriceNonDisplay: poolPriceDisplay, setPoolPriceNonDisplay } =
+        useContext(TradeDataContext);
     const { isUserConnected } = useContext(UserDataContext);
     const {
         baseToken: { address: baseTokenAddress },
@@ -139,14 +140,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         isFetchFirst200Candle: true,
                     };
                 });
-            } else {
-                // If there are no candles in the first 200 candles, it changes timeframe
-                if (candleData?.candles) {
-                    setNumCandlesFetched({
-                        candleCount: candleData?.candles.length || 0,
-                        switchPeriodFlag: !numCandlesFetched?.switchPeriodFlag,
-                    });
-                }
             }
         }
     }, [isFinishRequest]);
@@ -203,6 +196,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setCandleData(undefined);
         setTimeOfEndCandle(undefined);
         setIsCondensedModeEnabled(true);
+        setPoolPriceNonDisplay(0);
     }, [baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
@@ -214,9 +208,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv &&
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
-                isChangeUserConnected
+                isChangeUserConnected &&
+                poolPriceDisplay &&
+                isChartEnabled
             ) {
-                isChartEnabled && isUserOnline && fetchCandles(true);
+                fetchCandles(true);
                 if (isManualCandleFetchRequested)
                     setIsManualCandleFetchRequested(false);
             }
@@ -230,6 +226,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         baseTokenAddress + quoteTokenAddress,
         isPoolInitialized,
         chainId,
+        poolPriceDisplay === 0,
+        isUserConnected,
     ]);
 
     // only works when the period changes
@@ -294,7 +292,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             isUserOnline &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            crocEnv
+            crocEnv &&
+            poolPriceDisplay
         ) {
             setIsZoomRequestCanceled({ value: true });
 
@@ -302,10 +301,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 ? Math.floor(Date.now() / 1000)
                 : candleScale.lastCandleDate || 0;
 
-            const nCandles = Math.min(
-                Math.max(candleScale?.nCandles || 7, 7),
-                2999,
-            );
+            const nCandles = Math.min(Math.max(candleScale?.nCandles), 2999);
 
             setIsFinishRequest(false);
             !bypassSpinner && setIsFetchingCandle(true);
@@ -330,6 +326,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
+                poolPriceDisplay,
             )
                 .then((candles) => {
                     setCandleData(candles);
@@ -345,20 +342,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         }
                         setIsCandleDataNull(false);
                     } else {
-                        if (
-                            candleScale?.isFetchFirst200Candle &&
-                            candleTimeLocal === 60
-                        ) {
-                            setIsCandleDataNull(true);
-                        }
+                        setIsCandleDataNull(true);
                     }
 
-                    if (
-                        (candleSeries && candles?.candles.length >= 7) ||
-                        (candleSeries &&
-                            candleSeries.length > 0 &&
-                            candleTimeLocal === 60)
-                    ) {
+                    if (candleSeries && candleSeries.length > 0) {
                         setIsFetchingCandle(false);
                     }
                     setIsFirstFetch(false);
@@ -390,7 +377,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         ).getTime();
 
         return lastDate;
-    }, [candleData?.candles?.length, lastCandleDateInSeconds]);
+    }, [lastCandleDateInSeconds]);
 
     const numDurationsNeeded = useMemo(() => {
         if (candleTimeLocal === undefined) return;
@@ -410,7 +397,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         numDurations: number,
         minTimeMemo: number,
     ) => {
-        if (!crocEnv || !candleTimeLocal) {
+        if (!crocEnv || !candleTimeLocal || !poolPriceDisplay) {
             return;
         }
 
@@ -443,6 +430,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedQuerySpotPrice,
+            poolPriceDisplay,
             signal,
         )
             .then((incrCandles) => {
