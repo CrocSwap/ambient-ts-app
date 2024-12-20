@@ -41,6 +41,7 @@ export const blastMainnet: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,
     tokenPriceQueryAssetPlatform: 'blast',
+    vaultsEnabled: false,
     topPools: [
         new TopPool(blastETH, blastUSDB, chainSpecFromSDK.poolIndex),
         new TopPool(blastBLAST, blastETH, chainSpecFromSDK.poolIndex),

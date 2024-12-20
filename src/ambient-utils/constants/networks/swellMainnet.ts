@@ -44,6 +44,8 @@ export const swellMainnet: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Swell',
     tokenPriceQueryAssetPlatform: 'swell',
+    vaultsEnabled: true,
+    tempestApiNetworkName: 'swell',
     topPools: [
         new TopPool(swellETH, swellUSDE, chainSpecFromSDK.poolIndex),
         new TopPool(swellETH, swellRSETH, chainSpecFromSDK.poolIndex),
