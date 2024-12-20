@@ -25,6 +25,11 @@
     Access-Control-Allow-Origin = "*"
 
 [[headers]]
+  for = "/screenshots/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
   for = "/scroll-badge/*"
     [headers.values]
     Access-Control-Allow-Origin = "*"
