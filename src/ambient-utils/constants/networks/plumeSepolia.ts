@@ -40,6 +40,7 @@ export const plumeSepolia: NetworkIF = {
     displayName: 'Plume Devnet',
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         new TopPool(
             plumeSepoliaETH,

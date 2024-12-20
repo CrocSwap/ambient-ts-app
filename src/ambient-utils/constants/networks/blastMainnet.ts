@@ -42,6 +42,7 @@ export const blastMainnet: NetworkIF = {
     displayName: chainSpecForWalletConnector.name,
     tokenPriceQueryAssetPlatform: 'blast',
     vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         new TopPool(blastETH, blastUSDB, chainSpecFromSDK.poolIndex),
         new TopPool(blastBLAST, blastETH, chainSpecFromSDK.poolIndex),

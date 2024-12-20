@@ -43,6 +43,7 @@ export const baseSepolia: NetworkIF = {
     displayName: chainSpecForWalletConnector.name,
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         new TopPool(
             baseSepoliaETH,
