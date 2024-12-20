@@ -21,6 +21,8 @@ interface propsIF {
     left?: string;
     right?: string;
     expandable: boolean;
+    disabled?: boolean;
+    loading?: boolean;
 }
 
 export default function DropdownMenu2(props: propsIF) {
@@ -35,6 +37,8 @@ export default function DropdownMenu2(props: propsIF) {
         expandable,
         marginRight,
         marginLeft,
+        disabled,
+        loading,
     } = props;
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -95,7 +99,10 @@ export default function DropdownMenu2(props: propsIF) {
     );
 
     return (
-        <div ref={dropdownRefItem}>
+        <div
+            ref={dropdownRefItem}
+            style={{ pointerEvents: disabled ? 'none' : 'auto' }}
+        >
             <div
                 className={styles.menu}
                 onMouseEnter={() => setIsHovered(true)}
@@ -117,21 +124,25 @@ export default function DropdownMenu2(props: propsIF) {
                                 cursor: expandable ? 'pointer' : 'default',
                             }}
                         >
-                            <img
-                                src={logo}
-                                alt={title}
-                                width={
-                                    title.includes('Scroll') ||
-                                    title.includes('Blast')
-                                        ? '20px'
-                                        : '20px'
-                                }
-                                height='20px'
-                                style={{
-                                    borderRadius: '50%',
-                                    marginLeft: '2px',
-                                }}
-                            />
+                            {loading ? (
+                                <span className={styles.loading} />
+                            ) : (
+                                <img
+                                    src={logo}
+                                    alt={title}
+                                    width={
+                                        title.includes('Scroll') ||
+                                        title.includes('Blast')
+                                            ? '20px'
+                                            : '20px'
+                                    }
+                                    height='20px'
+                                    style={{
+                                        borderRadius: '50%',
+                                        marginLeft: '2px',
+                                    }}
+                                />
+                            )}
                             {title}
                         </div>
                     )}
