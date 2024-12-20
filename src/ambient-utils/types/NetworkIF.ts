@@ -26,7 +26,7 @@ export interface NetworkIF {
     displayName: string;
     tokenPriceQueryAssetPlatform: string | undefined;
     vaultsEnabled: boolean;
-    tempestApiNetworkName?: string;
+    tempestApiNetworkName: string;
     chainSpec: ChainSpec;
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
 }

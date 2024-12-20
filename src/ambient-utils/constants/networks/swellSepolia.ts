@@ -42,6 +42,7 @@ export const swellSepolia: NetworkIF = {
     displayName: 'Swell Testnet',
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         new TopPool(
             swellSepoliaETH,

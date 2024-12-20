@@ -34,6 +34,7 @@ export const scrollSepolia: NetworkIF = {
     displayName: 'Scroll Testnet',
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         new TopPool(
             scrollSepoliaETH,
