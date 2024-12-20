@@ -140,6 +140,9 @@ function Transactions(props: propsIF) {
         changes: [...getInitialChangesData()],
     });
 
+    const [infiniteScrollLock, setInfiniteScrollLock] =
+        useState<boolean>(false);
+
     const [hotTransactions, setHotTransactions] = useState<TransactionIF[]>([]);
 
     const fetchedTransactionsRef = useRef<Changes>();
@@ -170,6 +173,7 @@ function Transactions(props: propsIF) {
     accountAddressRef.current = accountAddress;
 
     const resetInfiniteScrollData = () => {
+        console.log('reset infinite scroll data');
         setPagesVisible([0, 1]);
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
@@ -371,7 +375,12 @@ function Transactions(props: propsIF) {
                 loadingStatus: true,
             });
         } else {
+            setInfiniteScrollLock(true);
             resetInfiniteScrollData();
+
+            setTimeout(() => {
+                setInfiniteScrollLock(false);
+            }, 500);
         }
     }, [isCandleSelected]);
 
@@ -935,6 +944,7 @@ function Transactions(props: propsIF) {
                     lastFetchedCount={lastFetchedCount}
                     setLastFetchedCount={setLastFetchedCount}
                     moreDataLoading={moreDataLoading}
+                    componentLock={infiniteScrollLock}
                 />
             </ul>
         </div>
