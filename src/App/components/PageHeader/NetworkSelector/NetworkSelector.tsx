@@ -56,6 +56,14 @@ export default function NetworkSelector(props: propsIF) {
     } = useContext(AppStateContext);
     const { networks, platformName, includeCanto } = useContext(BrandContext);
     const { setCrocEnv } = useContext(CrocEnvContext);
+
+    const [isNetworkUpdateInProgress, setIsNetworkUpdateInProgress] =
+        useState(false);
+
+    useEffect(() => {
+        console.log({ isNetworkUpdateInProgress });
+    }, [isNetworkUpdateInProgress]);
+
     const { closeBottomSheet } = useBottomSheet();
     const { switchNetwork } = useSwitchNetwork();
     const smallScreen: boolean = useMediaQuery('(max-width: 600px)');
@@ -76,6 +84,7 @@ export default function NetworkSelector(props: propsIF) {
 
     // click handler for network switching (does not handle Canto link)
     async function handleClick(chn: ChainSpec): Promise<void> {
+        setIsNetworkUpdateInProgress(true);
         if (isConnected) {
             setCrocEnv(undefined);
             await switchNetwork(parseInt(chn.chainId));
@@ -125,6 +134,12 @@ export default function NetworkSelector(props: propsIF) {
             }
         }
     }, [isConnected, initialLoadComplete]);
+
+    useEffect(() => {
+        if (isNetworkUpdateInProgress) {
+            setIsNetworkUpdateInProgress(false);
+        }
+    }, [chainId]);
 
     const networksData: NetworkSelectorListItemIF[] = [
         {
