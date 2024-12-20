@@ -41,13 +41,13 @@ const manifest = {
             type: 'image/png',
             purpose: 'any',
         },
-        {
-            src:
-                process.env.VITE_SITE_ICON_x256 ||
-                'icons/ambient_icon_x256.png',
-            sizes: '256x256',
-            type: 'image/png',
-        },
+        // {
+        //     src:
+        //         process.env.VITE_SITE_ICON_x256 ||
+        //         'icons/ambient_icon_x256.png',
+        //     sizes: '256x256',
+        //     type: 'image/png',
+        // },
         {
             src:
                 process.env.VITE_SITE_ICON_x512 ||
@@ -61,6 +61,24 @@ const manifest = {
     display: 'standalone',
     theme_color: process.env.MANIFEST_COLOR || '#7371fc',
     background_color: process.env.MANIFEST_COLOR || '#7371fc',
+    screenshots: [
+        {
+            src:
+                process.env.VITE_SITE_SCREENSHOT_WIDE ||
+                'screenshots/ambient-screenshot-wide.png',
+            sizes: '1280x720',
+            type: 'image/png',
+            form_factor: 'wide',
+        },
+        {
+            src:
+                process.env.VITE_SITE_SCREENSHOT_NARROW ||
+                'screenshots/ambient-screenshot-narrow.png',
+            sizes: '720x1280',
+            type: 'image/png',
+            form_factor: 'narrow',
+        },
+    ],
 };
 
 writeFileSync('./build/site.webmanifest', JSON.stringify(manifest, null, 2));
