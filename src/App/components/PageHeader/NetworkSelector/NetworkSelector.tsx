@@ -83,6 +83,7 @@ export default function NetworkSelector(props: propsIF) {
 
     // click handler for network switching (does not handle Canto link)
     async function handleClick(chn: ChainSpec): Promise<void> {
+        if (chn.chainId === chainId) return;
         setIsNetworkUpdateInProgress(true);
         const selectedNetwork = supportedNetworks[chn.chainId];
         setSelectedNetworkDisplayName(selectedNetwork.displayName);
