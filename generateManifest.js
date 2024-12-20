@@ -2,18 +2,24 @@
 /* eslint-disable camelcase */
 import { config } from 'dotenv';
 import { writeFileSync } from 'fs';
+import path from 'path';
 
 // Load .env.local
-// config({ path: '.env.futa' });
 config({ path: '.env.local' });
+
+// Determine the output directory based on the environment
+const isLocalBuild = process.env.LOCAL_BUILD === 'true';
+const outputPath = isLocalBuild
+    ? path.resolve('./site.webmanifest') // Write to the root directory
+    : path.resolve('./build/site.webmanifest'); // Write to the build directory
 
 const manifest = {
     short_name: process.env.MANIFEST_NAME || 'Ambient',
     name: process.env.MANIFEST_NAME || 'Ambient',
     id: process.env.MANIFEST_ID || '/',
     start_url: '/',
-    display_override: ['fullscreen', 'minimal-ui'],
-    display: 'standalone',
+    display_override: ['window-controls-overlay', 'fullscreen', 'minimal-ui'],
+    display: 'fullscreen',
     theme_color: process.env.MANIFEST_COLOR || '#7371fc',
     background_color: process.env.MANIFEST_COLOR || '#7371fc',
     icons: [
@@ -76,5 +82,5 @@ const manifest = {
     ],
 };
 
-writeFileSync('./build/site.webmanifest', JSON.stringify(manifest, null, 2));
-console.log('site.webmanifest generated!');
+writeFileSync(outputPath, JSON.stringify(manifest, null, 2));
+console.log(`site.webmanifest generated at: ${outputPath}`);
