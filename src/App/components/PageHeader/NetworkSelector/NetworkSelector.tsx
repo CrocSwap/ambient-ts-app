@@ -344,6 +344,15 @@ export default function NetworkSelector(props: propsIF) {
 
     const networkSpec = supportedNetworks[chainId];
 
+    const loadingContainer = (
+        <div className={styles.dropdownMenuContainer}>
+            <div className={styles.loading} />
+
+            <p className={styles.loadingText}>switching...</p>
+        </div>
+    );
+
+    if (isNetworkUpdateInProgress) return loadingContainer;
     return (
         <div
             style={{
@@ -359,13 +368,18 @@ export default function NetworkSelector(props: propsIF) {
                     marginTop={'50px'}
                     marginRight={smallScreen ? '70px' : ''}
                     titleWidth={'80px'}
-                    title={networkSpec.displayName}
+                    title={
+                        isNetworkUpdateInProgress
+                            ? 'switching...'
+                            : networkSpec.displayName
+                    }
                     expandable={networks.length > 1}
                     logo={
                         networksData.find(
                             (network) => network.chainId === chainId,
                         )?.logo
                     }
+                    disabled={isNetworkUpdateInProgress}
                 >
                     <ul
                         className={styles.menuContent}

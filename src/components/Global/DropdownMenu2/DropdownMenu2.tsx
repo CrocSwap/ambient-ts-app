@@ -21,6 +21,7 @@ interface propsIF {
     left?: string;
     right?: string;
     expandable: boolean;
+    disabled?: boolean;
 }
 
 export default function DropdownMenu2(props: propsIF) {
@@ -35,6 +36,7 @@ export default function DropdownMenu2(props: propsIF) {
         expandable,
         marginRight,
         marginLeft,
+        disabled,
     } = props;
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -95,7 +97,10 @@ export default function DropdownMenu2(props: propsIF) {
     );
 
     return (
-        <div ref={dropdownRefItem}>
+        <div
+            ref={dropdownRefItem}
+            style={{ pointerEvents: disabled ? 'none' : 'auto' }}
+        >
             <div
                 className={styles.menu}
                 onMouseEnter={() => setIsHovered(true)}
@@ -149,7 +154,7 @@ export default function DropdownMenu2(props: propsIF) {
                         />
                     )}
                 </div>
-                {expandable && !showMobileVersion && (
+                {!disabled && expandable && !showMobileVersion && (
                     <FaAngleDown
                         style={{
                             marginLeft: '4px',
