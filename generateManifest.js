@@ -10,6 +10,12 @@ config({ path: '.env.local' });
 const manifest = {
     short_name: process.env.MANIFEST_NAME || 'Ambient',
     name: process.env.MANIFEST_NAME || 'Ambient',
+    id: process.env.MANIFEST_ID || 'Ambient',
+    start_url: '/',
+    display: 'standalone',
+    display_override: ['fullscreen', 'minimal-ui'],
+    theme_color: process.env.MANIFEST_COLOR || '#7371fc',
+    background_color: process.env.MANIFEST_COLOR || '#7371fc',
     icons: [
         {
             src: process.env.VITE_SITE_ICON_x48 || 'icons/ambient_icon_x48.png',
@@ -41,13 +47,6 @@ const manifest = {
             type: 'image/png',
             purpose: 'any',
         },
-        // {
-        //     src:
-        //         process.env.VITE_SITE_ICON_x256 ||
-        //         'icons/ambient_icon_x256.png',
-        //     sizes: '256x256',
-        //     type: 'image/png',
-        // },
         {
             src:
                 process.env.VITE_SITE_ICON_x512 ||
@@ -56,16 +55,11 @@ const manifest = {
             type: 'image/png',
             purpose: 'maskable',
         },
-        { id: '/' },
         {
             display_override: ['fullscreen', 'minimal-ui'],
             display: 'standalone',
         },
     ],
-    start_url: '/',
-    display: 'standalone',
-    theme_color: process.env.MANIFEST_COLOR || '#7371fc',
-    background_color: process.env.MANIFEST_COLOR || '#7371fc',
     screenshots: [
         {
             src:
