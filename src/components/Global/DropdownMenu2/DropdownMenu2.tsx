@@ -22,6 +22,7 @@ interface propsIF {
     right?: string;
     expandable: boolean;
     disabled?: boolean;
+    loading?: boolean;
 }
 
 export default function DropdownMenu2(props: propsIF) {
@@ -37,6 +38,7 @@ export default function DropdownMenu2(props: propsIF) {
         marginRight,
         marginLeft,
         disabled,
+        loading,
     } = props;
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -96,6 +98,10 @@ export default function DropdownMenu2(props: propsIF) {
         </Modal>
     );
 
+    const yes = true;
+
+    console.log(loading);
+
     return (
         <div
             ref={dropdownRefItem}
@@ -122,21 +128,25 @@ export default function DropdownMenu2(props: propsIF) {
                                 cursor: expandable ? 'pointer' : 'default',
                             }}
                         >
-                            <img
-                                src={logo}
-                                alt={title}
-                                width={
-                                    title.includes('Scroll') ||
-                                    title.includes('Blast')
-                                        ? '20px'
-                                        : '20px'
-                                }
-                                height='20px'
-                                style={{
-                                    borderRadius: '50%',
-                                    marginLeft: '2px',
-                                }}
-                            />
+                            {yes ? (
+                                <span className={styles.loading} />
+                            ) : (
+                                <img
+                                    src={logo}
+                                    alt={title}
+                                    width={
+                                        title.includes('Scroll') ||
+                                        title.includes('Blast')
+                                            ? '20px'
+                                            : '20px'
+                                    }
+                                    height='20px'
+                                    style={{
+                                        borderRadius: '50%',
+                                        marginLeft: '2px',
+                                    }}
+                                />
+                            )}
                             {title}
                         </div>
                     )}
@@ -154,7 +164,7 @@ export default function DropdownMenu2(props: propsIF) {
                         />
                     )}
                 </div>
-                {!disabled && expandable && !showMobileVersion && (
+                {expandable && !showMobileVersion && (
                     <FaAngleDown
                         style={{
                             marginLeft: '4px',
