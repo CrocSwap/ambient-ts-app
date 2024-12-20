@@ -146,22 +146,18 @@ export default function DropdownMenu2(props: propsIF) {
                             {title}
                         </div>
                     )}
-                    {loading ? (
-                        <span className={styles.loading} />
-                    ) : (
-                        !showFullMenu && (
-                            <img
-                                src={logo}
-                                alt={title}
-                                width='18px'
-                                height='18px'
-                                style={{
-                                    cursor: expandable ? 'pointer' : 'default',
-                                    borderRadius: '50%',
-                                    marginLeft: '2px',
-                                }}
-                            />
-                        )
+                    {!showFullMenu && (
+                        <img
+                            src={logo}
+                            alt={title}
+                            width='18px'
+                            height='18px'
+                            style={{
+                                cursor: expandable ? 'pointer' : 'default',
+                                borderRadius: '50%',
+                                marginLeft: '2px',
+                            }}
+                        />
                     )}
                 </div>
                 {expandable && !showMobileVersion && (
