@@ -21,7 +21,7 @@ export default function CircularProgressBarForChat(
             leaveDelay={200}
         >
             <svg
-                className={fillPercentage < 100 ? styles.circular_progress : ''}
+                className={styles.circular_progress}
                 width={radius * 2}
                 height={radius * 2}
             >
