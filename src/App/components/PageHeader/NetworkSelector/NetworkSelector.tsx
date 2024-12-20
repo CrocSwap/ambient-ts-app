@@ -60,9 +60,12 @@ export default function NetworkSelector(props: propsIF) {
     const [isNetworkUpdateInProgress, setIsNetworkUpdateInProgress] =
         useState(false);
 
+    const [selectedNetworkDisplayName, setSelectedNetworkDisplayName] =
+        useState('');
+
     useEffect(() => {
-        console.log({ isNetworkUpdateInProgress });
-    }, [isNetworkUpdateInProgress]);
+        console.log({ isNetworkUpdateInProgress, selectedNetworkDisplayName });
+    }, [isNetworkUpdateInProgress, selectedNetworkDisplayName]);
 
     const { closeBottomSheet } = useBottomSheet();
     const { switchNetwork } = useSwitchNetwork();
@@ -85,6 +88,8 @@ export default function NetworkSelector(props: propsIF) {
     // click handler for network switching (does not handle Canto link)
     async function handleClick(chn: ChainSpec): Promise<void> {
         setIsNetworkUpdateInProgress(true);
+        const selectedNetwork = supportedNetworks[chn.chainId];
+        setSelectedNetworkDisplayName(selectedNetwork.displayName);
         if (isConnected) {
             setCrocEnv(undefined);
             await switchNetwork(parseInt(chn.chainId));
@@ -97,7 +102,7 @@ export default function NetworkSelector(props: propsIF) {
                 // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();
             }
-            chooseNetwork(supportedNetworks[chn.chainId]);
+            chooseNetwork(selectedNetwork);
         }
     }
 
@@ -136,8 +141,10 @@ export default function NetworkSelector(props: propsIF) {
     }, [isConnected, initialLoadComplete]);
 
     useEffect(() => {
+        // reset temporary update state when chain changes
         if (isNetworkUpdateInProgress) {
             setIsNetworkUpdateInProgress(false);
+            setSelectedNetworkDisplayName('');
         }
     }, [chainId]);
 
