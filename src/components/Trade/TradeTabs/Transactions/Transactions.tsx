@@ -448,7 +448,7 @@ function Transactions(props: propsIF) {
             quote: selectedQuoteAddress,
             poolIdx: poolIndex,
             chainId: chainId,
-            n: 100,
+            n: 200,
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
