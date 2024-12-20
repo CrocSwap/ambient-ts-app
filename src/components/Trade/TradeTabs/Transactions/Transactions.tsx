@@ -380,7 +380,7 @@ function Transactions(props: propsIF) {
 
             setTimeout(() => {
                 setInfiniteScrollLock(false);
-            }, 500);
+            }, 1000);
         }
     }, [isCandleSelected]);
 
