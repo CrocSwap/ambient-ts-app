@@ -374,15 +374,16 @@ function Transactions(props: propsIF) {
                 datasetName: 'isCandleDataLoading',
                 loadingStatus: true,
             });
-        } else {
-            setInfiniteScrollLock(true);
-            resetInfiniteScrollData();
-
-            setTimeout(() => {
-                setInfiniteScrollLock(false);
-            }, 1000);
         }
     }, [isCandleSelected]);
+
+    useEffect(() => {
+        setInfiniteScrollLock(true);
+        resetInfiniteScrollData();
+        setTimeout(() => {
+            setInfiniteScrollLock(false);
+        }, 500);
+    }, [candleTransactionData]);
 
     const isLoading = useMemo<boolean>(
         () =>
