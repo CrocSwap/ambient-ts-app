@@ -16,6 +16,9 @@ const outputPath = isLocalBuild
 const manifest = {
     short_name: process.env.MANIFEST_NAME || 'Ambient',
     name: process.env.MANIFEST_NAME || 'Ambient',
+    description:
+        process.env.MANIFEST_DESCRIPTION ||
+        'Zero-to-One Decentralized Trading Protocol',
     id: process.env.MANIFEST_ID || '/',
     start_url: '/',
     display_override: ['window-controls-overlay', 'fullscreen', 'minimal-ui'],
