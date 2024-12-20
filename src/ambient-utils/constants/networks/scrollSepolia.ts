@@ -33,6 +33,7 @@ export const scrollSepolia: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Scroll Testnet',
     tokenPriceQueryAssetPlatform: undefined,
+    vaultsEnabled: false,
     topPools: [
         new TopPool(
             scrollSepoliaETH,
