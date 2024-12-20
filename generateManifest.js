@@ -55,10 +55,6 @@ const manifest = {
             type: 'image/png',
             purpose: 'maskable',
         },
-        {
-            display_override: ['fullscreen', 'minimal-ui'],
-            display: 'standalone',
-        },
     ],
     screenshots: [
         {
