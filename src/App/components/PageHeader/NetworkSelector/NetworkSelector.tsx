@@ -63,10 +63,6 @@ export default function NetworkSelector(props: propsIF) {
     const [selectedNetworkDisplayName, setSelectedNetworkDisplayName] =
         useState('');
 
-    useEffect(() => {
-        console.log({ isNetworkUpdateInProgress, selectedNetworkDisplayName });
-    }, [isNetworkUpdateInProgress, selectedNetworkDisplayName]);
-
     const { closeBottomSheet } = useBottomSheet();
     const { switchNetwork } = useSwitchNetwork();
     const smallScreen: boolean = useMediaQuery('(max-width: 600px)');
