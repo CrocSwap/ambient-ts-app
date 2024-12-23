@@ -11,6 +11,7 @@ interface NoTableDataPropsIF {
     isAccountView: boolean;
     activeUserPositionsLength?: number;
     activeUserPositionsByPoolLength?: number;
+    unselectCandle?: () => void;
 }
 function NoTableData(props: NoTableDataPropsIF) {
     const {
@@ -19,10 +20,11 @@ function NoTableData(props: NoTableDataPropsIF) {
         isAccountView,
         activeUserPositionsLength,
         activeUserPositionsByPoolLength,
+        unselectCandle,
     } = props;
 
     const { showAllData, setShowAllData } = useContext(TradeTableContext);
-    const { isCandleSelected, setIsCandleSelected } = useContext(CandleContext);
+    const { isCandleSelected } = useContext(CandleContext);
 
     const navigate = useNavigate();
 
@@ -59,8 +61,8 @@ function NoTableData(props: NoTableDataPropsIF) {
                 </p>
                 <button
                     onClick={
-                        isCandleSelected
-                            ? () => setIsCandleSelected(false)
+                        isCandleSelected && unselectCandle
+                            ? () => unselectCandle()
                             : activeUserPositionsByPoolLength
                               ? () => setShowAllData(false)
                               : activeUserPositionsLength
