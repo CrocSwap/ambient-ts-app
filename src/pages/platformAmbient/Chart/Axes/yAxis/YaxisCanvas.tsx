@@ -54,8 +54,6 @@ interface yAxisIF {
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setMarketLineValue: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     render: any;
     liquidityData: liquidityChartData | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -98,7 +96,6 @@ function YAxisCanvas(props: yAxisIF) {
         reset,
         isLineDrag,
         setRescale,
-        setMarketLineValue,
         render,
         liquidityData,
         dragRange,
@@ -784,7 +781,6 @@ function YAxisCanvas(props: yAxisIF) {
                         return false;
                     });
 
-                    setMarketLineValue();
                     render();
                 })
                 .filter((event) => {

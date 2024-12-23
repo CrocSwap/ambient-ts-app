@@ -140,6 +140,9 @@ function Transactions(props: propsIF) {
         changes: [...getInitialChangesData()],
     });
 
+    const [infiniteScrollLock, setInfiniteScrollLock] =
+        useState<boolean>(false);
+
     const [hotTransactions, setHotTransactions] = useState<TransactionIF[]>([]);
 
     const fetchedTransactionsRef = useRef<Changes>();
@@ -366,12 +369,20 @@ function Transactions(props: propsIF) {
     useEffect(() => {
         if (!isCandleSelected) {
             setCandleTransactionData([]);
+            setInfiniteScrollLock(false);
             dataLoadingStatus.setDataLoadingStatus({
                 datasetName: 'isCandleDataLoading',
                 loadingStatus: true,
             });
         }
     }, [isCandleSelected]);
+
+    useEffect(() => {
+        if (isCandleSelected) {
+            setInfiniteScrollLock(true);
+            setPagesVisible([0, 1]);
+        }
+    }, [candleTransactionData]);
 
     const isLoading = useMemo<boolean>(
         () =>
@@ -433,7 +444,7 @@ function Transactions(props: propsIF) {
             quote: selectedQuoteAddress,
             poolIdx: poolIndex,
             chainId: chainId,
-            n: 100,
+            n: 200,
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
@@ -933,6 +944,7 @@ function Transactions(props: propsIF) {
                     lastFetchedCount={lastFetchedCount}
                     setLastFetchedCount={setLastFetchedCount}
                     moreDataLoading={moreDataLoading}
+                    componentLock={infiniteScrollLock}
                 />
             </ul>
         </div>
