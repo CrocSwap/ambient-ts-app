@@ -86,20 +86,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
-    const [abortController] = useState<{
-        abortController: AbortController | null;
-    }>({ abortController: null });
-
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDurationIF | undefined
     >();
     const [isCandleSelected, setIsCandleSelected] = useState<
         boolean | undefined
     >();
-
-    const [isZoomRequestCanceled, setIsZoomRequestCanceled] = useState({
-        value: false,
-    });
 
     const [timeOfEndCandle, setTimeOfEndCandle] = useState<
         number | undefined
@@ -184,11 +176,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        if (isFirstFetch) {
-            const controller = new AbortController();
-            abortController.abortController = controller;
-            setIsZoomRequestCanceled({ value: false });
-        }
         setIsFirstFetch(true);
     }, [isFirstFetch]);
 
@@ -295,8 +282,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             crocEnv &&
             poolPriceDisplay
         ) {
-            setIsZoomRequestCanceled({ value: true });
-
             const candleTime = candleScale.isShowLatestCandle
                 ? Math.floor(Date.now() / 1000)
                 : candleScale.lastCandleDate || 0;
@@ -401,22 +386,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             return;
         }
 
-        if (candleDomains.isResetRequest) {
-            if (abortController.abortController) {
-                abortController.abortController.abort();
-                setCandleDomains((prev) => {
-                    return prev ? { ...prev, isResetRequest: false } : prev;
-                });
-            }
-        }
-        if (candleDomains?.isAbortedRequest) {
-            const controller = new AbortController();
-            abortController.abortController = controller;
-            isZoomRequestCanceled.value = false;
-        }
-
-        const signal = abortController.abortController?.signal; // used cancel the request when the pool or timeframe changes before the zoom request end
-
         fetchCandleSeriesHybrid(
             true,
             chainId,
@@ -431,10 +400,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             cachedFetchTokenPrice,
             cachedQuerySpotPrice,
             poolPriceDisplay,
-            signal,
         )
             .then((incrCandles) => {
-                if (incrCandles && candleData && !isZoomRequestCanceled.value) {
+                if (incrCandles && candleData) {
                     if (candleDomains.isResetRequest) {
                         setCandleData(incrCandles);
                     } else {
@@ -479,11 +447,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 }
             })
             .catch((e) => {
-                if (e.name === 'AbortError') {
-                    console.warn('Zoom request cancelled');
-                } else {
-                    console.error(e);
-                }
+                console.error(e);
+
                 setIsCandleDataNull(false);
             });
     };
@@ -505,12 +470,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             }
         })();
     }, [numDurationsNeeded, minTimeMemo, crocEnv, chainId]);
-
-    useEffect(() => {
-        if (abortController.abortController && isZoomRequestCanceled.value) {
-            abortController.abortController.abort();
-        }
-    }, [isZoomRequestCanceled.value]);
 
     return (
         <CandleContext.Provider value={candleContext}>
