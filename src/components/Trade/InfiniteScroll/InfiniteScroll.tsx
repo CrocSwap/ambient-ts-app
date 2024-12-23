@@ -77,23 +77,27 @@ function InfiniteScroll(props: propsIF) {
         if (props.type === 'Order') {
             ret = {
                 dataReceived: false,
-                limitOrders: [...(props.data as LimitOrderIF[])],
+                limitOrders: [...(data as LimitOrderIF[])],
             };
         } else if (props.type === 'Range') {
             ret = {
                 dataReceived: false,
-                positions: [...(props.data as PositionIF[])],
+                positions: [...(data as PositionIF[])],
             };
         } else {
             return {
                 dataReceived: false,
-                changes: [...(props.data as TransactionIF[])],
+                changes: [...(data as TransactionIF[])],
             };
         }
         return ret;
     };
 
     // PAGE DATA COUNTS
+
+    // method which used to decide inital page data counts
+    // that method divides intial data into 2 pieces to make infinite scroll working
+    // if data count less than threshold value, component will assume first page with full data to not trigger redundant fetch process initially
     const getInitialDataPageCounts = (): PageDataCountIF => {
         let counts: [number, number];
         if (data.length == 0) {
@@ -206,6 +210,9 @@ function InfiniteScroll(props: propsIF) {
         setMoreDataLoading(false);
     };
 
+    // method which used to check if new txs are located in parameter data
+    // its called after fetch data through fetcher functions
+    // also used to decide if there are hot txs came from contexts data list
     const dataDiffCheck = useCallback(
         (
             dirtyData: LimitOrderIF[] | PositionIF[] | TransactionIF[],
@@ -389,6 +396,68 @@ function InfiniteScroll(props: propsIF) {
 
         setMoreDataLoading(false);
     };
+
+    // USE EFFECTS --------------------------------------------------------------------------------------------------------------------------
+
+    //  this effect has been triggered once pivot data has been changed through contexts
+    //  it will check new txs, then gonna add into table if user is on first page
+    //  if not, it will update hot txs (and these hot txs will be merged once user backs to page 0)
+    // its also trancuates table if data is an empty Array
+    useEffect(() => {
+        if (data.length == 0) {
+            setFetchedTransactions(assignInitialFetchedTransactions());
+        } else {
+            const newTxs = dataDiffCheck(data);
+
+            if (newTxs.length > 0) {
+                if (pagesVisible[0] == 0) {
+                    switch (props.type) {
+                        case 'Order':
+                            setFetchedTransactions((prev) => {
+                                return {
+                                    dataReceived: true,
+                                    limitOrders: [
+                                        ...(newTxs as LimitOrderIF[]),
+                                        ...(prev as LimitOrdersByPool)
+                                            .limitOrders,
+                                    ],
+                                } as LimitOrdersByPool;
+                            });
+                            break;
+                        case 'Range':
+                            setFetchedTransactions((prev) => {
+                                return {
+                                    dataReceived: true,
+                                    positions: [
+                                        ...(newTxs as PositionIF[]),
+                                        ...(prev as PositionsByPool).positions,
+                                    ],
+                                } as PositionsByPool;
+                            });
+                            break;
+                        case 'Transaction':
+                            setFetchedTransactions((prev) => {
+                                return {
+                                    dataReceived: true,
+                                    changes: [
+                                        ...(newTxs as TransactionIF[]),
+                                        ...(prev as Changes).changes,
+                                    ],
+                                } as Changes;
+                            });
+                            break;
+                    }
+                } else {
+                }
+            }
+        }
+    }, [data]);
+
+    useEffect(() => {
+        if (data.length > 0) {
+            addMoreData();
+        }
+    }, [fetchedTransactions]);
 
     return (
         <TableRowsInfiniteScroll
