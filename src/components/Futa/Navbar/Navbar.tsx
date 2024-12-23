@@ -112,9 +112,9 @@ export default function Navbar() {
                 pathNoLeadingSlash?.length == 50);
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
         if (pathNoLeadingSlash === '') {
-            document.title = 'FUTA | Fully Universal Ticker Auction';
+            document.title = 'FU/TA | Fully Universal Ticker Auction';
         } else if (pathNoLeadingSlash === 'account') {
-            document.title = 'FUTA | My Account';
+            document.title = 'FU/TA | My Account';
         } else if (isPathValidAddress) {
             const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
             const pathNoPrefixDecoded = decodeURIComponent(pathNoPrefix);
