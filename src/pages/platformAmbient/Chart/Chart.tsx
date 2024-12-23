@@ -81,6 +81,7 @@ import {
     checkShowLatestCandle,
     crosshair,
     fillLiqAdvanced,
+    findSnapTime,
     formatTimeDifference,
     getCandleCount,
     getInitialDisplayCandleCount,
@@ -713,6 +714,23 @@ export default function Chart(props: propsIF) {
         return new Zoom(setLocalCandleDomains, period, isCondensedModeEnabled);
     }, [period, isCondensedModeEnabled]);
 
+    const chartPoolPrice = useMemo(() => {
+        let poolPrice = poolPriceDisplay;
+        const currentTime = findSnapTime(Date.now(), period) - period * 1000;
+        if (unparsedData.candles.some((i) => i.time * 1000 === currentTime)) {
+            poolPrice = isDenomBase
+                ? lastCandleData.invPriceCloseDecimalCorrected
+                : lastCandleData.priceCloseDecimalCorrected;
+        }
+
+        setMarket(poolPrice);
+        return poolPrice;
+    }, [
+        lastCandleData,
+        diffHashSigScaleData(scaleData, 'x'),
+        poolPriceDisplay,
+        isDenomBase,
+    ]);
     useEffect(() => {
         useHandleSwipeBack(d3Container, toolbarRef);
     }, [d3Container === null]);
@@ -973,22 +991,6 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         updateDrawnShapeHistoryonLocalStorage();
     }, [JSON.stringify(drawnShapeHistory), isToolbarOpen]);
-
-    useEffect(() => {
-        setMarketLineValue();
-    }, [poolPriceWithoutDenom, denomInBase]);
-
-    const setMarketLineValue = () => {
-        if (poolPriceWithoutDenom !== undefined) {
-            const lastCandlePrice = denomInBase
-                ? 1 / poolPriceWithoutDenom
-                : poolPriceWithoutDenom;
-
-            setMarket(() => {
-                return lastCandlePrice !== undefined ? lastCandlePrice : 0;
-            });
-        }
-    };
 
     useEffect(() => {
         if (cursorStyleTrigger && chartZoomEvent !== 'wheel') {
@@ -5761,7 +5763,6 @@ export default function Chart(props: propsIF) {
         reset,
         isLineDrag,
         setRescale,
-        setMarketLineValue,
         render,
         liquidityData,
         dragRange,
@@ -5974,6 +5975,7 @@ export default function Chart(props: propsIF) {
                         mainCanvasBoundingClientRect={
                             mainCanvasBoundingClientRect
                         }
+                        chartPoolPrice={chartPoolPrice}
                         chartThemeColors={chartThemeColors}
                         render={render}
                         colorChangeTrigger={colorChangeTrigger}
