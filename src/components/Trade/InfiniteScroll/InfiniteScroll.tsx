@@ -5,7 +5,15 @@
 import { PositionIF } from '../../../ambient-utils/types/position';
 import { LimitOrderIF } from '../../../ambient-utils/types/limitOrder';
 import { TransactionIF } from '../../../ambient-utils/types/transaction';
-import { memo, useContext, useRef, useState } from 'react';
+import {
+    memo,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import {
     Changes,
     LimitOrdersByPool,
@@ -13,20 +21,46 @@ import {
 } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { PageDataCountIF } from '../../Chat/ChatIFs';
+import useInfiniteScrollFetchers from './useInfiniteScrollFetchers';
+import TableRowsInfiniteScroll from '../TradeTabs/TableRowsInfiniteScroll';
+import { RangeSortType } from '../TradeTabs/useSortedPositions';
+import { LimitSortType } from '../TradeTabs/useSortedLimits';
+import { TxSortType } from '../TradeTabs/useSortedTxs';
 
 interface propsIF {
-    type: 'Transaction' | 'Limit' | 'Range';
+    type: 'Transaction' | 'Order' | 'Range';
+    tableView: 'small' | 'medium' | 'large';
+    isAccountView: boolean;
     data: TransactionIF[] | LimitOrderIF[] | PositionIF[];
     dataPerPage: number;
+    fetchCount: number;
+    targetCount: number;
+    sortData: (
+        data: TransactionIF[] | LimitOrderIF[] | PositionIF[],
+    ) => TransactionIF[] | LimitOrderIF[] | PositionIF[];
+    sortBy: TxSortType | LimitSortType | RangeSortType;
+    showAllData: boolean;
 }
 
 function InfiniteScroll(props: propsIF) {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
-    const { data, dataPerPage } = props;
+    const {
+        data,
+        dataPerPage,
+        targetCount,
+        fetchCount,
+        sortData,
+        tableView,
+        isAccountView,
+        sortBy,
+        showAllData,
+    } = props;
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
+
+    const { fetchLimitOrders, fetchPositions } = useInfiniteScrollFetchers();
 
     const PAGE_COUNT_DIVIDE_THRESHOLD = 20;
     const INITIAL_EXTRA_REQUEST_THRESHOLD = 20;
@@ -40,7 +74,7 @@ function InfiniteScroll(props: propsIF) {
         | PositionsByPool
         | Changes => {
         let ret: LimitOrdersByPool | PositionsByPool | Changes;
-        if (props.type === 'Limit') {
+        if (props.type === 'Order') {
             ret = {
                 dataReceived: false,
                 limitOrders: [...(props.data as LimitOrderIF[])],
@@ -154,6 +188,15 @@ function InfiniteScroll(props: propsIF) {
     const pageDataCountRef = useRef<PageDataCountIF>();
     pageDataCountRef.current = pageDataCount;
 
+    const isAliveRef = useRef<boolean>(true);
+    isAliveRef.current = true;
+
+    useEffect(() => {
+        return () => {
+            isAliveRef.current = false;
+        };
+    }, []);
+
     const resetInfiniteScroll = () => {
         setFetchedTransactions(assignInitialFetchedTransactions());
         setHotTransactions([]);
@@ -163,7 +206,211 @@ function InfiniteScroll(props: propsIF) {
         setMoreDataLoading(false);
     };
 
-    return <div>InfiniteScroll</div>;
+    const dataDiffCheck = useCallback(
+        (
+            dirtyData: LimitOrderIF[] | PositionIF[] | TransactionIF[],
+        ): LimitOrderIF[] | PositionIF[] | TransactionIF[] => {
+            let txs: TransactionIF[] | LimitOrderIF[] | PositionIF[];
+            let ret: LimitOrderIF[] | PositionIF[] | TransactionIF[];
+
+            if (props.type === 'Transaction') {
+                txs = fetchedTransactionsRef.current
+                    ? (fetchedTransactionsRef.current as Changes).changes
+                    : (fetchedTransactions as Changes).changes;
+                const existingTxs = new Set(txs.map((e) => e.txHash || e.txId));
+                ret = (dirtyData as TransactionIF[]).filter(
+                    (e) => !existingTxs.has(e.txHash || e.txId),
+                );
+            } else if (props.type === 'Order') {
+                txs = fetchedTransactionsRef.current
+                    ? (fetchedTransactionsRef.current as LimitOrdersByPool)
+                          .limitOrders
+                    : (fetchedTransactions as LimitOrdersByPool).limitOrders;
+                const existingTxs = new Set(txs.map((e) => e.limitOrderId));
+                ret = (dirtyData as LimitOrderIF[]).filter(
+                    (e) => !existingTxs.has(e.limitOrderId),
+                );
+            } else {
+                txs = fetchedTransactionsRef.current
+                    ? (fetchedTransactionsRef.current as PositionsByPool)
+                          .positions
+                    : (fetchedTransactions as PositionsByPool).positions;
+                const existingTxs = new Set(txs.map((e) => e.positionId));
+                ret = (dirtyData as PositionIF[]).filter(
+                    (e) => !existingTxs.has(e.positionId),
+                );
+            }
+
+            return ret;
+        },
+        [fetchedTransactions, fetchedTransactionsRef.current],
+    );
+
+    const getOldestTime = (
+        txs: TransactionIF[] | LimitOrderIF[] | PositionIF[],
+    ): number => {
+        if (txs.length == 0) return 0;
+
+        let oldestTime = 0;
+        switch (props.type) {
+            case 'Transaction':
+                oldestTime = (txs as TransactionIF[]).reduce(
+                    (min, tx) => {
+                        return min < tx.txTime ? min : tx.txTime;
+                    },
+                    (txs[0] as TransactionIF).txTime,
+                );
+                break;
+            case 'Order':
+                oldestTime = (txs as LimitOrderIF[]).reduce(
+                    (min, limitOrder) => {
+                        return min < limitOrder.latestUpdateTime
+                            ? min
+                            : limitOrder.latestUpdateTime;
+                    },
+                    (txs[0] as LimitOrderIF).latestUpdateTime,
+                );
+                break;
+            case 'Range':
+                oldestTime = (txs as PositionIF[]).reduce(
+                    (min, position) => {
+                        return min < position.latestUpdateTime
+                            ? min
+                            : position.latestUpdateTime;
+                    },
+                    (txs[0] as PositionIF).latestUpdateTime,
+                );
+                break;
+        }
+        return oldestTime;
+    };
+
+    const addMoreData = async () => {
+        setMoreDataLoading(true);
+
+        let addedDataCount = 0;
+
+        const newTxData: LimitOrderIF[] | PositionIF[] | TransactionIF[] = [];
+
+        let oldestTimeParam = getOldestTime(data);
+
+        // ------------------- FETCH DATA WITH LOOP -------------------
+        while (addedDataCount < targetCount) {
+            if (!isAliveRef.current) {
+                break;
+            }
+
+            let dirtyData: LimitOrderIF[] | PositionIF[] | TransactionIF[] = [];
+
+            if (props.type === 'Order') {
+                dirtyData = await fetchLimitOrders(oldestTimeParam, fetchCount);
+            } else if (props.type === 'Range') {
+                dirtyData = await fetchPositions(oldestTimeParam, fetchCount);
+            } else {
+                // dirtyData = await fetchTransactions(oldestTimeParam, fetchCount);
+            }
+
+            if (dirtyData.length == 0) {
+                break;
+            }
+
+            const cleanData = dataDiffCheck(dirtyData);
+
+            if (cleanData.length == 0) {
+                break;
+            } else {
+                addedDataCount += cleanData.length;
+                if (props.type === 'Order') {
+                    (newTxData as LimitOrderIF[]).push(
+                        ...(cleanData as LimitOrderIF[]),
+                    );
+                } else if (props.type === 'Range') {
+                    (newTxData as PositionIF[]).push(
+                        ...(cleanData as PositionIF[]),
+                    );
+                } else {
+                    (newTxData as TransactionIF[]).push(
+                        ...(cleanData as TransactionIF[]),
+                    );
+                }
+
+                const oldestTimeTemp = getOldestTime(cleanData);
+                if (oldestTimeTemp < oldestTimeParam) {
+                    oldestTimeParam = oldestTimeTemp;
+                }
+            }
+        }
+        // ------------------------------------------------------------------
+
+        if (addedDataCount > 0) {
+            setFetchedTransactions(
+                (prev: LimitOrdersByPool | PositionsByPool | Changes) => {
+                    let sortedData:
+                        | TransactionIF[]
+                        | LimitOrderIF[]
+                        | PositionIF[];
+                    if (props.type === 'Order') {
+                        sortedData = sortData([
+                            ...(prev as LimitOrdersByPool).limitOrders,
+                            ...(newTxData as LimitOrderIF[]),
+                        ]) as LimitOrderIF[];
+                        return {
+                            dataReceived: true,
+                            limitOrders: sortedData,
+                        } as LimitOrdersByPool;
+                    } else if (props.type === 'Range') {
+                        sortedData = sortData([
+                            ...(prev as PositionsByPool).positions,
+                            ...(newTxData as PositionIF[]),
+                        ]) as PositionIF[];
+                        return {
+                            dataReceived: true,
+                            positions: sortedData,
+                        } as PositionsByPool;
+                    } else {
+                        sortedData = sortData([
+                            ...(prev as Changes).changes,
+                            ...(newTxData as TransactionIF[]),
+                        ]) as TransactionIF[];
+                        return {
+                            dataReceived: true,
+                            changes: sortedData,
+                        } as Changes;
+                    }
+                },
+            );
+            setLastFetchedCount(addedDataCount);
+            addPageDataCount(addedDataCount);
+            setExtraPagesAvailable((prev) => prev + 1);
+            setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
+        } else {
+            setMoreDataAvailable(false);
+        }
+
+        setMoreDataLoading(false);
+    };
+
+    return (
+        <TableRowsInfiniteScroll
+            type={props.type}
+            data={data}
+            tableView={tableView}
+            isAccountView={isAccountView}
+            fetcherFunction={addMoreData}
+            sortBy={sortBy}
+            showAllData={showAllData}
+            pagesVisible={pagesVisible}
+            setPagesVisible={setPagesVisible}
+            moreDataAvailable={moreDataAvailable}
+            extraPagesAvailable={extraPagesAvailable}
+            pageDataCount={pageDataCount.counts}
+            dataPerPage={dataPerPage}
+            tableKey={selectedBaseAddress + selectedQuoteAddress}
+            lastFetchedCount={lastFetchedCount}
+            setLastFetchedCount={setLastFetchedCount}
+            moreDataLoading={moreDataLoading}
+        />
+    );
 }
 
 export default memo(InfiniteScroll);

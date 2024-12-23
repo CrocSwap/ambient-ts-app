@@ -1157,9 +1157,6 @@ function Orders(props: propsIF) {
                 {showInfiniteScroll ? (
                     <TableRowsInfiniteScroll
                         type='Order'
-                        // data={unindexedUpdatedOrders.concat(
-                        //     sortedLimitDataToDisplay,
-                        // )}
                         data={sortedLimitDataToDisplay}
                         tableView={tableView}
                         isAccountView={isAccountView}
