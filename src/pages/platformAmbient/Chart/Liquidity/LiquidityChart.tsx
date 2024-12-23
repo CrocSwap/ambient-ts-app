@@ -151,7 +151,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
     const liqDataBid = liquidityData?.liqBidData;
 
-    const isAmbientPosition = simpleRangeWidth === 100;
+    const isAmbientPosition = simpleRangeWidth === 100 && !advancedMode;
 
     const liqDataDepthBid = useMemo<LiquidityDataLocal[]>(() => {
         return advancedMode
@@ -467,9 +467,6 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
         const advancedLow = low > poolPriceDisplay ? low : poolPriceDisplay;
         const advancedHigh = high < poolPriceDisplay ? high : poolPriceDisplay;
-
-        console.log('ssssssssssss', { advancedHigh });
-
         let lastLow =
             liqType === 'bid'
                 ? advancedMode
@@ -602,6 +599,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             liquidityDepthScale !== undefined &&
             liquidityScale !== undefined
         ) {
+            const isRange =
+                location.pathname.includes('pool') ||
+                location.pathname.includes('reposition');
+
             const canvas = d3
                 .select(d3CanvasLiq.current)
                 .select('canvas')
@@ -619,15 +620,23 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
             const bidMinBoudnary = poolPriceDisplay;
 
-            const bidMaxBoudnary = isAmbientPosition
-                ? scaleData.yScale.domain()[1]
-                : d3.max(liqDataBid, (d: LiquidityDataLocal) => d.liqPrices);
+            const bidMaxBoudnary =
+                (isAmbientPosition || advancedMode) && isRange
+                    ? scaleData.yScale.domain()[1]
+                    : d3.max(
+                          liqDataBid,
+                          (d: LiquidityDataLocal) => d.liqPrices,
+                      );
 
-            const askMinBoudnary = isAmbientPosition
-                ? scaleData.yScale.domain()[0] < 0
-                    ? 0
-                    : scaleData.yScale.domain()[0]
-                : d3.min(liqDataAsk, (d: LiquidityDataLocal) => d.liqPrices);
+            const askMinBoudnary =
+                (isAmbientPosition || advancedMode) && isRange
+                    ? scaleData.yScale.domain()[0] < 0
+                        ? 0
+                        : scaleData.yScale.domain()[0]
+                    : d3.min(
+                          liqDataAsk,
+                          (d: LiquidityDataLocal) => d.liqPrices,
+                      );
             const askMaxBoudnary = poolPriceDisplay;
 
             if (liqMaxActiveLiq && currentDataX <= liqMaxActiveLiq) {
@@ -670,6 +679,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
+        const isRange =
+            location.pathname.includes('pool') ||
+            location.pathname.includes('reposition');
+
         const allData =
             liqMode === 'curve'
                 ? liqDataBid.concat(liqDataAsk)
@@ -686,7 +699,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             d3.select(d3CanvasLiq.current)
                 .on('draw', () => {
                     let drawingData = allData;
-                    if (isAmbientPosition && scaleData) {
+                    if (
+                        (isAmbientPosition || (advancedMode && isRange)) &&
+                        scaleData
+                    ) {
                         drawingData = drawingData.concat([
                             {
                                 activeLiq:
@@ -814,6 +830,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 ? liqDataBid.concat(liqDataAsk)
                 : liqDataDepthBid.concat(liqDataDepthAsk);
 
+        const isRange =
+            location.pathname.includes('pool') ||
+            location.pathname.includes('reposition');
+
         const canvas = d3
             .select(d3CanvasLiqHover.current)
             .select('canvas')
@@ -829,9 +849,12 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                             chartMousemoveEvent,
                             rectCanvas,
                         );
-
                         let drawingData = allData;
-                        if (isAmbientPosition && scaleData) {
+                        if (
+                            (isAmbientPosition || advancedMode) &&
+                            isRange &&
+                            scaleData
+                        ) {
                             drawingData = drawingData.concat([
                                 {
                                     activeLiq:
@@ -1166,6 +1189,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         mainCanvasBoundingClientRect,
         liqMode,
         liqMaxActiveLiq,
+        isAmbientPosition,
+        advancedMode,
     ]);
 
     useEffect(() => {
