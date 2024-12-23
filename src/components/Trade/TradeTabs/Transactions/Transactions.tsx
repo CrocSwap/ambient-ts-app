@@ -380,7 +380,7 @@ function Transactions(props: propsIF) {
     useEffect(() => {
         if (isCandleSelected) {
             setInfiniteScrollLock(true);
-            resetInfiniteScrollData();
+            setPagesVisible([0, 1]);
         }
     }, [candleTransactionData]);
 
