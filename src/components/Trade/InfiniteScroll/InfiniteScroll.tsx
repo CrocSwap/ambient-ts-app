@@ -397,6 +397,65 @@ function InfiniteScroll(props: propsIF) {
         setMoreDataLoading(false);
     };
 
+    const updateHotTransactions = (
+        hotTxs: LimitOrderIF[] | PositionIF[] | TransactionIF[],
+    ) => {
+        const newTxs: LimitOrderIF[] | PositionIF[] | TransactionIF[] = [];
+
+        if (props.type === 'Order') {
+            const existingChanges = new Set(
+                hotTransactions.map(
+                    (change) => (change as LimitOrderIF).limitOrderId,
+                ),
+            );
+
+            hotTxs.forEach((tx) => {
+                if (!existingChanges.has((tx as LimitOrderIF).limitOrderId)) {
+                    (newTxs as LimitOrderIF[]).push(tx as LimitOrderIF);
+                }
+            });
+
+            setHotTransactions((prev) => [
+                ...(newTxs as LimitOrderIF[]),
+                ...(prev as LimitOrderIF[]),
+            ]);
+        } else if (props.type === 'Range') {
+            const existingChanges = new Set(
+                hotTransactions.map(
+                    (change) => (change as PositionIF).positionId,
+                ),
+            );
+
+            hotTxs.forEach((tx) => {
+                if (!existingChanges.has((tx as PositionIF).positionId)) {
+                    (newTxs as PositionIF[]).push(tx as PositionIF);
+                }
+            });
+
+            setHotTransactions((prev) => [
+                ...(newTxs as PositionIF[]),
+                ...(prev as PositionIF[]),
+            ]);
+        } else {
+            const existingChanges = new Set(
+                hotTransactions.map(
+                    (change) => (change as TransactionIF).txHash,
+                ),
+            );
+
+            hotTxs.forEach((tx) => {
+                if (!existingChanges.has((tx as TransactionIF).txHash)) {
+                    (newTxs as TransactionIF[]).push(tx as TransactionIF);
+                }
+            });
+
+            setHotTransactions((prev) => [
+                ...(newTxs as TransactionIF[]),
+                ...(prev as TransactionIF[]),
+            ]);
+        }
+    };
+
     // USE EFFECTS --------------------------------------------------------------------------------------------------------------------------
 
     //  this effect has been triggered once pivot data has been changed through contexts
@@ -448,6 +507,7 @@ function InfiniteScroll(props: propsIF) {
                             break;
                     }
                 } else {
+                    updateHotTransactions(newTxs);
                 }
             }
         }
