@@ -326,8 +326,9 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
               : undefined;
 
     const isChartEnabled =
-        !!import.meta.env.VITE_CHART_IS_ENABLED &&
-        import.meta.env.VITE_CHART_IS_ENABLED.toLowerCase() === 'false'
+        (!!import.meta.env.VITE_CHART_IS_ENABLED &&
+            import.meta.env.VITE_CHART_IS_ENABLED.toLowerCase() === 'false') ||
+        !location.pathname.includes('/trade')
             ? false
             : true;
 

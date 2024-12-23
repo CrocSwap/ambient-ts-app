@@ -223,7 +223,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [candleScale?.isFetchForTimeframe]);
 
     useEffect(() => {
-        if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
+        if (
+            isChartEnabled &&
+            isUserOnline &&
+            candleScale.isShowLatestCandle &&
+            location.pathname.includes('/trade')
+        ) {
             if (
                 candleData &&
                 candleData.candles &&
