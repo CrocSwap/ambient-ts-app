@@ -41,7 +41,8 @@ function NoTableData(props: NoTableDataPropsIF) {
 
     const toggleAllEnabledContentOrNull =
         isAccountView ||
-        (showAllData &&
+        (!isCandleSelected &&
+            showAllData &&
             !activeUserPositionsByPoolLength &&
             !activeUserPositionsLength) ? null : (
             <>
