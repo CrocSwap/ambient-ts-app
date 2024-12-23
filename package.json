@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.12.16",
+    "version": "2.12.19",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -54,7 +54,8 @@
         "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
         "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
         "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
-        "prepare": "husky"
+        "prepare": "husky",
+        "postbuild": "node generateManifest.js"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx,json}": [
@@ -80,6 +81,7 @@
         "@typescript-eslint/parser": "^7.1.0",
         "@vitejs/plugin-react": "^4.3.4",
         "adm-zip": "^0.5.10",
+        "dotenv": "^16.4.7",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-import-resolver-typescript": "^3.7.0",
