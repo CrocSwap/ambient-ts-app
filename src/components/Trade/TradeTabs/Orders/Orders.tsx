@@ -33,6 +33,7 @@ interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
     connectedAccountActive?: boolean;
     isAccountView: boolean;
+    unselectCandle?: () => void;
 }
 
 function Orders(props: propsIF) {
@@ -40,6 +41,7 @@ function Orders(props: propsIF) {
         activeAccountLimitOrderData,
         connectedAccountActive,
         isAccountView,
+        unselectCandle,
     } = props;
     const { showAllData: showAllDataSelection } = useContext(TradeTableContext);
     const {
@@ -760,6 +762,7 @@ function Orders(props: propsIF) {
             isAccountView={isAccountView}
             activeUserPositionsLength={activeUserLimitOrdersLength}
             activeUserPositionsByPoolLength={activeUserLimitOrdersByPool.length}
+            unselectCandle={unselectCandle}
         />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder} style={{ height: '100%' }}>
