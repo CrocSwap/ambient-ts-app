@@ -44,7 +44,6 @@ export function filterCandleWithTransaction(
             return {
                 ...item,
                 isShowData: isShowData,
-                isFakeData: false,
             };
         });
 

@@ -17,7 +17,6 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import { CSSTransition } from 'react-transition-group';
 import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { useDrawSettings } from '../../../App/hooks/useDrawSettings';
@@ -41,7 +40,6 @@ import {
     CandlesByPoolAndDurationIF,
     TransactionIF,
 } from '../../../ambient-utils/types';
-import Divider from '../../../components/Global/Divider/Divider';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { CandleContext } from '../../../contexts/CandleContext';
@@ -83,6 +81,7 @@ import {
     checkShowLatestCandle,
     crosshair,
     fillLiqAdvanced,
+    findSnapTime,
     formatTimeDifference,
     getCandleCount,
     getInitialDisplayCandleCount,
@@ -301,7 +300,6 @@ export default function Chart(props: propsIF) {
     const [isChartZoom, setIsChartZoom] = useState(false);
     const [cursorStyleTrigger, setCursorStyleTrigger] = useState(false);
 
-    const [chartHeights, setChartHeights] = useState(0);
     const { isUserConnected } = useContext(UserDataContext);
 
     const [minTickForLimit, setMinTickForLimit] = useState<number>(0);
@@ -382,9 +380,6 @@ export default function Chart(props: propsIF) {
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
-
-    const [isShowLastCandleTooltip, setIsShowLastCandleTooltip] =
-        useState(false);
     const [ranges, setRanges] = useState<lineValue[]>([
         {
             name: 'Min',
@@ -588,64 +583,6 @@ export default function Chart(props: propsIF) {
             period,
         ).sort((a, b) => b.time - a.time);
 
-        if (
-            poolPriceWithoutDenom &&
-            data &&
-            data.length > 0 &&
-            isShowLatestCandle
-        ) {
-            const closePriceWithDenom =
-                data[0].invPriceCloseExclMEVDecimalCorrected;
-            const poolPriceWithDenom = 1 / poolPriceWithoutDenom;
-
-            const fakeDataOpenWithDenom = closePriceWithDenom;
-
-            const fakeDataCloseWithDenom = poolPriceWithDenom;
-
-            const closePrice = data[0].priceCloseExclMEVDecimalCorrected;
-
-            const fakeDataOpen = closePrice;
-
-            const fakeDataClose = poolPriceWithoutDenom;
-
-            const placeHolderCandle = {
-                time: data[0].time + period,
-                invMinPriceExclMEVDecimalCorrected: fakeDataOpenWithDenom,
-                maxPriceExclMEVDecimalCorrected: fakeDataOpen,
-                invMaxPriceExclMEVDecimalCorrected: fakeDataCloseWithDenom,
-                minPriceExclMEVDecimalCorrected: fakeDataClose,
-                invPriceOpenExclMEVDecimalCorrected: fakeDataOpenWithDenom,
-                priceOpenExclMEVDecimalCorrected: fakeDataOpen,
-                invPriceCloseExclMEVDecimalCorrected: fakeDataCloseWithDenom,
-                priceCloseExclMEVDecimalCorrected: fakeDataClose,
-                period: period,
-                tvlData: {
-                    time: data[0].time,
-                    tvl: data[0].tvlData.tvl,
-                },
-                volumeUSD: 0,
-                averageLiquidityFee: data[0].averageLiquidityFee,
-                minPriceDecimalCorrected: fakeDataClose,
-                maxPriceDecimalCorrected: 0,
-                priceOpenDecimalCorrected: fakeDataOpen,
-                priceCloseDecimalCorrected: fakeDataClose,
-                invMinPriceDecimalCorrected: fakeDataCloseWithDenom,
-                invMaxPriceDecimalCorrected: 0,
-                invPriceOpenDecimalCorrected: fakeDataOpenWithDenom,
-                invPriceCloseDecimalCorrected: fakeDataCloseWithDenom,
-                isCrocData: false,
-                isFakeData: true,
-                isShowData: true,
-            };
-
-            // added candle for pool price market price match
-            if (!data[0].isFakeData) {
-                data.unshift(placeHolderCandle);
-            } else {
-                data[0] = placeHolderCandle;
-            }
-        }
-
         calculateDiscontinuityRange(data);
         return calculateVisibleCandles(
             scaleData,
@@ -702,9 +639,6 @@ export default function Chart(props: propsIF) {
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
         lastCandleData.time,
     );
-    const [lastCandleDataCenterX, setLastCandleDataCenterX] = useState(0);
-    const [lastCandleDataCenterY, setLastCandleDataCenterY] = useState(0);
-
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
@@ -780,6 +714,23 @@ export default function Chart(props: propsIF) {
         return new Zoom(setLocalCandleDomains, period, isCondensedModeEnabled);
     }, [period, isCondensedModeEnabled]);
 
+    const chartPoolPrice = useMemo(() => {
+        let poolPrice = poolPriceDisplay;
+        const currentTime = findSnapTime(Date.now(), period) - period * 1000;
+        if (unparsedData.candles.some((i) => i.time * 1000 === currentTime)) {
+            poolPrice = isDenomBase
+                ? lastCandleData.invPriceCloseDecimalCorrected
+                : lastCandleData.priceCloseDecimalCorrected;
+        }
+
+        setMarket(poolPrice);
+        return poolPrice;
+    }, [
+        lastCandleData,
+        diffHashSigScaleData(scaleData, 'x'),
+        poolPriceDisplay,
+        isDenomBase,
+    ]);
     useEffect(() => {
         useHandleSwipeBack(d3Container, toolbarRef);
     }, [d3Container === null]);
@@ -1040,22 +991,6 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         updateDrawnShapeHistoryonLocalStorage();
     }, [JSON.stringify(drawnShapeHistory), isToolbarOpen]);
-
-    useEffect(() => {
-        setMarketLineValue();
-    }, [poolPriceWithoutDenom, denomInBase]);
-
-    const setMarketLineValue = () => {
-        if (poolPriceWithoutDenom !== undefined) {
-            const lastCandlePrice = denomInBase
-                ? 1 / poolPriceWithoutDenom
-                : poolPriceWithoutDenom;
-
-            setMarket(() => {
-                return lastCandlePrice !== undefined ? lastCandlePrice : 0;
-            });
-        }
-    };
 
     useEffect(() => {
         if (cursorStyleTrigger && chartZoomEvent !== 'wheel') {
@@ -3070,15 +3005,11 @@ export default function Chart(props: propsIF) {
             const canvasDiv = d3.select(d3CanvasMain.current) as any;
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const resizeObserver = new ResizeObserver((result: any) => {
+            const resizeObserver = new ResizeObserver(() => {
                 const canvas = canvasDiv
                     .select('canvas')
                     .node() as HTMLCanvasElement;
                 setMainCanvasBoundingClientRect(canvas.getBoundingClientRect());
-
-                const height = result[0].contentRect.height;
-
-                setChartHeights(height);
                 render();
             });
 
@@ -5445,73 +5376,6 @@ export default function Chart(props: propsIF) {
                 ? limitTop > yValue && limitBot < yValue
                 : limitTop < yValue && limitBot > yValue;
 
-        if (
-            nearest &&
-            nearest?.time === lastCandleData?.time + period &&
-            dateControl &&
-            checkYLocation &&
-            scaleData
-        ) {
-            if (mainCanvasBoundingClientRect) {
-                const ymin = scaleData?.yScale.domain()[0] as number;
-                const ymax = scaleData?.yScale.domain()[1] as number;
-                const tempOpen = Math.max(open, close);
-                const tempClose = Math.min(open, close);
-
-                const localOpen = Math.min(tempOpen, ymax);
-                const localClose = Math.max(ymin, tempClose);
-
-                const location =
-                    mainCanvasBoundingClientRect.top +
-                    scaleData.yScale((localOpen + localClose) / 2) -
-                    30;
-
-                const positionX =
-                    mainCanvasBoundingClientRect.left +
-                    scaleData?.xScale(
-                        lastCandleData?.time * 1000 + period * 1000,
-                    ) +
-                    bandwidth * 2;
-
-                const positionXReversed =
-                    mainCanvasBoundingClientRect.left +
-                    scaleData?.xScale(
-                        lastCandleData?.time * 1000 + period * 1000,
-                    ) -
-                    260 -
-                    bandwidth * 2;
-
-                const mobilePlacement =
-                    positionXReversed < 5 && mobileView
-                        ? (mainCanvasBoundingClientRect.left +
-                              window.innerWidth) /
-                          2
-                        : positionXReversed;
-
-                const checkTooltipPlacement =
-                    positionX + 260 > window.innerWidth
-                        ? mobilePlacement - 130
-                        : positionX;
-
-                const localMobile = scaleData.yScale(localOpen) - 20;
-
-                const mobileYPlacement =
-                    positionXReversed < 5 && mobileView
-                        ? localMobile < 0
-                            ? 5
-                            : localMobile
-                        : location;
-
-                setLastCandleDataCenterY(mobileYPlacement);
-
-                setLastCandleDataCenterX(checkTooltipPlacement);
-            }
-
-            setIsShowLastCandleTooltip(true);
-        } else {
-            setIsShowLastCandleTooltip(false);
-        }
-
         /**
          * isHoverCandleOrVolumeData : mouse over candle or volume data
          * nearest : data information closest to the mouse
@@ -5899,7 +5763,6 @@ export default function Chart(props: propsIF) {
         reset,
         isLineDrag,
         setRescale,
-        setMarketLineValue,
         render,
         liquidityData,
         dragRange,
@@ -6112,6 +5975,7 @@ export default function Chart(props: propsIF) {
                         mainCanvasBoundingClientRect={
                             mainCanvasBoundingClientRect
                         }
+                        chartPoolPrice={chartPoolPrice}
                         chartThemeColors={chartThemeColors}
                         render={render}
                         colorChangeTrigger={colorChangeTrigger}
@@ -6323,34 +6187,6 @@ export default function Chart(props: propsIF) {
                     drawnShapeHistory={drawnShapeHistory}
                     chartThemeColors={chartThemeColors}
                 />
-            )}
-
-            {scaleData && (
-                <CSSTransition
-                    in={isShowLastCandleTooltip}
-                    timeout={500}
-                    classNames='lastCandleTooltip'
-                    unmountOnExit
-                >
-                    <div
-                        className='lastCandleDiv'
-                        style={{
-                            fontSize: chartHeights > 280 ? 'medium' : '12px',
-                            top: lastCandleDataCenterY,
-                            left: lastCandleDataCenterX,
-                        }}
-                    >
-                        <div>
-                            A placeholder candle to align the latest close price
-                            with the current pool price{' '}
-                        </div>
-                        <Divider />
-                        <div>
-                            Click any other price candle or volume bar to view
-                            transactions
-                        </div>
-                    </div>
-                </CSSTransition>
             )}
 
             {scaleData &&
