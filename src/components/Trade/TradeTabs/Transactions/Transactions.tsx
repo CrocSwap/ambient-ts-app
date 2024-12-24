@@ -53,6 +53,7 @@ interface propsIF {
     setSelectedInsideTab?: Dispatch<number>;
     fullLayoutActive?: boolean;
     accountAddress?: string | undefined;
+    unselectCandle?: () => void;
 }
 
 function Transactions(props: propsIF) {
@@ -65,6 +66,7 @@ function Transactions(props: propsIF) {
         isAccountView,
         fullLayoutActive,
         accountAddress,
+        unselectCandle,
     } = props;
 
     const {
@@ -806,6 +808,7 @@ function Transactions(props: propsIF) {
             activeUserPositionsByPoolLength={
                 userTransactionsByPool.changes.length
             }
+            unselectCandle={unselectCandle}
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
