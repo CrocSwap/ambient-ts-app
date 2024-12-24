@@ -35,9 +35,9 @@ interface propsIF {
     dataPerPage: number;
     fetchCount: number;
     targetCount: number;
-    sortData: (
-        data: TransactionIF[] | LimitOrderIF[] | PositionIF[],
-    ) => TransactionIF[] | LimitOrderIF[] | PositionIF[];
+    sortOrders?: (data: LimitOrderIF[]) => LimitOrderIF[];
+    sortPositions?: (data: PositionIF[]) => PositionIF[];
+    sortTransactions?: (data: TransactionIF[]) => TransactionIF[];
     sortBy: TxSortType | LimitSortType | RangeSortType;
     showAllData: boolean;
 }
@@ -49,7 +49,9 @@ function InfiniteScroll(props: propsIF) {
         dataPerPage,
         targetCount,
         fetchCount,
-        sortData,
+        sortOrders,
+        sortPositions,
+        sortTransactions,
         tableView,
         isAccountView,
         sortBy,
@@ -70,26 +72,10 @@ function InfiniteScroll(props: propsIF) {
     );
 
     const assignInitialFetchedTransactions = ():
-        | LimitOrdersByPool
-        | PositionsByPool
-        | Changes => {
-        let ret: LimitOrdersByPool | PositionsByPool | Changes;
-        if (props.type === 'Order') {
-            ret = {
-                dataReceived: false,
-                limitOrders: [...(data as LimitOrderIF[])],
-            };
-        } else if (props.type === 'Range') {
-            ret = {
-                dataReceived: false,
-                positions: [...(data as PositionIF[])],
-            };
-        } else {
-            return {
-                dataReceived: false,
-                changes: [...(data as TransactionIF[])],
-            };
-        }
+        | LimitOrderIF[]
+        | PositionIF[]
+        | TransactionIF[] => {
+        const ret = data;
         return ret;
     };
 
@@ -162,11 +148,11 @@ function InfiniteScroll(props: propsIF) {
     };
 
     const [fetchedTransactions, setFetchedTransactions] = useState<
-        LimitOrdersByPool | PositionsByPool | Changes
+        LimitOrderIF[] | PositionIF[] | TransactionIF[]
     >(assignInitialFetchedTransactions());
 
     const fetchedTransactionsRef = useRef<
-        LimitOrdersByPool | PositionsByPool | Changes
+        LimitOrderIF[] | PositionIF[] | TransactionIF[]
     >();
     fetchedTransactionsRef.current = fetchedTransactions;
 
@@ -222,26 +208,24 @@ function InfiniteScroll(props: propsIF) {
 
             if (props.type === 'Transaction') {
                 txs = fetchedTransactionsRef.current
-                    ? (fetchedTransactionsRef.current as Changes).changes
-                    : (fetchedTransactions as Changes).changes;
+                    ? (fetchedTransactionsRef.current as TransactionIF[])
+                    : (fetchedTransactions as TransactionIF[]);
                 const existingTxs = new Set(txs.map((e) => e.txHash || e.txId));
                 ret = (dirtyData as TransactionIF[]).filter(
                     (e) => !existingTxs.has(e.txHash || e.txId),
                 );
             } else if (props.type === 'Order') {
                 txs = fetchedTransactionsRef.current
-                    ? (fetchedTransactionsRef.current as LimitOrdersByPool)
-                          .limitOrders
-                    : (fetchedTransactions as LimitOrdersByPool).limitOrders;
+                    ? (fetchedTransactionsRef.current as LimitOrderIF[])
+                    : (fetchedTransactions as LimitOrderIF[]);
                 const existingTxs = new Set(txs.map((e) => e.limitOrderId));
                 ret = (dirtyData as LimitOrderIF[]).filter(
                     (e) => !existingTxs.has(e.limitOrderId),
                 );
             } else {
                 txs = fetchedTransactionsRef.current
-                    ? (fetchedTransactionsRef.current as PositionsByPool)
-                          .positions
-                    : (fetchedTransactions as PositionsByPool).positions;
+                    ? (fetchedTransactionsRef.current as PositionIF[])
+                    : (fetchedTransactions as PositionIF[]);
                 const existingTxs = new Set(txs.map((e) => e.positionId));
                 ret = (dirtyData as PositionIF[]).filter(
                     (e) => !existingTxs.has(e.positionId),
@@ -293,6 +277,7 @@ function InfiniteScroll(props: propsIF) {
     };
 
     const addMoreData = async () => {
+        console.log('>>> addMoreData');
         setMoreDataLoading(true);
 
         let addedDataCount = 0;
@@ -351,38 +336,22 @@ function InfiniteScroll(props: propsIF) {
 
         if (addedDataCount > 0) {
             setFetchedTransactions(
-                (prev: LimitOrdersByPool | PositionsByPool | Changes) => {
-                    let sortedData:
-                        | TransactionIF[]
-                        | LimitOrderIF[]
-                        | PositionIF[];
+                (prev: LimitOrderIF[] | PositionIF[] | TransactionIF[]) => {
                     if (props.type === 'Order') {
-                        sortedData = sortData([
-                            ...(prev as LimitOrdersByPool).limitOrders,
+                        return [
+                            ...(prev as LimitOrderIF[]),
                             ...(newTxData as LimitOrderIF[]),
-                        ]) as LimitOrderIF[];
-                        return {
-                            dataReceived: true,
-                            limitOrders: sortedData,
-                        } as LimitOrdersByPool;
+                        ];
                     } else if (props.type === 'Range') {
-                        sortedData = sortData([
-                            ...(prev as PositionsByPool).positions,
+                        return [
+                            ...(prev as PositionIF[]),
                             ...(newTxData as PositionIF[]),
-                        ]) as PositionIF[];
-                        return {
-                            dataReceived: true,
-                            positions: sortedData,
-                        } as PositionsByPool;
+                        ];
                     } else {
-                        sortedData = sortData([
-                            ...(prev as Changes).changes,
+                        return [
+                            ...(prev as TransactionIF[]),
                             ...(newTxData as TransactionIF[]),
-                        ]) as TransactionIF[];
-                        return {
-                            dataReceived: true,
-                            changes: sortedData,
-                        } as Changes;
+                        ];
                     }
                 },
             );
@@ -472,38 +441,49 @@ function InfiniteScroll(props: propsIF) {
                 if (pagesVisible[0] == 0) {
                     switch (props.type) {
                         case 'Order':
-                            setFetchedTransactions((prev) => {
-                                return {
-                                    dataReceived: true,
-                                    limitOrders: [
+                            setFetchedTransactions(
+                                (
+                                    prev:
+                                        | LimitOrderIF[]
+                                        | PositionIF[]
+                                        | TransactionIF[],
+                                ) => {
+                                    return [
+                                        ...(prev as LimitOrderIF[]),
                                         ...(newTxs as LimitOrderIF[]),
-                                        ...(prev as LimitOrdersByPool)
-                                            .limitOrders,
-                                    ],
-                                } as LimitOrdersByPool;
-                            });
+                                    ];
+                                },
+                            );
                             break;
                         case 'Range':
-                            setFetchedTransactions((prev) => {
-                                return {
-                                    dataReceived: true,
-                                    positions: [
+                            setFetchedTransactions(
+                                (
+                                    prev:
+                                        | LimitOrderIF[]
+                                        | PositionIF[]
+                                        | TransactionIF[],
+                                ) => {
+                                    return [
+                                        ...(prev as PositionIF[]),
                                         ...(newTxs as PositionIF[]),
-                                        ...(prev as PositionsByPool).positions,
-                                    ],
-                                } as PositionsByPool;
-                            });
+                                    ];
+                                },
+                            );
                             break;
                         case 'Transaction':
-                            setFetchedTransactions((prev) => {
-                                return {
-                                    dataReceived: true,
-                                    changes: [
+                            setFetchedTransactions(
+                                (
+                                    prev:
+                                        | TransactionIF[]
+                                        | LimitOrderIF[]
+                                        | PositionIF[],
+                                ) => {
+                                    return [
+                                        ...(prev as TransactionIF[]),
                                         ...(newTxs as TransactionIF[]),
-                                        ...(prev as Changes).changes,
-                                    ],
-                                } as Changes;
-                            });
+                                    ];
+                                },
+                            );
                             break;
                     }
                 } else {
@@ -513,16 +493,44 @@ function InfiniteScroll(props: propsIF) {
         }
     }, [data]);
 
-    useEffect(() => {
-        if (data.length > 0) {
-            addMoreData();
+    // useEffect(() => {
+    //     if (data.length > 0) {
+    //         addMoreData();
+    //     }
+    // }, [fetchedTransactions]);
+
+    const getIndexForPages = (start: boolean, offset = 0) => {
+        const pageDataCountVal = (
+            pageDataCountRef.current ? pageDataCountRef.current : pageDataCount
+        ).counts;
+
+        let ret = 0;
+        if (start) {
+            for (let i = 0; i < pagesVisible[0]; i++) {
+                ret += pageDataCountVal[i];
+            }
+        } else {
+            for (let i = 0; i <= pagesVisible[1]; i++) {
+                ret += pageDataCountVal[i];
+                if (pagesVisible[1] === 1 && offset > 0) {
+                    ret += offset;
+                }
+            }
         }
+        return ret;
+    };
+
+    const dataToDisplay = useMemo(() => {
+        const startIndex = getIndexForPages(true);
+        const endIndex = getIndexForPages(false, 1);
+
+        return fetchedTransactions.slice(startIndex, endIndex);
     }, [fetchedTransactions]);
 
     return (
         <TableRowsInfiniteScroll
             type={props.type}
-            data={data}
+            data={dataToDisplay}
             tableView={tableView}
             isAccountView={isAccountView}
             fetcherFunction={addMoreData}

@@ -1,6 +1,4 @@
 /* eslint-disable no-irregular-whitespace */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
     LimitOrderIF,
@@ -41,7 +39,6 @@ import {
     quoteTokenForConcLiq,
     tickToPrice,
 } from '@crocswap-libs/sdk';
-import InfiniteScroll from '../../InfiniteScroll/InfiniteScroll';
 // import DebugDiv from '../../../Chat/DomDebugger/Draggable/DebugDiv';
 
 interface propsIF {
@@ -1158,39 +1155,27 @@ function Orders(props: propsIF) {
                             />
                         ))}
                 {showInfiniteScroll ? (
-                    <InfiniteScroll
+                    <TableRowsInfiniteScroll
                         type='Order'
-                        data={sortedLimits}
+                        data={sortedLimitDataToDisplay}
                         tableView={tableView}
                         isAccountView={isAccountView}
+                        fetcherFunction={addMoreData}
                         sortBy={sortBy}
                         showAllData={showAllData}
+                        moreDataAvailable={moreDataAvailableRef.current}
+                        pagesVisible={pagesVisible}
+                        setPagesVisible={setPagesVisible}
+                        extraPagesAvailable={extraPagesAvailable}
+                        // setExtraPagesAvailable={setExtraPagesAvailable}
+                        tableKey='Orders'
                         dataPerPage={dataPerPage}
-                        fetchCount={50}
-                        targetCount={50}
-                        sortOrders={sortData}
+                        pageDataCount={pageDataCountRef.current.counts}
+                        lastFetchedCount={lastFetchedCount}
+                        setLastFetchedCount={setLastFetchedCount}
+                        moreDataLoading={moreDataLoading}
                     />
                 ) : (
-                    // <TableRowsInfiniteScroll
-                    //     type='Order'
-                    //     data={sortedLimitDataToDisplay}
-                    //     tableView={tableView}
-                    //     isAccountView={isAccountView}
-                    //     fetcherFunction={addMoreData}
-                    //     sortBy={sortBy}
-                    //     showAllData={showAllData}
-                    //     moreDataAvailable={moreDataAvailableRef.current}
-                    //     pagesVisible={pagesVisible}
-                    //     setPagesVisible={setPagesVisible}
-                    //     extraPagesAvailable={extraPagesAvailable}
-                    //     // setExtraPagesAvailable={setExtraPagesAvailable}
-                    //     tableKey='Orders'
-                    //     dataPerPage={dataPerPage}
-                    //     pageDataCount={pageDataCountRef.current.counts}
-                    //     lastFetchedCount={lastFetchedCount}
-                    //     setLastFetchedCount={setLastFetchedCount}
-                    //     moreDataLoading={moreDataLoading}
-                    // />
                     <TableRows
                         type='Order'
                         data={sortedLimitsToDisplayAccount}
