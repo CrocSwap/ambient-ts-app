@@ -127,7 +127,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
-    console.log({ lastBlockNumber });
 
     const [rpcNodeStatus, setRpcNodeStatus] =
         useState<RpcNodeStatus>('unknown');
