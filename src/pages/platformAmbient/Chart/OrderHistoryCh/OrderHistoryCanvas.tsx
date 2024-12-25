@@ -290,7 +290,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     ];
 
                     circleSerieArray.push({
-                        id: transaction.order.txId,
+                        id: transaction.order.txHash,
                         data: circleData,
                         serie: circleSerie,
                     });

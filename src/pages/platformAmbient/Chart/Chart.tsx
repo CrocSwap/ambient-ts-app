@@ -737,13 +737,26 @@ export default function Chart(props: propsIF) {
 
     const closestValue = (
         data: Array<{ order: TransactionIF; mergedTx: Array<TransactionIF> }>,
-        point: number,
+        pointX: number,
+        pointY: number,
     ) => {
         const xScale = scaleData?.xScale;
-        if (xScale) {
-            const accessor = (d: TransactionIF) =>
-                Math.abs(point - xScale(d.txTime * 1000));
+        const yScale = scaleData?.yScale;
 
+        if (xScale && yScale) {
+            const accessor = (d: TransactionIF) =>
+                Math.sqrt(
+                    Math.pow(pointX - xScale(d.txTime * 1000), 2) +
+                        Math.pow(
+                            pointY -
+                                yScale(
+                                    denomInBase
+                                        ? d.swapInvPriceDecimalCorrected
+                                        : d.swapPriceDecimalCorrected,
+                                ),
+                            2,
+                        ),
+                );
             return data
                 .map(function (dataPoint: {
                     order: TransactionIF;
@@ -795,32 +808,15 @@ export default function Chart(props: propsIF) {
                         if (selectedArray.length > 0) {
                             const nearestSwap = closestValue(
                                 selectedArray,
-                                scaleData.xScale(swap.txTime),
+                                scaleData.xScale(swap.txTime * 1000),
+                                scaleData.yScale(
+                                    denomInBase
+                                        ? swap.swapInvPriceDecimalCorrected
+                                        : swap.swapPriceDecimalCorrected,
+                                ),
                             );
 
-                            const diffInPixel = Math.abs(
-                                scaleData.xScale(swap.txTime * 1000) -
-                                    scaleData.xScale(
-                                        nearestSwap[1].order.txTime * 1000,
-                                    ),
-                            );
-
-                            const pricePoint = denomInBase
-                                ? swap.swapInvPriceDecimalCorrected
-                                : swap.swapPriceDecimalCorrected;
-                            const nearestPricePoint = denomInBase
-                                ? nearestSwap[1].order
-                                      .swapInvPriceDecimalCorrected
-                                : nearestSwap[1].order
-                                      .swapPriceDecimalCorrected;
-
-                            const priceDiffInPixel = Math.abs(
-                                scaleData.yScale(pricePoint) -
-                                    scaleData.yScale(nearestPricePoint),
-                            );
-
-                            const shouldMerge =
-                                diffInPixel < 10 && priceDiffInPixel < 20;
+                            const shouldMerge = nearestSwap[0] < 30;
 
                             if (shouldMerge) {
                                 nearestSwap[1].mergedTx.push(swap);
@@ -5352,7 +5348,7 @@ export default function Chart(props: propsIF) {
             if (domainRight && domainLeft) {
                 const scale = d3
                     .scaleLinear()
-                    .range([1000, 3000])
+                    .range([750, 3000])
                     .domain([domainLeft, domainRight]);
 
                 setCircleScale(() => {
@@ -5585,7 +5581,7 @@ export default function Chart(props: propsIF) {
                             )
                         ) {
                             resElement = {
-                                id: element.order.txId,
+                                id: element.order.txHash,
                                 type: 'swap',
                                 order: element,
                                 totalValueUSD: totalValueUSD,
