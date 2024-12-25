@@ -1,6 +1,5 @@
 import { ethers } from 'ethers';
 import {
-    ChangeEvent,
     Dispatch,
     SetStateAction,
     useContext,
@@ -262,7 +261,22 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const [hidePlaceholderText, setHidePlaceholderText] =
         useState<boolean>(INPUT_HAS_AUTOFOCUS);
 
-    // const ex = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate atque ipsum dolore mollitia, sunt voluptate blanditiis reprehenderit deleniti, minus amet veniam nulla, natus doloribus a itaque impedit ipsam iste consectetur. Enim laboriosam consequuntur, quisquam quam ea maiores accusantium officia, dolore amet quod ipsa inventore blanditiis accusamus recusandae facere necessitatibus minus?'
+    useEffect(() => {
+        const handlePasteShortcut = async (e: KeyboardEvent) => {
+            // Check for Cmd-V (Mac) or Ctrl-V (Windows/Linux)
+            if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
+                e.preventDefault();
+                const clipboardText = await navigator.clipboard.readText();
+                setInput(clipboardText); // Update the state with clipboard content
+            }
+        };
+
+        window.addEventListener('keydown', handlePasteShortcut);
+
+        return () => {
+            window.removeEventListener('keydown', handlePasteShortcut);
+        };
+    }, []);
 
     return (
         <Modal
@@ -283,17 +297,14 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                 : 'var(--text3)',
                         }}
                         value={rawInput}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             setInput(e.target.value)
                         }
                         spellCheck='false'
                         autoComplete='off'
                         autoFocus={INPUT_HAS_AUTOFOCUS}
-                        // needed to remove placeholder text when focused
                         onFocus={() => setHidePlaceholderText(true)}
-                        // needed to add placeholder text when not focused
                         onBlur={() => setHidePlaceholderText(false)}
-                        // variable placeholder text (disappears when field is focused)
                         placeholder={
                             hidePlaceholderText
                                 ? ''
