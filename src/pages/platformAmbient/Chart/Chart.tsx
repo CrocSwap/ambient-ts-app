@@ -819,7 +819,20 @@ export default function Chart(props: propsIF) {
                             const shouldMerge = nearestSwap[0] < 30;
 
                             if (shouldMerge) {
-                                nearestSwap[1].mergedTx.push(swap);
+                                const order =
+                                    swap.totalValueUSD >
+                                    nearestSwap[1].order.totalValueUSD
+                                        ? swap
+                                        : nearestSwap[1].order;
+                                const mergedSwap =
+                                    swap.totalValueUSD >
+                                    nearestSwap[1].order.totalValueUSD
+                                        ? nearestSwap[1].order
+                                        : swap;
+
+                                nearestSwap[1].order = order;
+
+                                nearestSwap[1].mergedTx.push(mergedSwap);
                             } else {
                                 selectedArray.push({
                                     order: swap,
