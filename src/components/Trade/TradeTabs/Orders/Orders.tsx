@@ -1167,7 +1167,7 @@ function Orders(props: propsIF) {
                         showAllData={showAllData}
                         dataPerPage={dataPerPage}
                         fetchCount={50}
-                        targetCount={50}
+                        targetCount={30}
                         sortOrders={sortData}
                     />
                 ) : (
