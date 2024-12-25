@@ -6453,7 +6453,7 @@ export default function Chart(props: propsIF) {
 
                             return {
                                 top: topPlacement,
-                                left,
+                                left: left > 50 ? left : 50,
                                 isOnLeftSide: false,
                             };
                         } else {
