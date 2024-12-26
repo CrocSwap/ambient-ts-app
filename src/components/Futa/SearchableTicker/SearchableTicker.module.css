@@ -226,10 +226,13 @@
     display: flex;
     gap: 8px;
     margin: 0 8px;
+    overflow-y: scroll;
 }
 
 /* header of the ticker table */
 .ticker_table > header {
+    position: sticky;
+    top: 0;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -246,6 +249,10 @@
 .ticker_table > header > * {
     width: 120px;
     flex: 1 10 auto;
+}
+
+.ticker_table_content {
+    overflow-y: scroll;
 }
 
 /* .tickerTableContent {

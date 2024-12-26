@@ -451,6 +451,7 @@ export default function SearchableTicker(props: propsIF) {
                 </header>
             ) : null}
             <div
+                // className={styles.ticker_table_content}
                 onMouseEnter={() => setIsMouseEnter(true)}
                 onMouseLeave={() => {
                     setIsMouseEnter(false);
