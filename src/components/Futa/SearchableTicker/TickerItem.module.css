@@ -3,7 +3,6 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin: 8px;
     outline: 1px solid salmon;
 }
 

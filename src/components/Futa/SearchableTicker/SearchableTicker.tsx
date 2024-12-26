@@ -435,11 +435,15 @@ export default function SearchableTicker(props: propsIF) {
     }, []);
 
     const searchableContent = (
-        <div className={styles.tickerTableContainer}>
+        <div className={styles.ticker_table}>
             {filteredData.length ? (
-                <header className={styles.tickerHeader}>
+                <header>
                     <p>TICKER</p>
-                    <p className={styles.marketCapHeader}>MARKET CAP</p>
+                    <p
+                    // className={styles.marketCapHeader}
+                    >
+                        MARKET CAP
+                    </p>
                     <p>STATUS</p>
                     <p>TIME</p>
                     {dataState?.active === 'created' && <p>ETH Committed</p>}
@@ -447,7 +451,6 @@ export default function SearchableTicker(props: propsIF) {
                 </header>
             ) : null}
             <div
-                className={styles.tickerTableContent}
                 onMouseEnter={() => setIsMouseEnter(true)}
                 onMouseLeave={() => {
                     setIsMouseEnter(false);

@@ -218,32 +218,35 @@
     border-radius: 50%;
 }
 
-.tickerTableContainer {
+/* wrapper for ticker table rows and column headers */
+.ticker_table {
     flex-direction: column;
     width: 100%;
     height: 100%;
     display: flex;
     gap: 8px;
+    margin: 0 8px;
 }
 
-.tickerHeader {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+.ticker_table > header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
     color: var(--text3);
     font-size: 12px;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    padding-left: 27px;
+    /* border-left: 4px solid transparent;
+    border-right: 4px solid transparent; */
+    background-color: green;
+    /* outline: 1px solid green; */
 }
 
-.tickerHeader span {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--text3);
+.ticker_table > header > * {
+    width: 120px;
+    flex: 1 10 auto;
 }
 
-.tickerTableContent {
+/* .tickerTableContent {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -252,7 +255,7 @@
     overflow-y: scroll;
     scrollbar-color: var(--dark2) var(--dark2);
     padding-bottom: 1rem;
-}
+} */
 
 .scrolling {
     scrollbar-color: var(--accent1) var(--dark2);
@@ -270,10 +273,10 @@
     text-align: end;
 }
 
-.marketCapHeader {
+/* .marketCapHeader {
     text-align: end;
     padding: 0 12px;
-}
+} */
 
 /* differential content when length of data array is zero */
 .no_auctions_content {
