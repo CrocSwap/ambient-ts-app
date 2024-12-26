@@ -7,6 +7,31 @@
     gap: 8px;
 }
 
+.resi {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    border-top: var(--futa-box-border);
+    border-left: var(--futa-box-border);
+    border-right: var(--futa-box-border);
+    border-bottom: var(--futa-box-border);
+}
+
+.mainBorder {
+    border: 2px solid var(--borders, #5C6F72);
+    padding: 8px;
+    height: calc(100% - 8px);
+}
+
+@media (max-width: 768px) {
+    .mainBorder {
+        border: none;
+        padding: none;
+        height: auto;
+    }
+}
+
 .header {
     display: flex;
     flex-direction: row;
@@ -348,13 +373,6 @@
     .tickerTableContent {
         height: 100%;
     }
-}
-
-@media (min-width: 1080px) {
-    .mainBorder {
-        height: calc(100% - 8px);
-    }
-
 }
 
 @media (min-width: 1280px) {

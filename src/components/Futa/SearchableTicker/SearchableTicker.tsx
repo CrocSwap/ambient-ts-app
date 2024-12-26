@@ -84,7 +84,7 @@ export default function SearchableTicker(props: propsIF) {
         canvasRef,
         setIsSearchableTickerHeightMinimum,
     } = useContext(FutaSearchableTickerContext);
-
+    false && isChartFullScreen;
     const isMobile = useMediaQuery('(max-width: 768px)');
 
     // shape of data to create filter dropdown menu options
@@ -452,7 +452,7 @@ export default function SearchableTicker(props: propsIF) {
                 </header>
             ) : null}
             <div
-                // className={styles.ticker_table_content}
+                className={styles.ticker_table_content}
                 onMouseEnter={() => setIsMouseEnter(true)}
                 onMouseLeave={() => {
                     setIsMouseEnter(false);
@@ -482,11 +482,13 @@ export default function SearchableTicker(props: propsIF) {
         </div>
     );
 
+    console.log(isAccount);
+
     const resizableChart = (
         <ResizableContainer
-            showResizeable={!isAccount}
+            showResizeable={false}
             enable={{
-                bottom: !isChartFullScreen,
+                bottom: false,
                 top: false,
                 left: false,
                 topLeft: false,
@@ -502,7 +504,7 @@ export default function SearchableTicker(props: propsIF) {
                 width: '100%',
                 height: searchableTickerHeights.current,
             }}
-            minHeight={40}
+            minHeight={400}
             onResize={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,
@@ -537,7 +539,9 @@ export default function SearchableTicker(props: propsIF) {
             }}
             bounds={'parent'}
             alignItems='flex-start'
+            className={styles.resi}
         >
+            {headerDisplay}
             {searchableContent}
         </ResizableContainer>
     );
@@ -556,11 +560,11 @@ export default function SearchableTicker(props: propsIF) {
                 overflow='hidden'
                 className={styles.contentContainer}
             >
-                <div className={styles.mainBorder}>
-                    {headerDisplay}
-                    {isMobile || isAccount ? searchableContent : resizableChart}
-                </div>
-
+                {/* <div className={styles.mainBorder}> */}
+                {/* {headerDisplay} */}
+                {/* {isMobile || isAccount ? searchableContent : resizableChart} */}
+                {/* </div> */}
+                {resizableChart}
                 {!isAccount && !isMobile && <Chart />}
             </FlexContainer>
         </div>
