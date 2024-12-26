@@ -498,7 +498,8 @@ export default function SearchableTicker(props: propsIF) {
                 width: '100%',
                 height: searchableTickerHeights.current,
             }}
-            minHeight={400}
+            minHeight={200}
+            maxHeight={window.innerHeight * 0.75}
             onResize={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,
@@ -554,10 +555,6 @@ export default function SearchableTicker(props: propsIF) {
                 overflow='hidden'
                 className={styles.contentContainer}
             >
-                {/* <div className={styles.mainBorder}> */}
-                {/* {headerDisplay} */}
-                {/* {isMobile || isAccount ? searchableContent : resizableChart} */}
-                {/* </div> */}
                 {resizableChart}
                 {!isAccount && !isMobile && <Chart />}
             </FlexContainer>
