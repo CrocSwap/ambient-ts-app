@@ -556,7 +556,7 @@ export default function SearchableTicker(props: propsIF) {
             >
                 <div className={styles.mainBorder}>
                     {headerDisplay}
-                    {isMobile ? searchableContent : resizableChart}
+                    {isMobile || isAccount ? searchableContent : resizableChart}
                 </div>
 
                 {!isAccount && !isMobile && <Chart />}

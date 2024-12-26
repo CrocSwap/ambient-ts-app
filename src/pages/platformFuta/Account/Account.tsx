@@ -256,7 +256,7 @@ export default function Account() {
                         active: tickerSet,
                         toggle: toggleData,
                     }}
-                    isAccount={true}
+                    isAccount
                 />
             </div>
             <div className={styles.separatorContainer}>
@@ -285,7 +285,7 @@ export default function Account() {
                         active: tickerSet,
                         toggle: toggleData,
                     }}
-                    isAccount={true}
+                    isAccount
                 />
             </div>
         </div>
@@ -301,7 +301,7 @@ export default function Account() {
                         active: tickerSet,
                         toggle: toggleData,
                     }}
-                    isAccount={true}
+                    isAccount
                 />
             </div>
             {claimAllContainer}
@@ -319,7 +319,7 @@ export default function Account() {
                         active: tickerSet,
                         toggle: toggleData,
                     }}
-                    isAccount={true}
+                    isAccount
                 />
             </div>
         </div>
