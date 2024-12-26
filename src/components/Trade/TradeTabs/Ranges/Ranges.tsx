@@ -40,7 +40,7 @@ import Toggle from '../../../Form/Toggle';
 import Spinner from '../../../Global/Spinner/Spinner';
 import NoTableData from '../NoTableData/NoTableData';
 import TableRows from '../TableRows';
-import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
+import TableRowsInfiniteScroll from '../../InfiniteScroll/TableRowsInfiniteScroll';
 import { useSortedPositions } from '../useSortedPositions';
 import RangeHeader from './RangesTable/RangeHeader';
 import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';

@@ -17,7 +17,7 @@ export interface ReceiptContextIF {
     resetReceiptData: () => void;
 }
 
-interface TransactionByType {
+export interface TransactionByType {
     chainId: string;
     userAddress: string;
     txHash: string;

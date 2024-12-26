@@ -39,7 +39,7 @@ import { FlexContainer } from '../../../../styled/Common';
 import { TransactionRow as TransactionRowStyled } from '../../../../styled/Components/TransactionTable';
 import Spinner from '../../../Global/Spinner/Spinner';
 import NoTableData from '../NoTableData/NoTableData';
-import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
+import TableRowsInfiniteScroll from '../../InfiniteScroll/TableRowsInfiniteScroll';
 import { useSortedTxs } from '../useSortedTxs';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';

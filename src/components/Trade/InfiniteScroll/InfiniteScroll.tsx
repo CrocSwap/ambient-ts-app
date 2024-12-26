@@ -16,16 +16,24 @@ import {
 } from 'react';
 import {
     Changes,
+    GraphDataContext,
     LimitOrdersByPool,
     PositionsByPool,
 } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { PageDataCountIF } from '../../Chat/ChatIFs';
 import useInfiniteScrollFetchers from './useInfiniteScrollFetchers';
-import TableRowsInfiniteScroll from '../TradeTabs/TableRowsInfiniteScroll';
+import TableRowsInfiniteScroll from './TableRowsInfiniteScroll';
 import { RangeSortType } from '../TradeTabs/useSortedPositions';
 import { LimitSortType } from '../TradeTabs/useSortedLimits';
 import { TxSortType } from '../TradeTabs/useSortedTxs';
+import useGenFakeTableRow from './useGenFakeTableRow';
+import {
+    ReceiptContext,
+    TransactionByType,
+} from '../../../contexts/ReceiptContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -41,6 +49,14 @@ interface propsIF {
     sortBy: TxSortType | LimitSortType | RangeSortType;
     showAllData: boolean;
 }
+
+export type RecentlyUpdatedPositionIF = {
+    positionHash: string;
+    timestamp: number;
+    position: LimitOrderIF | PositionIF;
+    type: string;
+    action: string;
+};
 
 function InfiniteScroll(props: propsIF) {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
@@ -63,6 +79,7 @@ function InfiniteScroll(props: propsIF) {
     const selectedQuoteAddress: string = quoteToken.address;
 
     const { fetchLimitOrders, fetchPositions } = useInfiniteScrollFetchers();
+    const { genFakeLimitOrder, genFakePosition } = useGenFakeTableRow();
 
     const PAGE_COUNT_DIVIDE_THRESHOLD = 20;
     const INITIAL_EXTRA_REQUEST_THRESHOLD = 20;
@@ -70,6 +87,15 @@ function InfiniteScroll(props: propsIF) {
     const prevBaseQuoteAddressRef = useRef<string>(
         selectedBaseAddress + selectedQuoteAddress,
     );
+
+    const { transactionsByType } = useContext(ReceiptContext);
+
+    const {
+        unindexedNonFailedSessionLimitOrderUpdates,
+        unindexedNonFailedSessionPositionUpdates,
+    } = useContext(GraphDataContext);
+
+    const { userAddress } = useContext(UserDataContext);
 
     const assignInitialFetchedTransactions = ():
         | LimitOrderIF[]
@@ -175,11 +201,23 @@ function InfiniteScroll(props: propsIF) {
         getInitialDataPageCounts(),
     );
 
+    const [recentlyUpdatedPositions, setRecentlyUpdatedPositions] = useState<
+        RecentlyUpdatedPositionIF[]
+    >([]);
+
     const pageDataCountRef = useRef<PageDataCountIF>();
     pageDataCountRef.current = pageDataCount;
 
     const isAliveRef = useRef<boolean>(true);
     isAliveRef.current = true;
+
+    const [relevantTransactions, setRelevantTransactions] = useState<
+        TransactionByType[]
+    >([]);
+
+    const {
+        activeNetwork: { poolIndex },
+    } = useContext(AppStateContext);
 
     useEffect(() => {
         return () => {
@@ -337,21 +375,26 @@ function InfiniteScroll(props: propsIF) {
         if (addedDataCount > 0) {
             setFetchedTransactions(
                 (prev: LimitOrderIF[] | PositionIF[] | TransactionIF[]) => {
-                    if (props.type === 'Order') {
-                        return [
+                    if (props.type === 'Order' && sortOrders) {
+                        return sortOrders([
                             ...(prev as LimitOrderIF[]),
                             ...(newTxData as LimitOrderIF[]),
-                        ];
-                    } else if (props.type === 'Range') {
-                        return [
+                        ] as LimitOrderIF[]);
+                    } else if (props.type === 'Range' && sortPositions) {
+                        return sortPositions([
                             ...(prev as PositionIF[]),
                             ...(newTxData as PositionIF[]),
-                        ];
-                    } else {
-                        return [
+                        ] as PositionIF[]);
+                    } else if (
+                        props.type === 'Transaction' &&
+                        sortTransactions
+                    ) {
+                        return sortTransactions([
                             ...(prev as TransactionIF[]),
                             ...(newTxData as TransactionIF[]),
-                        ];
+                        ] as TransactionIF[]);
+                    } else {
+                        return [] as TransactionIF[];
                     }
                 },
             );
@@ -493,11 +536,64 @@ function InfiniteScroll(props: propsIF) {
         }
     }, [data]);
 
-    // useEffect(() => {
-    //     if (data.length > 0) {
-    //         addMoreData();
-    //     }
-    // }, [fetchedTransactions]);
+    useEffect(() => {
+        if (props.type === 'Order') {
+            const relevantTransactions = transactionsByType.filter(
+                (tx) =>
+                    !tx.isRemoved &&
+                    unindexedNonFailedSessionLimitOrderUpdates.some(
+                        (update) => update.txHash === tx.txHash,
+                    ) &&
+                    tx.userAddress.toLowerCase() ===
+                        (userAddress || '').toLowerCase() &&
+                    tx.txDetails?.baseAddress.toLowerCase() ===
+                        baseToken.address.toLowerCase() &&
+                    tx.txDetails?.quoteAddress.toLowerCase() ===
+                        quoteToken.address.toLowerCase() &&
+                    tx.txDetails?.poolIdx === poolIndex,
+            );
+
+            setRelevantTransactions(relevantTransactions);
+        }
+    }, [transactionsByType]);
+
+    const updateRelevantTransactions = (
+        recentRelevantTxs: RecentlyUpdatedPositionIF[],
+    ) => {
+        const recentRelevantTxsHashes = new Set(
+            recentRelevantTxs.map((tx) => tx.positionHash),
+        );
+        setRecentlyUpdatedPositions((prev) => {
+            return [
+                ...prev.filter(
+                    (e) => !recentRelevantTxsHashes.has(e.positionHash),
+                ),
+                ...recentRelevantTxs,
+            ];
+        });
+    };
+
+    useEffect(() => {
+        (async () => {
+            if (props.type === 'Order') {
+                Promise.all(
+                    relevantTransactions.map((tx) => {
+                        return genFakeLimitOrder(tx);
+                    }),
+                ).then((rows) => {
+                    updateRelevantTransactions(rows);
+                });
+            } else if (props.type === 'Range') {
+                Promise.all(
+                    relevantTransactions.map((tx) => {
+                        return genFakePosition(tx);
+                    }),
+                ).then((rows) => {
+                    updateRelevantTransactions(rows);
+                });
+            }
+        })();
+    }, [relevantTransactions]);
 
     const getIndexForPages = (start: boolean, offset = 0) => {
         const pageDataCountVal = (

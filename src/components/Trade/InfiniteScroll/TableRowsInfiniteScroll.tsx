@@ -19,11 +19,11 @@ import {
 } from '../../../styled/Components/TransactionTable';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
-import TableRows from './TableRows';
+import TableRows from '../TradeTabs/TableRows';
 import styles from './TableRowsInfiniteScroll.module.css';
-import { LimitSortType } from './useSortedLimits';
-import { RangeSortType } from './useSortedPositions';
-import { TxSortType } from './useSortedTxs';
+import { LimitSortType } from '../TradeTabs/useSortedLimits';
+import { RangeSortType } from '../TradeTabs/useSortedPositions';
+import { TxSortType } from '../TradeTabs/useSortedTxs';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';

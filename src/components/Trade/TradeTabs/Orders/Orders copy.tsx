@@ -29,7 +29,7 @@ import { OrderRow as OrderRowStyled } from '../../../../styled/Components/Transa
 import { PageDataCountIF } from '../../../Chat/ChatIFs';
 import Spinner from '../../../Global/Spinner/Spinner';
 import TableRows from '../TableRows';
-import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
+import TableRowsInfiniteScroll from '../../InfiniteScroll/TableRowsInfiniteScroll';
 import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
 import { getLimitOrderData } from '../../../../ambient-utils/dataLayer';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
