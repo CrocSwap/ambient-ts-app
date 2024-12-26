@@ -228,6 +228,7 @@
     margin: 0 8px;
 }
 
+/* header of the ticker table */
 .ticker_table > header {
     display: flex;
     flex-direction: row;
@@ -241,6 +242,7 @@
     /* outline: 1px solid green; */
 }
 
+/* individual column headers in the ticker table */
 .ticker_table > header > * {
     width: 120px;
     flex: 1 10 auto;
