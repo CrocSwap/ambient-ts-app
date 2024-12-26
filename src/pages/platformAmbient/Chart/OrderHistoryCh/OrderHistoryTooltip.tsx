@@ -67,7 +67,8 @@ export default function OrderHistoryTooltip(props: {
 
     const [hoveredID, setHoveredID] = useState<string | undefined>();
 
-    const swapHeader = hoveredOrderHistory.type === 'swap' && (
+    const swapHeader = (hoveredOrderHistory.type === 'swap' ||
+        hoveredOrderHistory.type === 'limitCircle') && (
         <OrderHistoryHeader>
             <StyledHeader
                 color={
@@ -87,12 +88,16 @@ export default function OrderHistoryTooltip(props: {
             </StyledHeader>
 
             <StyledHeader color={'white'} size={'15px'}>
-                {getFormattedNumber({
-                    value: Math.abs(
-                        hoveredOrderHistory.tokenFlowDecimalCorrected,
-                    ),
-                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                })}
+                {hoveredOrderHistory.type === 'limitCircle'
+                    ? formatSubscript(
+                          hoveredOrderHistory.tokenFlowDecimalCorrected,
+                      )
+                    : getFormattedNumber({
+                          value: Math.abs(
+                              hoveredOrderHistory.tokenFlowDecimalCorrected,
+                          ),
+                          abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                      })}
             </StyledHeader>
 
             <StyledHeader color={'white'} size={'15px'}>
@@ -274,15 +279,18 @@ export default function OrderHistoryTooltip(props: {
                         setHoverOHTooltip(false);
                     }}
                 >
-                    {hoveredOrderHistory.type === 'swap' && swapHeader}
-                    {hoveredOrderHistory.type === 'limitCircle' &&
+                    {(hoveredOrderHistory.type === 'swap' ||
+                        hoveredOrderHistory.type === 'limitCircle') &&
+                        swapHeader}
+                    {hoveredOrderHistory.type === 'limitSwapLine' &&
                         limitOrderHeader}
                     {hoveredOrderHistory.type === 'historical' &&
                         headerHistorical}
 
                     <OrderHistoryBody>
                         {hoveredOrderHistory.type === 'swap' && swapTypeText}
-                        {hoveredOrderHistory.type === 'limitCircle' &&
+                        {(hoveredOrderHistory.type === 'limitSwapLine' ||
+                            hoveredOrderHistory.type === 'limitCircle') &&
                             LimitTypeText}
                         {hoveredOrderHistory.type === 'historical' &&
                             historicalTypeText}

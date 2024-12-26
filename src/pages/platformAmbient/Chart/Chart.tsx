@@ -794,6 +794,38 @@ export default function Chart(props: propsIF) {
                 (transaction) => transaction.entityType === 'swap',
             );
 
+            if (showLiquidity) {
+                const userLimit = userLimitOrdersByPool.limitOrders;
+
+                const filteredUserLimits = userLimit.filter(
+                    (transaction) => transaction.claimableLiq > 0,
+                );
+
+                filteredUserLimits.map((limit) => {
+                    userSwaps.push({
+                        txHash: limit.positionHash,
+                        txTime: limit.crossTime,
+                        isBuy: limit.isBid,
+                        swapInvPriceDecimalCorrected:
+                            limit.invLimitPriceDecimalCorrected,
+                        swapPriceDecimalCorrected:
+                            limit.limitPriceDecimalCorrected,
+                        totalValueUSD: limit.totalValueUSD,
+                        entityType: 'limitCircle',
+                        baseSymbol: limit.baseSymbol,
+                        quoteSymbol: limit.quoteSymbol,
+                        baseTokenLogoURI: limit.baseTokenLogoURI,
+                        quoteTokenLogoURI: limit.quoteTokenLogoURI,
+                        baseFlowDecimalCorrected: limit.isBid
+                            ? limit.originalPositionLiqBaseDecimalCorrected
+                            : limit.expectedPositionLiqBaseDecimalCorrected,
+                        quoteFlowDecimalCorrected: limit.isBid
+                            ? limit.expectedPositionLiqBaseDecimalCorrected
+                            : limit.originalPositionLiqBaseDecimalCorrected,
+                    } as TransactionIF);
+                });
+            }
+
             const sortedUserSwaps = userSwaps.sort((a, b) =>
                 d3.descending(a.txTime, b.txTime),
             );
@@ -853,7 +885,11 @@ export default function Chart(props: propsIF) {
         }
 
         return undefined;
-    }, [userTransactionData, diffHashSigScaleData(scaleData, 'x')]);
+    }, [
+        userTransactionData,
+        diffHashSigScaleData(scaleData, 'x'),
+        showLiquidity,
+    ]);
 
     const lastCandleData = unparsedData.candles?.reduce(
         function (prev, current) {
@@ -5469,35 +5505,7 @@ export default function Chart(props: propsIF) {
                           ? limitOrder.expectedPositionLiqQuoteDecimalCorrected
                           : limitOrder.originalPositionLiqQuoteDecimalCorrected;
 
-                    if (limitOrder.claimableLiq > 0) {
-                        const swapOrderData = [
-                            {
-                                x: limitOrder.crossTime * 1000,
-                                y: denomInBase
-                                    ? limitOrder.invLimitPriceDecimalCorrected
-                                    : limitOrder.limitPriceDecimalCorrected,
-                                denomInBase: denomInBase,
-                            },
-                        ];
-
-                        if (
-                            checkSwapLoation(
-                                swapOrderData,
-                                mouseX,
-                                mouseY,
-                                limitOrder.totalValueUSD,
-                            )
-                        ) {
-                            resElement = {
-                                id: limitOrder.positionHash,
-                                type: 'limitCircle',
-                                order: limitOrder,
-                                totalValueUSD: limitOrder.totalValueUSD,
-                                tokenFlowDecimalCorrected:
-                                    tokenFlowDecimalCorrected,
-                            };
-                        }
-                    } else if (limitOrder.claimableLiq === 0) {
+                    if (limitOrder.claimableLiq === 0) {
                         const swapOrderData = [
                             {
                                 x: limitOrder.timeFirstMint * 1000,
@@ -5519,7 +5527,7 @@ export default function Chart(props: propsIF) {
                         ) {
                             resElement = {
                                 id: limitOrder.positionHash,
-                                type: 'limitCircle',
+                                type: 'limitSwapLine',
                                 order: limitOrder,
                                 totalValueUSD: limitOrder.totalValueUSD,
                                 tokenFlowDecimalCorrected:
@@ -5543,7 +5551,7 @@ export default function Chart(props: propsIF) {
                         ) {
                             resElement = {
                                 id: limitOrder.positionHash,
-                                type: 'limitCircle',
+                                type: 'limitSwapLine',
                                 order: limitOrder,
                                 totalValueUSD: limitOrder.totalValueUSD,
                                 tokenFlowDecimalCorrected:
@@ -5556,7 +5564,11 @@ export default function Chart(props: propsIF) {
 
             if (filteredTransactionalData && showSwap) {
                 filteredTransactionalData.forEach((element) => {
-                    if (element.order.entityType === 'swap' && showSwap) {
+                    if (
+                        (element.order.entityType === 'swap' && showSwap) ||
+                        (element.order.entityType === 'limitCircle' &&
+                            showLiquidity)
+                    ) {
                         const swapOrderData = [
                             {
                                 x: element.order.txTime * 1000,
@@ -5568,6 +5580,7 @@ export default function Chart(props: propsIF) {
                         ];
 
                         let totalValueUSD = element.order.totalValueUSD;
+
                         let tokenFlowDecimalCorrected = denomInBase
                             ? element.order.baseFlowDecimalCorrected
                             : element.order.quoteFlowDecimalCorrected;
@@ -5595,7 +5608,7 @@ export default function Chart(props: propsIF) {
                         ) {
                             resElement = {
                                 id: element.order.txHash,
-                                type: 'swap',
+                                type: element.order.entityType,
                                 order: element,
                                 totalValueUSD: totalValueUSD,
                                 tokenFlowDecimalCorrected:
@@ -6281,7 +6294,12 @@ export default function Chart(props: propsIF) {
             const canvasRightEnd = rectCanvas.right;
 
             if (isHoveredOrderHistory && hoveredOrderHistory) {
-                if (hoveredOrderHistory.type === 'swap' && circleScale) {
+                if (
+                    circleScale &&
+                    ((hoveredOrderHistory.type === 'swap' && showSwap) ||
+                        (hoveredOrderHistory.type === 'limitCircle' &&
+                            showLiquidity))
+                ) {
                     setHoveredOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
@@ -6407,7 +6425,7 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (
-                    hoveredOrderHistory.type === 'limitCircle' &&
+                    hoveredOrderHistory.type === 'limitSwapLine' &&
                     circleScaleLimitOrder
                 ) {
                     setHoveredOrderTooltipPlacement(() => {
@@ -6465,62 +6483,18 @@ export default function Chart(props: propsIF) {
                                 left: left > 50 ? left : 50,
                                 isOnLeftSide: false,
                             };
-                        } else {
-                            let left =
-                                scaleData?.xScale(time * 1000) +
-                                scale(
-                                    circleScaleLimitOrder(
-                                        hoveredOrderHistory.totalValueUSD,
-                                    ),
-                                );
-
-                            let isOnLeftSide = false;
-                            if (
-                                isSelectedOrderHistory &&
-                                selectedOrderTooltipPlacement
-                            ) {
-                                const { isOverLeft, isOverTop } =
-                                    isShapeOverlaps(
-                                        left,
-                                        top,
-                                        selectedOrderTooltipPlacement.left,
-                                        selectedOrderTooltipPlacement.top,
-                                    );
-
-                                left =
-                                    scaleData?.xScale(time * 1000) +
-                                    (isOverLeft && isOverTop
-                                        ? -scale(
-                                              circleScaleLimitOrder(
-                                                  hoveredOrderHistory.totalValueUSD,
-                                              ),
-                                          ) +
-                                          (circleScaleLimitOrder(
-                                              hoveredOrderHistory.totalValueUSD,
-                                          ) < 1500
-                                              ? -105
-                                              : -90)
-                                        : +scale(
-                                              circleScaleLimitOrder(
-                                                  hoveredOrderHistory.totalValueUSD,
-                                              ),
-                                          ));
-
-                                isOnLeftSide = !!(isOverLeft && isOverTop);
-                            }
-
-                            return {
-                                top: top,
-                                left,
-                                isOnLeftSide,
-                            };
                         }
                     });
                 }
             }
 
             if (isSelectedOrderHistory && selectedOrderHistory) {
-                if (selectedOrderHistory.type === 'swap' && circleScale) {
+                if (
+                    circleScale &&
+                    ((selectedOrderHistory.type === 'swap' && showSwap) ||
+                        (selectedOrderHistory.type === 'limitCircle' &&
+                            showLiquidity))
+                ) {
                     setSelectedOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
@@ -6542,7 +6516,7 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (
-                    selectedOrderHistory.type === 'limitCircle' &&
+                    selectedOrderHistory.type === 'limitSwapLine' &&
                     circleScaleLimitOrder
                 ) {
                     setSelectedOrderTooltipPlacement(() => {

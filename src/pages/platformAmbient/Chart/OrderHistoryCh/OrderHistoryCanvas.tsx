@@ -54,7 +54,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         drawSettings,
         filteredTransactionalData,
         circleScale,
-        circleScaleLimitOrder,
+        // circleScaleLimitOrder,
     } = props;
 
     const d3OrderCanvas = useRef<HTMLDivElement | null>(null);
@@ -115,7 +115,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
     );
 
     useEffect(() => {
-        if (circleScaleLimitOrder && circleScale && scaleData) {
+        if (circleScale && scaleData) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const circleSerieArray: Array<{
                 id: string;
@@ -147,59 +147,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
             if (showLiquidity) {
                 userLimitOrdersByPool.limitOrders.forEach((limitOrder) => {
-                    if (limitOrder.claimableLiq > 0) {
-                        const circleSerie = createCircle(
-                            scaleData?.xScale,
-                            scaleData?.yScale,
-                            circleScaleLimitOrder(limitOrder.totalValueUSD),
-                            1,
-                            denomInBase,
-                            false,
-                            false,
-                            (denomInBase && !limitOrder.isBid) ||
-                                (!denomInBase && limitOrder.isBid),
-                            '--accent2',
-                            ['futa'].includes(platformName)
-                                ? '--negative'
-                                : '--accent4',
-                        );
-
-                        const circleData = [
-                            {
-                                x: limitOrder.crossTime * 1000,
-                                y: denomInBase
-                                    ? limitOrder.invLimitPriceDecimalCorrected
-                                    : limitOrder.limitPriceDecimalCorrected,
-                                denomInBase: denomInBase,
-                                isBid: limitOrder.isBid,
-                            },
-                        ];
-
-                        const lineData: lineData[] = [];
-
-                        lineData.push({
-                            x: limitOrder.timeFirstMint * 1000,
-                            y: denomInBase
-                                ? limitOrder.invLimitPriceDecimalCorrected
-                                : limitOrder.limitPriceDecimalCorrected,
-                            denomInBase: denomInBase,
-                        });
-                        lineData.push({
-                            x: limitOrder.crossTime * 1000,
-                            y: denomInBase
-                                ? limitOrder.invLimitPriceDecimalCorrected
-                                : limitOrder.limitPriceDecimalCorrected,
-                            denomInBase: denomInBase,
-                        });
-
-                        limitCircleSerieArray.push({
-                            id: limitOrder.positionHash,
-                            data: circleData,
-                            serie: circleSerie,
-                            lineData: lineData,
-                        });
-                    }
-
                     if (limitOrder.claimableLiq === 0) {
                         const lineData: Array<{
                             x: number;
