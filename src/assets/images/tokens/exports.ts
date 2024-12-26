@@ -19,7 +19,10 @@ import LINK from './LINK.svg';
 import MIA from './MIA.png';
 import MKR from './MKR.png';
 import NEV from './NEV.webp';
+import NRWA from './NRWA.svg';
+import NTBILL from './NTBILL.svg';
 import NURI from './NURI.svg';
+import NYIELD from './NYIELD.svg';
 import OHNO from './OHNO.png';
 import OLE from './OLE.svg';
 import ORBIT from './ORBIT.png';
@@ -84,7 +87,10 @@ export {
     MIA,
     MKR,
     NEV,
+    NRWA,
+    NTBILL,
     NURI,
+    NYIELD,
     OHNO,
     OLE,
     ORBIT,
