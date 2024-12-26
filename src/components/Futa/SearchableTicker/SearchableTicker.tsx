@@ -1,4 +1,4 @@
-import { NumberSize } from 're-resizable';
+import { NumberSize, Resizable } from 're-resizable';
 import { Direction } from 're-resizable/lib/resizer';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { BiSearch } from 'react-icons/bi';
@@ -482,13 +482,10 @@ export default function SearchableTicker(props: propsIF) {
         </div>
     );
 
-    console.log(isAccount);
-
     const resizableChart = (
-        <ResizableContainer
-            showResizeable={false}
+        <Resizable
             enable={{
-                bottom: false,
+                bottom: true,
                 top: false,
                 left: false,
                 topLeft: false,
@@ -496,9 +493,6 @@ export default function SearchableTicker(props: propsIF) {
                 right: false,
                 topRight: false,
                 bottomRight: false,
-            }}
-            handleClasses={{
-                bottom: 'custom-resizable-handle-futa',
             }}
             size={{
                 width: '100%',
@@ -538,12 +532,12 @@ export default function SearchableTicker(props: propsIF) {
                 setSearchableTickerHeight(newHeight);
             }}
             bounds={'parent'}
-            alignItems='flex-start'
             className={styles.resi}
+            style={{ borderBottom: 'none !important' }}
         >
             {headerDisplay}
             {searchableContent}
-        </ResizableContainer>
+        </Resizable>
     );
 
     return (

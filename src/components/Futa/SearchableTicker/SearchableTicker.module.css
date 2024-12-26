@@ -12,10 +12,7 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    border-top: var(--futa-box-border);
-    border-left: var(--futa-box-border);
-    border-right: var(--futa-box-border);
-    border-bottom: var(--futa-box-border);
+    border: var(--futa-box-border);
 }
 
 .mainBorder {
@@ -266,10 +263,6 @@
     justify-content: space-between;
     color: var(--text3);
     font-size: 12px;
-    /* border-left: 4px solid transparent;
-    border-right: 4px solid transparent; */
-    /* background-color: green; */
-    /* outline: 1px solid green; */
 }
 
 /* individual column headers in the ticker table */
