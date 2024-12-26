@@ -74,8 +74,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = useContext(AppStateContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
-    const { poolPriceNonDisplay: poolPriceDisplay, setPoolPriceNonDisplay } =
+    const { poolPriceNonDisplay: poolPriceDisplay } =
         useContext(TradeDataContext);
+
+    const poolPriceRef = useRef(poolPriceDisplay);
+
     const { isUserConnected } = useContext(UserDataContext);
     const {
         baseToken: { address: baseTokenAddress },
@@ -114,6 +117,13 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     offlineFetcherRef.current = offlineFetcher;
 
     const checkUserConnected = useRef(isUserConnected);
+    const poolTokenAddress = (
+        baseTokenAddress + quoteTokenAddress
+    ).toLocaleLowerCase('en-US');
+
+    useEffect(() => {
+        poolPriceRef.current = poolPriceDisplay;
+    }, [poolPriceDisplay]);
 
     useEffect(() => {
         if (isFinishRequest) {
@@ -183,8 +193,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setCandleData(undefined);
         setTimeOfEndCandle(undefined);
         setIsCondensedModeEnabled(true);
-        setPoolPriceNonDisplay(0);
-    }, [baseTokenAddress + quoteTokenAddress]);
+    }, [poolTokenAddress, chainId]);
 
     useEffect(() => {
         (async () => {
@@ -196,10 +205,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
                 isChangeUserConnected &&
-                poolPriceDisplay &&
                 isChartEnabled
             ) {
-                fetchCandles(true);
+                console.log('FETCHHHHHHHHHHHHHHHHHHHHHH');
+
+                fetchCandles();
                 if (isManualCandleFetchRequested)
                     setIsManualCandleFetchRequested(false);
             }
@@ -208,13 +218,27 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [
         isManualCandleFetchRequested,
         isChartEnabled,
-        crocEnv,
         isUserOnline,
-        baseTokenAddress + quoteTokenAddress,
         isPoolInitialized,
-        chainId,
-        poolPriceDisplay === 0,
         isUserConnected,
+    ]);
+
+    useEffect(() => {
+        console.log({
+            isManualCandleFetchRequested,
+            isChartEnabled,
+            isUserOnline,
+            isPoolInitialized,
+            isUserConnected,
+            crocEnv,
+        });
+    }, [
+        isManualCandleFetchRequested,
+        isChartEnabled,
+        isUserOnline,
+        isPoolInitialized,
+        isUserConnected,
+        crocEnv === undefined,
     ]);
 
     // only works when the period changes
@@ -235,9 +259,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 candleTimeLocal &&
                 !isCandleDataNull
             ) {
-                const nowTime = Math.floor(Date.now() / 1000);
-
-                fetchCandlesByNumDurations(200, nowTime);
+                // const nowTime = Math.floor(Date.now() / 1000);
+                // fetchCandlesByNumDurations(200, nowTime);
             }
         }
     }, [
@@ -246,7 +269,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserIdle
             ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
             : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
-        baseTokenAddress + quoteTokenAddress,
+        poolTokenAddress,
         candleScale?.isFetchForTimeframe,
         // candleScale.nCandles,
         candleScale.isShowLatestCandle,
@@ -277,16 +300,17 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         };
     }, [isCandleDataNull]);
 
-    const fetchCandles = (bypassSpinner = false) => {
+    const fetchCandles = () => {
         if (
             isChartEnabled &&
             isServerEnabled &&
             isUserOnline &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            crocEnv &&
-            poolPriceDisplay
+            crocEnv
         ) {
+            console.log('FETCH, CANDLE DATA', candleData);
+
             const candleTime = candleScale.isShowLatestCandle
                 ? Math.floor(Date.now() / 1000)
                 : candleScale.lastCandleDate || 0;
@@ -294,7 +318,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             const nCandles = Math.min(Math.max(candleScale?.nCandles), 2999);
 
             setIsFinishRequest(false);
-            !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);
 
             const chartSettings: chartSettingsIF | null = JSON.parse(
@@ -316,7 +339,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
-                poolPriceDisplay,
+                poolPriceRef.current,
             )
                 .then((candles) => {
                     setCandleData(candles);
@@ -387,7 +410,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         numDurations: number,
         minTimeMemo: number,
     ) => {
-        if (!crocEnv || !candleTimeLocal || !poolPriceDisplay) {
+        if (!crocEnv || !candleTimeLocal) {
             return;
         }
 
@@ -404,7 +427,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedQuerySpotPrice,
-            poolPriceDisplay,
+            poolPriceRef.current,
         )
             .then((incrCandles) => {
                 if (incrCandles && candleData) {

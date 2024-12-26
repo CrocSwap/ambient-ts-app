@@ -972,6 +972,15 @@ function TradeCandleStickChart(props: propsIF) {
                     period,
                 ).filter((i) => i.isShowData && i.time * 1000 < maxDom);
                 const minTime = firstCandleDate * 1000;
+                console.log(
+                    {
+                        candles,
+                        timeOfEndCandle,
+                        fetchCountForEnoughData,
+                        maxRequestCountForCondensed,
+                    },
+                    fetchCountForEnoughData < maxRequestCountForCondensed,
+                );
 
                 if (
                     candles.length < 100 &&

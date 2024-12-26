@@ -226,6 +226,7 @@ function decorateCandleData(
             let closePrice = p.priceClose;
             let maxPrice = p.maxPrice;
             let minPrice = p.minPrice;
+            let isZeroData = false;
 
             if (openPrice === 0) {
                 const prices = [p.priceClose, p.maxPrice, p.minPrice];
@@ -235,6 +236,7 @@ function decorateCandleData(
                 closePrice = nonZeroPrices ? nonZeroPrices : poolPriceDisplay;
                 maxPrice = nonZeroPrices ? nonZeroPrices : poolPriceDisplay;
                 minPrice = nonZeroPrices ? nonZeroPrices : poolPriceDisplay;
+                isZeroData = true;
             }
 
             return {
@@ -270,6 +272,7 @@ function decorateCandleData(
                     1 / (openPrice * priceDecMult),
                 invPriceCloseExclMEVDecimalCorrected:
                     1 / (closePrice * priceDecMult),
+                isZeroData: isZeroData,
             };
         });
 }
