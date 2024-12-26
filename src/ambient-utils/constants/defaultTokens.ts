@@ -993,7 +993,7 @@ export const plumePETH: TokenIF = registerToken({
 });
 
 export const plumeUSDC: TokenIF = registerToken({
-    name: 'Bridged USDC (Stargate)',
+    name: 'Bridged USDC',
     address: '0x3938A812c54304fEffD266C7E2E70B48F9475aD6',
     symbol: 'USDC.e',
     decimals: 6,
