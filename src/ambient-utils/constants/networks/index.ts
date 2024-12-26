@@ -92,11 +92,13 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
                                 Object.keys(defaultBrandAssets.networks),
                             );
 
-export const vaultSupportedNetworkIds = [
-    '0x1', // ethereum mainnet
-    '0x82750', // scroll mainnet
-    // '0x783', // swell mainnet
-];
+const vaultNetworks = networkDefinitions.filter((n: NetworkIF) =>
+    n.vaultsEnabled ? n : null,
+);
+
+export const vaultSupportedNetworkIds = vaultNetworks.map(
+    (n: NetworkIF) => n.chainId,
+);
 export const vaultSupportedNetworks = getNetworks(vaultSupportedNetworkIds);
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {

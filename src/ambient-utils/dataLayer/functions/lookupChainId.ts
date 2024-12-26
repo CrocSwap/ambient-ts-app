@@ -39,6 +39,7 @@ export function lookupChainId(
             chainIdHex = '0x82750';
             break;
         case 'swell':
+        case 'swellchain':
         case '1923':
         case '0x783':
             chainIdHex = '0x783';

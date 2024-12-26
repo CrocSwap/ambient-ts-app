@@ -21,7 +21,6 @@ import { ChartThemeIF } from '../../../../contexts/ChartContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
     clipCanvas,
-    fillLiqInfinity,
     setCanvasResolution,
 } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 import {
@@ -247,13 +246,6 @@ export default function TransactionDetailsLiquidityGraph(props: propsIF) {
             });
         })();
     }, [poolPriceDisplay]);
-
-    useEffect(() => {
-        if (yScale) {
-            const yMax = yScale?.domain()[1];
-            fillLiqInfinity(yMax, liquidityData.liquidityDataBid, !isDenomBase);
-        }
-    }, [yScale?.domain()]);
 
     useEffect(() => {
         if (yScale) {

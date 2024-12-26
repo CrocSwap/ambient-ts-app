@@ -35,6 +35,8 @@ export const ethereumSepolia: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Sepolia',
     tokenPriceQueryAssetPlatform: undefined,
+    vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         new TopPool(sepoliaETH, sepoliaUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(sepoliaETH, sepoliaWBTC, chainSpecFromSDK.poolIndex),
