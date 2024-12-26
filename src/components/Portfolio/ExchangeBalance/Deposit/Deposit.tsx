@@ -70,13 +70,8 @@ export default function Deposit(props: propsIF) {
         isUserOnline,
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const {
-        gasPriceInGwei,
-        isActiveNetworkL2,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-        isActiveNetworkPlume,
-    } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkL2, isActiveNetworkPlume } =
+        useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -95,9 +90,7 @@ export default function Deposit(props: propsIF) {
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
-    const [extraL1GasFeeDeposit] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeeDeposit] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
         string | undefined

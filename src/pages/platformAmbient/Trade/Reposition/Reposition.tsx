@@ -65,12 +65,8 @@ function Reposition() {
     } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
-    const {
-        gasPriceInGwei,
-        lastBlockNumber,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-    } = useContext(ChainDataContext);
+    const { gasPriceInGwei, lastBlockNumber, isActiveNetworkL2 } =
+        useContext(ChainDataContext);
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
@@ -742,9 +738,7 @@ function Reposition() {
     // const [l1GasFeePoolInGwei] = useState<number>(
     //     isScroll ? 0.0009 * 1e9 : 0,
     // );
-    const [extraL1GasFeePool] = useState(
-        isActiveNetworkScroll ? 0.03 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeePool] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {

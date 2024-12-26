@@ -70,12 +70,8 @@ function Swap(props: propsIF) {
         isUserOnline,
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
-    const {
-        gasPriceInGwei,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-        isActiveNetworkPlume,
-    } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkL2, isActiveNetworkPlume } =
+        useContext(ChainDataContext);
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
@@ -162,9 +158,7 @@ function Swap(props: propsIF) {
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
         useState<boolean>(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] =
-        useState<boolean>(
-            isActiveNetworkBlast ? false : dexBalSwap.outputToDexBal.isEnabled,
-        );
+        useState<boolean>(dexBalSwap.outputToDexBal.isEnabled);
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txError, setTxError] = useState<Error>();
@@ -448,10 +442,10 @@ function Swap(props: propsIF) {
     }, [baseToken.address + quoteToken.address]);
 
     const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
-        isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
+        isActiveNetworkL2 ? 10000 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
-        isActiveNetworkBlast ? 0.01 : 0.01,
+        isActiveNetworkL2 ? 0.01 : 0,
     );
 
     // calculate price of gas for swap

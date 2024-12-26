@@ -69,8 +69,7 @@ export default function Withdraw(props: propsIF) {
         isUserOnline,
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
-        useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -341,9 +340,7 @@ export default function Withdraw(props: propsIF) {
                 setInputValue(tokenExchangeDepositsDisplay);
         }
     };
-    const [extraL1GasFeeWithdraw] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeeWithdraw] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
         string | undefined

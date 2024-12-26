@@ -66,12 +66,8 @@ function Range() {
         activeNetwork: { chainId, gridSize },
     } = useContext(AppStateContext);
 
-    const {
-        gasPriceInGwei,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-        isActiveNetworkPlume,
-    } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkPlume, isActiveNetworkL2 } =
+        useContext(ChainDataContext);
     const {
         poolPriceDisplay,
         dailyVol,
@@ -874,11 +870,9 @@ function Range() {
         useState<number>(0.0005);
 
     const [l1GasFeePoolInGwei] = useState<number>(
-        isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
+        isActiveNetworkL2 ? 10000 : 0,
     );
-    const [extraL1GasFeePool] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeePool] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f' || chainId === '0x13e31'
@@ -923,6 +917,15 @@ function Range() {
                 GAS_DROPS_ESTIMATE_POOL *
                 NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
+
+            console.log({
+                gasPriceInDollarsNum,
+                extraL1GasFeePool,
+                gasPriceInGwei,
+                GAS_DROPS_ESTIMATE_POOL,
+                NUM_GWEI_IN_WEI,
+                ethMainnetUsdPrice,
+            });
 
             setRangeGasPriceinDollars(
                 getFormattedNumber({
