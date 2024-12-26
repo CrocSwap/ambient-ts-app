@@ -233,7 +233,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         const minimumPoolTvl = isActiveNetworkSwell
             ? 20
             : isActiveNetworkPlume
-              ? 50
+              ? 20
               : 100;
 
         if (
