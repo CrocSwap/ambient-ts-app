@@ -535,6 +535,7 @@ export default function SearchableTicker(props: propsIF) {
                 setSearchableTickerHeight(newHeight);
             }}
             bounds={'parent'}
+            alignItems='flex-start'
         >
             {searchableContent}
         </ResizableContainer>
@@ -556,7 +557,7 @@ export default function SearchableTicker(props: propsIF) {
             >
                 <div className={styles.mainBorder}>
                     {headerDisplay}
-                    {isMobile || isAccount ? searchableContent : resizableChart}
+                    {isMobile ? searchableContent : resizableChart}
                 </div>
 
                 {!isAccount && !isMobile && <Chart />}

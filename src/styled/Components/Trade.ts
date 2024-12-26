@@ -48,10 +48,12 @@ export const ResizableContainer = styled(Resizable)<{
     showResizeable: boolean;
     isFuta?: boolean;
     isChartFullScreen?: boolean;
+    alignItems?: string;
 }>`
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: ${({ alignItems }) => alignItems ?? 'center'};
+    alignItems: 
     overflow: hidden;
 
     max-height: ${({ isFuta, isChartFullScreen }) =>
