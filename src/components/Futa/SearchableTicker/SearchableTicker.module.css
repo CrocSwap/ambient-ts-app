@@ -227,6 +227,7 @@
     margin: 0 8px;
     overflow-y: auto;
     scrollbar-gutter: stable;
+    /* background-color: red; */
 }
 
 /* header of the ticker table */
@@ -242,7 +243,7 @@
     font-size: 12px;
     /* border-left: 4px solid transparent;
     border-right: 4px solid transparent; */
-    background-color: green;
+    /* background-color: green; */
     /* outline: 1px solid green; */
 }
 

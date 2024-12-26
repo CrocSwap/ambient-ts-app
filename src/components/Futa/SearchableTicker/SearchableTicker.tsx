@@ -175,9 +175,8 @@ export default function SearchableTicker(props: propsIF) {
     // choose data set to display and apply post-processing middleware
     const filteredData = useMemo<AuctionDataIF[]>(() => {
         // show the relevant data subset (complete vs incomplete)
-        const dataSubset: AuctionDataIF[] = showComplete
-            ? completeAuctions
-            : incompleteAuctions;
+        const dataSubset: AuctionDataIF[] =
+            showComplete && !isAccount ? completeAuctions : incompleteAuctions;
         // filter data subset by search input from user
         const searchHits: AuctionDataIF[] = dataSubset.filter(
             (auc: AuctionDataIF) =>
@@ -350,13 +349,15 @@ export default function SearchableTicker(props: propsIF) {
                 </div>
             </div>
             <div className={styles.filters}>
-                <button
-                    onClick={() => setShowComplete(!showComplete)}
-                    className={styles[showComplete ? 'button_on' : '']}
-                >
-                    <LuCheck size={BUTTON_ICON_SIZE} />
-                    <div>COMPLETED</div>
-                </button>
+                {isAccount || (
+                    <button
+                        onClick={() => setShowComplete(!showComplete)}
+                        className={styles[showComplete ? 'button_on' : '']}
+                    >
+                        <LuCheck size={BUTTON_ICON_SIZE} />
+                        <div>COMPLETED</div>
+                    </button>
+                )}
                 <button
                     onClick={() => watchlists.toggle()}
                     className={[
@@ -367,7 +368,7 @@ export default function SearchableTicker(props: propsIF) {
                     <FaEye size={BUTTON_ICON_SIZE} />
                     <div>WATCHLIST</div>
                 </button>
-                {isAccount && !smallScreen ? (
+                {isAccount ? (
                     <button
                         className={
                             styles[
@@ -501,7 +502,7 @@ export default function SearchableTicker(props: propsIF) {
                 width: '100%',
                 height: searchableTickerHeights.current,
             }}
-            minHeight={4}
+            minHeight={40}
             onResize={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,

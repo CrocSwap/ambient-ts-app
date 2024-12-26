@@ -4,6 +4,7 @@
     flex-direction: row;
     justify-content: space-between;
     outline: 1px solid salmon;
+    /* height: 400px; */
 }
 
 /* styles to apply universally to cells in the row */
