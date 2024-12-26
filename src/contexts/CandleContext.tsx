@@ -190,25 +190,31 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [isFirstFetch]);
 
     useEffect(() => {
+        if (candleData !== undefined) {
+            setCandleData(undefined);
+            setTimeOfEndCandle(undefined);
+            setIsCondensedModeEnabled(true);
+        }
+    }, [poolTokenAddress, chainId]);
+
+    // only works when the period changes
+    useEffect(() => {
         setCandleData(undefined);
         setTimeOfEndCandle(undefined);
-        setIsCondensedModeEnabled(true);
-    }, [poolTokenAddress, chainId]);
+    }, [candleScale?.isFetchForTimeframe]);
 
     useEffect(() => {
         (async () => {
             const isChangeUserConnected =
                 checkUserConnected.current === isUserConnected;
-
             if (
                 crocEnv &&
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
                 isChangeUserConnected &&
-                isChartEnabled
+                isChartEnabled &&
+                candleData === undefined
             ) {
-                console.log('FETCHHHHHHHHHHHHHHHHHHHHHH');
-
                 fetchCandles();
                 if (isManualCandleFetchRequested)
                     setIsManualCandleFetchRequested(false);
@@ -221,30 +227,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserOnline,
         isPoolInitialized,
         isUserConnected,
-    ]);
-
-    useEffect(() => {
-        console.log({
-            isManualCandleFetchRequested,
-            isChartEnabled,
-            isUserOnline,
-            isPoolInitialized,
-            isUserConnected,
-            crocEnv,
-        });
-    }, [
-        isManualCandleFetchRequested,
-        isChartEnabled,
-        isUserOnline,
-        isPoolInitialized,
-        isUserConnected,
+        candleData === undefined,
         crocEnv === undefined,
     ]);
-
-    // only works when the period changes
-    useEffect(() => {
-        fetchCandles();
-    }, [candleScale?.isFetchForTimeframe]);
 
     useEffect(() => {
         if (
@@ -259,8 +244,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 candleTimeLocal &&
                 !isCandleDataNull
             ) {
-                // const nowTime = Math.floor(Date.now() / 1000);
-                // fetchCandlesByNumDurations(200, nowTime);
+                const nowTime = Math.floor(Date.now() / 1000);
+                fetchCandlesByNumDurations(200, nowTime);
             }
         }
     }, [
@@ -271,7 +256,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
         poolTokenAddress,
         candleScale?.isFetchForTimeframe,
-        // candleScale.nCandles,
         candleScale.isShowLatestCandle,
     ]);
 
@@ -309,8 +293,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             quoteTokenAddress &&
             crocEnv
         ) {
-            console.log('FETCH, CANDLE DATA', candleData);
-
             const candleTime = candleScale.isShowLatestCandle
                 ? Math.floor(Date.now() / 1000)
                 : candleScale.lastCandleDate || 0;
@@ -403,14 +385,16 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             ? 3 * numDurationsForVisibleArea
             : 2 * numDurationsForVisibleArea;
 
-        return numDurations > 2999 ? 2999 : numDurations;
+        return numDurations;
     }, [minTimeMemo, domainBoundaryInSeconds]);
 
     const fetchCandlesByNumDurations = (
         numDurations: number,
         minTimeMemo: number,
     ) => {
-        if (!crocEnv || !candleTimeLocal) {
+        console.log({ crocEnv }, !candleTimeLocal);
+
+        if (!crocEnv || !candleTimeLocal || candleData === undefined) {
             return;
         }
 
@@ -483,21 +467,32 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         (async () => {
+            console.log(
+                'sdfafadfadfdfdas',
+                numDurationsNeeded,
+                candleDomains.domainBoundry,
+                crocEnv,
+                crocEnv && (await crocEnv.context).chain.chainId,
+                chainId,
+            );
+
             if (
                 numDurationsNeeded &&
                 crocEnv &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
-                if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
+                if (numDurationsNeeded > 0) {
                     minTimeMemo &&
                         fetchCandlesByNumDurations(
-                            numDurationsNeeded,
+                            numDurationsNeeded > 2999
+                                ? 2999
+                                : numDurationsNeeded,
                             minTimeMemo,
                         );
                 }
             }
         })();
-    }, [numDurationsNeeded, minTimeMemo, crocEnv, chainId]);
+    }, [numDurationsNeeded]);
 
     return (
         <CandleContext.Provider value={candleContext}>

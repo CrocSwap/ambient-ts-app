@@ -87,7 +87,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     const {
         candleData,
-        setCandleData,
         isFetchingCandle,
         setCandleScale,
         candleScale,
@@ -836,8 +835,6 @@ function TradeCandleStickChart(props: propsIF) {
                             }
                         }
 
-                        setCandleData(undefined);
-
                         setCandleScale((prev: CandleScaleIF) => {
                             return {
                                 isFetchForTimeframe: !prev.isFetchForTimeframe,
@@ -889,8 +886,6 @@ function TradeCandleStickChart(props: propsIF) {
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
             resetXScale(scaleData.xScale);
-
-            setCandleData(undefined);
 
             setCandleScale((prev: CandleScaleIF) => {
                 return {
@@ -947,8 +942,6 @@ function TradeCandleStickChart(props: propsIF) {
                 unparsedCandleData &&
                 unparsedCandleData.length > 0 &&
                 period &&
-                candleData.duration === period &&
-                unparsedCandleData[0].period === period &&
                 isFetchingEnoughData
             ) {
                 const lastCandleDate = unparsedCandleData?.reduce(
@@ -970,15 +963,20 @@ function TradeCandleStickChart(props: propsIF) {
                 const candles = filterCandleWithTransaction(
                     unparsedCandleData,
                     period,
-                ).filter((i) => i.isShowData && i.time * 1000 < maxDom);
+                ).filter((i) => i.isShowData && i.time * 1000);
                 const minTime = firstCandleDate * 1000;
+
                 console.log(
                     {
+                        unparsedCandleData,
+                        period,
+
                         candles,
                         timeOfEndCandle,
                         fetchCountForEnoughData,
                         maxRequestCountForCondensed,
                     },
+                    new Date(maxDom),
                     fetchCountForEnoughData < maxRequestCountForCondensed,
                 );
 
@@ -1012,6 +1010,11 @@ function TradeCandleStickChart(props: propsIF) {
                                     dom.domainBoundry + period * 1000;
                             }
                         }
+                        console.log(
+                            'sdfafadfadfdfdas',
+                            { dom },
+                            dom.domainBoundry,
+                        );
 
                         return dom;
                     });
