@@ -30,6 +30,7 @@ import PAC from './PAC.png';
 import $PACM from './PACM.webp';
 import PANDA from './PANDA.jpg';
 import PEPE from './PEPE.png';
+import PETH from './PETH.svg';
 import PUNKETH20 from './PUNKETH-20.jpeg';
 import PUSD from './PUSD.svg';
 import PXETH from './PXETH.png';
@@ -97,6 +98,7 @@ export {
     PAC,
     PANDA,
     PEPE,
+    PETH,
     PUNKETH20,
     PUSD,
     PXETH,
