@@ -53,7 +53,6 @@ export const ResizableContainer = styled(Resizable)<{
     display: flex;
     justify-content: center;
     align-items: ${({ alignItems }) => alignItems ?? 'center'};
-    alignItems: 
     overflow: hidden;
 
     max-height: ${({ isFuta, isChartFullScreen }) =>
