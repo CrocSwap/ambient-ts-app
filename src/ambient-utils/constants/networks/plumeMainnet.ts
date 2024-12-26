@@ -2,7 +2,13 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
-import { plumeNativeETH, plumeUSDC } from '../defaultTokens';
+import {
+    plumeNativeETH,
+    plumeNRWA,
+    plumePETH,
+    plumePUSD,
+    plumeUSDC,
+} from '../defaultTokens';
 import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -40,8 +46,8 @@ export const plumeMainnet: NetworkIF = {
     vaultsEnabled: false,
     tempestApiNetworkName: '',
     topPools: [
-        // new TopPool(plumePETH, plumePUSD, chainSpecFromSDK.poolIndex),
-        // new TopPool(plumeNEV, plumePUSD, chainSpecFromSDK.poolIndex),
+        new TopPool(plumePETH, plumePUSD, chainSpecFromSDK.poolIndex),
+        new TopPool(plumeNRWA, plumePUSD, chainSpecFromSDK.poolIndex),
         new TopPool(plumeUSDC, plumeNativeETH, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
