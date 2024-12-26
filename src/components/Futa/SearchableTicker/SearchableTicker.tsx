@@ -433,6 +433,9 @@ export default function SearchableTicker(props: propsIF) {
             }
         };
     }, []);
+
+    useEffect(() => console.log(dataState?.active === 'created'), [dataState]);
+
     const searchableContent = (
         <div className={styles.tickerTableContainer}>
             {filteredData.length ? (
@@ -441,6 +444,8 @@ export default function SearchableTicker(props: propsIF) {
                     <p className={styles.marketCapHeader}>MARKET CAP</p>
                     <p>STATUS</p>
                     <p>TIME</p>
+                    {dataState?.active === 'created' && <p>ETH Committed</p>}
+                    {dataState?.active === 'created' && <p>ETH Rewards</p>}
                 </header>
             ) : null}
             <div
@@ -466,6 +471,7 @@ export default function SearchableTicker(props: propsIF) {
                               setSelectedTicker={setSelectedTicker}
                               setShowComplete={setShowComplete}
                               useRefTicker={tickerItemRefs}
+                              isCreated={dataState?.active === 'created'}
                           />
                       ))
                     : noAuctionsContent}

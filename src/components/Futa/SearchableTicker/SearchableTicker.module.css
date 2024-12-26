@@ -158,7 +158,7 @@
 .tickerItemContainer {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    /* border-left: 4px solid var(--accent2); */
+    border-left: 4px solid var(--accent2);
     align-items: center;
     font-size: 18px;
     color: var(--text1);

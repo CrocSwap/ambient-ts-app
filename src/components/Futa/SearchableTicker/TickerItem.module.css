@@ -1,0 +1,43 @@
+/* top-level JSX parent component */
+.ticker_item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 8px;
+    outline: 1px solid salmon;
+}
+
+/* styles to apply universally to cells in the row */
+/* will be overridden by lower CSS in this file */
+.ticker_item > * {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    width: 120px;
+    outline: 1px solid blue;
+}
+
+.ticker_name {
+    flex: 1 10 auto;
+}
+
+.market_cap {
+    flex: 1 10 auto;
+}
+
+.auction_status {
+    flex: 1 10 auto;
+}
+
+.time_remaining {
+    flex: 1 10 auto;
+}
+
+.native_tkn_committed {
+    flex: 1 10 auto;
+}
+
+.native_tkn_reward {
+    flex: 1 10 auto;
+}

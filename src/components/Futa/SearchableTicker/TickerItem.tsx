@@ -12,7 +12,7 @@ import {
     getRetrievedAuctionDetailsForAccount,
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
-import styles from './SearchableTicker.module.css';
+import styles from './TickerItem.module.css';
 import { GoChevronRight } from 'react-icons/go';
 
 interface PropsIF {
@@ -20,6 +20,7 @@ interface PropsIF {
     setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
     selectedTicker: string | undefined;
     isAccount: boolean | undefined;
+    isCreated: boolean;
     isMobile: boolean;
     setShowComplete: Dispatch<SetStateAction<boolean>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,16 +29,20 @@ interface PropsIF {
 export default function TickerItem(props: PropsIF) {
     const {
         auction,
-        selectedTicker,
+        // selectedTicker,
         setSelectedTicker,
-        isAccount,
+        // isAccount,
+        isCreated,
         isMobile,
         setShowComplete,
         useRefTicker,
     } = props;
 
-    const { accountData, hoveredTicker, setHoveredTicker } =
-        useContext(AuctionsContext);
+    const {
+        accountData,
+        // hoveredTicker,
+        setHoveredTicker,
+    } = useContext(AuctionsContext);
 
     const {
         ticker,
@@ -159,19 +164,20 @@ export default function TickerItem(props: PropsIF) {
     return (
         <Link
             ref={(el) => (useRefTicker.current[ticker] = el)}
-            className={`${styles.tickerItemContainer} ${
-                auction?.ticker === selectedTicker && !isAccount
-                    ? styles.active
-                    : ''
-            } 
-            ${
-                auction?.ticker === hoveredTicker &&
-                hoveredTicker !== selectedTicker &&
-                !isAccount
-                    ? styles.hoverActive
-                    : ''
-            }
-            `}
+            // className={`${styles.tickerItemContainer} ${
+            //     auction?.ticker === selectedTicker && !isAccount
+            //         ? styles.active
+            //         : ''
+            // }
+            // ${
+            //     auction?.ticker === hoveredTicker &&
+            //     hoveredTicker !== selectedTicker &&
+            //     !isAccount
+            //         ? styles.hoverActive
+            //         : ''
+            // }
+            // `}
+            className={styles.ticker_item}
             to={'/auctions/v1/' + ticker}
             onClick={() => {
                 setSelectedTicker(ticker);
@@ -185,16 +191,11 @@ export default function TickerItem(props: PropsIF) {
             }}
         >
             <div className={styles.ticker_name}>
-                {isMobile || (
-                    <span className={styles.ticker_name_arrow}>
-                        <GoChevronRight />
-                    </span>
-                )}
-                <p className={styles.tick_name}>{ticker}</p>
+                {isMobile || <GoChevronRight />}
+                <p>{ticker}</p>
             </div>
-            <p className={styles.marketCap}>{formattedMarketCap}</p>
-            <p className={styles.statusContainer}>{!status2 ? 'IN' : 'OUT'}</p>
-
+            <p className={styles.market_cap}>{formattedMarketCap}</p>
+            <p className={styles.auction_status}>{!status2 ? 'IN' : 'OUT'}</p>
             <p
                 style={{
                     color:
@@ -205,10 +206,12 @@ export default function TickerItem(props: PropsIF) {
                               ? 'var(--text1)'
                               : 'var(--orange)',
                 }}
-                className={styles.timeRemaining}
+                className={styles.time_remaining}
             >
                 {timeRemaining}
             </p>
+            {isCreated && <p className={styles.native_tkn_committed}>1-2-3</p>}
+            {isCreated && <p className={styles.native_tkn_reward}>A-B-C</p>}
         </Link>
     );
 }
