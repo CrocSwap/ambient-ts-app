@@ -226,11 +226,12 @@
     display: flex;
     gap: 8px;
     margin: 0 8px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 /* header of the ticker table */
 .ticker_table > header {
+    /* `position` and `top` keep header visible when scrolling */
     position: sticky;
     top: 0;
     display: flex;
@@ -249,10 +250,6 @@
 .ticker_table > header > * {
     width: 120px;
     flex: 1 10 auto;
-}
-
-.ticker_table_content {
-    overflow-y: scroll;
 }
 
 /* .tickerTableContent {
