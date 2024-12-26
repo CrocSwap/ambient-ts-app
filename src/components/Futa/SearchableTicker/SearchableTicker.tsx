@@ -434,8 +434,6 @@ export default function SearchableTicker(props: propsIF) {
         };
     }, []);
 
-    useEffect(() => console.log(dataState?.active === 'created'), [dataState]);
-
     const searchableContent = (
         <div className={styles.tickerTableContainer}>
             {filteredData.length ? (

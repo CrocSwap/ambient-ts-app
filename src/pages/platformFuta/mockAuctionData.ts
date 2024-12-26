@@ -389,6 +389,8 @@ export const mockAccountData2: AuctionListResponseIF = {
             userBidClearingPriceInNativeTokenWei: '3637980000000000000',
             qtyBidByUserInNativeTokenWei: '500000000000000000',
             qtyUserBidFilledInNativeTokenWei: '500000000000000000',
+            nativeTokenCommitted: '17200000000000003',
+            nativeTokenReward: '22000000000000004',
         },
         {
             ticker: 'PEPE1',
@@ -401,6 +403,8 @@ export const mockAccountData2: AuctionListResponseIF = {
             userBidClearingPriceInNativeTokenWei: '250000000000000000',
             qtyBidByUserInNativeTokenWei: '100000000000000000',
             qtyUserBidFilledInNativeTokenWei: '50000000000000000',
+            nativeTokenCommitted: '17200000000000001',
+            nativeTokenReward: '22000000000000002',
         },
 
         {

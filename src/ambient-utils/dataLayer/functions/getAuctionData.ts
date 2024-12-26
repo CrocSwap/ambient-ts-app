@@ -53,6 +53,8 @@ export interface AuctionDataIF {
     qtyClaimedByUserInAuctionedTokenWei?: string | undefined;
     qtyUnreturnedToUserInNativeTokenWei?: string | undefined;
     qtyReturnedToUserInNativeTokenWei?: string | undefined;
+    nativeTokenCommitted?: string | undefined;
+    nativeTokenReward?: string | undefined;
 }
 
 // interface for auction status data used to generate auction details view

@@ -161,6 +161,22 @@ export default function TickerItem(props: PropsIF) {
                 : '$0'
             : undefined;
 
+    function convertWeiToEth(
+        rawVal: string,
+        decimals: number,
+        trunc: number,
+    ): string {
+        let formattedWei: string = rawVal;
+        while (formattedWei.length < decimals + 1) {
+            formattedWei = 0 + formattedWei;
+        }
+        const positionToSplit: number = formattedWei.length - decimals;
+        const firstPart: string = formattedWei.slice(0, positionToSplit);
+        const lastPart: string = formattedWei.slice(positionToSplit);
+        const output: string = (firstPart + '.' + lastPart).slice(0, trunc);
+        return output;
+    }
+
     return (
         <Link
             ref={(el) => (useRefTicker.current[ticker] = el)}
@@ -210,8 +226,18 @@ export default function TickerItem(props: PropsIF) {
             >
                 {timeRemaining}
             </p>
-            {isCreated && <p className={styles.native_tkn_committed}>1-2-3</p>}
-            {isCreated && <p className={styles.native_tkn_reward}>A-B-C</p>}
+            {isCreated && (
+                <p className={styles.native_tkn_committed}>
+                    {auction.nativeTokenCommitted &&
+                        convertWeiToEth(auction.nativeTokenCommitted, 18, 6)}
+                </p>
+            )}
+            {isCreated && (
+                <p className={styles.native_tkn_reward}>
+                    {auction.nativeTokenReward &&
+                        convertWeiToEth(auction.nativeTokenReward, 18, 6)}
+                </p>
+            )}
         </Link>
     );
 }
