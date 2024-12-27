@@ -15,7 +15,6 @@
     --width-for-scrollbar: 8px;
     padding: 6px var(--width-for-scrollbar) 6px 2px;
     border: var(--futa-box-border);
-    /* background-color: lightgoldenrodyellow; */
 }
 
 .mainBorder {

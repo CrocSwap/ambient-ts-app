@@ -37,33 +37,6 @@ interface propsIF {
 export default function SearchableTicker(props: propsIF) {
     const { auctions, placeholderTicker, isAccount, dataState } = props;
 
-    // logic to expand table to full height if no data is available, this
-    // ... keeps the 'no data available' msg centered in the visual space,
-    useEffect(() => {
-        // declare a variable to hold new table height
-        let heightToUse: number;
-        // if data is available, use either the saved or default height
-        if (auctions.data.length) {
-            heightToUse =
-                searchableTickerHeights.saved ??
-                searchableTickerHeights.default;
-        } else {
-            heightToUse = searchableTickerHeights.max;
-        }
-        // update state with new value
-        setSearchableTickerHeight(heightToUse);
-        // !important:  dependency array must be in the form val === 0,
-        // !important:  ... this logic should only apply in situations
-        // !important:  ... with no data or missing data, not when state
-        // !important:  ... adds additional data to what we already have
-    }, [auctions.data.length === 0]);
-
-    const [isSortDropdownOpen, setIsSortDropdownOpen] =
-        useState<boolean>(false);
-    // scrolling is disabled when hover on table
-    const [isMouseEnter, setIsMouseEnter] = useState(false);
-    const customLoading = false;
-
     const {
         setIsLoading,
         selectedTicker,
@@ -77,13 +50,48 @@ export default function SearchableTicker(props: propsIF) {
     } = useContext(AuctionsContext);
 
     const {
-        isFullScreen: isChartFullScreen,
         searchableTickerHeights,
         setSearchableTickerHeight,
         canvasRef,
         setIsSearchableTickerHeightMinimum,
+        isFullScreen,
     } = useContext(FutaSearchableTickerContext);
-    false && isChartFullScreen;
+
+    const tableParentRef = useRef<HTMLDivElement>(null);
+
+    // logic to expand table to full height if no data is available, this
+    // ... keeps the 'no data available' msg centered in the visual space,
+    useEffect(() => {
+        console.log(tableParentRef.current);
+        // declare a variable to hold new table height
+        let heightToUse: number;
+        // if data is available, use either the saved or default height
+        if (tableParentRef.current && isFullScreen) {
+            const val = tableParentRef.current.getBoundingClientRect().height;
+            console.log(val);
+            heightToUse = val;
+        } else if (auctions.data.length) {
+            heightToUse =
+                searchableTickerHeights.saved ??
+                searchableTickerHeights.default;
+        } else {
+            heightToUse = searchableTickerHeights.max;
+        }
+        // update state with new value
+        console.log(heightToUse);
+        setSearchableTickerHeight(heightToUse);
+        // !important:  dependency array must be in the form val === 0,
+        // !important:  ... this logic should only apply in situations
+        // !important:  ... with no data or missing data, not when state
+        // !important:  ... adds additional data to what we already have
+    }, [auctions.data.length === 0, tableParentRef.current]);
+
+    const [isSortDropdownOpen, setIsSortDropdownOpen] =
+        useState<boolean>(false);
+    // scrolling is disabled when hover on table
+    const [isMouseEnter, setIsMouseEnter] = useState(false);
+    const customLoading = false;
+
     const isMobile = useMediaQuery('(max-width: 768px)');
 
     // shape of data to create filter dropdown menu options
@@ -495,11 +503,14 @@ export default function SearchableTicker(props: propsIF) {
                 bottomRight: false,
             }}
             size={{
-                width: '100%',
-                height: searchableTickerHeights.current,
+                height:
+                    isAccount && tableParentRef.current
+                        ? tableParentRef.current.getBoundingClientRect()
+                              .height * 0.99
+                        : searchableTickerHeights.current,
             }}
             minHeight={200}
-            maxHeight={window.innerHeight * 0.75}
+            maxHeight={isAccount ? undefined : searchableTickerHeights.current}
             onResize={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,
@@ -552,8 +563,8 @@ export default function SearchableTicker(props: propsIF) {
             <FlexContainer
                 flexDirection='column'
                 fullHeight
-                overflow='hidden'
                 className={styles.contentContainer}
+                ref={tableParentRef}
             >
                 {resizableChart}
                 {!isAccount && !isMobile && <Chart />}
