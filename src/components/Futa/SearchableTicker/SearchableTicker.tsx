@@ -510,7 +510,7 @@ export default function SearchableTicker(props: propsIF) {
                         : searchableTickerHeights.current,
             }}
             minHeight={200}
-            maxHeight={isAccount ? undefined : searchableTickerHeights.current}
+            maxHeight={isAccount ? undefined : window.innerHeight - 200}
             onResize={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,
