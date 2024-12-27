@@ -442,12 +442,16 @@ export default function SearchableTicker(props: propsIF) {
         <div className={styles.ticker_table}>
             {filteredData.length ? (
                 <header>
-                    <p>TICKER</p>
-                    <p>MARKET CAP</p>
-                    <p>STATUS</p>
-                    <p>TIME</p>
-                    {dataState?.active === 'created' && <p>ETH Committed</p>}
-                    {dataState?.active === 'created' && <p>ETH Rewards</p>}
+                    <p className={styles.cell_left}>TICKER</p>
+                    <p className={styles.cell_right}>MARKET CAP</p>
+                    <p className={styles.cell_center}>STATUS</p>
+                    <p className={styles.cell_right}>TIME</p>
+                    {dataState?.active === 'created' && (
+                        <p className={styles.cell_right}>ETH Committed</p>
+                    )}
+                    {dataState?.active === 'created' && (
+                        <p className={styles.cell_right}>ETH Rewards</p>
+                    )}
                 </header>
             ) : null}
             <div

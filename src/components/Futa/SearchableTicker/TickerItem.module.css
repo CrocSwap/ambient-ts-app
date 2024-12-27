@@ -27,10 +27,6 @@
     width: 120px;
 }
 
-/* .ticker_arrow {
-    visibility: hidden;
-} */
-
 .active {
     background-color: #28585d;
 }
@@ -45,24 +41,30 @@
 
 .ticker_name {
     flex: 1 10 auto;
+    justify-content: flex-start;
 }
 
 .market_cap {
     flex: 1 10 auto;
+    justify-content: flex-end;
 }
 
 .auction_status {
     flex: 1 10 auto;
+    justify-content: center;
 }
 
 .time_remaining {
     flex: 1 10 auto;
+    justify-content: flex-end;
 }
 
 .native_tkn_committed {
     flex: 1 10 auto;
+    justify-content: flex-end;
 }
 
 .native_tkn_reward {
     flex: 1 10 auto;
+    justify-content: flex-end;
 }

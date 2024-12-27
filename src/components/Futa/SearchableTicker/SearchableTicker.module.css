@@ -247,6 +247,21 @@
     row-gap: 4px;
 }
 
+.cell_left {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.cell_center {
+    display: flex;
+    justify-content: center;
+}
+
+.cell_right {
+    display: flex;
+    justify-content: flex-end;
+}
+
 .scrolling {
     scrollbar-color: var(--accent1) var(--dark2);
 }
