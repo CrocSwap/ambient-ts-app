@@ -17,17 +17,9 @@
     border: var(--futa-box-border);
 }
 
-.mainBorder {
-    border: 2px solid var(--borders, #5C6F72);
-    padding: 8px;
-    height: calc(100% - 8px);
-}
-
-@media (max-width: 768px) {
-    .mainBorder {
+@media (max-width: 500px) {
+    .resi {
         border: none;
-        padding: none;
-        height: auto;
     }
 }
 
@@ -355,12 +347,6 @@
 @media (min-width: 768px) {
     .container {
         display: grid;
-    }
-
-    .mainBorder{
-        border: 2px solid var(--borders, #5C6F72);
-        padding: 8px;
-        height: calc(100% - 8px);
     }
 
     .tickerTableContainer {

@@ -176,8 +176,9 @@ export default function SearchableTicker(props: propsIF) {
     // choose data set to display and apply post-processing middleware
     const filteredData = useMemo<AuctionDataIF[]>(() => {
         // show the relevant data subset (complete vs incomplete)
-        const dataSubset: AuctionDataIF[] =
-            showComplete && !isAccount ? completeAuctions : incompleteAuctions;
+        const dataSubset: AuctionDataIF[] = showComplete
+            ? completeAuctions
+            : incompleteAuctions;
         // filter data subset by search input from user
         const searchHits: AuctionDataIF[] = dataSubset.filter(
             (auc: AuctionDataIF) =>
