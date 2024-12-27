@@ -54,7 +54,6 @@ export default function SearchableTicker(props: propsIF) {
         setSearchableTickerHeight,
         canvasRef,
         setIsSearchableTickerHeightMinimum,
-        isFullScreen,
     } = useContext(FutaSearchableTickerContext);
 
     const tableParentRef = useRef<HTMLDivElement>(null);
@@ -66,11 +65,7 @@ export default function SearchableTicker(props: propsIF) {
         // declare a variable to hold new table height
         let heightToUse: number;
         // if data is available, use either the saved or default height
-        if (tableParentRef.current && isFullScreen) {
-            const val = tableParentRef.current.getBoundingClientRect().height;
-            console.log(val);
-            heightToUse = val;
-        } else if (auctions.data.length) {
+        if (auctions.data.length) {
             heightToUse =
                 searchableTickerHeights.saved ??
                 searchableTickerHeights.default;
@@ -78,13 +73,12 @@ export default function SearchableTicker(props: propsIF) {
             heightToUse = searchableTickerHeights.max;
         }
         // update state with new value
-        console.log(heightToUse);
         setSearchableTickerHeight(heightToUse);
         // !important:  dependency array must be in the form val === 0,
         // !important:  ... this logic should only apply in situations
         // !important:  ... with no data or missing data, not when state
         // !important:  ... adds additional data to what we already have
-    }, [auctions.data.length === 0, tableParentRef.current]);
+    }, [auctions.data.length === 0]);
 
     const [isSortDropdownOpen, setIsSortDropdownOpen] =
         useState<boolean>(false);
@@ -448,11 +442,7 @@ export default function SearchableTicker(props: propsIF) {
             {filteredData.length ? (
                 <header>
                     <p>TICKER</p>
-                    <p
-                    // className={styles.marketCapHeader}
-                    >
-                        MARKET CAP
-                    </p>
+                    <p>MARKET CAP</p>
                     <p>STATUS</p>
                     <p>TIME</p>
                     {dataState?.active === 'created' && <p>ETH Committed</p>}
@@ -489,7 +479,7 @@ export default function SearchableTicker(props: propsIF) {
             </div>
         </div>
     );
-
+    console.log(window.innerHeight - 200);
     const resizableChart = (
         <Resizable
             enable={{
