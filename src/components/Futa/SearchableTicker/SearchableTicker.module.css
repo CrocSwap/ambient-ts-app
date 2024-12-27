@@ -240,6 +240,13 @@
     flex: 1 10 auto;
 }
 
+/* container for ticker line items */
+.ticker_table_content {
+    display: flex;
+    flex-direction: column;
+    row-gap: 4px;
+}
+
 .scrolling {
     scrollbar-color: var(--accent1) var(--dark2);
 }
