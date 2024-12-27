@@ -38,11 +38,8 @@ export default function TickerItem(props: PropsIF) {
         useRefTicker,
     } = props;
 
-    const {
-        accountData,
-        // hoveredTicker,
-        setHoveredTicker,
-    } = useContext(AuctionsContext);
+    const { accountData, hoveredTicker, setHoveredTicker } =
+        useContext(AuctionsContext);
 
     const {
         ticker,
@@ -197,9 +194,16 @@ export default function TickerItem(props: PropsIF) {
                 //  spacing and visual arrangement styles
                 styles.ticker_item,
                 //  add background highlighting when ticker is active
-                //  ... on Auctions page only
-                auction?.ticker === selectedTicker && !isAccount
-                    ? styles.active
+                //  ... or when hovered
+                !isAccount
+                    ? // ? (auction?.ticker === selectedTicker
+                      //     ? styles.active : styles.inactive
+                      // )
+                      styles[
+                          auction?.ticker === selectedTicker
+                              ? 'active'
+                              : 'inactive'
+                      ]
                     : '',
             ].join(' ')}
             to={'/auctions/v1/' + ticker}

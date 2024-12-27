@@ -16,7 +16,15 @@
 }
 
 .active {
-    background: #28585d;
+    background-color: #28585d;
+}
+
+.active:hover {
+    background-color: var(--dark3);
+}
+
+.inactive:hover {
+    background-color: var(--dark2);
 }
 
 .ticker_name {
