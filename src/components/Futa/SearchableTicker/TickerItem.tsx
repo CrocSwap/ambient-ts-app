@@ -38,8 +38,7 @@ export default function TickerItem(props: PropsIF) {
         useRefTicker,
     } = props;
 
-    const { accountData, hoveredTicker, setHoveredTicker } =
-        useContext(AuctionsContext);
+    const { accountData, setHoveredTicker } = useContext(AuctionsContext);
 
     const {
         ticker,
@@ -177,19 +176,6 @@ export default function TickerItem(props: PropsIF) {
     return (
         <Link
             ref={(el) => (useRefTicker.current[ticker] = el)}
-            // className={`${styles.tickerItemContainer} ${
-            //     auction?.ticker === selectedTicker && !isAccount
-            //         ? styles.active
-            //         : ''
-            // }
-            // ${
-            //     auction?.ticker === hoveredTicker &&
-            //     hoveredTicker !== selectedTicker &&
-            //     !isAccount
-            //         ? styles.hoverActive
-            //         : ''
-            // }
-            // `}
             className={[
                 //  spacing and visual arrangement styles
                 styles.ticker_item,

@@ -228,17 +228,13 @@ export default function SearchableTicker(props: propsIF) {
     }, [diffHashSig(filteredData)]);
 
     const tickerItemRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-    // useEffect(() => console.log(tickerItemRefs.current), [tickerItemRefs.current]);
-    console.log(tickerItemRefs.current);
+
     useEffect(() => {
         if (
             hoveredTicker &&
             tickerItemRefs.current[hoveredTicker] &&
             !isMouseEnter
         ) {
-            // tickerItemRefs.current[hoveredTicker]?.scrollIntoView({
-            //     behavior: 'smooth',
-            // });
             const itemRef = tickerItemRefs.current[hoveredTicker];
             if (itemRef && containerRef.current) {
                 containerRef.current.scrollTo({
