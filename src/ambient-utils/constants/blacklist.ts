@@ -217,6 +217,11 @@ export const hiddenTokens = [
         address: '0x83CA2E0018cBa6CD1149F2BB059d2Fc6D0fDf456',
         chainId: 1923,
     },
+    {
+        // pETH on Mainnet
+        address: '0x821a278dfff762c76410264303f25bf42e195c0c',
+        chainId: 1,
+    },
 ];
 
 const embargoedTokens = [
