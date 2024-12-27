@@ -64,6 +64,7 @@
     --navbar-border: transparent;
     --dark-border-color: #010101;
     --dark-border: 0.2px solid var(--dark-border-color);
+    --futa-box-border: 2px solid #5c6f72;
 
     /* transitions */
     --transition: all var(--animation-speed) ease-in-out;
@@ -201,7 +202,7 @@
     --text2: #939c9e;
     --text3: #4d5255;
 
-    --dark1: #0d0f13;
+    --dark1: #0d0f13FF;
     --dark2: #14161a;
     --dark3: #1b1e22;
     --dark4: #171f22;
