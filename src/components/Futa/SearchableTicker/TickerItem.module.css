@@ -5,6 +5,7 @@
     justify-content: space-between;
     transition: all var(--animation-speed) ease-in-out;
     font-size: 18px;
+    letter-spacing: 1px;
 }
 
 /* transparent ticker arrow in base state with transition */
