@@ -3,8 +3,6 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    outline: 1px solid salmon;
-    /* height: 400px; */
 }
 
 /* styles to apply universally to cells in the row */
@@ -15,7 +13,6 @@
     justify-content: flex-start;
     align-items: center;
     width: 120px;
-    outline: 1px solid blue;
 }
 
 .ticker_name {
