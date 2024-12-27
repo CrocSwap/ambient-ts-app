@@ -3,6 +3,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 /* styles to apply universally to cells in the row */
