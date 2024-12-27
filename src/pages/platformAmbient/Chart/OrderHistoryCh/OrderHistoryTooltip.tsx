@@ -89,7 +89,8 @@ export default function OrderHistoryTooltip(props: {
             </StyledHeader>
 
             <StyledHeader color={'white'} size={'15px'}>
-                {hoveredOrderHistory.type === 'limitCircle'
+                {hoveredOrderHistory.type === 'limitCircle' &&
+                hoveredOrderHistory.tokenFlowDecimalCorrected < 1
                     ? formatSubscript(
                           hoveredOrderHistory.tokenFlowDecimalCorrected,
                       )

@@ -762,12 +762,10 @@ export default function Chart(props: propsIF) {
                         quoteSymbol: limit.quoteSymbol,
                         baseTokenLogoURI: limit.baseTokenLogoURI,
                         quoteTokenLogoURI: limit.quoteTokenLogoURI,
-                        baseFlowDecimalCorrected: limit.isBid
-                            ? limit.originalPositionLiqBaseDecimalCorrected
-                            : limit.expectedPositionLiqBaseDecimalCorrected,
-                        quoteFlowDecimalCorrected: limit.isBid
-                            ? limit.expectedPositionLiqBaseDecimalCorrected
-                            : limit.originalPositionLiqBaseDecimalCorrected,
+                        baseFlowDecimalCorrected:
+                            limit.originalPositionLiqBaseDecimalCorrected,
+                        quoteFlowDecimalCorrected:
+                            limit.expectedPositionLiqQuoteDecimalCorrected,
                     } as TransactionIF);
                 });
             }
@@ -5409,15 +5407,15 @@ export default function Chart(props: propsIF) {
 
             if (userLimitOrdersByPool && showLiquidity) {
                 userLimitOrdersByPool.limitOrders.forEach((limitOrder) => {
-                    const tokenFlowDecimalCorrected = denomInBase
-                        ? limitOrder.isBid
-                            ? limitOrder.originalPositionLiqBaseDecimalCorrected
-                            : limitOrder.expectedPositionLiqBaseDecimalCorrected
-                        : limitOrder.isBid
-                          ? limitOrder.expectedPositionLiqQuoteDecimalCorrected
-                          : limitOrder.originalPositionLiqQuoteDecimalCorrected;
-
                     if (limitOrder.claimableLiq === 0) {
+                        const tokenFlowDecimalCorrected = denomInBase
+                            ? limitOrder.isBid
+                                ? limitOrder.originalPositionLiqBaseDecimalCorrected
+                                : limitOrder.expectedPositionLiqBaseDecimalCorrected
+                            : limitOrder.isBid
+                              ? limitOrder.expectedPositionLiqQuoteDecimalCorrected
+                              : limitOrder.originalPositionLiqQuoteDecimalCorrected;
+
                         const swapOrderData = [
                             {
                                 x: limitOrder.timeFirstMint * 1000,
@@ -5516,15 +5514,6 @@ export default function Chart(props: propsIF) {
                                         : merged.quoteFlowDecimalCorrected);
                             });
                         }
-
-                        console.log(
-                            checkSwapLoation(
-                                swapOrderData,
-                                mouseX,
-                                mouseY,
-                                totalValueUSD,
-                            ),
-                        );
 
                         if (
                             checkSwapLoation(
