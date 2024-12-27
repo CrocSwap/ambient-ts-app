@@ -201,7 +201,7 @@ export default function TickerItem(props: PropsIF) {
             }}
         >
             <div className={styles.ticker_name}>
-                {isMobile || <GoChevronRight />}
+                {isMobile || <GoChevronRight className={styles.ticker_arrow} />}
                 <p>{ticker}</p>
             </div>
             <p className={styles.market_cap}>{formattedMarketCap}</p>

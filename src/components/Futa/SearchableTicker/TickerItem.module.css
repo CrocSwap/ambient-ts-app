@@ -6,6 +6,17 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
+/* transparent ticker arrow in base state with transition */
+.ticker_arrow {
+    transition: all var(--animation-speed) ease-in-out;
+    color: #f0f0f800;
+}
+
+/* add color to ticker arrow when parent elem is hovered */
+.ticker_name:hover .ticker_arrow {
+    color: var(--text2);
+}
+
 /* styles to apply universally to cells in the row */
 /* will be overridden by lower CSS in this file */
 .ticker_item > * {
@@ -15,6 +26,10 @@
     align-items: center;
     width: 120px;
 }
+
+/* .ticker_arrow {
+    visibility: hidden;
+} */
 
 .active {
     background-color: #28585d;
