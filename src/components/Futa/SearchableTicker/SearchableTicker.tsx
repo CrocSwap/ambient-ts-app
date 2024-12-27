@@ -485,7 +485,7 @@ export default function SearchableTicker(props: propsIF) {
     const resizableChart = (
         <Resizable
             enable={{
-                bottom: true,
+                bottom: !isAccount,
                 top: false,
                 left: false,
                 topLeft: false,
