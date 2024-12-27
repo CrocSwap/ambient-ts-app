@@ -228,7 +228,8 @@ export default function SearchableTicker(props: propsIF) {
     }, [diffHashSig(filteredData)]);
 
     const tickerItemRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-
+    // useEffect(() => console.log(tickerItemRefs.current), [tickerItemRefs.current]);
+    console.log(tickerItemRefs.current);
     useEffect(() => {
         if (
             hoveredTicker &&

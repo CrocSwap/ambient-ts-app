@@ -29,9 +29,9 @@ interface PropsIF {
 export default function TickerItem(props: PropsIF) {
     const {
         auction,
-        // selectedTicker,
+        selectedTicker,
         setSelectedTicker,
-        // isAccount,
+        isAccount,
         isCreated,
         isMobile,
         setShowComplete,
@@ -193,7 +193,12 @@ export default function TickerItem(props: PropsIF) {
             //         : ''
             // }
             // `}
-            className={styles.ticker_item}
+            className={[
+                styles.ticker_item,
+                auction?.ticker === selectedTicker && !isAccount
+                    ? styles.active
+                    : '',
+            ].join(' ')}
             to={'/auctions/v1/' + ticker}
             onClick={() => {
                 setSelectedTicker(ticker);

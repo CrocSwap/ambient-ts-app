@@ -15,6 +15,10 @@
     width: 120px;
 }
 
+.active {
+    background: #28585d;
+}
+
 .ticker_name {
     flex: 1 10 auto;
 }
