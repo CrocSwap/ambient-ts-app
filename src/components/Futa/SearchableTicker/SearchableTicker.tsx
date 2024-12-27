@@ -184,17 +184,24 @@ export default function SearchableTicker(props: propsIF) {
             (auc: AuctionDataIF) =>
                 auc.ticker.includes(searchInputRaw.toUpperCase()),
         );
+        // declare an output variable
+        let output: AuctionDataIF[] = searchHits;
         // filter data set to watchlisted tokens
-        const watchlisted: AuctionDataIF[] = searchHits.filter(
-            (auc: AuctionDataIF) =>
-                watchlists.shouldDisplay
-                    ? watchlists.v1.data.includes(auc.ticker.toUpperCase())
-                    : true,
-        );
-        // return auctions from correct subset matching user search input
-        return activeSortOption.label === 'timeRemaining'
-            ? watchlisted.reverse()
-            : watchlisted;
+        console.log(watchlists.shouldDisplay);
+        if (!isAccount) {
+            const watchlisted: AuctionDataIF[] = searchHits.filter(
+                (auc: AuctionDataIF) =>
+                    watchlists.shouldDisplay
+                        ? watchlists.v1.data.includes(auc.ticker.toUpperCase())
+                        : true,
+            );
+            // return auctions from correct subset matching user search input
+            output =
+                activeSortOption.label === 'timeRemaining'
+                    ? watchlisted.reverse()
+                    : watchlisted;
+        }
+        return output;
     }, [
         searchInputRaw,
         incompleteAuctions,
