@@ -7,6 +7,12 @@ import { brandIF } from './types';
 
 export const ambientProductionBrandAssets: brandIF = {
     networks: {
+        // ethereum mainnet
+        '0x1': {
+            // first value in array is default color scheme
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
+            premiumColor: [],
+        },
         // swell mainnet
         '0x783': {
             // first value in array is default color scheme
@@ -33,12 +39,6 @@ export const ambientProductionBrandAssets: brandIF = {
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             cobrandingLogo: blastLogo,
-        },
-        // ethereum mainnet
-        '0x1': {
-            // first value in array is default color scheme
-            color: ['purple_dark', 'purple_light', 'futa_dark'],
-            premiumColor: [],
         },
     },
     platformName: 'ambient',
