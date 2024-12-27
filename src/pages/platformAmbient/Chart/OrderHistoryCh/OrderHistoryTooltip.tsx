@@ -19,6 +19,7 @@ import {
     OrderHistoryHover,
     StyledHeader,
     StyledLink,
+    LinkContainer,
 } from './OrderHistoryTooltipCss';
 
 export default function OrderHistoryTooltip(props: {
@@ -303,23 +304,35 @@ export default function OrderHistoryTooltip(props: {
                                 })}
                         </StyledHeader>
 
-                        <StyledLink
-                            color={'var(--text2)'}
-                            size={'13px'}
-                            onClick={(
-                                event: React.MouseEvent<HTMLDivElement>,
-                            ) => {
-                                event.stopPropagation();
-                                handleOpenExplorer(hoveredOrderHistory.id);
-                            }}
-                            onMouseEnter={() => {
-                                setHoveredID(hoveredOrderHistory.id);
-                            }}
-                            onMouseLeave={() => setHoveredID(() => undefined)}
-                        >
-                            {trimString(hoveredOrderHistory.id, 6, 4, '…')}
-                            <RiExternalLinkLine />
-                        </StyledLink>
+                        <LinkContainer>
+                            {hoveredOrderHistory.mergedIds.map(
+                                (id: string, index: number) => {
+                                    return (
+                                        <StyledLink
+                                            color={'var(--text2)'}
+                                            size={'13px'}
+                                            key={index}
+                                            onClick={(
+                                                event: React.MouseEvent<HTMLDivElement>,
+                                            ) => {
+                                                event.stopPropagation();
+                                                handleOpenExplorer(id);
+                                            }}
+                                            onMouseEnter={() => {
+                                                setHoveredID(id);
+                                            }}
+                                            onMouseLeave={() =>
+                                                setHoveredID(() => undefined)
+                                            }
+                                        >
+                                            {trimString(id, 6, 4, '…')}
+                                            <RiExternalLinkLine />
+                                        </StyledLink>
+                                    );
+                                },
+                            )}
+                        </LinkContainer>
+
                         {hoveredID && (
                             <div
                                 style={{

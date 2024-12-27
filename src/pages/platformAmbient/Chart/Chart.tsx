@@ -5489,6 +5489,7 @@ export default function Chart(props: propsIF) {
                                 order: position,
                                 totalValue: position.totalValueUSD,
                                 tokenFlowDecimalCorrected: 0,
+                                mergedIds: [position.positionId],
                             };
                         }
                     }
@@ -5532,6 +5533,7 @@ export default function Chart(props: propsIF) {
                                 totalValueUSD: limitOrder.totalValueUSD,
                                 tokenFlowDecimalCorrected:
                                     tokenFlowDecimalCorrected,
+                                mergedIds: [limitOrder.positionHash],
                             };
                         }
 
@@ -5556,6 +5558,7 @@ export default function Chart(props: propsIF) {
                                 totalValueUSD: limitOrder.totalValueUSD,
                                 tokenFlowDecimalCorrected:
                                     tokenFlowDecimalCorrected,
+                                mergedIds: [limitOrder.positionHash],
                             };
                         }
                     }
@@ -5585,8 +5588,13 @@ export default function Chart(props: propsIF) {
                             ? element.order.baseFlowDecimalCorrected
                             : element.order.quoteFlowDecimalCorrected;
 
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const mergedIds: Array<string> = [element.order.txHash];
+
                         if (element.mergedTx.length > 0) {
                             element.mergedTx.map((merged) => {
+                                mergedIds.push(merged.txHash);
+
                                 totalValueUSD =
                                     totalValueUSD + merged.totalValueUSD;
 
@@ -5613,6 +5621,7 @@ export default function Chart(props: propsIF) {
                                 totalValueUSD: totalValueUSD,
                                 tokenFlowDecimalCorrected:
                                     tokenFlowDecimalCorrected,
+                                mergedIds: mergedIds,
                             };
                         }
                     }

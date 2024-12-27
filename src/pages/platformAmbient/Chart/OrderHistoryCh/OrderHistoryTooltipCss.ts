@@ -96,6 +96,15 @@ const StyledLink = styled.div<{ color: string; size: string }>`
     }
 `;
 
+const LinkContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+
+    justify-content: center;
+`;
+
 export {
     OrderHistoryBody,
     OrderHistoryContainer,
@@ -103,4 +112,5 @@ export {
     OrderHistoryHover,
     StyledHeader,
     StyledLink,
+    LinkContainer,
 };
