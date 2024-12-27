@@ -194,7 +194,10 @@ export default function TickerItem(props: PropsIF) {
             // }
             // `}
             className={[
+                //  spacing and visual arrangement styles
                 styles.ticker_item,
+                //  add background highlighting when ticker is active
+                //  ... on Auctions page only
                 auction?.ticker === selectedTicker && !isAccount
                     ? styles.active
                     : '',
