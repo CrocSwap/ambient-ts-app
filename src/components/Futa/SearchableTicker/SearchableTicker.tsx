@@ -61,7 +61,6 @@ export default function SearchableTicker(props: propsIF) {
     // logic to expand table to full height if no data is available, this
     // ... keeps the 'no data available' msg centered in the visual space,
     useEffect(() => {
-        console.log(tableParentRef.current);
         // declare a variable to hold new table height
         let heightToUse: number;
         // if data is available, use either the saved or default height
@@ -187,7 +186,6 @@ export default function SearchableTicker(props: propsIF) {
         // declare an output variable
         let output: AuctionDataIF[] = searchHits;
         // filter data set to watchlisted tokens
-        console.log(watchlists.shouldDisplay);
         if (!isAccount) {
             const watchlisted: AuctionDataIF[] = searchHits.filter(
                 (auc: AuctionDataIF) =>
@@ -487,7 +485,7 @@ export default function SearchableTicker(props: propsIF) {
             </div>
         </div>
     );
-    console.log(window.innerHeight - 200);
+
     const resizableChart = (
         <Resizable
             enable={{
