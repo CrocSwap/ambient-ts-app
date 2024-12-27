@@ -563,6 +563,11 @@ function InfiniteScroll(props: propsIF) {
         const recentRelevantTxsHashes = new Set(
             recentRelevantTxs.map((tx) => tx.positionHash),
         );
+
+        recentRelevantTxs.forEach((tx) => {
+            console.log('>>> relevantTx USD' + tx.position.totalValueUSD);
+        });
+
         setRecentlyUpdatedPositions((prev) => {
             return [
                 ...prev.filter(
@@ -616,12 +621,81 @@ function InfiniteScroll(props: propsIF) {
         return ret;
     };
 
-    const dataToDisplay = useMemo(() => {
-        const startIndex = getIndexForPages(true);
-        const endIndex = getIndexForPages(false, 1);
+    const mergeDataWithPendingOrders = (
+        data: LimitOrderIF[] | PositionIF[] | TransactionIF[],
+        recentlyUpdatedOrders: RecentlyUpdatedPositionIF[],
+    ): {
+        mergedList: LimitOrderIF[] | PositionIF[] | TransactionIF[];
+        recentlyUpdatedCount: number;
+    } => {
+        const recentlyUpdatedHashes = new Set();
+        const recentlyUpdatedToShow: LimitOrderIF[] | PositionIF[] = [];
+        recentlyUpdatedOrders.forEach((e) => {
+            const isFresh =
+                Math.floor(e.timestamp / 1000) - Math.floor(Date.now() / 1000) <
+                60;
+            if (isFresh) {
+                if (e.action !== 'Remove') {
+                    if (props.type === 'Order') {
+                        (recentlyUpdatedToShow as LimitOrderIF[]).push(
+                            e.position as LimitOrderIF,
+                        );
+                    } else if (props.type === 'Range') {
+                        (recentlyUpdatedToShow as PositionIF[]).push(
+                            e.position as PositionIF,
+                        );
+                    }
+                }
+                recentlyUpdatedHashes.add(e.positionHash);
+            }
+        });
 
-        return fetchedTransactions.slice(startIndex, endIndex);
-    }, [fetchedTransactions, pagesVisible]);
+        let clearedData: LimitOrderIF[] | PositionIF[] = [];
+        if (props.type === 'Order') {
+            clearedData = (data as LimitOrderIF[]).filter(
+                (e) => !recentlyUpdatedHashes.has(e.positionHash),
+            );
+            return {
+                mergedList: [
+                    ...recentlyUpdatedToShow.reverse(),
+                    ...clearedData,
+                ] as LimitOrderIF[],
+                recentlyUpdatedCount: recentlyUpdatedToShow.length,
+            };
+        } else if (props.type === 'Range') {
+            clearedData = (data as PositionIF[]).filter(
+                (e) => !recentlyUpdatedHashes.has(e.positionId),
+            );
+            return {
+                mergedList: [
+                    ...recentlyUpdatedToShow.reverse(),
+                    ...clearedData,
+                ] as PositionIF[],
+                recentlyUpdatedCount: recentlyUpdatedToShow.length,
+            };
+        }
+
+        return {
+            mergedList: [],
+            recentlyUpdatedCount: 0,
+        };
+    };
+
+    const dataToDisplay = useMemo(() => {
+        const { mergedList, recentlyUpdatedCount } = mergeDataWithPendingOrders(
+            fetchedTransactions,
+            recentlyUpdatedPositions,
+        );
+
+        const startIndex = getIndexForPages(true);
+        const endIndex = getIndexForPages(false, recentlyUpdatedCount);
+
+        return mergedList.slice(startIndex, endIndex);
+    }, [fetchedTransactions, pagesVisible, recentlyUpdatedPositions]);
+
+    useEffect(() => {
+        console.log('>>> recentlyUpdatedPositions', recentlyUpdatedPositions);
+    }, [recentlyUpdatedPositions]);
 
     return (
         <TableRowsInfiniteScroll
