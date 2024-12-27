@@ -195,16 +195,12 @@ export default function TickerItem(props: PropsIF) {
                 styles.ticker_item,
                 //  add background highlighting when ticker is active
                 //  ... or when hovered
-                !isAccount
-                    ? // ? (auction?.ticker === selectedTicker
-                      //     ? styles.active : styles.inactive
-                      // )
-                      styles[
-                          auction?.ticker === selectedTicker
-                              ? 'active'
-                              : 'inactive'
-                      ]
-                    : '',
+                isAccount ||
+                    styles[
+                        auction?.ticker === selectedTicker
+                            ? 'active'
+                            : 'inactive'
+                    ],
             ].join(' ')}
             to={'/auctions/v1/' + ticker}
             onClick={() => {
