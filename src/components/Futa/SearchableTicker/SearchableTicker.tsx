@@ -23,6 +23,7 @@ import styles from './SearchableTicker.module.css';
 import TickerItem from './TickerItem';
 import { auctionDataSets } from '../../../pages/platformFuta/Account/Account';
 import { LuCheck, LuPencil } from 'react-icons/lu';
+import { GoChevronRight } from 'react-icons/go';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
@@ -442,7 +443,18 @@ export default function SearchableTicker(props: propsIF) {
         <div className={styles.ticker_table}>
             {filteredData.length ? (
                 <header>
-                    <p className={styles.cell_left}>TICKER</p>
+                    <p className={styles.cell_left}>
+                        {
+                            // this icon is a stupid but effective way
+                            // ... way to keep the header text aligned
+                            // ... with the content below
+                        }
+                        <GoChevronRight
+                            size={20}
+                            style={{ visibility: 'hidden' }}
+                        />
+                        TICKER
+                    </p>
                     <p className={styles.cell_right}>MARKET CAP</p>
                     <p className={styles.cell_center}>STATUS</p>
                     <p className={styles.cell_right}>TIME</p>
