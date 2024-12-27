@@ -360,14 +360,12 @@ export default function SearchableTicker(props: propsIF) {
                     <LuCheck size={BUTTON_ICON_SIZE} />
                     <div>COMPLETED</div>
                 </button>
-
                 {isAccount || (
                     <button
                         onClick={() => watchlists.toggle()}
-                        className={[
-                            styles[watchlists.shouldDisplay ? 'button_on' : ''],
-                            styles.foo,
-                        ].join(' ')}
+                        className={
+                            styles[watchlists.shouldDisplay ? 'button_on' : '']
+                        }
                     >
                         <FaEye size={BUTTON_ICON_SIZE} />
                         <div>WATCHLIST</div>
@@ -537,7 +535,7 @@ export default function SearchableTicker(props: propsIF) {
                 setSearchableTickerHeight(newHeight);
             }}
             bounds={'parent'}
-            className={styles.resi}
+            className={styles.resizable}
             style={{ borderBottom: 'none !important' }}
         >
             {headerDisplay}

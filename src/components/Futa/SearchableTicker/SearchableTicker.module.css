@@ -1,5 +1,4 @@
-.container,
-.content {
+.container {
     width: 100%;
     height: 100%;
     display: flex;
@@ -7,7 +6,7 @@
     gap: 8px;
 }
 
-.resi {
+.resizable {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -18,11 +17,12 @@
 }
 
 @media (max-width: 500px) {
-    .resi {
+    .resizable {
         border: none;
     }
 }
 
+/* element with search and filter interactables */
 .header {
     display: flex;
     flex-direction: row;
@@ -33,6 +33,7 @@
     width: 100%;
 }
 
+/* text search input and sort toggle */
 .search_and_sort {
     display: flex;
     flex-direction: row;
@@ -67,12 +68,14 @@
     font-size: 12px;
 }
 
+/* wrapper for all toggles for different data filters */
 .filters {
     display: flex;
     flex-direction: row;
     gap: 8px;
 }
 
+/* individual data filter toggle buttons */
 .filters > button {
     min-width: 110px;
     height: 25px;
@@ -89,6 +92,7 @@
     outline: none;
 }
 
+/* hover state for filter toggle buttons */
 .filters > button:hover {
     transition: all var(--animation-speed) ease-in-out;
     color: var(--accent1);
@@ -105,11 +109,13 @@
     color: var(--accent1);
 }
 
+/* clickable to open the sort dropdown menu */
 .sort_clickable {
     position: relative;
     width: 220px;
 }
 
+/* active sort option in dropdown */
 .sort_selection {
     display: flex;
     gap: 4px;
@@ -127,11 +133,13 @@
     text-transform: uppercase;
 }
 
+/* text rendered in clickable to launch dropdown */
 .timeDropdownButton p {
     font-size: 14px;
     color: var(--accent1);
 }
 
+/* arrows to indicate current sort direction asc vs desc */
 .sort_direction {
     display: flex;
     flex-direction: column;
@@ -139,11 +147,7 @@
     cursor: pointer;
 }
 
-.hi:hover {
-    color: var(--accent1);
-    opacity: 50%;
-}
-
+/* dropdown menu for sort options */
 .dropdown {
     height: auto;
     width: calc(100% - 25px);
@@ -169,37 +173,6 @@
 
 .timeItem:hover {
     background: var(--accent3);
-}
-
-.tickerItemContainer {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border-left: 4px solid var(--accent2);
-    align-items: center;
-    font-size: 18px;
-    color: var(--text1);
-    transition: all var(--animation-speed) ease-in-out;
-    cursor: pointer;
-    vertical-align: middle;
-    height: 32px;
-}
-
-.tickerItemContainer:hover {
-    background: var(--dark4);
-}
-
-.tickerItemContainer p:first-of-type {
-    text-transform: uppercase;
-}
-/* .tickerItemContainer p:not(:nth-of-type(3)) {
-    padding: 0 8px;
-} */
-
-.tickerItemContainer p:nth-of-type(3),
-.tickerHeader p:nth-of-type(3) ,
-.tickerItemContainer p:nth-of-type(4),
-.tickerHeader p:nth-of-type(4){
-    text-align: end;
 }
 
 .ticker_name {
@@ -267,37 +240,13 @@
     flex: 1 10 auto;
 }
 
-/* .tickerTableContent {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    height: 100%;
-    overflow-y: scroll;
-    scrollbar-color: var(--dark2) var(--dark2);
-    padding-bottom: 1rem;
-} */
-
 .scrolling {
     scrollbar-color: var(--accent1) var(--dark2);
-}
-
-.active {
-    background: #28585d;
-}
-
-.hoverActive {
-    background: var(--dark4);
 }
 
 .marketCap, .timeRemaining {
     text-align: end;
 }
-
-/* .marketCapHeader {
-    text-align: end;
-    padding: 0 12px;
-} */
 
 /* differential content when length of data array is zero */
 .no_auctions_content {
@@ -348,14 +297,6 @@
     .container {
         display: grid;
     }
-
-    .tickerTableContainer {
-        height: 100%;
-        
-    }
-    .tickerTableContent {
-        height: 100%;
-    }
 }
 
 @media (min-width: 1280px) {
@@ -377,10 +318,6 @@
 @media (max-width: 768px) {
     .contentContainer {
         padding-bottom: 0;
-    }
-
-    .tickerTableContent {
-        margin-bottom: 3rem;
     }
 }
 
