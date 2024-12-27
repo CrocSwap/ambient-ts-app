@@ -709,7 +709,21 @@ export default function Chart(props: propsIF) {
     };
 
     const filteredTransactionalData = useMemo(() => {
-        if (userTransactionData && showSwap) {
+        if (
+            userTransactionData &&
+            showSwap &&
+            scaleData &&
+            d3CanvasMain.current !== null
+        ) {
+            const canvas = d3
+                .select(d3CanvasMain.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const rectCanvas = canvas.getBoundingClientRect();
+            const width = rectCanvas.width;
+            scaleData.xScale.range([0, width]);
+
             const mergedSellArray: Array<{
                 order: TransactionIF;
                 mergedTx: Array<TransactionIF>;
@@ -4685,6 +4699,7 @@ export default function Chart(props: propsIF) {
         showSwap,
         showHistorical,
         isCondensedModeEnabled,
+        diffHashSig(filteredTransactionalData),
     ]);
 
     useEffect(() => {
@@ -5501,6 +5516,15 @@ export default function Chart(props: propsIF) {
                                         : merged.quoteFlowDecimalCorrected);
                             });
                         }
+
+                        console.log(
+                            checkSwapLoation(
+                                swapOrderData,
+                                mouseX,
+                                mouseY,
+                                totalValueUSD,
+                            ),
+                        );
 
                         if (
                             checkSwapLoation(
