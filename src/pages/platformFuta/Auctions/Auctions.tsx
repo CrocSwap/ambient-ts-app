@@ -54,15 +54,12 @@ export default function Auctions(props: propsIF) {
                         gridTemplateColumns: hideTicker ? '1fr' : '1fr 390px',
                     }}
                 >
-                    {/* <span id='auctions_search_wrapper'> */}
                     <div id='auctions_search_wrapper'>
                         <SearchableTicker
                             auctions={sorted}
                             placeholderTicker={placeholderTicker}
                         />
                     </div>
-                    {/* </span> */}
-
                     <div className={styles.flexColumn}>
                         <p className={styles.label}>TICKER</p>
                         <FutaDivider2 />

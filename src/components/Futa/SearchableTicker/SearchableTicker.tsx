@@ -13,7 +13,6 @@ import {
     sortedAuctionsIF,
 } from '../../../pages/platformFuta/Auctions/useSortedAuctions';
 import { FlexContainer } from '../../../styled/Common';
-import { ResizableContainer } from '../../../styled/Components/Trade';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
@@ -349,25 +348,26 @@ export default function SearchableTicker(props: propsIF) {
                 </div>
             </div>
             <div className={styles.filters}>
+                <button
+                    onClick={() => setShowComplete(!showComplete)}
+                    className={styles[showComplete ? 'button_on' : '']}
+                >
+                    <LuCheck size={BUTTON_ICON_SIZE} />
+                    <div>COMPLETED</div>
+                </button>
+
                 {isAccount || (
                     <button
-                        onClick={() => setShowComplete(!showComplete)}
-                        className={styles[showComplete ? 'button_on' : '']}
+                        onClick={() => watchlists.toggle()}
+                        className={[
+                            styles[watchlists.shouldDisplay ? 'button_on' : ''],
+                            styles.foo,
+                        ].join(' ')}
                     >
-                        <LuCheck size={BUTTON_ICON_SIZE} />
-                        <div>COMPLETED</div>
+                        <FaEye size={BUTTON_ICON_SIZE} />
+                        <div>WATCHLIST</div>
                     </button>
                 )}
-                <button
-                    onClick={() => watchlists.toggle()}
-                    className={[
-                        styles[watchlists.shouldDisplay ? 'button_on' : ''],
-                        styles.foo,
-                    ].join(' ')}
-                >
-                    <FaEye size={BUTTON_ICON_SIZE} />
-                    <div>WATCHLIST</div>
-                </button>
                 {isAccount ? (
                     <button
                         className={
