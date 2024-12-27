@@ -48,13 +48,7 @@ export interface chartSettingsMethodsIF {
 }
 
 // hook to manage user preferences for chart settings
-export const useChartSettings = (
-    numCandlesFetched: {
-        candleCount: number | undefined;
-        switchPeriodFlag: boolean;
-    },
-    currentPoolString: string,
-): chartSettingsMethodsIF => {
+export const useChartSettings = (): chartSettingsMethodsIF => {
     // fn to get user preference for overlay to display on the chart by module
     // will return `undefined` if the value does not exist yet
     // value of `undefined` will be handled downstream
@@ -83,62 +77,38 @@ export const useChartSettings = (
         return output as OverlayType;
     };
 
-    const [maxDuration, setMaxDuration] = useState<TimeInSecondsType>(86400);
-
-    useEffect(() => {
-        setMaxDuration(86400);
-    }, [currentPoolString]);
-
     const getCandleTime = (
-        currentCandleTimeGlobal: TimeInSecondsType | undefined,
+        timeFor: 'global' | 'market' | 'limit' | 'pool',
     ): TimeInSecondsType | undefined => {
-        if (numCandlesFetched?.candleCount === undefined) {
-            return undefined;
-        }
-
-        let newCandleDuration;
-        if (currentCandleTimeGlobal === undefined) {
-            if (numCandlesFetched.candleCount >= 7) {
-                newCandleDuration = 3600;
-            } else {
-                newCandleDuration = 900;
-            }
-        } else {
-            if (numCandlesFetched.candleCount >= 7) {
-                newCandleDuration = currentCandleTimeGlobal;
-            } else {
-                if (currentCandleTimeGlobal === 86400) {
-                    newCandleDuration = 14400;
-                    setMaxDuration(14400);
-                } else if (currentCandleTimeGlobal === 14400) {
-                    newCandleDuration = 3600;
-                    setMaxDuration(3600);
-                } else if (currentCandleTimeGlobal === 3600) {
-                    newCandleDuration = 900;
-                    setMaxDuration(900);
-                } else if (currentCandleTimeGlobal === 900) {
-                    newCandleDuration = 300;
-                    setMaxDuration(300);
-                } else {
-                    newCandleDuration = 60;
-                    setMaxDuration(60);
-                }
-            }
-        }
-
-        return newCandleDuration as TimeInSecondsType;
-    };
-
-    useEffect(() => {
         const chartSettings: chartSettingsIF | null = JSON.parse(
             getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
         );
-        const currentCandleTimeGlobal = chartSettings?.candleTimeGlobal as
-            | TimeInSecondsType
-            | undefined;
 
-        setCandleTimeGlobal(() => getCandleTime(currentCandleTimeGlobal));
-    }, [numCandlesFetched?.switchPeriodFlag]);
+        let time: number | undefined;
+
+        switch (timeFor) {
+            case 'global':
+            case 'market':
+            case 'limit':
+            case 'pool':
+                time = chartSettings ? chartSettings.candleTimeGlobal : 3600;
+                break;
+            default:
+                return;
+        }
+
+        return time as TimeInSecondsType;
+    };
+    /*    useEffect(() => {
+        const chartSettings: chartSettingsIF | null = JSON.parse(
+            getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
+        );
+        const currentCandleTimeGlobal = chartSettings
+            ? (chartSettings.candleTimeGlobal as TimeInSecondsType)
+            : 3600;
+
+        setCandleTimeGlobal(() => getCandleTime('global'));
+    }, []); */
 
     const [marketOverlay, setMarketOverlay] = useState<OverlayType>(
         getOverlay('market') ?? 'depth',
@@ -147,9 +117,9 @@ export const useChartSettings = (
         getOverlay('pool') ?? 'curve',
     );
 
-    const [candleTimeGlobal, setCandleTimeGlobal] = useState<
-        TimeInSecondsType | undefined
-    >();
+    const [candleTimeGlobal, setCandleTimeGlobal] = useState<TimeInSecondsType>(
+        getCandleTime('global') ?? 3600,
+    );
 
     // const [candleTimeMarket, setCandleTimeMarket] = useState<TimeInSecondsType>(
     //     getCandleTime('market') ?? 900,
@@ -213,50 +183,21 @@ export const useChartSettings = (
         time: TimeInSecondsType | undefined;
         // eslint-disable-next-line
         changeTime: (_val: TimeInSecondsType) => void;
-        defaults: DefaultTimeIF[] =
-            maxDuration === 86400
-                ? [
-                      { readable: '1m', seconds: 60 },
-                      { readable: '5m', seconds: 300 },
-                      { readable: '15m', seconds: 900 },
-                      { readable: '1h', seconds: 3600 },
-                      { readable: '4h', seconds: 14400 },
-                      { readable: '1d', seconds: 86400 },
-                  ]
-                : maxDuration === 14400
-                  ? [
-                        { readable: '1m', seconds: 60 },
-                        { readable: '5m', seconds: 300 },
-                        { readable: '15m', seconds: 900 },
-                        { readable: '1h', seconds: 3600 },
-                        { readable: '4h', seconds: 14400 },
-                    ]
-                  : maxDuration === 3600
-                    ? [
-                          { readable: '1m', seconds: 60 },
-                          { readable: '5m', seconds: 300 },
-                          { readable: '15m', seconds: 900 },
-                          { readable: '1h', seconds: 3600 },
-                      ]
-                    : maxDuration === 900
-                      ? [
-                            { readable: '1m', seconds: 60 },
-                            { readable: '5m', seconds: 300 },
-                            { readable: '15m', seconds: 900 },
-                        ]
-                      : maxDuration === 300
-                        ? [
-                              { readable: '1m', seconds: 60 },
-                              { readable: '5m', seconds: 300 },
-                          ]
-                        : [{ readable: '1m', seconds: 60 }];
+        defaults: DefaultTimeIF[] = [
+            { readable: '1m', seconds: 60 },
+            { readable: '5m', seconds: 300 },
+            { readable: '15m', seconds: 900 },
+            { readable: '1h', seconds: 3600 },
+            { readable: '4h', seconds: 14400 },
+            { readable: '1d', seconds: 86400 },
+        ];
         readableTime =
             this.defaults.find(
                 (pair: DefaultTimeIF) => pair.seconds === this.time,
             )?.readable ?? '15m';
         constructor(
             t: TimeInSecondsType | undefined,
-            setterFn: Dispatch<SetStateAction<TimeInSecondsType | undefined>>,
+            setterFn: Dispatch<SetStateAction<TimeInSecondsType>>,
         ) {
             this.time = t;
             this.changeTime = (val: TimeInSecondsType) => {
@@ -281,7 +222,6 @@ export const useChartSettings = (
         candleTimeGlobal,
         marketOverlay,
         poolOverlay,
-        maxDuration,
     ]);
 
     return chartSettings;

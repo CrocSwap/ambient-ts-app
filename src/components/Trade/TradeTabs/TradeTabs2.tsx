@@ -84,6 +84,7 @@ function TradeTabs2(props: propsIF) {
     const rangesProps = {
         notOnTradeRoute: false,
         isAccountView: false,
+        unselectCandle,
     };
 
     // Props for <Transactions/> React Element
@@ -92,18 +93,21 @@ function TradeTabs2(props: propsIF) {
         changeState,
         setSelectedDate,
         isAccountView: false,
+        unselectCandle,
     };
 
     // Props for <Orders/> React Element
     const ordersProps = {
         changeState,
         isAccountView: false,
+        unselectCandle,
     };
 
     const positionsOnlyToggleProps = {
         setTransactionFilter,
         changeState,
         setSelectedDate,
+        unselectCandle,
     };
 
     // data for headings of each of the three tabs

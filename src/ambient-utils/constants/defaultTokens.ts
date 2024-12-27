@@ -965,6 +965,15 @@ export const swellSWETH: TokenIF = registerToken({
         'https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/971f401121cc90314670c.svg',
 });
 
+export const swellUSDE: TokenIF = registerToken({
+    name: 'USDe',
+    address: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
+    symbol: 'USDe',
+    decimals: 18,
+    chainId: 1923,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29470.png',
+});
+
 export const plumeNativeETH: TokenIF = registerToken({
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
@@ -975,8 +984,8 @@ export const plumeNativeETH: TokenIF = registerToken({
 });
 
 export const plumePETH: TokenIF = registerToken({
-    name: 'plumeETH',
-    address: '0x11476323D8DFCBAFac942588E2f38823d2Dd308e',
+    name: 'Plume ETH',
+    address: '0xD630fb6A07c9c723cf709d2DaA9B63325d0E0B73',
     symbol: 'pETH',
     decimals: 18,
     chainId: 98865,
@@ -984,7 +993,7 @@ export const plumePETH: TokenIF = registerToken({
 });
 
 export const plumeUSDC: TokenIF = registerToken({
-    name: 'Bridged USDC (Stargate)',
+    name: 'Bridged USDC',
     address: '0x3938A812c54304fEffD266C7E2E70B48F9475aD6',
     symbol: 'USDC.e',
     decimals: 6,
@@ -1010,23 +1019,14 @@ export const plumePUSD: TokenIF = registerToken({
     logoURI: 'https://img.cryptorank.io/coins/plume_network1716480863760.png',
 });
 
-export const plumeNEV: TokenIF = registerToken({
-    name: 'Nest Egg Vault',
+export const plumeNRWA: TokenIF = registerToken({
+    name: 'Nest RWA Vault',
     address: '0x81537d879ACc8a290a1846635a0cAA908f8ca3a6',
-    symbol: 'NEV',
+    symbol: 'nRWA',
     decimals: 6,
     chainId: 98865,
     logoURI: '',
 });
-
-// export const plumeUSDC: TokenIF = registerToken({
-//     name: 'Bridged USDC',
-//     address: '0x3938A812c54304fEffD266C7E2E70B48F9475aD6',
-//     symbol: 'USDC.e',
-//     decimals: 6,
-//     chainId: 98865,
-//     logoURI: '',
-// });
 
 export const baseSepoliaUSDT: TokenIF = registerToken({
     name: 'Ambient USDT',

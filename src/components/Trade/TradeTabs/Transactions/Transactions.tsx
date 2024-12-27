@@ -53,6 +53,7 @@ interface propsIF {
     setSelectedInsideTab?: Dispatch<number>;
     fullLayoutActive?: boolean;
     accountAddress?: string | undefined;
+    unselectCandle?: () => void;
 }
 
 function Transactions(props: propsIF) {
@@ -65,6 +66,7 @@ function Transactions(props: propsIF) {
         isAccountView,
         fullLayoutActive,
         accountAddress,
+        unselectCandle,
     } = props;
 
     const {
@@ -139,6 +141,9 @@ function Transactions(props: propsIF) {
         dataReceived: false,
         changes: [...getInitialChangesData()],
     });
+
+    const [infiniteScrollLock, setInfiniteScrollLock] =
+        useState<boolean>(false);
 
     const [hotTransactions, setHotTransactions] = useState<TransactionIF[]>([]);
 
@@ -366,12 +371,20 @@ function Transactions(props: propsIF) {
     useEffect(() => {
         if (!isCandleSelected) {
             setCandleTransactionData([]);
+            setInfiniteScrollLock(false);
             dataLoadingStatus.setDataLoadingStatus({
                 datasetName: 'isCandleDataLoading',
                 loadingStatus: true,
             });
         }
     }, [isCandleSelected]);
+
+    useEffect(() => {
+        if (isCandleSelected) {
+            setInfiniteScrollLock(true);
+            setPagesVisible([0, 1]);
+        }
+    }, [candleTransactionData]);
 
     const isLoading = useMemo<boolean>(
         () =>
@@ -433,7 +446,7 @@ function Transactions(props: propsIF) {
             quote: selectedQuoteAddress,
             poolIdx: poolIndex,
             chainId: chainId,
-            n: 100,
+            n: 200,
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
@@ -795,6 +808,7 @@ function Transactions(props: propsIF) {
             activeUserPositionsByPoolLength={
                 userTransactionsByPool.changes.length
             }
+            unselectCandle={unselectCandle}
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
@@ -933,6 +947,7 @@ function Transactions(props: propsIF) {
                     lastFetchedCount={lastFetchedCount}
                     setLastFetchedCount={setLastFetchedCount}
                     moreDataLoading={moreDataLoading}
+                    componentLock={infiniteScrollLock}
                 />
             </ul>
         </div>
