@@ -70,3 +70,9 @@
     flex: 1 10 auto;
     justify-content: flex-end;
 }
+
+@media (max-width: 500px) {
+    .ticker_item > * {
+        font-size: 10px;
+    }
+}
