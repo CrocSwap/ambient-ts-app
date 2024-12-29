@@ -451,7 +451,7 @@ export default function SearchableTicker(props: propsIF) {
                         }
                         <GoChevronRight
                             size={20}
-                            style={{ visibility: 'hidden' }}
+                            className={styles.ticker_col_header_spacer}
                         />
                         TICKER
                     </p>

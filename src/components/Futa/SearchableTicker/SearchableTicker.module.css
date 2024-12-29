@@ -240,6 +240,11 @@
     flex: 1 10 auto;
 }
 
+/* spacer to keep `TICKER` col header aligned with table data */
+.ticker_col_header_spacer {
+    visibility: hidden;
+}
+
 /* container for ticker line items */
 .ticker_table_content {
     display: flex;
@@ -312,6 +317,11 @@
 @media (max-width: 500px){
     .tickerItemContainer, .tickerHeader {
         grid-template-columns: 1fr 1fr 50px 60px;
+    }
+
+    /* remove spacer icon in `TICKER` col header on small screens */
+    .ticker_col_header_spacer {
+        display: none;
     }
 }
 
