@@ -6,6 +6,7 @@
     gap: 8px;
 }
 
+/* styling for the resizable table element */
 .resizable {
     display: flex;
     flex-direction: column;
@@ -14,12 +15,6 @@
     --width-for-scrollbar: 8px;
     padding: 6px var(--width-for-scrollbar) 6px 2px;
     border: var(--futa-box-border);
-}
-
-@media (max-width: 500px) {
-    .resizable {
-        border: none;
-    }
 }
 
 /* element with search and filter interactables */
@@ -315,6 +310,10 @@
 }
 
 @media (max-width: 500px){
+    .resizable {
+        border: none;
+    }
+
     .tickerItemContainer, .tickerHeader {
         grid-template-columns: 1fr 1fr 50px 60px;
     }
