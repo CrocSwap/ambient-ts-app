@@ -376,4 +376,9 @@
     .filters {
         grid-area: bottom;
     }
+
+    /* individual column headers in the ticker table */
+    .ticker_table > header > * {
+        font-size: 10px;
+    }
 }
