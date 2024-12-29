@@ -223,7 +223,7 @@
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-between;
-    /* this has to be the rgba equiv of background color */
+    gap: 8px;
     background-color: var(--dark1);
     color: var(--text3);
     font-size: 12px;

@@ -4,6 +4,7 @@
     flex-direction: row;
     justify-content: space-between;
     transition: all var(--animation-speed) ease-in-out;
+    gap: 8px;
     font-size: 18px;
     letter-spacing: 1px;
 }
