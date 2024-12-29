@@ -314,6 +314,12 @@
         border: none;
     }
 
+    /* remove left margin from table on small screens */
+    /* helps fit everything in the viewport */
+    .ticker_table {
+        margin-left: 0px;
+    }
+
     .tickerItemContainer, .tickerHeader {
         grid-template-columns: 1fr 1fr 50px 60px;
     }
