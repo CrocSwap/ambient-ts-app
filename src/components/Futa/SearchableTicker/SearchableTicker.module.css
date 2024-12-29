@@ -188,20 +188,6 @@
     
 }
 
-.tickerItemContainer:hover .ticker_name_arrow{
-    opacity: 1;
-}
-
-.statusContainer {
-    text-align: end;
-}
-
-.tickerStatus {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-}
-
 /* wrapper for ticker table rows and column headers */
 .ticker_table {
     flex-direction: column;
@@ -310,6 +296,7 @@
 }
 
 @media (max-width: 500px) {
+    /* remove visible border from table on small screens */
     .resizable {
         border: none;
     }
@@ -318,10 +305,6 @@
     /* helps fit everything in the viewport */
     .ticker_table {
         margin-left: 0px;
-    }
-
-    .tickerItemContainer, .tickerHeader {
-        grid-template-columns: 1fr 1fr 50px 60px;
     }
 
     /* remove spacer icon in `TICKER` col header on small screens */
