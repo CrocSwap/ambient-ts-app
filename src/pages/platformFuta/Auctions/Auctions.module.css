@@ -35,3 +35,10 @@
     text-transform: uppercase;
     padding: 0 8px;
 }
+
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .mobileContainer {
+        height: var(--content-height-tablet);
+    }
+}
