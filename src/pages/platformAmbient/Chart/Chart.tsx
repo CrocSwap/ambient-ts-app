@@ -762,10 +762,12 @@ export default function Chart(props: propsIF) {
                         quoteSymbol: limit.quoteSymbol,
                         baseTokenLogoURI: limit.baseTokenLogoURI,
                         quoteTokenLogoURI: limit.quoteTokenLogoURI,
-                        baseFlowDecimalCorrected:
-                            limit.originalPositionLiqBaseDecimalCorrected,
-                        quoteFlowDecimalCorrected:
-                            limit.expectedPositionLiqQuoteDecimalCorrected,
+                        baseFlowDecimalCorrected: limit.isBid
+                            ? limit.originalPositionLiqBaseDecimalCorrected
+                            : limit.expectedPositionLiqBaseDecimalCorrected,
+                        quoteFlowDecimalCorrected: limit.isBid
+                            ? limit.expectedPositionLiqQuoteDecimalCorrected
+                            : limit.originalPositionLiqQuoteDecimalCorrected,
                     } as TransactionIF);
                 });
             }
