@@ -265,10 +265,6 @@ export default function SearchableTicker(props: propsIF) {
 
     const smallScreen: boolean = useMediaQuery('(max-width: 400px)');
 
-    useEffect(() => {
-        console.log(dataState?.active);
-    }, [dataState]);
-
     const headerDisplay = (
         <div className={styles.header}>
             <div className={styles.search_and_sort}>
