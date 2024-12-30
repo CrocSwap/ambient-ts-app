@@ -26,8 +26,9 @@ import {
     quoteTokenForConcLiq,
     tickToPrice,
 } from '@crocswap-libs/sdk';
-import { RecentlyUpdatedPositionIF } from './InfiniteScroll';
+
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { RecentlyUpdatedPositionIF } from './useMergeWithPendingTxs';
 
 const useGenFakeTableRow = () => {
     const { crocEnv, provider } = useContext(CrocEnvContext);

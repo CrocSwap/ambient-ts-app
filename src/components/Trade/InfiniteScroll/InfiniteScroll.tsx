@@ -34,6 +34,7 @@ import {
 } from '../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { RecentlyUpdatedPositionIF } from './useMergeWithPendingTxs';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -49,14 +50,6 @@ interface propsIF {
     sortBy: TxSortType | LimitSortType | RangeSortType;
     showAllData: boolean;
 }
-
-export type RecentlyUpdatedPositionIF = {
-    positionHash: string;
-    timestamp: number;
-    position: LimitOrderIF | PositionIF;
-    type: string;
-    action: string;
-};
 
 function InfiniteScroll(props: propsIF) {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
