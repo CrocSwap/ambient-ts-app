@@ -173,7 +173,8 @@
 [data-theme='futa_dark'] {
     /* subtract full height from navbar(56px) and footer(20px on desktop, 64 on mobile) */
     --content-height: calc(100vh - 76px);
-    --content-height-mobile: calc(100svh - 120px);
+    --content-height-mobile: calc(100dvh - 60px);
+
     /* font */
     --title-ts: 0px 0px 150px rgba(242, 153, 74, 0.5),
         0px 0px 100px rgba(242, 153, 74, 0.5),
