@@ -7,7 +7,7 @@ import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const PUBLIC_RPC_URL = 'https://ethereum-sepolia-rpc.publicnode.com';
-const SECONDARY_PUBLIC_RPC_URL = 'https://swell-mainnet.alt.technology';
+const SECONDARY_PUBLIC_RPC_URL = 'https://1rpc.io/sepolia';
 
 const RESTRICTED_RPC_URL =
     import.meta.env.VITE_SEPOLIA_RPC_URL !== undefined

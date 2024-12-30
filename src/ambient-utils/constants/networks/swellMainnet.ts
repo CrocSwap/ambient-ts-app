@@ -6,8 +6,8 @@ import { swellETH, swellRSWETH, swellSWETH, swellUSDE } from '../defaultTokens';
 import { GCGO_SWELL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-const PUBLIC_RPC_URL = 'https://rpc.ankr.com/swell';
-const SECONDARY_PUBLIC_RPC_URL = 'https://swell-mainnet.alt.technology';
+const PUBLIC_RPC_URL = 'https://swell-mainnet.alt.technology';
+const SECONDARY_PUBLIC_RPC_URL = 'https://rpc.ankr.com/swell';
 
 const RESTRICTED_RPC_URL =
     import.meta.env.VITE_SWELL_RPC_URL !== undefined

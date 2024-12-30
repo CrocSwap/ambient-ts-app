@@ -13,7 +13,7 @@ import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const PUBLIC_RPC_URL = 'https://phoenix-rpc.plumenetwork.xyz';
-const SECONDARY_PUBLIC_RPC_URL = 'https://rpc.plumenetwork.xyz';
+const SECONDARY_PUBLIC_RPC_URL = 'https://phoenix-rpc.plumenetwork.xyz';
 
 const RESTRICTED_RPC_URL =
     import.meta.env.VITE_PLUME_RPC_URL !== undefined
