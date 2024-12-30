@@ -12,11 +12,21 @@ import {
 import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const PUBLIC_RPC_URL = 'https://phoenix-rpc.plumenetwork.xyz';
+const PUBLIC_RPC_URL = 'https://phoenix-rpc.plumenetwork.xyz';
+const SECONDARY_PUBLIC_RPC_URL = 'https://rpc.plumenetwork.xyz';
 
-export const RESTRICTED_RPC_URL =
+const RESTRICTED_RPC_URL =
     import.meta.env.VITE_PLUME_RPC_URL !== undefined
         ? import.meta.env.VITE_PLUME_RPC_URL
+        : undefined;
+
+const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
+    ? RESTRICTED_RPC_URL
+    : PUBLIC_RPC_URL;
+
+const FALLBACK_RPC_URL =
+    PRIMARY_RPC_URL === PUBLIC_RPC_URL
+        ? SECONDARY_PUBLIC_RPC_URL
         : PUBLIC_RPC_URL;
 
 const chainIdHex = '0x18231';
@@ -34,7 +44,8 @@ export const plumeMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_PLUME_URL,
-    evmRpcUrl: RESTRICTED_RPC_URL,
+    evmRpcUrl: PRIMARY_RPC_URL,
+    fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [plumePETH, plumePUSD],
     defaultPairFuta: [plumePETH, plumePUSD],

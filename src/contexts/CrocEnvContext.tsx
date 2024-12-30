@@ -7,6 +7,7 @@ import {
     useContext,
     useEffect,
     useMemo,
+    useRef,
     useState,
 } from 'react';
 import {
@@ -55,39 +56,40 @@ export interface CrocEnvContextIF {
     swellProvider: Provider | undefined;
     blastProvider: Provider | undefined;
     plumeProvider: Provider | undefined;
+    isPrimaryRpcNodeInactive: React.MutableRefObject<boolean>;
 }
 
 export const CrocEnvContext = createContext({} as CrocEnvContextIF);
 const mainnetProvider = new BatchedJsonRpcProvider(
-    ethereumMainnet.evmRpcUrl,
+    ethereumMainnet.fallbackRpcUrl,
     parseInt(ethereumMainnet.chainId),
     {
         staticNetwork: true,
     },
 );
 const scrollProvider = new BatchedJsonRpcProvider(
-    scrollMainnet.evmRpcUrl,
+    scrollMainnet.fallbackRpcUrl,
     parseInt(scrollMainnet.chainId),
     {
         staticNetwork: true,
     },
 );
 const swellProvider = new BatchedJsonRpcProvider(
-    swellMainnet.evmRpcUrl,
+    swellMainnet.fallbackRpcUrl,
     parseInt(swellMainnet.chainId),
     {
         staticNetwork: true,
     },
 );
 const blastProvider = new BatchedJsonRpcProvider(
-    blastMainnet.evmRpcUrl,
+    blastMainnet.fallbackRpcUrl,
     parseInt(blastMainnet.chainId),
     {
         staticNetwork: true,
     },
 );
 const plumeProvider = new BatchedJsonRpcProvider(
-    plumeMainnet.evmRpcUrl,
+    plumeMainnet.fallbackRpcUrl,
     parseInt(plumeMainnet.chainId),
     {
         staticNetwork: true,
@@ -97,9 +99,15 @@ const plumeProvider = new BatchedJsonRpcProvider(
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
-        activeNetwork: { chainId, evmRpcUrl },
+        activeNetwork: { chainId, evmRpcUrl, fallbackRpcUrl },
         isUserOnline,
     } = useContext(AppStateContext);
+
+    const isPrimaryRpcNodeInactive = useRef<boolean>(false);
+
+    const activeNetworkRPC = !isPrimaryRpcNodeInactive.current
+        ? evmRpcUrl
+        : fallbackRpcUrl;
 
     const { userAddress } = useContext(UserDataContext);
     const { walletProvider } = useWeb3ModalProvider();
@@ -198,10 +206,10 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
 
     const provider = useMemo(
         () =>
-            new BatchedJsonRpcProvider(evmRpcUrl, parseInt(chainId), {
+            new BatchedJsonRpcProvider(activeNetworkRPC, parseInt(chainId), {
                 staticNetwork: true,
             }),
-        [chainId, evmRpcUrl],
+        [chainId, activeNetworkRPC],
     );
 
     useBlacklist(userAddress);
@@ -226,7 +234,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
 
     useEffect(() => {
         if (isUserOnline) setNewCrocEnv();
-    }, [provider, walletProvider, isUserOnline, userAddress]);
+    }, [provider, walletProvider, isUserOnline, userAddress, activeNetworkRPC]);
 
     const fetchMainnetEthPrice = async () => {
         const mainnetEthPrice = (
@@ -262,6 +270,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         swellProvider,
         blastProvider,
         plumeProvider,
+        isPrimaryRpcNodeInactive,
     };
 
     return (
