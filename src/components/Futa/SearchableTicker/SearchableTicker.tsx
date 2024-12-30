@@ -357,7 +357,9 @@ export default function SearchableTicker(props: propsIF) {
             <div className={styles.filters}>
                 <button
                     onClick={() => setShowComplete(!showComplete)}
-                    className={styles[showComplete ? 'button_on' : '']}
+                    className={
+                        styles[showComplete ? 'button_on' : 'button_off']
+                    }
                 >
                     <LuCheck size={BUTTON_ICON_SIZE} />
                     <div>COMPLETED</div>
@@ -366,7 +368,11 @@ export default function SearchableTicker(props: propsIF) {
                     <button
                         onClick={() => watchlists.toggle()}
                         className={
-                            styles[watchlists.shouldDisplay ? 'button_on' : '']
+                            styles[
+                                watchlists.shouldDisplay
+                                    ? 'button_on'
+                                    : 'button_off'
+                            ]
                         }
                     >
                         <FaEye size={BUTTON_ICON_SIZE} />
@@ -379,7 +385,7 @@ export default function SearchableTicker(props: propsIF) {
                             styles[
                                 dataState?.active === 'created'
                                     ? 'button_on'
-                                    : ''
+                                    : 'button_off'
                             ]
                         }
                         onClick={() => dataState?.toggle && dataState.toggle()}
