@@ -265,6 +265,10 @@ export default function SearchableTicker(props: propsIF) {
 
     const smallScreen: boolean = useMediaQuery('(max-width: 400px)');
 
+    useEffect(() => {
+        console.log(dataState?.active);
+    }, [dataState]);
+
     const headerDisplay = (
         <div className={styles.header}>
             <div className={styles.search_and_sort}>
@@ -364,7 +368,11 @@ export default function SearchableTicker(props: propsIF) {
                     <button
                         onClick={() => watchlists.toggle()}
                         className={
-                            styles[watchlists.shouldDisplay ? 'button_on' : '']
+                            styles[
+                                watchlists.shouldDisplay
+                                    ? 'button_on'
+                                    : 'button_off'
+                            ]
                         }
                     >
                         <FaEye size={BUTTON_ICON_SIZE} />
@@ -377,7 +385,7 @@ export default function SearchableTicker(props: propsIF) {
                             styles[
                                 dataState?.active === 'created'
                                     ? 'button_on'
-                                    : ''
+                                    : 'button_off'
                             ]
                         }
                         onClick={() => dataState?.toggle && dataState.toggle()}

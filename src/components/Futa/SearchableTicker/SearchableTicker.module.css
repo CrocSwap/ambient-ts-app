@@ -109,6 +109,16 @@
     color: var(--accent1);
 }
 
+.button_off{
+    border: 1px solid var(--dark3) !important;
+    color: var(--text2) !important;
+
+}
+
+.button_off *{
+    color: var(--text2) !important;
+}
+
 /* clickable to open the sort dropdown menu */
 .sort_clickable {
     position: relative;
