@@ -346,6 +346,10 @@ const useChatSocket = (
         // Collect the IDs as a Set, then convert it to a comma-separated string
         const resultSet = collectSendersAndReactions(messages); // Assuming it's returning a Set
 
+        console.log('>>> resultSet:', resultSet);
+
+        if (resultSet.entries.length == 0) return;
+
         // Convert Set to a comma-separated string
         const resultString = Array.from(resultSet).join(',');
 
@@ -363,7 +367,6 @@ const useChatSocket = (
         );
 
         const data = await response.json();
-        console.log('getUsersByIdList:', data);
         return data;
     }
 
@@ -466,7 +469,7 @@ const useChatSocket = (
                 getUsersByIdList();
             }
         }
-    }, [messages, isChatOpen]);
+    }, [messages, isChatOpen, room]);
 
     async function deleteMsgFromList(msgId: string) {
         const payload = {
