@@ -34,7 +34,9 @@ import {
 } from '../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { RecentlyUpdatedPositionIF } from './useMergeWithPendingTxs';
+import useMergeWithPendingTxs, {
+    RecentlyUpdatedPositionIF,
+} from './useMergeWithPendingTxs';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -681,17 +683,29 @@ function InfiniteScroll(props: propsIF) {
         };
     };
 
+    const { mergedData, fakeRowCount } = useMergeWithPendingTxs({
+        type: props.type,
+        data: fetchedTransactions,
+    });
+
     const dataToDisplay = useMemo(() => {
-        const { mergedList, recentlyUpdatedCount } = mergeDataWithPendingOrders(
-            fetchedTransactions,
-            recentlyUpdatedPositions,
-        );
-
         const startIndex = getIndexForPages(true);
-        const endIndex = getIndexForPages(false, recentlyUpdatedCount);
+        const endIndex = getIndexForPages(false, fakeRowCount);
 
-        return mergedList.slice(startIndex, endIndex);
-    }, [fetchedTransactions, pagesVisible, recentlyUpdatedPositions]);
+        return mergedData.slice(startIndex, endIndex);
+    }, [pagesVisible, mergedData, fakeRowCount]);
+
+    // const dataToDisplay = useMemo(() => {
+    //     const { mergedList, recentlyUpdatedCount } = mergeDataWithPendingOrders(
+    //         fetchedTransactions,
+    //         recentlyUpdatedPositions,
+    //     );
+
+    //     const startIndex = getIndexForPages(true);
+    //     const endIndex = getIndexForPages(false, recentlyUpdatedCount);
+
+    //     return mergedList.slice(startIndex, endIndex);
+    // }, [fetchedTransactions, pagesVisible, recentlyUpdatedPositions]);
 
     // useEffect(() => {
     //     console.log('>>> recentlyUpdatedPositions', recentlyUpdatedPositions);

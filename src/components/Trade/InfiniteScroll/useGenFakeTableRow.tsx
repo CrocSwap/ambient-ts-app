@@ -146,9 +146,14 @@ const useGenFakeTableRow = () => {
             cachedEnsResolve,
         );
 
-        let totalValueUSD = usdValue;
+        let totalValueUSD: number = usdValue;
+        console.log('>>> usdValue', usdValue);
+        console.log(
+            '>>> limitOrderData.totalValueUSD',
+            limitOrderData.totalValueUSD,
+        );
         if (limitOrderData.totalValueUSD) {
-            totalValueUSD += limitOrderData.totalValueUSD;
+            totalValueUSD += limitOrderData.totalValueUSD as number;
         }
 
         const onChainOrder: LimitOrderIF = {

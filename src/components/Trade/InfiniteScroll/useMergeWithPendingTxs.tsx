@@ -21,6 +21,7 @@ import {
     TransactionByType,
 } from '../../../contexts/ReceiptContext';
 import useGenFakeTableRow from './useGenFakeTableRow';
+import { TransactionIF } from '../../../ambient-utils/types';
 
 export type RecentlyUpdatedPositionIF = {
     positionHash: string;
@@ -32,7 +33,7 @@ export type RecentlyUpdatedPositionIF = {
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
-    data: LimitOrderIF[] | PositionIF[];
+    data: LimitOrderIF[] | PositionIF[] | TransactionIF[];
 }
 
 const useMergeWithPendingTxs = (props: propsIF) => {
@@ -136,6 +137,8 @@ const useMergeWithPendingTxs = (props: propsIF) => {
     const [fakeRowCount, setFakeRowCount] = useState(0);
 
     const mergedData = useMemo(() => {
+        console.log('>>> recentlyUpdatedPositions', recentlyUpdatedPositions);
+
         const recentlyUpdatedHashes = new Set();
         const recentlyUpdatedToShow: LimitOrderIF[] | PositionIF[] = [];
         recentlyUpdatedPositions.forEach((e) => {
@@ -178,7 +181,9 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 ...clearedData,
             ] as PositionIF[];
         }
-    }, [data, recentlyUpdatedPositions]);
+
+        return [];
+    }, [data, recentlyUpdatedPositions, relevantTransactions]);
 
     return {
         mergedData,

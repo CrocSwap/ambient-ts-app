@@ -333,8 +333,6 @@ function Orders(props: propsIF) {
 
                     const totalValueUSD = limitOrderData.totalValueUSD;
 
-                    console.log('>>>> usdValue', usdValue);
-
                     const onChainOrder: LimitOrderIF = {
                         positionLiq: liqNum,
                         positionLiqBase: positionLiqBase,
