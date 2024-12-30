@@ -6,8 +6,7 @@ import {
     TWITTER_LINK,
 } from '../../../../../ambient-utils/constants';
 export default function FutaLanding5() {
-    const BRAND_KIT_LINK =
-        'https://www.figma.com/design/ZQnS26jZqVd8OcGbUjiy8X/futa?node-id=3620-7194&t=2tiDHPAqGlO9Itwt-1';
+    const BRAND_KIT_LINK = 'https://futa-brand-kit.netlify.app/';
 
     return (
         <div className={styles.container}>

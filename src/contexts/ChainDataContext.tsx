@@ -23,6 +23,7 @@ import {
     BLOCK_POLLING_RPC_URL,
     GCGO_BLAST_URL,
     GCGO_ETHEREUM_URL,
+    GCGO_PLUME_URL,
     GCGO_SCROLL_URL,
     GCGO_SWELL_URL,
     hiddenTokens,
@@ -103,6 +104,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         scrollProvider,
         blastProvider,
         swellProvider,
+        plumeProvider,
     } = useContext(CrocEnvContext);
     const {
         cachedFetchAmbientListWalletBalances,
@@ -597,6 +599,12 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         [blastProvider !== undefined],
     );
 
+    const plumeCrocEnv = useMemo(
+        () =>
+            plumeProvider ? new CrocEnv(plumeProvider, undefined) : undefined,
+        [plumeProvider !== undefined],
+    );
+
     useEffect(() => {
         if (
             showDexStats &&
@@ -604,13 +612,14 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             scrollCrocEnv !== undefined &&
             swellCrocEnv !== undefined &&
             blastCrocEnv !== undefined &&
+            plumeCrocEnv !== undefined &&
             allDefaultTokens.length > 0
         ) {
             let tvlTotalUsd = 0,
                 volumeTotalUsd = 0,
                 feesTotalUsd = 0;
 
-            const numChainsToAggregate = 4;
+            const numChainsToAggregate = 5;
             let resultsReceived = 0;
 
             getChainStats(
@@ -747,6 +756,48 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 '0x13e31',
                 blastCrocEnv,
                 GCGO_BLAST_URL,
+                cachedFetchTokenPrice,
+                10,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
+                resultsReceived += 1;
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                }
+            });
+
+            getChainStats(
+                'cumulative',
+                '0x18231',
+                plumeCrocEnv,
+                GCGO_PLUME_URL,
                 cachedFetchTokenPrice,
                 10,
                 allDefaultTokens,

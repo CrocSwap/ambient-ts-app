@@ -4,8 +4,8 @@ import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
 import {
     mainnetETH,
-    mainnetSWETH,
-    mainnetTBTC,
+    mainnetRSWETH,
+    mainnetSWELL,
     mainnetUSDC,
     mainnetUSDT,
     mainnetWBTC,
@@ -46,11 +46,11 @@ export const ethereumMainnet: NetworkIF = {
     vaultsEnabled: true,
     tempestApiNetworkName: 'ethereum',
     topPools: [
+        new TopPool(mainnetRSWETH, mainnetETH, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetETH, mainnetTBTC, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetETH, mainnetUSDT, chainSpecFromSDK.poolIndex),
-        new TopPool(mainnetSWETH, mainnetETH, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetRSWETH, mainnetSWELL, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetWBTC, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetETH, mainnetUSDT, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
