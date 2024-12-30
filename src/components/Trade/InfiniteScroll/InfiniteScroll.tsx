@@ -315,7 +315,6 @@ function InfiniteScroll(props: propsIF) {
     };
 
     const addMoreData = async () => {
-        console.log('>>> addMoreData');
         setMoreDataLoading(true);
 
         let addedDataCount = 0;
@@ -564,8 +563,16 @@ function InfiniteScroll(props: propsIF) {
             recentRelevantTxs.map((tx) => tx.positionHash),
         );
 
+        // added to fix duplicated pending relevant txs
+        const uniqueRelevantTxs: RecentlyUpdatedPositionIF[] = [];
         recentRelevantTxs.forEach((tx) => {
-            console.log('>>> relevantTx USD' + tx.position.totalValueUSD);
+            if (
+                !uniqueRelevantTxs.find(
+                    (e) => e.positionHash === tx.positionHash,
+                )
+            ) {
+                uniqueRelevantTxs.push(tx);
+            }
         });
 
         setRecentlyUpdatedPositions((prev) => {
@@ -573,7 +580,7 @@ function InfiniteScroll(props: propsIF) {
                 ...prev.filter(
                     (e) => !recentRelevantTxsHashes.has(e.positionHash),
                 ),
-                ...recentRelevantTxs,
+                ...uniqueRelevantTxs,
             ];
         });
     };
@@ -693,9 +700,9 @@ function InfiniteScroll(props: propsIF) {
         return mergedList.slice(startIndex, endIndex);
     }, [fetchedTransactions, pagesVisible, recentlyUpdatedPositions]);
 
-    useEffect(() => {
-        console.log('>>> recentlyUpdatedPositions', recentlyUpdatedPositions);
-    }, [recentlyUpdatedPositions]);
+    // useEffect(() => {
+    //     console.log('>>> recentlyUpdatedPositions', recentlyUpdatedPositions);
+    // }, [recentlyUpdatedPositions]);
 
     return (
         <TableRowsInfiniteScroll

@@ -145,16 +145,16 @@ const useGenFakeTableRow = () => {
             cachedEnsResolve,
         );
 
-        const totalValueUSD = limitOrderData.totalValueUSD;
+        let totalValueUSD = usdValue;
+        if (limitOrderData.totalValueUSD) {
+            totalValueUSD += limitOrderData.totalValueUSD;
+        }
 
         const onChainOrder: LimitOrderIF = {
             positionLiq: liqNum,
             positionLiqBase: positionLiqBase,
             positionLiqQuote: positionLiqQuote,
-            totalValueUSD:
-                usdValue + (totalValueUSD ? totalValueUSD : 0) || totalValueUSD
-                    ? totalValueUSD
-                    : 0,
+            totalValueUSD: totalValueUSD,
             base: pendingTx.txDetails.baseAddress,
             quote: pendingTx.txDetails.quoteAddress,
             baseDecimals: pendingTx.txDetails.baseTokenDecimals || 0,
