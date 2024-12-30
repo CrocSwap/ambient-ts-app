@@ -43,6 +43,8 @@ export const ethereumMainnet: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Ethereum',
     tokenPriceQueryAssetPlatform: 'ethereum',
+    vaultsEnabled: true,
+    tempestApiNetworkName: 'ethereum',
     topPools: [
         new TopPool(mainnetRSWETH, mainnetETH, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),

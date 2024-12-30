@@ -23,6 +23,7 @@ import {
     getPositionData,
     isStablePair,
     trimString,
+    waitForTransaction,
 } from '../../../../ambient-utils/dataLayer';
 import RangeWidth from '../../../../components/Form/RangeWidth/RangeWidth';
 import { useModal } from '../../../../components/Global/Modal/useModal';
@@ -31,11 +32,6 @@ import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../../utils/TransactionError';
 import {
     linkGenMethodsIF,
     useLinkGen,
@@ -69,12 +65,8 @@ function Reposition() {
     } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
-    const {
-        gasPriceInGwei,
-        lastBlockNumber,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-    } = useContext(ChainDataContext);
+    const { gasPriceInGwei, lastBlockNumber, isActiveNetworkL2 } =
+        useContext(ChainDataContext);
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
@@ -117,6 +109,8 @@ function Reposition() {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const { position } = (locationState || {}) as { position?: PositionIF };
+
+    const posHash = getPositionHash(position);
 
     const slippageTolerancePercentage = position
         ? isStablePair(position.base, position.quote)
@@ -365,7 +359,6 @@ function Reposition() {
                         isBid: position.positionLiqQuote === 0,
                     },
                 });
-                const posHash = getPositionHash(position);
                 addPositionUpdate({
                     txHash: tx.hash,
                     positionID: posHash,
@@ -380,38 +373,26 @@ function Reposition() {
             setTxError(error);
         }
 
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                removePendingTx(error.hash);
-                const newTransactionHash = error.replacement.hash;
-                addPendingTx(newTransactionHash);
-
-                updateTransactionHash(error.hash, error.replacement.hash);
-                setNewRepositionTransactionHash(newTransactionHash);
-                const posHash = getPositionHash(position);
-                addPositionUpdate({
-                    txHash: newTransactionHash,
-                    positionID: posHash,
-                    isLimit: false,
-                    unixTimeAdded: Math.floor(Date.now() / 1000),
-                });
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
-                receipt = error.receipt;
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewRepositionTransactionHash,
+                    posHash,
+                    addPositionUpdate,
+                );
+            } catch (e) {
+                console.error({ e });
             }
-        }
-        if (receipt) {
-            addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.hash);
+            if (receipt) {
+                addReceipt(receipt);
+                removePendingTx(receipt.hash);
+            }
         }
     };
 
@@ -757,9 +738,7 @@ function Reposition() {
     // const [l1GasFeePoolInGwei] = useState<number>(
     //     isScroll ? 0.0009 * 1e9 : 0,
     // );
-    const [extraL1GasFeePool] = useState(
-        isActiveNetworkScroll ? 0.03 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeePool] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {

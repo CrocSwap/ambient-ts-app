@@ -1,6 +1,6 @@
 {
     "name": "Futa Token List",
-    "logoURI": "https://ambient.finance/rings_192.png",
+    "logoURI": "https://ambient.finance/icons/ambient_icon_x180.png",
     "timestamp": "2024-07-05T15:02:53.363Z",
     "version": {
         "major": 1,
@@ -16,7 +16,7 @@
             "symbol": "ETH",
             "decimals": 18,
             "chainId": 11155111,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
         },
         {
             "name": "USDC",

@@ -15,7 +15,6 @@ import {
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
     DEPOSIT_BUFFER_MULTIPLIER_L2,
     DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
-    IS_LOCAL_ENV,
     NUM_GWEI_IN_ETH,
     NUM_WEI_IN_GWEI,
     ZERO_ADDRESS,
@@ -25,7 +24,10 @@ import {
     GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
     NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants/';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    waitForTransaction,
+} from '../../../../ambient-utils/dataLayer';
 import { useApprove } from '../../../../App/functions/approve';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { AppStateContext } from '../../../../contexts';
@@ -38,11 +40,6 @@ import {
     MaxButton,
     SVGContainer,
 } from '../../../../styled/Components/Portfolio';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../../utils/TransactionError';
 import Button from '../../../Form/Button';
 import CurrencySelector from '../../../Form/CurrencySelector';
 import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
@@ -67,18 +64,14 @@ export default function Deposit(props: propsIF) {
         selectedTokenDecimals,
         setTokenModalOpen = () => null,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
     const {
         isUserOnline,
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const {
-        gasPriceInGwei,
-        isActiveNetworkL2,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-        isActiveNetworkPlume,
-    } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkL2, isActiveNetworkPlume } =
+        useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -97,9 +90,7 @@ export default function Deposit(props: propsIF) {
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
-    const [extraL1GasFeeDeposit] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeeDeposit] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
         string | undefined
@@ -288,38 +279,25 @@ export default function Deposit(props: propsIF) {
                         txDescription: `Deposit ${selectedToken.symbol}`,
                     });
 
-                let receipt;
-
-                try {
-                    if (tx) receipt = await tx.wait();
-                } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && 'repriced';
-                        removePendingTx(error.hash);
-
-                        const newTransactionHash = error.replacement.hash;
-                        addPendingTx(newTransactionHash);
-
-                        updateTransactionHash(
-                            error.hash,
-                            error.replacement.hash,
+                if (tx) {
+                    let receipt;
+                    try {
+                        receipt = await waitForTransaction(
+                            provider,
+                            tx.hash,
+                            removePendingTx,
+                            addPendingTx,
+                            updateTransactionHash,
                         );
-                        IS_LOCAL_ENV && { newTransactionHash };
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
-                        console.error({ error });
-                        receipt = error.receipt;
+                    } catch (e) {
+                        console.error({ e });
                     }
-                }
 
-                if (receipt) {
-                    addReceipt(JSON.stringify(receipt));
-                    removePendingTx(receipt.hash);
-                    resetDepositQty();
+                    if (receipt) {
+                        addReceipt(receipt);
+                        removePendingTx(receipt.hash);
+                        resetDepositQty();
+                    }
                 }
             } catch (error) {
                 if (

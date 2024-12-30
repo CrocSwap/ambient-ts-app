@@ -183,6 +183,11 @@ export const hiddenTokens = [
         chainId: 11155111,
     },
     {
+        // different sepolia USDC on Scroll-Tech's scroll scroll list
+        address: '0x7878290DB8C4f02bd06E0E249617871c19508bE6',
+        chainId: 534351,
+    },
+    {
         // aUSDC on Plume Devnet
         address: '0xef380e725648cfe1488d98973151599a75186016',
         chainId: 98864,
@@ -201,6 +206,21 @@ export const hiddenTokens = [
         // Ambient USDCv2 on Swell Testnet
         address: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
         chainId: 1924,
+    },
+    {
+        // WTT on Plume Mainnet
+        address: '0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3',
+        chainId: 98865,
+    },
+    {
+        // WTT on Swell Mainnet
+        address: '0x83CA2E0018cBa6CD1149F2BB059d2Fc6D0fDf456',
+        chainId: 1923,
+    },
+    {
+        // pETH on Mainnet
+        address: '0x821a278dfff762c76410264303f25bf42e195c0c',
+        chainId: 1,
     },
 ];
 

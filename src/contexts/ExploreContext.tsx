@@ -68,7 +68,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { allPoolStats } = useContext(ChainDataContext);
+    const { allPoolStats, isActiveNetworkPlume, isActiveNetworkSwell } =
+        useContext(ChainDataContext);
     const { poolList } = useContext(PoolContext);
 
     const [allPools, setAllPools] = useState<Array<PoolDataIF>>([]);
@@ -229,7 +230,16 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                     : nowPrice / ydayPrice - 1.0
                 : undefined;
 
-        if (!expandedPoolStatsNow || expandedPoolStatsNow.tvlTotalUsd < 100) {
+        const minimumPoolTvl = isActiveNetworkSwell
+            ? 20
+            : isActiveNetworkPlume
+              ? 20
+              : 100;
+
+        if (
+            !expandedPoolStatsNow ||
+            expandedPoolStatsNow.tvlTotalUsd < minimumPoolTvl
+        ) {
             // return early
             const poolData: PoolDataIF = {
                 ...pool,

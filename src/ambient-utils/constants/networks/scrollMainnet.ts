@@ -5,15 +5,15 @@ import { NetworkIF } from '../../types/NetworkIF';
 import {
     scrollETH,
     scrollSCR,
-    scrollSTONE,
     scrollUSDC,
-    scrollWBTC,
+    scrollUSDT,
+    scrollWrsETH,
     scrollWstETH,
 } from '../defaultTokens';
 import { GCGO_SCROLL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const PUBLIC_RPC_URL = 'https://rpc.scroll.io';
+export const PUBLIC_RPC_URL = 'https://scroll-rpc.publicnode.com';
 
 export const RESTRICTED_RPC_URL =
     import.meta.env.VITE_SCROLL_RPC_URL !== undefined
@@ -43,12 +43,14 @@ export const scrollMainnet: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Scroll',
     tokenPriceQueryAssetPlatform: 'scroll',
+    vaultsEnabled: true,
+    tempestApiNetworkName: 'scroll',
     topPools: [
-        new TopPool(scrollSCR, scrollETH, chainSpecFromSDK.poolIndex),
         new TopPool(scrollETH, scrollUSDC, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollSCR, scrollETH, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollETH, scrollUSDT, chainSpecFromSDK.poolIndex),
         new TopPool(scrollWstETH, scrollETH, chainSpecFromSDK.poolIndex),
-        new TopPool(scrollETH, scrollWBTC, chainSpecFromSDK.poolIndex),
-        new TopPool(scrollSTONE, scrollETH, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollWrsETH, scrollETH, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

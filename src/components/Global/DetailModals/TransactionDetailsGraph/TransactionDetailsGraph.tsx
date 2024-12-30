@@ -279,6 +279,7 @@ export default function TransactionDetailsGraph(
                         crocEnv,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
+                        poolPriceDisplay,
                     );
 
                     if (graphData) {
