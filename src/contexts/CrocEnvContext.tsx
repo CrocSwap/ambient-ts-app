@@ -6,7 +6,6 @@ import {
     createContext,
     useContext,
     useEffect,
-    useMemo,
     useRef,
     useState,
 } from 'react';
@@ -204,13 +203,19 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplateIF>(initUrl);
 
-    const provider = useMemo(
-        () =>
+    const [provider, setProvider] = useState<BatchedJsonRpcProvider>(
+        new BatchedJsonRpcProvider(activeNetworkRPC, parseInt(chainId), {
+            staticNetwork: true,
+        }),
+    );
+
+    useEffect(() => {
+        setProvider(
             new BatchedJsonRpcProvider(activeNetworkRPC, parseInt(chainId), {
                 staticNetwork: true,
             }),
-        [chainId, activeNetworkRPC],
-    );
+        );
+    }, [chainId, activeNetworkRPC]);
 
     useBlacklist(userAddress);
 

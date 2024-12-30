@@ -20,7 +20,6 @@ import {
 } from '../ambient-utils/api';
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
 import {
-    BLOCK_POLLING_RPC_URL,
     GCGO_BLAST_URL,
     GCGO_ETHEREUM_URL,
     GCGO_PLUME_URL,
@@ -62,6 +61,7 @@ export interface ChainDataContextIF {
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
     rpcNodeStatus: RpcNodeStatus;
     isPrimaryRpcNodeInactive: React.MutableRefObject<boolean>;
+    blockPollingUrl: string;
     connectedUserXp: UserXpDataIF;
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
@@ -108,6 +108,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         plumeProvider,
         isPrimaryRpcNodeInactive,
     } = useContext(CrocEnvContext);
+
     const {
         cachedFetchAmbientListWalletBalances,
         cachedFetchDexBalances,
@@ -160,11 +161,9 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         string | undefined
     >();
 
-    const blockPollingUrl = BLOCK_POLLING_RPC_URL
-        ? BLOCK_POLLING_RPC_URL
-        : !isPrimaryRpcNodeInactive.current
-          ? evmRpcUrl
-          : fallbackRpcUrl;
+    const blockPollingUrl = !isPrimaryRpcNodeInactive.current
+        ? evmRpcUrl
+        : fallbackRpcUrl;
 
     // array of network IDs for supported L2 networks
     const L1_NETWORKS: string[] = [
@@ -197,7 +196,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         }, GAS_PRICE_POLL_MS);
 
         return () => clearInterval(interval);
-    }, [chainId, blockPollingUrl]);
+    }, [chainId, blockPollingUrl, provider]);
 
     async function pollBlockNum(): Promise<void> {
         try {
@@ -254,6 +253,10 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             updateAllPoolStats();
         }
     }, [chainId, GCGO_URL, poolStatsPollingCacheTime, isUserOnline]);
+
+    useEffect(() => {
+        isPrimaryRpcNodeInactive.current = false;
+    }, [chainId]);
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
@@ -855,6 +858,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         setLastBlockNumber,
         rpcNodeStatus,
         isPrimaryRpcNodeInactive,
+        blockPollingUrl,
         gasPriceInGwei,
         connectedUserXp,
         connectedUserBlastXp,
