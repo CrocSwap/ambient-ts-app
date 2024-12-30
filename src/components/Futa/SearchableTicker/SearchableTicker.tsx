@@ -18,11 +18,11 @@ import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
 import Chart from '../Chart/Chart';
 // import Divider from '../Divider/FutaDivider';
+import { LuCheck, LuPencil } from 'react-icons/lu';
+import { auctionDataSets } from '../../../pages/platformFuta/Account/Account';
 import Typewriter from '../TypeWriter/TypeWriter';
 import styles from './SearchableTicker.module.css';
 import TickerItem from './TickerItem';
-import { auctionDataSets } from '../../../pages/platformFuta/Account/Account';
-import { LuCheck, LuPencil } from 'react-icons/lu';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
@@ -572,7 +572,7 @@ export default function SearchableTicker(props: propsIF) {
                 ref={tableParentRef}
             >
                 {resizableChart}
-                {((!isAccount && !isMobile) || isTabletScreen) && <Chart />}
+                {!isAccount && !isMobile && <Chart />}
             </FlexContainer>
         </div>
     );
