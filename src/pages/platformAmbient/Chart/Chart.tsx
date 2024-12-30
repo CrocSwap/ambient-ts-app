@@ -740,13 +740,13 @@ export default function Chart(props: propsIF) {
                 (transaction) => transaction.entityType === 'swap',
             );
 
-            if (showLiquidity) {
-                const userLimit = userLimitOrdersByPool.limitOrders;
+            const userLimit = userLimitOrdersByPool.limitOrders;
 
-                const filteredUserLimits = userLimit.filter(
-                    (transaction) => transaction.claimableLiq > 0,
-                );
+            const filteredUserLimits = userLimit.filter(
+                (transaction) => transaction.claimableLiq > 0,
+            );
 
+            if (filteredUserLimits.length > 0) {
                 filteredUserLimits.map((limit) => {
                     userSwaps.push({
                         txHash: limit.positionHash,
@@ -829,11 +829,7 @@ export default function Chart(props: propsIF) {
         }
 
         return undefined;
-    }, [
-        userTransactionData,
-        diffHashSigScaleData(scaleData, 'x'),
-        showLiquidity,
-    ]);
+    }, [userTransactionData, diffHashSigScaleData(scaleData, 'x'), showSwap]);
 
     const lastCandleData = unparsedData.candles?.reduce(
         function (prev, current) {
@@ -5476,11 +5472,7 @@ export default function Chart(props: propsIF) {
 
             if (filteredTransactionalData && showSwap) {
                 filteredTransactionalData.forEach((element) => {
-                    if (
-                        (element.order.entityType === 'swap' && showSwap) ||
-                        (element.order.entityType === 'limitCircle' &&
-                            showLiquidity)
-                    ) {
+                    if (showSwap) {
                         const swapOrderData = [
                             {
                                 x: element.order.txTime * 1000,
@@ -6144,12 +6136,7 @@ export default function Chart(props: propsIF) {
             const canvasRightEnd = rectCanvas.right;
 
             if (isHoveredOrderHistory && hoveredOrderHistory) {
-                if (
-                    circleScale &&
-                    ((hoveredOrderHistory.type === 'swap' && showSwap) ||
-                        (hoveredOrderHistory.type === 'limitCircle' &&
-                            showLiquidity))
-                ) {
+                if (circleScale && showSwap) {
                     setHoveredOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
@@ -6339,12 +6326,7 @@ export default function Chart(props: propsIF) {
             }
 
             if (isSelectedOrderHistory && selectedOrderHistory) {
-                if (
-                    circleScale &&
-                    ((selectedOrderHistory.type === 'swap' && showSwap) ||
-                        (selectedOrderHistory.type === 'limitCircle' &&
-                            showLiquidity))
-                ) {
+                if (circleScale && showSwap) {
                     setSelectedOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
