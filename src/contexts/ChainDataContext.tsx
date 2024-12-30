@@ -137,14 +137,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
-    useEffect(() => {
-        console.log({
-            primaryInactive: isPrimaryRpcNodeInactive.current,
-            rpcNodeStatus,
-            lastBlockNumber,
-        });
-    }, [rpcNodeStatus, lastBlockNumber, isPrimaryRpcNodeInactive.current]);
-
     const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(chainId);
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);

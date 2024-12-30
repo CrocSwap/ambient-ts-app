@@ -41,7 +41,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         [showMobileVersion, show3TopPools, show4TopPools, topPools],
     );
 
-    const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
+    const poolPriceCacheTime = Math.floor(Date.now() / 5000); // 5 second cache
 
     const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
     const [intermediarySpotPrices, setIntermediarySpotPrices] = useState<{
