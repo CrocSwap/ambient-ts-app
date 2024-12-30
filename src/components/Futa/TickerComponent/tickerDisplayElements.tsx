@@ -12,7 +12,6 @@ import {
     AuctionsContext,
 } from '../../../contexts/AuctionsContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Divider from '../Divider/FutaDivider';
 import styles from './TickerComponent.module.css';
 
@@ -464,8 +463,8 @@ export const tickerDisplayElements = (props: PropsIF) => {
 
     // Max FDV display component
     const tickerDropdownRef = useRef<HTMLDivElement>(null);
-    const clickOutsideWalletHandler = () => setIsMaxDropdownOpen(false);
-    useOnClickOutside(tickerDropdownRef, clickOutsideWalletHandler);
+    // const clickOutsideWalletHandler = () => setIsMaxDropdownOpen(false);
+    // useOnClickOutside(tickerDropdownRef, clickOutsideWalletHandler);
 
     const fdvUsdValue =
         nativeTokenUsdPrice !== undefined && selectedMaxMarketCapInEthNum

@@ -135,6 +135,16 @@
     color: var(--text1);
 }
 
+@media (min-width: 768px) and (max-width: 1024px) {
+    .container {
+        padding: 0px;
+    }
+
+    .slantedText {
+        font-size: 14px;
+    }
+}
+
 @media (min-width: 768px) {
     .fixedPositioned {
         position: fixed;
