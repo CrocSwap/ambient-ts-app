@@ -359,7 +359,9 @@ export default function SearchableTicker(props: propsIF) {
             <div className={styles.filters}>
                 <button
                     onClick={() => setShowComplete(!showComplete)}
-                    className={styles[showComplete ? 'button_on' : '']}
+                    className={
+                        styles[showComplete ? 'button_on' : 'button_off']
+                    }
                 >
                     <LuCheck size={BUTTON_ICON_SIZE} />
                     <div>COMPLETED</div>
