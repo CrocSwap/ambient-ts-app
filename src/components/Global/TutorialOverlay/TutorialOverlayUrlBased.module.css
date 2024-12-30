@@ -1,8 +1,8 @@
 .replay_tuto_btn {
     position: fixed;
     z-index: 99999;
-    top: 0.6rem;
-    right: 4rem;
+    top: 0.8rem;
+    right: 6rem;
     line-height: 1.5rem;
     text-align: center;
     /* background-color: var(--accent1); */

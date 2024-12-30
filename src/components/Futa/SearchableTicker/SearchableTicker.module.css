@@ -104,6 +104,16 @@
     color: var(--accent1);
 }
 
+.button_off{
+    border: 1px solid var(--dark3) !important;
+    color: var(--text2) !important;
+
+}
+
+.button_off *{
+    color: var(--text2) !important;
+}
+
 /* clickable to open the sort dropdown menu */
 .sort_clickable {
     position: relative;
@@ -185,7 +195,20 @@
     justify-content: center;
     align-items: center;
     height: 100%;
-    
+}
+
+.tickerItemContainer:hover .ticker_name_arrow {
+    opacity: 1;
+}
+
+.statusContainer {
+    text-align: end;
+}
+
+.tickerStatus {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
 }
 
 /* wrapper for ticker table rows and column headers */
@@ -252,7 +275,8 @@
     scrollbar-color: var(--accent1) var(--dark2);
 }
 
-.marketCap, .timeRemaining {
+.marketCap,
+.timeRemaining {
     text-align: end;
 }
 
@@ -310,8 +334,11 @@
     /* remove spacer icon in `TICKER` col header on small screens */
     .ticker_col_header_spacer {
         display: none;
+    .tickerItemContainer,
+    .tickerHeader {
+        grid-template-columns: 1fr 1fr 50px 60px;
     }
-}
+}}
 
 @media (min-width: 768px) {
     .container {
@@ -327,17 +354,19 @@
     }
 }
 
-@media (max-width: 968px) {
+@media (min-width: 768px) and (max-width: 1024px) {
     .contentContainer {
-        height: calc(100vh - 186px) !important;
+        height: calc(100dvh - 100px) !important;
         justify-content: space-between;
-        padding-bottom: 1rem;
+    }
+    .header {
+        flex-direction: row;
     }
 }
 
-@media (max-width: 768px) {
-    .contentContainer {
-        padding-bottom: 0;
+@media (max-width: 767px) {
+    .header {
+        flex-direction: column;
     }
 }
 
@@ -349,11 +378,10 @@
     flex-direction: column;
 }
 
-
 @media (max-width: 400px) {
     .header {
         display: grid;
-        grid-template-areas: 
+        grid-template-areas:
             'top'
             'bottom';
     }
