@@ -16,7 +16,7 @@
         "d3fc": "^15.2.4",
         "emoji-picker-react": "^4.11.1",
         "ethers": "^6.13.4",
-        "framer-motion": "4.1.17",
+        "framer-motion": "11.15.0",
         "intro.js": "^7.0.0",
         "intro.js-react": "^1.0.0",
         "modern-screenshot": "^4.4.25",
