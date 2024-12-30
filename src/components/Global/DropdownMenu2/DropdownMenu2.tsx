@@ -9,7 +9,7 @@ import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
 import Modal from '../Modal/Modal';
 import styles from './DropdownMenu2.module.css';
-// Interface for React functional components
+
 interface propsIF {
     title: string;
     children: ReactNode;
@@ -21,6 +21,8 @@ interface propsIF {
     left?: string;
     right?: string;
     expandable: boolean;
+    disabled?: boolean;
+    loading?: boolean;
 }
 
 export default function DropdownMenu2(props: propsIF) {
@@ -35,13 +37,19 @@ export default function DropdownMenu2(props: propsIF) {
         expandable,
         marginRight,
         marginLeft,
+        disabled,
+        loading,
     } = props;
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+
     const { appHeaderDropdown } = useContext(AppStateContext);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
     const isEscapePressed = useKeyPress('Escape');
+
     useEffect(() => {
         if (isEscapePressed) {
             setIsMenuOpen(false);
@@ -51,10 +59,8 @@ export default function DropdownMenu2(props: propsIF) {
 
     function toggleMenu(): void {
         setIsMenuOpen(!isMenuOpen);
-        // if (!isMenuOpen) {
-        //     appHeaderDropdown.setIsActive(true);
-        // } else appHeaderDropdown.setIsActive(false);
     }
+
     const clickOutsideHandler = () => {
         if (showMobileVersion) return null;
         setIsMenuOpen(false);
@@ -77,6 +83,7 @@ export default function DropdownMenu2(props: propsIF) {
                 top: marginTop ? marginTop : '30px',
                 left: marginLeft ?? left,
                 right: marginRight ?? right,
+                cursor: expandable ? 'pointer' : 'default',
             }}
         >
             {children}
@@ -92,9 +99,14 @@ export default function DropdownMenu2(props: propsIF) {
     );
 
     return (
-        <div ref={dropdownRefItem}>
+        <div
+            ref={dropdownRefItem}
+            style={{ pointerEvents: disabled ? 'none' : 'auto' }}
+        >
             <div
                 className={styles.menu}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
                 onClick={() => expandable && toggleMenu()}
                 style={{
                     minWidth: !showFullMenu
@@ -112,21 +124,25 @@ export default function DropdownMenu2(props: propsIF) {
                                 cursor: expandable ? 'pointer' : 'default',
                             }}
                         >
-                            <img
-                                src={logo}
-                                alt={title}
-                                width={
-                                    title.includes('Scroll') ||
-                                    title.includes('Blast')
-                                        ? '20px'
-                                        : '20px'
-                                }
-                                height='20px'
-                                style={{
-                                    borderRadius: '50%',
-                                    marginLeft: '2px',
-                                }}
-                            />
+                            {loading ? (
+                                <span className={styles.loading} />
+                            ) : (
+                                <img
+                                    src={logo}
+                                    alt={title}
+                                    width={
+                                        title.includes('Scroll') ||
+                                        title.includes('Blast')
+                                            ? '20px'
+                                            : '20px'
+                                    }
+                                    height='20px'
+                                    style={{
+                                        borderRadius: '50%',
+                                        marginLeft: '2px',
+                                    }}
+                                />
+                            )}
                             {title}
                         </div>
                     )}
@@ -137,7 +153,7 @@ export default function DropdownMenu2(props: propsIF) {
                             width='18px'
                             height='18px'
                             style={{
-                                cursor: 'default',
+                                cursor: expandable ? 'pointer' : 'default',
                                 borderRadius: '50%',
                                 marginLeft: '2px',
                             }}
@@ -146,7 +162,12 @@ export default function DropdownMenu2(props: propsIF) {
                 </div>
                 {expandable && !showMobileVersion && (
                     <FaAngleDown
-                        style={{ marginLeft: '4px', marginTop: '2px' }}
+                        style={{
+                            marginLeft: '4px',
+                            marginTop: '2px',
+                            color: isHovered ? 'var(--accent1)' : '', // Change color on hover
+                            transition: 'color 0.3s ease', // Smooth color transition
+                        }}
                     />
                 )}
             </div>

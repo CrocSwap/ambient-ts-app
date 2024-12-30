@@ -123,12 +123,11 @@ export const useTokenStats = (
             )
                 return;
             const tokenPricePromise: Promise<TokenPriceFnReturn> =
-                cachedFetchTokenPrice(token.tokenAddr, chainId, crocEnv);
+                cachedFetchTokenPrice(token.tokenAddr, chainId);
             const ethPricePromise: Promise<TokenPriceFnReturn> =
                 cachedFetchTokenPrice(
                     defaultTokensForChain[0].address,
                     chainId,
-                    crocEnv,
                 );
             const poolWithETHNonDisplayPricePromise: Promise<number> =
                 tokenMeta.address === defaultTokensForChain[0].address

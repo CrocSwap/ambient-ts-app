@@ -9,7 +9,11 @@ import React, {
 } from 'react';
 import { fetchEnsAddress } from '../ambient-utils/api';
 import { checkBlacklist } from '../ambient-utils/constants';
-import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
+import {
+    BlastUserXpIF,
+    UserVaultsServerIF,
+    UserXpIF,
+} from '../ambient-utils/types';
 import { UserAvatarDataIF } from '../components/Chat/ChatIFs';
 import { getAvatarRest } from '../components/Chat/ChatUtilsHelper';
 import { AppStateContext } from './AppStateContext';
@@ -19,7 +23,6 @@ export interface UserDataContextIF {
     userAddress: `0x${string}` | undefined;
     walletChain: number | undefined;
     disconnectUser: () => void;
-
     ensName: string | null | undefined;
     resolvedAddressFromContext: string;
     setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
@@ -40,6 +43,10 @@ export interface UserDataContextIF {
         walletID: string,
         avatarData: UserAvatarDataIF,
     ) => void;
+    userVaultData: UserVaultsServerIF[] | undefined;
+    setUserVaultData: React.Dispatch<
+        React.SetStateAction<UserVaultsServerIF[] | undefined>
+    >;
 }
 
 export interface UserXpDataIF {
@@ -102,6 +109,10 @@ export const UserDataContextProvider = (props: {
         UserAvatarDataIF | undefined
     >();
 
+    const [userVaultData, setUserVaultData] = useState<
+        UserVaultsServerIF[] | undefined
+    >();
+
     // check for ENS name account changes
     useEffect(() => {
         if (isUserOnline) {
@@ -157,6 +168,8 @@ export const UserDataContextProvider = (props: {
         setNftTestWalletAddress,
         userAvatarData,
         updateUserAvatarData,
+        userVaultData,
+        setUserVaultData,
     };
 
     return (

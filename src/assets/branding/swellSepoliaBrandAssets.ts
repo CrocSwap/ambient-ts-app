@@ -15,7 +15,7 @@ export const swellSepoliaBrandAssets: brandIF = {
     platformName: 'swellSepolia',
     fontSet: 'ambient',
     showPoints: false,
-    showDexStats: false,
+    showDexStats: true,
     headerImage: large as string,
     includeCanto: false,
 };

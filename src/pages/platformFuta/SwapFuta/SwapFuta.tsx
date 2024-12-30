@@ -1,12 +1,12 @@
 import { useContext, useState } from 'react';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import Comments from '../../../components/Futa/Comments/Comments';
-import Divider from '../../../components/Futa/Divider/FutaDivider';
 import { ChartContext } from '../../../contexts/ChartContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Swap from '../../platformAmbient/Trade/Swap/Swap';
 import Trade from '../../platformAmbient/Trade/Trade';
 import styles from './SwapFuta.module.css';
+import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
 
 function SwapFuta() {
     const tradeWrapperID = 'swapFutaTradeWrapper';
@@ -115,7 +115,6 @@ function SwapFuta() {
                     isFullScreen ? { gridColumnStart: 1, gridColumnEnd: 4 } : {}
                 }
             >
-                <Divider count={2} />
                 <Trade futaActiveTab={activeTab} />
             </div>
 
@@ -128,10 +127,12 @@ function SwapFuta() {
             </div>
             <div>
                 <span id={tradeWrapperID}>
-                    <Divider count={2} />
+                    <p className={styles.label}>order</p>
+                    <FutaDivider2 />
                     <Swap isOnTradeRoute />
                 </span>
-                <Divider count={2} />
+                <p className={styles.label}>comments</p>
+                <FutaDivider2 />
                 <Comments
                     isForTrade={true}
                     isSmall={true}

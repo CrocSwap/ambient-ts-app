@@ -22,7 +22,7 @@ const chainSpecFromSDK = lookupChain(chainIdHex);
 
 const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
-    name: 'Swell Testnet',
+    name: 'Swellchain Testnet',
     currency: 'ETH',
     rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://swell-testnet-explorer.alt.technology/',
@@ -39,7 +39,10 @@ export const swellSepolia: NetworkIF = {
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: chainSpecForWalletConnector.name,
+    displayName: 'Swell Testnet',
+    tokenPriceQueryAssetPlatform: undefined,
+    vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         new TopPool(
             swellSepoliaETH,

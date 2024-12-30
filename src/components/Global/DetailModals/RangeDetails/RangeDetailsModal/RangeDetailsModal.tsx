@@ -145,8 +145,11 @@ function RangeDetailsModal(props: propsIF) {
 
     const updateLiq = async () => {
         try {
-            if (!crocEnv || !position) return;
-            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+            if (
+                !position ||
+                !crocEnv ||
+                (await crocEnv.context).chain.chainId !== chainId
+            )
                 return;
             const pos = crocEnv.positions(
                 position.base,
@@ -157,12 +160,10 @@ function RangeDetailsModal(props: propsIF) {
             const basePricePromise = cachedFetchTokenPrice(
                 baseTokenAddress,
                 chainId,
-                crocEnv,
             );
             const quotePricePromise = cachedFetchTokenPrice(
                 quoteTokenAddress,
                 chainId,
-                crocEnv,
             );
 
             const poolPriceNonDisplay = await cachedQuerySpotPrice(
@@ -510,7 +511,6 @@ function RangeDetailsModal(props: propsIF) {
                     <TransactionDetailsGraph {...GraphProps} />
                 </div>
             </div>
-            <p className={styles.ambi_copyright}>ambient.finance</p>
         </div>
     );
     const shareComponentMobile = (

@@ -27,7 +27,6 @@ function SwapExtraInfo(props: propsIF) {
         liquidityFee,
         swapGasPriceinDollars,
         showExtraInfoDropdown,
-        showWarning,
     } = props;
 
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
@@ -149,7 +148,7 @@ function SwapExtraInfo(props: propsIF) {
             conversionRate={conversionRate}
             gasPrice={swapGasPriceinDollars}
             showDropdown={showExtraInfoDropdown}
-            showWarning={showWarning}
+            showWarning={priceImpactExceedsThreshold}
             priceImpactExceedsThreshold={priceImpactExceedsThreshold}
         />
     );

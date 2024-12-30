@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react';
-import Divider from '../../../components/Futa/Divider/FutaDivider';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
 import { AppStateContext } from '../../../contexts';
@@ -8,6 +7,7 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import styles from './Auctions.module.css';
 import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
+import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
 
 interface propsIF {
     hideTicker?: boolean;
@@ -57,16 +57,14 @@ export default function Auctions(props: propsIF) {
                 <div
                     className={styles.auctionsTickerContainer}
                     style={{
-                        gridTemplateColumns: hideTicker
-                            ? '1fr'
-                            : '1fr 4px 390px',
+                        gridTemplateColumns: hideTicker ? '1fr' : '1fr 390px',
                     }}
                 >
                     <span id='auctions_search_wrapper'>
                         <div style={{ height: 'calc(100vh - 80px)' }}>
                             <SearchableTicker
                                 auctions={sorted}
-                                title='AUCTIONS'
+                                title=''
                                 setIsFullLayoutActive={setIsFullLayoutActive}
                                 placeholderTicker={placeholderTicker}
                             />
@@ -78,9 +76,10 @@ export default function Auctions(props: propsIF) {
                         // empty `<div />` on the next line preserves
                         // ... spacing with CSS Grid layout
                     }
-                    <div />
+
                     <div className={styles.flexColumn}>
-                        <Divider count={2} />
+                        <p className={styles.label}>TICKER</p>
+                        <FutaDivider2 />
                         {!hideTicker && (
                             <TickerComponent
                                 isAuctionPage

@@ -10,13 +10,12 @@
     height: 35px;
     width: 35px;
 }
+
 .menuContent {
     width: 100%;
     padding: 12px;
     overflow: hidden;
     z-index: 999;
-    
-   
 }
 
 .menuContent ul,

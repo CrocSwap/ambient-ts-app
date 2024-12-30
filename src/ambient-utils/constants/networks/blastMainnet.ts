@@ -6,7 +6,7 @@ import { blastBLAST, blastETH, blastEzETH, blastUSDB } from '../defaultTokens';
 import { GCGO_BLAST_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const PUBLIC_RPC_URL = 'https://rpc.blast.io';
+export const PUBLIC_RPC_URL = 'https://blast-rpc.publicnode.com';
 
 export const RESTRICTED_RPC_URL =
     import.meta.env.VITE_BLAST_RPC_URL !== undefined
@@ -35,10 +35,13 @@ export const blastMainnet: NetworkIF = {
     defaultPair: [blastETH, blastUSDB],
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,
+    tokenPriceQueryAssetPlatform: 'blast',
+    vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         new TopPool(blastETH, blastUSDB, chainSpecFromSDK.poolIndex),
         new TopPool(blastBLAST, blastETH, chainSpecFromSDK.poolIndex),
-        new TopPool(blastEzETH, blastETH, chainSpecFromSDK.poolIndex),
+        new TopPool(blastEzETH, blastUSDB, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

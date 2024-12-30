@@ -43,6 +43,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import Comments from '../Comments/Comments';
 import { tickerDisplayElements } from './tickerDisplayElements';
+import FutaDivider2 from '../Divider/FutaDivider2';
 interface PropsIF {
     isAuctionPage?: boolean;
     placeholderTicker?: boolean;
@@ -832,8 +833,11 @@ export default function TickerComponent(props: PropsIF) {
 
                 {!showComments && (
                     <>
+                        <FutaDivider2 />
                         {openedBidDisplay}
+                        <FutaDivider2 />
                         {yourBidDisplay}
+                        <FutaDivider2 />
                         <div className={styles.flexColumn}>
                             {maxFdvDisplay}
                             {bidSizeDisplay}

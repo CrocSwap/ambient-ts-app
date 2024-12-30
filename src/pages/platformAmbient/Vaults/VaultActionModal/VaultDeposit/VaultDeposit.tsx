@@ -17,6 +17,7 @@ import {
     getFormattedNumber,
     precisionOfInput,
     uriToHttp,
+    waitForTransaction,
 } from '../../../../../ambient-utils/dataLayer';
 import {
     TokenIF,
@@ -38,11 +39,6 @@ import {
     ReceiptContext,
     UserDataContext,
 } from '../../../../../contexts';
-import {
-    TransactionError,
-    isTransactionFailedError,
-    isTransactionReplacedError,
-} from '../../../../../utils/TransactionError';
 import styles from './VaultDeposit.module.css';
 
 interface Props {
@@ -87,7 +83,8 @@ export default function VaultDeposit(props: Props) {
     const { isUserConnected } = useContext(UserDataContext);
     const { gasPriceInGwei, isActiveNetworkPlume } =
         useContext(ChainDataContext);
-    const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
+    const { ethMainnetUsdPrice, crocEnv, provider } =
+        useContext(CrocEnvContext);
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
@@ -120,21 +117,14 @@ export default function VaultDeposit(props: Props) {
 
     // calculate price of gas for vault deposit
     useEffect(() => {
-        if (crocEnv) {
-            (async () => {
-                const mainAssetPrice =
-                    (
-                        await cachedFetchTokenPrice(
-                            mainAsset.address,
-                            chainId,
-                            crocEnv,
-                        )
-                    )?.usdPrice || 0.0;
+        (async () => {
+            const mainAssetPrice =
+                (await cachedFetchTokenPrice(mainAsset.address, chainId))
+                    ?.usdPrice || 0.0;
 
-                setMainAssetPrice(mainAssetPrice);
-            })();
-        }
-    }, [crocEnv]);
+            setMainAssetPrice(mainAssetPrice);
+        })();
+    }, [mainAsset.address, chainId]);
 
     // calculate price of gas for vault deposit
     useEffect(() => {
@@ -203,6 +193,7 @@ export default function VaultDeposit(props: Props) {
         if (tx?.hash) {
             addPendingTx(tx?.hash);
             addTransactionByType({
+                chainId: chainId,
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txType: 'Deposit',
@@ -211,33 +202,27 @@ export default function VaultDeposit(props: Props) {
         } else {
             setShowSubmitted(false);
         }
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            setShowSubmitted(false);
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                removePendingTx(error.hash);
 
-                const newTransactionHash = error.replacement.hash;
-                addPendingTx(newTransactionHash);
-
-                updateTransactionHash(error.hash, error.replacement.hash);
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
-                console.error({ error });
-                receipt = error.receipt;
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                );
+            } catch (e) {
+                setShowSubmitted(false);
+                console.error({ e });
             }
-        }
 
-        if (receipt) {
-            addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.hash);
-            setShowSubmitted(false);
+            if (receipt) {
+                addReceipt(receipt);
+                removePendingTx(receipt.hash);
+                setShowSubmitted(false);
+            }
         }
     };
 

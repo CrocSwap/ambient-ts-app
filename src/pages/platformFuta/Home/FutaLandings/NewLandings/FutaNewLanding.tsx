@@ -182,7 +182,7 @@ export default function FutaNewLanding() {
     ];
 
     if (!showMainContent && !hasVideoPlayedOnce) {
-        return <FadingTextGrid />;
+        return <FadingTextGrid setShowMainContent={setShowMainContent} />;
     }
 
     return (
