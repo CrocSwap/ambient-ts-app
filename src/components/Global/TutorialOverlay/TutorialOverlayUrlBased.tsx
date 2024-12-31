@@ -1,9 +1,15 @@
 import { Step } from 'intro.js-react';
-import { memo, useContext, useEffect, useRef, useState } from 'react';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import {
+    Dispatch,
+    memo,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
-import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { futaAuctionsSteps } from '../../../utils/tutorial/Futa/AuctionsSteps';
 import { futaAccountSteps } from '../../../utils/tutorial/Futa/FutaAccountSteps';
@@ -15,14 +21,14 @@ import styles from './TutorialOverlayUrlBased.module.css';
 // import{ MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
+    replayTutorial: boolean;
+    setReplayTutorial: Dispatch<SetStateAction<boolean>>;
+    tutorialBtnRef: React.RefObject<HTMLDivElement>;
     checkStepHash?: boolean;
 }
 function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
-    const { isUserConnected } = useContext(UserDataContext);
-
-    const { checkStepHash } = props;
-
-    const [showTutorial, setShowTutorial] = useState<boolean>(false);
+    const { checkStepHash, replayTutorial, setReplayTutorial, tutorialBtnRef } =
+        props;
 
     const { currentPage } = useLinkGen();
     const [selectedTutorial, setSelectedTutorial] = useState<
@@ -33,7 +39,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     const [isTutoBuild, setIsTutoBuild] = useState<boolean>(false);
     const [stepsFiltered, setStepsFiltered] = useState<Step[]>([]);
 
-    const [replayTutorial, setReplayTutorial] = useState<boolean>(false);
+    const [showTutorial, setShowTutorial] = useState<boolean>(false);
 
     const {
         walletModal: { open: openWalletModal },
@@ -179,10 +185,6 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         setReplayTutorial(false);
     }, [selectedTutorial]);
 
-    const replayBtnListener = () => {
-        setReplayTutorial(true);
-    };
-
     const shouldTutoComponentShown =
         validateURL() &&
         stepsFiltered.length > 0 &&
@@ -191,6 +193,16 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         selectedTutorialRef.current &&
         !selectedTutorialRef.current.disableDefault &&
         showTutosLocalStorage;
+
+    if (!shouldTutoComponentShown && filterRenderedSteps().length > 0) {
+        if (tutorialBtnRef.current?.style) {
+            tutorialBtnRef.current.style.display = 'flex';
+        }
+    } else {
+        if (tutorialBtnRef.current?.style) {
+            tutorialBtnRef.current.style.display = 'none';
+        }
+    }
 
     return (
         <>
@@ -210,17 +222,6 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
                         />
                     </>
                 )}
-
-            {!shouldTutoComponentShown && filterRenderedSteps().length > 0 && (
-                <div
-                    className={`${styles.replay_tuto_btn} ${!isUserConnected ? styles.not_connected : ' '}`}
-                    onClick={replayBtnListener}
-                >
-                    {' '}
-                    <AiOutlineQuestionCircle />
-                </div>
-            )}
-            {/* {(<div className={`${styles.replay_tuto_btn} ${!isUserConnected ? styles.not_connected  : ' ' }`} onClick={replayBtnListener}> <AiOutlineQuestionCircle /></div>)} */}
         </>
     );
 }
