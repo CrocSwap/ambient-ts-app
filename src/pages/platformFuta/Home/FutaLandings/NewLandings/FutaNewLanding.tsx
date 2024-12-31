@@ -126,7 +126,6 @@ export default function FutaNewLanding() {
         });
     }, []);
 
-    console.log({ skipLandingPage });
     useEffect(() => {
         if (!showLandingPageTemp && skipLandingPage) {
             navigate('/auctions/');
