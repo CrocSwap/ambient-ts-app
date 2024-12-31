@@ -15,4 +15,18 @@ export const tokenListURIs = {
     baseCoingecko: 'https://tokens.coingecko.com/base/all.json',
 };
 
+// string union of all values in the `tokenListURIs` obj
 export type TokenListURITypes = keyof typeof tokenListURIs;
+
+// type definition for the refresh intervals object
+//      keys: subset of keys in the `tokenListURIs` obj
+//      values: refresh time in seconds (arbitrary number)
+export type tokenListRefreshTimes = Partial<
+    Record<keyof typeof tokenListURIs, number>
+>;
+
+// times to refresh individual token lists
+export const refreshIntervals: tokenListRefreshTimes = {
+    ambient: 30,
+    futa: 30,
+};
