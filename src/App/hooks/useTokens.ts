@@ -246,6 +246,37 @@ export const useTokens = (
         return output;
     }
 
+    // fn to patch the a single updated token list into the array
+    async function patchTokenList(
+        uri: tokenListEndpointStrings,
+    ): Promise<void> {
+        // fresh list retrieved from endpoint
+        const list: TokenListIF | undefined = await fetchAndFormatList(uri);
+        // console.log(list);
+        // cease processes if the fetch fails
+        if (!list) return;
+        // array of token lists with the new one patched in
+        const updatedLists: TokenListIF[] = tokenLists.map(
+            (oldList: TokenListIF) => (oldList.uri === uri ? list : oldList),
+        );
+        // send updated array of token lists to local state
+        setTokenLists(updatedLists);
+    }
+
+    // logic to test new token list being patched into local state
+    useEffect(() => {
+        console.log(tokenLists);
+    }, [tokenLists]);
+
+    // logic to update the scroll token list only to test functionality
+    useEffect(() => {
+        const refreshScroll = setInterval(
+            async () => await patchTokenList(tokenListURIs.scrollTech),
+            10000,
+        );
+        return () => clearInterval(refreshScroll);
+    }, []);
+
     // Load token lists from local storage for fast load, but asynchronously
     // fetch tokens from external URLs and update with latest values
     useEffect(() => {
