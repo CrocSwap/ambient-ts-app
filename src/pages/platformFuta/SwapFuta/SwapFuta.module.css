@@ -1,10 +1,10 @@
 .mainSection {
-    display: grid;
+    display: flex;
     gap: 4px;
-    grid-template-columns: auto 0px 390px;
     padding: 0 8px;
     height: 100%;
     height: calc(100dvh - 75px);
+    /* background-color: blueviolet; */
 }
 
 .mobileMainSection {
