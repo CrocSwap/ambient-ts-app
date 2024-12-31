@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     defaultTokens,
     hiddenTokens,
+    tokenListEndpointStrings,
     tokenListURIs,
 } from '../../ambient-utils/constants';
 import {
@@ -216,7 +217,7 @@ export const useTokens = (
 
     // fn to fetch a token list from an endpoint and decorate
     async function fetchAndFormatList(
-        uri: string,
+        uri: tokenListEndpointStrings,
     ): Promise<TokenListIF | undefined> {
         // convert URI to an array of queryable endpoints
         const endpoints: string[] = uriToHttp(uri, 'retry');

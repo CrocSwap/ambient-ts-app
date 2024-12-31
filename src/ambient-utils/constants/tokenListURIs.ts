@@ -15,8 +15,12 @@ export const tokenListURIs = {
     baseCoingecko: 'https://tokens.coingecko.com/base/all.json',
 };
 
-// string union of all values in the `tokenListURIs` obj
+// string union of all keys in the `tokenListURIs` obj
 export type TokenListURITypes = keyof typeof tokenListURIs;
+
+// string union of all values in the `tokenListURIs` obj
+export type tokenListEndpointStrings =
+    (typeof tokenListURIs)[TokenListURITypes];
 
 // type definition for the refresh intervals object
 //      keys: subset of keys in the `tokenListURIs` obj
