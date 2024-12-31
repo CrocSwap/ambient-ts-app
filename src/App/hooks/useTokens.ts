@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     defaultTokens,
     hiddenTokens,
+    refreshTime,
+    refreshTimes,
     tokenListEndpointStrings,
     tokenListURIs,
 } from '../../ambient-utils/constants';
@@ -250,6 +252,7 @@ export const useTokens = (
     async function patchTokenList(
         uri: tokenListEndpointStrings,
     ): Promise<void> {
+        console.log(uri);
         // fresh list retrieved from endpoint
         const list: TokenListIF | undefined = await fetchAndFormatList(uri);
         // console.log(list);
@@ -263,18 +266,25 @@ export const useTokens = (
         setTokenLists(updatedLists);
     }
 
-    // logic to test new token list being patched into local state
-    useEffect(() => {
-        console.log(tokenLists);
-    }, [tokenLists]);
+    // // logic to test new token list being patched into local state
+    // useEffect(() => {
+    //     console.log(tokenLists);
+    // }, [tokenLists]);
 
     // logic to update the scroll token list only to test functionality
     useEffect(() => {
-        const refreshScroll = setInterval(
-            async () => await patchTokenList(tokenListURIs.scrollTech),
-            10000,
-        );
-        return () => clearInterval(refreshScroll);
+        const intervalHandles: NodeJS.Timeout[] = [];
+
+        refreshTimes.forEach((rt: refreshTime) => {
+            const [listName, refreshInSeconds] = rt;
+            const listURI = tokenListURIs[listName];
+            const interval = setInterval(
+                () => patchTokenList(listURI),
+                refreshInSeconds * 1000,
+            );
+            intervalHandles.push(interval);
+        });
+        return () => intervalHandles.forEach(clearInterval);
     }, []);
 
     // Load token lists from local storage for fast load, but asynchronously

@@ -25,12 +25,10 @@ export type tokenListEndpointStrings =
 // type definition for the refresh intervals object
 //      keys: subset of keys in the `tokenListURIs` obj
 //      values: refresh time in seconds (arbitrary number)
-export type tokenListRefreshTimes = Partial<
-    Record<keyof typeof tokenListURIs, number>
->;
+export type refreshTime = [TokenListURITypes, number];
 
 // times to refresh individual token lists
-export const refreshIntervals: tokenListRefreshTimes = {
-    ambient: 30,
-    futa: 30,
-};
+export const refreshTimes: refreshTime[] = [
+    ['scrollTech', 6],
+    ['futa', 15],
+];
