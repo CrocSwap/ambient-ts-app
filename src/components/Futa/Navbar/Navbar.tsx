@@ -230,14 +230,14 @@ export default function Navbar() {
             variants={dropdownItemVariants}
             className={styles.skipAnimationContainer}
         >
-            <p>Show Home Animation</p>
+            <p>Skip Home Animation</p>
             <Toggle
-                isOn={showHomeVideoLocalStorage}
+                isOn={!showHomeVideoLocalStorage}
                 handleToggle={() =>
                     setShowHomeVideoLocalStorage(!showHomeVideoLocalStorage)
                 }
                 Width={36}
-                id='show_home_video_futa_toggle'
+                id='skip_home_video_futa_toggle'
                 disabled={false}
             />
         </motion.div>
@@ -247,7 +247,7 @@ export default function Navbar() {
             variants={dropdownItemVariants}
             className={styles.skipAnimationContainer}
         >
-            <p>Enter App on Load</p>
+            <p>Skip Home Page</p>
             <Toggle
                 isOn={skipLandingPage}
                 handleToggle={() => setSkipLandingPage(!skipLandingPage)}
