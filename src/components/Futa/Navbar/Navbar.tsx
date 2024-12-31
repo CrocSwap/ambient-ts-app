@@ -37,6 +37,7 @@ import Toggle from '../../Form/Toggle';
 import NotificationCenter from '../../Global/NotificationCenter/NotificationCenter';
 import TutorialOverlayUrlBased from '../../Global/TutorialOverlay/TutorialOverlayUrlBased';
 import styles from './Navbar.module.css';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 // Animation Variants
 const dropdownVariants = {
@@ -65,6 +66,8 @@ const dropdownItemVariants = {
 export default function Navbar() {
     // States
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [replayTutorial, setReplayTutorial] = useState(false);
+    const tutorialBtnRef = useRef<HTMLDivElement>(null);
     const currentLocationIsHome = location.pathname == '/';
 
     // Context
@@ -288,6 +291,14 @@ export default function Navbar() {
                 </div>
                 <div className={styles.rightContainer}>
                     {!desktopScreen && <NetworkSelector customBR={'50%'} />}
+                    <div
+                        className={styles.tutorialBtn}
+                        ref={tutorialBtnRef}
+                        onClick={() => setReplayTutorial(true)}
+                    >
+                        {' '}
+                        <AiOutlineQuestionCircle />{' '}
+                    </div>
                     {!isUserConnected && connectWagmiButton}
                     <NotificationCenter />
                     <div className={styles.moreContainer} ref={dropdownRef}>
@@ -354,7 +365,11 @@ export default function Navbar() {
                     </div>
                 </div>
             </div>
-            <TutorialOverlayUrlBased />
+            <TutorialOverlayUrlBased
+                replayTutorial={replayTutorial}
+                setReplayTutorial={setReplayTutorial}
+                tutorialBtnRef={tutorialBtnRef}
+            />
         </>
     );
 }
