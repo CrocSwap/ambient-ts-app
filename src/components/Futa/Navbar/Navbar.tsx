@@ -98,6 +98,9 @@ export default function Navbar() {
         setShowHomeVideoLocalStorage,
         showTutosLocalStorage,
         bindShowTutosLocalStorage,
+        skipLandingPage,
+        setSkipLandingPage,
+        setShowLandingPageTemp,
     } = useFutaHomeContext();
 
     // set page title
@@ -239,6 +242,21 @@ export default function Navbar() {
             />
         </motion.div>
     );
+    const skipLandingPageToggle = (
+        <motion.div
+            variants={dropdownItemVariants}
+            className={styles.skipAnimationContainer}
+        >
+            <p>Enter App on Load</p>
+            <Toggle
+                isOn={skipLandingPage}
+                handleToggle={() => setSkipLandingPage(!skipLandingPage)}
+                Width={36}
+                id='skip landing page_futa_toggle'
+                disabled={false}
+            />
+        </motion.div>
+    );
 
     const showTutosToggle = (
         <motion.div
@@ -281,7 +299,7 @@ export default function Navbar() {
                 className={`${styles.container} ${currentLocationIsHome && styles.fixedPositioned}`}
             >
                 <div className={styles.logoContainer}>
-                    <Link to='/'>
+                    <Link to='/' onClick={() => setShowLandingPageTemp(true)}>
                         <h3>FU/TA</h3>
                     </Link>
                     {desktopScreen && tabLinks}
@@ -329,6 +347,7 @@ export default function Navbar() {
                                         }`}
                                 </motion.p>
                                 {skipAnimationToggle}
+                                {skipLandingPageToggle}
                                 {showTutosToggle}
                                 <motion.p
                                     className={styles.version}

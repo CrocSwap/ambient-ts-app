@@ -18,6 +18,8 @@ export default function FutaNewLanding() {
         hasVideoPlayedOnce,
         setHasVideoPlayedOnce,
         showHomeVideoLocalStorage,
+        skipLandingPage,
+        showLandingPageTemp,
     } = useFutaHomeContext();
     const [activeSection, setActiveSection] = useState(0);
     const [showMainContent, setShowMainContent] = useState(false);
@@ -123,6 +125,13 @@ export default function FutaNewLanding() {
             block: 'start',
         });
     }, []);
+
+    console.log({ skipLandingPage });
+    useEffect(() => {
+        if (!showLandingPageTemp && skipLandingPage) {
+            navigate('/auctions/');
+        }
+    }, [skipLandingPage, navigate, showLandingPageTemp]);
 
     // Memoized keyboard handler
     const handleKeyDown = useCallback(
