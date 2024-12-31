@@ -501,14 +501,16 @@ export const tickerDisplayElements = (props: PropsIF) => {
     const maxFdvDisplay = (
         <div
             className={`${styles.tickerContainer} ${styles.maxMarketContainer}`}
-            ref={tickerDropdownRef}
         >
             <TooltipLabel
                 tooltipTitle='The max market cap you are willing to bid up to'
                 itemTitle='MAX MARKET CAP'
                 isHeader
             />
-            <div className={styles.maxDropdownContainer}>
+            <div
+                className={styles.maxDropdownContainer}
+                ref={tickerDropdownRef}
+            >
                 <button
                     onClick={() => {
                         tickerFromParams &&
