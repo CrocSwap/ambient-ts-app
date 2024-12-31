@@ -55,11 +55,12 @@ function getTokenEntryFromLS(key: string) {
     return [];
 }
 
+// fn to retrieve and parse token lists from local storage
 function getTokenListsFromLS(): TokenListIF[] {
     return getTokenEntryFromLS(localStorageKeys.tokenLists) as TokenListIF[];
 }
 
-// fn to retrieve and parse token lists from local storage
+// fn to retrieve and parse list of acknowledged tokens from local storage
 function getAckTokensFromLS(): TokenIF[] {
     return getTokenEntryFromLS(localStorageKeys.ackTokens) as TokenIF[];
 }
