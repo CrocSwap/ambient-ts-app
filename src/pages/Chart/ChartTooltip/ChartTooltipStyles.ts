@@ -23,8 +23,14 @@ const ChartTooltipDiv = styled.div<{
     @media screen and (min-width: 768px) {
         position: absolute;
         margin-top: 0px;
-        margin-left: ${({ isToolbarOpen }) =>
-            isToolbarOpen ? '38px' : '12px'};
+        margin-left: ${({ isToolbarOpen, isFuta }) =>
+            isFuta
+                ? isToolbarOpen
+                    ? '38px'
+                    : '12px'
+                : isToolbarOpen
+                  ? '52px'
+                  : '22px'};
 
         p {
             margin-left: 5px;
