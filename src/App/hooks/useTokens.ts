@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     defaultTokens,
     hiddenTokens,
-    refreshTime,
-    refreshTimes,
     tokenListEndpointStrings,
     tokenListURIs,
 } from '../../ambient-utils/constants';
@@ -266,25 +264,11 @@ export const useTokens = (
         setTokenLists(updatedLists);
     }
 
-    // // logic to test new token list being patched into local state
-    // useEffect(() => {
-    //     console.log(tokenLists);
-    // }, [tokenLists]);
-
-    // logic to update the scroll token list only to test functionality
+    // logic to update the futa token list only to test functionality
     useEffect(() => {
-        const intervalHandles: NodeJS.Timeout[] = [];
-
-        refreshTimes.forEach((rt: refreshTime) => {
-            const [listName, refreshInSeconds] = rt;
-            const listURI = tokenListURIs[listName];
-            const interval = setInterval(
-                () => patchTokenList(listURI),
-                refreshInSeconds * 1000,
-            );
-            intervalHandles.push(interval);
-        });
-        return () => intervalHandles.forEach(clearInterval);
+        setInterval(() => {
+            patchTokenList('http://localhost:3002/futa-token-list');
+        }, 5000);
     }, []);
 
     // Load token lists from local storage for fast load, but asynchronously

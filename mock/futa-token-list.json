@@ -28,12 +28,12 @@
                 "symbol": "USDC"
             },
             {
-                "name": "new token",
+                "name": "new token11",
                 "address": "0x50bBA138A74C5e7326885De5090700626950d509",
                 "chainId": 11155111,
                 "decimals": 6,
                 "logoURI": "",
-                "symbol": "NEW8"
+                "symbol": "NEW11"
             },
             {
                 "name": "new token",
