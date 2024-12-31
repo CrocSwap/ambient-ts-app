@@ -70,8 +70,7 @@ export default function Transfer(props: propsIF) {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const { gasPriceInGwei, isActiveNetworkScroll, isActiveNetworkBlast } =
-        useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
     const {
         addPendingTx,
         addReceipt,
@@ -303,9 +302,7 @@ export default function Transfer(props: propsIF) {
         }
     };
 
-    const [extraL1GasFeeTransfer] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeeTransfer] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     const [transferGasPriceinDollars, setTransferGasPriceinDollars] = useState<
         string | undefined

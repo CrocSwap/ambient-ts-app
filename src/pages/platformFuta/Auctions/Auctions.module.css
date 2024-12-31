@@ -5,12 +5,11 @@
 
 .desktopContainer {
     padding: 0px 16px;
-    height: 100%;
-    height: var(--content-height);
-    overflow-y: hidden;
+    /* height: 100%; */
+    /* height: var(--content-height); */
+    /* overflow-y: hidden; */
     /* height: calc(100vh - 85px); */
 }
-
 
 .consoleChartComponent {
     display: flex;

@@ -65,12 +65,8 @@ export default function Limit() {
         activeNetwork: { chainId, gridSize, poolIndex },
         isUserOnline,
     } = useContext(AppStateContext);
-    const {
-        gasPriceInGwei,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-        isActiveNetworkPlume,
-    } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkL2, isActiveNetworkPlume } =
+        useContext(ChainDataContext);
     const {
         pool,
         isPoolInitialized,
@@ -555,11 +551,9 @@ export default function Limit() {
     }, [tokenADexBalance]);
 
     const [l1GasFeeLimitInGwei] = useState<number>(
-        isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
+        isActiveNetworkL2 ? 10000 : 0,
     );
-    const [extraL1GasFeeLimit] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeeLimit] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -597,6 +591,14 @@ export default function Limit() {
                 NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
+            console.log({
+                gasPriceInDollarsNum,
+                extraL1GasFeeLimit,
+                gasPriceInGwei,
+                averageLimitCostInGasDrops,
+                NUM_GWEI_IN_WEI,
+                ethMainnetUsdPrice,
+            });
             setOrderGasPriceInDollars(
                 getFormattedNumber({
                     value: gasPriceInDollarsNum + extraL1GasFeeLimit,

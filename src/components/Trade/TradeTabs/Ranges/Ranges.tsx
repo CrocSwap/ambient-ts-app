@@ -50,12 +50,17 @@ interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
     isAccountView: boolean;
+    unselectCandle?: () => void;
 }
 
 // react functional component
 function Ranges(props: propsIF) {
-    const { activeAccountPositionData, connectedAccountActive, isAccountView } =
-        props;
+    const {
+        activeAccountPositionData,
+        connectedAccountActive,
+        isAccountView,
+        unselectCandle,
+    } = props;
 
     const {
         showAllData: showAllDataSelection,
@@ -1351,6 +1356,7 @@ function Ranges(props: propsIF) {
             isAccountView={isAccountView}
             activeUserPositionsLength={activeUserPositionsLength}
             activeUserPositionsByPoolLength={activeUserPositionsByPool.length}
+            unselectCandle={unselectCandle}
         />
     ) : (
         <div onKeyDown={handleKeyDownViewRanges} style={{ height: '100%' }}>
