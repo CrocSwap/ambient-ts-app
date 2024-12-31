@@ -214,38 +214,40 @@ export const useTokens = (
         [chainId, tokenUniv.length],
     );
 
+    // fn to fetch a token list from an endpoint and decorate
+    async function fetchAndFormatList(
+        uri: string,
+    ): Promise<TokenListIF | undefined> {
+        // convert URI to an array of queryable endpoints
+        const endpoints: string[] = uriToHttp(uri, 'retry');
+        // logic to query endpoints until a query is successful
+        let rawData;
+        for (let i = 0; i < endpoints.length; i++) {
+            const response = await fetch(endpoints[i]);
+            if (response.ok) {
+                rawData = await response.json();
+                break;
+            }
+        }
+        // cease funcationality if no endpoint returned a valid response
+        if (!rawData) return;
+        // format the raw data returned with values used in the Ambient app
+        const output: TokenListIF = {
+            ...rawData,
+            uri,
+            dateRetrieved: new Date().toISOString(),
+            userImported: false,
+            tokens: rawData.tokens.map((tkn: TokenIF) => {
+                return { ...tkn, fromList: uri };
+            }),
+        };
+        // return formatted token list
+        return output;
+    }
+
     // Load token lists from local storage for fast load, but asynchronously
     // fetch tokens from external URLs and update with latest values
     useEffect(() => {
-        const fetchAndFormatList = async (
-            uri: string,
-        ): Promise<TokenListIF | undefined> => {
-            // convert URI to an array of queryable endpoints
-            const endpoints: string[] = uriToHttp(uri, 'retry');
-            // logic to query endpoints until a query is successful
-            let rawData;
-            for (let i = 0; i < endpoints.length; i++) {
-                const response = await fetch(endpoints[i]);
-                if (response.ok) {
-                    rawData = await response.json();
-                    break;
-                }
-            }
-            // cease funcationality if no endpoint returned a valid response
-            if (!rawData) return;
-            // format the raw data returned with values used in the Ambient app
-            const output: TokenListIF = {
-                ...rawData,
-                uri,
-                dateRetrieved: new Date().toISOString(),
-                userImported: false,
-                tokens: rawData.tokens.map((tkn: TokenIF) => {
-                    return { ...tkn, fromList: uri };
-                }),
-            };
-            // return formatted token list
-            return output;
-        };
         // array of promises for fetched token lists
         const tokenListPromises: Promise<TokenListIF | undefined>[] =
             Object.values(tokenListURIs).map((uri: string) =>
