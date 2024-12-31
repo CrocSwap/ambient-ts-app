@@ -6,6 +6,7 @@
     gap: 8px;
 }
 
+/* styling for the resizable table element */
 .resizable {
     display: flex;
     flex-direction: column;
@@ -14,12 +15,6 @@
     --width-for-scrollbar: 8px;
     padding: 6px var(--width-for-scrollbar) 6px 2px;
     border: var(--futa-box-border);
-}
-
-@media (max-width: 500px) {
-    .resizable {
-        border: none;
-    }
 }
 
 /* element with search and filter interactables */
@@ -237,7 +232,7 @@
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-between;
-    /* this has to be the rgba equiv of background color */
+    gap: 8px;
     background-color: var(--dark1);
     color: var(--text3);
     font-size: 12px;
@@ -249,11 +244,31 @@
     flex: 1 10 auto;
 }
 
+/* spacer to keep `TICKER` col header aligned with table data */
+.ticker_col_header_spacer {
+    visibility: hidden;
+}
+
 /* container for ticker line items */
 .ticker_table_content {
     display: flex;
     flex-direction: column;
     row-gap: 4px;
+}
+
+.cell_left {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.cell_center {
+    display: flex;
+    justify-content: center;
+}
+
+.cell_right {
+    display: flex;
+    justify-content: flex-end;
 }
 
 .scrolling {
@@ -305,11 +320,25 @@
 }
 
 @media (max-width: 500px) {
+    /* remove visible border from table on small screens */
+    .resizable {
+        border: none;
+    }
+
+    /* remove left margin from table on small screens */
+    /* helps fit everything in the viewport */
+    .ticker_table {
+        margin-left: 0px;
+    }
+
+    /* remove spacer icon in `TICKER` col header on small screens */
+    .ticker_col_header_spacer {
+        display: none;
     .tickerItemContainer,
     .tickerHeader {
         grid-template-columns: 1fr 1fr 50px 60px;
     }
-}
+}}
 
 @media (min-width: 768px) {
     .container {
@@ -363,5 +392,10 @@
 
     .filters {
         grid-area: bottom;
+    }
+
+    /* individual column headers in the ticker table */
+    .ticker_table > header > * {
+        font-size: 10px;
     }
 }

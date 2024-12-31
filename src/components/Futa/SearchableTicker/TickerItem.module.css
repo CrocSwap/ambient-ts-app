@@ -4,6 +4,9 @@
     flex-direction: row;
     justify-content: space-between;
     transition: all var(--animation-speed) ease-in-out;
+    gap: 8px;
+    font-size: 18px;
+    letter-spacing: 1px;
 }
 
 /* transparent ticker arrow in base state with transition */
@@ -27,10 +30,6 @@
     width: 120px;
 }
 
-/* .ticker_arrow {
-    visibility: hidden;
-} */
-
 .active {
     background-color: #28585d;
 }
@@ -45,24 +44,36 @@
 
 .ticker_name {
     flex: 1 10 auto;
+    justify-content: flex-start;
 }
 
 .market_cap {
     flex: 1 10 auto;
+    justify-content: flex-end;
 }
 
 .auction_status {
     flex: 1 10 auto;
+    justify-content: center;
 }
 
 .time_remaining {
     flex: 1 10 auto;
+    justify-content: flex-end;
 }
 
 .native_tkn_committed {
     flex: 1 10 auto;
+    justify-content: flex-end;
 }
 
 .native_tkn_reward {
     flex: 1 10 auto;
+    justify-content: flex-end;
+}
+
+@media (max-width: 500px) {
+    .ticker_item > * {
+        font-size: 10px;
+    }
 }

@@ -117,14 +117,6 @@ function SwapFuta() {
             >
                 <Trade futaActiveTab={activeTab} />
             </div>
-
-            <div style={{ paddingBottom: '4px' }}>
-                {
-                    // code below this line no longer needed but wrapper needs to
-                    // ... exist to preserve page layout sans further CSS changes
-                    // <Separator dots={100} />
-                }
-            </div>
             <div>
                 <span id={tradeWrapperID}>
                     <p className={styles.label}>order</p>
