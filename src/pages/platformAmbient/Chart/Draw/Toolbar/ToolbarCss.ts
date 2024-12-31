@@ -5,13 +5,14 @@ const ToolbarContainer = styled.div<{
     isMobile: boolean;
     isFullScreen: boolean;
     isSmallScreen: boolean;
+    isFuta: boolean;
     backgroundColor: string;
     marginTopValue: number;
     height: number;
 }>`
-    ${({ isActive, marginTopValue, isMobile, isFullScreen }) => {
+    ${({ isActive, marginTopValue, isMobile, isFullScreen, isFuta }) => {
         const marginTop = isMobile ? '' : `${marginTopValue}px`;
-        const marginLeft = isFullScreen ? 16 : 0;
+        const marginLeft = isFullScreen || isFuta ? 16 : 0;
         if (isActive) {
             return `
             width: 38px;
@@ -50,6 +51,14 @@ const ToolbarContainer = styled.div<{
     transition: all 600ms ease-in-out;
     z-index: 6;
     scrollbar-color: auto;
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        margin-left: 16px;
+    }
+
+    @media (max-width: 767px) {
+        margin-left: 0;
+    }
 `;
 
 const ScrollableDiv = styled.div<{ height: string; isHover: boolean }>`
