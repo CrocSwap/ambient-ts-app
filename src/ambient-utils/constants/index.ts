@@ -172,4 +172,4 @@ export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
 export const CURRENT_AUCTION_VERSION = 1;
 
 export const SHOW_TUTOS_DEFAULT =
-    import.meta.env.VITE_SHOW_TUTOS_DEFAULT || false;
+    import.meta.env.VITE_SHOW_TUTOS_DEFAULT || 'true';

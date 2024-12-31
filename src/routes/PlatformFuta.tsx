@@ -25,7 +25,10 @@ const PlatformFutaRoutes: React.FC = () => {
     const desktopScreen: boolean = useMediaQuery('(min-width: 768px)');
 
     return (
-        <div style={{ background: 'var(--dark1)' }} className='futa_routes'>
+        <div
+            style={{ background: 'var(--dark1)', height: '100%' }}
+            className='futa_routes'
+        >
             <Routes>
                 <Route path='/' element={<FutaNewLanding />} />
                 <Route
