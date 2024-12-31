@@ -400,7 +400,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     )}
                     {platform === 'futa' &&
                         tokens
-                            .getTokensFromList('/futa-token-list.json')
+                            .getTokensFromList(
+                                'http://localhost:3002/futa-token-list',
+                            )
                             .filter((tk: TokenIF) => {
                                 // fn to compare name and symbol to search input
                                 function matchSymbolOrName(
