@@ -2,8 +2,9 @@
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { motion } from 'framer-motion';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { FiMoreHorizontal } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     DISCORD_LINK,
     DOCS_LINK,
@@ -37,7 +38,6 @@ import Toggle from '../../Form/Toggle';
 import NotificationCenter from '../../Global/NotificationCenter/NotificationCenter';
 import TutorialOverlayUrlBased from '../../Global/TutorialOverlay/TutorialOverlayUrlBased';
 import styles from './Navbar.module.css';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 // Animation Variants
 const dropdownVariants = {
@@ -279,22 +279,38 @@ export default function Navbar() {
         </motion.div>
     );
 
-    const tabLinks = (
-        <ul className={styles.navTabs} role='tablist'>
-            {navbarLinks.map((navLink) => (
-                <li key={navLink.id} className={styles.navItem}>
-                    <Link
-                        to={navLink.link}
-                        className={`${styles.navLink} ${location.pathname.includes(navLink.link) ? styles.active : styles.not_active}`}
-                    >
-                        <span className={styles.slantedText}>
-                            {navLink.label}
-                        </span>
-                    </Link>
-                </li>
-            ))}
-        </ul>
-    );
+    const tabLinks = () => {
+        const navigate = useNavigate();
+        const location = useLocation();
+
+        return (
+            <ul className={styles.navTabs} role='tablist'>
+                {navbarLinks.map((navLink) => (
+                    <li key={navLink.id} className={styles.navItem}>
+                        <div
+                            className={`${styles.navLink} ${
+                                location.pathname.includes(navLink.link)
+                                    ? styles.active
+                                    : styles.not_active
+                            }`}
+                            onMouseDown={() => navigate(navLink.link)}
+                            role='link'
+                            tabIndex={0} // Makes the div focusable for accessibility
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    navigate(navLink.link);
+                                }
+                            }}
+                        >
+                            <span className={styles.slantedText}>
+                                {navLink.label}
+                            </span>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        );
+    };
 
     return (
         <>
@@ -305,7 +321,7 @@ export default function Navbar() {
                     <Link to='/' onClick={() => setShowLandingPageTemp(true)}>
                         <h3>FU/TA</h3>
                     </Link>
-                    {desktopScreen && tabLinks}
+                    {desktopScreen && tabLinks()}
                 </div>
                 <div className={styles.rightContainer}>
                     {!desktopScreen && <NetworkSelector customBR={'50%'} />}
