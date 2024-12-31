@@ -539,17 +539,20 @@ function InfiniteScroll(props: propsIF) {
         return ret;
     };
 
-    const { mergedData, fakeRowCount } = useMergeWithPendingTxs({
+    const { mergedData, recentlyUpdatedPositions } = useMergeWithPendingTxs({
         type: props.type,
         data: fetchedTransactions,
     });
 
     const dataToDisplay = useMemo(() => {
         const startIndex = getIndexForPages(true);
-        const endIndex = getIndexForPages(false, fakeRowCount);
+        const endIndex = getIndexForPages(
+            false,
+            recentlyUpdatedPositions.length,
+        );
 
         return mergedData.slice(startIndex, endIndex);
-    }, [pagesVisible, mergedData, fakeRowCount]);
+    }, [pagesVisible, mergedData, recentlyUpdatedPositions]);
 
     return (
         <TableRowsInfiniteScroll

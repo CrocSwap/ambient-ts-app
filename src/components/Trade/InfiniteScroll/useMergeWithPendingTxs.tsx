@@ -191,7 +191,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
 
     return {
         mergedData,
-        fakeRowCount,
+        recentlyUpdatedPositions,
     };
 };
 
