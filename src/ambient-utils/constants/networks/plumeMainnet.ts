@@ -46,9 +46,9 @@ export const plumeMainnet: NetworkIF = {
     vaultsEnabled: false,
     tempestApiNetworkName: '',
     topPools: [
+        new TopPool(plumeNativeETH, plumeUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(plumePETH, plumePUSD, chainSpecFromSDK.poolIndex),
         new TopPool(plumeNRWA, plumePUSD, chainSpecFromSDK.poolIndex),
-        new TopPool(plumeUSDC, plumeNativeETH, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
