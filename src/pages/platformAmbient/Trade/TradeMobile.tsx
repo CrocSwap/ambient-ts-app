@@ -386,6 +386,8 @@ export default function TradeMobile(props: propsIF) {
                     )
                         ? 10
                         : 0),
+
+                maxWidth: !isFuta && activeTab === 'Order' ? '600px' : '',
             }}
             // onTouchStart={handleTouchStart}
             // onTouchMove={handleTouchMove}
