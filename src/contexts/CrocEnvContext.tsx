@@ -1,6 +1,6 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useWeb3ModalProvider } from '@web3modal/ethers/react';
-import { Provider, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import {
     ReactNode,
     createContext,
@@ -49,12 +49,12 @@ export interface CrocEnvContextIF {
     topPools: PoolIF[];
     ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplateIF;
-    provider: Provider;
-    mainnetProvider: Provider | undefined;
-    scrollProvider: Provider | undefined;
-    swellProvider: Provider | undefined;
-    blastProvider: Provider | undefined;
-    plumeProvider: Provider | undefined;
+    provider: BatchedJsonRpcProvider;
+    mainnetProvider: BatchedJsonRpcProvider | undefined;
+    scrollProvider: BatchedJsonRpcProvider | undefined;
+    swellProvider: BatchedJsonRpcProvider | undefined;
+    blastProvider: BatchedJsonRpcProvider | undefined;
+    plumeProvider: BatchedJsonRpcProvider | undefined;
     isPrimaryRpcNodeInactive: React.MutableRefObject<boolean>;
 }
 
@@ -210,36 +210,53 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     );
 
     useEffect(() => {
-        setProvider(
-            new BatchedJsonRpcProvider(activeNetworkRPC, parseInt(chainId), {
-                staticNetwork: true,
-            }),
-        );
-    }, [chainId, activeNetworkRPC]);
+        (async () => {
+            if (provider) {
+                const currentProviderChainId = (
+                    await provider.getNetwork()
+                ).chainId.toString();
+
+                if (
+                    currentProviderChainId !== parseInt(chainId).toString() ||
+                    provider._getConnection().url !== activeNetworkRPC
+                ) {
+                    setProvider(
+                        new BatchedJsonRpcProvider(
+                            activeNetworkRPC,
+                            parseInt(chainId),
+                            {
+                                staticNetwork: true,
+                            },
+                        ),
+                    );
+                }
+            }
+        })();
+    }, [provider, chainId, activeNetworkRPC]);
 
     useBlacklist(userAddress);
 
-    const setNewCrocEnv = async () => {
-        let signer = undefined;
-        if (walletProvider) {
-            const w3provider = new ethers.BrowserProvider(walletProvider);
-            signer = await w3provider.getSigner();
-        }
-        if (!provider && !signer) {
-            setCrocEnv(undefined);
-            return;
-        } else if (provider) {
-            const newCrocEnv = new CrocEnv(
-                provider,
-                signer ? signer : undefined,
-            );
-            setCrocEnv(newCrocEnv);
-        }
-    };
-
+    // set new crocEnv
     useEffect(() => {
-        if (isUserOnline) setNewCrocEnv();
-    }, [provider, walletProvider, isUserOnline, userAddress, activeNetworkRPC]);
+        (async () => {
+            if (!isUserOnline) return;
+            let signer = undefined;
+            if (walletProvider) {
+                const w3provider = new ethers.BrowserProvider(walletProvider);
+                signer = await w3provider.getSigner();
+            }
+            if (!provider && !signer) {
+                setCrocEnv(undefined);
+                return;
+            } else if (provider) {
+                const newCrocEnv = new CrocEnv(
+                    provider,
+                    signer ? signer : undefined,
+                );
+                setCrocEnv(newCrocEnv);
+            }
+        })();
+    }, [isUserOnline, provider, walletProvider, userAddress, activeNetworkRPC]);
 
     const fetchMainnetEthPrice = async () => {
         const mainnetEthPrice = (

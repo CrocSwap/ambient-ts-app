@@ -83,7 +83,12 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     // reset pool data when switching networks
     useEffect(() => {
-        setIntermediaryPoolData([]);
+        if (
+            intermediaryPoolData.length &&
+            intermediaryPoolData[0].chainId !== activeNetwork.chainId
+        ) {
+            setIntermediaryPoolData([]);
+        }
     }, [activeNetwork.chainId]);
 
     // used to prevent displaying data for a previous network after switching networks
