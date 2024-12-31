@@ -25,6 +25,7 @@ import {
 import { CurrencySelector } from '../../Form/CurrencySelector';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import TooltipLabel from '../TooltipLabel/TooltipLabel';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 // Props interface
 export interface PropsIF {
@@ -463,8 +464,12 @@ export const tickerDisplayElements = (props: PropsIF) => {
 
     // Max FDV display component
     const tickerDropdownRef = useRef<HTMLDivElement>(null);
-    // const clickOutsideWalletHandler = () => setIsMaxDropdownOpen(false);
-    // useOnClickOutside(tickerDropdownRef, clickOutsideWalletHandler);
+    const clickOutsideWalletHandler = () => {
+        if (isMaxDropdownOpen) {
+            setIsMaxDropdownOpen(false);
+        } else return;
+    };
+    useOnClickOutside(tickerDropdownRef, clickOutsideWalletHandler);
 
     const fdvUsdValue =
         nativeTokenUsdPrice !== undefined && selectedMaxMarketCapInEthNum
@@ -496,6 +501,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
     const maxFdvDisplay = (
         <div
             className={`${styles.tickerContainer} ${styles.maxMarketContainer}`}
+            ref={tickerDropdownRef}
         >
             <TooltipLabel
                 tooltipTitle='The max market cap you are willing to bid up to'
@@ -527,10 +533,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                     </div>
                 </button>
                 {isMaxDropdownOpen && (
-                    <div
-                        className={styles.maxDropdownContent}
-                        ref={tickerDropdownRef}
-                    >
+                    <div className={styles.maxDropdownContent}>
                         {maxFdvData.map((item, idx) => {
                             const maxFdvInEth = toDisplayQty(item, 18);
 
