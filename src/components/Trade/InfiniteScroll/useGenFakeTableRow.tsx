@@ -12,6 +12,7 @@ import {
     CachedDataContext,
     ChainDataContext,
     CrocEnvContext,
+    PoolContext,
     TokenContext,
     TradeDataContext,
 } from '../../../contexts';
@@ -39,6 +40,21 @@ const useGenFakeTableRow = () => {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
+
+    // const {
+    //     pool,
+    //     isPoolInitialized,
+    //     isTradeDollarizationEnabled,
+    //     usdPriceInverse,
+    //     poolData,
+    // } = useContext(PoolContext);
+
+    // const { basePrice, quotePrice } = poolData;
+    // console.log('>>> poolData', poolData);
+    // console.log('>>> pool', pool);
+
+    // console.log('>>> basePrice', basePrice);
+    // console.log('>>> quotePrice', quotePrice);
 
     const {
         activeNetwork: { chainId, poolIndex, GCGO_URL },
@@ -72,7 +88,6 @@ const useGenFakeTableRow = () => {
             pendingTx.txAction === 'Buy',
             pendingTx.txDetails.lowTick || 0,
             pendingTx.txDetails.highTick || 0,
-            // lastBlockNumber
         );
         if (!pendingTx.txDetails) {
             return {} as RecentlyUpdatedPositionIF;
@@ -147,14 +162,14 @@ const useGenFakeTableRow = () => {
         );
 
         let totalValueUSD: number = usdValue;
-        console.log('>>> usdValue', usdValue);
-        console.log(
-            '>>> limitOrderData.totalValueUSD',
-            limitOrderData.totalValueUSD,
-        );
         if (limitOrderData.totalValueUSD) {
             totalValueUSD += limitOrderData.totalValueUSD as number;
         }
+        console.log(
+            '>>> totalUsdValue',
+            usdValue,
+            limitOrderData.totalValueUSD,
+        );
 
         const onChainOrder: LimitOrderIF = {
             positionLiq: liqNum,

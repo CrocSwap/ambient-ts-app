@@ -64,7 +64,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
 
     useEffect(() => {
         if (props.type === 'Order') {
-            const relevantTransactions = transactionsByType.filter(
+            const relTxs = transactionsByType.filter(
                 (tx) =>
                     !tx.isRemoved &&
                     unindexedNonFailedSessionLimitOrderUpdates.some(
@@ -79,40 +79,16 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                     tx.txDetails?.poolIdx === poolIndex,
             );
 
-            setRelevantTransactions(relevantTransactions);
+            setRelevantTransactions(relTxs);
         }
     }, [transactionsByType]);
 
-    const updateRelevantTransactions = (
-        recentRelevantTxs: RecentlyUpdatedPositionIF[],
-    ) => {
-        const recentRelevantTxsHashes = new Set(
-            recentRelevantTxs.map((tx) => tx.positionHash),
-        );
-
-        // added to fix duplicated pending relevant txs
-        const uniqueRelevantTxs: RecentlyUpdatedPositionIF[] = [];
-        recentRelevantTxs.forEach((tx) => {
-            if (
-                !uniqueRelevantTxs.find(
-                    (e) => e.positionHash === tx.positionHash,
-                )
-            ) {
-                uniqueRelevantTxs.push(tx);
-            }
-        });
-
-        setRecentlyUpdatedPositions((prev) => {
-            return [
-                ...prev.filter(
-                    (e) => !recentRelevantTxsHashes.has(e.positionHash),
-                ),
-                ...uniqueRelevantTxs,
-            ];
-        });
-    };
-
     useEffect(() => {
+        if (relevantTransactions.length === 0) {
+            setRecentlyUpdatedPositions([]);
+            return;
+        }
+
         (async () => {
             if (props.type === 'Order') {
                 Promise.all(
@@ -134,11 +110,39 @@ const useMergeWithPendingTxs = (props: propsIF) => {
         })();
     }, [relevantTransactions]);
 
+    const updateRelevantTransactions = (
+        recentRelevantTxs: RecentlyUpdatedPositionIF[],
+    ) => {
+        const recentRelevantTxsHashes = new Set(
+            recentRelevantTxs.map((tx) => tx.positionHash),
+        );
+
+        // added to fix duplicated pending relevant txs
+        const uniqueRelevantTxs: RecentlyUpdatedPositionIF[] = [];
+
+        recentRelevantTxs.forEach((tx) => {
+            if (
+                !uniqueRelevantTxs.find(
+                    (e) => e.positionHash === tx.positionHash,
+                )
+            ) {
+                uniqueRelevantTxs.push(tx);
+            }
+        });
+
+        setRecentlyUpdatedPositions((prev) => {
+            return [
+                ...prev.filter(
+                    (e) => !recentRelevantTxsHashes.has(e.positionHash),
+                ),
+                ...uniqueRelevantTxs,
+            ];
+        });
+    };
+
     const [fakeRowCount, setFakeRowCount] = useState(0);
 
     const mergedData = useMemo(() => {
-        console.log('>>> recentlyUpdatedPositions', recentlyUpdatedPositions);
-
         const recentlyUpdatedHashes = new Set();
         const recentlyUpdatedToShow: LimitOrderIF[] | PositionIF[] = [];
         recentlyUpdatedPositions.forEach((e) => {
@@ -183,7 +187,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
         }
 
         return [];
-    }, [data, recentlyUpdatedPositions, relevantTransactions]);
+    }, [data, recentlyUpdatedPositions]);
 
     return {
         mergedData,
