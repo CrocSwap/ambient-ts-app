@@ -101,6 +101,9 @@ export default function Navbar() {
         setShowHomeVideoLocalStorage,
         showTutosLocalStorage,
         bindShowTutosLocalStorage,
+        skipLandingPage,
+        setSkipLandingPage,
+        setShowLandingPageTemp,
     } = useFutaHomeContext();
 
     // set page title
@@ -230,14 +233,29 @@ export default function Navbar() {
             variants={dropdownItemVariants}
             className={styles.skipAnimationContainer}
         >
-            <p>Show Home Animation</p>
+            <p>Skip Home Animation</p>
             <Toggle
-                isOn={showHomeVideoLocalStorage}
+                isOn={!showHomeVideoLocalStorage}
                 handleToggle={() =>
                     setShowHomeVideoLocalStorage(!showHomeVideoLocalStorage)
                 }
                 Width={36}
-                id='show_home_video_futa_toggle'
+                id='skip_home_video_futa_toggle'
+                disabled={false}
+            />
+        </motion.div>
+    );
+    const skipLandingPageToggle = (
+        <motion.div
+            variants={dropdownItemVariants}
+            className={styles.skipAnimationContainer}
+        >
+            <p>Skip Home Page</p>
+            <Toggle
+                isOn={skipLandingPage}
+                handleToggle={() => setSkipLandingPage(!skipLandingPage)}
+                Width={36}
+                id='skip landing page_futa_toggle'
                 disabled={false}
             />
         </motion.div>
@@ -284,7 +302,7 @@ export default function Navbar() {
                 className={`${styles.container} ${currentLocationIsHome && styles.fixedPositioned}`}
             >
                 <div className={styles.logoContainer}>
-                    <Link to='/'>
+                    <Link to='/' onClick={() => setShowLandingPageTemp(true)}>
                         <h3>FU/TA</h3>
                     </Link>
                     {desktopScreen && tabLinks}
@@ -340,6 +358,7 @@ export default function Navbar() {
                                         }`}
                                 </motion.p>
                                 {skipAnimationToggle}
+                                {skipLandingPageToggle}
                                 {showTutosToggle}
                                 <motion.p
                                     className={styles.version}
