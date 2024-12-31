@@ -236,6 +236,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             isChartEnabled &&
             isUserOnline &&
             candleScale.isShowLatestCandle &&
+            !isFetchingCandle &&
             location.pathname.includes('/trade')
         ) {
             if (
@@ -257,6 +258,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         poolTokenAddress,
         candleScale?.isFetchForTimeframe,
         candleScale.isShowLatestCandle,
+        isFetchingCandle,
     ]);
 
     useEffect(() => {
@@ -392,8 +394,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         numDurations: number,
         minTimeMemo: number,
     ) => {
-        console.log({ crocEnv }, !candleTimeLocal);
-
         if (!crocEnv || !candleTimeLocal || candleData === undefined) {
             return;
         }
@@ -467,15 +467,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         (async () => {
-            console.log(
-                'sdfafadfadfdfdas',
-                numDurationsNeeded,
-                candleDomains.domainBoundry,
-                crocEnv,
-                crocEnv && (await crocEnv.context).chain.chainId,
-                chainId,
-            );
-
             if (
                 numDurationsNeeded &&
                 crocEnv &&
