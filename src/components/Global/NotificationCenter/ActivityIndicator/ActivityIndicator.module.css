@@ -12,10 +12,18 @@
 }
 
 .circleContainerFuta {
-    width: 16.66px;
-    height: 16.66px;
+
+
+    position: relative;
+    width: 12.5px;
+    height: 12.5px;
     background-color: var(--accent1);
     border-radius: 0;
+    cursor: pointer;
+    display: flex;
+    outline: none;
+    border: none;
+    padding: none;
 }
 .circleButton {
     outline: none;
@@ -38,8 +46,13 @@
 .ringFuta {
     border: 3px solid var(--accent1);
     border-radius: 0;
-    width: 33.33px;
-    height: 33.33px;
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    animation: pulsate 1s ease-out infinite;
+    opacity: 0;
 }
 
 .activityIndicatorDiv {

@@ -331,7 +331,7 @@ export default function Navbar() {
                         onClick={() => setReplayTutorial(true)}
                     >
                         {' '}
-                        <AiOutlineQuestionCircle />{' '}
+                        <AiOutlineQuestionCircle /> Help
                     </div>
                     {!isUserConnected && connectWagmiButton}
                     <NotificationCenter />
