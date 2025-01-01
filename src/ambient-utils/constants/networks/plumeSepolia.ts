@@ -10,10 +10,22 @@ import {
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const PLUME_SEPOLIA_RPC_URL =
+const PUBLIC_RPC_URL = 'https://test-rpc.plumenetwork.xyz';
+const SECONDARY_PUBLIC_RPC_URL = 'https://test-rpc.plumenetwork.xyz';
+
+const RESTRICTED_RPC_URL =
     import.meta.env.VITE_PLUME_SEPOLIA_RPC_URL !== undefined
         ? import.meta.env.VITE_PLUME_SEPOLIA_RPC_URL
-        : 'https://test-rpc.plumenetwork.xyz';
+        : undefined;
+
+const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
+    ? RESTRICTED_RPC_URL
+    : PUBLIC_RPC_URL;
+
+const FALLBACK_RPC_URL =
+    PRIMARY_RPC_URL === PUBLIC_RPC_URL
+        ? SECONDARY_PUBLIC_RPC_URL
+        : PUBLIC_RPC_URL;
 
 const chainIdHex = '0x18230';
 const chainSpecFromSDK = lookupChain(chainIdHex);
@@ -22,7 +34,7 @@ const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
     name: 'Plume Devnet',
     currency: 'ETH',
-    rpcUrl: PLUME_SEPOLIA_RPC_URL,
+    rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://test-explorer.plumenetwork.xyz/',
 };
 
@@ -30,7 +42,8 @@ export const plumeSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_TESTNET_URL,
-    evmRpcUrl: PLUME_SEPOLIA_RPC_URL,
+    evmRpcUrl: PRIMARY_RPC_URL,
+    fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [plumeSepoliaETH, plumeSepoliaUSD],
     defaultPairFuta: [plumeSepoliaETH, plumeSepoliaUSD],

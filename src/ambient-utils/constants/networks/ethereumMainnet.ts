@@ -12,11 +12,21 @@ import {
 import { GCGO_ETHEREUM_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const PUBLIC_RPC_URL = 'https://ethereum-rpc.publicnode.com';
+const PUBLIC_RPC_URL = 'https://ethereum-rpc.publicnode.com';
+const SECONDARY_PUBLIC_RPC_URL = 'https://eth.llamarpc.com';
 
-export const RESTRICTED_RPC_URL =
+const RESTRICTED_RPC_URL =
     import.meta.env.VITE_MAINNET_RPC_URL !== undefined
         ? import.meta.env.VITE_MAINNET_RPC_URL
+        : undefined;
+
+const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
+    ? RESTRICTED_RPC_URL
+    : PUBLIC_RPC_URL;
+
+const FALLBACK_RPC_URL =
+    PRIMARY_RPC_URL === PUBLIC_RPC_URL
+        ? SECONDARY_PUBLIC_RPC_URL
         : PUBLIC_RPC_URL;
 
 const chainIdHex = '0x1';
@@ -34,7 +44,8 @@ export const ethereumMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_ETHEREUM_URL,
-    evmRpcUrl: RESTRICTED_RPC_URL,
+    evmRpcUrl: PRIMARY_RPC_URL,
+    fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [mainnetETH, mainnetUSDC],
     poolIndex: chainSpecFromSDK.poolIndex,

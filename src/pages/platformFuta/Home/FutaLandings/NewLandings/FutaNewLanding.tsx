@@ -14,7 +14,13 @@ const INITIAL_DELAY = 7000;
 const TOTAL_SECTIONS = 5;
 
 export default function FutaNewLanding() {
-    const { hasVideoPlayedOnce, setHasVideoPlayedOnce } = useFutaHomeContext();
+    const {
+        hasVideoPlayedOnce,
+        setHasVideoPlayedOnce,
+        showHomeVideoLocalStorage,
+        skipLandingPage,
+        showLandingPageTemp,
+    } = useFutaHomeContext();
     const [activeSection, setActiveSection] = useState(0);
     const [showMainContent, setShowMainContent] = useState(false);
     const navigate = useNavigate();
@@ -120,6 +126,12 @@ export default function FutaNewLanding() {
         });
     }, []);
 
+    useEffect(() => {
+        if (!showLandingPageTemp && skipLandingPage) {
+            navigate('/auctions/');
+        }
+    }, [skipLandingPage, navigate, showLandingPageTemp]);
+
     // Memoized keyboard handler
     const handleKeyDown = useCallback(
         (event: KeyboardEvent) => {
@@ -164,13 +176,21 @@ export default function FutaNewLanding() {
     }, [handleScroll]);
 
     // Initial delay for showing main content
+
     useEffect(() => {
-        const timer = setTimeout(() => {
+        if (!showHomeVideoLocalStorage) {
+            // If the user has chosen to skip, immediately show main content
             setShowMainContent(true);
             setHasVideoPlayedOnce(true);
-        }, INITIAL_DELAY);
-        return () => clearTimeout(timer);
-    }, []);
+        } else {
+            // Otherwise, use the timer for the initial delay
+            const timer = setTimeout(() => {
+                setShowMainContent(true);
+                setHasVideoPlayedOnce(true);
+            }, INITIAL_DELAY);
+            return () => clearTimeout(timer);
+        }
+    }, [showHomeVideoLocalStorage, setHasVideoPlayedOnce]);
 
     // Sections configuration
     const sections = [
