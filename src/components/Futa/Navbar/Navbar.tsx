@@ -68,6 +68,9 @@ export default function Navbar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [replayTutorial, setReplayTutorial] = useState(false);
     const tutorialBtnRef = useRef<HTMLDivElement>(null);
+
+    const navigate = useNavigate();
+    const location = useLocation();
     const currentLocationIsHome = location.pathname == '/';
 
     // Context
@@ -280,9 +283,6 @@ export default function Navbar() {
     );
 
     const tabLinks = () => {
-        const navigate = useNavigate();
-        const location = useLocation();
-
         return (
             <ul className={styles.navTabs} role='tablist'>
                 {navbarLinks.map((navLink) => (
@@ -331,7 +331,7 @@ export default function Navbar() {
                         onClick={() => setReplayTutorial(true)}
                     >
                         {' '}
-                        <AiOutlineQuestionCircle />{' '}
+                        <AiOutlineQuestionCircle /> Help
                     </div>
                     {!isUserConnected && connectWagmiButton}
                     <NotificationCenter />
