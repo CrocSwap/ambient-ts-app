@@ -21,7 +21,6 @@ import { UserDataContext } from '../../contexts/UserDataContext';
 import Button from '../Form/Button';
 import Modal from '../Global/Modal/Modal';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
-import SmolRefuelLink from '../Global/SmolRefuelLink/SmolRefuelLink';
 import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
@@ -492,7 +491,6 @@ export default function LimitActionModal(props: propsIF) {
                 />
                 <div className={styles.info_container}>
                     <LimitActionInfo {...limitInfoProps} />
-                    {!showSettings && <SmolRefuelLink />}
                     {showConfirmation ? (
                         <SubmitTransaction
                             type={type === 'Remove' ? 'Remove' : 'Claim'}
