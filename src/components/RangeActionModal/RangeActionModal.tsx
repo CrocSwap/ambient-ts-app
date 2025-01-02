@@ -24,6 +24,7 @@ import {
     getFormattedNumber,
     getPositionData,
     isStablePair,
+    waitForTransaction,
 } from '../../ambient-utils/dataLayer';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 import { AppStateContext } from '../../contexts/AppStateContext';
@@ -42,7 +43,6 @@ import {
 } from '../../utils/TransactionError';
 import Modal from '../Global/Modal/Modal';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
-import SmolRefuelLink from '../Global/SmolRefuelLink/SmolRefuelLink';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
 
@@ -55,6 +55,8 @@ interface propsIF {
 
 function RangeActionModal(props: propsIF) {
     const { type, position, onClose, isAccountView } = props;
+    const posHash = getPositionHash(position);
+
     const {
         activeNetwork: { GCGO_URL, chainId, poolIndex },
     } = useContext(AppStateContext);
@@ -353,6 +355,7 @@ function RangeActionModal(props: propsIF) {
 
         if (tx?.hash) {
             addTransactionByType({
+                chainId: chainId,
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txAction: 'Remove',
@@ -372,7 +375,6 @@ function RangeActionModal(props: propsIF) {
                     gridSize: lookupChain(position.chainId).gridSize,
                 },
             });
-            const posHash = getPositionHash(position);
             addPositionUpdate({
                 txHash: tx.hash,
                 positionID: posHash,
@@ -381,40 +383,26 @@ function RangeActionModal(props: propsIF) {
             });
         }
 
-        let receipt;
-
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                removePendingTx(error.hash);
-                const newTransactionHash = error.replacement.hash;
-                setNewTransactionHash(newTransactionHash);
-                addPendingTx(newTransactionHash);
-
-                updateTransactionHash(error.hash, error.replacement.hash);
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                const posHash = getPositionHash(position);
-                addPositionUpdate({
-                    txHash: newTransactionHash,
-                    positionID: posHash,
-                    isLimit: false,
-                    unixTimeAdded: Math.floor(Date.now() / 1000),
-                });
-            } else if (isTransactionFailedError(error)) {
-                receipt = error.receipt;
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewTransactionHash,
+                    posHash,
+                    addPositionUpdate,
+                );
+            } catch (e) {
+                console.error({ e });
             }
-        }
-        if (receipt) {
-            IS_LOCAL_ENV && console.debug('dispatching receipt');
-            IS_LOCAL_ENV && console.debug({ receipt });
-            addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.hash);
+            if (receipt) {
+                addReceipt(receipt);
+                removePendingTx(receipt.hash);
+            }
         }
     };
 
@@ -442,6 +430,7 @@ function RangeActionModal(props: propsIF) {
                 setNewTransactionHash(tx?.hash);
                 if (tx?.hash) {
                     addTransactionByType({
+                        chainId: chainId,
                         userAddress: userAddress || '',
                         txHash: tx.hash,
                         txAction: 'Harvest',
@@ -461,7 +450,6 @@ function RangeActionModal(props: propsIF) {
                             gridSize: lookupChain(position.chainId).gridSize,
                         },
                     });
-                    const posHash = getPositionHash(position);
                     addPositionUpdate({
                         txHash: tx.hash,
                         positionID: posHash,
@@ -477,39 +465,46 @@ function RangeActionModal(props: propsIF) {
             console.error('unsupported position type for harvest');
         }
 
-        let receipt;
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewTransactionHash,
+                );
+            } catch (e) {
+                const error = e as TransactionError;
+                console.error({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    IS_LOCAL_ENV && console.debug('repriced');
+                    removePendingTx(error.hash);
+                    const newTransactionHash = error.replacement.hash;
+                    setNewTransactionHash(newTransactionHash);
+                    addPendingTx(newTransactionHash);
 
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                removePendingTx(error.hash);
-                const newTransactionHash = error.replacement.hash;
-                setNewTransactionHash(newTransactionHash);
-                addPendingTx(newTransactionHash);
-
-                updateTransactionHash(error.hash, error.replacement.hash);
-                const posHash = getPositionHash(position);
-                addPositionUpdate({
-                    txHash: newTransactionHash,
-                    positionID: posHash,
-                    isLimit: false,
-                    unixTimeAdded: Math.floor(Date.now() / 1000),
-                });
-            } else if (isTransactionFailedError(error)) {
-                receipt = error.receipt;
+                    updateTransactionHash(error.hash, error.replacement.hash);
+                    addPositionUpdate({
+                        txHash: newTransactionHash,
+                        positionID: posHash,
+                        isLimit: false,
+                        unixTimeAdded: Math.floor(Date.now() / 1000),
+                    });
+                } else if (isTransactionFailedError(error)) {
+                    receipt = error.receipt;
+                }
             }
-        }
-        if (receipt) {
-            IS_LOCAL_ENV && console.debug('dispatching receipt');
-            IS_LOCAL_ENV && console.debug({ receipt });
-            addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.hash);
+            if (receipt) {
+                IS_LOCAL_ENV && console.debug('dispatching receipt');
+                IS_LOCAL_ENV && console.debug({ receipt });
+                addReceipt(receipt);
+                removePendingTx(receipt.hash);
+            }
         }
     };
 
@@ -751,11 +746,6 @@ function RangeActionModal(props: propsIF) {
             <div className={styles.remove_range_container}>
                 <div className={styles.main_content}>
                     {mainModalContent}
-                    {!showSettings && (
-                        <span style={{ marginRight: '20px' }}>
-                            <SmolRefuelLink />
-                        </span>
-                    )}
                     {buttonToDisplay}
                 </div>
             </div>

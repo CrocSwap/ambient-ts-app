@@ -29,7 +29,11 @@ import { TokenContext } from './TokenContext';
 export interface ExploreContextIF {
     pools: {
         all: Array<PoolDataIF>;
-        getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
+        getAllPools: (
+            poolList: PoolIF[],
+            crocEnv: CrocEnv,
+            chainId: string,
+        ) => void;
 
         reset: () => void;
     };
@@ -64,7 +68,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { allPoolStats } = useContext(ChainDataContext);
+    const { allPoolStats, isActiveNetworkPlume, isActiveNetworkSwell } =
+        useContext(ChainDataContext);
     const { poolList } = useContext(PoolContext);
 
     const [allPools, setAllPools] = useState<Array<PoolDataIF>>([]);
@@ -75,11 +80,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         useState(
             localStorage.getItem('isExploreDollarizationEnabled') === 'true',
         );
-
-    // reset pool data when switching networks
-    useEffect(() => {
-        setIntermediaryPoolData([]);
-    }, [activeNetwork.chainId]);
 
     // used to prevent displaying data for a previous network after switching networks
     useEffect(() => {
@@ -120,12 +120,26 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 poolList.length > 0 &&
                 (await crocEnv.context).chain.chainId === activeNetwork.chainId
             ) {
-                getAllPools();
+                if (
+                    intermediaryPoolData.length &&
+                    intermediaryPoolData[0]?.chainId !== activeNetwork.chainId
+                ) {
+                    setIntermediaryPoolData([]);
+                }
+                if (!intermediaryPoolData.length) {
+                    getAllPools();
+                    const interval = setInterval(() => {
+                        getAllPools(); // refresh pool data every 5 minutes
+                    }, 300000);
+                    return () => clearInterval(interval);
+                }
             }
         })();
     }, [
         isUserOnline,
-        JSON.stringify(poolList),
+        poolList.length,
+        poolList[0]?.chainId,
+        intermediaryPoolData[0]?.chainId,
         crocEnv,
         activeNetwork.chainId,
     ]);
@@ -225,7 +239,16 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                     : nowPrice / ydayPrice - 1.0
                 : undefined;
 
-        if (!expandedPoolStatsNow || expandedPoolStatsNow.tvlTotalUsd < 100) {
+        const minimumPoolTvl = isActiveNetworkSwell
+            ? 20
+            : isActiveNetworkPlume
+              ? 20
+              : 100;
+
+        if (
+            !expandedPoolStatsNow ||
+            expandedPoolStatsNow.tvlTotalUsd < minimumPoolTvl
+        ) {
             // return early
             const poolData: PoolDataIF = {
                 ...pool,
@@ -298,20 +321,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             : toDisplayPrice(nowPrice, pool.base.decimals, pool.quote.decimals);
 
         const tokenPriceForUsd = shouldInvert
-            ? (
-                  await cachedFetchTokenPrice(
-                      pool.quote.address,
-                      pool.chainId,
-                      crocEnv,
-                  )
-              )?.usdPrice || 0
-            : (
-                  await cachedFetchTokenPrice(
-                      pool.base.address,
-                      pool.chainId,
-                      crocEnv,
-                  )
-              )?.usdPrice || 0;
+            ? (await cachedFetchTokenPrice(pool.quote.address, pool.chainId))
+                  ?.usdPrice || 0
+            : (await cachedFetchTokenPrice(pool.base.address, pool.chainId))
+                  ?.usdPrice || 0;
 
         const usdPriceMoneynessBased = displayPrice * tokenPriceForUsd;
 
@@ -358,7 +371,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 const filteredPoolData = results.filter(
                     (pool) => pool.spotPrice > 0,
                 );
-                setIntermediaryPoolData(filteredPoolData);
+                if (filteredPoolData.length) {
+                    setIntermediaryPoolData(filteredPoolData);
+                }
             })
             .catch((err) => {
                 console.warn(err);
@@ -378,7 +393,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const exploreContext: ExploreContextIF = {
         pools: {
             all: allPools,
-            getAll: getAllPools,
+            getAllPools: getAllPools,
             reset: () => {
                 setIntermediaryPoolData([]);
             },

@@ -1,22 +1,24 @@
+import { TransactionReceipt } from 'ethers';
 import React, { createContext } from 'react';
 
 export interface ReceiptContextIF {
-    sessionReceipts: Array<string>;
-    allReceipts: Array<string>;
+    sessionReceipts: Array<TransactionReceipt>;
+    allReceipts: Array<TransactionReceipt>;
     pendingTransactions: Array<string>;
     transactionsByType: Array<TransactionByType>;
     sessionPositionUpdates: PositionUpdateIF[];
     addTransactionByType: (txByType: TransactionByType) => void;
-    addReceipt: (receipt: string) => void;
+    addReceipt: (receipt: TransactionReceipt) => void;
     addPendingTx: (tx: string) => void;
     addPositionUpdate: (positionUpdate: PositionUpdateIF) => void;
     updateTransactionHash: (oldHash: string, newHash: string) => void;
-    removePendingTx: (pendingTx: string) => void;
+    removePendingTx: (pendingTx: string, isRemoved?: boolean) => void;
     removeReceipt: (txHash: string) => void;
     resetReceiptData: () => void;
 }
 
 interface TransactionByType {
+    chainId: string;
     userAddress: string;
     txHash: string;
     txAction?:
@@ -53,6 +55,7 @@ interface TransactionByType {
         originalLowTick?: number;
         originalHighTick?: number;
     };
+    isRemoved?: boolean;
 }
 
 export interface PositionUpdateIF {
@@ -70,8 +73,12 @@ export const ReceiptContext = createContext({} as ReceiptContextIF);
 export const ReceiptContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const [sessionReceipts, setSessionReceipts] = React.useState<string[]>([]);
-    const [allReceipts, setAllReceipts] = React.useState<string[]>([]);
+    const [sessionReceipts, setSessionReceipts] = React.useState<
+        TransactionReceipt[]
+    >([]);
+    const [allReceipts, setAllReceipts] = React.useState<TransactionReceipt[]>(
+        [],
+    );
     const [pendingTransactions, setPendingTransactions] = React.useState<
         string[]
     >([]);
@@ -87,13 +94,30 @@ export const ReceiptContextProvider = (props: {
     const addTransactionByType = (txByType: TransactionByType) => {
         setTransactionsByType((prev) => [...prev, txByType]);
     };
-    const addReceipt = (receipt: string) => {
+    const addReceipt = (receipt: TransactionReceipt) => {
         setSessionReceipts((prev) => [receipt, ...prev]);
         setAllReceipts((prev) => [receipt, ...prev]);
     };
-    const addPendingTx = (tx: string) => {
-        setPendingTransactions((prev) => [tx, ...prev]);
+    const addPendingTx = (pendingTx: string) => {
+        setPendingTransactions((prev) => [pendingTx, ...prev]);
     };
+    const removePendingTx = (nonPendingTx: string, isRemoved?: boolean) => {
+        // Remove the transaction from pendingTransactions
+        setPendingTransactions((pendingTransactions) =>
+            pendingTransactions.filter((p) => p !== nonPendingTx),
+        );
+
+        // Update the isRemoved property in transactionsByType
+        isRemoved &&
+            setTransactionsByType((transactionsByType) =>
+                transactionsByType.map((tx) =>
+                    tx.txHash === nonPendingTx
+                        ? { ...tx, isRemoved: true } // Add or update the isRemoved property
+                        : tx,
+                ),
+            );
+    };
+
     const addPositionUpdate = (positionUpdate: PositionUpdateIF) => {
         setSessionPositionUpdates((prev) => [positionUpdate, ...prev]);
     };
@@ -105,14 +129,9 @@ export const ReceiptContextProvider = (props: {
             transactionsByType[txIndex] = {
                 ...transactionsByType[txIndex],
                 txHash: newHash,
+                isRemoved: false,
             };
         }
-    };
-
-    const removePendingTx = (pendingTx: string) => {
-        setPendingTransactions((pendingTransactions) =>
-            pendingTransactions.filter((p) => p !== pendingTx),
-        );
     };
 
     const removeReceipt = (txHash: string) => {
@@ -120,8 +139,7 @@ export const ReceiptContextProvider = (props: {
 
         setSessionReceipts((sessionReceipts) =>
             sessionReceipts.filter(
-                (r) =>
-                    JSON.parse(r).hash.toLowerCase() !== txHash.toLowerCase(),
+                (r) => r.hash.toLowerCase() !== txHash.toLowerCase(),
             ),
         );
     };

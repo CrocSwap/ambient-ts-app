@@ -330,7 +330,12 @@ function ChartToolbar() {
             isMobile={mobileView}
             isSmallScreen={smallScreen}
             isFullScreen={isFullScreen}
-            marginTopValue={chartContainerOptions.top - 57}
+            marginTopValue={
+                isFuta
+                    ? chartContainerOptions.top - 40
+                    : chartContainerOptions.top - 57
+            }
+            isFuta={isFuta}
             height={chartContainerOptions.height - xAxisHeightPixel}
             id='toolbar_container'
             ref={toolbarRef}
@@ -343,7 +348,6 @@ function ChartToolbar() {
             }
             onMouseLeave={handleMouseLeave}
             onMouseMove={handleMouseMove}
-            style={{ paddingLeft: isFuta ? '16px' : '' }}
         >
             <DrawlistContainer isActive={isToolbarOpen}>
                 <ScrollableDiv

@@ -279,12 +279,18 @@ export const useTokens = (
     const verifyToken = useCallback(
         (addr: string): boolean => {
             for (const token of defaultTokens) {
-                if (token.address.toLowerCase() === addr.toLowerCase()) {
+                if (
+                    token.address.toLowerCase() === addr.toLowerCase() &&
+                    token.chainId === parseInt(chainId)
+                ) {
                     return true;
                 }
             }
             for (const token of tokenMap.values()) {
-                if (token.address.toLowerCase() === addr.toLowerCase()) {
+                if (
+                    token.address.toLowerCase() === addr.toLowerCase() &&
+                    token.chainId === parseInt(chainId)
+                ) {
                     return true;
                 }
             }

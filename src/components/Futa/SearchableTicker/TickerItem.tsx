@@ -12,14 +12,16 @@ import {
     getRetrievedAuctionDetailsForAccount,
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
-import styles from './SearchableTicker.module.css';
-import styles2 from './TickerItem.module.css';
+import styles from './TickerItem.module.css';
+import { GoChevronRight } from 'react-icons/go';
 
 interface PropsIF {
     auction: AuctionDataIF;
     setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
     selectedTicker: string | undefined;
     isAccount: boolean | undefined;
+    isCreated: boolean;
+    isMobile: boolean;
     setShowComplete: Dispatch<SetStateAction<boolean>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useRefTicker: MutableRefObject<any>;
@@ -30,12 +32,13 @@ export default function TickerItem(props: PropsIF) {
         selectedTicker,
         setSelectedTicker,
         isAccount,
+        isCreated,
+        isMobile,
         setShowComplete,
         useRefTicker,
     } = props;
 
-    const { accountData, hoveredTicker, setHoveredTicker } =
-        useContext(AuctionsContext);
+    const { accountData, setHoveredTicker } = useContext(AuctionsContext);
 
     const {
         ticker,
@@ -154,22 +157,37 @@ export default function TickerItem(props: PropsIF) {
                 : '$0'
             : undefined;
 
+    function convertWeiToEth(
+        rawVal: string,
+        decimals: number,
+        trunc: number,
+    ): string {
+        let formattedWei: string = rawVal;
+        while (formattedWei.length < decimals + 1) {
+            formattedWei = 0 + formattedWei;
+        }
+        const positionToSplit: number = formattedWei.length - decimals;
+        const firstPart: string = formattedWei.slice(0, positionToSplit);
+        const lastPart: string = formattedWei.slice(positionToSplit);
+        const output: string = (firstPart + '.' + lastPart).slice(0, trunc);
+        return output;
+    }
+
     return (
         <Link
             ref={(el) => (useRefTicker.current[ticker] = el)}
-            className={`${styles.tickerItemContainer} ${
-                auction?.ticker === selectedTicker && !isAccount
-                    ? styles.active
-                    : ''
-            } 
-            ${
-                auction?.ticker === hoveredTicker &&
-                hoveredTicker !== selectedTicker &&
-                !isAccount
-                    ? styles.hoverActive
-                    : ''
-            }
-            `}
+            className={[
+                //  spacing and visual arrangement styles
+                styles.ticker_item,
+                //  add background highlighting when ticker is active
+                //  ... or when hovered
+                isAccount ||
+                    styles[
+                        auction?.ticker === selectedTicker
+                            ? 'active'
+                            : 'inactive'
+                    ],
+            ].join(' ')}
             to={'/auctions/v1/' + ticker}
             onClick={() => {
                 setSelectedTicker(ticker);
@@ -182,8 +200,14 @@ export default function TickerItem(props: PropsIF) {
                 setHoveredTicker(ticker);
             }}
         >
-            <p className={styles2.ticker_name}>{ticker}</p>
-            <p className={styles.marketCap}>{formattedMarketCap}</p>
+            <div className={styles.ticker_name}>
+                {isMobile || (
+                    <GoChevronRight size={20} className={styles.ticker_arrow} />
+                )}
+                <p>{ticker}</p>
+            </div>
+            <p className={styles.market_cap}>{formattedMarketCap}</p>
+            <p className={styles.auction_status}>{!status2 ? 'IN' : 'OUT'}</p>
             <p
                 style={{
                     color:
@@ -194,17 +218,22 @@ export default function TickerItem(props: PropsIF) {
                               ? 'var(--text1)'
                               : 'var(--orange)',
                 }}
+                className={styles.time_remaining}
             >
                 {timeRemaining}
             </p>
-            <div className={styles.statusContainer}>
-                {status2 && (
-                    <span
-                        className={styles.tickerStatus}
-                        style={{ background: status2 ? status2 : '' }}
-                    />
-                )}
-            </div>
+            {isCreated && (
+                <p className={styles.native_tkn_committed}>
+                    {auction.nativeTokenCommitted &&
+                        convertWeiToEth(auction.nativeTokenCommitted, 18, 6)}
+                </p>
+            )}
+            {isCreated && (
+                <p className={styles.native_tkn_reward}>
+                    {auction.nativeTokenReward &&
+                        convertWeiToEth(auction.nativeTokenReward, 18, 6)}
+                </p>
+            )}
         </Link>
     );
 }

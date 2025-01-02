@@ -10,8 +10,8 @@ import {
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
     getFormattedNumber,
-    getTxReceipt,
     submitLimitOrder,
+    waitForTransaction,
 } from '../../../../ambient-utils/dataLayer';
 import { useTradeData } from '../../../../App/hooks/useTradeData';
 import Button from '../../../../components/Form/Button';
@@ -58,18 +58,15 @@ import {
 import { limitTutorialSteps } from '../../../../utils/tutorial/Limit';
 
 export default function Limit() {
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
 
     const {
         activeNetwork: { chainId, gridSize, poolIndex },
         isUserOnline,
     } = useContext(AppStateContext);
-    const {
-        gasPriceInGwei,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-        isActiveNetworkPlume,
-    } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkL2, isActiveNetworkPlume } =
+        useContext(ChainDataContext);
     const {
         pool,
         isPoolInitialized,
@@ -519,7 +516,7 @@ export default function Limit() {
     ]);
 
     useEffect(() => {
-        setNewLimitOrderTransactionHash('');
+        resetConfirmation();
     }, [baseToken.address + quoteToken.address]);
 
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
@@ -549,16 +546,14 @@ export default function Limit() {
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(
-            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
         );
     }, [tokenADexBalance]);
 
     const [l1GasFeeLimitInGwei] = useState<number>(
-        isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
+        isActiveNetworkL2 ? 10000 : 0,
     );
-    const [extraL1GasFeeLimit] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeeLimit] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -596,6 +591,14 @@ export default function Limit() {
                 NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
+            console.log({
+                gasPriceInDollarsNum,
+                extraL1GasFeeLimit,
+                gasPriceInGwei,
+                averageLimitCostInGasDrops,
+                NUM_GWEI_IN_WEI,
+                ethMainnetUsdPrice,
+            });
             setOrderGasPriceInDollars(
                 getFormattedNumber({
                     value: gasPriceInDollarsNum + extraL1GasFeeLimit,
@@ -737,6 +740,7 @@ export default function Limit() {
             addPendingTx(tx?.hash);
             setNewLimitOrderTransactionHash(tx.hash);
             addTransactionByType({
+                chainId: chainId,
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txAction:
@@ -775,7 +779,15 @@ export default function Limit() {
 
         let receipt;
         try {
-            if (tx) receipt = await getTxReceipt(tx);
+            if (tx)
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewLimitOrderTransactionHash,
+                );
         } catch (e) {
             const error = e as TransactionError;
             console.error({ error });
@@ -804,7 +816,7 @@ export default function Limit() {
         }
 
         if (receipt) {
-            addReceipt(JSON.stringify(receipt));
+            addReceipt(receipt);
             removePendingTx(receipt.hash);
         }
     };
@@ -962,7 +974,8 @@ export default function Limit() {
                     }}
                     tokenBInputQty={{
                         value:
-                            tokenBInputQtyNoExponentString !== '0.0'
+                            tokenBInputQtyNoExponentString !== '0.0' ||
+                            !isTokenAPrimary
                                 ? tokenBInputQty
                                 : '0',
                         set: setTokenBInputQty,
@@ -1087,7 +1100,12 @@ export default function Limit() {
                                 tokenA.symbol,
                                 undefined,
                                 isActiveNetworkPlume
-                                    ? tokenAQtyCoveredByWalletBalance
+                                    ? isTokenAPrimary
+                                        ? tokenAQtyCoveredByWalletBalance
+                                        : // add 1% buffer to avoid rounding errors
+                                          (tokenAQtyCoveredByWalletBalance *
+                                              101n) /
+                                          100n
                                     : tokenABalance
                                       ? fromDisplayQty(
                                             tokenABalance,

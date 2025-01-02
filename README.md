@@ -15,7 +15,7 @@ Welcome to the Ambient Finance platform! Please [click here](https://ambient.fin
 
 ### Dev Mode
 
-Clone the repo and use `yarn start` to run the Ambient UI in development mode.
+Clone the repo and use `yarn ambi` to run the Ambient UI in development mode.
 
 Open [http://localhost:3000](http://localhost:3000) to view it in a browser.
 
@@ -24,18 +24,6 @@ Note: Node v18+ is required
 ### Environmental Variables
 
 Configure your build environment by adding a dotfile (e.g. `.env.local`) with variable definitions to the top level directory before starting the server. Please reference `.gitignore` in the root directory for dotfile naming conventions.
-
-#### Infura
-
-This is a key for the Infura API which is used to pull metadata from on-chain.
-
-Format: `VITE_INFURA_KEY=*********************`
-
-Notes:
-
--   Please use your own Infura key for development purposes.
-
-[Back to Top](#top)
 
 # Contributions
 

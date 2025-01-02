@@ -232,6 +232,23 @@ export const SoloTokenSelect = (props: propsIF) => {
     const [hidePlaceholderText, setHidePlaceholderText] =
         useState<boolean>(INPUT_HAS_AUTOFOCUS);
 
+    useEffect(() => {
+        const handlePasteShortcut = async (e: KeyboardEvent) => {
+            // Check for Cmd-V (Mac) or Ctrl-V (Windows/Linux)
+            if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
+                e.preventDefault();
+                const clipboardText = await navigator.clipboard.readText();
+                setInput(clipboardText); // Update the state with clipboard content
+            }
+        };
+
+        window.addEventListener('keydown', handlePasteShortcut);
+
+        return () => {
+            window.removeEventListener('keydown', handlePasteShortcut);
+        };
+    }, []);
+
     return (
         <section className={styles.container}>
             <header className={styles.header}>
@@ -246,28 +263,27 @@ export const SoloTokenSelect = (props: propsIF) => {
             </header>
             <div className={styles.input_control_container}>
                 <input
-                    id='token_select_input_field'
-                    spellCheck='false'
                     type='text'
-                    value={rawInput}
-                    autoComplete='off'
-                    autoFocus={INPUT_HAS_AUTOFOCUS}
-                    // needed to remove placeholder text when focused
-                    onFocus={() => setHidePlaceholderText(true)}
-                    // needed to add placeholder text when not focused
-                    onBlur={() => setHidePlaceholderText(false)}
-                    // variable placeholder text (disappears when field is focused)
-                    placeholder={
-                        hidePlaceholderText
-                            ? ''
-                            : '🔍 Search name or paste address'
-                    }
-                    onChange={(e) => setInput(e.target.value)}
+                    id='token_select_input_field'
                     style={{
                         color: showSoloSelectTokenButtons
                             ? 'var(--text2)'
                             : 'var(--text3)',
                     }}
+                    value={rawInput}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setInput(e.target.value)
+                    }
+                    spellCheck='false'
+                    autoComplete='off'
+                    autoFocus={INPUT_HAS_AUTOFOCUS}
+                    onFocus={() => setHidePlaceholderText(true)}
+                    onBlur={() => setHidePlaceholderText(false)}
+                    placeholder={
+                        hidePlaceholderText
+                            ? ''
+                            : '🔍 Search name or paste address'
+                    }
                 />
                 {validatedInput && (
                     <button

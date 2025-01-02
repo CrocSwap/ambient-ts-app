@@ -6,15 +6,26 @@ import {
     baseSepoliaETH,
     baseSepoliaUSDC,
     baseSepoliaUSDT,
+    baseSepoliaWTT,
 } from '../defaultTokens';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const PUBLIC_RPC_URL = 'https://sepolia.base.org';
+const PUBLIC_RPC_URL = 'https://sepolia.base.org';
+const SECONDARY_PUBLIC_RPC_URL = 'https://base-sepolia-rpc.publicnode.com';
 
-export const RESTRICTED_RPC_URL =
+const RESTRICTED_RPC_URL =
     import.meta.env.VITE_BASE_SEPOLIA_RPC_URL !== undefined
         ? import.meta.env.VITE_BASE_SEPOLIA_RPC_URL
+        : undefined;
+
+const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
+    ? RESTRICTED_RPC_URL
+    : PUBLIC_RPC_URL;
+
+const FALLBACK_RPC_URL =
+    PRIMARY_RPC_URL === PUBLIC_RPC_URL
+        ? SECONDARY_PUBLIC_RPC_URL
         : PUBLIC_RPC_URL;
 
 const chainIdHex = '0x14a34';
@@ -32,7 +43,8 @@ export const baseSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_TESTNET_URL,
-    evmRpcUrl: RESTRICTED_RPC_URL,
+    evmRpcUrl: PRIMARY_RPC_URL,
+    fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [baseSepoliaETH, baseSepoliaUSDC],
     defaultPairFuta: [baseSepoliaETH, baseSepoliaUSDC],
@@ -40,6 +52,9 @@ export const baseSepolia: NetworkIF = {
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,
+    tokenPriceQueryAssetPlatform: undefined,
+    vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         new TopPool(
             baseSepoliaETH,
@@ -51,6 +66,7 @@ export const baseSepolia: NetworkIF = {
             baseSepoliaUSDT,
             chainSpecFromSDK.poolIndex,
         ),
+        new TopPool(baseSepoliaETH, baseSepoliaWTT, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

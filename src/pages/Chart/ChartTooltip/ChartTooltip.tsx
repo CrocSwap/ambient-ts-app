@@ -47,7 +47,7 @@ export default function ChartTooltip(props: propsIF) {
             {showTooltip && currentData ? (
                 <CurrentDataDiv isFuta={isFuta}>
                     <p>
-                        {(isFuta && !mobileView) ||
+                        {(isFuta && smallScreen) ||
                         (!isFuta && smallScreen && mobileView)
                             ? ''
                             : `${topToken.symbol}/${bottomToken.symbol} ${matchingCandleTime?.readable} `}

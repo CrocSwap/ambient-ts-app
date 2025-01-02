@@ -20,10 +20,8 @@ import {
     formatAmountChartData,
     formatPoolPriceAxis,
 } from '../../../../../utils/numbers';
-import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import {
     crosshair,
-    fillLiqAdvanced,
     getXandYLocationForChart,
     lineValue,
     liquidityChartData,
@@ -32,14 +30,13 @@ import {
     scaleData,
     selectedDrawnData,
     setCanvasResolution,
-    standardDeviation,
 } from '../../ChartUtils/chartUtils';
 import useDollarPrice from '../../ChartUtils/getDollarPrice';
 import { createRectLabel } from './YaxisUtils';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;
-    market: number;
+    chartPoolPrice: number;
     liqMode: string;
     liqTransitionPointforCurve: number;
     liqTransitionPointforDepth: number;
@@ -56,8 +53,6 @@ interface yAxisIF {
     isLineDrag: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setMarketLineValue: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     render: any;
     liquidityData: liquidityChartData | undefined;
@@ -89,7 +84,7 @@ function YAxisCanvas(props: yAxisIF) {
         liqMode,
         lineSellColor,
         lineBuyColor,
-        market,
+        chartPoolPrice,
         liqTransitionPointforCurve,
         liqTransitionPointforDepth,
         isAmbientOrAdvanced,
@@ -101,7 +96,6 @@ function YAxisCanvas(props: yAxisIF) {
         reset,
         isLineDrag,
         setRescale,
-        setMarketLineValue,
         render,
         liquidityData,
         dragRange,
@@ -246,11 +240,11 @@ function YAxisCanvas(props: yAxisIF) {
     const sameLocationLimit = () => {
         if (scaleData) {
             const resultData =
-                scaleData?.yScale(limit) - scaleData?.yScale(market);
+                scaleData?.yScale(limit) - scaleData?.yScale(chartPoolPrice);
             const resultLocationData = resultData < 0 ? -20 : 20;
             const isSameLocation = Math.abs(resultData) < 20;
             const sameLocationData =
-                scaleData?.yScale(market) + resultLocationData;
+                scaleData?.yScale(chartPoolPrice) + resultLocationData;
             return {
                 isSameLocation: isSameLocation,
                 sameLocationData: sameLocationData,
@@ -403,12 +397,13 @@ function YAxisCanvas(props: yAxisIF) {
                 }
             });
 
-            if (market) {
-                const { tick, tickSubString } = prepareTickLabel(market);
+            if (chartPoolPrice) {
+                const { tick, tickSubString } =
+                    prepareTickLabel(chartPoolPrice);
 
                 createRectLabel(
                     context,
-                    yScale(market),
+                    yScale(chartPoolPrice),
                     X,
                     'white',
                     'black',
@@ -782,27 +777,11 @@ function YAxisCanvas(props: yAxisIF) {
                             }
                         }
                     });
-                    if (advancedMode && liquidityData) {
-                        const liqAllBidPrices = liquidityData?.liqBidData.map(
-                            (liqData: LiquidityDataLocal) => liqData.liqPrices,
-                        );
-                        const liqBidDeviation =
-                            standardDeviation(liqAllBidPrices);
-
-                        if (scaleData) {
-                            fillLiqAdvanced(
-                                liqBidDeviation,
-                                scaleData,
-                                liquidityData,
-                            );
-                        }
-                    }
 
                     setRescale(() => {
                         return false;
                     });
 
-                    setMarketLineValue();
                     render();
                 })
                 .filter((event) => {
@@ -894,7 +873,7 @@ function YAxisCanvas(props: yAxisIF) {
             renderSubchartCrCanvas();
         }
     }, [
-        market,
+        chartPoolPrice,
         diffHashSig(crosshairData),
         limit,
         isLineDrag,

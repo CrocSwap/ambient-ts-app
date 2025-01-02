@@ -132,6 +132,9 @@ export const REQUEST_TIMEOUT_DELAY = import.meta.env.VITE_REQUEST_TIMEOUT_DELAY
 export const NETWORK_ACCESS = import.meta.env.NETWORK_ACCESS || 'disabled';
 export const CACHE_UPDATE_FREQ_IN_MS = 60000; // 1 minute
 
+// Refresh USD prices in 15 minute windows
+export const PRICE_WINDOW_GRANULARITY = 15 * 60 * 1000;
+
 export const DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES =
     brand === 'futa'
         ? Infinity
@@ -169,4 +172,4 @@ export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
 export const CURRENT_AUCTION_VERSION = 1;
 
 export const SHOW_TUTOS_DEFAULT =
-    import.meta.env.VITE_SHOW_TUTOS_DEFAULT || false;
+    import.meta.env.VITE_SHOW_TUTOS_DEFAULT || 'true';

@@ -9,7 +9,6 @@ import {
     fetchEnsAddress,
     fetchTokenPrice,
 } from '../api';
-import { createNetworkSession } from '../constants/networks/createNetworkSession';
 import {
     SpotPriceFn,
     filterLimitArray,
@@ -210,14 +209,6 @@ const fetchSimpleDecorated = async ({
     cachedTokenDetails,
     cachedEnsResolve,
 }: RecordRequestIF) => {
-    const sess = await createNetworkSession({
-        chainId: chainId,
-        tokenUniv: tokenUniv,
-        gcUrl: gcUrl,
-        provider: provider,
-        crocEnv: crocEnv,
-    });
-
     cachedFetchTokenPrice =
         cachedFetchTokenPrice || (fetchTokenPrice as TokenPriceFn);
     cachedQuerySpotPrice =
@@ -232,11 +223,11 @@ const fetchSimpleDecorated = async ({
         user,
 
         // Session Information:
-        chainId: sess.chainId,
-        gcUrl: sess.gcUrl,
-        provider: sess.provider,
-        tokenUniv: sess.tokenUniv,
-        crocEnv: sess.crocEnv,
+        chainId: chainId,
+        gcUrl: gcUrl,
+        provider: provider,
+        tokenUniv: tokenUniv,
+        crocEnv: crocEnv,
 
         // Data Sources
         cachedFetchTokenPrice,
