@@ -38,7 +38,6 @@ import { AppStateContext } from '../../../../contexts';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import CurrencySelector from '../../../Form/CurrencySelector';
-import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -368,7 +367,6 @@ export default function Transfer(props: propsIF) {
                     </GasPump>
                 }
             </FlexContainer>
-            <SmolRefuelLink />
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button
