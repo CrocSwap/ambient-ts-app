@@ -444,6 +444,7 @@ export const sepoliaWBTC: TokenIF = registerToken({
     chainId: 11155111,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+    isFuta: true,
 });
 
 export const scrollSepoliaWBTC: TokenIF = registerToken({

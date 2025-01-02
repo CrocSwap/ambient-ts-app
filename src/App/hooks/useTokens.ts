@@ -20,6 +20,7 @@ export interface tokenMethodsIF {
     tokenUniv: TokenIF[];
     getTokenByAddress: (addr: string) => TokenIF | undefined;
     getTokensFromList: (uri: string) => TokenIF[];
+    getFutaTokens: () => TokenIF[];
     getTokensByNameOrSymbol: (
         input: string,
         chn: string,
@@ -122,6 +123,7 @@ export const useTokens = (
                         deepToken.name = tknFromMap.name;
                         deepToken.logoURI = tknFromMap.logoURI;
                         deepToken.decimals = tknFromMap.decimals;
+                        deepToken.isFuta = tknFromMap.isFuta;
                     }
                 }
                 // add updated deep copy to the Map
@@ -183,9 +185,13 @@ export const useTokens = (
                             excluded.chainId === t.chainId,
                     );
                 })
-                .map((tkn: TokenIF) =>
-                    deepCopyToken(tkn, tkn.fromList ?? tokenListURIs.ambient),
-                );
+                .map((tkn: TokenIF) => {
+                    const copiedToken = deepCopyToken(
+                        tkn,
+                        tkn.fromList ?? tokenListURIs.ambient,
+                    );
+                    return copiedToken;
+                });
         }
     }, [tokenMap, tokenBalances]);
 
@@ -201,6 +207,7 @@ export const useTokens = (
             logoURI: tkn.logoURI,
             name: tkn.name,
             symbol: tkn.symbol,
+            isFuta: tkn.isFuta,
         };
     }
 
@@ -375,6 +382,15 @@ export const useTokens = (
         [chainId, tokenUniv],
     );
 
+    const getFutaTokens = useCallback(() => {
+        return tokenUniv.filter(
+            (tkn: TokenIF) =>
+                tkn.listedBy?.includes(
+                    'http://localhost:3002/futa-token-list',
+                ) || tkn.isFuta,
+        );
+    }, [tokenUniv]);
+
     // fn to return all tokens where name or symbol matches search input
     // can return just exact matches or exact + partial matches
     const getTokensByNameOrSymbol = useCallback(
@@ -450,6 +466,7 @@ export const useTokens = (
             tokenUniv: tokenUniv,
             getTokenByAddress: getTokenByAddress,
             getTokensFromList: getTokensFromList,
+            getFutaTokens: getFutaTokens,
             getTokensByNameOrSymbol: getTokensByNameOrSymbol,
         }),
         [tokenUniv, chainId],
