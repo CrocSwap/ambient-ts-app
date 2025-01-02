@@ -3,6 +3,7 @@ import { ZeroAddress } from 'ethers';
 import { PRICE_WINDOW_GRANULARITY } from '../constants';
 import { allNetworks } from '../constants/networks';
 import {
+    isETHorStakedEthToken,
     isUsdStableToken,
     memoizePromiseFn,
     translateToken,
@@ -37,8 +38,8 @@ export const fetchTokenPrice = async (
         return response.value;
     } catch (error) {
         if (
-            // if token is ETH, return current value of mainnet ETH
-            dispToken.toLowerCase() === ZeroAddress
+            // if token is ETH or Staked ETH, return current value of mainnet ETH
+            isETHorStakedEthToken(dispToken)
         ) {
             const body = {
                 config_path: 'price',

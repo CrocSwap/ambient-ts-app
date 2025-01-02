@@ -20,9 +20,9 @@ import {
 } from '../ambient-utils/api';
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
 import {
-    BLOCK_POLLING_RPC_URL,
     GCGO_BLAST_URL,
     GCGO_ETHEREUM_URL,
+    GCGO_PLUME_URL,
     GCGO_SCROLL_URL,
     GCGO_SWELL_URL,
     hiddenTokens,
@@ -60,6 +60,8 @@ export interface ChainDataContextIF {
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
     rpcNodeStatus: RpcNodeStatus;
+    isPrimaryRpcNodeInactive: React.MutableRefObject<boolean>;
+    blockPollingUrl: string;
     connectedUserXp: UserXpDataIF;
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
@@ -85,7 +87,7 @@ export const ChainDataContext = createContext({} as ChainDataContextIF);
 
 export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { chainId, evmRpcUrl: nodeUrl, GCGO_URL },
+        activeNetwork: { chainId, evmRpcUrl, fallbackRpcUrl, GCGO_URL },
         isUserIdle,
         isUserOnline,
     } = useContext(AppStateContext);
@@ -103,7 +105,10 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         scrollProvider,
         blastProvider,
         swellProvider,
+        plumeProvider,
+        isPrimaryRpcNodeInactive,
     } = useContext(CrocEnvContext);
+
     const {
         cachedFetchAmbientListWalletBalances,
         cachedFetchDexBalances,
@@ -130,6 +135,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     const [rpcNodeStatus, setRpcNodeStatus] =
         useState<RpcNodeStatus>('unknown');
+
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
     const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(chainId);
@@ -155,9 +161,9 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         string | undefined
     >();
 
-    const blockPollingUrl = BLOCK_POLLING_RPC_URL
-        ? BLOCK_POLLING_RPC_URL
-        : nodeUrl;
+    const blockPollingUrl = !isPrimaryRpcNodeInactive.current
+        ? evmRpcUrl
+        : fallbackRpcUrl;
 
     // array of network IDs for supported L2 networks
     const L1_NETWORKS: string[] = [
@@ -190,7 +196,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         }, GAS_PRICE_POLL_MS);
 
         return () => clearInterval(interval);
-    }, [chainId]);
+    }, [chainId, blockPollingUrl, provider]);
 
     async function pollBlockNum(): Promise<void> {
         try {
@@ -200,9 +206,11 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 setRpcNodeStatus('active');
             } else {
                 setRpcNodeStatus('inactive');
+                isPrimaryRpcNodeInactive.current = true;
             }
         } catch (error) {
             setRpcNodeStatus('inactive');
+            isPrimaryRpcNodeInactive.current = true;
         }
     }
 
@@ -217,7 +225,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
         // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(interval);
-    }, [isUserOnline, chainId, BLOCK_NUM_POLL_MS]);
+    }, [isUserOnline, chainId, BLOCK_NUM_POLL_MS, blockPollingUrl]);
 
     const [allPoolStats, setAllPoolStats] = useState<
         SinglePoolDataIF[] | undefined
@@ -245,6 +253,10 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             updateAllPoolStats();
         }
     }, [chainId, GCGO_URL, poolStatsPollingCacheTime, isUserOnline]);
+
+    useEffect(() => {
+        isPrimaryRpcNodeInactive.current = false;
+    }, [chainId]);
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
@@ -597,6 +609,12 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         [blastProvider !== undefined],
     );
 
+    const plumeCrocEnv = useMemo(
+        () =>
+            plumeProvider ? new CrocEnv(plumeProvider, undefined) : undefined,
+        [plumeProvider !== undefined],
+    );
+
     useEffect(() => {
         if (
             showDexStats &&
@@ -604,13 +622,14 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             scrollCrocEnv !== undefined &&
             swellCrocEnv !== undefined &&
             blastCrocEnv !== undefined &&
+            plumeCrocEnv !== undefined &&
             allDefaultTokens.length > 0
         ) {
             let tvlTotalUsd = 0,
                 volumeTotalUsd = 0,
                 feesTotalUsd = 0;
 
-            const numChainsToAggregate = 4;
+            const numChainsToAggregate = 5;
             let resultsReceived = 0;
 
             getChainStats(
@@ -783,6 +802,48 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                     );
                 }
             });
+
+            getChainStats(
+                'cumulative',
+                '0x18231',
+                plumeCrocEnv,
+                GCGO_PLUME_URL,
+                cachedFetchTokenPrice,
+                10,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
+                resultsReceived += 1;
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                            mantissa: 1,
+                        }),
+                    );
+                }
+            });
         }
     }, [
         showDexStats,
@@ -796,6 +857,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         lastBlockNumber,
         setLastBlockNumber,
         rpcNodeStatus,
+        isPrimaryRpcNodeInactive,
+        blockPollingUrl,
         gasPriceInGwei,
         connectedUserXp,
         connectedUserBlastXp,

@@ -38,7 +38,6 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
-import SmolRefuelLink from '../../../../components/Global/SmolRefuelLink/SmolRefuelLink';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
@@ -65,12 +64,8 @@ function Reposition() {
     } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
-    const {
-        gasPriceInGwei,
-        lastBlockNumber,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-    } = useContext(ChainDataContext);
+    const { gasPriceInGwei, lastBlockNumber, isActiveNetworkL2 } =
+        useContext(ChainDataContext);
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
@@ -742,9 +737,7 @@ function Reposition() {
     // const [l1GasFeePoolInGwei] = useState<number>(
     //     isScroll ? 0.0009 * 1e9 : 0,
     // );
-    const [extraL1GasFeePool] = useState(
-        isActiveNetworkScroll ? 0.03 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeePool] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -852,9 +845,6 @@ function Reposition() {
                         valueLossExceedsThreshold={valueLossExceedsThreshold}
                         isCurrentPositionEmpty={isCurrentPositionEmpty}
                     />
-                    <span style={{ marginRight: '25px', marginBottom: '5px' }}>
-                        <SmolRefuelLink />
-                    </span>
                     <div className={styles.button_container}>
                         {bypassConfirmRepo.isEnabled && showConfirmation ? (
                             <SubmitTransaction

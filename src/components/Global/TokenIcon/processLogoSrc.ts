@@ -28,9 +28,7 @@ export default function processLogoSrc(args: argsIF): string {
         return '';
     }
 
-    if (localLogoLookupSymbol === 'PETH') {
-        localLogoLookupSymbol = 'ETH';
-    } else if (localLogoLookupSymbol === 'USD+') {
+    if (localLogoLookupSymbol === 'USD+') {
         localLogoLookupSymbol = 'USDPLUS';
     } else if (localLogoLookupSymbol === 'USDC.E') {
         localLogoLookupSymbol = 'USDC';

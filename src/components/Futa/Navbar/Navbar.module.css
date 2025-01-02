@@ -13,7 +13,7 @@
 .moreContainer {
     display: flex;
     width: 30px;
-    height: 30px;
+    height: 25px;
     padding: 2px;
     flex-direction: column;
     justify-content: center;
@@ -133,6 +133,39 @@
 }
 .desktopLink:hover {
     color: var(--text1);
+}
+
+.tutorialBtn {
+    cursor: pointer;
+    display: flex;
+    height: var(--buttonHeightSmall, 25px);
+    padding: 4px 16px 4px 12px;
+    align-items: center;
+    gap: 8px;
+
+    border: 1px solid var(--dark3, #1b1e22);
+    background: var(--dark2, #14161a);
+
+    color: var(--text2, #939c9e);
+    text-align: center;
+
+    /* Mono 14 */
+    font-family: 'Fira Mono';
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-transform: uppercase;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .container {
+        padding: 0px;
+    }
+
+    .slantedText {
+        font-size: 14px;
+    }
 }
 
 @media (min-width: 768px) {

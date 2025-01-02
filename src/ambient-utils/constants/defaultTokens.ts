@@ -984,8 +984,8 @@ export const plumeNativeETH: TokenIF = registerToken({
 });
 
 export const plumePETH: TokenIF = registerToken({
-    name: 'plumeETH',
-    address: '0x11476323D8DFCBAFac942588E2f38823d2Dd308e',
+    name: 'Plume ETH',
+    address: '0xD630fb6A07c9c723cf709d2DaA9B63325d0E0B73',
     symbol: 'pETH',
     decimals: 18,
     chainId: 98865,
@@ -993,7 +993,7 @@ export const plumePETH: TokenIF = registerToken({
 });
 
 export const plumeUSDC: TokenIF = registerToken({
-    name: 'Bridged USDC (Stargate)',
+    name: 'Bridged USDC',
     address: '0x3938A812c54304fEffD266C7E2E70B48F9475aD6',
     symbol: 'USDC.e',
     decimals: 6,
@@ -1012,30 +1012,21 @@ export const plumeWTT: TokenIF = registerToken({
 
 export const plumePUSD: TokenIF = registerToken({
     name: 'Plume USD',
-    address: '0x360822f796975cEccD8095c10720c57567b4199f',
+    address: '0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F',
     symbol: 'pUSD',
-    decimals: 6,
-    chainId: 98865,
-    logoURI: 'https://img.cryptorank.io/coins/plume_network1716480863760.png',
-});
-
-export const plumeNEV: TokenIF = registerToken({
-    name: 'Nest Egg Vault',
-    address: '0x81537d879ACc8a290a1846635a0cAA908f8ca3a6',
-    symbol: 'NEV',
     decimals: 6,
     chainId: 98865,
     logoURI: '',
 });
 
-// export const plumeUSDC: TokenIF = registerToken({
-//     name: 'Bridged USDC',
-//     address: '0x3938A812c54304fEffD266C7E2E70B48F9475aD6',
-//     symbol: 'USDC.e',
-//     decimals: 6,
-//     chainId: 98865,
-//     logoURI: '',
-// });
+export const plumeNRWA: TokenIF = registerToken({
+    name: 'Nest RWA Vault',
+    address: '0x81537d879ACc8a290a1846635a0cAA908f8ca3a6',
+    symbol: 'nRWA',
+    decimals: 6,
+    chainId: 98865,
+    logoURI: '',
+});
 
 export const baseSepoliaUSDT: TokenIF = registerToken({
     name: 'Ambient USDT',
