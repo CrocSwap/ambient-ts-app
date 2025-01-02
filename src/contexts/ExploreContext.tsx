@@ -120,7 +120,12 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 poolList.length > 0 &&
                 (await crocEnv.context).chain.chainId === activeNetwork.chainId
             ) {
-                setIntermediaryPoolData([]);
+                if (
+                    intermediaryPoolData &&
+                    intermediaryPoolData[0]?.chainId !== activeNetwork.chainId
+                ) {
+                    setIntermediaryPoolData([]);
+                }
                 getAllPools();
                 const interval = setInterval(() => {
                     getAllPools(); // refresh pool data every 5 minutes
