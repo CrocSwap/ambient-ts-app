@@ -26,6 +26,7 @@
     margin-bottom: 8px;
     gap: 8px;
     width: 100%;
+    height: auto;
 }
 
 /* text search input and sort toggle */
@@ -35,6 +36,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 4px;
+    height: 100%;
 }
 
 /* wrapper for search input icon, text field, and 'clear' button */
@@ -47,6 +49,7 @@
     max-width: 400px;
     gap: 4px;
     background-color: var(--dark2);
+    height: 100%;
 }
 
 /* text entry box for search input */
@@ -68,6 +71,7 @@
     display: flex;
     flex-direction: row;
     gap: 8px;
+    height: 100%;
 }
 
 /* individual data filter toggle buttons */
@@ -217,7 +221,6 @@
     width: 100%;
     display: flex;
     gap: 8px;
-    margin: 0 8px;
     overflow-y: auto;
     scrollbar-gutter: stable;
     /* background-color: red; */
@@ -342,10 +345,17 @@
 
 @media (min-width: 768px) {
     .container {
-        display: grid;
+        display: flex
     }
-}
 
+    .header{
+        height: 28px;
+        padding: 0 8px;
+    }
+    .filters > button {
+        height: auto;
+}
+}
 @media (min-width: 1280px) {
     .content h2 {
         color: var(--text1, #ceffff);
@@ -354,7 +364,7 @@
     }
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
+/* @media (min-width: 768px) and (max-width: 1024px) {
     .contentContainer {
         height: calc(100dvh - 100px) !important;
         justify-content: space-between;
@@ -362,7 +372,7 @@
     .header {
         flex-direction: row;
     }
-}
+} */
 
 @media (max-width: 767px) {
     .header {
@@ -370,13 +380,6 @@
     }
 }
 
-/* WHY DOES THE APP BREAK WHEN I REMOVE THIS */
-/* IF I TAKE IT OUT THE ENTIRE TABLE DISAPPEARS */
-/* IT SHOULD BE REDUNDANT WITH THE FIRST RULE IN THIS FILE */
-.container {
-    display: flex;
-    flex-direction: column;
-}
 
 @media (max-width: 400px) {
     .header {

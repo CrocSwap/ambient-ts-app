@@ -5,19 +5,28 @@ import { NetworkIF } from '../../types/NetworkIF';
 import {
     scrollETH,
     scrollSCR,
-    scrollSTONE,
     scrollUSDC,
     scrollUSDT,
-    scrollWrsETH,
+    scrollWBTC,
 } from '../defaultTokens';
 import { GCGO_SCROLL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const PUBLIC_RPC_URL = 'https://scroll-rpc.publicnode.com';
+const PUBLIC_RPC_URL = 'https://scroll-rpc.publicnode.com';
+const SECONDARY_PUBLIC_RPC_URL = 'https://rpc.scroll.io';
 
-export const RESTRICTED_RPC_URL =
+const RESTRICTED_RPC_URL =
     import.meta.env.VITE_SCROLL_RPC_URL !== undefined
         ? import.meta.env.VITE_SCROLL_RPC_URL
+        : undefined;
+
+const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
+    ? RESTRICTED_RPC_URL
+    : PUBLIC_RPC_URL;
+
+const FALLBACK_RPC_URL =
+    PRIMARY_RPC_URL === PUBLIC_RPC_URL
+        ? SECONDARY_PUBLIC_RPC_URL
         : PUBLIC_RPC_URL;
 
 const chainIdHex = '0x82750';
@@ -35,7 +44,8 @@ export const scrollMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_SCROLL_URL,
-    evmRpcUrl: RESTRICTED_RPC_URL,
+    evmRpcUrl: PRIMARY_RPC_URL,
+    fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [scrollETH, scrollUSDC],
     poolIndex: chainSpecFromSDK.poolIndex,
@@ -48,9 +58,9 @@ export const scrollMainnet: NetworkIF = {
     topPools: [
         new TopPool(scrollETH, scrollUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(scrollSCR, scrollETH, chainSpecFromSDK.poolIndex),
-        new TopPool(scrollWrsETH, scrollETH, chainSpecFromSDK.poolIndex),
         new TopPool(scrollETH, scrollUSDT, chainSpecFromSDK.poolIndex),
-        new TopPool(scrollSTONE, scrollETH, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollETH, scrollWBTC, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollUSDT, scrollUSDC, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

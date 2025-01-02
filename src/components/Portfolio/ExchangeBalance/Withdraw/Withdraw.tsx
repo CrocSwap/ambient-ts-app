@@ -38,7 +38,6 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import Button from '../../../Form/Button';
 import CurrencySelector from '../../../Form/CurrencySelector';
 import Toggle from '../../../Form/Toggle';
-import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 import TransferAddressInput from '../Transfer/TransferAddressInput';
 
 interface propsIF {
@@ -404,7 +403,6 @@ export default function Withdraw(props: propsIF) {
                     </GasPump>
                 }
             </FlexContainer>
-            <SmolRefuelLink />
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button

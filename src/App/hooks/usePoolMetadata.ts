@@ -37,7 +37,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata() {
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
-    const { allPoolStats } = useContext(ChainDataContext);
+    const { allPoolStats, blockPollingUrl } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { sessionReceipts } = useContext(ReceiptContext);
@@ -649,6 +649,7 @@ export function usePoolMetadata() {
             : Math.floor(Date.now() / 10000), // cache for 10 seconds if not idle
         provider,
         sessionReceipts.length,
+        blockPollingUrl,
     ]);
 
     const totalPositionLiq = useMemo(

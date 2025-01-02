@@ -259,13 +259,7 @@ export default function Account() {
                     isAccount
                 />
             </div>
-            <div className={styles.separatorContainer}>
-                {
-                    /* <Separator dots={70} /> */
-                    // leaving parent container empty preserves
-                    // ... layout with CSS Grid styling
-                }
-            </div>
+
             <div className={styles.rightLayout}>
                 <div>
                     <p className={styles.label}>CLAIM</p>
