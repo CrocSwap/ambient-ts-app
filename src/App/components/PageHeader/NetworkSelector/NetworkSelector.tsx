@@ -8,7 +8,8 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import { useSearchParams } from 'react-router-dom';
 import { supportedNetworks } from '../../../../ambient-utils/constants';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
-import baseSepoliaLogo from '../../../../assets/images/networks/Base_Network_Logo.svg';
+// import baseLogo from '../../../../assets/images/networks/Base_Network_Logo.svg';
+import baseSepoliaLogo from '../../../../assets/images/networks/base_sepolia_logo.webp';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
@@ -224,15 +225,15 @@ export default function NetworkSelector(props: propsIF) {
             condition: chainMap.has('0xaa36a7'),
         },
         {
-            id: 'plume_sepolia_network_selector',
-            chainId: '0x18230',
-            name: 'Plume',
-            logo: plumeSepoliaLogo,
+            id: 'scroll_sepolia_network_selector',
+            chainId: '0x8274f',
+            name: 'Scroll',
+            logo: scrollSepoliaLogo,
             custom: 2,
             isExternal: false,
             testnet: true,
             link: '',
-            condition: chainMap.has('0x18230'),
+            condition: chainMap.has('0x8274f'),
         },
         {
             id: 'swell_sepolia_network_selector',
@@ -246,26 +247,15 @@ export default function NetworkSelector(props: propsIF) {
             condition: chainMap.has('0x784'),
         },
         {
-            id: 'base_sepolia_network_selector',
-            chainId: '0x14a34',
-            name: 'Base',
-            logo: baseSepoliaLogo,
+            id: 'plume_sepolia_network_selector',
+            chainId: '0x18230',
+            name: 'Plume',
+            logo: plumeSepoliaLogo,
             custom: 2,
             isExternal: false,
             testnet: true,
             link: '',
-            condition: chainMap.has('0x14a34'),
-        },
-        {
-            id: 'scroll_sepolia_network_selector',
-            chainId: '0x8274f',
-            name: 'Scroll',
-            logo: scrollSepoliaLogo,
-            custom: 2,
-            isExternal: false,
-            testnet: true,
-            link: '',
-            condition: chainMap.has('0x8274f'),
+            condition: chainMap.has('0x18230'),
         },
         {
             id: 'blast_sepolia_network_selector',
@@ -277,6 +267,17 @@ export default function NetworkSelector(props: propsIF) {
             testnet: true,
             link: '',
             condition: chainMap.has('0xa0c71fd'),
+        },
+        {
+            id: 'base_sepolia_network_selector',
+            chainId: '0x14a34',
+            name: 'Base',
+            logo: baseSepoliaLogo,
+            custom: 2,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x14a34'),
         },
     ];
 
