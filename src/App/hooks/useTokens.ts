@@ -264,11 +264,15 @@ export const useTokens = (
         setTokenLists(updatedLists);
     }
 
-    // logic to update the futa token list only to test functionality
+    // logic to update the FUTA token list
+    // having trouble getting multiple lists to update in parallel
     useEffect(() => {
-        setInterval(() => {
-            patchTokenList('http://localhost:3002/futa-token-list');
-        }, 5000);
+        // time interval between updates
+        const TIME = 120000;
+        // endpoint (will use a centralized endpoing later)
+        const FUTA_LIST_URI = 'http://localhost:3002/futa-token-list';
+        // set interval to patch token list after a timeout
+        setInterval(() => patchTokenList(FUTA_LIST_URI), TIME);
     }, []);
 
     // Load token lists from local storage for fast load, but asynchronously
