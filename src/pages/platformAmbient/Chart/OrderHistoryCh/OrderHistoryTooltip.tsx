@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { CSSTransition } from 'react-transition-group';
 import {
@@ -20,7 +20,10 @@ import {
     StyledHeader,
     StyledLink,
     LinkContainer,
+    ArrowHoverContainer,
+    IdContainer,
 } from './OrderHistoryTooltipCss';
+import { ArrowContainer } from '../../../../styled/Components/Chart';
 
 export default function OrderHistoryTooltip(props: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -53,6 +56,8 @@ export default function OrderHistoryTooltip(props: {
         setHoverOHTooltip,
     } = props;
 
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
     const {
         activeNetwork: { blockExplorer },
     } = useContext(AppStateContext);
@@ -67,6 +72,95 @@ export default function OrderHistoryTooltip(props: {
     }
 
     const [hoveredID, setHoveredID] = useState<string | undefined>();
+
+    const [showUpArrow, setShowUpArrow] = useState(false);
+    const [showDownArrow, setShowDownArrow] = useState(false);
+
+    const isAtBottom = () => {
+        if (scrollContainerRef.current) {
+            const { scrollTop, scrollHeight, clientHeight } =
+                scrollContainerRef.current;
+            return scrollTop >= scrollHeight - clientHeight;
+        }
+        return false;
+    };
+
+    const handleMouseMove = () => {
+        const scrollContainer = scrollContainerRef.current;
+
+        if (scrollContainer && scrollContainer.scrollTop <= 5) {
+            setShowUpArrow(false);
+        } else {
+            setShowUpArrow(true);
+        }
+
+        if (isAtBottom()) {
+            setShowDownArrow(false);
+        } else {
+            setShowDownArrow(true);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        setShowUpArrow(false);
+        setShowDownArrow(false);
+    };
+
+    const handleScroll = (direction: string) => {
+        const scrollContainer = scrollContainerRef.current;
+
+        if (scrollContainer) {
+            const scrollAmount = 50;
+
+            if (direction === 'up') {
+                scrollContainer.scrollTop -= scrollAmount;
+            } else if (direction === 'down') {
+                scrollContainer.scrollTop += scrollAmount;
+            }
+
+            if (scrollContainer.scrollTop <= 5) {
+                setShowUpArrow(false);
+            } else {
+                setShowUpArrow(true);
+            }
+        }
+    };
+
+    const downArrow = (
+        <ArrowHoverContainer
+            isTop={false}
+            onClick={(event: React.MouseEvent<HTMLDivElement>) => {
+                event.stopPropagation();
+                handleScroll('down');
+            }}
+            onMouseEnter={(event: React.MouseEvent<HTMLDivElement>) => {
+                event.stopPropagation();
+            }}
+            onMouseLeave={(event: React.MouseEvent<HTMLDivElement>) => {
+                event.stopPropagation();
+            }}
+        >
+            <ArrowContainer degree={135} />
+        </ArrowHoverContainer>
+    );
+
+    const upArrow = (
+        <ArrowHoverContainer
+            isTop={true}
+            onClick={(event: React.MouseEvent<HTMLDivElement>) => {
+                event.stopPropagation();
+                handleScroll('up');
+            }}
+            onMouseEnter={(event: React.MouseEvent<HTMLDivElement>) => {
+                event.stopPropagation();
+            }}
+            onMouseLeave={(event: React.MouseEvent<HTMLDivElement>) => {
+                event.stopPropagation();
+            }}
+        >
+            <ArrowContainer degree={315} />
+        </ArrowHoverContainer>
+    );
 
     const swapHeader = (hoveredOrderHistory.type === 'swap' ||
         hoveredOrderHistory.type === 'limitCircle') && (
@@ -289,7 +383,10 @@ export default function OrderHistoryTooltip(props: {
                     {hoveredOrderHistory.type === 'historical' &&
                         headerHistorical}
 
-                    <OrderHistoryBody>
+                    <OrderHistoryBody
+                        onMouseMove={handleMouseMove}
+                        onMouseLeave={handleMouseLeave}
+                    >
                         {hoveredOrderHistory.type === 'swap' && swapTypeText}
                         {(hoveredOrderHistory.type === 'limitSwapLine' ||
                             hoveredOrderHistory.type === 'limitCircle') &&
@@ -305,34 +402,49 @@ export default function OrderHistoryTooltip(props: {
                                 })}
                         </StyledHeader>
 
-                        <LinkContainer>
-                            {hoveredOrderHistory.mergedIds.map(
-                                (id: string, index: number) => {
-                                    return (
-                                        <StyledLink
-                                            color={'var(--text2)'}
-                                            size={'13px'}
-                                            key={index}
-                                            onClick={(
-                                                event: React.MouseEvent<HTMLDivElement>,
-                                            ) => {
-                                                event.stopPropagation();
-                                                handleOpenExplorer(id);
-                                            }}
-                                            onMouseEnter={() => {
-                                                setHoveredID(id);
-                                            }}
-                                            onMouseLeave={() =>
-                                                setHoveredID(() => undefined)
-                                            }
-                                        >
-                                            {trimString(id, 6, 4, '…')}
-                                            <RiExternalLinkLine />
-                                        </StyledLink>
-                                    );
-                                },
-                            )}
-                        </LinkContainer>
+                        {hoveredOrderHistory.mergedIds.length > 5 &&
+                            showUpArrow &&
+                            upArrow}
+
+                        <IdContainer>
+                            <LinkContainer
+                                isHover={false}
+                                ref={scrollContainerRef}
+                            >
+                                {hoveredOrderHistory.mergedIds.map(
+                                    (id: string, index: number) => {
+                                        return (
+                                            <StyledLink
+                                                color={'var(--text2)'}
+                                                size={'13px'}
+                                                key={index}
+                                                onClick={(
+                                                    event: React.MouseEvent<HTMLDivElement>,
+                                                ) => {
+                                                    event.stopPropagation();
+                                                    handleOpenExplorer(id);
+                                                }}
+                                                onMouseEnter={() => {
+                                                    setHoveredID(id);
+                                                }}
+                                                onMouseLeave={() =>
+                                                    setHoveredID(
+                                                        () => undefined,
+                                                    )
+                                                }
+                                            >
+                                                {trimString(id, 6, 4, '…')}
+                                                <RiExternalLinkLine />
+                                            </StyledLink>
+                                        );
+                                    },
+                                )}
+                            </LinkContainer>
+                        </IdContainer>
+
+                        {hoveredOrderHistory.mergedIds.length > 5 &&
+                            showDownArrow &&
+                            downArrow}
 
                         {hoveredID && (
                             <div
