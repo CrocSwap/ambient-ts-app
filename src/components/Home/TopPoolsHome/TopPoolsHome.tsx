@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AppStateContext } from '../../../contexts';
+import { AppStateContext, ChainDataContext } from '../../../contexts';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
@@ -20,7 +20,9 @@ interface TopPoolsPropsIF {
 // eslint-disable-next-line
 export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
-    const { topPools, crocEnv } = useContext(CrocEnvContext);
+    const { topPools, crocEnv, provider } = useContext(CrocEnvContext);
+
+    const { blockPollingUrl } = useContext(ChainDataContext);
 
     const {
         activeNetwork: { chainId },
@@ -41,7 +43,8 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         [showMobileVersion, show3TopPools, show4TopPools, topPools],
     );
 
-    const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
+    const poolPriceCacheTime = Math.floor(Date.now() / 10000); // 10 second cache
+    const poolPriceUpdateInterval = Math.floor(Date.now() / 2000); // 2 second interval
 
     const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
     const [intermediarySpotPrices, setIntermediarySpotPrices] = useState<{
@@ -59,6 +62,8 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         setSpotPrices(intermediarySpotPrices.prices);
     }, [intermediarySpotPrices]);
 
+    const providerUrl = provider?._getConnection().url;
+
     const fetchSpotPrices = async () => {
         if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
             return;
@@ -68,7 +73,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
                 pool.base.address,
                 pool.quote.address,
                 pool.chainId,
-                poolPriceCacheTime,
+                poolPriceCacheTime + providerUrl.length,
             ).catch((error) => {
                 console.error(
                     `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
@@ -87,8 +92,10 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     };
 
     useEffect(() => {
-        fetchSpotPrices();
-    }, [poolPriceCacheTime, poolData]);
+        if (providerUrl === blockPollingUrl) {
+            fetchSpotPrices();
+        }
+    }, [poolData, poolPriceUpdateInterval, blockPollingUrl, providerUrl]);
 
     useEffect(() => {
         if (!crocEnv) return;

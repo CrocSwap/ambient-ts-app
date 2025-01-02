@@ -376,7 +376,19 @@ export default function TradeMobile(props: propsIF) {
     return (
         <div
             className={styles.mobile_container}
-            style={{ height: layout.contentHeight }}
+            style={{
+                height:
+                    layout.contentHeight -
+                    ((
+                        isFuta
+                            ? futaActiveTab === 'Chart'
+                            : activeTab === 'Chart'
+                    )
+                        ? 10
+                        : 0),
+
+                maxWidth: !isFuta && activeTab === 'Order' ? '600px' : '',
+            }}
             // onTouchStart={handleTouchStart}
             // onTouchMove={handleTouchMove}
             // onTouchEnd={handleTouchEnd}

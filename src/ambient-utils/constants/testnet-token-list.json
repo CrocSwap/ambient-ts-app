@@ -1,6 +1,6 @@
 {
     "name": "Testnet Token List",
-    "logoURI": "https://ambient-finance.netlify.app/rings_192.png",
+    "logoURI": "https://ambient.finance/icons/ambient_icon_x180.png",
     "timestamp": "2024-12-06T16:20:57.774Z",
     "version": {
         "major": 1,
@@ -16,7 +16,7 @@
             "symbol": "ETH",
             "decimals": 18,
             "chainId": 11155111,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
         },
         {
             "name": "USDC",
@@ -48,7 +48,7 @@
             "symbol": "ETH",
             "decimals": 18,
             "chainId": 168587773,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
         },
         {
             "name": "USDB",
@@ -72,7 +72,7 @@
             "symbol": "ETH",
             "decimals": 18,
             "chainId": 534351,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
         },
         {
             "name": "Bridged USD Coin",
@@ -96,7 +96,7 @@
             "symbol": "ETH",
             "decimals": 18,
             "chainId": 98864,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
         },
         {
             "name": "Plume USD",
@@ -160,6 +160,22 @@
             "symbol": "USDT",
             "decimals": 6,
             "chainId": 84532,
+            "logoURI": ""
+        },
+        {
+            "name": "Wolski Test Token",
+            "address": "0xfefd8bcb0034a2b0e3cc22e2f5a59279fae67128",
+            "symbol": "WTT",
+            "decimals": 6,
+            "chainId": 84532,
+            "logoURI": ""
+        },
+        {
+            "name": "Wolski Test Token",
+            "address": "0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3",
+            "symbol": "WTT",
+            "decimals": 6,
+            "chainId": 98865,
             "logoURI": ""
         }
     ]

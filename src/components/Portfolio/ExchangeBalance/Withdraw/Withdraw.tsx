@@ -38,7 +38,6 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import Button from '../../../Form/Button';
 import CurrencySelector from '../../../Form/CurrencySelector';
 import Toggle from '../../../Form/Toggle';
-import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 import TransferAddressInput from '../Transfer/TransferAddressInput';
 
 interface propsIF {
@@ -69,8 +68,7 @@ export default function Withdraw(props: propsIF) {
         isUserOnline,
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
-        useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -341,9 +339,7 @@ export default function Withdraw(props: propsIF) {
                 setInputValue(tokenExchangeDepositsDisplay);
         }
     };
-    const [extraL1GasFeeWithdraw] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeeWithdraw] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
         string | undefined
@@ -407,7 +403,6 @@ export default function Withdraw(props: propsIF) {
                     </GasPump>
                 }
             </FlexContainer>
-            <SmolRefuelLink />
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button

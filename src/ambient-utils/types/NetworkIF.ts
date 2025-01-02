@@ -17,6 +17,7 @@ export interface NetworkIF {
     GCGO_URL: string;
     chainSpecForWalletConnector: ChainSpecForWeb3Modal;
     evmRpcUrl: string;
+    fallbackRpcUrl: string;
     poolIndex: number;
     gridSize: number;
     defaultPair: TokenIF[];
@@ -25,6 +26,8 @@ export interface NetworkIF {
     blockExplorer: string;
     displayName: string;
     tokenPriceQueryAssetPlatform: string | undefined;
+    vaultsEnabled: boolean;
+    tempestApiNetworkName: string;
     chainSpec: ChainSpec;
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
 }

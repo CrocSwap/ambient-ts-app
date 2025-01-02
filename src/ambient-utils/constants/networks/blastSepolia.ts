@@ -6,6 +6,23 @@ import { blastSepoliaETH, blastSepoliaUSDB } from '../defaultTokens';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
+const PUBLIC_RPC_URL = 'https://sepolia.blast.io';
+const SECONDARY_PUBLIC_RPC_URL = 'https://blast-sepolia.drpc.org';
+
+const RESTRICTED_RPC_URL =
+    import.meta.env.VITE_BLAST_SEPOLIA_RPC_URL !== undefined
+        ? import.meta.env.VITE_BLAST_SEPOLIA_RPC_URL
+        : undefined;
+
+const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
+    ? RESTRICTED_RPC_URL
+    : PUBLIC_RPC_URL;
+
+const FALLBACK_RPC_URL =
+    PRIMARY_RPC_URL === PUBLIC_RPC_URL
+        ? SECONDARY_PUBLIC_RPC_URL
+        : PUBLIC_RPC_URL;
+
 const chainIdHex = '0xa0c71fd';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
@@ -21,13 +38,16 @@ export const blastSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_TESTNET_URL,
-    evmRpcUrl: chainSpecForWalletConnector.rpcUrl,
+    evmRpcUrl: PRIMARY_RPC_URL,
+    fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [blastSepoliaETH, blastSepoliaUSDB],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     displayName: 'Blast Testnet',
     tokenPriceQueryAssetPlatform: undefined,
+    vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         new TopPool(
             blastSepoliaETH,

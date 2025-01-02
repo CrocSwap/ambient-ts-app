@@ -207,6 +207,26 @@ export const hiddenTokens = [
         address: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
         chainId: 1924,
     },
+    {
+        // WTT on Plume Mainnet
+        address: '0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3',
+        chainId: 98865,
+    },
+    {
+        // WTT on Swell Mainnet
+        address: '0x83CA2E0018cBa6CD1149F2BB059d2Fc6D0fDf456',
+        chainId: 1923,
+    },
+    {
+        // pETH on Mainnet
+        address: '0x821a278dfff762c76410264303f25bf42e195c0c',
+        chainId: 1,
+    },
+    {
+        // old pUSD on Plume Mainnet
+        address: '0x360822f796975cEccD8095c10720c57567b4199f',
+        chainId: 98865,
+    },
 ];
 
 const embargoedTokens = [

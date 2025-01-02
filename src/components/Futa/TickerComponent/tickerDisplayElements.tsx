@@ -12,7 +12,6 @@ import {
     AuctionsContext,
 } from '../../../contexts/AuctionsContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Divider from '../Divider/FutaDivider';
 import styles from './TickerComponent.module.css';
 
@@ -26,6 +25,7 @@ import {
 import { CurrencySelector } from '../../Form/CurrencySelector';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import TooltipLabel from '../TooltipLabel/TooltipLabel';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 // Props interface
 export interface PropsIF {
@@ -464,7 +464,11 @@ export const tickerDisplayElements = (props: PropsIF) => {
 
     // Max FDV display component
     const tickerDropdownRef = useRef<HTMLDivElement>(null);
-    const clickOutsideWalletHandler = () => setIsMaxDropdownOpen(false);
+    const clickOutsideWalletHandler = () => {
+        if (isMaxDropdownOpen) {
+            setIsMaxDropdownOpen(false);
+        } else return;
+    };
     useOnClickOutside(tickerDropdownRef, clickOutsideWalletHandler);
 
     const fdvUsdValue =
@@ -503,7 +507,10 @@ export const tickerDisplayElements = (props: PropsIF) => {
                 itemTitle='MAX MARKET CAP'
                 isHeader
             />
-            <div className={styles.maxDropdownContainer}>
+            <div
+                className={styles.maxDropdownContainer}
+                ref={tickerDropdownRef}
+            >
                 <button
                     onClick={() => {
                         tickerFromParams &&
@@ -528,10 +535,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                     </div>
                 </button>
                 {isMaxDropdownOpen && (
-                    <div
-                        className={styles.maxDropdownContent}
-                        ref={tickerDropdownRef}
-                    >
+                    <div className={styles.maxDropdownContent}>
                         {maxFdvData.map((item, idx) => {
                             const maxFdvInEth = toDisplayQty(item, 18);
 

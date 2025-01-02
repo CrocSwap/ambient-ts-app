@@ -10,7 +10,6 @@ import DexTokens from '../../../components/Global/Explore/DexTokens/DexTokens';
 import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../contexts';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ExploreContext } from '../../../contexts/ExploreContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -34,27 +33,15 @@ export default function Explore(props: ExploreIF) {
     const { crocEnv } = useContext(CrocEnvContext);
 
     const {
-        activeNetwork: { chainId },
+        activeNetwork: { chainId, displayName },
     } = useContext(AppStateContext);
     const { poolList } = useContext(PoolContext);
-    const {
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-        isActiveNetworkMainnet,
-    } = useContext(ChainDataContext);
 
     const getAllPoolData = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
             pools.getAllPools(poolList, crocEnv, chainId);
         }
     };
-
-    const everyOneMinute = Math.floor(Date.now() / 60000);
-
-    // update top pools data
-    useEffect(() => {
-        getAllPoolData();
-    }, [everyOneMinute]);
 
     // trigger process to fetch and format token data when page loads with
     // ... gatekeeping to prevent re-fetch if data is already loaded
@@ -86,21 +73,9 @@ export default function Explore(props: ExploreIF) {
         });
     }
 
-    const titleTextPools: string = isActiveNetworkMainnet
-        ? 'Top Ambient Pools on Ethereum'
-        : isActiveNetworkBlast
-          ? 'Top Ambient Pools on Blast'
-          : isActiveNetworkScroll
-            ? 'Top Ambient Pools on Scroll'
-            : 'Top Pools on Ambient';
+    const titleTextPools = `Top Ambient Pools on ${displayName}`;
 
-    const titleTextTokens: string = isActiveNetworkMainnet
-        ? 'Active Tokens on Ethereum'
-        : isActiveNetworkBlast
-          ? 'Active Tokens on Blast'
-          : isActiveNetworkScroll
-            ? 'Active Tokens on Scroll'
-            : 'Top Pools on Ambient';
+    const titleTextTokens = `Active Tokens on ${displayName}`;
 
     const titleTextForDOM: string =
         view === 'pools' ? titleTextPools : titleTextTokens;
@@ -141,9 +116,23 @@ export default function Explore(props: ExploreIF) {
             ),
     );
 
+    const filteredPoolsNoHiddenTokens = filteredPoolsNoExcludedTokens.filter(
+        (p) => {
+            // check if pool contains tokenin hidden token list
+            return !hiddenTokens.some(
+                (excluded) =>
+                    (excluded.address.toLowerCase() ===
+                        p.base.address.toLowerCase() ||
+                        excluded.address.toLowerCase() ===
+                            p.quote.address.toLowerCase()) &&
+                    excluded.chainId === parseInt(p.chainId),
+            );
+        },
+    );
+
     const filteredPools =
         searchQueryPool.length >= 2
-            ? filteredPoolsNoExcludedTokens.filter((pool: PoolIF) => {
+            ? filteredPoolsNoHiddenTokens.filter((pool: PoolIF) => {
                   const lowerCaseQuery = searchQueryPool.toLowerCase();
                   return (
                       pool.base.name.toLowerCase().includes(lowerCaseQuery) ||
@@ -152,7 +141,7 @@ export default function Explore(props: ExploreIF) {
                       pool.quote.symbol.toLowerCase().includes(lowerCaseQuery)
                   );
               })
-            : filteredPoolsNoExcludedTokens;
+            : filteredPoolsNoHiddenTokens;
 
     const filteredTokens =
         searchQueryToken.length >= 2
@@ -169,7 +158,7 @@ export default function Explore(props: ExploreIF) {
                       );
                   })
                   .filter((t) => {
-                      // check if token is in exclusion list
+                      // check if token is in hidden token list
                       return !hiddenTokens.some(
                           (excluded) =>
                               excluded.address.toLowerCase() ===

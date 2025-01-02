@@ -10,6 +10,23 @@ import {
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
+const PUBLIC_RPC_URL = 'https://sepolia-rpc.scroll.io';
+const SECONDARY_PUBLIC_RPC_URL = 'https://scroll-sepolia-rpc.publicnode.com';
+
+const RESTRICTED_RPC_URL =
+    import.meta.env.VITE_BASE_SEPOLIA_RPC_URL !== undefined
+        ? import.meta.env.VITE_BASE_SEPOLIA_RPC_URL
+        : undefined;
+
+const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
+    ? RESTRICTED_RPC_URL
+    : PUBLIC_RPC_URL;
+
+const FALLBACK_RPC_URL =
+    PRIMARY_RPC_URL === PUBLIC_RPC_URL
+        ? SECONDARY_PUBLIC_RPC_URL
+        : PUBLIC_RPC_URL;
+
 const chainIdHex = '0x8274f';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
@@ -17,7 +34,7 @@ const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
     name: 'Scroll Sepolia Testnet',
     currency: 'ETH',
-    rpcUrl: 'https://sepolia-rpc.scroll.io/',
+    rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://sepolia.scrollscan.dev/',
 };
 
@@ -25,7 +42,8 @@ export const scrollSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_TESTNET_URL,
-    evmRpcUrl: chainSpecForWalletConnector.rpcUrl,
+    evmRpcUrl: PRIMARY_RPC_URL,
+    fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [scrollSepoliaETH, scrollSepoliaUSDC],
     poolIndex: chainSpecFromSDK.poolIndex,
@@ -33,6 +51,8 @@ export const scrollSepolia: NetworkIF = {
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Scroll Testnet',
     tokenPriceQueryAssetPlatform: undefined,
+    vaultsEnabled: false,
+    tempestApiNetworkName: '',
     topPools: [
         new TopPool(
             scrollSepoliaETH,

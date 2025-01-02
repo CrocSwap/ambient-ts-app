@@ -19,7 +19,10 @@ import LINK from './LINK.svg';
 import MIA from './MIA.png';
 import MKR from './MKR.png';
 import NEV from './NEV.webp';
+import NRWA from './NRWA.svg';
+import NTBILL from './NTBILL.svg';
 import NURI from './NURI.svg';
+import NYIELD from './NYIELD.svg';
 import OHNO from './OHNO.png';
 import OLE from './OLE.svg';
 import ORBIT from './ORBIT.png';
@@ -27,11 +30,11 @@ import PAC from './PAC.png';
 import $PACM from './PACM.webp';
 import PANDA from './PANDA.jpg';
 import PEPE from './PEPE.png';
+import PETH from './PETH.svg';
 import PUNKETH20 from './PUNKETH-20.jpeg';
 import PUSD from './PUSD.svg';
 import PXETH from './PXETH.png';
 import RPL from './RPL.png';
-import RSETH from './RSETH.webp';
 import RSWETH from './RSWETH.svg';
 import SCR from './SCR.svg';
 import SCRIBES from './SCRIBES.png';
@@ -44,6 +47,7 @@ import SWELL from './SWELL.png';
 import SWETH from './SWETH.svg';
 import SYN from './SYN.svg';
 import TBTC from './TBTC.svg';
+import UBTC from './UBTC.svg';
 import UNI from './UNI.webp';
 import UNIETH from './UNIETH.png';
 import USDPLUS from './USD+.png';
@@ -84,18 +88,21 @@ export {
     MIA,
     MKR,
     NEV,
+    NRWA,
+    NTBILL,
     NURI,
+    NYIELD,
     OHNO,
     OLE,
     ORBIT,
     PAC,
     PANDA,
     PEPE,
+    PETH,
     PUNKETH20,
     PUSD,
     PXETH,
     RPL,
-    RSETH,
     RSWETH,
     SCR,
     SCRIBES,
@@ -108,6 +115,7 @@ export {
     SWETH,
     SYN,
     TBTC,
+    UBTC,
     UNI,
     UNIETH,
     USDB,
