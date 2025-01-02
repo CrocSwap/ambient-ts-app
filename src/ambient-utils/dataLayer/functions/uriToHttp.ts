@@ -62,7 +62,7 @@ export function uriToHttp(uri: string, retry?: string): string | string[] {
             // handle http URIs
             case 'http':
                 // create an https version of the URI
-                outputURLs.push('https' + uri.slice(4));
+                // outputURLs.push('https' + uri.slice(4));
                 // create a backup URI using the unaltered http form
                 outputURLs.push(uri);
                 break;

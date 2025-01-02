@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     defaultTokens,
+    defaultTokensFUTA,
     hiddenTokens,
+    tokenListEndpointStrings,
     tokenListURIs,
 } from '../../ambient-utils/constants';
 import {
@@ -19,6 +21,7 @@ export interface tokenMethodsIF {
     tokenUniv: TokenIF[];
     getTokenByAddress: (addr: string) => TokenIF | undefined;
     getTokensFromList: (uri: string) => TokenIF[];
+    getFutaTokens: () => TokenIF[];
     getTokensByNameOrSymbol: (
         input: string,
         chn: string,
@@ -55,11 +58,12 @@ function getTokenEntryFromLS(key: string) {
     return [];
 }
 
+// fn to retrieve and parse token lists from local storage
 function getTokenListsFromLS(): TokenListIF[] {
     return getTokenEntryFromLS(localStorageKeys.tokenLists) as TokenListIF[];
 }
 
-// fn to retrieve and parse token lists from local storage
+// fn to retrieve and parse list of acknowledged tokens from local storage
 function getAckTokensFromLS(): TokenIF[] {
     return getTokenEntryFromLS(localStorageKeys.ackTokens) as TokenIF[];
 }
@@ -79,6 +83,24 @@ export const useTokens = (
 
     // User acknowledge tokens
     const [ackTokens, setAckTokens] = useState<TokenIF[]>(INIT_ACK);
+
+    function checkDefault(t: TokenIF, list: TokenIF[]): boolean {
+        return list.some(
+            (listedToken: TokenIF) =>
+                listedToken.address.toLowerCase() === t.address.toLowerCase(),
+        );
+    }
+
+    function findDefaultPlatforms(t: TokenIF): ('ambient' | 'futa')[] {
+        const defaultPlatforms: ('ambient' | 'futa')[] = [];
+        if (checkDefault(t, defaultTokens)) {
+            defaultPlatforms.push('ambient');
+        }
+        if (checkDefault(t, defaultTokensFUTA)) {
+            defaultPlatforms.push('futa');
+        }
+        return defaultPlatforms;
+    }
 
     // Universe of tokens within the given chain. Combines both tokens from
     // lists and user-acknowledge tokens
@@ -108,6 +130,15 @@ export const useTokens = (
                 const tknFromMap: TokenIF | undefined = retMap.get(
                     t.address.toLowerCase(),
                 );
+                const defaultForPlatforms: ('ambient' | 'futa')[] = [];
+                if (checkDefault(deepToken, defaultTokens)) {
+                    defaultForPlatforms.push('ambient');
+                }
+                if (checkDefault(deepToken, defaultTokensFUTA)) {
+                    defaultForPlatforms.push('futa');
+                }
+                console.log(defaultForPlatforms);
+                deepToken.defaultPlatforms = findDefaultPlatforms(deepToken);
                 // if token is listed, update the array of originating URIs
                 if (tknFromMap?.listedBy) {
                     deepToken.listedBy = deepToken.listedBy?.concat(
@@ -181,9 +212,13 @@ export const useTokens = (
                             excluded.chainId === t.chainId,
                     );
                 })
-                .map((tkn: TokenIF) =>
-                    deepCopyToken(tkn, tkn.fromList ?? tokenListURIs.ambient),
-                );
+                .map((tkn: TokenIF) => {
+                    const copiedToken = deepCopyToken(
+                        tkn,
+                        tkn.fromList ?? tokenListURIs.ambient,
+                    );
+                    return copiedToken;
+                });
         }
     }, [tokenMap, tokenBalances]);
 
@@ -213,38 +248,71 @@ export const useTokens = (
         [chainId, tokenUniv.length],
     );
 
+    // fn to fetch a token list from an endpoint and decorate
+    async function fetchAndFormatList(
+        uri: tokenListEndpointStrings,
+    ): Promise<TokenListIF | undefined> {
+        // convert URI to an array of queryable endpoints
+        const endpoints: string[] = uriToHttp(uri, 'retry');
+        // logic to query endpoints until a query is successful
+        let rawData;
+        for (let i = 0; i < endpoints.length; i++) {
+            const response = await fetch(endpoints[i]);
+            if (response.ok) {
+                rawData = await response.json();
+                break;
+            }
+        }
+        // cease funcationality if no endpoint returned a valid response
+        if (!rawData) return;
+        // format the raw data returned with values used in the Ambient app
+        const output: TokenListIF = {
+            ...rawData,
+            uri,
+            dateRetrieved: new Date().toISOString(),
+            userImported: false,
+            tokens: rawData.tokens.map((tkn: TokenIF) => {
+                return { ...tkn, fromList: uri };
+            }),
+        };
+        // return formatted token list
+        return output;
+    }
+
+    // fn to patch the a single updated token list into the array
+    async function patchTokenList(
+        uri: tokenListEndpointStrings,
+    ): Promise<void> {
+        // fresh list retrieved from endpoint
+        const list: TokenListIF | undefined = await fetchAndFormatList(uri);
+        // cease processes if the fetch fails
+        if (!list) return;
+        // array of token lists with the new one patched in
+        const updatedLists: TokenListIF[] = tokenLists.map(
+            (oldList: TokenListIF) => (oldList.uri === uri ? list : oldList),
+        );
+        // send updated array of token lists to local state
+        setTokenLists(updatedLists);
+        localStorage.setItem(
+            localStorageKeys.tokenLists,
+            JSON.stringify(updatedLists),
+        );
+    }
+
+    // logic to update the FUTA token list
+    // having trouble getting multiple lists to update in parallel
+    useEffect(() => {
+        // time interval between updates
+        const TIME = 120000;
+        // endpoint (will use a centralized endpoing later)
+        const FUTA_LIST_URI = 'http://localhost:3002/futa-token-list';
+        // set interval to patch token list after a timeout
+        setInterval(() => patchTokenList(FUTA_LIST_URI), TIME);
+    }, []);
+
     // Load token lists from local storage for fast load, but asynchronously
     // fetch tokens from external URLs and update with latest values
     useEffect(() => {
-        const fetchAndFormatList = async (
-            uri: string,
-        ): Promise<TokenListIF | undefined> => {
-            // convert URI to an array of queryable endpoints
-            const endpoints: string[] = uriToHttp(uri, 'retry');
-            // logic to query endpoints until a query is successful
-            let rawData;
-            for (let i = 0; i < endpoints.length; i++) {
-                const response = await fetch(endpoints[i]);
-                if (response.ok) {
-                    rawData = await response.json();
-                    break;
-                }
-            }
-            // cease funcationality if no endpoint returned a valid response
-            if (!rawData) return;
-            // format the raw data returned with values used in the Ambient app
-            const output: TokenListIF = {
-                ...rawData,
-                uri,
-                dateRetrieved: new Date().toISOString(),
-                userImported: false,
-                tokens: rawData.tokens.map((tkn: TokenIF) => {
-                    return { ...tkn, fromList: uri };
-                }),
-            };
-            // return formatted token list
-            return output;
-        };
         // array of promises for fetched token lists
         const tokenListPromises: Promise<TokenListIF | undefined>[] =
             Object.values(tokenListURIs).map((uri: string) =>
@@ -342,6 +410,32 @@ export const useTokens = (
         [chainId, tokenUniv],
     );
 
+    // fn to get all FUTA tokens
+    const getFutaTokens = useCallback((): TokenIF[] => {
+        // filter token universe for FUTA tokens
+        const found: TokenIF[] = tokenUniv.filter(
+            (tkn: TokenIF) =>
+                tkn.listedBy?.includes(
+                    'http://localhost:3002/futa-token-list',
+                ) || tkn.defaultPlatforms?.includes('futa'),
+        );
+        // patch in FUTA tokens from the default list
+        // TODO: make chain-specific
+        defaultTokensFUTA.forEach((dtf: TokenIF) => {
+            const alreadyFound: boolean = found.some(
+                (foundToken: TokenIF) =>
+                    foundToken.address.toLowerCase() ===
+                    dtf.address.toLowerCase(),
+            );
+            alreadyFound ||
+                found.push({
+                    ...dtf,
+                    defaultPlatforms: findDefaultPlatforms(dtf),
+                });
+        });
+        return found;
+    }, [tokenUniv]);
+
     // fn to return all tokens where name or symbol matches search input
     // can return just exact matches or exact + partial matches
     const getTokensByNameOrSymbol = useCallback(
@@ -417,6 +511,7 @@ export const useTokens = (
             tokenUniv: tokenUniv,
             getTokenByAddress: getTokenByAddress,
             getTokensFromList: getTokensFromList,
+            getFutaTokens: getFutaTokens,
             getTokensByNameOrSymbol: getTokensByNameOrSymbol,
         }),
         [tokenUniv, chainId],

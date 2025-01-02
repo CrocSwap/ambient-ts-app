@@ -24,4 +24,5 @@ export interface TokenIF extends ServerTokenIF {
     walletBalance?: string;
     dexBalance?: string;
     totalSupply?: bigint;
+    defaultPlatforms?: ('ambient' | 'futa')[];
 }
