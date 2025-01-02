@@ -508,6 +508,15 @@ function TableRowsInfiniteScroll({
         if (sortBy === 'time' || !autoScrollAlternateSolutionActive) {
             if (autoScrollDirection === ScrollDirection.DOWN) {
                 if (pageDataCount && dataPerPage && couldFirstPageLoop()) {
+                    console.log(
+                        ' >>>>> ScrollPosition.TOP ',
+                        'pageDataCount',
+                        pageDataCount,
+                        'dataPerPage',
+                        dataPerPage,
+                        'couldFirstPageLoop',
+                        couldFirstPageLoop(),
+                    );
                     scrollByTxID(
                         lastSeenTxIDRef.current || '',
                         ScrollPosition.TOP,

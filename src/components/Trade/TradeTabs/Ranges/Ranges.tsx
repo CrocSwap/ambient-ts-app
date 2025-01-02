@@ -1430,7 +1430,7 @@ function Ranges(props: propsIF) {
                             tableView={tableView}
                             isAccountView={isAccountView}
                             data={sortedPositions}
-                            dataPerPage={dataPerPage}
+                            dataPerPage={50}
                             fetchCount={200}
                             targetCount={30}
                             sortBy={sortBy}
