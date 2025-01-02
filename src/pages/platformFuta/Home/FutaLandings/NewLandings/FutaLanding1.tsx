@@ -6,7 +6,6 @@ export default function FutaLanding() {
             <div className={styles.content}>
                 <p>No pictures. No devs. Just tickers.</p>
                 <p>To move forwards, we must go back.</p>
-
                 <Link to='/auctions'>/Enter</Link>
             </div>
         </div>

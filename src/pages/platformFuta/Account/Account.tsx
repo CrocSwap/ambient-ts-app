@@ -22,6 +22,8 @@ import {
 } from '../Auctions/useSortedAuctions';
 import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
 
+export type auctionDataSets = 'bids' | 'created';
+
 export default function Account() {
     const { accountData } = useContext(AuctionsContext);
     const { isUserConnected, userAddress } = useContext(UserDataContext);
@@ -45,16 +47,24 @@ export default function Account() {
         undefined,
     );
 
+    const [tickerSet, setTickerSet] = useState<auctionDataSets>('bids');
+    function toggleData(set?: auctionDataSets): void {
+        if (set) {
+            setTickerSet(set);
+        } else if (tickerSet === 'bids') {
+            setTickerSet('created');
+        } else if (tickerSet === 'created') {
+            setTickerSet('bids');
+        }
+    }
+
     if (addressFromParams && !isAddressEns && !isAddressHex) {
         return <Navigate to='/404' replace />;
     }
 
     const sumUnclaimedAndUnreturned = useMemo(() => {
         if (!accountData.auctions) return BigInt(0);
-        // return { totalUnclaimed: BigInt(0), totalUnreturned: BigInt(0) };
         let sum = BigInt(0);
-        // let totalUnclaimed = BigInt(0);
-        // let totalUnreturned = BigInt(0);
 
         accountData.auctions.forEach((auction: AuctionDataIF) => {
             if (auction.qtyUnclaimedByUserInAuctionedTokenWei) {
@@ -63,16 +73,6 @@ export default function Account() {
             if (auction.qtyUnreturnedToUserInNativeTokenWei) {
                 sum += BigInt(auction.qtyUnreturnedToUserInNativeTokenWei);
             }
-            // if (auction.qtyUnclaimedByUserInAuctionedTokenWei) {
-            //     totalUnclaimed += BigInt(
-            //         auction.qtyUnclaimedByUserInAuctionedTokenWei,
-            //     );
-            // }
-            // if (auction.qtyUnreturnedToUserInNativeTokenWei) {
-            //     totalUnreturned += BigInt(
-            //         auction.qtyUnreturnedToUserInNativeTokenWei,
-            //     );
-            // }
         });
 
         return sum;
@@ -216,6 +216,27 @@ export default function Account() {
     const sorted: sortedAuctionsIF = useSortedAuctions(
         accountData.auctions || [],
     );
+
+    // !important:  the table will display "No tickers available" if `sorted` is
+    // !important:  ... removed from the dependency array of this hook which I
+    // !important:  ... sometimes do to simulate state, please re-insert if it is
+    // !important:  ... ever inadvertently left out
+    // logic to filter bids created by authenticated wallet when relevant
+    const filtered = useMemo<sortedAuctionsIF>(() => {
+        // copy sorted data to an output variable
+        const output = { ...sorted };
+        // apply filter if user sets state to created auctions only
+        if (tickerSet === 'created') {
+            output.data = sorted.data.filter(
+                (tck: AuctionDataIF) =>
+                    tck.createdBy &&
+                    tck.createdBy.toLowerCase() === userAddress?.toLowerCase(),
+            );
+        }
+        // return data after processing (processing is actually optional)
+        return output;
+    }, [tickerSet, sorted]);
+
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
     if (!isUserConnected && !addressFromParams) {
@@ -229,14 +250,14 @@ export default function Account() {
     const desktopVersionWithClaimAll = (
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
-                <SearchableTicker auctions={sorted} title='' isAccount={true} />
-            </div>
-            <div className={styles.separatorContainer}>
-                {
-                    /* <Separator dots={70} /> */
-                    // leaving parent container empty preserves
-                    // ... layout with CSS Grid styling
-                }
+                <SearchableTicker
+                    auctions={filtered}
+                    dataState={{
+                        active: tickerSet,
+                        toggle: toggleData,
+                    }}
+                    isAccount
+                />
             </div>
 
             <div className={styles.rightLayout}>
@@ -253,9 +274,12 @@ export default function Account() {
         <div className={styles.container}>
             <div className={styles.content}>
                 <SearchableTicker
-                    auctions={sorted}
-                    title='account'
-                    isAccount={true}
+                    auctions={filtered}
+                    dataState={{
+                        active: tickerSet,
+                        toggle: toggleData,
+                    }}
+                    isAccount
                 />
             </div>
         </div>
@@ -265,8 +289,14 @@ export default function Account() {
         <div className={styles.container}>
             <div className={styles.content}>
                 <BreadCrumb />
-                <h2>Account</h2>
-                <SearchableTicker auctions={sorted} isAccount={true} />
+                <SearchableTicker
+                    auctions={filtered}
+                    dataState={{
+                        active: tickerSet,
+                        toggle: toggleData,
+                    }}
+                    isAccount
+                />
             </div>
             {claimAllContainer}
         </div>
@@ -277,7 +307,14 @@ export default function Account() {
             <div className={styles.content}>
                 <BreadCrumb />
                 <h2>Account</h2>
-                <SearchableTicker auctions={sorted} isAccount={true} />
+                <SearchableTicker
+                    auctions={filtered}
+                    dataState={{
+                        active: tickerSet,
+                        toggle: toggleData,
+                    }}
+                    isAccount
+                />
             </div>
         </div>
     );

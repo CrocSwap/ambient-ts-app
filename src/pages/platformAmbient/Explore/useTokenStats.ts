@@ -1,6 +1,5 @@
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { ethers } from 'ethers';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     FetchContractDetailsFn,
     TokenPriceFn,
@@ -18,7 +17,9 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import { AppStateContext } from '../../../contexts';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { BatchedJsonRpcProvider } from '../../../utils/batchedProvider';
 
 interface dexDataGeneric {
     raw: number;
@@ -48,23 +49,38 @@ export const useTokenStats = (
     cachedFetchTokenPrice: TokenPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     tokenMethods: tokenMethodsIF,
-    provider: ethers.Provider,
+    provider: BatchedJsonRpcProvider,
 ): useTokenStatsIF => {
     const [dexTokens, setDexTokens] = useState<dexTokenData[]>([]);
+    const { activeNetwork } = useContext(AppStateContext);
 
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const defaultTokensForChain: [TokenIF, TokenIF] =
         getDefaultPairForChain(chainId);
 
+    const providerUrl = useMemo(
+        () => provider._getConnection().url,
+        [provider],
+    );
+
+    // reset pool data when switching networks
+    useEffect(() => {
+        if (
+            dexTokens.length &&
+            dexTokens[0].tokenMeta?.chainId !== parseInt(activeNetwork.chainId)
+        ) {
+            setDexTokens([]);
+        }
+    }, [activeNetwork.chainId]);
+
     // redecorate token data when token lists are pulled for the first time
     useEffect(() => {
         (async () => {
             if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
-                setDexTokens([]);
                 await fetchData();
             }
         })();
-    }, [crocEnv, chainId]);
+    }, [crocEnv, chainId, providerUrl]);
 
     async function fetchData(): Promise<void> {
         if (crocEnv) {
@@ -140,14 +156,19 @@ export const useTokenStats = (
                           Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                       );
 
-            const price: number =
-                (await tokenPricePromise)?.usdPrice ||
-                toDisplayPrice(
-                    await poolWithETHNonDisplayPricePromise,
-                    18,
-                    tokenMeta.decimals,
-                ) * ((await ethPricePromise)?.usdPrice || 0) ||
-                0;
+            let price: number;
+
+            const canonicalTokenPrice = (await tokenPricePromise)?.usdPrice;
+            if (canonicalTokenPrice) {
+                price = canonicalTokenPrice;
+            } else {
+                price =
+                    toDisplayPrice(
+                        await poolWithETHNonDisplayPricePromise,
+                        18,
+                        tokenMeta.decimals,
+                    ) * ((await ethPricePromise)?.usdPrice || 0) || 0;
+            }
 
             const tvlUSD: number = normalizeToUSD(
                 token.dexTvl,

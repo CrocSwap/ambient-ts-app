@@ -64,6 +64,7 @@
     --navbar-border: transparent;
     --dark-border-color: #010101;
     --dark-border: 0.2px solid var(--dark-border-color);
+    --futa-box-border: 2px solid #5c6f72;
 
     /* transitions */
     --transition: all var(--animation-speed) ease-in-out;
@@ -172,7 +173,8 @@
 [data-theme='futa_dark'] {
     /* subtract full height from navbar(56px) and footer(20px on desktop, 64 on mobile) */
     --content-height: calc(100vh - 76px);
-    --content-height-mobile: calc(100svh - 120px);
+    --content-height-mobile: calc(100dvh - 60px);
+
     /* font */
     --title-ts: 0px 0px 150px rgba(242, 153, 74, 0.5),
         0px 0px 100px rgba(242, 153, 74, 0.5),
@@ -201,7 +203,7 @@
     --text2: #939c9e;
     --text3: #4d5255;
 
-    --dark1: #0d0f13;
+    --dark1: #0d0f13FF;
     --dark2: #14161a;
     --dark3: #1b1e22;
     --dark4: #171f22;

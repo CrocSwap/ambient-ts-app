@@ -918,15 +918,6 @@ function Range() {
                 NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
-            console.log({
-                gasPriceInDollarsNum,
-                extraL1GasFeePool,
-                gasPriceInGwei,
-                GAS_DROPS_ESTIMATE_POOL,
-                NUM_GWEI_IN_WEI,
-                ethMainnetUsdPrice,
-            });
-
             setRangeGasPriceinDollars(
                 getFormattedNumber({
                     value: gasPriceInDollarsNum + extraL1GasFeePool,

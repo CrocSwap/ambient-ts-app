@@ -38,7 +38,6 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
-import SmolRefuelLink from '../../../../components/Global/SmolRefuelLink/SmolRefuelLink';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
@@ -846,9 +845,6 @@ function Reposition() {
                         valueLossExceedsThreshold={valueLossExceedsThreshold}
                         isCurrentPositionEmpty={isCurrentPositionEmpty}
                     />
-                    <span style={{ marginRight: '25px', marginBottom: '5px' }}>
-                        <SmolRefuelLink />
-                    </span>
                     <div className={styles.button_container}>
                         {bypassConfirmRepo.isEnabled && showConfirmation ? (
                             <SubmitTransaction

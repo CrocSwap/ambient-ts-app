@@ -1012,11 +1012,11 @@ export const plumeWTT: TokenIF = registerToken({
 
 export const plumePUSD: TokenIF = registerToken({
     name: 'Plume USD',
-    address: '0x360822f796975cEccD8095c10720c57567b4199f',
+    address: '0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F',
     symbol: 'pUSD',
     decimals: 6,
     chainId: 98865,
-    logoURI: 'https://img.cryptorank.io/coins/plume_network1716480863760.png',
+    logoURI: '',
 });
 
 export const plumeNRWA: TokenIF = registerToken({
