@@ -40,25 +40,59 @@ export default function Footer() {
         {
             label: 'Explore',
             link: '/auctions',
-            icon: <MdOutlineExplore size={24} color='var(--text1)' />,
+            icon: (
+                <MdOutlineExplore
+                    size={24}
+                    color={
+                        location.pathname.includes('auctions')
+                            ? 'var(--text1)'
+                            : 'var(--text2)'
+                    }
+                />
+            ),
         },
         {
             label: 'Create',
             link: '/create',
-            icon: <FiPlusCircle size={24} color='var(--text1)' />,
+            icon: (
+                <FiPlusCircle
+                    size={24}
+                    color={
+                        location.pathname.includes('create')
+                            ? 'var(--text1)'
+                            : 'var(--text2)'
+                    }
+                />
+            ),
         },
         {
             label: 'Swap',
             link: '/swap/' + paramsSlug,
             icon: (
-                <MdOutlineSwapVerticalCircle size={24} color='var(--text1)' />
+                <MdOutlineSwapVerticalCircle
+                    size={24}
+                    color={
+                        location.pathname.includes('swap')
+                            ? 'var(--text1)'
+                            : 'var(--text2)'
+                    }
+                />
             ),
         },
 
         {
             label: 'Account',
             link: '/account',
-            icon: <RiAccountCircleLine size={24} color='var(--text1)' />,
+            icon: (
+                <RiAccountCircleLine
+                    size={24}
+                    color={
+                        location.pathname.includes('account')
+                            ? 'var(--text1)'
+                            : 'var(--text2)'
+                    }
+                />
+            ),
         },
     ];
 
