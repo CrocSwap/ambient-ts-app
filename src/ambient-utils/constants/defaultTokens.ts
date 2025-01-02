@@ -1029,6 +1029,24 @@ export const plumeNRWA: TokenIF = registerToken({
     logoURI: '',
 });
 
+export const plumeNTBILL: TokenIF = registerToken({
+    name: 'Nest Treasuries Vault',
+    address: '0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9',
+    symbol: 'nTBILL',
+    decimals: 6,
+    chainId: 98865,
+    logoURI: '',
+});
+
+export const plumeNYIELD: TokenIF = registerToken({
+    name: 'Nest Yield Vault',
+    address: '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8',
+    symbol: 'nYIELD',
+    decimals: 6,
+    chainId: 98865,
+    logoURI: '',
+});
+
 export const baseSepoliaUSDT: TokenIF = registerToken({
     name: 'Ambient USDT',
     address: '0x868cFD46ad326354AD214bEA9f08fD8EfBfac3b9',
