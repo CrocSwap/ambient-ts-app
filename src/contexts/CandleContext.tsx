@@ -28,8 +28,6 @@ import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeDataContext } from './TradeDataContext';
 import { TradeTokenContext } from './TradeTokenContext';
-import { UserDataContext } from './UserDataContext';
-
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
     setCandleData: Dispatch<
@@ -78,8 +76,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         useContext(TradeDataContext);
 
     const poolPriceRef = useRef(poolPriceDisplay);
-
-    const { isUserConnected } = useContext(UserDataContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -117,7 +113,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const offlineFetcherRef = useRef<NodeJS.Timeout>();
     offlineFetcherRef.current = offlineFetcher;
 
-    const checkUserConnected = useRef(isUserConnected);
     const poolTokenAddress = (
         baseTokenAddress + quoteTokenAddress
     ).toLocaleLowerCase('en-US');
@@ -209,13 +204,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
      */
     useEffect(() => {
         (async () => {
-            const isChangeUserConnected =
-                checkUserConnected.current === isUserConnected;
             if (
                 crocEnv &&
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
-                isChangeUserConnected &&
                 isChartEnabled &&
                 candleData === undefined
             ) {
@@ -223,14 +215,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 if (isManualCandleFetchRequested)
                     setIsManualCandleFetchRequested(false);
             }
-            checkUserConnected.current = isUserConnected;
         })();
     }, [
         isManualCandleFetchRequested,
         isChartEnabled,
         isUserOnline,
         isPoolInitialized,
-        isUserConnected,
         candleData === undefined,
         crocEnv,
         chainId,
