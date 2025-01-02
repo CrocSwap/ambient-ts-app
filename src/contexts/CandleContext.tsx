@@ -256,9 +256,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
             : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
         poolTokenAddress,
-        candleScale?.isFetchForTimeframe,
         candleScale.isShowLatestCandle,
-        isFetchingCandle,
     ]);
 
     useEffect(() => {
