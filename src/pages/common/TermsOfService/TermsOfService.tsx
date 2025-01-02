@@ -1,8 +1,17 @@
 import styles from './TermsOfService.module.css';
-
+import futaBg from '../../../assets/futa/home/background.png';
+import ambientBg from '../../../assets/images/backgrounds/background.png';
+import { brand } from '../../../ambient-utils/constants';
 export default function TermsOfService() {
+    const isFuta = brand === 'futa';
+
     return (
-        <div className={styles.background}>
+        <div
+            className={styles.background}
+            style={{
+                background: `url(${isFuta ? futaBg : ambientBg}) no-repeat`,
+            }}
+        >
             <div className={styles.container}>
                 <div className={styles.content}>
                     <span className={styles.header}>
