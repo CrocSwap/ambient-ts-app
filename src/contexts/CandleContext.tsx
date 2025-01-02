@@ -232,7 +232,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isPoolInitialized,
         isUserConnected,
         candleData === undefined,
-        crocEnv === undefined,
+        crocEnv,
+        chainId,
     ]);
 
     useEffect(() => {
