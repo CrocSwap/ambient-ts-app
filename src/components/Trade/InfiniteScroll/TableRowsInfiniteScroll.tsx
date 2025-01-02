@@ -99,7 +99,7 @@ function TableRowsInfiniteScroll({
     const txSpanSelectorForScrollMethod = `#infinite_scroll_wrapper_${wrapperID} div[data-label='hidden-id'] > span`;
     const txSpanSelectorForBindMethod = 'div[data-label="hidden-id"]';
 
-    const debugMode = true;
+    const debugMode = false;
     const markRows = false;
     const [manualMode, setManualMode] = useState(false);
     const manualModeRef = useRef<boolean>();
@@ -508,15 +508,6 @@ function TableRowsInfiniteScroll({
         if (sortBy === 'time' || !autoScrollAlternateSolutionActive) {
             if (autoScrollDirection === ScrollDirection.DOWN) {
                 if (pageDataCount && dataPerPage && couldFirstPageLoop()) {
-                    console.log(
-                        ' >>>>> ScrollPosition.TOP ',
-                        'pageDataCount',
-                        pageDataCount,
-                        'dataPerPage',
-                        dataPerPage,
-                        'couldFirstPageLoop',
-                        couldFirstPageLoop(),
-                    );
                     scrollByTxID(
                         lastSeenTxIDRef.current || '',
                         ScrollPosition.TOP,
