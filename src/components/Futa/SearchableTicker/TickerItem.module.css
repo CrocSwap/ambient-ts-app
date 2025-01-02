@@ -1,0 +1,79 @@
+/* top-level JSX parent component */
+.ticker_item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    transition: all var(--animation-speed) ease-in-out;
+    gap: 8px;
+    font-size: 18px;
+    letter-spacing: 1px;
+}
+
+/* transparent ticker arrow in base state with transition */
+.ticker_arrow {
+    transition: all var(--animation-speed) ease-in-out;
+    color: #f0f0f800;
+}
+
+/* add color to ticker arrow when parent elem is hovered */
+.ticker_name:hover .ticker_arrow {
+    color: var(--text2);
+}
+
+/* styles to apply universally to cells in the row */
+/* will be overridden by lower CSS in this file */
+.ticker_item > * {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    width: 120px;
+}
+
+.active {
+    background-color: #28585d;
+}
+
+.active:hover {
+    background-color: var(--dark3);
+}
+
+.inactive:hover {
+    background-color: var(--dark2);
+}
+
+.ticker_name {
+    flex: 1 10 auto;
+    justify-content: flex-start;
+}
+
+.market_cap {
+    flex: 1 10 auto;
+    justify-content: flex-end;
+}
+
+.auction_status {
+    flex: 1 10 auto;
+    justify-content: center;
+}
+
+.time_remaining {
+    flex: 1 10 auto;
+    justify-content: flex-end;
+}
+
+.native_tkn_committed {
+    flex: 1 10 auto;
+    justify-content: flex-end;
+}
+
+.native_tkn_reward {
+    flex: 1 10 auto;
+    justify-content: flex-end;
+}
+
+@media (max-width: 500px) {
+    .ticker_item > * {
+        font-size: 10px;
+    }
+}

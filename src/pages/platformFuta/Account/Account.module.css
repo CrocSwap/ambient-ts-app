@@ -1,8 +1,7 @@
 .container {
     width: 100%;
-    height: calc(100svh - 154px);
+    height: calc(100svh - 104px);
     background: var(--dark1);
-
     display: flex;
     padding: 8px 16px;
     flex-direction: column;
@@ -97,7 +96,7 @@
 .desktopContainer {
     background: var(--dark1);
     display: grid;
-    grid-template-columns: auto 4px 390px;
+    grid-template-columns: auto 390px;
     padding: 0 16px;
     height: calc(100vh - 56px);
     gap: 16px;
@@ -174,7 +173,15 @@
         margin: 5px 0;
     }
 
-    .container {
+    /* .container {
         height: calc(100svh - 280px);
-    }
+    } */
+}
+
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .container {
+        width: 100%;
+        height: calc(100svh - 154px);
+}
 }

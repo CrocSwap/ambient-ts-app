@@ -43,13 +43,6 @@ export default function Explore(props: ExploreIF) {
         }
     };
 
-    const everyOneMinute = Math.floor(Date.now() / 60000);
-
-    // update top pools data
-    useEffect(() => {
-        getAllPoolData();
-    }, [everyOneMinute]);
-
     // trigger process to fetch and format token data when page loads with
     // ... gatekeeping to prevent re-fetch if data is already loaded
     useEffect(() => {

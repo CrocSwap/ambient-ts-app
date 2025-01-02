@@ -23,7 +23,6 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
 import TradeLinks from './TradeLinks';
 
 interface PropsIF {
@@ -203,7 +202,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     padding={isFuta ? '0 16px' : '0 32px 30px 32px'}
                 >
                     {transactionDetails}
-                    <SmolRefuelLink />
                     {isUserConnected === undefined ||
                     !areDefaultTokensUpdatedForChain ? null : isUserConnected ===
                       true ? (

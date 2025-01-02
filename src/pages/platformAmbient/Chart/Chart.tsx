@@ -390,8 +390,6 @@ export default function Chart(props: propsIF) {
 
     const [limit, setLimit] = useState<number>(0);
 
-    const [market, setMarket] = useState<number>(0);
-
     const [boundaries, setBoundaries] = useState<boolean>();
     const [isShapeEdited, setIsShapeEdited] = useState<boolean>();
 
@@ -720,7 +718,6 @@ export default function Chart(props: propsIF) {
                 : lastCandleData.priceCloseDecimalCorrected;
         }
 
-        setMarket(poolPrice);
         return poolPrice;
     }, [
         lastCandleData,
@@ -4110,7 +4107,7 @@ export default function Chart(props: propsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([5, 3]);
-                    marketLine([market]);
+                    marketLine([chartPoolPrice]);
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
@@ -4120,7 +4117,7 @@ export default function Chart(props: propsIF) {
                 });
         }
         renderCanvasArray([d3CanvasMarketLine]);
-    }, [market, marketLine]);
+    }, [chartPoolPrice, marketLine]);
 
     useEffect(() => {
         const noGoZoneBoundaries = noGoZone(
@@ -4257,7 +4254,7 @@ export default function Chart(props: propsIF) {
     }
 
     function changeScaleLimit(isTriggeredByZoom: boolean) {
-        if (scaleData && market && rescale) {
+        if (scaleData && chartPoolPrice && rescale) {
             const { minYBoundary, maxYBoundary } =
                 getYAxisBoundary(isTriggeredByZoom);
 
@@ -4267,14 +4264,14 @@ export default function Chart(props: propsIF) {
                     minYBoundary,
                     value,
                     minTickForLimit,
-                    market,
+                    chartPoolPrice,
                 );
 
                 const high = Math.max(
                     maxYBoundary,
                     value,
                     maxTickForLimit,
-                    market,
+                    chartPoolPrice,
                 );
 
                 const bufferForLimit = Math.abs((low - high) / 6);
@@ -4297,7 +4294,7 @@ export default function Chart(props: propsIF) {
             const min = minPrice;
             const max = maxPrice;
 
-            if (!market) {
+            if (!chartPoolPrice) {
                 scaleData.yScale.domain(
                     scaleData.priceRange(visibleCandleData),
                 );
@@ -4308,7 +4305,7 @@ export default function Chart(props: propsIF) {
 
             if (
                 maxYBoundary !== undefined &&
-                market &&
+                chartPoolPrice &&
                 minYBoundary !== undefined
             ) {
                 if (simpleRangeWidth !== 100 || advancedMode) {
@@ -4316,9 +4313,19 @@ export default function Chart(props: propsIF) {
                         ranges[0] = { name: 'Min', value: minPrice };
                         ranges[1] = { name: 'Max', value: maxPrice };
 
-                        const low = Math.min(min, max, minYBoundary, market);
+                        const low = Math.min(
+                            min,
+                            max,
+                            minYBoundary,
+                            chartPoolPrice,
+                        );
 
-                        const high = Math.max(min, max, maxYBoundary, market);
+                        const high = Math.max(
+                            min,
+                            max,
+                            maxYBoundary,
+                            chartPoolPrice,
+                        );
 
                         const bufferForRange = Math.abs((low - high) / 6);
 
@@ -4415,7 +4422,7 @@ export default function Chart(props: propsIF) {
     }, [
         location.pathname.includes('pool') ||
             location.pathname.includes('reposition'),
-        market,
+        chartPoolPrice,
         isLineDrag,
         minPrice,
         maxPrice,
@@ -5704,7 +5711,7 @@ export default function Chart(props: propsIF) {
 
     const yAxisCanvasProps = {
         scaleData,
-        market,
+        chartPoolPrice,
         liqMode,
         liqTransitionPointforCurve: liquidityData
             ? liquidityData?.liqTransitionPointforCurve
@@ -5936,7 +5943,6 @@ export default function Chart(props: propsIF) {
                         mainCanvasBoundingClientRect={
                             mainCanvasBoundingClientRect
                         }
-                        chartPoolPrice={chartPoolPrice}
                         chartThemeColors={chartThemeColors}
                         render={render}
                         colorChangeTrigger={colorChangeTrigger}

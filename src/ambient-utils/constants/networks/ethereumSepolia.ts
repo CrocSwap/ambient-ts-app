@@ -6,10 +6,22 @@ import { sepoliaETH, sepoliaUSDC, sepoliaWBTC } from '../defaultTokens';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-export const SEPOLIA_RPC_URL =
+const PUBLIC_RPC_URL = 'https://ethereum-sepolia-rpc.publicnode.com';
+const SECONDARY_PUBLIC_RPC_URL = 'https://1rpc.io/sepolia';
+
+const RESTRICTED_RPC_URL =
     import.meta.env.VITE_SEPOLIA_RPC_URL !== undefined
         ? import.meta.env.VITE_SEPOLIA_RPC_URL
-        : 'https://ethereum-sepolia-rpc.publicnode.com';
+        : undefined;
+
+const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
+    ? RESTRICTED_RPC_URL
+    : PUBLIC_RPC_URL;
+
+const FALLBACK_RPC_URL =
+    PRIMARY_RPC_URL === PUBLIC_RPC_URL
+        ? SECONDARY_PUBLIC_RPC_URL
+        : PUBLIC_RPC_URL;
 
 const chainIdHex = '0xaa36a7';
 const chainSpecFromSDK = lookupChain(chainIdHex);
@@ -18,7 +30,7 @@ const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
     name: 'Sepolia',
     currency: 'ETH',
-    rpcUrl: SEPOLIA_RPC_URL,
+    rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://sepolia.etherscan.io/',
 };
 
@@ -26,7 +38,8 @@ export const ethereumSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_TESTNET_URL,
-    evmRpcUrl: SEPOLIA_RPC_URL,
+    evmRpcUrl: PRIMARY_RPC_URL,
+    fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
     defaultPair: [sepoliaETH, sepoliaUSDC],
     defaultPairFuta: [sepoliaETH, sepoliaWBTC],

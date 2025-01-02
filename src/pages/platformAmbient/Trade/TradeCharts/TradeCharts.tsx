@@ -400,7 +400,7 @@ function TradeCharts(props: propsIF) {
         <section
             style={{
                 justifyContent: 'space-between',
-                padding: '0px 1rem 1rem 1rem',
+                padding: '2px 1rem 1rem 1rem',
             }}
             className={styles.time_frame_container}
         >

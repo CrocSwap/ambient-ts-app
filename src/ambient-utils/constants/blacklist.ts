@@ -222,6 +222,11 @@ export const hiddenTokens = [
         address: '0x821a278dfff762c76410264303f25bf42e195c0c',
         chainId: 1,
     },
+    {
+        // old pUSD on Plume Mainnet
+        address: '0x360822f796975cEccD8095c10720c57567b4199f',
+        chainId: 98865,
+    },
 ];
 
 const embargoedTokens = [

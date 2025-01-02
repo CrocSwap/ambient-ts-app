@@ -43,7 +43,6 @@ import {
 } from '../../utils/TransactionError';
 import Modal from '../Global/Modal/Modal';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
-import SmolRefuelLink from '../Global/SmolRefuelLink/SmolRefuelLink';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
 
@@ -747,11 +746,6 @@ function RangeActionModal(props: propsIF) {
             <div className={styles.remove_range_container}>
                 <div className={styles.main_content}>
                     {mainModalContent}
-                    {!showSettings && (
-                        <span style={{ marginRight: '20px' }}>
-                            <SmolRefuelLink />
-                        </span>
-                    )}
                     {buttonToDisplay}
                 </div>
             </div>
