@@ -121,21 +121,25 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 (await crocEnv.context).chain.chainId === activeNetwork.chainId
             ) {
                 if (
-                    intermediaryPoolData &&
+                    intermediaryPoolData.length &&
                     intermediaryPoolData[0]?.chainId !== activeNetwork.chainId
                 ) {
                     setIntermediaryPoolData([]);
                 }
-                getAllPools();
-                const interval = setInterval(() => {
-                    getAllPools(); // refresh pool data every 5 minutes
-                }, 300000);
-                return () => clearInterval(interval);
+                if (!intermediaryPoolData.length) {
+                    getAllPools();
+                    const interval = setInterval(() => {
+                        getAllPools(); // refresh pool data every 5 minutes
+                    }, 300000);
+                    return () => clearInterval(interval);
+                }
             }
         })();
     }, [
         isUserOnline,
-        JSON.stringify(poolList),
+        poolList.length,
+        poolList[0]?.chainId,
+        intermediaryPoolData[0]?.chainId,
         crocEnv,
         activeNetwork.chainId,
     ]);
