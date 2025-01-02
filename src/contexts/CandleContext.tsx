@@ -110,6 +110,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         domainBoundry: undefined,
         isAbortedRequest: false,
         isResetRequest: false,
+        isCondensedFetching: false,
     });
 
     const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timeout>();
@@ -203,6 +204,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setTimeOfEndCandle(undefined);
     }, [candleScale?.isFetchForTimeframe]);
 
+    /**
+     * this is for the first fetch (initial load, switching network, changing period, or switching pool).
+     */
     useEffect(() => {
         (async () => {
             const isChangeUserConnected =
@@ -258,6 +262,17 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         poolTokenAddress,
         candleScale.isShowLatestCandle,
     ]);
+
+    /**
+     * only works if have not enough candle data on condensed mode
+     */
+    useEffect(() => {
+        (async () => {
+            if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
+                minTimeMemo && fetchCandlesByNumDurations(2999, minTimeMemo);
+            }
+        })();
+    }, [candleDomains.isCondensedFetching]);
 
     useEffect(() => {
         if (isCandleDataNull) {
@@ -463,6 +478,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             });
     };
 
+    /**
+     * only works for zoom
+     */
     useEffect(() => {
         (async () => {
             if (

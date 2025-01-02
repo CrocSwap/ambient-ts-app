@@ -256,6 +256,7 @@ export default function Chart(props: propsIF) {
     } = useContext(ChartContext);
     const {
         setCandleDomains,
+        candleDomains,
         timeOfEndCandle,
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
@@ -278,6 +279,7 @@ export default function Chart(props: propsIF) {
             domainBoundry: undefined,
             isAbortedRequest: false,
             isResetRequest: false,
+            isCondensedFetching: false,
         });
 
     const {
@@ -704,7 +706,12 @@ export default function Chart(props: propsIF) {
     const debouncedGetNewCandleDataRight = useDebounce(localCandleDomains, 500);
 
     const zoomBase = useMemo(() => {
-        return new Zoom(setLocalCandleDomains, period, isCondensedModeEnabled);
+        return new Zoom(
+            setLocalCandleDomains,
+            period,
+            isCondensedModeEnabled,
+            candleDomains,
+        );
     }, [period, isCondensedModeEnabled]);
 
     const chartPoolPrice = useMemo(() => {
@@ -2543,14 +2550,15 @@ export default function Chart(props: propsIF) {
     function fetchCandleForResetOrLatest(isReset = false) {
         const nowDate = Date.now();
         if (isReset) {
-            const candleDomain = {
+            const localCandleDomain = {
                 lastCandleDate: nowDate,
                 domainBoundry: nowDate - 200 * 1000 * period,
                 isAbortedRequest: true,
                 isResetRequest: isReset,
+                isCondensedFetching: candleDomains.isCondensedFetching,
             };
 
-            setCandleDomains(candleDomain);
+            setCandleDomains(localCandleDomain);
         } else {
             if ((reset || latest) && scaleData) {
                 const lastCandleDataTime =
@@ -2564,6 +2572,7 @@ export default function Chart(props: propsIF) {
                             : lastCandleDataTime,
                     isAbortedRequest: false,
                     isResetRequest: isReset,
+                    isCondensedFetching: candleDomains.isCondensedFetching,
                 };
 
                 if (!isReset) {

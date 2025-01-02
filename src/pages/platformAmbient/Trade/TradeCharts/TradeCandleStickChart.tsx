@@ -964,30 +964,17 @@ function TradeCandleStickChart(props: propsIF) {
                     setIsFetchingEnoughData(true);
                     const dom = {
                         lastCandleDate: minTime,
-                        domainBoundry: minTime - 2999 * period * 1000,
                         isAbortedRequest: true,
                         isResetRequest: false,
                     };
 
                     setFetchCountForEnoughData(fetchCountForEnoughData + 1);
                     setCandleDomains((prev: CandleDomainIF) => {
-                        if (prev && prev.domainBoundry && prev.lastCandleDate) {
-                            const nCandles = Math.floor(
-                                (prev.lastCandleDate - prev.domainBoundry) /
-                                    (period * 1000),
-                            );
-
-                            const newNCandles = Math.floor(
-                                (dom.lastCandleDate - dom.domainBoundry) /
-                                    (period * 1000),
-                            );
-                            if (nCandles === newNCandles) {
-                                dom.domainBoundry =
-                                    dom.domainBoundry + period * 1000;
-                            }
-                        }
-
-                        return dom;
+                        return {
+                            ...dom,
+                            domainBoundry: prev.domainBoundry,
+                            isCondensedFetching: !prev.isCondensedFetching,
+                        };
                     });
                 } else {
                     if (!candleDomains.isResetRequest) {
