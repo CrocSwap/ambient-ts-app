@@ -133,9 +133,13 @@ export default function TickerItem(props: PropsIF) {
         !userDataForAuction?.qtyUnreturnedToUserInNativeTokenWei;
 
     const statusText = isUserInTheMoney
-        ? 'IN'
+        ? isAuctionOpen
+            ? 'IN'
+            : 'WON'
         : isUserOutOfTheMoney
-          ? 'OUT'
+          ? isAuctionOpen
+              ? 'OUT'
+              : 'LOST'
           : userActionsCompleted
             ? 'CLAIMED'
             : undefined;
