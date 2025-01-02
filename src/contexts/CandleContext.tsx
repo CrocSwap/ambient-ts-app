@@ -269,7 +269,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     useEffect(() => {
         (async () => {
             if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
-                minTimeMemo && fetchCandlesByNumDurations(2999, minTimeMemo);
+                const lastDate = new Date(
+                    (candleDomains?.lastCandleDate as number) / 1000,
+                ).getTime();
+                fetchCandlesByNumDurations(2999, lastDate);
             }
         })();
     }, [candleDomains.isCondensedFetching]);
