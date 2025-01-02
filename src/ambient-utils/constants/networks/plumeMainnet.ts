@@ -60,6 +60,8 @@ export const plumeMainnet: NetworkIF = {
         new TopPool(plumeNativeETH, plumeUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(plumePETH, plumePUSD, chainSpecFromSDK.poolIndex),
         new TopPool(plumeNRWA, plumePUSD, chainSpecFromSDK.poolIndex),
+        new TopPool(plumeNativeETH, plumePUSD, chainSpecFromSDK.poolIndex),
+        new TopPool(plumeUSDC, plumePUSD, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
