@@ -6145,7 +6145,13 @@ export default function Chart(props: propsIF) {
             const canvasRightEnd = rectCanvas.right;
 
             if (isHoveredOrderHistory && hoveredOrderHistory) {
-                if (circleScale && showSwap) {
+                if (
+                    circleScale &&
+                    showSwap &&
+                    (hoveredOrderHistory.type === 'swap' ||
+                        hoveredOrderHistory.type === 'limitCircle')
+                ) {
+                    console.log(hoveredOrderHistory);
                     setHoveredOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
