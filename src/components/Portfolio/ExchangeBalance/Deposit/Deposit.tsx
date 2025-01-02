@@ -42,7 +42,6 @@ import {
 } from '../../../../styled/Components/Portfolio';
 import Button from '../../../Form/Button';
 import CurrencySelector from '../../../Form/CurrencySelector';
-import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -421,7 +420,6 @@ export default function Deposit(props: propsIF) {
                     </FlexContainer>
                 }
             </FlexContainer>
-            <SmolRefuelLink />
             <Button
                 idForDOM='deposit_tokens_button'
                 title={buttonMessage}

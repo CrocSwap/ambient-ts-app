@@ -109,36 +109,26 @@ function SwapFuta() {
 
     return (
         <section className={styles.mainSection}>
-            <div
-                className={styles.chartSection}
-                style={
-                    isFullScreen ? { gridColumnStart: 1, gridColumnEnd: 4 } : {}
-                }
-            >
+            <div className={styles.chartSection}>
                 <Trade futaActiveTab={activeTab} />
             </div>
 
-            <div style={{ paddingBottom: '4px' }}>
-                {
-                    // code below this line no longer needed but wrapper needs to
-                    // ... exist to preserve page layout sans further CSS changes
-                    // <Separator dots={100} />
-                }
-            </div>
-            <div>
-                <span id={tradeWrapperID}>
-                    <p className={styles.label}>order</p>
+            {!isFullScreen && (
+                <div>
+                    <span id={tradeWrapperID}>
+                        <p className={styles.label}>order</p>
+                        <FutaDivider2 />
+                        <Swap isOnTradeRoute />
+                    </span>
+                    <p className={styles.label}>comments</p>
                     <FutaDivider2 />
-                    <Swap isOnTradeRoute />
-                </span>
-                <p className={styles.label}>comments</p>
-                <FutaDivider2 />
-                <Comments
-                    isForTrade={true}
-                    isSmall={true}
-                    resizeEffectorSelector={tradeWrapperID}
-                />
-            </div>
+                    <Comments
+                        isForTrade={true}
+                        isSmall={true}
+                        resizeEffectorSelector={tradeWrapperID}
+                    />
+                </div>
+            )}
         </section>
     );
 }

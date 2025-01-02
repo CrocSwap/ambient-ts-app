@@ -36,7 +36,7 @@ import { createRectLabel } from './YaxisUtils';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;
-    market: number;
+    chartPoolPrice: number;
     liqMode: string;
     liqTransitionPointforCurve: number;
     liqTransitionPointforDepth: number;
@@ -84,7 +84,7 @@ function YAxisCanvas(props: yAxisIF) {
         liqMode,
         lineSellColor,
         lineBuyColor,
-        market,
+        chartPoolPrice,
         liqTransitionPointforCurve,
         liqTransitionPointforDepth,
         isAmbientOrAdvanced,
@@ -240,11 +240,11 @@ function YAxisCanvas(props: yAxisIF) {
     const sameLocationLimit = () => {
         if (scaleData) {
             const resultData =
-                scaleData?.yScale(limit) - scaleData?.yScale(market);
+                scaleData?.yScale(limit) - scaleData?.yScale(chartPoolPrice);
             const resultLocationData = resultData < 0 ? -20 : 20;
             const isSameLocation = Math.abs(resultData) < 20;
             const sameLocationData =
-                scaleData?.yScale(market) + resultLocationData;
+                scaleData?.yScale(chartPoolPrice) + resultLocationData;
             return {
                 isSameLocation: isSameLocation,
                 sameLocationData: sameLocationData,
@@ -397,12 +397,13 @@ function YAxisCanvas(props: yAxisIF) {
                 }
             });
 
-            if (market) {
-                const { tick, tickSubString } = prepareTickLabel(market);
+            if (chartPoolPrice) {
+                const { tick, tickSubString } =
+                    prepareTickLabel(chartPoolPrice);
 
                 createRectLabel(
                     context,
-                    yScale(market),
+                    yScale(chartPoolPrice),
                     X,
                     'white',
                     'black',
@@ -872,7 +873,7 @@ function YAxisCanvas(props: yAxisIF) {
             renderSubchartCrCanvas();
         }
     }, [
-        market,
+        chartPoolPrice,
         diffHashSig(crosshairData),
         limit,
         isLineDrag,

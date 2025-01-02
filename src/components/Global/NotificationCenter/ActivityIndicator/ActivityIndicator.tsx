@@ -57,12 +57,12 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
 
     const pendingCircle = (
         <button
-            className={`${styles.circleContainer}${isFuta ? styles.circleContainerFuta : ''}`}
+            className={
+                isFuta ? styles.circleContainerFuta : styles.circleContainer
+            }
             onClick={toggleNotificationCenter}
         >
-            <span
-                className={`${styles.ring}${isFuta ? styles.ringFuta : ''}`}
-            />
+            <span className={isFuta ? styles.ringFuta : styles.ring} />
         </button>
     );
 

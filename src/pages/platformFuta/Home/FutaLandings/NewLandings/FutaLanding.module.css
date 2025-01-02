@@ -14,24 +14,26 @@
     background-size: cover;
 }
 
-.content{
+.content {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     gap: 1rem;
-   margin-top: 7rem;
+    margin-top: 7rem;
 }
-.container p {
+
+.content > p {
     color: var(--base-text1, #AACFD1);
     text-align: center;
-
     /* Mono 24 */
     font-family: 'Fira Mono';
     font-size: 24px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .container a {
