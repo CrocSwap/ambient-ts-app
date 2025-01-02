@@ -16,7 +16,8 @@ import {
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
 import { getLocalStorageItem } from './ambient-utils/dataLayer';
-import baseSepoliaLogo from './assets/images/networks/base_network_logo_with_margin.webp';
+// import baseLogo from './assets/images/networks/base_network_logo_with_margin.webp';
+import baseSepoliaLogo from './assets/images/networks/base_sepolia_logo.webp';
 import blastLogo from './assets/images/networks/blast_logo.png';
 import blastSepoliaLogo from './assets/images/networks/blast_sepolia_logo.webp';
 import ethLogo from './assets/images/networks/ethereum_logo.svg';

@@ -28,6 +28,8 @@ import {
     mainnetWBTC,
     mainnetWstETH,
     plumeNRWA,
+    plumeNTBILL,
+    plumeNYIELD,
     plumePETH,
     plumePUSD,
     plumeSepoliaNEV,
@@ -169,6 +171,8 @@ export const STABLE_USD_TOKENS = [
     swellSepoliaUSDT,
     swellUSDE,
     baseSepoliaUSDT,
+    plumeNTBILL,
+    plumeNYIELD,
 ]
     .map((x) => x.address.toLowerCase())
     .concat(USDC_TOKENS);
