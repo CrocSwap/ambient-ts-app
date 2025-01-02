@@ -113,7 +113,19 @@ export default function Footer() {
                     className={styles.footerContainer}
                     variants={itemVariants}
                 >
-                    <Link to={item.link} className={styles.footerItem}>
+                    <Link
+                        to={item.link}
+                        className={styles.footerItem}
+                        style={{
+                            color: location.pathname.includes(
+                                item.label === 'Explore'
+                                    ? 'auctions'
+                                    : item.label.toLowerCase(),
+                            )
+                                ? 'var(--text1)'
+                                : 'var(--text2)',
+                        }}
+                    >
                         {item.icon}
                         {item.label}
                     </Link>
