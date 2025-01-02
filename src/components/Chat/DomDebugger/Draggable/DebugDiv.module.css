@@ -1,0 +1,22 @@
+
+.debug_div{
+    position: fixed;
+    z-index: 99999;
+    background: black;
+    color: var(--white);
+    border: 1px solid var(--dark2);
+    font-size: .8rem;
+    font: 'Consolas';
+    color:rgba(0,255,0,1);
+}
+
+.debug_div_title{
+    color: white;
+    border-bottom: 1px solid var(--dark2);
+    padding: .5rem 1rem;
+}
+
+
+.debug_div_content{
+    padding: .5rem 1rem;
+}
