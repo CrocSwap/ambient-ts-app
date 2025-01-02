@@ -84,6 +84,24 @@ export const useTokens = (
     // User acknowledge tokens
     const [ackTokens, setAckTokens] = useState<TokenIF[]>(INIT_ACK);
 
+    function checkDefault(t: TokenIF, list: TokenIF[]): boolean {
+        return list.some(
+            (listedToken: TokenIF) =>
+                listedToken.address.toLowerCase() === t.address.toLowerCase(),
+        );
+    }
+
+    function findDefaultPlatforms(t: TokenIF): ('ambient' | 'futa')[] {
+        const defaultPlatforms: ('ambient' | 'futa')[] = [];
+        if (checkDefault(t, defaultTokens)) {
+            defaultPlatforms.push('ambient');
+        }
+        if (checkDefault(t, defaultTokensFUTA)) {
+            defaultPlatforms.push('futa');
+        }
+        return defaultPlatforms;
+    }
+
     // Universe of tokens within the given chain. Combines both tokens from
     // lists and user-acknowledge tokens
     const tokenMap = useMemo<Map<string, TokenIF>>(() => {
@@ -112,6 +130,15 @@ export const useTokens = (
                 const tknFromMap: TokenIF | undefined = retMap.get(
                     t.address.toLowerCase(),
                 );
+                const defaultForPlatforms: ('ambient' | 'futa')[] = [];
+                if (checkDefault(deepToken, defaultTokens)) {
+                    defaultForPlatforms.push('ambient');
+                }
+                if (checkDefault(deepToken, defaultTokensFUTA)) {
+                    defaultForPlatforms.push('futa');
+                }
+                console.log(defaultForPlatforms);
+                deepToken.defaultPlatforms = findDefaultPlatforms(deepToken);
                 // if token is listed, update the array of originating URIs
                 if (tknFromMap?.listedBy) {
                     deepToken.listedBy = deepToken.listedBy?.concat(
@@ -390,7 +417,7 @@ export const useTokens = (
             (tkn: TokenIF) =>
                 tkn.listedBy?.includes(
                     'http://localhost:3002/futa-token-list',
-                ) || tkn.isFuta,
+                ) || tkn.defaultPlatforms?.includes('futa'),
         );
         // patch in FUTA tokens from the default list
         // TODO: make chain-specific
@@ -400,7 +427,11 @@ export const useTokens = (
                     foundToken.address.toLowerCase() ===
                     dtf.address.toLowerCase(),
             );
-            alreadyFound || found.push(dtf);
+            alreadyFound ||
+                found.push({
+                    ...dtf,
+                    defaultPlatforms: findDefaultPlatforms(dtf),
+                });
         });
         return found;
     }, [tokenUniv]);
