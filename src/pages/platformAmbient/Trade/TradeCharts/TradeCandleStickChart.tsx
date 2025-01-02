@@ -944,41 +944,17 @@ function TradeCandleStickChart(props: propsIF) {
                 period &&
                 isFetchingEnoughData
             ) {
-                const lastCandleDate = unparsedCandleData?.reduce(
-                    function (prev, current) {
-                        return prev.time > current.time ? prev : current;
-                    },
-                ).time;
-
                 const firstCandleDate = unparsedCandleData?.reduce(
                     function (prev, current) {
                         return prev.time < current.time ? prev : current;
                     },
                 ).time;
 
-                const maxDom =
-                    scaleData !== undefined
-                        ? scaleData?.xScale.domain()[1]
-                        : lastCandleDate * 1000;
                 const candles = filterCandleWithTransaction(
                     unparsedCandleData,
                     period,
                 ).filter((i) => i.isShowData && i.time * 1000);
                 const minTime = firstCandleDate * 1000;
-
-                console.log(
-                    {
-                        unparsedCandleData,
-                        period,
-
-                        candles,
-                        timeOfEndCandle,
-                        fetchCountForEnoughData,
-                        maxRequestCountForCondensed,
-                    },
-                    new Date(maxDom),
-                    fetchCountForEnoughData < maxRequestCountForCondensed,
-                );
 
                 if (
                     candles.length < 100 &&
@@ -1010,11 +986,6 @@ function TradeCandleStickChart(props: propsIF) {
                                     dom.domainBoundry + period * 1000;
                             }
                         }
-                        console.log(
-                            'sdfafadfadfdfdas',
-                            { dom },
-                            dom.domainBoundry,
-                        );
 
                         return dom;
                     });
