@@ -1,3 +1,6 @@
+/* eslint-disable no-irregular-whitespace */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
@@ -44,6 +47,7 @@ import TableRowsInfiniteScroll from '../../InfiniteScroll/TableRowsInfiniteScrol
 import { useSortedPositions } from '../useSortedPositions';
 import RangeHeader from './RangesTable/RangeHeader';
 import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
+import InfiniteScroll from '../../InfiniteScroll/InfiniteScroll';
 
 // interface for props
 interface propsIF {
@@ -1395,30 +1399,45 @@ function Ranges(props: propsIF) {
                             />
                         ))}
                 {showInfiniteScroll ? (
-                    <TableRowsInfiniteScroll
-                        type='Range'
-                        data={unindexedUpdatedPositions.concat(
-                            sortedPositionDataToDisplay,
-                        )}
-                        tableView={tableView}
-                        isAccountView={isAccountView}
-                        fetcherFunction={addMoreData}
-                        sortBy={sortBy}
-                        showAllData={showAllData}
-                        moreDataAvailable={moreDataAvailableRef.current}
-                        pagesVisible={pagesVisible}
-                        setPagesVisible={setPagesVisible}
-                        extraPagesAvailable={extraPagesAvailable}
-                        // setExtraPagesAvailable={setExtraPagesAvailable}
-                        tableKey='Ranges'
-                        dataPerPage={dataPerPage}
-                        pageDataCount={pageDataCountRef.current.counts}
-                        lastFetchedCount={lastFetchedCount}
-                        setLastFetchedCount={setLastFetchedCount}
-                        moreDataLoading={moreDataLoading}
-                        componentLock={infiniteScrollLockRef.current}
-                        scrollOnTopTresholdRatio={0.05}
-                    />
+                    <>
+                        {/* <TableRowsInfiniteScroll
+                            type='Range'
+                            data={unindexedUpdatedPositions.concat(
+                                sortedPositionDataToDisplay,
+                            )}
+                            tableView={tableView}
+                            isAccountView={isAccountView}
+                            fetcherFunction={addMoreData}
+                            sortBy={sortBy}
+                            showAllData={showAllData}
+                            moreDataAvailable={moreDataAvailableRef.current}
+                            pagesVisible={pagesVisible}
+                            setPagesVisible={setPagesVisible}
+                            extraPagesAvailable={extraPagesAvailable}
+                            // setExtraPagesAvailable={setExtraPagesAvailable}
+                            tableKey='Ranges'
+                            dataPerPage={dataPerPage}
+                            pageDataCount={pageDataCountRef.current.counts}
+                            lastFetchedCount={lastFetchedCount}
+                            setLastFetchedCount={setLastFetchedCount}
+                            moreDataLoading={moreDataLoading}
+                            componentLock={infiniteScrollLockRef.current}
+                            scrollOnTopTresholdRatio={0.05}
+                        /> */}
+
+                        <InfiniteScroll
+                            type='Range'
+                            tableView={tableView}
+                            isAccountView={isAccountView}
+                            data={sortedPositions}
+                            dataPerPage={dataPerPage}
+                            fetchCount={200}
+                            targetCount={30}
+                            sortBy={sortBy}
+                            showAllData={showAllData}
+                            sortPositions={sortData}
+                        />
+                    </>
                 ) : (
                     <TableRows
                         type='Range'

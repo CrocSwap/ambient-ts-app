@@ -51,10 +51,12 @@ interface propsIF {
     sortTransactions?: (data: TransactionIF[]) => TransactionIF[];
     sortBy: TxSortType | LimitSortType | RangeSortType;
     showAllData: boolean;
+    extraRequestCreditLimit?: number;
 }
 
 function InfiniteScroll(props: propsIF) {
-    const { baseToken, quoteToken } = useContext(TradeDataContext);
+    const { baseToken, quoteToken, blackListedTimeParams, addToBlackList } =
+        useContext(TradeDataContext);
     const {
         data,
         dataPerPage,
@@ -67,7 +69,13 @@ function InfiniteScroll(props: propsIF) {
         isAccountView,
         sortBy,
         showAllData,
+        extraRequestCreditLimit,
     } = props;
+
+    const PAGE_COUNT_DIVIDE_THRESHOLD = 20;
+    const INITIAL_EXTRA_REQUEST_THRESHOLD = 20;
+    const EXTRA_REQUEST_CREDIT_COUNT = extraRequestCreditLimit || 0;
+
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
     const selectedBaseAddress: string = baseToken.address;
@@ -75,9 +83,6 @@ function InfiniteScroll(props: propsIF) {
 
     const { fetchLimitOrders, fetchPositions } = useInfiniteScrollFetchers();
     const { genFakeLimitOrder, genFakePosition } = useGenFakeTableRow();
-
-    const PAGE_COUNT_DIVIDE_THRESHOLD = 20;
-    const INITIAL_EXTRA_REQUEST_THRESHOLD = 20;
 
     const prevBaseQuoteAddressRef = useRef<string>(
         selectedBaseAddress + selectedQuoteAddress,
@@ -196,8 +201,24 @@ function InfiniteScroll(props: propsIF) {
         getInitialDataPageCounts(),
     );
 
+    const [extraRequestCreditCount, setExtraRequestCreditCount] =
+        useState<number>(EXTRA_REQUEST_CREDIT_COUNT);
+
+    const extraRequestCreditRef = useRef<number>();
+    extraRequestCreditRef.current = extraRequestCreditCount;
+
     const pageDataCountRef = useRef<PageDataCountIF>();
     pageDataCountRef.current = pageDataCount;
+
+    const [lastOldestTimeParam, setLastOldestTimeParam] = useState<number>(-1);
+    const lastOldestTimeParamRef = useRef<number>(lastOldestTimeParam);
+    lastOldestTimeParamRef.current = lastOldestTimeParam;
+
+    const [requestedOldestTimes, setRequestedOldestTimes] = useState<number[]>(
+        [],
+    );
+    const requestedOldestTimesRef = useRef<number[]>(requestedOldestTimes);
+    requestedOldestTimesRef.current = requestedOldestTimes;
 
     const isAliveRef = useRef<boolean>(true);
     isAliveRef.current = true;
@@ -215,6 +236,13 @@ function InfiniteScroll(props: propsIF) {
         setMoreDataAvailable(true);
         setLastFetchedCount(0);
         setMoreDataLoading(false);
+    };
+
+    const stopFetchingAnimation = () => {
+        setMoreDataLoading(false);
+        setTimeout(() => {
+            setMoreDataLoading(false);
+        }, 1000);
     };
 
     // method which used to check if new txs are located in parameter data
@@ -312,17 +340,80 @@ function InfiniteScroll(props: propsIF) {
                 break;
             }
 
+            if (lastOldestTimeParamRef.current === oldestTimeParam) {
+                stopFetchingAnimation();
+                break;
+            }
+
+            if (requestedOldestTimesRef.current.includes(oldestTimeParam)) {
+                stopFetchingAnimation();
+                break;
+            }
+
+            if (
+                blackListedTimeParams.has(
+                    selectedBaseAddress + selectedQuoteAddress,
+                ) &&
+                blackListedTimeParams
+                    .get(selectedBaseAddress + selectedQuoteAddress)
+                    ?.has(oldestTimeParam)
+            ) {
+                stopFetchingAnimation();
+                break;
+            }
+
+            setRequestedOldestTimes((prev) => [...prev, oldestTimeParam]);
+
             let dirtyData: LimitOrderIF[] | PositionIF[] | TransactionIF[] = [];
 
             if (props.type === 'Order') {
                 dirtyData = await fetchLimitOrders(oldestTimeParam, fetchCount);
             } else if (props.type === 'Range') {
                 dirtyData = await fetchPositions(oldestTimeParam, fetchCount);
+
+                // set last used oldest time param
+                setLastOldestTimeParam(oldestTimeParam);
+
+                // get oldest time from dirty data to potential usage for extra requests
+                const oldestTimeTemp = getOldestTime(dirtyData);
+                oldestTimeParam =
+                    oldestTimeTemp < oldestTimeParam
+                        ? oldestTimeTemp
+                        : oldestTimeParam;
             } else {
                 // dirtyData = await fetchTransactions(oldestTimeParam, fetchCount);
             }
 
+            if (props.type === 'Range') {
+                dirtyData = (dirtyData as PositionIF[]).filter(
+                    (e: PositionIF) => (e as PositionIF).positionLiq !== 0,
+                ) as PositionIF[];
+            }
+
             if (dirtyData.length == 0) {
+                // if current tab is range and request result is empty Array
+                // add last sent time parameter into black list to not send redundandt backend calls
+                // also reduce extra request credit value by 1
+                if (props.type === 'Range') {
+                    addToBlackList(
+                        selectedBaseAddress + selectedQuoteAddress,
+                        oldestTimeParam,
+                    );
+                }
+
+                // this code block checks if there available extra request credit
+                // if there is, it will reduce extra request credit value by 1
+                // and continue the loop
+                const creditVal =
+                    extraRequestCreditRef.current !== undefined
+                        ? extraRequestCreditRef.current
+                        : extraRequestCreditCount;
+                if (creditVal > 0) {
+                    setExtraRequestCreditCount(creditVal - 1);
+                    continue;
+                }
+
+                // if there is no available extra request credit, break the loop
                 break;
             }
 
@@ -384,6 +475,7 @@ function InfiniteScroll(props: propsIF) {
             addPageDataCount(addedDataCount);
             setExtraPagesAvailable((prev) => prev + 1);
             setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
+            setExtraRequestCreditCount(EXTRA_REQUEST_CREDIT_COUNT);
         } else {
             setMoreDataAvailable(false);
         }
