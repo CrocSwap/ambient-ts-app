@@ -8,8 +8,8 @@ export const tokenListURIs = {
     blastCoingecko: 'https://tokens.coingecko.com/blast/all.json',
     // broken: '/broken-list.json',
     scrollCoingecko: 'https://tokens.coingecko.com/scroll/all.json',
-    // scrollTech:
-    //     'https://raw.githubusercontent.com/scroll-tech/token-list/main/scroll.tokenlist.json',
+    scrollTech:
+        'https://raw.githubusercontent.com/scroll-tech/token-list/main/scroll.tokenlist.json',
     // uniswap: 'https://tokens.uniswap.org',
     futa: 'http://localhost:3002/futa-token-list',
     baseCoingecko: 'https://tokens.coingecko.com/base/all.json',

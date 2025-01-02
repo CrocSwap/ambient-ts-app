@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     defaultTokens,
+    defaultTokensFUTA,
     hiddenTokens,
     tokenListEndpointStrings,
     tokenListURIs,
@@ -123,7 +124,6 @@ export const useTokens = (
                         deepToken.name = tknFromMap.name;
                         deepToken.logoURI = tknFromMap.logoURI;
                         deepToken.decimals = tknFromMap.decimals;
-                        deepToken.isFuta = tknFromMap.isFuta;
                     }
                 }
                 // add updated deep copy to the Map
@@ -207,7 +207,6 @@ export const useTokens = (
             logoURI: tkn.logoURI,
             name: tkn.name,
             symbol: tkn.symbol,
-            isFuta: tkn.isFuta,
         };
     }
 
@@ -257,10 +256,8 @@ export const useTokens = (
     async function patchTokenList(
         uri: tokenListEndpointStrings,
     ): Promise<void> {
-        console.log(uri);
         // fresh list retrieved from endpoint
         const list: TokenListIF | undefined = await fetchAndFormatList(uri);
-        // console.log(list);
         // cease processes if the fetch fails
         if (!list) return;
         // array of token lists with the new one patched in
@@ -269,6 +266,10 @@ export const useTokens = (
         );
         // send updated array of token lists to local state
         setTokenLists(updatedLists);
+        localStorage.setItem(
+            localStorageKeys.tokenLists,
+            JSON.stringify(updatedLists),
+        );
     }
 
     // logic to update the FUTA token list
@@ -382,13 +383,26 @@ export const useTokens = (
         [chainId, tokenUniv],
     );
 
-    const getFutaTokens = useCallback(() => {
-        return tokenUniv.filter(
+    // fn to get all FUTA tokens
+    const getFutaTokens = useCallback((): TokenIF[] => {
+        // filter token universe for FUTA tokens
+        const found: TokenIF[] = tokenUniv.filter(
             (tkn: TokenIF) =>
                 tkn.listedBy?.includes(
                     'http://localhost:3002/futa-token-list',
                 ) || tkn.isFuta,
         );
+        // patch in FUTA tokens from the default list
+        // TODO: make chain-specific
+        defaultTokensFUTA.forEach((dtf: TokenIF) => {
+            const alreadyFound: boolean = found.some(
+                (foundToken: TokenIF) =>
+                    foundToken.address.toLowerCase() ===
+                    dtf.address.toLowerCase(),
+            );
+            alreadyFound || found.push(dtf);
+        });
+        return found;
     }, [tokenUniv]);
 
     // fn to return all tokens where name or symbol matches search input

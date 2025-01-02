@@ -12,22 +12,6 @@
         "keywords": ["futa", "default"],
         "tokens": [
             {
-                "name": "Native Ether",
-                "address": "0x0000000000000000000000000000000000000000",
-                "symbol": "ETH",
-                "decimals": 18,
-                "chainId": 11155111,
-                "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
-            },
-            {
-                "name": "USDC",
-                "address": "0x60bBA138A74C5e7326885De5090700626950d509",
-                "chainId": 11155111,
-                "decimals": 6,
-                "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
-                "symbol": "USDC"
-            },
-            {
                 "name": "new token11",
                 "address": "0x50bBA138A74C5e7326885De5090700626950d509",
                 "chainId": 11155111,
