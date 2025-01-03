@@ -256,6 +256,8 @@ export default function Chart(props: propsIF) {
     } = useContext(ChartContext);
     const {
         setCandleDomains,
+        setCandleScale,
+        candleScale,
         candleDomains,
         timeOfEndCandle,
         isCondensedModeEnabled,
@@ -1061,6 +1063,42 @@ export default function Chart(props: propsIF) {
 
         return filtered[0];
     };
+
+    // calculates first fetch candle domain for time and pool change
+    useEffect(() => {
+        if (scaleData && !isChartZoom) {
+            const xDomain = scaleData?.xScale.domain();
+            const isFutureDay =
+                new Date(xDomain[1]).getTime() > new Date().getTime();
+
+            let domainMax = isFutureDay
+                ? new Date().getTime()
+                : new Date(xDomain[1]).getTime();
+
+            const nCandles = Math.floor(
+                (xDomain[1] - xDomain[0]) / (period * 1000),
+            );
+
+            const minDate = 1657868400; // 15 July 2022
+
+            domainMax = domainMax < minDate ? minDate : domainMax;
+
+            const isShowLatestCandle = checkShowLatestCandle(
+                period,
+                scaleData?.xScale,
+            );
+
+            setCandleScale(() => {
+                return {
+                    isFetchForTimeframe: candleScale.isFetchForTimeframe,
+                    lastCandleDate: Math.floor(domainMax / 1000),
+                    nCandles: nCandles,
+                    isShowLatestCandle: isShowLatestCandle,
+                    isFetchFirst200Candle: false,
+                };
+            });
+        }
+    }, [diffHashSigScaleData(scaleData, 'x'), period, isChartZoom]);
 
     useEffect(() => {
         if (scaleData) {
