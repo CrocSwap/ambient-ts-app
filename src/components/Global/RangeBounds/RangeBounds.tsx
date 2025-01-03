@@ -53,6 +53,7 @@ interface RangeBoundsProps {
     minPrice: number;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
+    estRangeApr?: number;
 }
 
 export default function RangeBounds(props: RangeBoundsProps) {
@@ -85,6 +86,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
 
         isRangeBoundsDisabled,
         customSwitch = false,
+        estRangeApr,
     } = props;
     const rangeWidthProps = {
         rangeWidthPercentage,
@@ -99,6 +101,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
         isTokenABase,
         poolPriceCharacter,
         isAmbient,
+        estRangeApr,
     };
 
     const minMaxPricePropsIF = {
