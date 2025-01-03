@@ -5,7 +5,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import styles from './GateWalletModal.module.css';
 
 import { useWeb3Modal } from '@web3modal/ethers/react';
-import { VIEW_ONLY } from '../../../ambient-utils/constants';
+import { brand, VIEW_ONLY } from '../../../ambient-utils/constants';
 import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useTermsAgreed } from '../../hooks/useTermsAgreed';
@@ -18,6 +18,7 @@ export default function GateWalletModal() {
     const walletConnectionsAllowed = !VIEW_ONLY;
     const [recordAgreed, __, termUrls] = useTermsAgreed();
     const { open: openW3Modal } = useWeb3Modal();
+    const isFuta = brand === 'futa';
 
     return walletConnectionsAllowed ? (
         <Modal onClose={closeModal} title='Welcome'>
@@ -30,6 +31,7 @@ export default function GateWalletModal() {
                             target='_blank'
                             rel='noreferrer'
                             aria-label='open source repo'
+                            style={{ color: isFuta ? '#62ebf1' : '#7371fc' }}
                         >
                             open source web application
                         </a>{' '}
@@ -42,6 +44,7 @@ export default function GateWalletModal() {
                             target='_blank'
                             rel='noreferrer'
                             aria-label='terms of service'
+                            style={{ color: isFuta ? '#62ebf1' : '#7371fc' }}
                         >
                             Terms of Service
                         </a>
@@ -54,6 +57,7 @@ export default function GateWalletModal() {
                             target='_blank'
                             rel='noreferrer'
                             aria-label='site policy'
+                            style={{ color: isFuta ? '#62ebf1' : '#7371fc' }}
                         >
                             found here
                         </a>

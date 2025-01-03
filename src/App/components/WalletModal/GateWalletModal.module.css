@@ -58,7 +58,6 @@
 }
 
 .main_container a {
-    color: var(--accent1);
     text-decoration: underline;
 }
 

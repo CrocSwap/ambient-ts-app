@@ -49,14 +49,14 @@
 }
 
 .option_button:hover {
-    border: 1px solid var(--accent, #7371fc);
-    color: var(--accent, #7371fc);
+    border: 1px solid var(--accent1);
+    color: var(--accent1);
     transition: all var(--animation-speed) ease-in-out;
 }
 
 .active_option {
-    border: 1px solid var(--accent, #7371fc);
-    color: var(--accent, #7371fc);
+    border: 1px solid var(--accent1);
+    color: var(--accent1);
 }
 
 .arrow_icon {

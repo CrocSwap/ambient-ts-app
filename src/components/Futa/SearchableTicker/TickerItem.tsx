@@ -1,5 +1,6 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { Dispatch, MutableRefObject, SetStateAction, useContext } from 'react';
+import { GoChevronRight } from 'react-icons/go';
 import { Link } from 'react-router-dom';
 import {
     AuctionDataIF,
@@ -13,7 +14,6 @@ import {
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
 import styles from './TickerItem.module.css';
-import { GoChevronRight } from 'react-icons/go';
 
 interface PropsIF {
     auction: AuctionDataIF;
@@ -132,12 +132,16 @@ export default function TickerItem(props: PropsIF) {
         !userDataForAuction?.qtyUnclaimedByUserInAuctionedTokenWei &&
         !userDataForAuction?.qtyUnreturnedToUserInNativeTokenWei;
 
-    const status2 = isUserInTheMoney
-        ? 'var(--text1)'
+    const statusText = isUserInTheMoney
+        ? isAuctionOpen
+            ? 'IN'
+            : 'WON'
         : isUserOutOfTheMoney
-          ? 'var(--orange)'
+          ? isAuctionOpen
+              ? 'OUT'
+              : 'LOST'
           : userActionsCompleted
-            ? 'var(--accent2)'
+            ? 'CLAIMED'
             : undefined;
 
     const filledMarketCapUsdValue =
@@ -207,7 +211,7 @@ export default function TickerItem(props: PropsIF) {
                 <p>{ticker}</p>
             </div>
             <p className={styles.market_cap}>{formattedMarketCap}</p>
-            <p className={styles.auction_status}>{!status2 ? 'IN' : 'OUT'}</p>
+            <p className={styles.auction_status}>{statusText}</p>
             <p
                 style={{
                     color:

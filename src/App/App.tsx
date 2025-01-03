@@ -165,6 +165,7 @@ export default function App() {
                     ? location.pathname !== '/' && <Navbar />
                     : location.pathname !== '/' && <PageHeader />}
                 <RouteRenderer platformName={platformName} />
+                {isWalletModalOpen && <GateWalletModal />}
             </FlexContainer>
 
             <GlobalPopup data-theme={skin.active} />
@@ -173,7 +174,6 @@ export default function App() {
             {ambientFooter}
             {!isBottomSheetOpen && footerDisplay}
 
-            {isWalletModalOpen && <GateWalletModal />}
             {isCSSModalOpen && <CSSModal close={() => closeCSSModal()} />}
         </>
     );
