@@ -350,23 +350,24 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (
             chartThemeColors &&
-            chartThemeColors.downCandleBorderColor !== null
+            chartThemeColors.liqBidColor !== null &&
+            chartThemeColors.liqAskColor !== null
         ) {
             setLineSellColor((prev) => {
-                if (chartThemeColors.downCandleBorderColor)
-                    return chartThemeColors.downCandleBorderColor.toString();
+                if (chartThemeColors.liqBidColor)
+                    return chartThemeColors.liqBidColor.toString();
 
                 return prev;
             });
 
             setLineBuyColor((prev) => {
-                if (chartThemeColors.upCandleBodyColor)
-                    return chartThemeColors.upCandleBodyColor.toString();
+                if (chartThemeColors.liqAskColor)
+                    return chartThemeColors.liqAskColor.toString();
 
                 return prev;
             });
         }
-    }, [chartThemeColors]);
+    }, [chartThemeColors?.liqAskColor, chartThemeColors?.liqBidColor]);
 
     const location = useLocation();
 

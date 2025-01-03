@@ -52,7 +52,13 @@ export default function Button(props: propsIF) {
         <button
             id={idForDOM}
             style={{
-                ...(thin ? { height: '28px', width: '156px', padding: 0 } : {}),
+                ...(thin
+                    ? {
+                          height: '28px',
+                          width: '156px',
+                          padding: 0,
+                      }
+                    : {}),
                 ...style, // Merge with style prop
             }}
             onClick={action}
