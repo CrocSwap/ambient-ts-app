@@ -13,13 +13,22 @@
 .ticker_arrow {
     transition: all var(--animation-speed) ease-in-out;
     color: #f0f0f800;
+    ;
 }
 
 /* add color to ticker arrow when parent elem is hovered */
-.ticker_name:hover .ticker_arrow {
+.ticker_item:hover .ticker_arrow {
     color: var(--text2);
 }
 
+
+.active:hover .ticker_arrow, .active .ticker_arrow{
+    color: var(--dark2);
+}
+
+.inactive:hover .ticker_arrow{
+    color: var(--accent1)
+}
 /* styles to apply universally to cells in the row */
 /* will be overridden by lower CSS in this file */
 .ticker_item > * {
@@ -30,16 +39,19 @@
     width: 120px;
 }
 
+
 .active {
-    background-color: #28585d;
+    background: var(--accent1, #AACFD1);
+    color: var(--dark1, #0D0F13);
+
 }
 
-.active:hover {
+/* .active:hover {
     background-color: var(--dark3);
-}
+} */
 
-.inactive:hover {
-    background-color: var(--dark2);
+.inactive:hover, .ticker_item:hover {
+    background-color: var(--dark3);
 }
 
 .ticker_name {
