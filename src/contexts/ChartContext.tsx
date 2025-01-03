@@ -265,11 +265,11 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const [defaultChartSettings] = useState<LocalChartSettingsIF>({
         chartColors: {
-            upCandleBodyColor: '--accent5',
-            downCandleBodyColor: '--dark2',
+            upCandleBodyColor: '--chart-positive',
+            downCandleBodyColor: '--chart-negative',
             selectedDateFillColor: '--accent2',
-            upCandleBorderColor: '--accent5',
-            downCandleBorderColor: '--accent1',
+            upCandleBorderColor: '--chart-positive',
+            downCandleBorderColor: '--chart-negative',
             liqAskColor: '--accent5',
             liqBidColor: '--accent1',
             selectedDateStrokeColor: '--accent2',
@@ -434,11 +434,11 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         const upCandleBodyColor =
             contextChartColors && contextChartColors.upCandleBodyColor
                 ? d3.color(contextChartColors.upCandleBodyColor)
-                : getCssVariable(skin.active, '--accent5');
+                : getCssVariable(skin.active, '--chart-positive');
         const downCandleBodyColor =
             contextChartColors && contextChartColors.downCandleBodyColor
                 ? d3.color(contextChartColors.downCandleBodyColor)
-                : getCssVariable(skin.active, '--dark2');
+                : getCssVariable(skin.active, '--chart-negative');
         const selectedDateFillColor =
             contextChartColors && contextChartColors.selectedDateFillColor
                 ? d3.color(contextChartColors.selectedDateFillColor)
@@ -446,11 +446,11 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         const downCandleBorderColor =
             contextChartColors && contextChartColors.downCandleBorderColor
                 ? d3.color(contextChartColors.downCandleBorderColor)
-                : getCssVariable(skin.active, '--accent1');
+                : getCssVariable(skin.active, '--chart-negative');
         const upCandleBorderColor =
             contextChartColors && contextChartColors.upCandleBorderColor
                 ? d3.color(contextChartColors.upCandleBorderColor)
-                : getCssVariable(skin.active, '--accent5');
+                : getCssVariable(skin.active, '--chart-positive');
 
         const liqAskColor =
             contextChartColors && contextChartColors.liqAskColor
