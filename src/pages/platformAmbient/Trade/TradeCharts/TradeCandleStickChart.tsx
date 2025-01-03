@@ -330,41 +330,48 @@ function TradeCandleStickChart(props: propsIF) {
             );
 
             const depthBidLeft = Math.min(
-                ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumBidLiq !== undefined && o.cumBidLiq > 0
-                        ? o.cumBidLiq
-                        : Infinity;
-                }),
+                ...unparsedLiquidityData.ranges
+
+                    .filter(
+                        (o: any) =>
+                            o.cumBidLiq !== undefined && o.cumBidLiq !== 0,
+                    )
+                    .map((i) => (i.cumBidLiq > 0 ? i.cumBidLiq : -i.cumBidLiq)),
             );
 
             const depthBidRight = Math.max(
-                ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumBidLiq !== undefined && o.cumBidLiq > 0
-                        ? o.cumBidLiq
-                        : 0;
-                }),
+                ...unparsedLiquidityData.ranges
+                    .filter(
+                        (o: any) =>
+                            o.cumBidLiq !== undefined && o.cumBidLiq !== 0,
+                    )
+                    .map((i) => (i.cumBidLiq > 0 ? i.cumBidLiq : -i.cumBidLiq)),
             );
 
             const depthAskLeft = Math.min(
-                ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumAskLiq !== undefined && o.cumAskLiq > 0
-                        ? o.cumAskLiq
-                        : Infinity;
-                }),
+                ...unparsedLiquidityData.ranges
+                    .filter(
+                        (o: any) =>
+                            o.cumAskLiq !== undefined && o.cumAskLiq !== 0,
+                    )
+                    .map((i) => (i.cumAskLiq > 0 ? i.cumAskLiq : -i.cumAskLiq)),
             );
 
             const depthAskRight = Math.max(
-                ...unparsedLiquidityData.ranges.map((o: any) => {
-                    const price = isDenomBase
-                        ? o.upperBoundInvPriceDecimalCorrected
-                        : o.upperBoundPriceDecimalCorrected;
-                    if (price > barThreshold / 10 && price < limitBoundary) {
-                        return o.cumAskLiq !== undefined && o.cumAskLiq > 0
-                            ? o.cumAskLiq
-                            : 0;
-                    }
-                    return 0;
-                }),
+                ...unparsedLiquidityData.ranges
+                    .filter((o: any) => {
+                        const price = isDenomBase
+                            ? o.upperBoundInvPriceDecimalCorrected
+                            : o.upperBoundPriceDecimalCorrected;
+
+                        return (
+                            price > barThreshold / 10 &&
+                            price < limitBoundary &&
+                            o.cumAskLiq !== undefined &&
+                            o.cumAskLiq !== 0
+                        );
+                    })
+                    .map((i) => (i.cumAskLiq > 0 ? i.cumAskLiq : -i.cumAskLiq)),
             );
 
             const liquidityScale = d3
@@ -436,13 +443,23 @@ function TradeCandleStickChart(props: propsIF) {
                 if (!isDenomBase) {
                     if (
                         data.cumAskLiq !== undefined &&
-                        data.cumAskLiq !== '0' &&
+                        data.cumAskLiq !== 0 &&
                         liqUpperPrices !== '+inf' &&
-                        !Number.isNaN(depthLiquidityScale(data.cumAskLiq)) &&
+                        !Number.isNaN(
+                            depthLiquidityScale(
+                                data.cumAskLiq > 0
+                                    ? data.cumAskLiq
+                                    : -data.cumAskLiq,
+                            ),
+                        ) &&
                         liqUpperPrices < poolPriceDisplay * 10
                     ) {
                         depthLiqBidData.push({
-                            activeLiq: depthLiquidityScale(data.cumAskLiq),
+                            activeLiq: depthLiquidityScale(
+                                data.cumAskLiq > 0
+                                    ? data.cumAskLiq
+                                    : -data.cumAskLiq,
+                            ),
                             liqPrices: liqUpperPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
@@ -456,11 +473,21 @@ function TradeCandleStickChart(props: propsIF) {
 
                     if (
                         data.cumBidLiq !== undefined &&
-                        !Number.isNaN(depthLiquidityScale(data.cumBidLiq)) &&
+                        !Number.isNaN(
+                            depthLiquidityScale(
+                                data.cumBidLiq > 0
+                                    ? data.cumBidLiq
+                                    : -data.cumBidLiq,
+                            ),
+                        ) &&
                         liqLowerPrices > poolPriceDisplay / 10
                     ) {
                         depthLiqAskData.push({
-                            activeLiq: depthLiquidityScale(data.cumBidLiq),
+                            activeLiq: depthLiquidityScale(
+                                data.cumBidLiq > 0
+                                    ? data.cumBidLiq
+                                    : -data.cumBidLiq,
+                            ),
                             liqPrices: liqLowerPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
@@ -474,13 +501,23 @@ function TradeCandleStickChart(props: propsIF) {
                 } else {
                     if (
                         data.cumBidLiq !== undefined &&
-                        data.cumBidLiq !== '0' &&
+                        data.cumBidLiq !== 0 &&
                         liqUpperPrices !== '+inf' &&
                         liqUpperPrices < poolPriceDisplay * 10 &&
-                        !Number.isNaN(depthLiquidityScale(data.cumBidLiq))
+                        !Number.isNaN(
+                            depthLiquidityScale(
+                                data.cumBidLiq > 0
+                                    ? data.cumBidLiq
+                                    : -data.cumBidLiq,
+                            ),
+                        )
                     ) {
                         depthLiqBidData.push({
-                            activeLiq: depthLiquidityScale(data.cumBidLiq),
+                            activeLiq: depthLiquidityScale(
+                                data.cumBidLiq > 0
+                                    ? data.cumBidLiq
+                                    : -data.cumBidLiq,
+                            ),
                             liqPrices: liqUpperPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
@@ -495,12 +532,22 @@ function TradeCandleStickChart(props: propsIF) {
                     if (
                         data.cumAskLiq !== undefined &&
                         data.cumAskLiq !== '0' &&
-                        !Number.isNaN(depthLiquidityScale(data.cumAskLiq)) &&
+                        !Number.isNaN(
+                            depthLiquidityScale(
+                                data.cumAskLiq > 0
+                                    ? data.cumAskLiq
+                                    : -data.cumAskLiq,
+                            ),
+                        ) &&
                         liqUpperPrices <= limitBoundary &&
                         liqUpperPrices > poolPriceDisplay / 10
                     ) {
                         depthLiqAskData.push({
-                            activeLiq: depthLiquidityScale(data.cumAskLiq),
+                            activeLiq: depthLiquidityScale(
+                                data.cumAskLiq > 0
+                                    ? data.cumAskLiq
+                                    : -data.cumAskLiq,
+                            ),
                             liqPrices: liqLowerPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
