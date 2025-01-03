@@ -148,8 +148,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
 
-    const [isFetchingEnoughData, setIsFetchingEnoughData] = useState(true);
-
     const [isCompletedFetchData, setIsCompletedFetchData] = useState(true);
 
     const [fetchCountForEnoughData, setFetchCountForEnoughData] = useState(1);
@@ -181,6 +179,26 @@ function TradeCandleStickChart(props: propsIF) {
         }),
         [tokenB.address, tokenB.chainId, tokenA.address, tokenA.chainId],
     );
+
+    const isFetchingEnoughData = useMemo(() => {
+        if (candleData && candleData.candles && period) {
+            const candles = filterCandleWithTransaction(
+                candleData?.candles,
+                period,
+            ).filter((i) => i.isShowData && i.time * 1000);
+
+            if (
+                fetchCountForEnoughData === maxRequestCountForCondensed ||
+                candleData.candles.length > 2999 * maxRequestCountForCondensed
+            ) {
+                return false;
+            } else {
+                return candles.length < 100;
+            }
+        }
+
+        return true;
+    }, [candleData?.candles, period]);
 
     // TODO: could probably be determined from the isTokenABase in context?
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
@@ -218,7 +236,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     useEffect(() => {
         setSelectedDrawnShape(undefined);
-        setIsFetchingEnoughData(true);
         setIsCompletedFetchData(true);
         setChartResetStatus({
             isResetChart: false,
@@ -228,7 +245,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     useEffect(() => {
         if (candleDomains.isResetRequest) {
-            setIsFetchingEnoughData(true);
             setIsCompletedFetchData(true);
             setFetchCountForEnoughData(0);
         }
@@ -961,7 +977,6 @@ function TradeCandleStickChart(props: propsIF) {
                     !timeOfEndCandle &&
                     fetchCountForEnoughData < maxRequestCountForCondensed
                 ) {
-                    setIsFetchingEnoughData(true);
                     const dom = {
                         lastCandleDate: minTime,
                         isAbortedRequest: true,
@@ -973,19 +988,18 @@ function TradeCandleStickChart(props: propsIF) {
                         return {
                             ...dom,
                             domainBoundry: prev.domainBoundry,
-                            isCondensedFetching: !prev.isCondensedFetching,
+                            isCondensedFetching:
+                                !candleDomains.isCondensedFetching,
                         };
                     });
                 } else {
                     if (!candleDomains.isResetRequest) {
                         setFetchCountForEnoughData(maxRequestCountForCondensed);
-                        setIsFetchingEnoughData(false);
                     }
                 }
             }
         } else {
             setFetchCountForEnoughData(maxRequestCountForCondensed);
-            setIsFetchingEnoughData(false);
         }
     }, [unparsedCandleData, isCondensedModeEnabled]);
 
