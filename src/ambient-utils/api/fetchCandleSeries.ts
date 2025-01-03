@@ -22,7 +22,6 @@ export async function fetchCandleSeriesHybrid(
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     poolPriceDisplay: number,
-    signal?: AbortSignal,
 ): Promise<CandlesByPoolAndDurationIF | undefined> {
     const candles = await fetchCandleSeriesCroc(
         isFetchEnabled,
@@ -38,7 +37,6 @@ export async function fetchCandleSeriesHybrid(
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         poolPriceDisplay,
-        signal,
     );
 
     if (!candles) {
@@ -71,7 +69,6 @@ export async function fetchCandleSeriesCroc(
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     poolPriceDisplay: number,
-    signal?: AbortSignal,
 ): Promise<CandlesByPoolAndDurationIF | undefined> {
     if (!isFetchEnabled) {
         return undefined;
@@ -96,7 +93,7 @@ export async function fetchCandleSeriesCroc(
         chainId: chainId,
     });
 
-    return fetch(candleSeriesEndpoint + '?' + reqOptions, { signal })
+    return fetch(candleSeriesEndpoint + '?' + reqOptions)
         .then((response) => response?.json())
         .then(async (json) => {
             if (!json?.data) {
@@ -229,6 +226,7 @@ function decorateCandleData(
             let closePrice = p.priceClose;
             let maxPrice = p.maxPrice;
             let minPrice = p.minPrice;
+            let isZeroData = false;
 
             if (openPrice === 0) {
                 const prices = [p.priceClose, p.maxPrice, p.minPrice];
@@ -238,6 +236,7 @@ function decorateCandleData(
                 closePrice = nonZeroPrices ? nonZeroPrices : poolPriceDisplay;
                 maxPrice = nonZeroPrices ? nonZeroPrices : poolPriceDisplay;
                 minPrice = nonZeroPrices ? nonZeroPrices : poolPriceDisplay;
+                isZeroData = true;
             }
 
             return {
@@ -273,6 +272,7 @@ function decorateCandleData(
                     1 / (openPrice * priceDecMult),
                 invPriceCloseExclMEVDecimalCorrected:
                     1 / (closePrice * priceDecMult),
+                isZeroData: isZeroData,
             };
         });
 }

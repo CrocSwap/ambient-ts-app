@@ -87,7 +87,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     const {
         candleData,
-        setCandleData,
         isFetchingCandle,
         setCandleScale,
         candleScale,
@@ -149,8 +148,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
 
-    const [isFetchingEnoughData, setIsFetchingEnoughData] = useState(true);
-
     const [isCompletedFetchData, setIsCompletedFetchData] = useState(true);
 
     const [fetchCountForEnoughData, setFetchCountForEnoughData] = useState(1);
@@ -182,6 +179,28 @@ function TradeCandleStickChart(props: propsIF) {
         }),
         [tokenB.address, tokenB.chainId, tokenA.address, tokenA.chainId],
     );
+
+    const isFetchingEnoughData = useMemo(() => {
+        if (candleData && candleData.candles && period) {
+            const candles = filterCandleWithTransaction(
+                candleData?.candles,
+                period,
+            ).filter((i) => i.isShowData && i.time * 1000);
+
+            if (
+                fetchCountForEnoughData === maxRequestCountForCondensed ||
+                candleData.candles.length >
+                    2999 * maxRequestCountForCondensed ||
+                timeOfEndCandle
+            ) {
+                return false;
+            } else {
+                return candles.length < 100;
+            }
+        }
+
+        return true;
+    }, [candleData?.candles, period, timeOfEndCandle]);
 
     // TODO: could probably be determined from the isTokenABase in context?
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
@@ -219,7 +238,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     useEffect(() => {
         setSelectedDrawnShape(undefined);
-        setIsFetchingEnoughData(true);
         setIsCompletedFetchData(true);
         setChartResetStatus({
             isResetChart: false,
@@ -229,7 +247,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     useEffect(() => {
         if (candleDomains.isResetRequest) {
-            setIsFetchingEnoughData(true);
             setIsCompletedFetchData(true);
             setFetchCountForEnoughData(0);
         }
@@ -836,8 +853,6 @@ function TradeCandleStickChart(props: propsIF) {
                             }
                         }
 
-                        setCandleData(undefined);
-
                         setCandleScale((prev: CandleScaleIF) => {
                             return {
                                 isFetchForTimeframe: !prev.isFetchForTimeframe,
@@ -889,8 +904,6 @@ function TradeCandleStickChart(props: propsIF) {
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
             resetXScale(scaleData.xScale);
-
-            setCandleData(undefined);
 
             setCandleScale((prev: CandleScaleIF) => {
                 return {
@@ -947,30 +960,18 @@ function TradeCandleStickChart(props: propsIF) {
                 unparsedCandleData &&
                 unparsedCandleData.length > 0 &&
                 period &&
-                candleData.duration === period &&
-                unparsedCandleData[0].period === period &&
                 isFetchingEnoughData
             ) {
-                const lastCandleDate = unparsedCandleData?.reduce(
-                    function (prev, current) {
-                        return prev.time > current.time ? prev : current;
-                    },
-                ).time;
-
                 const firstCandleDate = unparsedCandleData?.reduce(
                     function (prev, current) {
                         return prev.time < current.time ? prev : current;
                     },
                 ).time;
 
-                const maxDom =
-                    scaleData !== undefined
-                        ? scaleData?.xScale.domain()[1]
-                        : lastCandleDate * 1000;
                 const candles = filterCandleWithTransaction(
                     unparsedCandleData,
                     period,
-                ).filter((i) => i.isShowData && i.time * 1000 < maxDom);
+                ).filter((i) => i.isShowData && i.time * 1000);
                 const minTime = firstCandleDate * 1000;
 
                 if (
@@ -978,44 +979,29 @@ function TradeCandleStickChart(props: propsIF) {
                     !timeOfEndCandle &&
                     fetchCountForEnoughData < maxRequestCountForCondensed
                 ) {
-                    setIsFetchingEnoughData(true);
                     const dom = {
                         lastCandleDate: minTime,
-                        domainBoundry: minTime - 2999 * period * 1000,
                         isAbortedRequest: true,
                         isResetRequest: false,
                     };
 
                     setFetchCountForEnoughData(fetchCountForEnoughData + 1);
                     setCandleDomains((prev: CandleDomainIF) => {
-                        if (prev && prev.domainBoundry && prev.lastCandleDate) {
-                            const nCandles = Math.floor(
-                                (prev.lastCandleDate - prev.domainBoundry) /
-                                    (period * 1000),
-                            );
-
-                            const newNCandles = Math.floor(
-                                (dom.lastCandleDate - dom.domainBoundry) /
-                                    (period * 1000),
-                            );
-                            if (nCandles === newNCandles) {
-                                dom.domainBoundry =
-                                    dom.domainBoundry + period * 1000;
-                            }
-                        }
-
-                        return dom;
+                        return {
+                            ...dom,
+                            domainBoundry: prev.domainBoundry,
+                            isCondensedFetching:
+                                !candleDomains.isCondensedFetching,
+                        };
                     });
                 } else {
                     if (!candleDomains.isResetRequest) {
                         setFetchCountForEnoughData(maxRequestCountForCondensed);
-                        setIsFetchingEnoughData(false);
                     }
                 }
             }
         } else {
             setFetchCountForEnoughData(maxRequestCountForCondensed);
-            setIsFetchingEnoughData(false);
         }
     }, [unparsedCandleData, isCondensedModeEnabled]);
 

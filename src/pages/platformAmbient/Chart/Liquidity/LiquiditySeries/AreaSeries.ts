@@ -105,15 +105,15 @@ export function createAreaSeriesLiquidity(
         .curve(curve)
         .decorate((context: CanvasRenderingContext2D) => {
             const d3LiqBidColor =
-                chartThemeColors && chartThemeColors.downCandleBorderColor
-                    ? chartThemeColors.downCandleBorderColor.copy()
+                chartThemeColors && chartThemeColors.liqBidColor
+                    ? chartThemeColors.liqBidColor.copy()
                     : undefined;
 
             if (d3LiqBidColor) d3LiqBidColor.opacity = 0.3;
 
             const d3LiqAskColor =
-                chartThemeColors && chartThemeColors.upCandleBorderColor
-                    ? chartThemeColors.upCandleBorderColor.copy()
+                chartThemeColors && chartThemeColors.liqAskColor
+                    ? chartThemeColors.liqAskColor.copy()
                     : undefined;
 
             if (d3LiqAskColor) d3LiqAskColor.opacity = 0.3;
