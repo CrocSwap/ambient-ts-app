@@ -302,10 +302,9 @@ export default function TransactionDetailsGraph(
 
     useEffect(() => {
         if (scaleData !== undefined && chartThemeColors) {
-            const d3LineColor = chartThemeColors.downCandleBorderColor?.copy();
-            const d3RangeTriangleColor =
-                chartThemeColors.downCandleBorderColor?.copy();
-            const d3BandColor = chartThemeColors.downCandleBorderColor?.copy();
+            const d3LineColor = chartThemeColors.liqBidColor?.copy();
+            const d3RangeTriangleColor = chartThemeColors.liqBidColor?.copy();
+            const d3BandColor = chartThemeColors.liqBidColor?.copy();
 
             if (d3RangeTriangleColor) d3RangeTriangleColor.opacity = 0.8;
             if (d3BandColor) d3BandColor.opacity = 0.075;
