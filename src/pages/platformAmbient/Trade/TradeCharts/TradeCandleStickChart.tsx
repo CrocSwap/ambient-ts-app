@@ -331,7 +331,7 @@ function TradeCandleStickChart(props: propsIF) {
 
             const depthBidLeft = Math.min(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumBidLiq !== undefined && o.cumBidLiq !== 0
+                    return o.cumBidLiq !== undefined && o.cumBidLiq > 0
                         ? o.cumBidLiq
                         : Infinity;
                 }),
@@ -339,7 +339,7 @@ function TradeCandleStickChart(props: propsIF) {
 
             const depthBidRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumBidLiq !== undefined && o.cumBidLiq !== 0
+                    return o.cumBidLiq !== undefined && o.cumBidLiq > 0
                         ? o.cumBidLiq
                         : 0;
                 }),
@@ -347,7 +347,7 @@ function TradeCandleStickChart(props: propsIF) {
 
             const depthAskLeft = Math.min(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumAskLiq !== undefined && o.cumAskLiq !== 0
+                    return o.cumAskLiq !== undefined && o.cumAskLiq > 0
                         ? o.cumAskLiq
                         : Infinity;
                 }),
@@ -359,7 +359,7 @@ function TradeCandleStickChart(props: propsIF) {
                         ? o.upperBoundInvPriceDecimalCorrected
                         : o.upperBoundPriceDecimalCorrected;
                     if (price > barThreshold / 10 && price < limitBoundary) {
-                        return o.cumAskLiq !== undefined && o.cumAskLiq !== 0
+                        return o.cumAskLiq !== undefined && o.cumAskLiq > 0
                             ? o.cumAskLiq
                             : 0;
                     }
