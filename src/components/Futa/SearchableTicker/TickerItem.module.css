@@ -26,6 +26,7 @@
     color: var(--dark2);
 }
 
+
 .inactive:hover .ticker_arrow{
     color: var(--accent1)
 }
@@ -40,8 +41,8 @@
 }
 
 
-.active {
-    background: var(--accent1, #AACFD1);
+.active, .active:hover {
+    background: var(--accent1, #AACFD1) !important;
     color: var(--dark1, #0D0F13);
 
 }
