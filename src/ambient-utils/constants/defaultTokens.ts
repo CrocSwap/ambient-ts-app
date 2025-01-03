@@ -1012,17 +1012,35 @@ export const plumeWTT: TokenIF = registerToken({
 
 export const plumePUSD: TokenIF = registerToken({
     name: 'Plume USD',
-    address: '0x360822f796975cEccD8095c10720c57567b4199f',
+    address: '0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F',
     symbol: 'pUSD',
     decimals: 6,
     chainId: 98865,
-    logoURI: 'https://img.cryptorank.io/coins/plume_network1716480863760.png',
+    logoURI: '',
 });
 
 export const plumeNRWA: TokenIF = registerToken({
     name: 'Nest RWA Vault',
     address: '0x81537d879ACc8a290a1846635a0cAA908f8ca3a6',
     symbol: 'nRWA',
+    decimals: 6,
+    chainId: 98865,
+    logoURI: '',
+});
+
+export const plumeNTBILL: TokenIF = registerToken({
+    name: 'Nest Treasuries Vault',
+    address: '0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9',
+    symbol: 'nTBILL',
+    decimals: 6,
+    chainId: 98865,
+    logoURI: '',
+});
+
+export const plumeNYIELD: TokenIF = registerToken({
+    name: 'Nest Yield Vault',
+    address: '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8',
+    symbol: 'nYIELD',
     decimals: 6,
     chainId: 98865,
     logoURI: '',

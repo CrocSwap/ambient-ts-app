@@ -8,6 +8,7 @@ export const blacklist = [
     '0x08723392ed15743cc38513c4925f5e6be5c17243',
     '0x08b2efdcdb8822efe5ad0eae55517cf5dc544251',
     '0x09193888b3f38c82dedfda55259a82c0e7de875e',
+    '0x0931ca4d13bb4ba75d9b7132ab690265d749a5e7',
     '0x098b716b8aaf21512996dc57eb0615e2383e2f96',
     '0x0e3a09dda6b20afbb34ac7cd4a6881493f3e7bf7',
     '0x0ee5067b06776a89ccc7dc8ee369984ad7db5e06',
@@ -18,6 +19,7 @@ export const blacklist = [
     '0x178169b423a011fff22b9e3f3abea13414ddd0f1',
     '0x179f48c78f57a3a78f0608cc9197b8972921d1d2',
     '0x1967d8af5bd86a497fb3dd7899a020e47560daaf',
+    '0x1999ef52700c34de7ec2b68a28aafb37db0c5ade',
     '0x19aa5fe80d33a56d56c78e82ea5e50e5d80b4dff',
     '0x19f8f2b0915daa12a3f5c9cf01df9e24d53794f7',
     '0x1da5821544e25c636c1417ba96ade4cf6d2f9b5a',
@@ -140,6 +142,7 @@ export const blacklist = [
     '0xdd4c48c0b24039969fc16d1cdf626eab821d3384',
     '0xdf231d99ff8b6c6cbf4e9b9a945cbacef9339178',
     '0xdf3a408c53e5078af6e8fb2a85088d46ee09a61b',
+    '0xe1d865c3d669dcc8c57c8d023140cb204e672ee4',
     '0xe7aa314c77f4233c18c6cc84384a9247c0cf367b',
     '0xe950dc316b836e4eefb8308bf32bf7c72a1358ff',
     '0xed6e0a7e4ac94d976eebfb82ccf777a3c6bad921',
@@ -221,6 +224,11 @@ export const hiddenTokens = [
         // pETH on Mainnet
         address: '0x821a278dfff762c76410264303f25bf42e195c0c',
         chainId: 1,
+    },
+    {
+        // old pUSD on Plume Mainnet
+        address: '0x360822f796975cEccD8095c10720c57567b4199f',
+        chainId: 98865,
     },
 ];
 

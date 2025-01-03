@@ -86,7 +86,7 @@ export default function SearchableTicker(props: propsIF) {
     const [isMouseEnter, setIsMouseEnter] = useState(false);
     const customLoading = false;
 
-    const isMobile = useMediaQuery('(max-width: 768px)');
+    const isMobile = useMediaQuery('(max-width: 767px)');
     const isTabletScreen = useMediaQuery(
         '(min-width: 768px) and (max-width: 1200px)',
     );

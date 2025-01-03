@@ -172,7 +172,7 @@ function TokenInputQuantity(props: propsIF) {
                         tokenB: tokenB.address,
                     })}
                 >
-                    Initialize it to continue.
+                    Click here to initialize the pool
                 </Link>
             </span>
         </div>

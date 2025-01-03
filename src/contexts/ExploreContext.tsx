@@ -81,11 +81,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             localStorage.getItem('isExploreDollarizationEnabled') === 'true',
         );
 
-    // reset pool data when switching networks
-    useEffect(() => {
-        setIntermediaryPoolData([]);
-    }, [activeNetwork.chainId]);
-
     // used to prevent displaying data for a previous network after switching networks
     useEffect(() => {
         if (intermediaryPoolData.length) {
@@ -125,12 +120,21 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 poolList.length > 0 &&
                 (await crocEnv.context).chain.chainId === activeNetwork.chainId
             ) {
-                getAllPools();
+                if (
+                    intermediaryPoolData.length &&
+                    intermediaryPoolData[0]?.chainId !== activeNetwork.chainId
+                ) {
+                    setIntermediaryPoolData([]);
+                } else {
+                    getAllPools();
+                }
             }
         })();
     }, [
         isUserOnline,
-        JSON.stringify(poolList),
+        poolList,
+        allPoolStats,
+        intermediaryPoolData[0]?.chainId,
         crocEnv,
         activeNetwork.chainId,
     ]);
@@ -362,7 +366,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 const filteredPoolData = results.filter(
                     (pool) => pool.spotPrice > 0,
                 );
-                setIntermediaryPoolData(filteredPoolData);
+                if (filteredPoolData.length) {
+                    setIntermediaryPoolData(filteredPoolData);
+                }
             })
             .catch((err) => {
                 console.warn(err);
