@@ -212,20 +212,7 @@ export default function TickerItem(props: PropsIF) {
             </div>
             <p className={styles.market_cap}>{formattedMarketCap}</p>
             <p className={styles.auction_status}>{statusText}</p>
-            <p
-                style={{
-                    color:
-                        // set color to orange if time remaining is less than 2 hours
-                        timeRemainingInSec <= 0
-                            ? 'var(--accent1)'
-                            : timeRemainingInSec > 7200
-                              ? 'var(--text1)'
-                              : 'var(--orange)',
-                }}
-                className={styles.time_remaining}
-            >
-                {timeRemaining}
-            </p>
+            <p className={styles.time_remaining}>{timeRemaining}</p>
             {isCreated && (
                 <p className={styles.native_tkn_committed}>
                     {auction.nativeTokenCommitted &&
