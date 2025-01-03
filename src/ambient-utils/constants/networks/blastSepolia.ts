@@ -7,7 +7,7 @@ import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const PUBLIC_RPC_URL = 'https://sepolia.blast.io';
-const SECONDARY_PUBLIC_RPC_URL = 'https://blast-sepolia.drpc.org';
+const SECONDARY_PUBLIC_RPC_URL = 'https://sepolia.blast.io';
 
 const RESTRICTED_RPC_URL =
     import.meta.env.VITE_BLAST_SEPOLIA_RPC_URL !== undefined
