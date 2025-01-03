@@ -266,7 +266,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const [defaultChartSettings] = useState<LocalChartSettingsIF>({
         chartColors: {
             upCandleBodyColor: '--chart-positive',
-            downCandleBodyColor: '--chart-negative',
+            downCandleBodyColor: '--dark2',
             selectedDateFillColor: '--accent2',
             upCandleBorderColor: '--chart-positive',
             downCandleBorderColor: '--chart-negative',
@@ -438,7 +438,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         const downCandleBodyColor =
             contextChartColors && contextChartColors.downCandleBodyColor
                 ? d3.color(contextChartColors.downCandleBodyColor)
-                : getCssVariable(skin.active, '--chart-negative');
+                : getCssVariable(skin.active, '--dark2');
         const selectedDateFillColor =
             contextChartColors && contextChartColors.selectedDateFillColor
                 ? d3.color(contextChartColors.selectedDateFillColor)
