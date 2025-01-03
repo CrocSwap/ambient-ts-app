@@ -26,7 +26,7 @@ import plumeLogo from './assets/images/networks/plume_mainnet_logo_small.webp';
 import plumeSepoliaLogo from './assets/images/networks/plume_sepolia.webp';
 import scrollLogo from './assets/images/networks/scroll_logo.webp';
 import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia.webp';
-import swellLogo from './assets/images/networks/swell_network_logo_with_margin.webp';
+import swellLogo from './assets/images/networks/swell_logo.webp';
 import swellSepoliaLogo from './assets/images/networks/swell_sepolia.webp';
 import { GlobalContexts } from './contexts/GlobalContexts';
 

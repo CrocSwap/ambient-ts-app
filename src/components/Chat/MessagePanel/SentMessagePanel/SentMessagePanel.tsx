@@ -21,7 +21,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 import ethLogo from '../../../../assets/images/networks/ethereum_logo.svg';
-import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
+import scrollLogo from '../../../../assets/images/networks/scroll_logo_no_margin.webp';
 import {
     ALLOW_AUTH,
     ALLOW_REACTIONS,
