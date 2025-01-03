@@ -30,6 +30,8 @@ const OrderHistoryContainer = styled.div`
     border-radius: 4px;
     box-shadow: 0 8px 32px 0 var(--dark1);
 
+    padding: 3px 0 3px 0;
+
     min-width: 120px;
 
     line-height: 1.3;
@@ -102,7 +104,7 @@ const LinkContainer = styled.div<{ isHover: boolean }>`
 
     max-height: 100px;
 
-    margin: 5px 0 5px 0;
+    margin: 3px 0 3px 0;
 
     overflow-y: auto;
     overflow-x: hidden;

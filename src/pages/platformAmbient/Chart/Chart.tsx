@@ -5403,7 +5403,12 @@ export default function Chart(props: propsIF) {
                                 order: position,
                                 totalValue: position.totalValueUSD,
                                 tokenFlowDecimalCorrected: 0,
-                                mergedIds: [position.positionId],
+                                mergedIds: [
+                                    {
+                                        hash: position.positionId,
+                                        type: 'historical',
+                                    },
+                                ],
                             };
                         }
                     }
@@ -5447,7 +5452,12 @@ export default function Chart(props: propsIF) {
                                 totalValueUSD: limitOrder.totalValueUSD,
                                 tokenFlowDecimalCorrected:
                                     tokenFlowDecimalCorrected,
-                                mergedIds: [limitOrder.positionHash],
+                                mergedIds: [
+                                    {
+                                        hash: limitOrder.positionHash,
+                                        type: 'historical',
+                                    },
+                                ],
                             };
                         }
 
@@ -5472,7 +5482,12 @@ export default function Chart(props: propsIF) {
                                 totalValueUSD: limitOrder.totalValueUSD,
                                 tokenFlowDecimalCorrected:
                                     tokenFlowDecimalCorrected,
-                                mergedIds: [limitOrder.positionHash],
+                                mergedIds: [
+                                    {
+                                        hash: limitOrder.positionHash,
+                                        type: 'historical',
+                                    },
+                                ],
                             };
                         }
                     }
@@ -5499,11 +5514,20 @@ export default function Chart(props: propsIF) {
                             : element.order.quoteFlowDecimalCorrected;
 
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const mergedIds: Array<string> = [element.order.txHash];
+                        const mergedIds: Array<{ hash: string; type: string }> =
+                            [
+                                {
+                                    hash: element.order.txHash,
+                                    type: element.order.entityType,
+                                },
+                            ];
 
                         if (element.mergedTx.length > 0) {
                             element.mergedTx.map((merged) => {
-                                mergedIds.push(merged.txHash);
+                                mergedIds.push({
+                                    hash: merged.txHash,
+                                    type: merged.entityType,
+                                });
 
                                 totalValueUSD =
                                     totalValueUSD + merged.totalValueUSD;
@@ -6151,7 +6175,6 @@ export default function Chart(props: propsIF) {
                     (hoveredOrderHistory.type === 'swap' ||
                         hoveredOrderHistory.type === 'limitCircle')
                 ) {
-                    console.log(hoveredOrderHistory);
                     setHoveredOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase

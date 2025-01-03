@@ -402,47 +402,68 @@ export default function OrderHistoryTooltip(props: {
                                 })}
                         </StyledHeader>
 
-                        {hoveredOrderHistory.mergedIds.length > 5 &&
+                        {hoveredOrderHistory.type === 'swap' &&
+                            hoveredOrderHistory.mergedIds.length > 5 &&
                             showUpArrow &&
                             upArrow}
 
-                        <IdContainer>
-                            <LinkContainer
-                                isHover={false}
-                                ref={scrollContainerRef}
-                            >
-                                {hoveredOrderHistory.mergedIds.map(
-                                    (id: string, index: number) => {
-                                        return (
-                                            <StyledLink
-                                                color={'var(--text2)'}
-                                                size={'13px'}
-                                                key={index}
-                                                onClick={(
-                                                    event: React.MouseEvent<HTMLDivElement>,
-                                                ) => {
-                                                    event.stopPropagation();
-                                                    handleOpenExplorer(id);
-                                                }}
-                                                onMouseEnter={() => {
-                                                    setHoveredID(id);
-                                                }}
-                                                onMouseLeave={() =>
-                                                    setHoveredID(
-                                                        () => undefined,
-                                                    )
-                                                }
-                                            >
-                                                {trimString(id, 6, 4, '…')}
-                                                <RiExternalLinkLine />
-                                            </StyledLink>
-                                        );
-                                    },
-                                )}
-                            </LinkContainer>
-                        </IdContainer>
+                        {hoveredOrderHistory.type === 'swap' && (
+                            <IdContainer>
+                                <LinkContainer
+                                    isHover={false}
+                                    ref={scrollContainerRef}
+                                >
+                                    {hoveredOrderHistory.mergedIds.map(
+                                        (
+                                            merge: {
+                                                hash: string;
+                                                type: string;
+                                            },
+                                            index: number,
+                                        ) => {
+                                            return (
+                                                merge.type === 'swap' && (
+                                                    <StyledLink
+                                                        color={'var(--text2)'}
+                                                        size={'13px'}
+                                                        key={index}
+                                                        onClick={(
+                                                            event: React.MouseEvent<HTMLDivElement>,
+                                                        ) => {
+                                                            event.stopPropagation();
+                                                            handleOpenExplorer(
+                                                                merge.hash,
+                                                            );
+                                                        }}
+                                                        onMouseEnter={() => {
+                                                            setHoveredID(
+                                                                merge.hash,
+                                                            );
+                                                        }}
+                                                        onMouseLeave={() =>
+                                                            setHoveredID(
+                                                                () => undefined,
+                                                            )
+                                                        }
+                                                    >
+                                                        {trimString(
+                                                            merge.hash,
+                                                            6,
+                                                            4,
+                                                            '…',
+                                                        )}
+                                                        <RiExternalLinkLine />
+                                                    </StyledLink>
+                                                )
+                                            );
+                                        },
+                                    )}
+                                </LinkContainer>
+                            </IdContainer>
+                        )}
 
-                        {hoveredOrderHistory.mergedIds.length > 5 &&
+                        {hoveredOrderHistory.type === 'swap' &&
+                            hoveredOrderHistory.mergedIds.length > 5 &&
                             showDownArrow &&
                             downArrow}
 
