@@ -18,18 +18,23 @@ import {
 } from '../../../contexts';
 import { fetchPoolLimitOrders } from '../../../ambient-utils/api/fetchPoolLimitOrders';
 import { fetchPoolPositions } from '../../../ambient-utils/api/fetchPoolPositions';
-import { PositionIF } from '../../../ambient-utils/types/position';
+import {
+    PositionIF,
+    PositionServerIF,
+} from '../../../ambient-utils/types/position';
 import { TransactionByType } from '../../../contexts/ReceiptContext';
 import { getLimitOrderData } from '../../../ambient-utils/dataLayer/functions/getLimitOrderData';
 import {
     baseTokenForConcLiq,
     bigIntToFloat,
+    priceToTick,
     quoteTokenForConcLiq,
     tickToPrice,
 } from '@crocswap-libs/sdk';
 
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { RecentlyUpdatedPositionIF } from './useMergeWithPendingTxs';
+import { getPositionData } from '../../../ambient-utils/dataLayer/functions/getPositionData';
 
 const useGenFakeTableRow = () => {
     const { crocEnv, provider } = useContext(CrocEnvContext);
@@ -40,21 +45,6 @@ const useGenFakeTableRow = () => {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-
-    // const {
-    //     pool,
-    //     isPoolInitialized,
-    //     isTradeDollarizationEnabled,
-    //     usdPriceInverse,
-    //     poolData,
-    // } = useContext(PoolContext);
-
-    // const { basePrice, quotePrice } = poolData;
-    // console.log('>>> poolData', poolData);
-    // console.log('>>> pool', pool);
-
-    // console.log('>>> basePrice', basePrice);
-    // console.log('>>> quotePrice', quotePrice);
 
     const {
         activeNetwork: { chainId, poolIndex, GCGO_URL },
@@ -260,9 +250,182 @@ const useGenFakeTableRow = () => {
     const genFakePosition = async (
         pendingTx: TransactionByType,
     ): Promise<RecentlyUpdatedPositionIF> => {
-        return new Promise((resolve) => {
-            if (!crocEnv || !provider) resolve({} as RecentlyUpdatedPositionIF);
+        if (!crocEnv || !pendingTx.txDetails)
+            return {} as RecentlyUpdatedPositionIF;
+
+        const pos = crocEnv.positions(
+            pendingTx.txDetails.baseAddress,
+            pendingTx.txDetails.quoteAddress,
+            pendingTx.userAddress,
+        );
+
+        const poolPriceNonDisplay = await cachedQuerySpotPrice(
+            crocEnv,
+            pendingTx.txDetails.baseAddress,
+            pendingTx.txDetails.quoteAddress,
+            chainId,
+            lastBlockNumber,
+        );
+
+        const position = pendingTx.txDetails.isAmbient
+            ? await pos.queryAmbientPos()
+            : await pos.queryRangePos(
+                  pendingTx.txDetails.lowTick || 0,
+                  pendingTx.txDetails.highTick || 0,
+              );
+
+        const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
+
+        let positionLiqBase, positionLiqQuote;
+
+        const liqBigInt = position.liq;
+        const liqNum = bigIntToFloat(liqBigInt);
+        if (pendingTx.txDetails.isAmbient) {
+            positionLiqBase = liqNum * Math.sqrt(poolPriceNonDisplay);
+            positionLiqQuote = liqNum / Math.sqrt(poolPriceNonDisplay);
+        } else {
+            positionLiqBase = bigIntToFloat(
+                baseTokenForConcLiq(
+                    poolPriceNonDisplay,
+                    liqBigInt,
+                    tickToPrice(pendingTx.txDetails.lowTick || 0),
+                    tickToPrice(pendingTx.txDetails.highTick || 0),
+                ),
+            );
+            positionLiqQuote = bigIntToFloat(
+                quoteTokenForConcLiq(
+                    poolPriceNonDisplay,
+                    liqBigInt,
+                    tickToPrice(pendingTx.txDetails.lowTick || 0),
+                    tickToPrice(pendingTx.txDetails.highTick || 0),
+                ),
+            );
+        }
+
+        const posHash = getPositionHash(undefined, {
+            isPositionTypeAmbient: pendingTx.txDetails.isAmbient || false,
+            user: pendingTx.userAddress,
+            baseAddress: pendingTx.txDetails.baseAddress,
+            quoteAddress: pendingTx.txDetails.quoteAddress,
+            poolIdx: pendingTx.txDetails.poolIdx,
+            bidTick: pendingTx.txDetails.lowTick || 0,
+            askTick: pendingTx.txDetails.highTick || 0,
         });
+
+        const mockServerPosition: PositionServerIF = {
+            positionId: posHash,
+            chainId: chainId,
+            askTick: pendingTx.txDetails.highTick || 0,
+            bidTick: pendingTx.txDetails.lowTick || 0,
+            poolIdx: pendingTx.txDetails.poolIdx,
+            base: pendingTx.txDetails.baseAddress,
+            quote: pendingTx.txDetails.quoteAddress,
+            user: pendingTx.userAddress,
+            ambientLiq: pendingTx.txDetails.isAmbient ? liqNum : 0,
+            concLiq: !pendingTx.txDetails.isAmbient ? liqNum : 0,
+            rewardLiq: 0, // unknown
+            positionType: pendingTx.txDetails.isAmbient
+                ? 'ambient'
+                : 'concentrated',
+            timeFirstMint: 0, // unknown
+            lastMintTx: '', // unknown
+            firstMintTx: '', // unknown
+            aprEst: 0, // unknown
+        };
+        const skipENSFetch = true;
+
+        const positionData = await getPositionData(
+            mockServerPosition,
+            tokenList,
+            crocEnv,
+            provider,
+            chainId,
+            cachedFetchTokenPrice,
+            cachedQuerySpotPrice,
+            cachedTokenDetails,
+            cachedEnsResolve,
+            skipENSFetch,
+        );
+
+        const onChainPosition: PositionIF = {
+            chainId: chainId,
+            base: pendingTx.txDetails.baseAddress,
+            quote: pendingTx.txDetails.quoteAddress,
+            poolIdx: pendingTx.txDetails.poolIdx,
+            bidTick: pendingTx.txDetails.lowTick,
+            askTick: pendingTx.txDetails.highTick,
+            isBid: pendingTx.txDetails.isBid,
+            user: pendingTx.userAddress,
+            timeFirstMint: 0, // unknown
+            latestUpdateTime: 0,
+            lastMintTx: '', // unknown
+            firstMintTx: '', // unknown
+            positionType: pendingTx.txDetails.isAmbient
+                ? 'ambient'
+                : 'concentrated',
+            ambientLiq: pendingTx.txDetails.isAmbient ? liqNum : 0,
+            concLiq: !pendingTx.txDetails.isAmbient ? liqNum : 0,
+            rewardLiq: 0, // unknown
+            liqRefreshTime: 0,
+            aprDuration: 0, // unknown
+            aprPostLiq: 0,
+            aprContributedLiq: 0,
+            // aprEst: 0,
+            poolPriceInTicks: poolPriceInTicks,
+            isPositionInRange: true, // unknown
+            baseDecimals: pendingTx.txDetails.baseTokenDecimals,
+            quoteDecimals: pendingTx.txDetails.quoteTokenDecimals,
+            baseSymbol: pendingTx.txDetails.baseSymbol,
+            quoteSymbol: pendingTx.txDetails.quoteSymbol,
+            baseName: '',
+            quoteName: '',
+            lowRangeDisplayInBase: positionData.lowRangeDisplayInBase,
+            highRangeDisplayInBase: positionData.highRangeDisplayInBase,
+            lowRangeDisplayInQuote: positionData.lowRangeDisplayInQuote,
+            highRangeDisplayInQuote: positionData.highRangeDisplayInQuote,
+            lowRangeShortDisplayInBase: positionData.lowRangeShortDisplayInBase,
+            lowRangeShortDisplayInQuote:
+                positionData.lowRangeShortDisplayInQuote,
+            highRangeShortDisplayInBase:
+                positionData.highRangeShortDisplayInBase,
+            highRangeShortDisplayInQuote:
+                positionData.highRangeShortDisplayInQuote,
+            bidTickPriceDecimalCorrected:
+                positionData.bidTickPriceDecimalCorrected,
+            bidTickInvPriceDecimalCorrected:
+                positionData.bidTickInvPriceDecimalCorrected,
+            askTickPriceDecimalCorrected:
+                positionData.askTickPriceDecimalCorrected,
+            askTickInvPriceDecimalCorrected:
+                positionData.askTickInvPriceDecimalCorrected,
+            positionLiq: liqNum,
+            positionLiqBase: positionLiqBase,
+            positionLiqQuote: positionLiqQuote,
+            feesLiqBase: positionData.feesLiqBase,
+            feesLiqQuote: positionData.feesLiqQuote,
+            feesLiqBaseDecimalCorrected:
+                positionData.feesLiqBaseDecimalCorrected,
+            feesLiqQuoteDecimalCorrected:
+                positionData.feesLiqQuoteDecimalCorrected,
+            positionLiqBaseDecimalCorrected:
+                positionData.positionLiqBaseDecimalCorrected,
+            positionLiqQuoteDecimalCorrected:
+                positionData.positionLiqQuoteDecimalCorrected,
+            positionLiqBaseTruncated: positionData.positionLiqBaseTruncated,
+            positionLiqQuoteTruncated: positionData.positionLiqQuoteTruncated,
+            totalValueUSD: positionData.totalValueUSD,
+            apy: positionData.apy,
+            positionId: positionData.positionId,
+            onChainConstructedPosition: true,
+        } as PositionIF;
+
+        return {
+            positionHash: posHash,
+            timestamp: Date.now(),
+            position: onChainPosition,
+            type: pendingTx.txType,
+            action: pendingTx.txAction || '',
+        };
     };
 
     return {

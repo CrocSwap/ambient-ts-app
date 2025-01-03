@@ -80,6 +80,22 @@ const useMergeWithPendingTxs = (props: propsIF) => {
             );
 
             setRelevantTransactions(relTxs);
+        } else if (props.type === 'Range') {
+            const relTxs = transactionsByType.filter(
+                (tx) =>
+                    !tx.isRemoved &&
+                    unindexedNonFailedSessionPositionUpdates.some(
+                        (update) => update.txHash === tx.txHash,
+                    ) &&
+                    tx.userAddress.toLowerCase() ===
+                        (userAddress || '').toLowerCase() &&
+                    tx.txDetails?.baseAddress.toLowerCase() ===
+                        baseToken.address.toLowerCase() &&
+                    tx.txDetails?.quoteAddress.toLowerCase() ===
+                        quoteToken.address.toLowerCase() &&
+                    tx.txDetails?.poolIdx === poolIndex,
+            );
+            setRelevantTransactions(relTxs);
         }
     }, [transactionsByType]);
 
