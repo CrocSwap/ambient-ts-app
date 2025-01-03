@@ -189,7 +189,9 @@ function TradeCandleStickChart(props: propsIF) {
 
             if (
                 fetchCountForEnoughData === maxRequestCountForCondensed ||
-                candleData.candles.length > 2999 * maxRequestCountForCondensed
+                candleData.candles.length >
+                    2999 * maxRequestCountForCondensed ||
+                timeOfEndCandle
             ) {
                 return false;
             } else {
@@ -198,7 +200,7 @@ function TradeCandleStickChart(props: propsIF) {
         }
 
         return true;
-    }, [candleData?.candles, period]);
+    }, [candleData?.candles, period, timeOfEndCandle]);
 
     // TODO: could probably be determined from the isTokenABase in context?
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;

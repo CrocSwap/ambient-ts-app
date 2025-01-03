@@ -982,6 +982,9 @@ export default function Chart(props: propsIF) {
                     } else {
                         setIsCompletedFetchData(false);
                     }
+                } else {
+                    setReset(true);
+                    setIsCompletedFetchData(false);
                 }
             } else {
                 setIsCompletedFetchData(false);

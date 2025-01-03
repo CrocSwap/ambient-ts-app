@@ -482,7 +482,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
-                if (numDurationsNeeded > 0) {
+                if (numDurationsNeeded > 0 && !isFetchingCandle) {
                     minTimeMemo &&
                         fetchCandlesByNumDurations(
                             numDurationsNeeded > 2999
