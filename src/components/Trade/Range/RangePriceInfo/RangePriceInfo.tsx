@@ -236,7 +236,9 @@ function RangePriceInfo(props: propsIF) {
                 <span
                     id='max_price_readable'
                     className={styles.max_price}
-                    style={{ color: 'var(--accent3)' }}
+                    style={{
+                        color: estRangeApr ? 'var(--accent3)' : 'var(--text2)',
+                    }}
                 >
                     {estRangeAprString}
                 </span>
