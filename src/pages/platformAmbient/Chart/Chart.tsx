@@ -6214,7 +6214,10 @@ export default function Chart(props: propsIF) {
                     });
                 }
 
-                if (hoveredOrderHistory.type === 'historical') {
+                if (
+                    hoveredOrderHistory.type === 'historical' &&
+                    showHistorical
+                ) {
                     const minPrice = denomInBase
                         ? hoveredOrderHistory.order
                               .bidTickInvPriceDecimalCorrected
@@ -6278,7 +6281,8 @@ export default function Chart(props: propsIF) {
 
                 if (
                     hoveredOrderHistory.type === 'limitSwapLine' &&
-                    circleScaleLimitOrder
+                    circleScaleLimitOrder &&
+                    showLiquidity
                 ) {
                     setHoveredOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
@@ -6341,7 +6345,12 @@ export default function Chart(props: propsIF) {
             }
 
             if (isSelectedOrderHistory && selectedOrderHistory) {
-                if (circleScale && showSwap) {
+                if (
+                    (selectedOrderHistory.type === 'swap' ||
+                        selectedOrderHistory.type === 'limitCircle') &&
+                    circleScale &&
+                    showSwap
+                ) {
                     setSelectedOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
                             denomInBase
@@ -6364,7 +6373,8 @@ export default function Chart(props: propsIF) {
 
                 if (
                     selectedOrderHistory.type === 'limitSwapLine' &&
-                    circleScaleLimitOrder
+                    circleScaleLimitOrder &&
+                    showLiquidity
                 ) {
                     setSelectedOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(
@@ -6395,7 +6405,10 @@ export default function Chart(props: propsIF) {
                     });
                 }
 
-                if (selectedOrderHistory.type === 'historical') {
+                if (
+                    selectedOrderHistory.type === 'historical' &&
+                    showHistorical
+                ) {
                     const minPrice = denomInBase
                         ? selectedOrderHistory.order
                               .bidTickInvPriceDecimalCorrected
@@ -6443,6 +6456,9 @@ export default function Chart(props: propsIF) {
         diffHashSigScaleData(scaleData),
         reset,
         denomInBase,
+        showHistorical,
+        showLiquidity,
+        showSwap,
     ]);
 
     useEffect(() => {
@@ -6788,8 +6804,14 @@ export default function Chart(props: propsIF) {
                 )}
 
             {scaleData &&
-                (showSwap || showLiquidity || showHistorical) &&
                 selectedOrderHistory &&
+                ((showSwap &&
+                    (selectedOrderHistory.type === 'swap' ||
+                        selectedOrderHistory.type === 'limitCircle')) ||
+                    (showLiquidity &&
+                        selectedOrderHistory.type === 'limitSwapLine') ||
+                    (showHistorical &&
+                        selectedOrderHistory.type === 'historical')) &&
                 selectedOrderTooltipPlacement && (
                     <OrderHistoryTooltip
                         hoveredOrderHistory={selectedOrderHistory}
