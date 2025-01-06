@@ -64,7 +64,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
 
     useEffect(() => {
         if (props.type === 'Order') {
-            const relTxs = transactionsByType.filter(
+            let relTxs = transactionsByType.filter(
                 (tx) =>
                     !tx.isRemoved &&
                     unindexedNonFailedSessionLimitOrderUpdates.some(
@@ -79,9 +79,13 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                     tx.txDetails?.poolIdx === poolIndex,
             );
 
+            relTxs = relTxs.filter((tx) => {
+                return tx.txType === 'Limit';
+            });
+
             setRelevantTransactions(relTxs);
         } else if (props.type === 'Range') {
-            const relTxs = transactionsByType.filter(
+            let relTxs = transactionsByType.filter(
                 (tx) =>
                     !tx.isRemoved &&
                     unindexedNonFailedSessionPositionUpdates.some(
@@ -95,6 +99,16 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                         quoteToken.address.toLowerCase() &&
                     tx.txDetails?.poolIdx === poolIndex,
             );
+
+            relTxs = relTxs.filter((tx) => {
+                return (
+                    tx.txAction === 'Add' ||
+                    tx.txAction === 'Reposition' ||
+                    tx.txAction === 'Remove' ||
+                    tx.txAction === 'Harvest'
+                );
+            });
+
             setRelevantTransactions(relTxs);
         }
     }, [transactionsByType]);
