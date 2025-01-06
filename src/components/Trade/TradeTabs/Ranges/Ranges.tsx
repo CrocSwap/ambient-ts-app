@@ -441,7 +441,11 @@ function Ranges(props: propsIF) {
         relevantTransactionsByType.length === 0;
 
     const sortedPositionsToDisplayAccount = useMemo(() => {
-        return mergedData;
+        return (mergedData as PositionIF[]).filter(
+            (pos) =>
+                (isAccountView && !hideEmptyPositionsOnAccount) ||
+                pos.positionLiq !== 0,
+        );
     }, [mergedData]);
 
     const pendingPositionsToDisplayPlaceholder = useMemo(() => {
