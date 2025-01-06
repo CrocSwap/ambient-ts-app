@@ -156,8 +156,6 @@ const useMergeWithPendingTxs = (props: propsIF) => {
         });
     };
 
-    const [fakeRowCount, setFakeRowCount] = useState(0);
-
     const mergedData = useMemo(() => {
         const recentlyUpdatedHashes = new Set();
         const recentlyUpdatedToShow: LimitOrderIF[] | PositionIF[] = [];
@@ -166,22 +164,23 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 Math.floor(e.timestamp / 1000) - Math.floor(Date.now() / 1000) <
                 60;
             if (isFresh) {
-                if (e.action !== 'Remove') {
-                    if (props.type === 'Order') {
+                if (props.type === 'Order') {
+                    if (e.action !== 'Remove') {
                         (recentlyUpdatedToShow as LimitOrderIF[]).push(
                             e.position as LimitOrderIF,
                         );
-                    } else if (props.type === 'Range') {
-                        (recentlyUpdatedToShow as PositionIF[]).push(
-                            e.position as PositionIF,
-                        );
                     }
+                } else if (
+                    props.type === 'Range' &&
+                    e.position.positionLiq !== 0
+                ) {
+                    (recentlyUpdatedToShow as PositionIF[]).push(
+                        e.position as PositionIF,
+                    );
                 }
                 recentlyUpdatedHashes.add(e.positionHash);
             }
         });
-
-        setFakeRowCount(recentlyUpdatedToShow.length);
 
         let clearedData: LimitOrderIF[] | PositionIF[] = [];
         if (props.type === 'Order') {

@@ -48,6 +48,7 @@ import { useSortedPositions } from '../useSortedPositions';
 import RangeHeader from './RangesTable/RangeHeader';
 import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
 import InfiniteScroll from '../../InfiniteScroll/InfiniteScroll';
+import useMergeWithPendingTxs from '../../InfiniteScroll/useMergeWithPendingTxs';
 
 // interface for props
 interface propsIF {
@@ -1282,6 +1283,11 @@ function Ranges(props: propsIF) {
         })();
     }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
 
+    const { mergedData, recentlyUpdatedPositions } = useMergeWithPendingTxs({
+        type: 'Range',
+        data: sortedPositions,
+    });
+
     const shouldDisplayNoTableData =
         !isLoading &&
         !rangeData.length &&
@@ -1291,8 +1297,8 @@ function Ranges(props: propsIF) {
         (pos) => pos.positionId,
     );
 
-    const pendingPositionsToDisplayPlaceholder =
-        relevantTransactionsByType.filter((pos) => {
+    const pendingPositionsToDisplayPlaceholder = useMemo(() => {
+        return relevantTransactionsByType.filter((pos) => {
             const pendingPosHash = getPositionHash(undefined, {
                 isPositionTypeAmbient: pos.txDetails?.isAmbient || false,
                 user: pos.userAddress,
@@ -1302,28 +1308,14 @@ function Ranges(props: propsIF) {
                 bidTick: pos.txDetails?.lowTick || 0,
                 askTick: pos.txDetails?.highTick || 0,
             });
-            const matchingPosition = unindexedUpdatedPositions.find(
+            const matchingPosition = recentlyUpdatedPositions.find(
                 (unindexedPosition) => {
-                    return pendingPosHash === unindexedPosition.positionId;
+                    return pendingPosHash === unindexedPosition.positionHash;
                 },
             );
-            const matchingPositionUpdatedInLastMinute =
-                !!matchingPosition &&
-                listOfRecentlyUpdatedPositions.some(
-                    (recentlyUpdatedPosition) =>
-                        recentlyUpdatedPosition.posHash ===
-                            matchingPosition.positionId &&
-                        recentlyUpdatedPosition.timestamp >
-                            Date.now() / 1000 - 60,
-                );
-
-            // identify completed adds when update time in last minute (does not work for removes)
-            return (
-                !unindexedUpdatedPositionHashes.includes(pendingPosHash) ||
-                (matchingPosition && !matchingPositionUpdatedInLastMinute)
-                // show pulsing placeholder until existing position is updated
-            );
+            return !matchingPosition;
         });
+    }, [relevantTransactionsByType, recentlyUpdatedPositions]);
 
     const handleKeyDownViewRanges = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,

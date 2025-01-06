@@ -2,9 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { PositionIF } from '../../../ambient-utils/types/position';
-import { LimitOrderIF } from '../../../ambient-utils/types/limitOrder';
-import { TransactionIF } from '../../../ambient-utils/types/transaction';
 import {
     memo,
     useCallback,
@@ -14,29 +11,21 @@ import {
     useRef,
     useState,
 } from 'react';
-import {
-    Changes,
-    GraphDataContext,
-    LimitOrdersByPool,
-    PositionsByPool,
-} from '../../../contexts/GraphDataContext';
+import { LimitOrderIF } from '../../../ambient-utils/types/limitOrder';
+import { PositionIF } from '../../../ambient-utils/types/position';
+import { TransactionIF } from '../../../ambient-utils/types/transaction';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { PageDataCountIF } from '../../Chat/ChatIFs';
-import useInfiniteScrollFetchers from './useInfiniteScrollFetchers';
-import TableRowsInfiniteScroll from './TableRowsInfiniteScroll';
-import { RangeSortType } from '../TradeTabs/useSortedPositions';
-import { LimitSortType } from '../TradeTabs/useSortedLimits';
-import { TxSortType } from '../TradeTabs/useSortedTxs';
-import useGenFakeTableRow from './useGenFakeTableRow';
-import {
-    ReceiptContext,
-    TransactionByType,
-} from '../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import useMergeWithPendingTxs, {
-    RecentlyUpdatedPositionIF,
-} from './useMergeWithPendingTxs';
+import { PageDataCountIF } from '../../Chat/ChatIFs';
+import { LimitSortType } from '../TradeTabs/useSortedLimits';
+import { RangeSortType } from '../TradeTabs/useSortedPositions';
+import { TxSortType } from '../TradeTabs/useSortedTxs';
+import TableRowsInfiniteScroll from './TableRowsInfiniteScroll';
+import useGenFakeTableRow from './useGenFakeTableRow';
+import useInfiniteScrollFetchers from './useInfiniteScrollFetchers';
+import useMergeWithPendingTxs from './useMergeWithPendingTxs';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -96,6 +85,8 @@ function InfiniteScroll(props: propsIF) {
     } = useContext(GraphDataContext);
 
     const { userAddress } = useContext(UserDataContext);
+
+    // TODO: check if we need infiniteScrollLock state variable or not (we were using it on Ranges.tsx)
 
     const assignInitialFetchedTransactions = ():
         | LimitOrderIF[]
@@ -609,6 +600,26 @@ function InfiniteScroll(props: propsIF) {
             }
         }
     }, [data]);
+
+    // merge hot txs with first page once user is on page 0
+    useEffect(() => {
+        if (pagesVisible[0] === 0 && hotTransactions.length > 0) {
+            if (props.type === 'Order') {
+                setFetchedTransactions((prev) => [
+                    ...(hotTransactions as LimitOrderIF[]),
+                    ...(prev as LimitOrderIF[]),
+                ]);
+            } else if (props.type === 'Range') {
+                setFetchedTransactions((prev) => [
+                    ...(hotTransactions as PositionIF[]),
+                    ...(prev as PositionIF[]),
+                ]);
+            }
+
+            mergePageDataCounts(hotTransactions.length);
+            setHotTransactions([]);
+        }
+    }, [pagesVisible[0]]);
 
     const getIndexForPages = (start: boolean, offset = 0) => {
         const pageDataCountVal = (
