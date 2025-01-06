@@ -3,6 +3,7 @@ import { TokenIF } from '../types/token/TokenIF';
 // Use `defaultTokens` directly as the registry
 export const defaultTokens: TokenIF[] = [];
 
+export const defaultTokensAmbient: TokenIF[] = [];
 export const defaultTokensFUTA: TokenIF[] = [];
 
 type platforms = 'ambient' | 'futa';
@@ -15,6 +16,10 @@ function registerToken(
     defaultTokens.push(token);
     if (additionalPlatforms) {
         additionalPlatforms.includes('futa') && defaultTokensFUTA.push(token);
+        additionalPlatforms.includes('ambient') &&
+            defaultTokensAmbient.push(token);
+    } else {
+        defaultTokensAmbient.push(token);
     }
     return token;
 }
