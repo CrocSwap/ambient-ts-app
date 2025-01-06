@@ -57,8 +57,8 @@ export const plumeMainnet: NetworkIF = {
     vaultsEnabled: false,
     tempestApiNetworkName: '',
     topPools: [
-        new TopPool(plumeNativeETH, plumeUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(plumePETH, plumePUSD, chainSpecFromSDK.poolIndex),
+        new TopPool(plumeNativeETH, plumeUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(plumeNRWA, plumePUSD, chainSpecFromSDK.poolIndex),
         new TopPool(plumeNativeETH, plumePUSD, chainSpecFromSDK.poolIndex),
         new TopPool(plumeUSDC, plumePUSD, chainSpecFromSDK.poolIndex),

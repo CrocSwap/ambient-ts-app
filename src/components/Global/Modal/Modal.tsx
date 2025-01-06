@@ -2,7 +2,10 @@ import { motion } from 'framer-motion';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { BiArrowBack } from 'react-icons/bi';
 import { RiCloseFill } from 'react-icons/ri';
-import { GLOBAL_MODAL_COMPONENT_ID } from '../../../ambient-utils/constants';
+import {
+    brand,
+    GLOBAL_MODAL_COMPONENT_ID,
+} from '../../../ambient-utils/constants';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 import { Container } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -24,6 +27,7 @@ interface ModalPropsIF {
 }
 
 export default function Modal(props: ModalPropsIF) {
+    const isFuta = brand === 'futa';
     const {
         handleBack,
         title = '',
@@ -143,7 +147,12 @@ export default function Modal(props: ModalPropsIF) {
                     }}
                 >
                     <div className={styles.sheet_handle}>
-                        <div className={styles.drag_handle} />
+                        <div
+                            className={styles.drag_handle}
+                            style={{
+                                background: isFuta ? '#62ebf1' : '#7371fc',
+                            }}
+                        />
                     </div>
                     {headerJSX}
                     <section className={styles.modal_content}>

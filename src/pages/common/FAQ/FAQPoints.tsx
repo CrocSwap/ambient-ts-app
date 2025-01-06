@@ -2,11 +2,13 @@
 import { useContext, useEffect, useRef } from 'react';
 import { FiLink } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
-import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
+import { brand, IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import styles from './FAQ.module.css';
+import futaBg from '../../../assets/futa/home/background.png';
+import ambientBg from '../../../assets/images/backgrounds/background.png';
 interface questionIF {
     question: string;
     answer: string | string[] | JSX.Element | JSX.Element[];
@@ -15,6 +17,8 @@ interface questionIF {
 
 export default function FAQPoints() {
     const { params } = useParams();
+    const isFuta = brand === 'futa';
+
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -138,7 +142,12 @@ export default function FAQPoints() {
     }
 
     return (
-        <div className={styles.background}>
+        <div
+            className={styles.background}
+            style={{
+                background: `url(${isFuta ? futaBg : ambientBg}) no-repeat`,
+            }}
+        >
             <div className={styles.container}>
                 <div className={styles.content}>
                     <div className={styles.header_container}>
