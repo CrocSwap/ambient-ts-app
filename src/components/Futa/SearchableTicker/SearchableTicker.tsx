@@ -239,9 +239,11 @@ export default function SearchableTicker(props: propsIF) {
             !isMouseEnter
         ) {
             const itemRef = tickerItemRefs.current[hoveredTicker];
-            if (itemRef && containerRef.current) {
+            const tableRef = containerRef.current;
+
+            if (itemRef && containerRef.current && tableRef) {
                 containerRef.current.scrollTo({
-                    top: itemRef.offsetTop,
+                    top: itemRef.offsetTop - tableRef.offsetTop,
                     behavior: 'smooth',
                 });
             }

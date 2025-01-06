@@ -268,6 +268,8 @@ export default function RangeLinesChart(props: propsIF) {
             });
         }
     }, [
+        lineSellColor,
+        lineBuyColor,
         horizontalLine,
         ranges,
         triangle,

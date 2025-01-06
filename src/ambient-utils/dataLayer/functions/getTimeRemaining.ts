@@ -106,7 +106,7 @@ export function getTimeRemainingAbbrev(
     const remainingTimeString =
         remainingTimeInSecondsNum !== undefined
             ? remainingTimeInSecondsNum < 0
-                ? 'COMPLETE'
+                ? 'DONE'
                 : remainingTimeInSecondsNum < 60
                   ? '< 01m'
                   : remainingTimeInSecondsNum < 120

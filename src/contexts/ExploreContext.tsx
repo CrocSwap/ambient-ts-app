@@ -125,20 +125,15 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                     intermediaryPoolData[0]?.chainId !== activeNetwork.chainId
                 ) {
                     setIntermediaryPoolData([]);
-                }
-                if (!intermediaryPoolData.length) {
+                } else {
                     getAllPools();
-                    const interval = setInterval(() => {
-                        getAllPools(); // refresh pool data every 5 minutes
-                    }, 300000);
-                    return () => clearInterval(interval);
                 }
             }
         })();
     }, [
         isUserOnline,
-        poolList.length,
-        poolList[0]?.chainId,
+        poolList,
+        allPoolStats,
         intermediaryPoolData[0]?.chainId,
         crocEnv,
         activeNetwork.chainId,
