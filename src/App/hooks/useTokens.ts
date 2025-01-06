@@ -6,6 +6,8 @@ import {
     tokenListEndpointStrings,
     tokenListURIs,
 } from '../../ambient-utils/constants';
+import ambientTokenList from '../../ambient-utils/constants/ambient-token-list.json';
+import testnetTokenList from '../../ambient-utils/constants/testnet-token-list.json';
 import {
     chainNumToString,
     serializeBigInt,
@@ -137,7 +139,6 @@ export const useTokens = (
                 if (checkDefault(deepToken, defaultTokensFUTA)) {
                     defaultForPlatforms.push('futa');
                 }
-                console.log(defaultForPlatforms);
                 deepToken.defaultPlatforms = findDefaultPlatforms(deepToken);
                 // if token is listed, update the array of originating URIs
                 if (tknFromMap?.listedBy) {
@@ -256,15 +257,27 @@ export const useTokens = (
         const endpoints: string[] = uriToHttp(uri, 'retry');
         // logic to query endpoints until a query is successful
         let rawData;
+        // process all endpoints
         for (let i = 0; i < endpoints.length; i++) {
-            const response = await fetch(endpoints[i]);
-            if (response.ok) {
-                rawData = await response.json();
-                break;
+            // isolate current endpoint from list
+            const endpoint = endpoints[i];
+            // special handling for the ambient token list (exists locally)
+            if (endpoint === tokenListURIs.ambient) {
+                rawData = ambientTokenList;
+            }
+            // special handling for the testnet token list (exists locally)
+            else if (endpoint === tokenListURIs.testnet) {
+                rawData = testnetTokenList;
+            }
+            // handling for all non-local token lists
+            else {
+                const response = await fetch(endpoint);
+                if (response.ok) {
+                    rawData = await response.json();
+                    break;
+                }
             }
         }
-        // cease funcationality if no endpoint returned a valid response
-        if (!rawData) return;
         // format the raw data returned with values used in the Ambient app
         const output: TokenListIF = {
             ...rawData,
