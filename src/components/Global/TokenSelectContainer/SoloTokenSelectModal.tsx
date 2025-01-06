@@ -449,6 +449,22 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                     ? checkForMatches()
                                     : true;
                             })
+                            .sort((tickerA: TokenIF, tickerB: TokenIF) => {
+                                function rankTicker(t: TokenIF): number {
+                                    let rank: number;
+                                    if (
+                                        t.address.toLowerCase() === ZERO_ADDRESS
+                                    ) {
+                                        rank = 1;
+                                    } else {
+                                        rank = 2;
+                                    }
+                                    return rank;
+                                }
+                                const rankA: number = rankTicker(tickerA);
+                                const rankB: number = rankTicker(tickerB);
+                                return rankA - rankB;
+                            })
                             .map((ticker: TokenIF) => (
                                 <TokenSelect
                                     key={JSON.stringify(ticker)}
