@@ -51,7 +51,7 @@
     background-color: var(--dark3);
 } */
 
-.inactive:hover, .ticker_item:hover {
+.inactive:hover, .ticker_item:hover, .hoverActive {
     background-color: var(--dark3);
 }
 
