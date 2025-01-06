@@ -3,9 +3,24 @@ import { TokenIF } from '../types/token/TokenIF';
 // Use `defaultTokens` directly as the registry
 export const defaultTokens: TokenIF[] = [];
 
+export const defaultTokensAmbient: TokenIF[] = [];
+export const defaultTokensFUTA: TokenIF[] = [];
+
+type platforms = 'ambient' | 'futa';
+
 // Helper to register tokens
-function registerToken(token: TokenIF): TokenIF {
+function registerToken(
+    token: TokenIF,
+    additionalPlatforms?: platforms[],
+): TokenIF {
     defaultTokens.push(token);
+    if (additionalPlatforms) {
+        additionalPlatforms.includes('futa') && defaultTokensFUTA.push(token);
+        additionalPlatforms.includes('ambient') &&
+            defaultTokensAmbient.push(token);
+    } else {
+        defaultTokensAmbient.push(token);
+    }
     return token;
 }
 
@@ -417,14 +432,17 @@ export const blastSepoliaUSDB: TokenIF = registerToken({
     symbol: 'USDB',
 });
 
-export const sepoliaETH: TokenIF = registerToken({
-    name: 'Native Ether',
-    address: '0x0000000000000000000000000000000000000000',
-    symbol: 'ETH',
-    decimals: 18,
-    chainId: 11155111,
-    logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
-});
+export const sepoliaETH: TokenIF = registerToken(
+    {
+        name: 'Native Ether',
+        address: '0x0000000000000000000000000000000000000000',
+        symbol: 'ETH',
+        decimals: 18,
+        chainId: 11155111,
+        logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
+    },
+    ['futa'],
+);
 
 export const sepoliaUSDC: TokenIF = registerToken({
     name: 'USDC',
@@ -436,15 +454,18 @@ export const sepoliaUSDC: TokenIF = registerToken({
         'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png',
 });
 
-export const sepoliaWBTC: TokenIF = registerToken({
-    name: 'Wrapped BTC',
-    address: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
-    symbol: 'WBTC',
-    decimals: 8,
-    chainId: 11155111,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
-});
+export const sepoliaWBTC: TokenIF = registerToken(
+    {
+        name: 'Wrapped BTC',
+        address: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
+        symbol: 'WBTC',
+        decimals: 8,
+        chainId: 11155111,
+        logoURI:
+            'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+    },
+    ['futa'],
+);
 
 export const scrollSepoliaWBTC: TokenIF = registerToken({
     name: 'Wrapped BTC',

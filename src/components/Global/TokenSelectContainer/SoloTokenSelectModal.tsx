@@ -325,9 +325,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     )}
                 </div>
                 <div className={styles.scrollContainer}>
-                    <div style={{ padding: '1rem' }}>
-                        {platform !== 'futa' &&
-                            isWrappedNativeToken(validatedInput) && (
+                    {platform !== 'futa' &&
+                        isWrappedNativeToken(validatedInput) && (
+                            <div style={{ padding: '1rem' }}>
                                 <WarningBox
                                     title=''
                                     details={WETH_WARNING}
@@ -357,8 +357,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                         </button>
                                     }
                                 />
-                            )}
-                    </div>
+                            </div>
+                        )}
                     {platform === 'ambient' && (
                         <>
                             {isWrappedNativeToken(validatedInput) &&
@@ -400,7 +400,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     )}
                     {platform === 'futa' &&
                         tokens
-                            .getTokensFromList('/futa-token-list.json')
+                            .getFutaTokens()
                             .filter((tk: TokenIF) => {
                                 // fn to compare name and symbol to search input
                                 function matchSymbolOrName(
@@ -448,6 +448,22 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                 return validatedInput
                                     ? checkForMatches()
                                     : true;
+                            })
+                            .sort((tickerA: TokenIF, tickerB: TokenIF) => {
+                                function rankTicker(t: TokenIF): number {
+                                    let rank: number;
+                                    if (
+                                        t.address.toLowerCase() === ZERO_ADDRESS
+                                    ) {
+                                        rank = 1;
+                                    } else {
+                                        rank = 2;
+                                    }
+                                    return rank;
+                                }
+                                const rankA: number = rankTicker(tickerA);
+                                const rankB: number = rankTicker(tickerB);
+                                return rankA - rankB;
                             })
                             .map((ticker: TokenIF) => (
                                 <TokenSelect
