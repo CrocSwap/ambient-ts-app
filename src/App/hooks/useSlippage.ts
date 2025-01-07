@@ -92,6 +92,6 @@ export const useSlippage = (
             updateVolatile: isActiveNetworkL2 ? setL2 : setVolatile,
             presets: defaults.getPresets(isActiveNetworkL2),
         }),
-        [stable, volatile, l2],
+        [stable, volatile, l2, isActiveNetworkL2],
     );
 };
