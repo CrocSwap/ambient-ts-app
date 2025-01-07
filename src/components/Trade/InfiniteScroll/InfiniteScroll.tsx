@@ -14,16 +14,12 @@ import {
 import { LimitOrderIF } from '../../../ambient-utils/types/limitOrder';
 import { PositionIF } from '../../../ambient-utils/types/position';
 import { TransactionIF } from '../../../ambient-utils/types/transaction';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { UserDataContext } from '../../../contexts/UserDataContext';
 import { PageDataCountIF } from '../../Chat/ChatIFs';
 import { LimitSortType } from '../TradeTabs/useSortedLimits';
 import { RangeSortType } from '../TradeTabs/useSortedPositions';
 import { TxSortType } from '../TradeTabs/useSortedTxs';
 import TableRowsInfiniteScroll from './TableRowsInfiniteScroll';
-import useGenFakeTableRow from './useGenFakeTableRow';
 import useInfiniteScrollFetchers from './useInfiniteScrollFetchers';
 import useMergeWithPendingTxs from './useMergeWithPendingTxs';
 
@@ -40,6 +36,7 @@ interface propsIF {
     sortTransactions?: (data: TransactionIF[]) => TransactionIF[];
     sortBy: TxSortType | LimitSortType | RangeSortType;
     showAllData: boolean;
+    componentLock?: boolean;
     extraRequestCreditLimit?: number;
     txFetchType?: TxFetchType;
     txFetchAddress?: `0x${string}` | string;
@@ -70,27 +67,29 @@ function InfiniteScroll(props: propsIF) {
         extraRequestCreditLimit,
         txFetchType,
         txFetchAddress,
+        componentLock,
     } = props;
 
-    function getEnumName(value: number): string | undefined {
-        return Object.keys(TxFetchType).find(
-            (key) => TxFetchType[key as keyof typeof TxFetchType] === value,
-        );
-    }
+    // function getEnumName(value: number): string | undefined {
+    //     return Object.keys(TxFetchType).find(
+    //         (key) => TxFetchType[key as keyof typeof TxFetchType] === value,
+    //     );
+    // }
 
-    if (txFetchType !== undefined) {
-        console.log('>>> fetchType:', getEnumName(txFetchType));
-    }
-    console.log('>>> fetchAddress:', txFetchAddress);
+    // if (txFetchType !== undefined) {
+    //     console.log('>>> fetchType:', getEnumName(txFetchType));
+    // }
+    // console.log('>>> fetchAddress:', txFetchAddress);
 
     const PAGE_COUNT_DIVIDE_THRESHOLD = 20;
-    const INITIAL_EXTRA_REQUEST_THRESHOLD = 20;
+
     const EXTRA_REQUEST_CREDIT_COUNT = extraRequestCreditLimit || 0;
 
-    const baseTokenSymbol = baseToken.symbol;
-    const quoteTokenSymbol = quoteToken.symbol;
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
+
+    const componentLockRef = useRef<boolean>();
+    componentLockRef.current = componentLock;
 
     const {
         fetchLimitOrders,
@@ -99,22 +98,9 @@ function InfiniteScroll(props: propsIF) {
         fetchTxsUser,
         fetchTxsUserPool,
     } = useInfiniteScrollFetchers();
-    const { genFakeLimitOrder, genFakePosition } = useGenFakeTableRow();
-
-    const prevBaseQuoteAddressRef = useRef<string>(
-        selectedBaseAddress + selectedQuoteAddress,
-    );
-
-    const { transactionsByType } = useContext(ReceiptContext);
-
-    const {
-        unindexedNonFailedSessionLimitOrderUpdates,
-        unindexedNonFailedSessionPositionUpdates,
-    } = useContext(GraphDataContext);
-
-    const { userAddress } = useContext(UserDataContext);
 
     // TODO: check if we need infiniteScrollLock state variable or not (we were using it on Ranges.tsx)
+    // const INITIAL_EXTRA_REQUEST_THRESHOLD = 20;   (That threshold value was used on related lock mechanism)
 
     const assignInitialFetchedTransactions = ():
         | LimitOrderIF[]
@@ -125,7 +111,6 @@ function InfiniteScroll(props: propsIF) {
     };
 
     // PAGE DATA COUNTS
-
     // method which used to decide inital page data counts
     // that method divides intial data into 2 pieces to make infinite scroll working
     // if data count less than threshold value, component will assume first page with full data to not trigger redundant fetch process initially
@@ -248,14 +233,15 @@ function InfiniteScroll(props: propsIF) {
         };
     }, []);
 
-    const resetInfiniteScroll = () => {
-        setFetchedTransactions(assignInitialFetchedTransactions());
-        setHotTransactions([]);
-        setExtraPagesAvailable(0);
-        setMoreDataAvailable(true);
-        setLastFetchedCount(0);
-        setMoreDataLoading(false);
-    };
+    // no need to use it for now
+    // const resetInfiniteScroll = () => {
+    //     setFetchedTransactions(assignInitialFetchedTransactions());
+    //     setHotTransactions([]);
+    //     setExtraPagesAvailable(0);
+    //     setMoreDataAvailable(true);
+    //     setLastFetchedCount(0);
+    //     setMoreDataLoading(false);
+    // };
 
     const stopFetchingAnimation = () => {
         setMoreDataLoading(false);
@@ -345,6 +331,10 @@ function InfiniteScroll(props: propsIF) {
     };
 
     const addMoreData = async () => {
+        if (componentLockRef.current) {
+            return;
+        }
+
         setMoreDataLoading(true);
 
         let addedDataCount = 0;
@@ -653,6 +643,12 @@ function InfiniteScroll(props: propsIF) {
                 } else {
                     updateHotTransactions(newTxs);
                 }
+            } else {
+                console.log('>>> !!!!!!!!!! data', data.length);
+                // mode change on transactions tab etc..
+                setPagesVisible([0, 1]);
+                setFetchedTransactions(assignInitialFetchedTransactions());
+                setPageDataCount(getInitialDataPageCounts());
             }
         }
     }, [data]);
@@ -676,6 +672,15 @@ function InfiniteScroll(props: propsIF) {
             setHotTransactions([]);
         }
     }, [pagesVisible[0]]);
+
+    // back to first page once component lock has been changed (once candle transactions mode is activated)
+    useEffect(() => {
+        if (props.type === 'Transaction') {
+            setPagesVisible([0, 1]);
+            setFetchedTransactions(assignInitialFetchedTransactions());
+            setPageDataCount(getInitialDataPageCounts());
+        }
+    }, [componentLock]);
 
     const getIndexForPages = (start: boolean, offset = 0) => {
         const pageDataCountVal = (
@@ -732,6 +737,7 @@ function InfiniteScroll(props: propsIF) {
             lastFetchedCount={lastFetchedCount}
             setLastFetchedCount={setLastFetchedCount}
             moreDataLoading={moreDataLoading}
+            componentLock={componentLock}
         />
     );
 }

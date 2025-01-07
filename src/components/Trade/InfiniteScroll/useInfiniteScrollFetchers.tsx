@@ -1,9 +1,16 @@
 /* eslint-disable no-irregular-whitespace */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useContext } from 'react';
+import {
+    fetchPoolRecentChanges,
+    fetchUserRecentChanges,
+} from '../../../ambient-utils/api';
+import { fetchPoolLimitOrders } from '../../../ambient-utils/api/fetchPoolLimitOrders';
+import { fetchPoolPositions } from '../../../ambient-utils/api/fetchPoolPositions';
+import { fetchPoolUserChanges } from '../../../ambient-utils/api/fetchPoolUserChanges';
+import { TransactionIF } from '../../../ambient-utils/types';
 import { LimitOrderIF } from '../../../ambient-utils/types/limitOrder';
+import { PositionIF } from '../../../ambient-utils/types/position';
 import {
     AppStateContext,
     CachedDataContext,
@@ -11,15 +18,6 @@ import {
     TokenContext,
     TradeDataContext,
 } from '../../../contexts';
-import { fetchPoolLimitOrders } from '../../../ambient-utils/api/fetchPoolLimitOrders';
-import { fetchPoolPositions } from '../../../ambient-utils/api/fetchPoolPositions';
-import { PositionIF } from '../../../ambient-utils/types/position';
-import { TransactionIF } from '../../../ambient-utils/types';
-import {
-    fetchPoolRecentChanges,
-    fetchUserRecentChanges,
-} from '../../../ambient-utils/api';
-import { fetchPoolUserChanges } from '../../../ambient-utils/api/fetchPoolUserChanges';
 
 const useInfiniteScrollFetchers = () => {
     const {

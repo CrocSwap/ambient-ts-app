@@ -1,27 +1,20 @@
 /* eslint-disable no-irregular-whitespace */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useContext, useEffect, useMemo, useState } from 'react';
+import { TransactionIF } from '../../../ambient-utils/types';
 import { LimitOrderIF } from '../../../ambient-utils/types/limitOrder';
+import { PositionIF } from '../../../ambient-utils/types/position';
 import {
     AppStateContext,
-    CachedDataContext,
-    CrocEnvContext,
     GraphDataContext,
-    TokenContext,
     TradeDataContext,
     UserDataContext,
 } from '../../../contexts';
-import { fetchPoolLimitOrders } from '../../../ambient-utils/api/fetchPoolLimitOrders';
-import { fetchPoolPositions } from '../../../ambient-utils/api/fetchPoolPositions';
-import { PositionIF } from '../../../ambient-utils/types/position';
 import {
     ReceiptContext,
     TransactionByType,
 } from '../../../contexts/ReceiptContext';
 import useGenFakeTableRow from './useGenFakeTableRow';
-import { TransactionIF } from '../../../ambient-utils/types';
 
 export type RecentlyUpdatedPositionIF = {
     positionHash: string;
@@ -37,7 +30,7 @@ interface propsIF {
 }
 
 const useMergeWithPendingTxs = (props: propsIF) => {
-    const { data, type } = props;
+    const { data } = props;
 
     const { transactionsByType } = useContext(ReceiptContext);
     const {

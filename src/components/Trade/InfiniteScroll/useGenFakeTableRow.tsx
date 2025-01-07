@@ -1,29 +1,5 @@
 /* eslint-disable no-irregular-whitespace */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useContext } from 'react';
-import {
-    LimitOrderIF,
-    LimitOrderServerIF,
-} from '../../../ambient-utils/types/limitOrder';
-import {
-    AppStateContext,
-    CachedDataContext,
-    ChainDataContext,
-    CrocEnvContext,
-    PoolContext,
-    TokenContext,
-    TradeDataContext,
-} from '../../../contexts';
-import { fetchPoolLimitOrders } from '../../../ambient-utils/api/fetchPoolLimitOrders';
-import { fetchPoolPositions } from '../../../ambient-utils/api/fetchPoolPositions';
-import {
-    PositionIF,
-    PositionServerIF,
-} from '../../../ambient-utils/types/position';
-import { TransactionByType } from '../../../contexts/ReceiptContext';
-import { getLimitOrderData } from '../../../ambient-utils/dataLayer/functions/getLimitOrderData';
 import {
     baseTokenForConcLiq,
     bigIntToFloat,
@@ -31,10 +7,28 @@ import {
     quoteTokenForConcLiq,
     tickToPrice,
 } from '@crocswap-libs/sdk';
+import { useContext } from 'react';
+import { getLimitOrderData } from '../../../ambient-utils/dataLayer/functions/getLimitOrderData';
+import {
+    LimitOrderIF,
+    LimitOrderServerIF,
+} from '../../../ambient-utils/types/limitOrder';
+import {
+    PositionIF,
+    PositionServerIF,
+} from '../../../ambient-utils/types/position';
+import {
+    AppStateContext,
+    CachedDataContext,
+    ChainDataContext,
+    CrocEnvContext,
+    TokenContext,
+} from '../../../contexts';
+import { TransactionByType } from '../../../contexts/ReceiptContext';
 
+import { getPositionData } from '../../../ambient-utils/dataLayer/functions/getPositionData';
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { RecentlyUpdatedPositionIF } from './useMergeWithPendingTxs';
-import { getPositionData } from '../../../ambient-utils/dataLayer/functions/getPositionData';
 
 const useGenFakeTableRow = () => {
     const { crocEnv, provider } = useContext(CrocEnvContext);
@@ -47,7 +41,7 @@ const useGenFakeTableRow = () => {
     } = useContext(CachedDataContext);
 
     const {
-        activeNetwork: { chainId, poolIndex, GCGO_URL },
+        activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
 
     const {

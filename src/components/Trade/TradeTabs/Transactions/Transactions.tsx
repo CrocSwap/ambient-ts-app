@@ -133,6 +133,9 @@ function Transactions(props: propsIF) {
         ? candleTransactionData
         : transactionData;
 
+    const [infiniteScrollLock, setInfiniteScrollLock] =
+        useState<boolean>(false);
+
     const [
         sortBy,
         setSortBy,
@@ -141,6 +144,8 @@ function Transactions(props: propsIF) {
         sortedTransactions,
         sortData,
     ] = useSortedTxs('time', txDataToDisplay);
+
+    console.log('>>> sortedTransactions', sortedTransactions.length);
 
     const userTransacionsLength = useMemo<number>(
         () =>
@@ -155,12 +160,19 @@ function Transactions(props: propsIF) {
     useEffect(() => {
         if (!isCandleSelected) {
             setCandleTransactionData([]);
+            setInfiniteScrollLock(false);
             dataLoadingStatus.setDataLoadingStatus({
                 datasetName: 'isCandleDataLoading',
                 loadingStatus: true,
             });
         }
     }, [isCandleSelected]);
+
+    useEffect(() => {
+        if (isCandleSelected) {
+            setInfiniteScrollLock(true);
+        }
+    }, [candleTransactionData]);
 
     const isLoading = useMemo<boolean>(
         () =>
@@ -634,6 +646,7 @@ function Transactions(props: propsIF) {
                     sortTransactions={sortData}
                     txFetchType={fetchType}
                     txFetchAddress={addressToUse}
+                    componentLock={infiniteScrollLock}
                 />
             </ul>
         </div>
