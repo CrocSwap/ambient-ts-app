@@ -38,7 +38,7 @@
 
 .container a {
     display: flex;
-    padding: 8px 16px;
+    padding: 32px 16px;
     justify-content: center;
     align-items: center;
     background: var(--base-text1, #AACFD1);
@@ -46,13 +46,18 @@
     text-align: center;
     /* Mono 24 */
     font-family: 'Fira Mono';
-    font-size: 24px;
+    font-size: 48px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
     outline: none;
     border: none;
     cursor: pointer;
+    width: 237px;
+    height: 90px;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    text-transform: uppercase;
+
 }
 
 .content a:hover{
