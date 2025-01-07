@@ -79,8 +79,8 @@
     min-width: 110px;
     height: 25px;
     border: 1px solid var(--dark3);
-    background: var(--dark3);
     color: var(--text2);
+    background-color: var(--dark2);
     display: flex;
     justify-content: center;
     align-items: center;
