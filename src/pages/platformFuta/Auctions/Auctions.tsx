@@ -16,7 +16,6 @@ interface propsIF {
 
 export default function Auctions(props: propsIF) {
     const { hideTicker, placeholderTicker } = props;
-    // placeholder data until the platform has live data
 
     const {
         globalAuctionList,

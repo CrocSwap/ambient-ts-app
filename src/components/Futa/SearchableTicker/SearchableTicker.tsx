@@ -301,7 +301,7 @@ export default function SearchableTicker(props: propsIF) {
                 <div className={styles.sort_clickable} ref={timeDropdownRef}>
                     <div className={styles.sort_selection}>
                         <div
-                            className={styles.timeDropdownButton}
+                            className={styles.open_dropdown_clickable}
                             onClick={() =>
                                 setIsSortDropdownOpen(!isSortDropdownOpen)
                             }

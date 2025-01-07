@@ -130,7 +130,8 @@
     gap: 4px;
 }
 
-.timeDropdownButton {
+/* clickable area to open sort dropdown menu */
+.open_dropdown_clickable {
     border-left: 4px solid var(--accent1, #62ebf1);
     background-color: var(--dark2);
     display: flex;
@@ -159,7 +160,7 @@
 /* dropdown menu for sort options */
 .dropdown {
     height: auto;
-    width: 160px;
+    width: 100%;
     background-color: var(--dark2);
     position: absolute;
     top: 30px;
