@@ -90,11 +90,12 @@ margin-bottom: -8px;
 
     /* Mono 12 */
     font-family: var(--mainFont, 'Fira Mono');
-    font-size: var(--fontSizes-fontSize_small, 12px);
+    font-size: var(--body-size, 12px);
     font-style: normal;
     font-weight: 500;
     line-height: normal;
     margin-bottom: 6px;
+    transition: all var(--animation-speed) ease-in-out;
     
 }
 

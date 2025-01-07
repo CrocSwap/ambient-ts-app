@@ -2,6 +2,7 @@ import { IoIosArrowDown } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './FutaLandingNav.module.css';
+import { BsChevronDown } from 'react-icons/bs';
 
 interface propsIF {
     scrollToSection: ScrollToSectionFn;
@@ -28,7 +29,10 @@ export default function FutaLandingNav(props: propsIF) {
                 <span>/</span>
                 <span className={styles.taText}>TA</span>
             </div>
-            <div className={styles.enterButton}>
+            <div
+                className={styles.enterButton}
+                style={{ opacity: activeSection == 0 ? 0 : 1 }}
+            >
                 <button onClick={() => navigate('/auctions')}>/ENTER</button>
             </div>
         </div>
@@ -44,11 +48,11 @@ export default function FutaLandingNav(props: propsIF) {
             </div>
             {showMobileVersion ? (
                 futaText
-            ) : (
-                <IoIosArrowDown
-                    size={120}
+            ) : activeSection === 0 ? null : (
+                <BsChevronDown
+                    size={85}
                     onClick={handleNextSection}
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', marginBottom: '12px' }}
                 />
             )}
 
