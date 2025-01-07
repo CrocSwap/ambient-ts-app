@@ -144,7 +144,7 @@
 }
 
 /* text rendered in clickable to launch dropdown */
-.timeDropdownButton p {
+.open_dropdown_clickable p {
     font-size: 14px;
     color: var(--accent1);
 }
