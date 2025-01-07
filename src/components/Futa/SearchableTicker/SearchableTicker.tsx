@@ -310,7 +310,17 @@ export default function SearchableTicker(props: propsIF) {
                             {isSortDropdownOpen ? (
                                 <IoIosArrowUp color='var(--accent1)' />
                             ) : (
-                                <IoIosArrowDown color='var(--accent1)' />
+                                <IoIosArrowDown
+                                    onClick={(e) => {
+                                        // without this handler the click will not register
+                                        // ... properly to open the dropdown menu
+                                        e.stopPropagation();
+                                        setIsSortDropdownOpen(
+                                            !isSortDropdownOpen,
+                                        );
+                                    }}
+                                    color='var(--accent1)'
+                                />
                             )}
                         </div>
                         <div
