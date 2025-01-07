@@ -159,29 +159,40 @@
 /* dropdown menu for sort options */
 .dropdown {
     height: auto;
-    width: calc(100% - 25px);
+    width: 160px;
     background-color: var(--dark2);
     position: absolute;
     top: 30px;
-    overflow-y: scroll;
-    padding: 4px;
     z-index: 2;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 }
 
-.timeItem {
+/* individual clickables in the dropdown menu */
+.dropdown > p {
     font-size: 12px;
-    color: var(--text1);
+    width: 100%;
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
     padding: 0 4px;
     text-transform: uppercase;
 }
 
-.timeItem:hover {
-    background: var(--accent3);
+/* color rules for the active sort option in dropdown */
+.active_sort {
+    color: var(--dark2) !important;
+    background-color: var(--accent1);
+}
+
+/* color rules for the inactive sort options in dropdown */
+.inactive_sort {
+    color: var(--accent1);
+}
+
+/* hover effects for the inactive sort options in dropdown */
+.inactive_sort:hover {
+    background: var(--text3);
 }
 
 .ticker_name {

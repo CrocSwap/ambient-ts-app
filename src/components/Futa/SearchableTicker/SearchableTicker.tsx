@@ -340,8 +340,14 @@ export default function SearchableTicker(props: propsIF) {
                         <div className={styles.dropdown}>
                             {sortDropdownOptions.map((item, idx) => (
                                 <p
-                                    className={styles.timeItem}
                                     key={idx}
+                                    className={
+                                        styles[
+                                            activeSortOption.slug === item.slug
+                                                ? 'active_sort'
+                                                : 'inactive_sort'
+                                        ]
+                                    }
                                     onClick={() => {
                                         setActiveSortOption(item);
                                         setIsSortDropdownOpen(false);
