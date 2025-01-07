@@ -271,7 +271,7 @@ export default function SearchableTicker(props: propsIF) {
     const smallScreen: boolean = useMediaQuery('(max-width: 400px)');
 
     const headerDisplay = (
-        <div className={styles.header}>
+        <search className={styles.header}>
             <div className={styles.search_and_sort}>
                 <div className={styles.text_search_box}>
                     <BiSearch
@@ -414,7 +414,7 @@ export default function SearchableTicker(props: propsIF) {
                     </button>
                 ) : null}
             </div>
-        </div>
+        </search>
     );
 
     const noAuctionsContent = (

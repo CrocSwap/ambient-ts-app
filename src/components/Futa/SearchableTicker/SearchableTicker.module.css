@@ -47,6 +47,7 @@
     align-items: center;
     width: 100%;
     max-width: 400px;
+    padding-left: 8px;
     gap: 4px;
     background-color: var(--dark2);
     height: 100%;
