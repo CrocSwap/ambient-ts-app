@@ -21,6 +21,7 @@ const ChartSettingsContainer = styled.div<{
     overflow: visible;
 
     z-index: 999999;
+    font: var(--font-family);
 `;
 
 const ContextMenu = styled.div<{ isFuta?: boolean }>`
@@ -55,7 +56,7 @@ const ContextMenuHeader = styled.div`
 `;
 
 const ContextMenuHeaderText = styled.div`
-    font-family: Lexend Deca;
+    font-family: var(--font-family);
 
     font-size: 16px;
 
@@ -71,7 +72,7 @@ const ContextMenuHeaderText = styled.div`
 `;
 
 const ContextMenuContextText = styled.div`
-    font-family: Lexend Deca;
+    font-family: var(--font-family);
     font-size: 12px;
     font-weight: 300;
 
