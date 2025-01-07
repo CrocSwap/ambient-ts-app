@@ -213,6 +213,10 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 ...recentlyUpdatedToShow.reverse(),
                 ...clearedData,
             ] as PositionIF[];
+        } else if (props.type === 'Transaction') {
+            return (data as TransactionIF[]).filter(
+                (e) => !recentlyUpdatedHashes.has(e.txHash),
+            ) as TransactionIF[];
         }
 
         return [];

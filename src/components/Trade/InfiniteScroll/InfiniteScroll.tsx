@@ -41,6 +41,15 @@ interface propsIF {
     sortBy: TxSortType | LimitSortType | RangeSortType;
     showAllData: boolean;
     extraRequestCreditLimit?: number;
+    txFetchType?: TxFetchType;
+    txFetchAddress?: `0x${string}` | string;
+}
+
+export enum TxFetchType {
+    UserTxs,
+    PoolTxs,
+    UserPoolTxs,
+    None,
 }
 
 function InfiniteScroll(props: propsIF) {
@@ -59,7 +68,20 @@ function InfiniteScroll(props: propsIF) {
         sortBy,
         showAllData,
         extraRequestCreditLimit,
+        txFetchType,
+        txFetchAddress,
     } = props;
+
+    function getEnumName(value: number): string | undefined {
+        return Object.keys(TxFetchType).find(
+            (key) => TxFetchType[key as keyof typeof TxFetchType] === value,
+        );
+    }
+
+    if (txFetchType !== undefined) {
+        console.log('>>> fetchType:', getEnumName(txFetchType));
+    }
+    console.log('>>> fetchAddress:', txFetchAddress);
 
     const PAGE_COUNT_DIVIDE_THRESHOLD = 20;
     const INITIAL_EXTRA_REQUEST_THRESHOLD = 20;
@@ -70,7 +92,13 @@ function InfiniteScroll(props: propsIF) {
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
 
-    const { fetchLimitOrders, fetchPositions } = useInfiniteScrollFetchers();
+    const {
+        fetchLimitOrders,
+        fetchPositions,
+        fetchTxsPool,
+        fetchTxsUser,
+        fetchTxsUserPool,
+    } = useInfiniteScrollFetchers();
     const { genFakeLimitOrder, genFakePosition } = useGenFakeTableRow();
 
     const prevBaseQuoteAddressRef = useRef<string>(
@@ -371,8 +399,36 @@ function InfiniteScroll(props: propsIF) {
                     oldestTimeTemp < oldestTimeParam
                         ? oldestTimeTemp
                         : oldestTimeParam;
-            } else {
-                // dirtyData = await fetchTransactions(oldestTimeParam, fetchCount);
+            } else if (
+                props.type === 'Transaction' &&
+                txFetchType !== undefined
+            ) {
+                switch (txFetchType) {
+                    case TxFetchType.UserTxs:
+                        if (txFetchAddress) {
+                            dirtyData = await fetchTxsUser(
+                                oldestTimeParam,
+                                fetchCount,
+                                txFetchAddress,
+                            );
+                        }
+                        break;
+                    case TxFetchType.UserPoolTxs:
+                        if (txFetchAddress) {
+                            dirtyData = await fetchTxsUserPool(
+                                oldestTimeParam,
+                                fetchCount,
+                                txFetchAddress as `0x${string}`,
+                            );
+                        }
+                        break;
+                    case TxFetchType.PoolTxs:
+                        dirtyData = await fetchTxsPool(
+                            oldestTimeParam,
+                            fetchCount,
+                        );
+                        break;
+                }
             }
 
             if (props.type === 'Range') {

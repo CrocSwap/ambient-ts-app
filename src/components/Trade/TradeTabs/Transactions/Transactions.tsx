@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-irregular-whitespace */
 import { CandleDataIF, TransactionIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -43,6 +45,9 @@ import TableRowsInfiniteScroll from '../../InfiniteScroll/TableRowsInfiniteScrol
 import { useSortedTxs } from '../useSortedTxs';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
+import InfiniteScroll, {
+    TxFetchType,
+} from '../../InfiniteScroll/InfiniteScroll';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -779,6 +784,32 @@ function Transactions(props: propsIF) {
         setMoreDataLoading(false);
     };
 
+    const fetchType = useMemo<TxFetchType>(() => {
+        if (showAllData && !isAccountView) {
+            return TxFetchType.PoolTxs;
+        } else if (!showAllData && !isAccountView && userAddress) {
+            return TxFetchType.UserPoolTxs;
+        } else if (isAccountView && accountAddress) {
+            return TxFetchType.UserTxs;
+        }
+
+        return TxFetchType.None;
+    }, [showAllData, isAccountView, userAddress, accountAddress]);
+
+    const addressToUse = useMemo<`0x${string}` | string | undefined>(() => {
+        if (fetchType === TxFetchType.UserPoolTxs && userAddress) {
+            return userAddress;
+        } else if (fetchType === TxFetchType.UserTxs) {
+            if (accountAddress) {
+                return accountAddress;
+            } else {
+                return userAddress;
+            }
+        }
+
+        return undefined;
+    }, [fetchType]);
+
     const [debouncedIsLoading, setDebouncedIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -932,22 +963,19 @@ function Transactions(props: propsIF) {
                             </>
                         );
                     })}
-                <TableRowsInfiniteScroll
+                <InfiniteScroll
                     type='Transaction'
-                    data={sortedTxDataToDisplay}
+                    data={sortedTransactions}
                     tableView={tableView}
                     isAccountView={isAccountView}
-                    fetcherFunction={addMoreData}
                     sortBy={sortBy}
                     showAllData={showAllData}
-                    moreDataAvailable={moreDataAvailableRef.current}
-                    pagesVisible={pagesVisible}
-                    setPagesVisible={setPagesVisible}
-                    extraPagesAvailable={extraPagesAvailable}
-                    lastFetchedCount={lastFetchedCount}
-                    setLastFetchedCount={setLastFetchedCount}
-                    moreDataLoading={moreDataLoading}
-                    componentLock={infiniteScrollLock}
+                    dataPerPage={50}
+                    fetchCount={50}
+                    targetCount={30}
+                    sortTransactions={sortData}
+                    txFetchType={fetchType}
+                    txFetchAddress={addressToUse}
                 />
             </ul>
         </div>
