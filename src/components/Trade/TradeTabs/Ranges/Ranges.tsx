@@ -1,6 +1,4 @@
 /* eslint-disable no-irregular-whitespace */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useLocation } from 'react-router-dom';
@@ -8,13 +6,11 @@ import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-util
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { PositionIF } from '../../../../ambient-utils/types';
 import { AppStateContext } from '../../../../contexts';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
-import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
@@ -56,8 +52,6 @@ function Ranges(props: propsIF) {
         hideEmptyPositionsOnAccount,
         setHideEmptyPositionsOnAccount,
     } = useContext(TradeTableContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
-    const { tokens } = useContext(TokenContext);
 
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -65,7 +59,7 @@ function Ranges(props: propsIF) {
     const { setCurrentRangeInReposition } = useContext(RangeContext);
 
     const {
-        activeNetwork: { chainId, poolIndex, GCGO_URL },
+        activeNetwork: { poolIndex },
     } = useContext(AppStateContext);
 
     // only show all data when on trade tabs page
