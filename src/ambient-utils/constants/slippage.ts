@@ -54,12 +54,12 @@ const SWAP_DEFAULTS: defaultsConstructorArgsIF = {
     vals: {
         stable: 0.1,
         volatile: 0.1,
-        l2: 1,
+        l2: 0.5,
     },
     presets: {
         stable: [0.1, 0.3, 0.5],
         volatile: [0.1, 0.3, 0.5],
-        l2: [0.5, 1, 3],
+        l2: [0.5, 1, 5],
     },
 };
 
