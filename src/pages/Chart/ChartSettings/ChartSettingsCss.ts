@@ -23,7 +23,7 @@ const ChartSettingsContainer = styled.div<{
     z-index: 999999;
 `;
 
-const ContextMenu = styled.div`
+const ContextMenu = styled.div<{ isFuta?: boolean }>`
     width: 284px;
 
     padding: 8px 16px 8px 16px;
@@ -34,9 +34,14 @@ const ContextMenu = styled.div`
 
     border: 1px solid var(--accent1);
 
-    box-shadow: 0px 0px 20px 0px #7371fc66 inset;
-
-    box-shadow: 0px 0px 20px 0px #7371fc33;
+    ${({ isFuta }) =>
+        isFuta
+            ? `
+                box-shadow: none;
+            `
+            : `
+                box-shadow: 0px 0px 20px 0px #7371fc66 inset, 0px 0px 20px 0px #7371fc33;
+            `}
 `;
 
 const ContextMenuHeader = styled.div`
