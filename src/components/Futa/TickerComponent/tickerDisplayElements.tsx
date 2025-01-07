@@ -105,6 +105,8 @@ export const tickerDisplayElements = (props: PropsIF) => {
         ? getTimeDifference(timeRemainingInSeconds)
         : '-';
 
+    const SECTION_HEADER_FONT_SIZE = '18px';
+
     // Status data
     const statusData = [
         {
@@ -422,7 +424,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
     // Opened bid display component
     const openedBidDisplay = (
         <div className={`${styles.tickerContainer} ${styles.openBidContainer}`}>
-            <h3>OPEN BID</h3>
+            <h3 style={{ fontSize: SECTION_HEADER_FONT_SIZE }}>OPEN BID</h3>
             {openedBidData.map((item, idx) => (
                 <div className={styles.tickerRow} key={idx}>
                     <TooltipLabel
@@ -445,7 +447,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
     // Your bid display component
     const yourBidDisplay = (
         <div className={`${styles.tickerContainer} ${styles.openBidContainer}`}>
-            <h3>YOUR BID</h3>
+            <h3 style={{ fontSize: SECTION_HEADER_FONT_SIZE }}>YOUR BID</h3>
             {yourBidData.map((item, idx) => (
                 <div className={styles.tickerRow} key={idx}>
                     <TooltipLabel
@@ -506,6 +508,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                 tooltipTitle='The max market cap you are willing to bid up to'
                 itemTitle='MAX MARKET CAP'
                 isHeader
+                fontSize={SECTION_HEADER_FONT_SIZE}
             />
             <div
                 className={styles.maxDropdownContainer}
@@ -597,6 +600,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                 tooltipTitle='The max bid size you are willing to submit'
                 itemTitle='BID SIZE'
                 isHeader
+                fontSize={SECTION_HEADER_FONT_SIZE}
             />
             <CurrencySelector
                 disable={!tickerFromParams}
