@@ -1,4 +1,3 @@
-import { IoIosArrowDown } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './FutaLandingNav.module.css';
