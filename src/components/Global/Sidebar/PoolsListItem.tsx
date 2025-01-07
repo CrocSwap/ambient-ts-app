@@ -127,7 +127,7 @@ export default function PoolsListItem(props: propsIF) {
 
     const poolDisplay = (
         <FlexContainer gap={8} alignItems='center'>
-            {!mobileScreen && (
+            {!mobileScreen && !isFuta && (
                 <FlexContainer gap={4}>
                     <TokenIcon
                         token={
