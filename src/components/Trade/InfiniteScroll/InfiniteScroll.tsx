@@ -70,17 +70,6 @@ function InfiniteScroll(props: propsIF) {
         componentLock,
     } = props;
 
-    // function getEnumName(value: number): string | undefined {
-    //     return Object.keys(TxFetchType).find(
-    //         (key) => TxFetchType[key as keyof typeof TxFetchType] === value,
-    //     );
-    // }
-
-    // if (txFetchType !== undefined) {
-    //     console.log('>>> fetchType:', getEnumName(txFetchType));
-    // }
-    // console.log('>>> fetchAddress:', txFetchAddress);
-
     const PAGE_COUNT_DIVIDE_THRESHOLD = 20;
 
     const EXTRA_REQUEST_CREDIT_COUNT = extraRequestCreditLimit || 0;
@@ -595,10 +584,6 @@ function InfiniteScroll(props: propsIF) {
         } else {
             if (infShouldReset) {
                 resetInfiniteScroll();
-                // setPagesVisible([0, 1]);
-                // setFetchedTransactions(assignInitialFetchedTransactions());
-                // setPageDataCount(getInitialDataPageCounts());
-                // setInfShouldReset(false);
             } else {
                 const newTxs = dataDiffCheck(data);
 
@@ -661,9 +646,6 @@ function InfiniteScroll(props: propsIF) {
 
     useEffect(() => {
         if (props.type === 'Transaction') {
-            // setPagesVisible([0, 1]);
-            // setFetchedTransactions(assignInitialFetchedTransactions());
-            // setPageDataCount(getInitialDataPageCounts());
             setInfShouldReset(true);
         }
     }, [txFetchType]);
