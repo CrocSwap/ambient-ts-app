@@ -13,7 +13,6 @@
 .ticker_arrow {
     transition: all var(--animation-speed) ease-in-out;
     color: #f0f0f800;
-    ;
 }
 
 /* add color to ticker arrow when parent elem is hovered */
