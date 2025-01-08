@@ -6,7 +6,7 @@
     height: 135px;
     position: fixed;
     bottom: 0;
-    background: var(--dark1);
+    /* background: var(--dark1); */
     padding: 0 16px;
 
     transition: all var(--animation-speed) ease-in-out;

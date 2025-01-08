@@ -12,6 +12,7 @@ import styles from './FutaNewLanding.module.css';
 
 const INITIAL_DELAY = 7000;
 const TOTAL_SECTIONS = 5;
+const SCROLL_THRESHOLD = 100; // Pixels to scroll before triggering section change
 
 export default function FutaNewLanding() {
     const {
@@ -27,112 +28,78 @@ export default function FutaNewLanding() {
     const sectionsRef = useRef<(HTMLDivElement | null)[]>(
         Array(TOTAL_SECTIONS).fill(null),
     );
+    const lastScrollPosition = useRef(0);
+    const isScrollingRef = useRef(false);
 
-    // Memoized navigation functions
-    const navigateToNextSection = useCallback(() => {
-        const nextSection = (activeSection + 1) % TOTAL_SECTIONS;
-        setActiveSection(nextSection);
-        scrollToSection(nextSection);
-    }, [activeSection]);
+    const scrollToSection = useCallback((index: number) => {
+        if (index < 0 || index >= TOTAL_SECTIONS) return;
 
-    const navigateToPreviousSection = useCallback(() => {
-        const previousSection =
-            activeSection === 0 ? TOTAL_SECTIONS - 1 : activeSection - 1;
-        setActiveSection(previousSection);
-        scrollToSection(previousSection);
-    }, [activeSection]);
+        setActiveSection(index);
+        const section = sectionsRef.current[index];
+        if (section) {
+            isScrollingRef.current = true;
+            section.scrollIntoView({ behavior: 'smooth' });
+            // Reset after animation
+            setTimeout(() => {
+                isScrollingRef.current = false;
+                lastScrollPosition.current = window.scrollY;
+            }, 1000);
+        }
+    }, []);
 
     const handleScroll = useCallback(() => {
-        // Function to determine which section is most in view
-        const getCurrentSection = () => {
-            const viewportHeight = window.innerHeight;
-            // const scrollTop = window.scrollY;
+        if (isScrollingRef.current) return;
 
-            let maxVisibility = 0;
-            let mostVisibleIndex = 0;
+        const handleScrollAction = () => {
+            const currentScroll = window.scrollY;
+            const scrollDifference = currentScroll - lastScrollPosition.current;
 
-            sectionsRef.current.forEach((section, index) => {
-                if (section) {
-                    const rect = section.getBoundingClientRect();
-                    const visibleHeight =
-                        Math.min(rect.bottom, viewportHeight) -
-                        Math.max(rect.top, 0);
-                    const visibility = visibleHeight / viewportHeight;
+            // Get the current section's position
+            const currentSectionEl = sectionsRef.current[activeSection];
+            if (!currentSectionEl) return;
 
-                    if (visibility > maxVisibility) {
-                        maxVisibility = visibility;
-                        mostVisibleIndex = index;
-                    }
+            const currentSectionTop = currentSectionEl.offsetTop;
+            const distanceFromSection = Math.abs(
+                currentScroll - currentSectionTop,
+            );
+
+            if (distanceFromSection > SCROLL_THRESHOLD) {
+                // Determine scroll direction and next section
+                if (
+                    scrollDifference > 0 &&
+                    activeSection < TOTAL_SECTIONS - 1
+                ) {
+                    // Scrolling down
+                    scrollToSection(activeSection + 1);
+                } else if (scrollDifference < 0 && activeSection > 0) {
+                    // Scrolling up
+                    scrollToSection(activeSection - 1);
+                } else {
+                    // Snap back to current section if at edges
+                    scrollToSection(activeSection);
                 }
+            }
+        };
+
+        // Update last scroll position
+        if (!isScrollingRef.current) {
+            requestAnimationFrame(() => {
+                handleScrollAction();
+                lastScrollPosition.current = window.scrollY;
             });
-
-            return mostVisibleIndex;
-        };
-
-        // Direct scroll event handler
-        const onScroll = () => {
-            const currentSection = getCurrentSection();
-            setActiveSection(currentSection);
-        };
-
-        // Add scroll event listener
-        window.addEventListener('scroll', onScroll, { passive: true });
-
-        // Also keep the IntersectionObserver for backup
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const visibleEntry = entries.reduce(
-                    (max, entry) => {
-                        return entry.intersectionRatio >
-                            (max?.intersectionRatio || 0)
-                            ? entry
-                            : max;
-                    },
-                    null as IntersectionObserverEntry | null,
-                );
-
-                if (visibleEntry?.isIntersecting) {
-                    const index = sectionsRef.current.findIndex(
-                        (section) => section === visibleEntry.target,
-                    );
-                    if (index !== -1) {
-                        setActiveSection(index);
-                    }
-                }
-            },
-            {
-                threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-                rootMargin: '-50% 0px -50% 0px',
-            },
-        );
-
-        sectionsRef.current.forEach((section) => {
-            if (section) observer.observe(section);
-        });
-
-        // Cleanup function
-        return () => {
-            window.removeEventListener('scroll', onScroll);
-            observer.disconnect();
-        };
-    }, []);
-
-    // Also modify the scrollToSection to update activeSection immediately
-    const scrollToSection = useCallback((index: number) => {
-        setActiveSection(index); // Update active section immediately
-        sectionsRef.current[index]?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-        });
-    }, []);
+        }
+    }, [activeSection, scrollToSection]);
 
     useEffect(() => {
-        if (!showLandingPageTemp && skipLandingPage) {
-            navigate('/auctions/');
-        }
-    }, [skipLandingPage, navigate, showLandingPageTemp]);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [handleScroll]);
 
-    // Memoized keyboard handler
+    // Initialize last scroll position
+    useEffect(() => {
+        lastScrollPosition.current = window.scrollY;
+    }, []);
+
     const handleKeyDown = useCallback(
         (event: KeyboardEvent) => {
             switch (event.key) {
@@ -147,43 +114,38 @@ export default function FutaNewLanding() {
                 case 'ArrowDown':
                 case 'ArrowRight':
                     event.preventDefault();
-                    navigateToNextSection();
+                    if (activeSection < TOTAL_SECTIONS - 1) {
+                        scrollToSection(activeSection + 1);
+                    }
                     break;
                 case 'ArrowUp':
                 case 'ArrowLeft':
                     event.preventDefault();
-                    navigateToPreviousSection();
+                    if (activeSection > 0) {
+                        scrollToSection(activeSection - 1);
+                    }
                     break;
             }
         },
-        [
-            showMainContent,
-            navigate,
-            navigateToNextSection,
-            navigateToPreviousSection,
-        ],
+        [activeSection, showMainContent, navigate, scrollToSection],
     );
 
-    // Event listeners setup
+    useEffect(() => {
+        if (!showLandingPageTemp && skipLandingPage) {
+            navigate('/auctions/');
+        }
+    }, [skipLandingPage, navigate, showLandingPageTemp]);
+
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [handleKeyDown]);
 
     useEffect(() => {
-        const cleanup = handleScroll();
-        return cleanup;
-    }, [handleScroll]);
-
-    // Initial delay for showing main content
-
-    useEffect(() => {
         if (!showHomeVideoLocalStorage) {
-            // If the user has chosen to skip, immediately show main content
             setShowMainContent(true);
             setHasVideoPlayedOnce(true);
         } else {
-            // Otherwise, use the timer for the initial delay
             const timer = setTimeout(() => {
                 setShowMainContent(true);
                 setHasVideoPlayedOnce(true);
@@ -192,7 +154,6 @@ export default function FutaNewLanding() {
         }
     }, [showHomeVideoLocalStorage, setHasVideoPlayedOnce]);
 
-    // Sections configuration
     const sections = [
         <FutaLanding key='section1' />,
         <FutaLanding2 key='section2' />,
