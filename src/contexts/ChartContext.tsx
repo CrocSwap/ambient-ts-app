@@ -266,7 +266,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const [defaultChartSettings] = useState<LocalChartSettingsIF>({
         chartColors: {
             upCandleBodyColor: '--chart-positive',
-            downCandleBodyColor: '--dark2',
+            downCandleBodyColor: '--chart-negative',
             selectedDateFillColor: '--accent2',
             upCandleBorderColor: '--chart-positive',
             downCandleBorderColor: '--chart-negative',
