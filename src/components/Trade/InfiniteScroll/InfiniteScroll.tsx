@@ -91,6 +91,8 @@ function InfiniteScroll(props: propsIF) {
     const componentLockRef = useRef<boolean>();
     componentLockRef.current = componentLock;
 
+    const [infShouldReset, setInfShouldReset] = useState<boolean>(false);
+
     const {
         fetchLimitOrders,
         fetchPositions,
@@ -234,14 +236,16 @@ function InfiniteScroll(props: propsIF) {
     }, []);
 
     // no need to use it for now
-    // const resetInfiniteScroll = () => {
-    //     setFetchedTransactions(assignInitialFetchedTransactions());
-    //     setHotTransactions([]);
-    //     setExtraPagesAvailable(0);
-    //     setMoreDataAvailable(true);
-    //     setLastFetchedCount(0);
-    //     setMoreDataLoading(false);
-    // };
+    const resetInfiniteScroll = () => {
+        setFetchedTransactions(assignInitialFetchedTransactions());
+        setPageDataCount(getInitialDataPageCounts());
+        setHotTransactions([]);
+        setRequestedOldestTimes([]);
+        setExtraPagesAvailable(0);
+        setMoreDataAvailable(true);
+        setLastFetchedCount(0);
+        setMoreDataLoading(false);
+    };
 
     const stopFetchingAnimation = () => {
         setMoreDataLoading(false);
@@ -589,69 +593,80 @@ function InfiniteScroll(props: propsIF) {
         if (data.length == 0) {
             setFetchedTransactions(assignInitialFetchedTransactions());
         } else {
-            const newTxs = dataDiffCheck(data);
-
-            if (newTxs.length > 0) {
-                if (pagesVisible[0] == 0) {
-                    switch (props.type) {
-                        case 'Order':
-                            setFetchedTransactions(
-                                (
-                                    prev:
-                                        | LimitOrderIF[]
-                                        | PositionIF[]
-                                        | TransactionIF[],
-                                ) => {
-                                    return [
-                                        ...(prev as LimitOrderIF[]),
-                                        ...(newTxs as LimitOrderIF[]),
-                                    ];
-                                },
-                            );
-                            break;
-                        case 'Range':
-                            setFetchedTransactions(
-                                (
-                                    prev:
-                                        | LimitOrderIF[]
-                                        | PositionIF[]
-                                        | TransactionIF[],
-                                ) => {
-                                    return [
-                                        ...(prev as PositionIF[]),
-                                        ...(newTxs as PositionIF[]),
-                                    ];
-                                },
-                            );
-                            break;
-                        case 'Transaction':
-                            setFetchedTransactions(
-                                (
-                                    prev:
-                                        | TransactionIF[]
-                                        | LimitOrderIF[]
-                                        | PositionIF[],
-                                ) => {
-                                    return [
-                                        ...(prev as TransactionIF[]),
-                                        ...(newTxs as TransactionIF[]),
-                                    ];
-                                },
-                            );
-                            break;
-                    }
-                } else {
-                    updateHotTransactions(newTxs);
-                }
+            if (infShouldReset) {
+                resetInfiniteScroll();
+                // setPagesVisible([0, 1]);
+                // setFetchedTransactions(assignInitialFetchedTransactions());
+                // setPageDataCount(getInitialDataPageCounts());
+                // setInfShouldReset(false);
             } else {
-                console.log('>>> !!!!!!!!!! data', data.length);
-                // mode change on transactions tab etc..
-                setPagesVisible([0, 1]);
-                setFetchedTransactions(assignInitialFetchedTransactions());
-                setPageDataCount(getInitialDataPageCounts());
+                const newTxs = dataDiffCheck(data);
+
+                if (newTxs.length > 0) {
+                    if (pagesVisible[0] == 0) {
+                        switch (props.type) {
+                            case 'Order':
+                                setFetchedTransactions(
+                                    (
+                                        prev:
+                                            | LimitOrderIF[]
+                                            | PositionIF[]
+                                            | TransactionIF[],
+                                    ) => {
+                                        return [
+                                            ...(prev as LimitOrderIF[]),
+                                            ...(newTxs as LimitOrderIF[]),
+                                        ];
+                                    },
+                                );
+                                break;
+                            case 'Range':
+                                setFetchedTransactions(
+                                    (
+                                        prev:
+                                            | LimitOrderIF[]
+                                            | PositionIF[]
+                                            | TransactionIF[],
+                                    ) => {
+                                        return [
+                                            ...(prev as PositionIF[]),
+                                            ...(newTxs as PositionIF[]),
+                                        ];
+                                    },
+                                );
+                                break;
+                            case 'Transaction':
+                                setFetchedTransactions(
+                                    (
+                                        prev:
+                                            | TransactionIF[]
+                                            | LimitOrderIF[]
+                                            | PositionIF[],
+                                    ) => {
+                                        return [
+                                            ...(prev as TransactionIF[]),
+                                            ...(newTxs as TransactionIF[]),
+                                        ];
+                                    },
+                                );
+                                break;
+                        }
+                    } else {
+                        updateHotTransactions(newTxs);
+                    }
+                }
             }
         }
     }, [data]);
+
+    useEffect(() => {
+        if (props.type === 'Transaction') {
+            // setPagesVisible([0, 1]);
+            // setFetchedTransactions(assignInitialFetchedTransactions());
+            // setPageDataCount(getInitialDataPageCounts());
+            setInfShouldReset(true);
+        }
+    }, [txFetchType]);
 
     // merge hot txs with first page once user is on page 0
     useEffect(() => {

@@ -145,8 +145,6 @@ function Transactions(props: propsIF) {
         sortData,
     ] = useSortedTxs('time', txDataToDisplay);
 
-    console.log('>>> sortedTransactions', sortedTransactions.length);
-
     const userTransacionsLength = useMemo<number>(
         () =>
             isAccountView
