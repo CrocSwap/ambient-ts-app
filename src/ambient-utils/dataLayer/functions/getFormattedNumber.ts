@@ -56,7 +56,7 @@ export function getFormattedNumber({
                   ? formatAbbrev(value, false, 1)
                   : value < 1000000
                     ? formatAbbrev(value, false, 0)
-                    : formatAbbrev(value, false, 2);
+                    : formatAbbrev(value, false, 1);
         prefix = '$';
     } else if (isUSD) {
         // only display two decimal points for USD values
@@ -179,7 +179,9 @@ const formatSubscript = (value: number, precision = 3) => {
 const formatAbbrev = (value: number, isTvl?: boolean, mantissa = 2) => {
     return numbro(value).format({
         average: true,
-        ...(isTvl && { roundingFunction: (num: number) => Math.floor(num) }),
+        ...(isTvl
+            ? { roundingFunction: (num: number) => Math.floor(num) }
+            : { roundingFunction: (num: number) => num }),
         mantissa: mantissa,
         abbreviations: {
             thousand: 'k',
