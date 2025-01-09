@@ -9,6 +9,7 @@ import FutaLanding3 from './FutaLanding3';
 import FutaLanding4 from './FutaLanding4';
 import FutaLanding5 from './FutaLanding5';
 import styles from './FutaNewLanding.module.css';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 const INITIAL_DELAY = 7000;
 const TOTAL_SECTIONS = 5;
@@ -47,7 +48,10 @@ export default function FutaNewLanding() {
         }
     }, []);
 
+    const isMobileVersion = useMediaQuery('(max-width: 500px)');
+
     const handleScroll = useCallback(() => {
+        if (isMobileVersion) return;
         if (isScrollingRef.current) return;
 
         const handleScrollAction = () => {

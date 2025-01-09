@@ -1,13 +1,13 @@
 .container {
     width: 100svw;
-    height: calc(100svh - 60px);
+    height: calc(100svh);
     scroll-behavior: smooth;
 
-    /* background: url('../../../../../assets/futa/home/background.png') no-repeat center center fixed; 
+    background: url('../../../../../assets/futa/home/background.png') no-repeat center center fixed; 
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
-    background-size: cover; */
+    background-size: cover;
 
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
@@ -15,7 +15,7 @@
 
 .content {
     width: 100%;
-    height: calc(100svh - 60px);
+    height: 100svh;
     display: grid;
     grid-template-rows: 1fr 135px;
 

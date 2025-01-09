@@ -80,8 +80,9 @@ width: 100%;
         display: grid;
         grid-template-columns: 0.6fr 1fr;
         align-items: center;
-        padding: 0 130px;
-        /* gap: 25rem; */
+        padding:0  130px;
+        height: 100svh;
+        padding-bottom: 130px;
      }
      .videoContainer{
         height: 100%;
