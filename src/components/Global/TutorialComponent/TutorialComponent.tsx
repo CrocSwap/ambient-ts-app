@@ -344,7 +344,6 @@ function TutorialComponent(props: propsIF) {
                         left: 0,
                         width: window.innerWidth,
                         height: rect.top,
-                        // backgroundColor: 'rgba(0,255,0,.4)',
                     };
                 case 'right':
                     return {
@@ -352,7 +351,6 @@ function TutorialComponent(props: propsIF) {
                         left: rect.right,
                         width: window.innerWidth - rect.right,
                         height: rect.height,
-                        // backgroundColor: 'rgba(255,255,0,.4)',
                     };
                 case 'bottom':
                     return {
@@ -360,7 +358,6 @@ function TutorialComponent(props: propsIF) {
                         left: 0,
                         width: window.innerWidth,
                         height: window.innerHeight - rect.bottom,
-                        // backgroundColor: 'rgba(0,0,255,.4)',
                     };
                 case 'left':
                     return {
@@ -368,7 +365,6 @@ function TutorialComponent(props: propsIF) {
                         left: 0,
                         width: rect.left,
                         height: rect.height,
-                        // backgroundColor: 'rgba(255,0,255,.4)',
                     };
             }
         }
