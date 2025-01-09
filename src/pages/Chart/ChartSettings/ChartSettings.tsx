@@ -20,9 +20,6 @@ interface ContextMenuIF {
     setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
     chartItemStates: chartItemStates;
     chartThemeColors: ChartThemeIF;
-    setChartThemeColors: React.Dispatch<
-        React.SetStateAction<ChartThemeIF | undefined>
-    >;
     isCondensedModeEnabled: boolean;
     closeOutherChartSetting: boolean;
     setIsCondensedModeEnabled: React.Dispatch<React.SetStateAction<boolean>>;
@@ -46,7 +43,6 @@ export default function ChartSettings(props: ContextMenuIF) {
         contextMenuPlacement,
         setContextmenu,
         chartThemeColors,
-        // setChartThemeColors,
         // render,
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
