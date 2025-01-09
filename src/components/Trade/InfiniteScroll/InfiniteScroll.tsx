@@ -1,6 +1,4 @@
 /* eslint-disable no-irregular-whitespace */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
     memo,
@@ -91,7 +89,8 @@ function InfiniteScroll(props: propsIF) {
     } = useInfiniteScrollFetchers();
 
     // TODO: check if we need infiniteScrollLock state variable or not (we were using it on Ranges.tsx)
-    // const INITIAL_EXTRA_REQUEST_THRESHOLD = 20;   (That threshold value was used on related lock mechanism)
+    //   (That threshold value was used on related lock mechanism)
+    const INITIAL_EXTRA_REQUEST_THRESHOLD = 20;
 
     const assignInitialFetchedTransactions = ():
         | LimitOrderIF[]
@@ -166,6 +165,22 @@ function InfiniteScroll(props: propsIF) {
                 counts: newCounts,
             };
         });
+    };
+
+    const updateInitialPageDataCounts = (dataCount: number) => {
+        if (dataCount < PAGE_COUNT_DIVIDE_THRESHOLD) {
+            return {
+                pair: (
+                    selectedBaseAddress + selectedQuoteAddress
+                ).toLowerCase(),
+                counts: [dataCount, 0],
+            };
+        }
+
+        return {
+            pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
+            counts: [Math.ceil(dataCount / 2), Math.floor(dataCount / 2)],
+        };
     };
 
     const [fetchedTransactions, setFetchedTransactions] = useState<
@@ -287,7 +302,7 @@ function InfiniteScroll(props: propsIF) {
     const getOldestTime = (
         txs: TransactionIF[] | LimitOrderIF[] | PositionIF[],
     ): number => {
-        if (txs.length == 0) return 0;
+        if (txs.length == 0) return Infinity;
 
         let oldestTime = 0;
         switch (props.type) {
@@ -323,7 +338,7 @@ function InfiniteScroll(props: propsIF) {
         return oldestTime;
     };
 
-    const addMoreData = async () => {
+    const addMoreData = async (byPassPageIncrement?: boolean) => {
         if (componentLockRef.current) {
             return;
         }
@@ -501,11 +516,20 @@ function InfiniteScroll(props: propsIF) {
                     }
                 },
             );
-            setLastFetchedCount(addedDataCount);
-            addPageDataCount(addedDataCount);
-            setExtraPagesAvailable((prev) => prev + 1);
-            setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
-            setExtraRequestCreditCount(EXTRA_REQUEST_CREDIT_COUNT);
+            if (byPassPageIncrement) {
+                const currTxsLen = fetchedTransactionsRef.current
+                    ? fetchedTransactionsRef.current.length
+                    : fetchedTransactions.length;
+                setPageDataCount(
+                    updateInitialPageDataCounts(currTxsLen + addedDataCount),
+                );
+            } else {
+                setLastFetchedCount(addedDataCount);
+                addPageDataCount(addedDataCount);
+                setExtraPagesAvailable((prev) => prev + 1);
+                setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
+                setExtraRequestCreditCount(EXTRA_REQUEST_CREDIT_COUNT);
+            }
         } else {
             setMoreDataAvailable(false);
         }
@@ -714,6 +738,17 @@ function InfiniteScroll(props: propsIF) {
 
         return mergedData.slice(startIndex, endIndex);
     }, [pagesVisible, mergedData, recentlyUpdatedPositions]);
+
+    useEffect(() => {
+        if (props.type === 'Range') {
+            if (
+                mergedData.length < INITIAL_EXTRA_REQUEST_THRESHOLD &&
+                mergedData.length > 0
+            ) {
+                addMoreData(true);
+            }
+        }
+    }, [mergedData]);
 
     return (
         <TableRowsInfiniteScroll
