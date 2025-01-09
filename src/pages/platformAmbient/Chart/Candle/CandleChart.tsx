@@ -57,10 +57,10 @@ export default function CandleChart(props: candlePropsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [candlestick, setCandlestick] = useState<any>();
     const selectedCandleColor = '#E480FF';
-    const crocCandleLightColor = '#CDC1FF';
-    const crocCandleBorderLightColor = '#CDC1FF';
-    const crocCandleDarkColor = '#24243e';
-    const crocCandleBorderDarkColor = '#7371FC';
+    const crocCandleLightColor = '#26A69A';
+    const crocCandleBorderLightColor = '#26A69A';
+    const crocCandleDarkColor = '#EF5350';
+    const crocCandleBorderDarkColor = '#EF5350';
 
     const bandwidth = useMemo(() => {
         if (candlestick) {

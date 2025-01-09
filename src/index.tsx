@@ -16,16 +16,17 @@ import {
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
 import { getLocalStorageItem } from './ambient-utils/dataLayer';
-import baseSepoliaLogo from './assets/images/networks/base_network_logo_with_margin.webp';
+// import baseLogo from './assets/images/networks/base_network_logo_with_margin.webp';
+import baseSepoliaLogo from './assets/images/networks/base_sepolia.webp';
 import blastLogo from './assets/images/networks/blast_logo.png';
-import blastSepoliaLogo from './assets/images/networks/blast_sepolia_logo.webp';
+import blastSepoliaLogo from './assets/images/networks/blast_sepolia.webp';
 import ethLogo from './assets/images/networks/ethereum_logo.svg';
+import sepoliaLogo from './assets/images/networks/ethereum_sepolia.webp';
 import plumeLogo from './assets/images/networks/plume_mainnet_logo_small.webp';
-import plumeSepoliaLogo from './assets/images/networks/plume_sepolia_logo_small.webp';
+import plumeSepoliaLogo from './assets/images/networks/plume_sepolia.webp';
 import scrollLogo from './assets/images/networks/scroll_logo.webp';
-import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia_logo.webp';
-import sepoliaLogo from './assets/images/networks/sepolia_logo.webp';
-import swellLogo from './assets/images/networks/swell_network_logo_with_margin.webp';
+import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia.webp';
+import swellLogo from './assets/images/networks/swell_logo.webp';
 import swellSepoliaLogo from './assets/images/networks/swell_sepolia.webp';
 import { GlobalContexts } from './contexts/GlobalContexts';
 

@@ -1,5 +1,6 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { Dispatch, MutableRefObject, SetStateAction, useContext } from 'react';
+import { GoChevronRight } from 'react-icons/go';
 import { Link } from 'react-router-dom';
 import {
     AuctionDataIF,
@@ -13,7 +14,6 @@ import {
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
 import styles from './TickerItem.module.css';
-import { GoChevronRight } from 'react-icons/go';
 
 interface PropsIF {
     auction: AuctionDataIF;
@@ -38,7 +38,8 @@ export default function TickerItem(props: PropsIF) {
         useRefTicker,
     } = props;
 
-    const { accountData, setHoveredTicker } = useContext(AuctionsContext);
+    const { accountData, hoveredTicker, setHoveredTicker } =
+        useContext(AuctionsContext);
 
     const {
         ticker,
@@ -132,12 +133,16 @@ export default function TickerItem(props: PropsIF) {
         !userDataForAuction?.qtyUnclaimedByUserInAuctionedTokenWei &&
         !userDataForAuction?.qtyUnreturnedToUserInNativeTokenWei;
 
-    const status2 = isUserInTheMoney
-        ? 'var(--text1)'
+    const statusText = isUserInTheMoney
+        ? isAuctionOpen
+            ? 'IN'
+            : 'WON'
         : isUserOutOfTheMoney
-          ? 'var(--orange)'
+          ? isAuctionOpen
+              ? 'OUT'
+              : 'LOST'
           : userActionsCompleted
-            ? 'var(--accent2)'
+            ? 'CLAIMED'
             : undefined;
 
     const filledMarketCapUsdValue =
@@ -187,6 +192,12 @@ export default function TickerItem(props: PropsIF) {
                             ? 'active'
                             : 'inactive'
                     ],
+                styles[
+                    auction?.ticker === hoveredTicker &&
+                    hoveredTicker !== selectedTicker
+                        ? 'hoverActive'
+                        : ''
+                ],
             ].join(' ')}
             to={'/auctions/v1/' + ticker}
             onClick={() => {
@@ -207,21 +218,8 @@ export default function TickerItem(props: PropsIF) {
                 <p>{ticker}</p>
             </div>
             <p className={styles.market_cap}>{formattedMarketCap}</p>
-            <p className={styles.auction_status}>{!status2 ? 'IN' : 'OUT'}</p>
-            <p
-                style={{
-                    color:
-                        // set color to orange if time remaining is less than 2 hours
-                        timeRemainingInSec <= 0
-                            ? 'var(--accent1)'
-                            : timeRemainingInSec > 7200
-                              ? 'var(--text1)'
-                              : 'var(--orange)',
-                }}
-                className={styles.time_remaining}
-            >
-                {timeRemaining}
-            </p>
+            <p className={styles.auction_status}>{statusText}</p>
+            <p className={styles.time_remaining}>{timeRemaining}</p>
             {isCreated && (
                 <p className={styles.native_tkn_committed}>
                     {auction.nativeTokenCommitted &&

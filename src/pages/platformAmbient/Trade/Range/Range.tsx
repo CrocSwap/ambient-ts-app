@@ -1084,6 +1084,7 @@ function Range() {
         minPrice: minPrice,
         setMaxPrice: setMaxPrice,
         setMinPrice: setMinPrice,
+        estRangeApr: estRangeApr,
     };
 
     const rangeExtraInfoProps = {

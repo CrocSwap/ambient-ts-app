@@ -8,6 +8,12 @@ import { brandIF } from './types';
 
 export const defaultBrandAssets: brandIF = {
     networks: {
+        // ethereum mainnet
+        '0x1': {
+            // first value in array is default color scheme
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
+            premiumColor: [],
+        },
         // scroll mainnet
         '0x82750': {
             // first value in array is default color scheme
@@ -22,13 +28,6 @@ export const defaultBrandAssets: brandIF = {
             premiumColor: [],
             cobrandingLogo: swellLogo,
         },
-        // blast mainnet
-        '0x13e31': {
-            // first value in array is default color scheme
-            color: ['purple_dark', 'purple_light', 'futa_dark'],
-            premiumColor: [],
-            cobrandingLogo: blastLogo,
-        },
         // plume mainnet
         '0x18231': {
             // first value in array is default color scheme
@@ -36,11 +35,12 @@ export const defaultBrandAssets: brandIF = {
             premiumColor: [],
             cobrandingLogo: plumeLogo,
         },
-        // ethereum mainnet
-        '0x1': {
+        // blast mainnet
+        '0x13e31': {
             // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
+            cobrandingLogo: blastLogo,
         },
         // ethereum sepolia
         '0xaa36a7': {

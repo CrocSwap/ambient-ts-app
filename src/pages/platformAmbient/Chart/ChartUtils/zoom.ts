@@ -9,12 +9,15 @@ export class Zoom {
     setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>;
     period: number;
     isDiscontinuityScaleEnabled: boolean;
+    candleDomains: CandleDomainIF;
     constructor(
         setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>,
         period: number,
         isDiscontinuityScaleEnabled: boolean,
+        candleDomains: CandleDomainIF,
     ) {
         this.setCandleDomains = setCandleDomains;
+        this.candleDomains = candleDomains;
         this.period = period;
         this.isDiscontinuityScaleEnabled = isDiscontinuityScaleEnabled;
     }
@@ -215,6 +218,7 @@ export class Zoom {
                 domainBoundry: lastCandleTime,
                 isAbortedRequest: false,
                 isResetRequest: false,
+                isCondensedFetching: this.candleDomains.isCondensedFetching,
             };
 
             this.setCandleDomains(candleDomain);
@@ -233,6 +237,7 @@ export class Zoom {
                 domainBoundry: newLastCandle,
                 isAbortedRequest: false,
                 isResetRequest: false,
+                isCondensedFetching: this.candleDomains.isCondensedFetching,
             };
 
             this.setCandleDomains(candleDomain);
@@ -304,6 +309,7 @@ export class Zoom {
             domainBoundry: Math.floor(firstDomainDate),
             isAbortedRequest: false,
             isResetRequest: false,
+            isCondensedFetching: this.candleDomains.isCondensedFetching,
         };
 
         this.setCandleDomains(candleDomain);

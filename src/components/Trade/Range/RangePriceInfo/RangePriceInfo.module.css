@@ -21,7 +21,17 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
+}
+
+.title_wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px; /* This creates the spacing between the h4 and tooltip */
+}
+
+.price_title {
+    margin: 0; /* Remove any default margins */
 }
 .price_title,
 .min_price,

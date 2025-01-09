@@ -36,7 +36,6 @@ import {
 import {
     CandleDataIF,
     CandleDomainIF,
-    CandleScaleIF,
     CandlesByPoolAndDurationIF,
     TransactionIF,
 } from '../../../ambient-utils/types';
@@ -259,6 +258,8 @@ export default function Chart(props: propsIF) {
     const {
         setCandleDomains,
         setCandleScale,
+        candleScale,
+        candleDomains,
         timeOfEndCandle,
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
@@ -281,6 +282,7 @@ export default function Chart(props: propsIF) {
             domainBoundry: undefined,
             isAbortedRequest: false,
             isResetRequest: false,
+            isCondensedFetching: false,
         });
 
     const {
@@ -354,23 +356,24 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (
             chartThemeColors &&
-            chartThemeColors.downCandleBorderColor !== null
+            chartThemeColors.liqBidColor !== null &&
+            chartThemeColors.liqAskColor !== null
         ) {
             setLineSellColor((prev) => {
-                if (chartThemeColors.downCandleBorderColor)
-                    return chartThemeColors.downCandleBorderColor.toString();
+                if (chartThemeColors.liqBidColor)
+                    return chartThemeColors.liqBidColor.toString();
 
                 return prev;
             });
 
             setLineBuyColor((prev) => {
-                if (chartThemeColors.upCandleBodyColor)
-                    return chartThemeColors.upCandleBodyColor.toString();
+                if (chartThemeColors.liqAskColor)
+                    return chartThemeColors.liqAskColor.toString();
 
                 return prev;
             });
         }
-    }, [chartThemeColors]);
+    }, [chartThemeColors?.liqAskColor, chartThemeColors?.liqBidColor]);
 
     const location = useLocation();
 
@@ -950,7 +953,12 @@ export default function Chart(props: propsIF) {
     const debouncedGetNewCandleDataRight = useDebounce(localCandleDomains, 500);
 
     const zoomBase = useMemo(() => {
-        return new Zoom(setLocalCandleDomains, period, isCondensedModeEnabled);
+        return new Zoom(
+            setLocalCandleDomains,
+            period,
+            isCondensedModeEnabled,
+            candleDomains,
+        );
     }, [period, isCondensedModeEnabled]);
 
     const chartPoolPrice = useMemo(() => {
@@ -1219,6 +1227,9 @@ export default function Chart(props: propsIF) {
                     } else {
                         setIsCompletedFetchData(false);
                     }
+                } else {
+                    setReset(true);
+                    setIsCompletedFetchData(false);
                 }
             } else {
                 setIsCompletedFetchData(false);
@@ -1312,9 +1323,9 @@ export default function Chart(props: propsIF) {
                 scaleData?.xScale,
             );
 
-            setCandleScale((prev: CandleScaleIF) => {
+            setCandleScale(() => {
                 return {
-                    isFetchForTimeframe: prev.isFetchForTimeframe,
+                    isFetchForTimeframe: candleScale.isFetchForTimeframe,
                     lastCandleDate: Math.floor(domainMax / 1000),
                     nCandles: nCandles,
                     isShowLatestCandle: isShowLatestCandle,
@@ -2812,14 +2823,15 @@ export default function Chart(props: propsIF) {
     function fetchCandleForResetOrLatest(isReset = false) {
         const nowDate = Date.now();
         if (isReset) {
-            const candleDomain = {
+            const localCandleDomain = {
                 lastCandleDate: nowDate,
                 domainBoundry: nowDate - 200 * 1000 * period,
                 isAbortedRequest: true,
                 isResetRequest: isReset,
+                isCondensedFetching: candleDomains.isCondensedFetching,
             };
 
-            setCandleDomains(candleDomain);
+            setCandleDomains(localCandleDomain);
         } else {
             if ((reset || latest) && scaleData) {
                 const lastCandleDataTime =
@@ -2833,6 +2845,7 @@ export default function Chart(props: propsIF) {
                             : lastCandleDataTime,
                     isAbortedRequest: false,
                     isResetRequest: isReset,
+                    isCondensedFetching: candleDomains.isCondensedFetching,
                 };
 
                 if (!isReset) {

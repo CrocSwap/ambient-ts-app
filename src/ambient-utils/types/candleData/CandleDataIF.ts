@@ -24,4 +24,5 @@ export interface CandleDataIF {
     priceOpenExclMEVDecimalCorrected: number;
     invPriceOpenExclMEVDecimalCorrected: number;
     isCrocData: boolean;
+    isZeroData: boolean;
 }

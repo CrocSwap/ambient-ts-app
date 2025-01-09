@@ -155,7 +155,7 @@ export default function App() {
                 data-theme={skin.active}
                 style={{
                     height:
-                        location.pathname == '/'
+                        location.pathname == '/' && platformName !== 'futa'
                             ? 'calc(100vh - 56px)'
                             : '100dvh',
                 }}
@@ -165,6 +165,7 @@ export default function App() {
                     ? location.pathname !== '/' && <Navbar />
                     : location.pathname !== '/' && <PageHeader />}
                 <RouteRenderer platformName={platformName} />
+                {isWalletModalOpen && <GateWalletModal />}
             </FlexContainer>
 
             <GlobalPopup data-theme={skin.active} />
@@ -173,7 +174,6 @@ export default function App() {
             {ambientFooter}
             {!isBottomSheetOpen && footerDisplay}
 
-            {isWalletModalOpen && <GateWalletModal />}
             {isCSSModalOpen && <CSSModal close={() => closeCSSModal()} />}
         </>
     );
