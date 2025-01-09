@@ -162,8 +162,10 @@ export default function OrderHistoryTooltip(props: {
         </ArrowHoverContainer>
     );
 
+    // useEffect(() => {console.log(hoveredOrderHistory)},[hoveredOrderHistory])
+
     const swapHeader = (hoveredOrderHistory.type === 'swap' ||
-        hoveredOrderHistory.type === 'limitCircle') && (
+        hoveredOrderHistory.type === 'limitOrder') && (
         <OrderHistoryHeader>
             <StyledHeader
                 color={
@@ -183,7 +185,7 @@ export default function OrderHistoryTooltip(props: {
             </StyledHeader>
 
             <StyledHeader color={'white'} size={'15px'}>
-                {hoveredOrderHistory.type === 'limitCircle' &&
+                {hoveredOrderHistory.type === 'limitOrder' &&
                 hoveredOrderHistory.tokenFlowDecimalCorrected < 1
                     ? formatSubscript(
                           hoveredOrderHistory.tokenFlowDecimalCorrected,
@@ -376,7 +378,7 @@ export default function OrderHistoryTooltip(props: {
                     }}
                 >
                     {(hoveredOrderHistory.type === 'swap' ||
-                        hoveredOrderHistory.type === 'limitCircle') &&
+                        hoveredOrderHistory.type === 'limitOrder') &&
                         swapHeader}
                     {hoveredOrderHistory.type === 'limitSwapLine' &&
                         limitOrderHeader}
@@ -389,7 +391,7 @@ export default function OrderHistoryTooltip(props: {
                     >
                         {hoveredOrderHistory.type === 'swap' && swapTypeText}
                         {(hoveredOrderHistory.type === 'limitSwapLine' ||
-                            hoveredOrderHistory.type === 'limitCircle') &&
+                            hoveredOrderHistory.type === 'limitOrder') &&
                             LimitTypeText}
                         {hoveredOrderHistory.type === 'historical' &&
                             historicalTypeText}
@@ -402,12 +404,14 @@ export default function OrderHistoryTooltip(props: {
                                 })}
                         </StyledHeader>
 
-                        {hoveredOrderHistory.type === 'swap' &&
+                        {(hoveredOrderHistory.type === 'swap' ||
+                            hoveredOrderHistory.type === 'limitOrder') &&
                             hoveredOrderHistory.mergedIds.length > 5 &&
                             showUpArrow &&
                             upArrow}
 
-                        {hoveredOrderHistory.type === 'swap' && (
+                        {(hoveredOrderHistory.type === 'swap' ||
+                            hoveredOrderHistory.type === 'limitOrder') && (
                             <IdContainer>
                                 <LinkContainer
                                     isHover={false}
@@ -422,39 +426,37 @@ export default function OrderHistoryTooltip(props: {
                                             index: number,
                                         ) => {
                                             return (
-                                                merge.type === 'swap' && (
-                                                    <StyledLink
-                                                        color={'var(--text2)'}
-                                                        size={'13px'}
-                                                        key={index}
-                                                        onClick={(
-                                                            event: React.MouseEvent<HTMLDivElement>,
-                                                        ) => {
-                                                            event.stopPropagation();
-                                                            handleOpenExplorer(
-                                                                merge.hash,
-                                                            );
-                                                        }}
-                                                        onMouseEnter={() => {
-                                                            setHoveredID(
-                                                                merge.hash,
-                                                            );
-                                                        }}
-                                                        onMouseLeave={() =>
-                                                            setHoveredID(
-                                                                () => undefined,
-                                                            )
-                                                        }
-                                                    >
-                                                        {trimString(
+                                                <StyledLink
+                                                    color={'var(--text2)'}
+                                                    size={'13px'}
+                                                    key={index}
+                                                    onClick={(
+                                                        event: React.MouseEvent<HTMLDivElement>,
+                                                    ) => {
+                                                        event.stopPropagation();
+                                                        handleOpenExplorer(
                                                             merge.hash,
-                                                            6,
-                                                            4,
-                                                            '…',
-                                                        )}
-                                                        <RiExternalLinkLine />
-                                                    </StyledLink>
-                                                )
+                                                        );
+                                                    }}
+                                                    onMouseEnter={() => {
+                                                        setHoveredID(
+                                                            merge.hash,
+                                                        );
+                                                    }}
+                                                    onMouseLeave={() =>
+                                                        setHoveredID(
+                                                            () => undefined,
+                                                        )
+                                                    }
+                                                >
+                                                    {trimString(
+                                                        merge.hash,
+                                                        6,
+                                                        4,
+                                                        '…',
+                                                    )}
+                                                    <RiExternalLinkLine />
+                                                </StyledLink>
                                             );
                                         },
                                     )}
@@ -462,7 +464,8 @@ export default function OrderHistoryTooltip(props: {
                             </IdContainer>
                         )}
 
-                        {hoveredOrderHistory.type === 'swap' &&
+                        {(hoveredOrderHistory.type === 'swap' ||
+                            hoveredOrderHistory.type === 'limitOrder') &&
                             hoveredOrderHistory.mergedIds.length > 5 &&
                             showDownArrow &&
                             downArrow}

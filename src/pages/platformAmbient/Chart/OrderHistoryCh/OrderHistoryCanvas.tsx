@@ -225,12 +225,19 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             : '--accent5',
                     );
 
+                    const invYValue =
+                        transaction.order.entityType === 'limitOrder'
+                            ? transaction.order.invLimitPriceDecimalCorrected
+                            : transaction.order.swapInvPriceDecimalCorrected;
+                    const yValue =
+                        transaction.order.entityType === 'limitOrder'
+                            ? transaction.order.limitPriceDecimalCorrected
+                            : transaction.order.swapPriceDecimalCorrected;
+
                     const circleData = [
                         {
                             x: transaction.order.txTime * 1000,
-                            y: denomInBase
-                                ? transaction.order.swapInvPriceDecimalCorrected
-                                : transaction.order.swapPriceDecimalCorrected,
+                            y: denomInBase ? invYValue : yValue,
                             denomInBase: denomInBase,
                             isBuy: transaction.order.isBuy,
                         },
@@ -606,13 +613,13 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                     isSelectedOrderHistory &&
                                     (selectedOrderHistory.type === 'swap' ||
                                         selectedOrderHistory.type ===
-                                            'limitCircle') &&
+                                            'limitOrder') &&
                                     selectedOrderHistory.id === element.id) ||
                                 (hoveredOrderHistory &&
                                     isHoveredOrderHistory &&
                                     (hoveredOrderHistory.type === 'swap' ||
                                         hoveredOrderHistory.type ===
-                                            'limitCircle') &&
+                                            'limitOrder') &&
                                     hoveredOrderHistory.id === element.id);
 
                             if (isShapeSelected) {
