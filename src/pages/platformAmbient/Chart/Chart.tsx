@@ -451,9 +451,6 @@ export default function Chart(props: propsIF) {
     const [circleScale, setCircleScale] =
         useState<d3.ScaleLinear<number, number>>();
 
-    const [circleScaleLimitOrder, setCircleScaleLimitOrder] =
-        useState<d3.ScaleLinear<number, number>>();
-
     const [shouldDisableChartSettings, setShouldDisableChartSettings] =
         useState<boolean>(true);
     const [closeOutherChartSetting, setCloseOutherChartSetting] =
@@ -739,9 +736,7 @@ export default function Chart(props: propsIF) {
 
             const userLimitTx = userLimitOrdersByPool.limitOrders;
 
-            const userSwaps = userTransactionData.filter(
-                (transaction) => transaction.entityType === 'swap',
-            );
+            const userSwaps: Array<TransactionIF> = [];
 
             const userLimits = userTransactionData.filter(
                 (transaction) =>
@@ -754,38 +749,34 @@ export default function Chart(props: propsIF) {
                 d3.descending(a.txTime, b.txTime),
             );
 
-            sortedUserLimits.forEach((limit) => {
-                if (limit.changeType === 'mint') {
+            sortedUserLimits.forEach((mint) => {
+                if (mint.changeType === 'mint') {
                     const completedLimit = sortedUserLimits.find(
                         (key) =>
                             key.changeType === 'cross' &&
-                            (limit.isBuy
-                                ? key.bidTick === limit.bidTick &&
-                                  key.askTick === limit.bidTick
-                                : key.bidTick === limit.askTick &&
-                                  key.askTick === limit.askTick),
+                            (mint.isBuy
+                                ? key.bidTick === mint.bidTick &&
+                                  key.askTick === mint.bidTick
+                                : key.bidTick === mint.askTick &&
+                                  key.askTick === mint.askTick),
                     );
 
                     const infoLimit = userLimitTx.find(
                         (key) =>
                             key.claimableLiq > 0 &&
-                            key.bidTick === limit.bidTick &&
-                            key.askTick === limit.askTick,
+                            key.bidTick === mint.bidTick &&
+                            key.askTick === mint.askTick,
                     );
 
                     if (completedLimit !== undefined && infoLimit) {
-                        limit.baseFlowDecimalCorrected = limit.isBid
-                            ? infoLimit.originalPositionLiqBaseDecimalCorrected
-                            : infoLimit.expectedPositionLiqBaseDecimalCorrected;
+                        mint.swapInvPriceDecimalCorrected =
+                            mint.invLimitPriceDecimalCorrected;
+                        mint.swapPriceDecimalCorrected =
+                            mint.limitPriceDecimalCorrected;
 
-                        limit.quoteFlowDecimalCorrected = limit.isBid
-                            ? infoLimit.expectedPositionLiqQuoteDecimalCorrected
-                            : infoLimit.originalPositionLiqQuoteDecimalCorrected;
+                        mint.txHash = completedLimit.txHash;
 
-                        limit.txHash = completedLimit.txHash;
-                        limit.txTime = infoLimit.crossTime;
-
-                        userSwaps.push(limit);
+                        userSwaps.push(mint);
                     }
                 }
             });
@@ -802,20 +793,13 @@ export default function Chart(props: propsIF) {
                             : mergedSellArray;
 
                         if (selectedArray.length > 0) {
-                            const invYValue =
-                                swap.entityType === 'limitOrder'
-                                    ? swap.invLimitPriceDecimalCorrected
-                                    : swap.swapInvPriceDecimalCorrected;
-                            const yValue =
-                                swap.entityType === 'limitOrder'
-                                    ? swap.limitPriceDecimalCorrected
-                                    : swap.swapPriceDecimalCorrected;
-
                             const nearestSwap = closestValue(
                                 selectedArray,
                                 scaleData.xScale(swap.txTime * 1000),
                                 scaleData.yScale(
-                                    denomInBase ? invYValue : yValue,
+                                    denomInBase
+                                        ? swap.swapInvPriceDecimalCorrected
+                                        : swap.swapPriceDecimalCorrected,
                                 ),
                             );
 
@@ -5337,13 +5321,15 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        if (userTransactionData) {
-            const domainRight = d3.max(userTransactionData, (data) => {
-                if (data.entityType === 'swap') return data.totalValueUSD;
-            });
-            const domainLeft = d3.min(userTransactionData, (data) => {
-                if (data.entityType === 'swap') return data.totalValueUSD;
-            });
+        if (filteredTransactionalData) {
+            const domainRight = d3.max(
+                filteredTransactionalData,
+                (data) => data.order.totalValueUSD,
+            );
+            const domainLeft = d3.min(
+                filteredTransactionalData,
+                (data) => data.order.totalValueUSD,
+            );
 
             if (domainRight && domainLeft) {
                 const scale = d3
@@ -5356,31 +5342,7 @@ export default function Chart(props: propsIF) {
                 });
             }
         }
-    }, [userTransactionData, denomInBase]);
-
-    useEffect(() => {
-        if (userTransactionData) {
-            const domainRight = d3.max(
-                userLimitOrdersByPool.limitOrders,
-                (data) => data.totalValueUSD,
-            );
-            const domainLeft = d3.min(
-                userLimitOrdersByPool.limitOrders,
-                (data) => data.totalValueUSD,
-            );
-
-            if (domainRight && domainLeft) {
-                const scale = d3
-                    .scaleLinear()
-                    .range([1000, 3000])
-                    .domain([domainLeft, domainRight]);
-
-                setCircleScaleLimitOrder(() => {
-                    return scale;
-                });
-            }
-        }
-    }, [userTransactionData, denomInBase]);
+    }, [filteredTransactionalData, denomInBase]);
 
     const handleCardClick = (id: string): void => {
         setSelectedDate(undefined);
@@ -5534,28 +5496,26 @@ export default function Chart(props: propsIF) {
             if (filteredTransactionalData && showSwap) {
                 filteredTransactionalData.forEach((element) => {
                     if (showSwap) {
-                        const invYValue =
-                            element.order.entityType === 'limitOrder'
-                                ? element.order.invLimitPriceDecimalCorrected
-                                : element.order.swapInvPriceDecimalCorrected;
-                        const yValue =
-                            element.order.entityType === 'limitOrder'
-                                ? element.order.limitPriceDecimalCorrected
-                                : element.order.swapPriceDecimalCorrected;
-
                         const swapOrderData = [
                             {
                                 x: element.order.txTime * 1000,
-                                y: denomInBase ? invYValue : yValue,
+                                y: denomInBase
+                                    ? element.order.swapInvPriceDecimalCorrected
+                                    : element.order.swapPriceDecimalCorrected,
                                 denomInBase: denomInBase,
                             },
                         ];
 
                         let totalValueUSD = element.order.totalValueUSD;
 
-                        let tokenFlowDecimalCorrected = denomInBase
-                            ? element.order.baseFlowDecimalCorrected
-                            : element.order.quoteFlowDecimalCorrected;
+                        let tokenFlowDecimalCorrected =
+                            element.order.entityType === 'limitOrder'
+                                ? element.order.isBuy
+                                    ? element.order.baseFlowDecimalCorrected
+                                    : element.order.quoteFlowDecimalCorrected
+                                : denomInBase
+                                  ? element.order.baseFlowDecimalCorrected
+                                  : element.order.quoteFlowDecimalCorrected;
 
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const mergedIds: Array<{ hash: string; type: string }> =
@@ -5568,19 +5528,30 @@ export default function Chart(props: propsIF) {
 
                         if (element.mergedTx.length > 0) {
                             element.mergedTx.map((merged) => {
-                                mergedIds.push({
-                                    hash: merged.txHash,
-                                    type: merged.entityType,
-                                });
+                                const isIn = mergedIds.find(
+                                    (id) => id.hash === merged.txHash,
+                                );
+
+                                if (isIn === undefined) {
+                                    mergedIds.push({
+                                        hash: merged.txHash,
+                                        type: merged.entityType,
+                                    });
+                                }
 
                                 totalValueUSD =
                                     totalValueUSD + merged.totalValueUSD;
 
                                 tokenFlowDecimalCorrected =
                                     tokenFlowDecimalCorrected +
-                                    (denomInBase
-                                        ? merged.baseFlowDecimalCorrected
-                                        : merged.quoteFlowDecimalCorrected);
+                                        merged.entityType ===
+                                    'limitOrder'
+                                        ? merged.isBuy
+                                            ? merged.baseFlowDecimalCorrected
+                                            : merged.quoteFlowDecimalCorrected
+                                        : denomInBase
+                                          ? merged.baseFlowDecimalCorrected
+                                          : merged.quoteFlowDecimalCorrected;
                             });
                         }
 
@@ -5593,7 +5564,7 @@ export default function Chart(props: propsIF) {
                             )
                         ) {
                             resElement = {
-                                id: element.order.txHash,
+                                id: element.order.txId,
                                 type: element.order.entityType,
                                 order: element,
                                 totalValueUSD: totalValueUSD,
@@ -6220,23 +6191,12 @@ export default function Chart(props: propsIF) {
                         hoveredOrderHistory.type === 'limitOrder')
                 ) {
                     setHoveredOrderTooltipPlacement(() => {
-                        const invYValue =
-                            hoveredOrderHistory.order.order.entityType ===
-                            'limitOrder'
-                                ? hoveredOrderHistory.order.order
-                                      .invLimitPriceDecimalCorrected
-                                : hoveredOrderHistory.order.order
-                                      .swapInvPriceDecimalCorrected;
-                        const yValue =
-                            hoveredOrderHistory.order.order.entityType ===
-                            'limitOrder'
-                                ? hoveredOrderHistory.order.order
-                                      .limitPriceDecimalCorrected
-                                : hoveredOrderHistory.order.order
-                                      .swapPriceDecimalCorrected;
-
                         const top = scaleData.yScale(
-                            denomInBase ? invYValue : yValue,
+                            denomInBase
+                                ? hoveredOrderHistory.order.order
+                                      .swapInvPriceDecimalCorrected
+                                : hoveredOrderHistory.order.order
+                                      .swapPriceDecimalCorrected,
                         );
 
                         let left =
@@ -6359,7 +6319,7 @@ export default function Chart(props: propsIF) {
 
                 if (
                     hoveredOrderHistory.type === 'limitSwapLine' &&
-                    circleScaleLimitOrder &&
+                    circleScale &&
                     showLiquidity
                 ) {
                     setHoveredOrderTooltipPlacement(() => {
@@ -6430,23 +6390,12 @@ export default function Chart(props: propsIF) {
                     showSwap
                 ) {
                     setSelectedOrderTooltipPlacement(() => {
-                        const invYValue =
-                            selectedOrderHistory.order.order.entityType ===
-                            'limitOrder'
-                                ? selectedOrderHistory.order.order
-                                      .invLimitPriceDecimalCorrected
-                                : selectedOrderHistory.order.order
-                                      .swapInvPriceDecimalCorrected;
-                        const yValue =
-                            selectedOrderHistory.order.order.entityType ===
-                            'limitOrder'
-                                ? selectedOrderHistory.order.order
-                                      .limitPriceDecimalCorrected
-                                : selectedOrderHistory.order.order
-                                      .swapPriceDecimalCorrected;
-
                         const top = scaleData.yScale(
-                            denomInBase ? invYValue : yValue,
+                            denomInBase
+                                ? selectedOrderHistory.order.order
+                                      .swapInvPriceDecimalCorrected
+                                : selectedOrderHistory.order.order
+                                      .swapPriceDecimalCorrected,
                         );
                         const left =
                             scaleData?.xScale(
@@ -6462,7 +6411,7 @@ export default function Chart(props: propsIF) {
 
                 if (
                     selectedOrderHistory.type === 'limitSwapLine' &&
-                    circleScaleLimitOrder &&
+                    circleScale &&
                     showLiquidity
                 ) {
                     setSelectedOrderTooltipPlacement(() => {
@@ -6482,7 +6431,7 @@ export default function Chart(props: propsIF) {
                         const distance =
                             selectedOrderHistory.order.claimableLiq > 0
                                 ? scale(
-                                      circleScaleLimitOrder(
+                                      circleScale(
                                           selectedOrderHistory.totalValueUSD,
                                       ),
                                   )
@@ -6660,9 +6609,9 @@ export default function Chart(props: propsIF) {
                     />
                 )}
 
-                {(showSwap || showLiquidity || showHistorical) &&
-                    circleScale &&
-                    circleScaleLimitOrder &&
+                {((showSwap && circleScale) ||
+                    showLiquidity ||
+                    showHistorical) &&
                     scaleData && (
                         <OrderHistoryCanvas
                             scaleData={scaleData}
@@ -6677,7 +6626,6 @@ export default function Chart(props: propsIF) {
                                 filteredTransactionalData
                             }
                             circleScale={circleScale}
-                            circleScaleLimitOrder={circleScaleLimitOrder}
                             isSelectedOrderHistory={isSelectedOrderHistory}
                             selectedOrderHistory={selectedOrderHistory}
                         />

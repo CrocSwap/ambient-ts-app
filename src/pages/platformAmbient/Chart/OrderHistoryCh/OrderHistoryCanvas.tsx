@@ -36,8 +36,7 @@ interface OrderHistoryCanvasProps {
               mergedTx: Array<TransactionIF>;
           }>
         | undefined;
-    circleScale: d3.ScaleLinear<number, number>;
-    circleScaleLimitOrder: d3.ScaleLinear<number, number>;
+    circleScale: d3.ScaleLinear<number, number> | undefined;
 }
 
 export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
@@ -54,7 +53,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         drawSettings,
         filteredTransactionalData,
         circleScale,
-        // circleScaleLimitOrder,
     } = props;
 
     const d3OrderCanvas = useRef<HTMLDivElement | null>(null);
@@ -115,7 +113,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
     );
 
     useEffect(() => {
-        if (circleScale && scaleData) {
+        if (scaleData) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const circleSerieArray: Array<{
                 id: string;
@@ -198,7 +196,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 });
             }
 
-            if (showSwap && filteredTransactionalData) {
+            if (showSwap && filteredTransactionalData && circleScale) {
                 filteredTransactionalData.forEach((transaction) => {
                     let totalValueUSD = transaction.order.totalValueUSD;
 
@@ -244,7 +242,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     ];
 
                     circleSerieArray.push({
-                        id: transaction.order.txHash,
+                        id: transaction.order.txId,
                         data: circleData,
                         serie: circleSerie,
                     });
