@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFutaHomeContext } from '../../../../../contexts/Futa/FutaHomeContext';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import FadingTextGrid from '../../Animations/FadingTextGrid';
 import FutaLandingNav from '../FutaLandingNav';
 import FutaLanding from './FutaLanding1';
@@ -9,11 +10,10 @@ import FutaLanding3 from './FutaLanding3';
 import FutaLanding4 from './FutaLanding4';
 import FutaLanding5 from './FutaLanding5';
 import styles from './FutaNewLanding.module.css';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 const INITIAL_DELAY = 7000;
 const TOTAL_SECTIONS = 5;
-const SCROLL_THRESHOLD = 100; // Pixels to scroll before triggering section change
+const SCROLL_THRESHOLD = 5; // Pixels to scroll before triggering section change
 
 export default function FutaNewLanding() {
     const {
