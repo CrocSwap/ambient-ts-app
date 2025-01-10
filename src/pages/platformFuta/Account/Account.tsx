@@ -332,7 +332,12 @@ export default function Account() {
     return (
         <main>
             <div>
-                {isMobile && <BreadCrumb />}
+                {isMobile && (
+                    <>
+                        <BreadCrumb />
+                        <h2>Account</h2>
+                    </>
+                )}
                 <SearchableTicker
                     auctions={filtered}
                     dataState={{
