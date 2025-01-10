@@ -42,7 +42,7 @@
     /* align-items: end; */
     justify-content: flex-end;
     flex: 1;
-    gap: 10px;
+    gap: 39px;
 
    
     
@@ -90,20 +90,27 @@ margin-bottom: -8px;
 
     /* Mono 12 */
     font-family: var(--mainFont, 'Fira Mono');
-    font-size: var(--fontSizes-fontSize_small, 12px);
+    font-size: var(--body-size, 12px);
     font-style: normal;
     font-weight: 500;
     line-height: normal;
     margin-bottom: 6px;
+    transition: all var(--animation-speed) ease-in-out;
     
 }
 
 .enterButton button{
-    background: var(--base-text1, #AACFD1);
+    background: var(--text1, #AACFD1);
     display: inline-flex;
-    padding: 4px 8px;
+    padding: 8px 16px;
     outline: none;
     border: none;
+    width: 119px;
+    height: 45px;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
  
     
 }

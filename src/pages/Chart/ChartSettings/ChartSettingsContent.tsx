@@ -191,27 +191,27 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 chartColors: {
                     upCandleBodyColor: chartThemeColors.upCandleBodyColor
                         ? chartThemeColors.upCandleBodyColor.toString()
-                        : '--accent5',
+                        : '--chart-positive',
                     downCandleBodyColor: chartThemeColors.downCandleBodyColor
                         ? chartThemeColors.downCandleBodyColor.toString()
-                        : '--dark2',
+                        : '--chart-negative',
                     selectedDateFillColor:
                         chartThemeColors.selectedDateFillColor
                             ? chartThemeColors.selectedDateFillColor.toString()
                             : '--accent2',
                     upCandleBorderColor: chartThemeColors.upCandleBorderColor
                         ? chartThemeColors.upCandleBorderColor.toString()
-                        : '--accent5',
+                        : '--chart-positive',
                     downCandleBorderColor:
                         chartThemeColors.downCandleBorderColor
                             ? chartThemeColors.downCandleBorderColor.toString()
-                            : '--accent1',
+                            : '--chart-negative',
                     liqAskColor: chartThemeColors.liqAskColor
                         ? chartThemeColors.liqAskColor.toString()
-                        : '--accent5',
+                        : '--chart-positive',
                     liqBidColor: chartThemeColors.liqBidColor
                         ? chartThemeColors.liqBidColor.toString()
-                        : '--accent1',
+                        : '--chart-negative',
                     selectedDateStrokeColor:
                         chartThemeColors.selectedDateStrokeColor
                             ? chartThemeColors.selectedDateStrokeColor.toString()
@@ -423,8 +423,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             selection: 'Liquidity Area',
             actionHandler: 'liq',
             action: handleCandleColorPicker,
-            upColor: 'liqAskColor',
             downColor: 'liqBidColor',
+            upColor: 'liqAskColor',
             exclude: ['futa'],
         },
     ];

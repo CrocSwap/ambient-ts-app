@@ -270,8 +270,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             selectedDateFillColor: '--accent2',
             upCandleBorderColor: '--chart-positive',
             downCandleBorderColor: '--chart-negative',
-            liqAskColor: '--accent5',
-            liqBidColor: '--accent1',
+            liqBidColor: '--chart-negative',
+            liqAskColor: '--chart-positive',
             selectedDateStrokeColor: '--accent2',
             textColor: '',
         },
@@ -438,7 +438,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         const downCandleBodyColor =
             contextChartColors && contextChartColors.downCandleBodyColor
                 ? d3.color(contextChartColors.downCandleBodyColor)
-                : getCssVariable(skin.active, '--dark2');
+                : getCssVariable(skin.active, '--chart-negative');
         const selectedDateFillColor =
             contextChartColors && contextChartColors.selectedDateFillColor
                 ? d3.color(contextChartColors.selectedDateFillColor)
@@ -455,11 +455,11 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         const liqAskColor =
             contextChartColors && contextChartColors.liqAskColor
                 ? d3.color(contextChartColors.liqAskColor)
-                : getCssVariable(skin.active, '--accent5');
+                : getCssVariable(skin.active, '--chart-positive');
         const liqBidColor =
             contextChartColors && contextChartColors.liqBidColor
                 ? d3.color(contextChartColors.liqBidColor)
-                : getCssVariable(skin.active, '--accent1');
+                : getCssVariable(skin.active, '--chart-negative');
 
         const selectedDateStrokeColor =
             contextChartColors && contextChartColors.selectedDateStrokeColor
