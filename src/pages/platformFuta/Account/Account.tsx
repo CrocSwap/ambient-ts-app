@@ -168,20 +168,6 @@ export default function Account() {
             ? 'Transaction Pending...'
             : 'Claim All';
 
-    const connectWalletContent = (
-        <div className={styles.connectWalletContent}>
-            <Typewriter text='Connect your wallet to view your auctions' />
-            <button onClick={openWalletModal}>Connect wallet</button>
-        </div>
-    );
-
-    const noAuctionsContent = (
-        <div className={styles.connectWalletContent}>
-            <Typewriter text='No auctions found' />
-            <p>Consider viewing all auctions</p>
-            <Link to='/auctions'>All auctions</Link>
-        </div>
-    );
     const sorted: sortedAuctionsIF = useSortedAuctions(
         accountData.auctions || [],
     );
@@ -206,15 +192,29 @@ export default function Account() {
         return output;
     }, [tickerSet, sorted]);
 
+    // boolean to add or remove DOM elements on mobile devices
+    const isMobile: boolean = useMediaQuery('(max-width: 1024px)');
+
+    // differential return when no wallet is connected
     if (!isUserConnected && !addressFromParams) {
-        return connectWalletContent;
+        return (
+            <div className={styles.connectWalletContent}>
+                <Typewriter text='Connect your wallet to view your auctions' />
+                <button onClick={openWalletModal}>Connect wallet</button>
+            </div>
+        );
     }
 
+    // differential return when no auction data is available
     if (!sorted?.data?.length) {
-        return noAuctionsContent;
+        return (
+            <div className={styles.connectWalletContent}>
+                <Typewriter text='No auctions found' />
+                <p>Consider viewing all auctions</p>
+                <Link to='/auctions'>All auctions</Link>
+            </div>
+        );
     }
-
-    const isMobile = useMediaQuery('(max-width: 1024px)');
 
     return (
         <main>
