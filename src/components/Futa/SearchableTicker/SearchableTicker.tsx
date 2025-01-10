@@ -602,7 +602,6 @@ export default function SearchableTicker(props: propsIF) {
             <FlexContainer
                 flexDirection='column'
                 fullHeight
-                className={styles.contentContainer}
                 ref={tableParentRef}
             >
                 {resizableChart}

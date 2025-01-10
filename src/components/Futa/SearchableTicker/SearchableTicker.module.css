@@ -15,7 +15,6 @@
     align-items: flex-start;
     justify-content: flex-start;
     --width-for-scrollbar: 8px;
-    padding-right: var(--width-for-scrollbar);
     border: var(--futa-box-border);
 }
 
@@ -25,7 +24,7 @@ search {
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    margin-bottom: 8px;
+    padding: 8px;
     gap: 8px;
     width: 100%;
     height: auto;
