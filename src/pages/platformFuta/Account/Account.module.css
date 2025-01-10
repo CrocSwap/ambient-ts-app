@@ -2,22 +2,36 @@
 main {
     display: flex;
     flex-direction: row;
+    height: calc(100% - 19px);
     padding: 0px 8px;
 }
 
 /* left side of `Account.tsx` (contains ticker table and chart) */
 .tickers_and_chart {
     flex-grow: 1;
+    outline: 1px solid green;
 }
 
 /* right side of `Account.tsx` (contains Claim All button and tx data) */
 .data_detail {
     display: flex;
     flex-direction: column;
-    max-width: 390px;
+    width: 390px;
     color: var(--text2);
     font-size: 12px;
     text-align: center;
+    outline: 1px solid blue;
+}
+
+/* tablets and cellphones */
+@media screen and (max-width: 1024px) {
+    main {
+        flex-direction: column;
+    }
+
+    .data_detail {
+        width: 100%;
+    }
 }
 
 
