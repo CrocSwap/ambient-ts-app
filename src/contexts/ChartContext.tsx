@@ -102,7 +102,7 @@ export interface ChartContextIF {
     chartThemeColors: ChartThemeIF | undefined;
     setColorChangeTrigger: React.Dispatch<SetStateAction<boolean>>;
     colorChangeTrigger: boolean;
-    defaultChartSettings: LocalChartSettingsIF;
+    defaultChartSettings: LocalChartSettingsIF | undefined;
     setContextmenu: React.Dispatch<SetStateAction<boolean>>;
     contextmenu: boolean;
     setShouldResetBuffer: React.Dispatch<SetStateAction<boolean>>;
@@ -152,18 +152,7 @@ export interface ChartThemeIF {
 }
 
 export interface LocalChartSettingsIF {
-    chartColors: {
-        upCandleBodyColor: string;
-        downCandleBodyColor: string;
-        selectedDateFillColor: string;
-        upCandleBorderColor: string;
-        downCandleBorderColor: string;
-        liqAskColor: string;
-        liqBidColor: string;
-        selectedDateStrokeColor: string;
-        textColor: string;
-        drawngShapeDefaultColor: string;
-    };
+    chartColors: ChartThemeIF;
     isTradeDollarizationEnabled: boolean;
     showVolume: boolean;
     showTvl: boolean;
@@ -265,13 +254,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const [colorChangeTrigger, setColorChangeTrigger] = useState(false);
 
-    const [defaultChartSettings] = useState<LocalChartSettingsIF>({
-        chartColors: chartDefaultColorVariables,
-        isTradeDollarizationEnabled: false,
-        showVolume: true,
-        showTvl: false,
-        showFeeRate: false,
-    });
+    const [defaultChartSettings, setDefaultChartSettings] =
+        useState<LocalChartSettingsIF>();
 
     // the max size is based on the max height, and is subtracting the minimum size of table and the padding around the drag bar
     useEffect(() => {
@@ -415,18 +399,14 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const getColors = (
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        contextChartColors: any,
+        colorSource: any,
         skin: skins,
-        isContextDataAvailable: boolean,
+        isDefaultColor: boolean,
     ) => {
-        const colorSource = isContextDataAvailable
-            ? contextChartColors
-            : chartDefaultColorVariables;
-
         const getColor = (colorKey: string) => {
-            const colorValue = isContextDataAvailable
-                ? colorSource[colorKey]
-                : getCssVariable(skin, colorSource[colorKey]);
+            const colorValue = isDefaultColor
+                ? getCssVariable(skin, colorSource[colorKey])
+                : colorSource[colorKey];
 
             return d3.color(colorValue) as d3.RGBColor | d3.HSLColor;
         };
@@ -445,32 +425,57 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        const parsedContextData = CHART_CONTEXT_SETTINGS_LOCAL_STORAGE
-            ? JSON.parse(CHART_CONTEXT_SETTINGS_LOCAL_STORAGE)
-            : undefined;
-
-        const contextChartColors = parsedContextData?.chartColors;
         const text2 = getCssVariable(skin.active, '--text2');
         const accent3 = getCssVariable(skin.active, '--accent3');
         const accent1 = getCssVariable(skin.active, '--accent1');
         const dark1 = getCssVariable(skin.active, '--dark1');
 
-        const isContextDataAvailable = Boolean(contextChartColors);
-
         const chartThemeColors = {
-            ...getColors(
-                contextChartColors,
-                skin.active,
-                isContextDataAvailable,
-            ),
+            ...getColors(chartDefaultColorVariables, skin.active, true),
             text2,
             accent1,
             accent3,
             dark1,
         };
 
-        setChartThemeColors(() => chartThemeColors);
+        setDefaultChartSettings({
+            chartColors: chartThemeColors,
+            isTradeDollarizationEnabled: false,
+            showVolume: true,
+            showTvl: false,
+            showFeeRate: false,
+        });
     }, [skin.active]);
+
+    useEffect(() => {
+        if (CHART_CONTEXT_SETTINGS_LOCAL_STORAGE) {
+            const parsedContextData = JSON.parse(
+                CHART_CONTEXT_SETTINGS_LOCAL_STORAGE,
+            );
+
+            const contextChartColors = parsedContextData?.chartColors;
+            const text2 = getCssVariable(skin.active, '--text2');
+            const accent3 = getCssVariable(skin.active, '--accent3');
+            const accent1 = getCssVariable(skin.active, '--accent1');
+            const dark1 = getCssVariable(skin.active, '--dark1');
+
+            const chartThemeColors = {
+                ...getColors(contextChartColors, skin.active, false),
+                text2,
+                accent1,
+                accent3,
+                dark1,
+            };
+
+            setChartThemeColors(() => chartThemeColors);
+        } else {
+            if (defaultChartSettings) {
+                setChartThemeColors(() => {
+                    return { ...defaultChartSettings.chartColors };
+                });
+            }
+        }
+    }, [defaultChartSettings]);
 
     return (
         <ChartContext.Provider value={chartContext}>

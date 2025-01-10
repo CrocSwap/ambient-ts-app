@@ -14,7 +14,7 @@ export const chartDefaultColorVariables = {
     upCandleBorderColor: '--chart-positive-border',
     downCandleBodyColor: '--chart-negative-body',
     downCandleBorderColor: '--chart-negative-border',
-    selectedDateFillColor: '---chart-selected-color',
+    selectedDateFillColor: '--chart-selected-color',
     selectedDateStrokeColor: '--chart-selected-color',
     liqAskColor: '--liq-ask-color',
     liqBidColor: '--liq-bid-color',
