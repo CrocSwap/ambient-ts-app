@@ -113,9 +113,7 @@ export default function RangeLinesChart(props: propsIF) {
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((context: any) => {
-                    const style = getComputedStyle(context.canvas);
-
-                    const fillColor = style.getPropertyValue('--accent1');
+                    const fillColor = '#6A6A6D';
 
                     const d3AreaFillColor = d3.color(fillColor);
 

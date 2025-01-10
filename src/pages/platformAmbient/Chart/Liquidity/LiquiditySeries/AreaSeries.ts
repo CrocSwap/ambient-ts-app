@@ -41,8 +41,8 @@ export const getBidPriceValue = (
     }
 };
 
-const liqAskColor = 'rgba(205, 193, 255, 0.3)';
-const liqBidColor = 'rgba(115, 113, 252, 0.3)';
+const liqAskColor = 'rgba(38,166,154, 0.3)';
+const liqBidColor = 'rgba(239, 83, 80, 0.3)';
 
 export function createAreaSeries(
     xScale: d3.ScaleLinear<number, number>,
