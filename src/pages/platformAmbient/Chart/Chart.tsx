@@ -322,8 +322,11 @@ export default function Chart(props: propsIF) {
 
     const [discontinuityProvider, setDiscontinuityProvider] =
         useState(undefined);
-    const [lineSellColor, setLineSellColor] = useState('rgba(115, 113, 252)');
-    const [lineBuyColor, setLineBuyColor] = useState('rgba(205, 193, 255)');
+
+    const lineSellColor =
+        chartThemeColors?.text2?.toString() ?? 'rgb(139, 152, 165)';
+    const lineBuyColor =
+        chartThemeColors?.text2?.toString() ?? 'rgb(139, 152, 165)';
 
     const {
         showFeeRate,
@@ -348,28 +351,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasCrosshair = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        if (
-            chartThemeColors &&
-            chartThemeColors.liqBidColor !== null &&
-            chartThemeColors.liqAskColor !== null
-        ) {
-            setLineSellColor((prev) => {
-                if (chartThemeColors.liqBidColor)
-                    return chartThemeColors.liqBidColor.toString();
-
-                return prev;
-            });
-
-            setLineBuyColor((prev) => {
-                if (chartThemeColors.liqAskColor)
-                    return chartThemeColors.liqAskColor.toString();
-
-                return prev;
-            });
-        }
-    }, [chartThemeColors?.liqAskColor, chartThemeColors?.liqBidColor]);
 
     const location = useLocation();
 

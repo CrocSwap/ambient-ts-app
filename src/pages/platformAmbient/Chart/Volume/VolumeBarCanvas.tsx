@@ -84,10 +84,10 @@ export default function VolumeBarCanvas(props: propsIF) {
                               : close > open
                                 ? d3LightStrokeColor
                                     ? d3LightStrokeColor.toString()
-                                    : 'rgba(115,113,252, 0.5)'
+                                    : '#26a69a'
                                 : d3DarkStrokeColor
                                   ? d3DarkStrokeColor.toString()
-                                  : 'rgba(205,193,255, 0.5)';
+                                  : '#ef5350';
 
                     context.strokeStyle =
                         d.volumeUSD === null || d.volumeUSD === 0
@@ -98,10 +98,10 @@ export default function VolumeBarCanvas(props: propsIF) {
                               : close > open
                                 ? d3LightStrokeColor
                                     ? d3LightStrokeColor.toString()
-                                    : 'rgba(115,113,252, 0.5)'
+                                    : '#26a69a'
                                 : d3DarkStrokeColor
                                   ? d3DarkStrokeColor.toString()
-                                  : 'rgba(205,193,255, 0.5)';
+                                  : '#ef5350';
 
                     if (d.time * 1000 > visibleDateForCandle) {
                         context.fillStyle = 'transparent';

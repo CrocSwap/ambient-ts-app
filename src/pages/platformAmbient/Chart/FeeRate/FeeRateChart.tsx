@@ -176,7 +176,7 @@ function FeeRateChart(props: FreeRateData) {
             scaleData !== undefined &&
             chartThemeColors
         ) {
-            const d3Feerate = chartThemeColors.liqBidColor?.copy();
+            const d3Feerate = chartThemeColors.accent1?.copy();
 
             const lineSeries = d3fc
                 .seriesCanvasLine()
