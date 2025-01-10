@@ -10,6 +10,8 @@ import {
     uriToHttp,
 } from '../../ambient-utils/dataLayer';
 import { TokenIF, TokenListIF } from '../../ambient-utils/types';
+import ambientTokenList from '../../ambient-utils/constants/ambient-token-list.json';
+import testnetTokenList from '../../ambient-utils/constants/testnet-token-list.json';
 
 export interface tokenMethodsIF {
     allDefaultTokens: TokenIF[];
@@ -224,10 +226,23 @@ export const useTokens = (
             // logic to query endpoints until a query is successful
             let rawData;
             for (let i = 0; i < endpoints.length; i++) {
-                const response = await fetch(endpoints[i]);
-                if (response.ok) {
-                    rawData = await response.json();
-                    break;
+                // isolate current endpoint from list
+                const endpoint = endpoints[i];
+                // special handling for the ambient token list (exists locally)
+                if (endpoint === tokenListURIs.ambient) {
+                    rawData = ambientTokenList;
+                }
+                // special handling for the testnet token list (exists locally)
+                else if (endpoint === tokenListURIs.testnet) {
+                    rawData = testnetTokenList;
+                }
+                // handling for all non-local token lists
+                else {
+                    const response = await fetch(endpoint);
+                    if (response.ok) {
+                        rawData = await response.json();
+                        break;
+                    }
                 }
             }
             // cease funcationality if no endpoint returned a valid response
