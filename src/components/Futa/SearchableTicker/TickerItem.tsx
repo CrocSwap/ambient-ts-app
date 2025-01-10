@@ -38,7 +38,8 @@ export default function TickerItem(props: PropsIF) {
         useRefTicker,
     } = props;
 
-    const { accountData, setHoveredTicker } = useContext(AuctionsContext);
+    const { accountData, hoveredTicker, setHoveredTicker } =
+        useContext(AuctionsContext);
 
     const {
         ticker,
@@ -154,9 +155,7 @@ export default function TickerItem(props: PropsIF) {
             ? filledMarketCapUsdValue
                 ? getFormattedNumber({
                       value: filledMarketCapUsdValue,
-                      minFracDigits: 0,
-                      maxFracDigits: 0,
-                      isUSD: true,
+                      isTickerDisplay: true,
                   })
                 : '$0'
             : undefined;
@@ -191,6 +190,12 @@ export default function TickerItem(props: PropsIF) {
                             ? 'active'
                             : 'inactive'
                     ],
+                styles[
+                    auction?.ticker === hoveredTicker &&
+                    hoveredTicker !== selectedTicker
+                        ? 'hoverActive'
+                        : ''
+                ],
             ].join(' ')}
             to={'/auctions/v1/' + ticker}
             onClick={() => {

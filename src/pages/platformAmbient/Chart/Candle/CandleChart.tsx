@@ -59,7 +59,7 @@ export default function CandleChart(props: candlePropsIF) {
     const selectedCandleColor = '#E480FF';
     const crocCandleLightColor = '#26A69A';
     const crocCandleBorderLightColor = '#26A69A';
-    const crocCandleDarkColor = '#24243e';
+    const crocCandleDarkColor = '#EF5350';
     const crocCandleBorderDarkColor = '#EF5350';
 
     const bandwidth = useMemo(() => {

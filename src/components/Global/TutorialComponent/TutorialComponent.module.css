@@ -1,3 +1,10 @@
+
+.tutorial_blur {
+    backdrop-filter: blur(4px);
+    position: fixed;
+    z-index: 100;
+}
+
 .tutorial_overlay {
     position: fixed;
     top: 5rem;
@@ -5,6 +12,7 @@
     display: block;
     width: 100vw;
     height: 100vh;
+    z-index: 101;
 }
 
 .focus_outline {
