@@ -1,8 +1,10 @@
-.container {
+/* top-level container element in SearchableTicker.tsx file */
+.searchable_ticker {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
+    padding: 8px;
     gap: 8px;
 }
 
@@ -13,7 +15,7 @@
     align-items: flex-start;
     justify-content: flex-start;
     --width-for-scrollbar: 8px;
-    padding: 8px var(--width-for-scrollbar) 8px 8px;
+    padding-right: var(--width-for-scrollbar);
     border: var(--futa-box-border);
 }
 
@@ -329,12 +331,15 @@ search {
     background: var(--accent2);
 }
 
-.container {
-    display: flex;
-    flex-direction: column;
-}
-
 @media (max-width: 1024px) {
+    .searchable_ticker {
+        padding: 0px;
+    }
+    
+    .resizable {
+        border: none;
+    }
+
     search {
         flex-direction: column;
     }

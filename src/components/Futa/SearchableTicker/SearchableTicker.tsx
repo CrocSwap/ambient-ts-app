@@ -593,7 +593,7 @@ export default function SearchableTicker(props: propsIF) {
 
     return (
         <div
-            className={styles.container}
+            className={styles.searchable_ticker}
             style={{
                 gridTemplateRows: isAccount ? 'auto 100%' : '',
             }}

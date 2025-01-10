@@ -177,7 +177,7 @@ export default function TickerItem(props: propsIF) {
         const output: string = (firstPart + '.' + lastPart).slice(0, trunc);
         return output;
     }
-    console.log(isMobile);
+
     return (
         <Link
             ref={(el) => (useRefTicker.current[ticker] = el)}
