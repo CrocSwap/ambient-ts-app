@@ -155,7 +155,7 @@ export default function App() {
                 data-theme={skin.active}
                 style={{
                     height:
-                        location.pathname == '/'
+                        location.pathname == '/' && platformName !== 'futa'
                             ? 'calc(100vh - 56px)'
                             : '100dvh',
                 }}
