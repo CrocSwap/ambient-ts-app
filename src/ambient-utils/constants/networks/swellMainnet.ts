@@ -5,7 +5,7 @@ import { NetworkIF } from '../../types/NetworkIF';
 import {
     swellETH,
     swellEZETH,
-    swellRSETH,
+    swellRSWETH,
     swellUSDE,
     swellWEETH,
 } from '../defaultTokens';
@@ -58,7 +58,7 @@ export const swellMainnet: NetworkIF = {
     tempestApiNetworkName: 'swell',
     topPools: [
         new TopPool(swellETH, swellUSDE, chainSpecFromSDK.poolIndex),
-        new TopPool(swellWEETH, swellRSETH, chainSpecFromSDK.poolIndex),
+        new TopPool(swellWEETH, swellRSWETH, chainSpecFromSDK.poolIndex),
         new TopPool(swellEZETH, swellETH, chainSpecFromSDK.poolIndex),
         new TopPool(swellWEETH, swellETH, chainSpecFromSDK.poolIndex),
     ],
