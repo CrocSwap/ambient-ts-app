@@ -1,5 +1,23 @@
+/* top-level element returned by `Account.tsx` file */
 main {
+    display: flex;
+    flex-direction: row;
     padding: 0px 8px;
+}
+
+/* left side of `Account.tsx` (contains ticker table and chart) */
+.tickers_and_chart {
+    flex-grow: 1;
+}
+
+/* right side of `Account.tsx` (contains Claim All button and tx data) */
+.data_detail {
+    display: flex;
+    flex-direction: column;
+    max-width: 390px;
+    color: var(--text2);
+    font-size: 12px;
+    text-align: center;
 }
 
 

@@ -168,37 +168,6 @@ export default function Account() {
             ? 'Transaction Pending...'
             : 'Claim All';
 
-    const claimAllContainer = (
-        <div className={styles.claimAllContainer}>
-            <h3>CLAIM ALL</h3>
-            <p className={styles.claimAllText}>
-                CLAIM ALL TOKENS FROM WINNING AUCTIONS AND UNUSED BIDS
-            </p>
-            <div className={styles.extraFeeContainer}>
-                <div className={styles.justifyRow}>
-                    <TooltipLabel
-                        itemTitle='NETWORK FEE'
-                        tooltipTitle='NETWORK FEE PAID IN ORDER TO TRANSACT'
-                    />
-                    <p style={{ color: 'var(--text2)', fontSize: '14px' }}>
-                        ~0.01
-                    </p>
-                </div>
-            </div>
-            <button
-                id='futa_account_claim_all_button'
-                className={
-                    isButtonDisabled
-                        ? `${styles.claimButton} ${styles.disabledButton}`
-                        : `${styles.claimButton}`
-                }
-                onClick={sendClaimAndReturnAllTransaction}
-            >
-                {buttonText.toUpperCase()}
-            </button>
-        </div>
-    );
-
     const connectWalletContent = (
         <div className={styles.connectWalletContent}>
             <Typewriter text='Connect your wallet to view your auctions' />
@@ -331,7 +300,7 @@ export default function Account() {
 
     return (
         <main>
-            <div>
+            <div className={styles.tickers_and_chart}>
                 {isMobile && (
                     <>
                         <BreadCrumb />
@@ -348,14 +317,47 @@ export default function Account() {
                 />
             </div>
             {connectedAccountActive && (
-                <div className={styles.rightLayout}>
+                <div className={styles.data_detail}>
                     {isMobile || (
                         <div>
                             <p className={styles.label}>CLAIM</p>
                             <FutaDivider2 />
                         </div>
                     )}
-                    {claimAllContainer}
+                    <div className={styles.claim}>
+                        <h3>CLAIM ALL</h3>
+                        <p className={styles.claimAllText}>
+                            CLAIM ALL TOKENS FROM WINNING AUCTIONS AND UNUSED
+                            BIDS
+                        </p>
+                        <div className={styles.extraFeeContainer}>
+                            <div className={styles.justifyRow}>
+                                <TooltipLabel
+                                    itemTitle='NETWORK FEE'
+                                    tooltipTitle='NETWORK FEE PAID IN ORDER TO TRANSACT'
+                                />
+                                <p
+                                    style={{
+                                        color: 'var(--text2)',
+                                        fontSize: '14px',
+                                    }}
+                                >
+                                    ~0.01
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            id='futa_account_claim_all_button'
+                            className={
+                                isButtonDisabled
+                                    ? `${styles.claimButton} ${styles.disabledButton}`
+                                    : `${styles.claimButton}`
+                            }
+                            onClick={sendClaimAndReturnAllTransaction}
+                        >
+                            {buttonText.toUpperCase()}
+                        </button>
+                    </div>
                 </div>
             )}
         </main>
