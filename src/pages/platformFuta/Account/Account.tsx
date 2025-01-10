@@ -237,7 +237,7 @@ export default function Account() {
         return output;
     }, [tickerSet, sorted]);
 
-    const desktopScreen = useMediaQuery('(min-width: 1080px)');
+    const desktopScreen = useMediaQuery('(min-width: 1025px)');
 
     if (!isUserConnected && !addressFromParams) {
         return connectWalletContent;
