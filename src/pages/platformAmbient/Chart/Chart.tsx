@@ -738,46 +738,35 @@ export default function Chart(props: propsIF) {
 
             const userSwaps: Array<TransactionIF> = [];
 
-            const userLimits = userTransactionData.filter(
-                (transaction) =>
-                    transaction.entityType === 'limitOrder' &&
-                    (transaction.changeType === 'mint' ||
-                        transaction.changeType === 'cross'),
-            );
+            // const userLimitOrderHistory = userTransactionData.filter(
+            //     (transaction) =>
+            //         transaction.entityType === 'limitOrder' &&
+            //         transaction.changeType === 'mint',
+            // );
 
-            const sortedUserLimits = userLimits.sort((a, b) =>
-                d3.descending(a.txTime, b.txTime),
-            );
-
-            sortedUserLimits.forEach((mint) => {
-                if (mint.changeType === 'mint') {
-                    const completedLimit = sortedUserLimits.find(
-                        (key) =>
-                            key.changeType === 'cross' &&
-                            (mint.isBuy
-                                ? key.bidTick === mint.bidTick &&
-                                  key.askTick === mint.bidTick
-                                : key.bidTick === mint.askTick &&
-                                  key.askTick === mint.askTick),
-                    );
-
-                    const infoLimit = userLimitTx.find(
-                        (key) =>
-                            key.claimableLiq > 0 &&
-                            key.bidTick === mint.bidTick &&
-                            key.askTick === mint.askTick,
-                    );
-
-                    if (completedLimit !== undefined && infoLimit) {
-                        mint.swapInvPriceDecimalCorrected =
-                            mint.invLimitPriceDecimalCorrected;
-                        mint.swapPriceDecimalCorrected =
-                            mint.limitPriceDecimalCorrected;
-
-                        mint.txHash = completedLimit.txHash;
-
-                        userSwaps.push(mint);
-                    }
+            userLimitTx.forEach((limitTx) => {
+                if (limitTx.claimableLiq > 0) {
+                    userSwaps.push({
+                        entityType: 'limitOrder',
+                        txId: limitTx.limitOrderId,
+                        txTime: limitTx.crossTime,
+                        swapInvPriceDecimalCorrected:
+                            limitTx.invLimitPriceDecimalCorrected,
+                        swapPriceDecimalCorrected:
+                            limitTx.limitPriceDecimalCorrected,
+                        totalValueUSD: limitTx.totalValueUSD,
+                        isBuy: limitTx.isBid,
+                        baseFlowDecimalCorrected: limitTx.isBid
+                            ? limitTx.originalPositionLiqBaseDecimalCorrected
+                            : limitTx.expectedPositionLiqBaseDecimalCorrected,
+                        quoteFlowDecimalCorrected: limitTx.isBid
+                            ? limitTx.originalPositionLiqQuoteDecimalCorrected
+                            : limitTx.expectedPositionLiqQuoteDecimalCorrected,
+                        bidTick: limitTx.bidTick,
+                        askTick: limitTx.askTick,
+                        baseSymbol: limitTx.baseSymbol,
+                        quoteSymbol: limitTx.quoteSymbol,
+                    } as TransactionIF);
                 }
             });
 
@@ -5493,7 +5482,13 @@ export default function Chart(props: propsIF) {
                 });
             }
 
-            if (filteredTransactionalData && showSwap) {
+            if (filteredTransactionalData && showSwap && userTransactionData) {
+                const userLimitOrderHistory = userTransactionData.filter(
+                    (transaction) =>
+                        transaction.entityType === 'limitOrder' &&
+                        transaction.changeType === 'mint',
+                );
+
                 filteredTransactionalData.forEach((element) => {
                     if (showSwap) {
                         const swapOrderData = [
@@ -5508,51 +5503,114 @@ export default function Chart(props: propsIF) {
 
                         let totalValueUSD = element.order.totalValueUSD;
 
-                        let tokenFlowDecimalCorrected =
-                            element.order.entityType === 'limitOrder'
-                                ? element.order.isBuy
-                                    ? element.order.baseFlowDecimalCorrected
-                                    : element.order.quoteFlowDecimalCorrected
-                                : denomInBase
-                                  ? element.order.baseFlowDecimalCorrected
-                                  : element.order.quoteFlowDecimalCorrected;
+                        let tokenFlowDecimalCorrected = denomInBase
+                            ? element.order.baseFlowDecimalCorrected
+                            : element.order.quoteFlowDecimalCorrected;
 
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const mergedIds: Array<{ hash: string; type: string }> =
-                            [
-                                {
-                                    hash: element.order.txHash,
-                                    type: element.order.entityType,
-                                },
-                            ];
+                            element.order.entityType === 'limitOrder'
+                                ? []
+                                : [
+                                      {
+                                          hash: element.order.txHash,
+                                          type: element.order.entityType,
+                                      },
+                                  ];
 
-                        if (element.mergedTx.length > 0) {
-                            element.mergedTx.map((merged) => {
+                        if (element.order.entityType == 'limitOrder') {
+                            const processLimitOrder = (
+                                entity: TransactionIF,
+                            ) => {
+                                const mintedInTick =
+                                    userLimitOrderHistory.filter(
+                                        (his) =>
+                                            his.isBuy === entity.isBuy &&
+                                            his.bidTick === entity.bidTick &&
+                                            his.askTick === entity.askTick,
+                                    );
+
+                                if (mintedInTick?.length > 0) {
+                                    return mintedInTick;
+                                }
+                            };
+
+                            if (element.mergedTx.length > 0) {
+                                element.mergedTx.forEach((merged) => {
+                                    if (merged.entityType === 'limitOrder') {
+                                        const mintedInTick =
+                                            processLimitOrder(merged);
+
+                                        mintedInTick?.forEach((mint) => {
+                                            const isIn = mergedIds.find(
+                                                (id) => id.hash === mint.txHash,
+                                            );
+
+                                            if (isIn === undefined) {
+                                                mergedIds.push({
+                                                    hash: mint.txHash,
+                                                    type: mint.entityType,
+                                                });
+                                            }
+                                        });
+                                    } else {
+                                        const isIn = mergedIds.find(
+                                            (id) => id.hash === merged.txHash,
+                                        );
+
+                                        if (isIn === undefined) {
+                                            mergedIds.push({
+                                                hash: merged.txHash,
+                                                type: merged.entityType,
+                                            });
+                                        }
+                                    }
+
+                                    totalValueUSD =
+                                        totalValueUSD + merged.totalValueUSD;
+                                });
+                            }
+
+                            const mintedInTick = processLimitOrder(
+                                element.order,
+                            );
+
+                            mintedInTick?.forEach((mint) => {
                                 const isIn = mergedIds.find(
-                                    (id) => id.hash === merged.txHash,
+                                    (id) => id.hash === mint.txHash,
                                 );
 
                                 if (isIn === undefined) {
                                     mergedIds.push({
-                                        hash: merged.txHash,
-                                        type: merged.entityType,
+                                        hash: mint.txHash,
+                                        type: mint.entityType,
                                     });
                                 }
-
-                                totalValueUSD =
-                                    totalValueUSD + merged.totalValueUSD;
-
-                                tokenFlowDecimalCorrected =
-                                    tokenFlowDecimalCorrected +
-                                        merged.entityType ===
-                                    'limitOrder'
-                                        ? merged.isBuy
-                                            ? merged.baseFlowDecimalCorrected
-                                            : merged.quoteFlowDecimalCorrected
-                                        : denomInBase
-                                          ? merged.baseFlowDecimalCorrected
-                                          : merged.quoteFlowDecimalCorrected;
                             });
+                        } else {
+                            if (element.mergedTx.length > 0) {
+                                element.mergedTx.map((merged) => {
+                                    const isIn = mergedIds.find(
+                                        (id) => id.hash === merged.txHash,
+                                    );
+
+                                    if (isIn === undefined) {
+                                        mergedIds.push({
+                                            hash: merged.txHash,
+                                            type: merged.entityType,
+                                        });
+                                    }
+
+                                    totalValueUSD =
+                                        totalValueUSD + merged.totalValueUSD;
+
+                                    tokenFlowDecimalCorrected =
+                                        tokenFlowDecimalCorrected +
+                                        (denomInBase
+                                            ? merged.baseFlowDecimalCorrected
+                                            : merged.quoteFlowDecimalCorrected);
+                                });
+                            }
                         }
 
                         if (

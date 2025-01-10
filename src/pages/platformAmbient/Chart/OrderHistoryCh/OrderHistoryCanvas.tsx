@@ -223,19 +223,12 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             : '--accent5',
                     );
 
-                    const invYValue =
-                        transaction.order.entityType === 'limitOrder'
-                            ? transaction.order.invLimitPriceDecimalCorrected
-                            : transaction.order.swapInvPriceDecimalCorrected;
-                    const yValue =
-                        transaction.order.entityType === 'limitOrder'
-                            ? transaction.order.limitPriceDecimalCorrected
-                            : transaction.order.swapPriceDecimalCorrected;
-
                     const circleData = [
                         {
                             x: transaction.order.txTime * 1000,
-                            y: denomInBase ? invYValue : yValue,
+                            y: denomInBase
+                                ? transaction.order.swapInvPriceDecimalCorrected
+                                : transaction.order.swapPriceDecimalCorrected,
                             denomInBase: denomInBase,
                             isBuy: transaction.order.isBuy,
                         },

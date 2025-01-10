@@ -162,8 +162,6 @@ export default function OrderHistoryTooltip(props: {
         </ArrowHoverContainer>
     );
 
-    // useEffect(() => {console.log(hoveredOrderHistory)},[hoveredOrderHistory])
-
     const swapHeader = (hoveredOrderHistory.type === 'swap' ||
         hoveredOrderHistory.type === 'limitOrder') && (
         <OrderHistoryHeader>
@@ -199,21 +197,36 @@ export default function OrderHistoryTooltip(props: {
             </StyledHeader>
 
             <StyledHeader color={'white'} size={'15px'}>
-                {denomInBase
-                    ? hoveredOrderHistory.order.order.baseSymbol
-                    : hoveredOrderHistory.order.order.quoteSymbol}
+                {hoveredOrderHistory.type === 'limitOrder'
+                    ? hoveredOrderHistory.order.order.isBuy
+                        ? hoveredOrderHistory.order.order.baseSymbol
+                        : hoveredOrderHistory.order.order.quoteSymbol
+                    : denomInBase
+                      ? hoveredOrderHistory.order.order.baseSymbol
+                      : hoveredOrderHistory.order.order.quoteSymbol}
             </StyledHeader>
 
             {(
-                denomInBase
-                    ? hoveredOrderHistory.order.order.baseTokenLogoURI
-                    : hoveredOrderHistory.order.order.quoteTokenLogoURI
+                hoveredOrderHistory.type === 'limitOrder'
+                    ? hoveredOrderHistory.order.order.isBuy
+                        ? hoveredOrderHistory.order.order.baseTokenLogoURI
+                        : hoveredOrderHistory.order.order.quoteTokenLogoURI
+                    : denomInBase
+                      ? hoveredOrderHistory.order.order.baseTokenLogoURI
+                      : hoveredOrderHistory.order.order.quoteTokenLogoURI
             ) ? (
                 <img
                     src={uriToHttp(
-                        denomInBase
-                            ? hoveredOrderHistory.order.order.baseTokenLogoURI
-                            : hoveredOrderHistory.order.order.quoteTokenLogoURI,
+                        hoveredOrderHistory.type === 'limitOrder'
+                            ? hoveredOrderHistory.order.order.isBuy
+                                ? hoveredOrderHistory.order.order
+                                      .baseTokenLogoURI
+                                : hoveredOrderHistory.order.order
+                                      .quoteTokenLogoURI
+                            : denomInBase
+                              ? hoveredOrderHistory.order.order.baseTokenLogoURI
+                              : hoveredOrderHistory.order.order
+                                    .quoteTokenLogoURI,
                     )}
                     alt='base token'
                     style={{ width: '18px' }}
