@@ -169,7 +169,7 @@ export default function Modal(props: ModalPropsIF) {
         <GlobalModalPortal>
             <aside
                 id={GLOBAL_MODAL_COMPONENT_ID}
-                className={styles.outside_modal}
+                className={`${styles.outside_modal} ${isFuta && styles.noBoxShadow}`}
                 onMouseDown={handleClose}
                 role='dialog'
                 aria-modal='true'
@@ -186,7 +186,7 @@ export default function Modal(props: ModalPropsIF) {
                     tabIndex={0}
                     aria-label={`${title} modal`}
                 >
-                    <Container boxShadow='gradient'>
+                    <Container boxShadow={isFuta ? 'none' : 'gradient'}>
                         {headerJSX}
                         <section className={styles.modal_content}>
                             {children}
