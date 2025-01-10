@@ -97,10 +97,10 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     false,
                     (denomInBase && !order.isBuy) ||
                         (!denomInBase && order.isBuy),
-                    '--accent1',
+                    '--chart-negative',
                     ['futa'].includes(platformName)
                         ? '--negative'
-                        : '--accent5',
+                        : '--chart-positive',
                 );
 
                 circleSerieArray.push(circleSerie);
