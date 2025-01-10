@@ -23,6 +23,36 @@ main {
     outline: 1px solid blue;
 }
 
+/* 'CLAIM ALL' button */
+.claim_btn {
+    display: flex;
+    padding: 2px 8px;
+    justify-content: center;
+    align-items: center;
+    /* align-self: stretch; */
+    width: 100%;
+    gap: 10px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    color: var(--dark1);
+    background-color: var(--accent1, #0ccdff);
+    transition: all var(--animation-speed) ease-in-out;
+}
+
+/* hover styling for 'CLAIM ALL' button (when enabled) */
+.claim_btn:hover {
+    background: var(--accent2);
+    color: var(--dark1);
+}
+
+/* disabled styling for 'CLAIM ALL' button */
+.claim_btn:disabled {
+    background: var(--dark4);
+    color: var(--text2);
+    pointer-events: none;
+}
+
 /* tablets and cellphones */
 @media screen and (max-width: 1024px) {
     main {
