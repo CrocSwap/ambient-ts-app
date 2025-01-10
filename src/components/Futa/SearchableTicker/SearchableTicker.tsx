@@ -86,9 +86,9 @@ export default function SearchableTicker(props: propsIF) {
     const [isMouseEnter, setIsMouseEnter] = useState(false);
     const customLoading = false;
 
-    const isMobile = useMediaQuery('(max-width: 767px)');
+    const isMobile = useMediaQuery('(max-width: 1024px)');
     const isTabletScreen = useMediaQuery(
-        '(min-width: 768px) and (max-width: 1200px)',
+        '(min-width: 769px) and (max-width: 1024px)',
     );
     // shape of data to create filter dropdown menu options
     interface filterOptionIF {
@@ -267,8 +267,6 @@ export default function SearchableTicker(props: propsIF) {
 
     // apply a consistent size to all icons inside buttons
     const BUTTON_ICON_SIZE = 17;
-
-    const smallScreen: boolean = useMediaQuery('(max-width: 400px)');
 
     const headerDisplay = (
         <search className={styles.header}>
@@ -475,10 +473,12 @@ export default function SearchableTicker(props: propsIF) {
                             // ... way to keep the header text aligned
                             // ... with the content below
                         }
-                        <GoChevronRight
-                            size={20}
-                            className={styles.ticker_col_header_spacer}
-                        />
+                        {isMobile || (
+                            <GoChevronRight
+                                size={20}
+                                className={styles.ticker_col_header_spacer}
+                            />
+                        )}
                         TICKER
                     </p>
                     <p className={styles.cell_right}>MARKET CAP</p>
@@ -510,7 +510,7 @@ export default function SearchableTicker(props: propsIF) {
                               key={JSON.stringify(auction)}
                               auction={auction}
                               isAccount={isAccount}
-                              isMobile={smallScreen}
+                              isMobile={isMobile}
                               selectedTicker={selectedTicker}
                               setSelectedTicker={setSelectedTicker}
                               setShowComplete={setShowComplete}

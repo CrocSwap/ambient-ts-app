@@ -13,7 +13,7 @@
     align-items: flex-start;
     justify-content: flex-start;
     --width-for-scrollbar: 8px;
-    padding: 6px var(--width-for-scrollbar) 6px 2px;
+    padding: 8px var(--width-for-scrollbar) 8px 8px;
     border: var(--futa-box-border);
 }
 
@@ -24,7 +24,6 @@ search {
     justify-content: flex-start;
     align-items: center;
     margin-bottom: 8px;
-    padding-left: 8px;
     gap: 8px;
     width: 100%;
     height: auto;
@@ -362,15 +361,7 @@ search {
     .ticker_table {
         margin-left: 0px;
     }
-
-    /* remove spacer icon in `TICKER` col header on small screens */
-    .ticker_col_header_spacer {
-        display: none;
-    .tickerItemContainer,
-    .tickerHeader {
-        grid-template-columns: 1fr 1fr 50px 60px;
-    }
-}}
+}
 
 @media (min-width: 768px) {
     .container {
