@@ -62,6 +62,7 @@ import {
     swellRSWETH,
     swellSTBTC,
     swellSWBTC,
+    swellSWELL,
     swellSWETH,
     swellSepoliaUSDC,
     swellSepoliaUSDT,
@@ -214,9 +215,10 @@ export const STAKED_ETH_TOKENS = [
     swellRSWETH,
 ].map((x) => x.address.toLowerCase());
 
-export const USD_EXCLUDED_TOKENS = [mainnetSWELL.address].map((x) =>
-    x.toLowerCase(),
-);
+export const USD_EXCLUDED_TOKENS = [
+    mainnetSWELL.address,
+    swellSWELL.address,
+].map((x) => x.toLowerCase());
 
 export const STAKED_BTC_TOKENS = [
     scrollSOLVBTC,
