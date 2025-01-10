@@ -4,12 +4,23 @@ main {
     flex-direction: row;
     height: calc(100% - 19px);
     padding: 0px 8px;
+    font-family: 'Fira Mono';
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
 }
 
 /* left side of `Account.tsx` (contains ticker table and chart) */
 .tickers_and_chart {
     flex-grow: 1;
     outline: 1px solid green;
+}
+
+/* in-page 'ACCOUNT' title (only on mobile devices) */
+.tickers_and_chart h2 {
+    color: var(--text1, #ceffff);
+    font-size: 24px;
+    text-transform: uppercase;
 }
 
 /* right side of `Account.tsx` (contains Claim All button and tx data) */
@@ -21,6 +32,20 @@ main {
     font-size: 12px;
     text-align: center;
     outline: 1px solid blue;
+}
+
+.claim {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+}
+
+/* 'CLAIM ALL' header text */
+.claim > h3 {
+    text-align: center;
+    color: var(--text1, #ceffff);
+    font-size: 20px;
 }
 
 /* 'CLAIM ALL' button */
@@ -64,49 +89,12 @@ main {
     }
 }
 
-
-
-
-.container {
-    width: 100%;
-    height: calc(100svh - 104px);
-    background: var(--dark1);
-    display: flex;
-    padding: 8px 16px;
-    flex-direction: column;
-    gap: 8px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    font-family: 'Fira Mono';
-    justify-content: space-between;
-}
-
-.content {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-}
-
-.content h2 {
-    color: var(--text1, #ceffff);
-    font-size: 24px;
-    text-transform: uppercase;
-}
-
 .claimAllContainer {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.claimAllContainer h3 {
-    color: var(--text1, #ceffff);
-    font-size: 20px;
-}
 .claimAllText {
     padding: 0 16px;
 }
@@ -134,31 +122,6 @@ main {
     gap: 4px;
 }
 
-.claimButton {
-    display: flex;
-    padding: 2px 8px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    align-self: stretch;
-    outline: none;
-    background: var(--accent1, #0ccdff);
-    color: var(--dark1);
-    border: none;
-    cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
-}
-.claimButton:hover {
-    background: var(--accent2);
-    color: var(--dark1);
-}
-
-.disabledButton {
-    background: var(--dark4);
-    color: var(--text2);
-    pointer-events: none;
-}
-
 /* desktop */
 .desktopContainer {
     background: var(--dark1);
@@ -170,13 +133,6 @@ main {
 }
 .separatorContainer {
     height: calc(100vh - 80px);
-}
-
-.rightLayout {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
 }
 
 .connectWalletContent {
@@ -233,9 +189,6 @@ main {
 }
 
 @media (max-width: 780px) {
-    .claimAllContainer h3 {
-        text-align: center;
-    }
     .claimButton {
         margin: 5px 0;
     }

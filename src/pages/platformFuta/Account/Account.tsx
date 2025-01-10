@@ -206,8 +206,6 @@ export default function Account() {
         return output;
     }, [tickerSet, sorted]);
 
-    // const desktopScreen = useMediaQuery('(min-width: 1025px)');
-
     if (!isUserConnected && !addressFromParams) {
         return connectWalletContent;
     }
@@ -215,86 +213,6 @@ export default function Account() {
     if (!sorted?.data?.length) {
         return noAuctionsContent;
     }
-
-    // const desktopVersionWithClaimAll = (
-    //     <div className={styles.desktopContainer}>
-    //         <div className={styles.content}>
-    //             <SearchableTicker
-    //                 auctions={filtered}
-    //                 dataState={{
-    //                     active: tickerSet,
-    //                     toggle: toggleData,
-    //                 }}
-    //                 isAccount
-    //             />
-    //         </div>
-
-    //         <div className={styles.rightLayout}>
-    //             <div>
-    //                 <p className={styles.label}>CLAIM</p>
-    //                 <FutaDivider2 />
-    //             </div>
-    //             {claimAllContainer}
-    //         </div>
-    //     </div>
-    // );
-
-    // const desktopVersionWithoutClaimAll = (
-    //     <div className={styles.container}>
-    //         <div className={styles.content}>
-    //             <SearchableTicker
-    //                 auctions={filtered}
-    //                 dataState={{
-    //                     active: tickerSet,
-    //                     toggle: toggleData,
-    //                 }}
-    //                 isAccount
-    //             />
-    //         </div>
-    //     </div>
-    // );
-
-    // const mobileVersionWithClaimAll = (
-    //     <div className={styles.container}>
-    //         <div className={styles.content}>
-    //             <BreadCrumb />
-    //             <SearchableTicker
-    //                 auctions={filtered}
-    //                 dataState={{
-    //                     active: tickerSet,
-    //                     toggle: toggleData,
-    //                 }}
-    //                 isAccount
-    //             />
-    //         </div>
-    //         {claimAllContainer}
-    //     </div>
-    // );
-
-    // const mobileVersionWithoutClaimAll = (
-    //     <div className={styles.container}>
-    //         <div className={styles.content}>
-    //             <BreadCrumb />
-    //             <h2>Account</h2>
-    //             <SearchableTicker
-    //                 auctions={filtered}
-    //                 dataState={{
-    //                     active: tickerSet,
-    //                     toggle: toggleData,
-    //                 }}
-    //                 isAccount
-    //             />
-    //         </div>
-    //     </div>
-    // );
-
-    // return desktopScreen
-    //     ? connectedAccountActive
-    //         ? desktopVersionWithClaimAll
-    //         : desktopVersionWithoutClaimAll
-    //     : connectedAccountActive
-    //       ? mobileVersionWithClaimAll
-    //       : mobileVersionWithoutClaimAll;
 
     const isMobile = useMediaQuery('(max-width: 1024px)');
 
