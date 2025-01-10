@@ -40,11 +40,17 @@ export const useSlippage = (
 
     // fn to get relevant slippage pair from local storage and return
     // ... a value to use productively for stable or volatile slippage
-    const getSlippage = (whichOne: 'stable' | 'volatile' | 'l2'): number => {
+    const getSlippage = (
+        whichOne: 'stable' | 'volatile' | 'l2Stable' | 'l2Volatile',
+    ): number => {
         // retrieve the relevant slippage pair from local storage
         // query will return `null` if the key-value pair does not exist
-        const pair: { stable: number; volatile: number; l2: number } | null =
-            JSON.parse(localStorage.getItem(LS_KEY) as string);
+        const pair: {
+            stable: number;
+            volatile: number;
+            l2Stable: number;
+            l2Volatile: number;
+        } | null = JSON.parse(localStorage.getItem(LS_KEY) as string);
         // declare an output value for the function
         let output: number;
         // router to get the stable or volatile value as specified by params
@@ -56,11 +62,14 @@ export const useSlippage = (
             case 'volatile':
                 output = pair?.volatile ?? defaults.vals.volatile;
                 break;
-            case 'l2':
-                output = pair?.l2 ?? defaults.vals.l2;
+            case 'l2Stable':
+                output = pair?.l2Stable ?? defaults.vals.l2Stable;
+                break;
+            case 'l2Volatile':
+                output = pair?.l2Volatile ?? defaults.vals.l2Volatile;
                 break;
             default:
-                output = 0.1;
+                output = 0.25;
         }
         // return output value
         return output;
@@ -71,12 +80,18 @@ export const useSlippage = (
     // do NOT refactor these as useMemo() hooks, it will not work
     const [stable, setStable] = useState<number>(getSlippage('stable'));
     const [volatile, setVolatile] = useState<number>(getSlippage('volatile'));
-    const [l2, setL2] = useState<number>(getSlippage('l2'));
+    const [l2Stable, setL2Stable] = useState<number>(getSlippage('l2Stable'));
+    const [l2Volatile, setL2Volatile] = useState<number>(
+        getSlippage('l2Volatile'),
+    );
 
     // update persisted value in local storage whenever user changes slippage tolerance
     useEffect(() => {
-        localStorage.setItem(LS_KEY, JSON.stringify({ stable, volatile, l2 }));
-    }, [stable, volatile, l2]);
+        localStorage.setItem(
+            LS_KEY,
+            JSON.stringify({ stable, volatile, l2Stable, l2Volatile }),
+        );
+    }, [stable, volatile, l2Stable, l2Volatile]);
 
     // return data object
     // stable ➡ number, active slippage value for stable pairs
@@ -86,12 +101,12 @@ export const useSlippage = (
     // !important:  fields will preferentially consume an L2 value as relevant
     return useMemo<SlippageMethodsIF>(
         () => ({
-            stable: isActiveNetworkL2 ? l2 : stable,
-            volatile: isActiveNetworkL2 ? l2 : volatile,
-            updateStable: isActiveNetworkL2 ? setL2 : setStable,
-            updateVolatile: isActiveNetworkL2 ? setL2 : setVolatile,
+            stable: isActiveNetworkL2 ? l2Stable : stable,
+            volatile: isActiveNetworkL2 ? l2Volatile : volatile,
+            updateStable: isActiveNetworkL2 ? setL2Stable : setStable,
+            updateVolatile: isActiveNetworkL2 ? setL2Volatile : setVolatile,
             presets: defaults.getPresets(isActiveNetworkL2),
         }),
-        [stable, volatile, l2, isActiveNetworkL2],
+        [stable, volatile, l2Stable, l2Volatile, isActiveNetworkL2],
     );
 };
