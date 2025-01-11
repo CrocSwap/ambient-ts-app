@@ -223,7 +223,7 @@ function SwapTokenInput(props: propsIF) {
             const normalizedEstimatedBuyString = normalizeExponential(
                 toDisplayQty(estimatedBuyBigInt, tokenB.decimals),
                 precisionForTruncation,
-            ).replace(/\.?0+$/, '');
+            );
 
             // prevent writing result of impact query to the UI if a new query has been made
             if (
@@ -257,7 +257,7 @@ function SwapTokenInput(props: propsIF) {
             const normalizedEstimatedSellString = normalizeExponential(
                 toDisplayQty(estimatedSellBigInt, tokenA.decimals),
                 precisionForTruncation,
-            ).replace(/\.?0+$/, '');
+            );
 
             // prevent writing result of impact query to the UI if a new query has been made
             const lastQueryBigInt = stringToBigInt(
