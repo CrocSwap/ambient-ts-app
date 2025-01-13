@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import {
@@ -6,6 +6,7 @@ import {
     TutorialStepIF,
 } from '../../Chat/ChatIFs';
 import styles from './TutorialComponent.module.css';
+import { BrandContext } from '../../../contexts/BrandContext';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface propsIF {
@@ -19,6 +20,9 @@ interface propsIF {
 }
 
 function TutorialComponent(props: propsIF) {
+    const { platformName } = useContext(BrandContext);
+    console.log('>>> platformName : ', platformName);
+
     const { steps, tutoKey, initialStep, showSteps, onComplete } = props;
     console.log(tutoKey, steps);
 
@@ -179,6 +183,18 @@ function TutorialComponent(props: propsIF) {
             // left overflow
             if (tooltipTop < 0) {
                 tooltipTop = 20;
+            }
+
+            // right overflow
+            if (
+                tooltipLeft +
+                    tooltipWrapper.current.getBoundingClientRect().width >
+                window.innerWidth
+            ) {
+                tooltipLeft =
+                    window.innerWidth -
+                    tooltipWrapper.current.getBoundingClientRect().width -
+                    20;
             }
 
             // bottom overflow
@@ -400,7 +416,8 @@ function TutorialComponent(props: propsIF) {
                             className={`${styles.step_btn} ${styles.prev_btn} ${stepIndex == 0 ? styles.disabled : ''}`}
                             onClick={prevStep}
                         >
-                            {'<'} Prev
+                            {/* {'<'} Prev */}
+                            Previous
                         </div>
                     }
                     {stepIndex < steps.length - 1 && (
@@ -410,7 +427,8 @@ function TutorialComponent(props: propsIF) {
                             }
                             onClick={nextStep}
                         >
-                            Next {'>'}
+                            {/* Next {'>'} */}
+                            Next
                         </div>
                     )}
                 </>
@@ -452,7 +470,7 @@ function TutorialComponent(props: propsIF) {
     );
 
     return (
-        <div>
+        <div className={platformName == 'ambient' ? styles.ambi : ''}>
             <div className={styles.tutorial_overlay} onClick={nextStep}></div>
             <div
                 className={styles.tutorial_blur}

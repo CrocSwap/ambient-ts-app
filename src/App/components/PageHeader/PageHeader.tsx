@@ -1,5 +1,12 @@
 import { AnimateSharedLayout, motion } from 'framer-motion';
-import { memo, useCallback, useContext, useEffect, useState } from 'react';
+import {
+    memo,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
     chainNumToString,
@@ -34,6 +41,8 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import styles from './PageHeader.module.css';
 import UserMenu from './UserMenu/UserMenu';
+import TutorialOverlayUrlBased from '../../../components/Global/TutorialOverlay/TutorialOverlayUrlBased';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 const PageHeader = function () {
     const {
@@ -405,6 +414,10 @@ const PageHeader = function () {
         };
     }, []);
 
+    // ------------------  TUTORIAL FUNCTIONALITY
+    const [replayTutorial, setReplayTutorial] = useState(false);
+    const tutorialBtnRef = useRef<HTMLDivElement>(null);
+
     return (
         <>
             <header
@@ -463,6 +476,14 @@ const PageHeader = function () {
                                 overflow='visible'
                             >
                                 <NetworkSelector />
+                                <div
+                                    className={styles.tutorialBtn}
+                                    ref={tutorialBtnRef}
+                                    onClick={() => setReplayTutorial(true)}
+                                >
+                                    {' '}
+                                    <AiOutlineQuestionCircle /> Help
+                                </div>
                                 {!isUserConnected && connectWalletButton}
                                 <UserMenu {...userMenuProps} />
                             </FlexContainer>
@@ -470,6 +491,11 @@ const PageHeader = function () {
                     )}
                 </div>
             </header>
+            <TutorialOverlayUrlBased
+                replayTutorial={replayTutorial}
+                setReplayTutorial={setReplayTutorial}
+                tutorialBtnRef={tutorialBtnRef}
+            />
         </>
     );
 };

@@ -18,6 +18,7 @@ import { TutorialIF, TutorialStepExternalComponent } from '../../Chat/ChatIFs';
 import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
 import styles from './TutorialOverlayUrlBased.module.css';
+import { ambientMarketSteps } from '../../../utils/tutorial/MarketSteps';
 // import{ MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
@@ -58,6 +59,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     );
 
     const getTutorialObjectForPage = (page: string) => {
+        console.log('>>> page : ', page);
         switch (page) {
             case 'auctions':
                 return { lsKey: 'tuto_auctions', steps: futaAuctionsSteps };
@@ -81,6 +83,8 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
                         ],
                     ]),
                 };
+            case 'market':
+                return { lsKey: 'tuto_market', steps: ambientMarketSteps };
             default:
                 return undefined;
         }
