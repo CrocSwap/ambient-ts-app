@@ -316,7 +316,7 @@ export const RefreshButton = styled(IconButton)`
 
 export const RefreshButtonFuta = styled.button`
     display: flex;
-    width: 98px;
+    width: 82px;
     margin-left: auto;
     padding: 0px 12px;
     justify-content: center;

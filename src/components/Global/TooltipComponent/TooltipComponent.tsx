@@ -7,12 +7,14 @@ import {
     TextOnlyTooltip,
 } from '../StyledTooltip/StyledTooltip';
 import styles from './TooltipComponent.module.css';
+import { brand } from '../../../ambient-utils/constants';
 
 interface TooltipComponentProps {
     title: string | JSX.Element;
     noBg?: boolean;
     usePopups?: boolean;
     icon?: JSX.Element;
+    svgColor?: string;
     placement?:
         | 'right'
         | 'bottom-end'
@@ -33,6 +35,7 @@ function TooltipComponent(props: TooltipComponentProps) {
     const [open, setOpen] = useState(false);
     const isMobile = useMediaQuery('(max-width:600px)');
     const containerRef = useRef<HTMLDivElement>(null);
+    const isFuta = brand === 'futa';
 
     const clickOutsideHandler = () => {
         setOpen(false);
@@ -57,7 +60,11 @@ function TooltipComponent(props: TooltipComponentProps) {
                     {props.icon ? (
                         props.icon
                     ) : (
-                        <AiOutlineQuestionCircle size={18} />
+                        <AiOutlineQuestionCircle
+                            size={18}
+                            color={props.svgColor ?? 'var(--text2)'}
+                            className='futaStyleSvg'
+                        />
                     )}
                 </div>
             </TextOnlyTooltip>
@@ -81,6 +88,7 @@ function TooltipComponent(props: TooltipComponentProps) {
                         <AiOutlineQuestionCircle
                             size={15}
                             onClick={() => setOpen(!open)}
+                            color={props.svgColor ?? 'var(--text2)'}
                         />
                     )}
                 </div>

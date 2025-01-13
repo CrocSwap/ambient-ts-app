@@ -130,6 +130,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         setIsCondensedModeEnabled(!isCondensedModeEnabled)
                     }
                     mobileHide={activeMobileComponent !== 'chart'}
+                    isActive={isCondensedModeEnabled}
+                    isFuta
                 >
                     <AiOutlineAreaChart
                         size={20}
@@ -159,6 +161,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         setIsTradeDollarizationEnabled((prev) => !prev)
                     }
                     mobileHide={activeMobileComponent !== 'chart'}
+                    isActive={isTradeDollarizationEnabled}
+                    isFuta
                 >
                     <AiOutlineDollarCircle
                         size={20}
@@ -230,6 +234,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         });
                     }}
                     id='chart_settings_button'
+                    isActive={contextmenu}
+                    isFuta
                 >
                     <IoSettingsOutline
                         size={20}

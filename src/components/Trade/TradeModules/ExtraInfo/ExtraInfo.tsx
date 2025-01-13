@@ -46,7 +46,7 @@ export const ExtraInfo = (props: PropsIF) => {
         }
     }, [showWarning]);
 
-    const arrowToRender = isFuta ? null : showDropdown ? (
+    const arrowToRender = showDropdown ? (
         showExtraInfo ? (
             <RiArrowUpSLine size={22} />
         ) : (
@@ -59,7 +59,7 @@ export const ExtraInfo = (props: PropsIF) => {
     return (
         <>
             <ExtraInfoContainer
-                // style={{ textTransform: isFuta ? 'uppercase' : 'none' }}
+                style={{ display: isFuta ? 'none' : 'flex' }}
                 role='button'
                 justifyContent='space-between'
                 alignItems='center'
@@ -121,8 +121,17 @@ export const ExtraInfo = (props: PropsIF) => {
                             }
                         >
                             <FlexContainer gap={4}>
-                                <div>{item.title}</div>
-                                <TooltipComponent title={item.tooltipTitle} />
+                                <div
+                                    style={{
+                                        color: isFuta ? 'var(--text3)' : '',
+                                    }}
+                                >
+                                    {item.title}
+                                </div>
+                                <TooltipComponent
+                                    title={item.tooltipTitle}
+                                    svgColor='#4D5255'
+                                />
                             </FlexContainer>
                             <div style={{ textAlign: 'end' }}>{item.data}</div>
                         </FlexContainer>
