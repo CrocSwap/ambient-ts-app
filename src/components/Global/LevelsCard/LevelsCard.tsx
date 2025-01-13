@@ -7,7 +7,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import LevelLine from '../LevelLine/LevelLine';
 import styles from './LevelsCard.module.css';
 import PointsHistoryDisplay from './PointsHistoryDisplay/PointsHistoryDisplay';

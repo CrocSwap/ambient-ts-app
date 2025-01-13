@@ -3,7 +3,7 @@ import { CandleDataIF, TokenIF } from '../../../ambient-utils/types';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import useDollarPrice from '../../platformAmbient/Chart/ChartUtils/getDollarPrice';
 import { ChartTooltipDiv, CurrentDataDiv } from './ChartTooltipStyles';

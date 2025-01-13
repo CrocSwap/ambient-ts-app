@@ -19,7 +19,7 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../styled/Common';
 import { ClearButton } from '../../../styled/Components/TransactionTable';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import TableInfo from '../TableInfo/TableInfo';

@@ -22,7 +22,7 @@ import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import styles from './Create.module.css';
 
 export default function Create() {

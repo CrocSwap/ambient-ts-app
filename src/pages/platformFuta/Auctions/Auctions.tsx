@@ -4,7 +4,7 @@ import TickerComponent from '../../../components/Futa/TickerComponent/TickerComp
 import { AppStateContext } from '../../../contexts';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import styles from './Auctions.module.css';
 import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
 import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';

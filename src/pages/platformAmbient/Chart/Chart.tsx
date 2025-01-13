@@ -51,7 +51,7 @@ import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import useHandleSwipeBack from '../../../utils/hooks/useHandleSwipeBack';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { formatDollarAmountAxis } from '../../../utils/numbers';

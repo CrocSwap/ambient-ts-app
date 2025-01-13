@@ -31,7 +31,7 @@ import {
     MainSection,
     ResizableContainer,
 } from '../../../styled/Components/Trade';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';

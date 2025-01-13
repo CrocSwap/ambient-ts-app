@@ -1,5 +1,5 @@
 import { HeaderButtons } from '../../../styled/Components/Chart';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     isButtonFavorited: boolean;

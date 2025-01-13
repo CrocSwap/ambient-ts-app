@@ -10,7 +10,7 @@ import { TokenIF, TransactionIF } from '../../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import Apy from '../../../Tabs/Apy/Apy';
 import TokenIcon from '../../../TokenIcon/TokenIcon';

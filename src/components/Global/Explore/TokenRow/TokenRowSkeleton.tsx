@@ -1,4 +1,4 @@
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import styles from './TokenRow.module.css';
 export default function TokenRowSkeleton() {
     const desktopView = useMediaQuery('(min-width: 768px)');

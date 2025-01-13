@@ -39,7 +39,7 @@ import {
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import Comments from '../Comments/Comments';
 import { tickerDisplayElements } from './tickerDisplayElements';

@@ -7,7 +7,7 @@ import {
 import DropdownSearch from '../../../../../components/Global/DropdownSearch/DropdownSearch';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 import PoolData from './PoolData';
 import styles from './TradeChartsTokenInfo.module.css';
 

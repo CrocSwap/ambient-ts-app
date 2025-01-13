@@ -1,5 +1,5 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 
 import moment from 'moment';
 import React, { useContext } from 'react';

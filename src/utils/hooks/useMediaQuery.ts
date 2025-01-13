@@ -3,7 +3,7 @@ import { maxWidth, minWidth } from '../../ambient-utils/types/mediaQueries';
 
 type centralQueries = maxWidth | minWidth;
 
-function useMediaQuery(query: centralQueries | string): boolean {
+export function useMediaQuery(query: centralQueries | string): boolean {
     const getMatches = (query: string): boolean => {
         // Prevents SSR issues
         if (typeof window !== 'undefined') {
@@ -46,5 +46,3 @@ function useMediaQuery(query: centralQueries | string): boolean {
 
     return matches;
 }
-
-export default useMediaQuery;

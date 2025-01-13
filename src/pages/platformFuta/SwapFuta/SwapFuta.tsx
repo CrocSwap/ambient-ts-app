@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import Comments from '../../../components/Futa/Comments/Comments';
 import { ChartContext } from '../../../contexts/ChartContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import Swap from '../../platformAmbient/Trade/Swap/Swap';
 import Trade from '../../platformAmbient/Trade/Trade';
 import styles from './SwapFuta.module.css';
