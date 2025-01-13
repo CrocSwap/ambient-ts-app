@@ -3,14 +3,14 @@ import { maxWidth, minWidth } from '../../ambient-utils/types/mediaQueries';
 
 type centralQueries = maxWidth | minWidth;
 
-export type MediaQueryResultsIF = {
-    xs: boolean; // 1px - 599px
-    sm: boolean; // 600px - 899px
-    md: boolean; // 900px - 1199px
-    lg: boolean; // 1200px - 1599px
-    xl: boolean; // 1600px - 1919px
-    ultra: boolean; // 1920px and above
-};
+export interface MediaQueryResultsIF {
+    isWidescreen: boolean;
+    isDesktop: boolean;
+    isLaptop: boolean;
+    isTabletWide: boolean;
+    isTabletNarrow: boolean;
+    isCellphone: boolean;
+}
 
 export function useMediaQuery(): MediaQueryResultsIF;
 export function useMediaQuery(query: centralQueries | string): boolean;
@@ -24,12 +24,12 @@ export function useMediaQuery(
         return output;
     }
     const defaultQueries = {
-        xs: makeQueryString(1, 599),
-        sm: makeQueryString(600, 899),
-        md: makeQueryString(900, 1199),
-        lg: makeQueryString(1200, 1599),
-        xl: makeQueryString(1600, 1919),
-        ultra: makeQueryString(1920),
+        isWidescreen: makeQueryString(1921),
+        isDesktop: makeQueryString(1281, 1920),
+        isLaptop: makeQueryString(1025, 1280),
+        isTabletWide: makeQueryString(769, 1024),
+        isTabletNarrow: makeQueryString(481, 768),
+        isCellphone: makeQueryString(1, 480),
     };
 
     const getMatches = (query: string): boolean => {

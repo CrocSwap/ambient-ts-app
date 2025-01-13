@@ -1,9 +1,14 @@
-import { useMediaQuery } from '@material-ui/core';
+import {
+    MediaQueryResultsIF,
+    useMediaQuery,
+} from '../../../utils/hooks/useMediaQuery';
 
 export default function TestPage() {
     const MEDIA_QUERY = '(min-width: 768px)';
-    const output: boolean = useMediaQuery(MEDIA_QUERY);
-    console.log(output);
+    const output1: boolean = useMediaQuery(MEDIA_QUERY);
+    const output2: MediaQueryResultsIF = useMediaQuery();
+    console.log(output1);
+    console.log(output2);
 
     return (
         <main>
