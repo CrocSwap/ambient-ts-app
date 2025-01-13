@@ -12,6 +12,9 @@ type MediaQueryResults = {
     ultra: boolean; // 1920px and above
 };
 
+export function useMediaQuery(): MediaQueryResults;
+export function useMediaQuery(query: centralQueries | string): boolean;
+
 export function useMediaQuery(
     query?: centralQueries | string,
 ): boolean | MediaQueryResults {
