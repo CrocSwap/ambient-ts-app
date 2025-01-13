@@ -12,13 +12,8 @@ interface BaseMediaQueryStringsIF {
     isCellphone: string;
 }
 
-export interface MediaQueryResultsIF {
-    isWidescreen: boolean;
-    isDesktop: boolean;
-    isLaptop: boolean;
-    isTabletWide: boolean;
-    isTabletNarrow: boolean;
-    isCellphone: boolean;
+export interface MediaQueryResultsIF
+    extends Record<keyof BaseMediaQueryStringsIF, boolean> {
     isComputer: boolean;
     isMobile: boolean;
 }
