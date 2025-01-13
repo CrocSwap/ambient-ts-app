@@ -6469,10 +6469,10 @@ mlly@^1.7.1, mlly@^1.7.2:
     pkg-types "^1.2.0"
     ufo "^1.5.4"
 
-modern-screenshot@^4.4.25:
-  version "4.4.39"
-  resolved "https://registry.yarnpkg.com/modern-screenshot/-/modern-screenshot-4.4.39.tgz#4c8b7a9ecb899e68b6d4111abfa71043f326847a"
-  integrity sha512-p+I4yLZUDnoJMa5zoi+71nLQmoLQ6WRU4W8vZu1BZk2PlIYOz5mGnj9/7t2lGWKYeOr4zo6pajhY0/9TS5Zcdw==
+modern-screenshot@^4.5.5:
+  version "4.5.5"
+  resolved "https://registry.yarnpkg.com/modern-screenshot/-/modern-screenshot-4.5.5.tgz#76346f1b1685aaf537f2d9d44d07de3c9aa6a5eb"
+  integrity sha512-k5AC0UjY8YccnKn53upeQMzgDdPYkDN/706ma3yPHCwOZi+AoL0NeMlLS3nQwA/s0xrM7s8WO+UWnx5YJNpQeA==
 
 moment@^2.30.1:
   version "2.30.1"
