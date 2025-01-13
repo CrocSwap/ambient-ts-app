@@ -77,7 +77,7 @@ function InfiniteScroll(props: propsIF) {
     const componentLockRef = useRef<boolean>();
     componentLockRef.current = componentLock;
 
-    const [infShouldReset, setInfShouldReset] = useState<boolean>(false);
+    const prevTxFetchType = useRef<TxFetchType>();
 
     const {
         fetchLimitOrders,
@@ -605,63 +605,58 @@ function InfiniteScroll(props: propsIF) {
         if (data.length == 0) {
             setFetchedTransactions(assignInitialFetchedTransactions());
         } else {
-            if (infShouldReset) {
-                resetInfiniteScroll();
-            } else {
-                const newTxs = dataDiffCheck(data);
-
-                if (newTxs.length > 0) {
-                    if (pagesVisible[0] == 0) {
-                        switch (props.type) {
-                            case 'Order':
-                                setFetchedTransactions(
-                                    (
-                                        prev:
-                                            | LimitOrderIF[]
-                                            | PositionIF[]
-                                            | TransactionIF[],
-                                    ) => {
-                                        return [
-                                            ...(prev as LimitOrderIF[]),
-                                            ...(newTxs as LimitOrderIF[]),
-                                        ];
-                                    },
-                                );
-                                break;
-                            case 'Range':
-                                setFetchedTransactions(
-                                    (
-                                        prev:
-                                            | LimitOrderIF[]
-                                            | PositionIF[]
-                                            | TransactionIF[],
-                                    ) => {
-                                        return [
-                                            ...(prev as PositionIF[]),
-                                            ...(newTxs as PositionIF[]),
-                                        ];
-                                    },
-                                );
-                                break;
-                            case 'Transaction':
-                                setFetchedTransactions(
-                                    (
-                                        prev:
-                                            | TransactionIF[]
-                                            | LimitOrderIF[]
-                                            | PositionIF[],
-                                    ) => {
-                                        return [
-                                            ...(prev as TransactionIF[]),
-                                            ...(newTxs as TransactionIF[]),
-                                        ];
-                                    },
-                                );
-                                break;
-                        }
-                    } else {
-                        updateHotTransactions(newTxs);
+            const newTxs = dataDiffCheck(data);
+            if (newTxs.length > 0) {
+                if (pagesVisible[0] == 0) {
+                    switch (props.type) {
+                        case 'Order':
+                            setFetchedTransactions(
+                                (
+                                    prev:
+                                        | LimitOrderIF[]
+                                        | PositionIF[]
+                                        | TransactionIF[],
+                                ) => {
+                                    return [
+                                        ...(newTxs as LimitOrderIF[]),
+                                        ...(prev as LimitOrderIF[]),
+                                    ];
+                                },
+                            );
+                            break;
+                        case 'Range':
+                            setFetchedTransactions(
+                                (
+                                    prev:
+                                        | LimitOrderIF[]
+                                        | PositionIF[]
+                                        | TransactionIF[],
+                                ) => {
+                                    return [
+                                        ...(newTxs as PositionIF[]),
+                                        ...(prev as PositionIF[]),
+                                    ];
+                                },
+                            );
+                            break;
+                        case 'Transaction':
+                            setFetchedTransactions(
+                                (
+                                    prev:
+                                        | TransactionIF[]
+                                        | LimitOrderIF[]
+                                        | PositionIF[],
+                                ) => {
+                                    return [
+                                        ...(newTxs as TransactionIF[]),
+                                        ...(prev as TransactionIF[]),
+                                    ];
+                                },
+                            );
+                            break;
                     }
+                } else {
+                    updateHotTransactions(newTxs);
                 }
             }
         }
@@ -669,7 +664,13 @@ function InfiniteScroll(props: propsIF) {
 
     useEffect(() => {
         if (props.type === 'Transaction') {
-            setInfShouldReset(true);
+            if (
+                prevTxFetchType.current &&
+                prevTxFetchType.current !== txFetchType
+            ) {
+                resetInfiniteScroll();
+            }
+            prevTxFetchType.current = txFetchType;
         }
     }, [txFetchType]);
 
