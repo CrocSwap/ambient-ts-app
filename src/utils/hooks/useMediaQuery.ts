@@ -18,13 +18,18 @@ export function useMediaQuery(query: centralQueries | string): boolean;
 export function useMediaQuery(
     query?: centralQueries | string,
 ): boolean | MediaQueryResultsIF {
+    function makeQueryString(low: number, high: number): string {
+        const l: string = low.toString();
+        const h: string = high.toString();
+        return `(min-width: ${l}px) and (max-width: ${h}px)`;
+    }
     const defaultQueries = {
-        xs: '(min-width: 1px) and (max-width: 599px)',
-        sm: '(min-width: 600px) and (max-width: 899px)',
-        md: '(min-width: 900px) and (max-width: 1199px)',
-        lg: '(min-width: 1200px) and (max-width: 1599px)',
-        xl: '(min-width: 1600px) and (max-width: 1919px)',
-        ultra: '(min-width: 1920px)',
+        xs: makeQueryString(1, 599),
+        sm: makeQueryString(600, 899),
+        md: makeQueryString(900, 1199),
+        lg: makeQueryString(1200, 1599),
+        xl: makeQueryString(1600, 1919),
+        ultra: makeQueryString(1920, 999999),
     };
 
     const getMatches = (query: string): boolean => {
