@@ -3,7 +3,7 @@ import { maxWidth, minWidth } from '../../ambient-utils/types/mediaQueries';
 
 type centralQueries = maxWidth | minWidth;
 
-type MediaQueryResultsIF = {
+export type MediaQueryResultsIF = {
     xs: boolean; // 1px - 599px
     sm: boolean; // 600px - 899px
     md: boolean; // 900px - 1199px
@@ -18,10 +18,10 @@ export function useMediaQuery(query: centralQueries | string): boolean;
 export function useMediaQuery(
     query?: centralQueries | string,
 ): boolean | MediaQueryResultsIF {
-    function makeQueryString(low: number, high: number): string {
-        const l: string = low.toString();
-        const h: string = high.toString();
-        return `(min-width: ${l}px) and (max-width: ${h}px)`;
+    function makeQueryString(low: number, high?: number): string {
+        let output = `(min-width: ${low.toString()}px)`;
+        if (high) output += `and (max-width: ${high.toString()}px)`;
+        return output;
     }
     const defaultQueries = {
         xs: makeQueryString(1, 599),
@@ -29,7 +29,7 @@ export function useMediaQuery(
         md: makeQueryString(900, 1199),
         lg: makeQueryString(1200, 1599),
         xl: makeQueryString(1600, 1919),
-        ultra: makeQueryString(1920, 999999),
+        ultra: makeQueryString(1920),
     };
 
     const getMatches = (query: string): boolean => {
