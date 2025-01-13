@@ -1,22 +1,14 @@
-import FutaNewLanding from '../../platformFuta/Home/FutaLandings/NewLandings/FutaNewLanding';
+import { useMediaQuery } from '@material-ui/core';
 
 export default function TestPage() {
-    // const [activeTab, setActiveTab] = useState(0);
-
-    // const tabData = [
-    //   { label: 'Trade', content: <div>Content for Trade</div> },
-    //   { label: 'Explore', content: <div>Content for Explore</div> },
-    //   { label: 'Account', content: <div>Content for Account</div> },
-    //   { label: 'Chat', content: <div>Content for Chat</div> },
-    // ];
+    const MEDIA_QUERY = '(min-width: 768px)';
+    const output: boolean = useMediaQuery(MEDIA_QUERY);
+    console.log(output);
 
     return (
-        // <FlexContainer justifyContent='center' alignItems='center' style={{width: '100vw', height: '100vh'}}>
-
-        //   <FadingTextGrid/>
-        // </FlexContainer>
-
-        <FutaNewLanding />
-        // <FutaLandingNav/>
+        <main>
+            <h1>Media Query</h1>
+            <p>{MEDIA_QUERY}</p>
+        </main>
     );
 }
