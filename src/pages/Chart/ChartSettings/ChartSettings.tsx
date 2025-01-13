@@ -42,9 +42,7 @@ export interface ColorObjIF {
 export default function ChartSettings(props: ContextMenuIF) {
     const {
         contextMenuPlacement,
-        setContextmenu,
         chartThemeColors,
-        // render,
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
         setShouldDisableChartSettings,
@@ -60,6 +58,8 @@ export default function ChartSettings(props: ContextMenuIF) {
     const [isSaving, setIsSaving] = useState(false);
     const [applyDefault, setApplyDefault] = useState(false);
     const [reverseColorObj, setReverseColorObj] = useState(false);
+
+    const [isSettingsClosing, setIsSettingsClosing] = useState(false);
 
     const tabletView = useMediaQuery(
         '(min-width: 768px) and (max-width: 1200px)',
@@ -89,6 +89,7 @@ export default function ChartSettings(props: ContextMenuIF) {
 
     useEffect(() => {
         if (closeOutherChartSetting) {
+            setIsSettingsClosing(true);
             setSelectedColorObj(undefined);
             setShouldDisableChartSettings(true);
             setCloseOutherChartSetting(false);
@@ -122,7 +123,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                             ? 'CHART SETTINGS'
                             : 'Chart Settings'}
                     </ContextMenuHeaderText>
-                    <CloseButton onClick={() => setContextmenu(false)}>
+                    <CloseButton onClick={() => setIsSettingsClosing(true)}>
                         <VscClose size={24} />
                     </CloseButton>
                 </ContextMenuHeader>
@@ -145,7 +146,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                     isSaving={isSaving}
                     setIsSaving={setIsSaving}
                     isMobile={tabletView}
-                    // render={render}
+                    isSettingsClosing={isSettingsClosing}
                 />
             </ContextMenu>
         </ChartSettingsContainer>

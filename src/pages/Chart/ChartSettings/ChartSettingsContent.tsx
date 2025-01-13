@@ -66,7 +66,7 @@ interface ContextMenuContentIF {
     isSaving: boolean;
     setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
     isMobile: boolean;
-    // render: () => void;
+    isSettingsClosing: boolean;
 }
 
 export default function ChartSettingsContent(props: ContextMenuContentIF) {
@@ -85,7 +85,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         isSaving,
         setIsSaving,
         isMobile,
-        // render,
+        isSettingsClosing,
     } = props;
 
     const {
@@ -140,6 +140,12 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         );
         setPriceInOption(option);
     };
+
+    useEffect(() => {
+        if (isSettingsClosing) {
+            handleCancelChanges();
+        }
+    }, [isSettingsClosing]);
 
     const handleCandleColorPicker = (
         replaceSelector: string,
