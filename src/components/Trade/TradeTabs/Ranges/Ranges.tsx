@@ -4,8 +4,13 @@ import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-utils/constants';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { PositionIF } from '../../../../ambient-utils/types';
-import { AppStateContext } from '../../../../contexts';
+import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
+import {
+    AppStateContext,
+    CachedDataContext,
+    CrocEnvContext,
+    TokenContext,
+} from '../../../../contexts';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
@@ -29,6 +34,7 @@ import TableRows from '../TableRows';
 import { useSortedPositions } from '../useSortedPositions';
 import RangeHeader from './RangesTable/RangeHeader';
 import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
+import { getPositionData } from '../../../../ambient-utils/dataLayer/functions/getPositionData';
 
 // interface for props
 interface propsIF {
@@ -59,8 +65,18 @@ function Ranges(props: propsIF) {
     const { setCurrentRangeInReposition } = useContext(RangeContext);
 
     const {
-        activeNetwork: { poolIndex },
+        activeNetwork: { poolIndex, GCGO_URL, chainId },
     } = useContext(AppStateContext);
+
+    const { tokens } = useContext(TokenContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
+
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -72,6 +88,7 @@ function Ranges(props: propsIF) {
         userPositionsByPool,
         positionsByPool,
         unindexedNonFailedSessionPositionUpdates,
+        setUserPositionsByPool,
     } = useContext(GraphDataContext);
     const dataLoadingStatus = useContext(DataLoadingContext);
 
@@ -136,6 +153,80 @@ function Ranges(props: propsIF) {
             positionsByPool,
         ],
     );
+
+    useEffect(() => {
+        if (
+            showAllData ||
+            !userAddress ||
+            !baseToken ||
+            !quoteToken ||
+            !poolIndex ||
+            !GCGO_URL ||
+            !crocEnv
+        )
+            return;
+        // retrieve user_pool_positions
+        const userPoolPositionsCacheEndpoint =
+            GCGO_URL + '/user_pool_positions?';
+        const forceOnchainLiqUpdate = true;
+        fetch(
+            userPoolPositionsCacheEndpoint +
+                new URLSearchParams({
+                    user: userAddress,
+                    base: baseToken.address.toLowerCase(),
+                    quote: quoteToken.address.toLowerCase(),
+                    poolIdx: poolIndex.toString(),
+                    chainId: chainId,
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                const userPoolPositions = json.data;
+                const skipENSFetch = true;
+
+                if (userPoolPositions) {
+                    Promise.all(
+                        userPoolPositions.map((position: PositionServerIF) => {
+                            return getPositionData(
+                                position,
+                                tokens.tokenUniv,
+                                crocEnv,
+                                provider,
+                                chainId,
+                                cachedFetchTokenPrice,
+                                cachedQuerySpotPrice,
+                                cachedTokenDetails,
+                                cachedEnsResolve,
+                                skipENSFetch,
+                                forceOnchainLiqUpdate,
+                            );
+                        }),
+                    )
+                        .then((updatedPositions) => {
+                            setUserPositionsByPool({
+                                dataReceived: true,
+                                positions: updatedPositions,
+                            });
+                            dataLoadingStatus.setDataLoadingStatus({
+                                datasetName:
+                                    'isConnectedUserPoolRangeDataLoading',
+                                loadingStatus: false,
+                            });
+                        })
+                        .catch(console.error);
+                } else {
+                    setUserPositionsByPool({
+                        dataReceived: false,
+                        positions: [],
+                    });
+                    dataLoadingStatus.setDataLoadingStatus({
+                        datasetName: 'isConnectedUserPoolRangeDataLoading',
+                        loadingStatus: false,
+                    });
+                }
+            })
+            .catch(console.error);
+    }, [userAddress, showAllData]);
 
     // ------------------------------------------------------------------------------------------------------------------------------
 
@@ -429,10 +520,13 @@ function Ranges(props: propsIF) {
         data: sortedPositions,
     });
 
-    const shouldDisplayNoTableData =
-        !isLoading &&
-        !rangeData.length &&
-        relevantTransactionsByType.length === 0;
+    const shouldDisplayNoTableData = useMemo(
+        () =>
+            !isLoading &&
+            !mergedData.length &&
+            relevantTransactionsByType.length === 0,
+        [isLoading, mergedData.length, relevantTransactionsByType.length],
+    );
 
     const sortedPositionsToDisplayAccount = useMemo(() => {
         return (mergedData as PositionIF[]).filter(
