@@ -74,6 +74,10 @@
     animation: tooltipAnim 0.5s ease-in-out forwards;
 }
 
+.ambi .tooltip_wrapper.animated{
+    animation: ambiTutoAnim .5s ease-in-out forwards;
+}
+
 .tooltip_title {
     font-size: 1.1rem;
     font-weight: bold;
@@ -110,6 +114,24 @@
     }
     100% {
         transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes ambiTutoAnim {
+    0%{
+        opacity: 0;
+        transform: scale(1);
+        background-color: color-mix(in srgb, var(--accent1) 0%, var(--dark2));
+    }
+    50%{
+        transform: scale(1.1);
+        background-color: var(--accent1);
+        background-color: color-mix(in srgb, var(--accent1) 10%, var(--dark2));
+    }
+    100%{
+        transform: scale(1);
+        background-color: color-mix(in srgb, var(--accent1) 0%, var(--dark2));
         opacity: 1;
     }
 }
@@ -300,7 +322,6 @@ opacity: .4;
 font-size: 1.1rem;
 padding-top: 0rem;
 }
-
 
 
 @media only screen and (max-width: 600px) {
