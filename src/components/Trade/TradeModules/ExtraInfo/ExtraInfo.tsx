@@ -46,7 +46,7 @@ export const ExtraInfo = (props: PropsIF) => {
         }
     }, [showWarning]);
 
-    const arrowToRender = showDropdown ? (
+    const arrowToRender = isFuta ? null : showDropdown ? (
         showExtraInfo ? (
             <RiArrowUpSLine size={22} />
         ) : (
@@ -54,10 +54,12 @@ export const ExtraInfo = (props: PropsIF) => {
         )
     ) : null;
 
+    const staticDropdown = isFuta ? true : showExtraInfo && showDropdown;
+
     return (
         <>
             <ExtraInfoContainer
-                style={{ textTransform: isFuta ? 'uppercase' : 'none' }}
+                // style={{ textTransform: isFuta ? 'uppercase' : 'none' }}
                 role='button'
                 justifyContent='space-between'
                 alignItems='center'
@@ -66,6 +68,7 @@ export const ExtraInfo = (props: PropsIF) => {
                 fontSize='body'
                 padding='4px'
                 active={showDropdown}
+                isFuta={isFuta}
                 onClick={
                     showDropdown
                         ? () => setShowExtraInfo(!showExtraInfo)
@@ -96,8 +99,10 @@ export const ExtraInfo = (props: PropsIF) => {
                 </FlexContainer>
                 <div style={{ height: '22px' }}>{arrowToRender}</div>
             </ExtraInfoContainer>
-            {showExtraInfo && showDropdown && (
-                <ExtraDetailsContainer>
+            {staticDropdown && (
+                <ExtraDetailsContainer
+                    style={{ textTransform: isFuta ? 'uppercase' : 'none' }}
+                >
                     {extraInfo.map((item, idx) => (
                         <FlexContainer
                             key={idx}
@@ -119,7 +124,7 @@ export const ExtraInfo = (props: PropsIF) => {
                                 <div>{item.title}</div>
                                 <TooltipComponent title={item.tooltipTitle} />
                             </FlexContainer>
-                            <div>{item.data}</div>
+                            <div style={{ textAlign: 'end' }}>{item.data}</div>
                         </FlexContainer>
                     ))}
                 </ExtraDetailsContainer>

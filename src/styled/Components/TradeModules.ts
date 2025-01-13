@@ -347,7 +347,10 @@ export const RefreshButtonFuta = styled.button`
     }
 `;
 
-export const ExtraInfoContainer = styled(FlexContainer)<{ active: boolean }>`
+export const ExtraInfoContainer = styled(FlexContainer)<{
+    active: boolean;
+    isFuta?: boolean;
+}>`
     border-radius: var(--border-radius);
 
     ${({ active }) =>
@@ -382,6 +385,15 @@ export const ExtraInfoContainer = styled(FlexContainer)<{ active: boolean }>`
             background: transparent;
         }
     `}
+
+    ${({ isFuta }) =>
+        isFuta
+            ? `
+        & {
+          text-transform: uppercase !important;
+        }
+    `
+            : ''}
 `;
 
 export const ExtraDetailsContainer = styled.div`
