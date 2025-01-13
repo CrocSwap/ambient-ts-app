@@ -16,6 +16,8 @@ type baseMediaQueries =
 export interface MediaQueryResultsIF extends Record<baseMediaQueries, boolean> {
     // isWidescreen || isDesktop || isLaptop
     isComputer: boolean;
+    // isTabletWide || isTabletNarrow
+    isTablet: boolean;
     // isTabletWide || isTabletNarrow || isCellphone
     isMobile: boolean;
 }
@@ -87,8 +89,11 @@ export function useMediaQuery(
             } = rawOutput;
             // decorate data from basic inquiries with union values
             output = {
+                // all atomic ranges
                 ...rawOutput,
+                // all union ranges
                 isComputer: isWidescreen || isDesktop || isLaptop,
+                isTablet: isTabletWide || isTabletNarrow,
                 isMobile: isTabletWide || isTabletNarrow || isCellphone,
             };
         }
