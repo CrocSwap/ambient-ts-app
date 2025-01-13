@@ -4,11 +4,7 @@ import { MouseEvent, useContext, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { BrandContext } from '../../../contexts/BrandContext';
-import {
-    ChartContext,
-    ChartThemeIF,
-    LocalChartSettingsIF,
-} from '../../../contexts/ChartContext';
+import { ChartContext, ChartThemeIF } from '../../../contexts/ChartContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
@@ -330,8 +326,6 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                     parsedContextData.chartColors.drawngShapeDefaultColor,
                 ) as d3.RGBColor,
             };
-
-            console.log({ oldColorData });
 
             Object.assign(chartThemeColors, oldColorData);
         } else {

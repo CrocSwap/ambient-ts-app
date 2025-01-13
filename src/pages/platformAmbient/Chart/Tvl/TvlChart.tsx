@@ -272,8 +272,8 @@ function TvlChart(props: TvlData) {
                     resizeHeight,
                 );
 
-                const d3TvlGradientStart = chartThemeColors.liqBidColor?.copy();
-                const d3TvlGradient = chartThemeColors.liqBidColor?.copy();
+                const d3TvlGradientStart = chartThemeColors.accent1?.copy();
+                const d3TvlGradient = chartThemeColors.accent1?.copy();
 
                 if (d3TvlGradientStart) d3TvlGradientStart.opacity = 0;
                 if (d3TvlGradient) d3TvlGradient.opacity = 0.7;
@@ -338,7 +338,7 @@ function TvlChart(props: TvlData) {
                 return areaSeries;
             });
 
-            const d3TvlGradient = chartThemeColors.liqBidColor?.copy();
+            const d3TvlGradient = chartThemeColors.accent1?.copy();
 
             if (d3TvlGradient) d3TvlGradient.opacity = 0.7;
 
