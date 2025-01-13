@@ -191,7 +191,7 @@ function Orders(props: propsIF) {
             .catch(console.error);
     }, [userAddress, showAllData]);
 
-    const activeUserLimitOrdersLength = useMemo(
+    const activeUserLimitOrdersInOtherPoolsLength = useMemo(
         () =>
             isAccountView
                 ? activeAccountLimitOrderData
@@ -203,9 +203,24 @@ function Orders(props: propsIF) {
                     : 0
                 : limitOrdersByUser.limitOrders.filter(
                       (order) =>
-                          order.positionLiq != 0 || order.claimableLiq !== 0,
+                          order.positionLiq != 0 ||
+                          (order.claimableLiq !== 0 &&
+                              !(
+                                  order.base.toLowerCase() ===
+                                      baseToken.address.toLowerCase() &&
+                                  order.quote.toLowerCase() ===
+                                      quoteToken.address.toLowerCase() &&
+                                  order.poolIdx === poolIndex
+                              )),
                   ).length,
-        [activeAccountLimitOrderData, isAccountView, limitOrdersByUser],
+        [
+            activeAccountLimitOrderData,
+            isAccountView,
+            limitOrdersByUser,
+            baseToken.address,
+            quoteToken.address,
+            poolIndex,
+        ],
     );
 
     const isLoading = useMemo(
@@ -490,8 +505,8 @@ function Orders(props: propsIF) {
         <NoTableData
             type='limits'
             isAccountView={isAccountView}
-            activeUserPositionsLength={activeUserLimitOrdersLength}
-            activeUserPositionsByPoolLength={activeUserLimitOrdersByPool.length}
+            activeUserPositionsLength={activeUserLimitOrdersInOtherPoolsLength}
+            activeUserPositionsByPoolLength={mergedData.length}
             unselectCandle={unselectCandle}
         />
     ) : (

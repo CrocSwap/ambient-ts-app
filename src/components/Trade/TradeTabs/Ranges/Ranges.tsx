@@ -3,6 +3,7 @@ import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useLocation } from 'react-router-dom';
 import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-utils/constants';
+import { getPositionData } from '../../../../ambient-utils/dataLayer/functions/getPositionData';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
 import {
@@ -34,7 +35,6 @@ import TableRows from '../TableRows';
 import { useSortedPositions } from '../useSortedPositions';
 import RangeHeader from './RangesTable/RangeHeader';
 import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
-import { getPositionData } from '../../../../ambient-utils/dataLayer/functions/getPositionData';
 
 // interface for props
 interface propsIF {
@@ -104,7 +104,7 @@ function Ranges(props: propsIF) {
         setCurrentRangeInReposition('');
     }
 
-    const activeUserPositionsLength = useMemo(
+    const activeUserPositionsInOtherPoolsLength = useMemo(
         () =>
             isAccountView
                 ? activeAccountPositionData
@@ -113,9 +113,22 @@ function Ranges(props: propsIF) {
                       ).length
                     : 0
                 : positionsByUser.positions.filter(
-                      (position) => position.positionLiq != 0,
+                      (position) =>
+                          position.positionLiq != 0 &&
+                          (position.base.toLowerCase() !==
+                              baseToken.address.toLowerCase() ||
+                              position.quote.toLowerCase() !==
+                                  quoteToken.address.toLowerCase() ||
+                              position.poolIdx !== poolIndex),
                   ).length,
-        [activeAccountPositionData, positionsByUser, isAccountView],
+        [
+            activeAccountPositionData,
+            positionsByUser,
+            isAccountView,
+            baseToken.address,
+            quoteToken.address,
+            poolIndex,
+        ],
     );
 
     const activeUserPositionsByPool = useMemo(
@@ -589,8 +602,8 @@ function Ranges(props: propsIF) {
         <NoTableData
             type='liquidity'
             isAccountView={isAccountView}
-            activeUserPositionsLength={activeUserPositionsLength}
-            activeUserPositionsByPoolLength={activeUserPositionsByPool.length}
+            activeUserPositionsLength={activeUserPositionsInOtherPoolsLength}
+            activeUserPositionsByPoolLength={mergedData.length}
             unselectCandle={unselectCandle}
         />
     ) : (
