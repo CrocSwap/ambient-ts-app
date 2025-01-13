@@ -13,7 +13,6 @@ import {
 } from 'react';
 import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
 
-import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
 import { UserDataContext } from '../../../../contexts';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
@@ -244,19 +243,11 @@ function Transactions(props: propsIF) {
             cachedEnsResolve: cachedEnsResolve,
         })
             .then((selectedCandleChangesJson) => {
-                IS_LOCAL_ENV && console.debug({ selectedCandleChangesJson });
                 if (selectedCandleChangesJson) {
                     const selectedCandleChangesWithoutFills =
-                        selectedCandleChangesJson.filter((tx) => {
-                            if (
-                                tx.changeType !== 'fill' &&
-                                tx.changeType !== 'cross'
-                            ) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        });
+                        selectedCandleChangesJson.filter(
+                            (tx) => tx.changeType !== 'cross',
+                        );
                     setCandleTransactionData(selectedCandleChangesWithoutFills);
                 }
                 setOutsideControl(true);

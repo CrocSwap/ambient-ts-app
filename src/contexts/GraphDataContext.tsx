@@ -13,7 +13,6 @@ import {
     LiquidityDataIF,
     PositionIF,
     RecordType,
-    TokenIF,
     TransactionIF,
 } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
@@ -497,7 +496,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider,
-                    n: 100, // fetch last 100 changes,
+                    n: 200,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
@@ -505,62 +504,14 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
+                            const userTransactionsWithoutFills =
+                                updatedTransactions.filter(
+                                    (tx) => tx.changeType !== 'cross',
+                                );
                             setTransactionsByUser({
                                 dataReceived: true,
-                                changes: updatedTransactions,
+                                changes: userTransactionsWithoutFills,
                             });
-                            const result: TokenIF[] = [];
-                            const tokenMap = new Map();
-                            for (const item of updatedTransactions as TransactionIF[]) {
-                                if (!tokenMap.has(item.base)) {
-                                    const isFoundInAmbientList =
-                                        tokens.defaultTokens.some(
-                                            (ambientToken) => {
-                                                if (
-                                                    ambientToken.address.toLowerCase() ===
-                                                    item.base.toLowerCase()
-                                                )
-                                                    return true;
-                                                return false;
-                                            },
-                                        );
-                                    if (!isFoundInAmbientList) {
-                                        tokenMap.set(item.base, true); // set any value to Map
-                                        result.push({
-                                            name: item.baseName,
-                                            address: item.base,
-                                            symbol: item.baseSymbol,
-                                            decimals: item.baseDecimals,
-                                            chainId: parseInt(item.chainId),
-                                            logoURI: item.baseTokenLogoURI,
-                                        });
-                                    }
-                                }
-                                if (!tokenMap.has(item.quote)) {
-                                    const isFoundInAmbientList =
-                                        tokens.defaultTokens.some(
-                                            (ambientToken) => {
-                                                if (
-                                                    ambientToken.address.toLowerCase() ===
-                                                    item.quote.toLowerCase()
-                                                )
-                                                    return true;
-                                                return false;
-                                            },
-                                        );
-                                    if (!isFoundInAmbientList) {
-                                        tokenMap.set(item.quote, true); // set any value to Map
-                                        result.push({
-                                            name: item.quoteName,
-                                            address: item.quote,
-                                            symbol: item.quoteSymbol,
-                                            decimals: item.quoteDecimals,
-                                            chainId: parseInt(item.chainId),
-                                            logoURI: item.quoteTokenLogoURI,
-                                        });
-                                    }
-                                }
-                            }
                         }
 
                         setDataLoadingStatus({

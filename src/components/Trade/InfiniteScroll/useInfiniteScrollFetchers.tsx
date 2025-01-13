@@ -130,7 +130,11 @@ const useInfiniteScrollFetchers = () => {
                     cachedEnsResolve: cachedEnsResolve,
                 }).then((poolChangesJsonData) => {
                     if (poolChangesJsonData && poolChangesJsonData.length > 0) {
-                        resolve(poolChangesJsonData as TransactionIF[]);
+                        const newTxByPoolDataWithoutFills =
+                            poolChangesJsonData.filter(
+                                (tx) => tx.changeType !== 'cross',
+                            );
+                        resolve(newTxByPoolDataWithoutFills as TransactionIF[]);
                     } else {
                         resolve([]);
                     }
@@ -162,7 +166,17 @@ const useInfiniteScrollFetchers = () => {
                     cachedEnsResolve: cachedEnsResolve,
                 }).then((userChangesJsonData) => {
                     if (userChangesJsonData && userChangesJsonData.length > 0) {
-                        resolve(userChangesJsonData as TransactionIF[]);
+                        const userTransactionsWithoutFills =
+                            userChangesJsonData.filter(
+                                (tx) => tx.changeType !== 'cross',
+                            );
+                        console.log({
+                            userChangesJsonData,
+                            userTransactionsWithoutFills,
+                        });
+                        resolve(
+                            userTransactionsWithoutFills as TransactionIF[],
+                        );
                     } else {
                         resolve([]);
                     }
@@ -197,7 +211,13 @@ const useInfiniteScrollFetchers = () => {
                     cachedEnsResolve: cachedEnsResolve,
                 }).then((poolChangesJsonData) => {
                     if (poolChangesJsonData && poolChangesJsonData.length > 0) {
-                        resolve(poolChangesJsonData as TransactionIF[]);
+                        const poolUserTransactionsWithoutFills =
+                            poolChangesJsonData.filter(
+                                (tx) => tx.changeType !== 'cross',
+                            );
+                        resolve(
+                            poolUserTransactionsWithoutFills as TransactionIF[],
+                        );
                     } else {
                         resolve([]);
                     }

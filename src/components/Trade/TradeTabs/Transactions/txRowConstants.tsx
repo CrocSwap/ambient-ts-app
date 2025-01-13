@@ -32,7 +32,7 @@ interface propsIF {
     quoteTokenLogo: string;
     quoteQuantityDisplay: string;
     elapsedTimeString: string;
-    sideType: 'add' | 'claim' | 'harvest' | 'remove' | 'buy' | 'sell';
+    sideType: 'add' | 'claim' | 'fill' | 'harvest' | 'remove' | 'buy' | 'sell';
     sideCharacter: string;
     ensName: string | null;
     ownerId: string;
