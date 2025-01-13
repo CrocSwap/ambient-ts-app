@@ -149,7 +149,7 @@
         {
             "name": "Ambient USDC",
             "address": "0x1B98743bB9297A60FF9e75EA2630A77bf72bc17c",
-            "symbol": "USDT",
+            "symbol": "USDC",
             "decimals": 6,
             "chainId": 84532,
             "logoURI": ""

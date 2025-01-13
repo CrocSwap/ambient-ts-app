@@ -4,7 +4,7 @@ export default function FutaLanding3() {
     return (
         <div className={styles.container}>
             <div className={styles.content}>
-                <h3>/UNIQUE TICKERS</h3>
+                <h3>/Unique Tickers</h3>
 
                 <p>There can only ever be 1 of each ticker.</p>
                 <p>No more confusion over which is the “right” token.</p>
