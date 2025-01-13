@@ -331,6 +331,45 @@ function TutorialComponent(props: propsIF) {
         setHasTriggered(true);
     };
 
+    const getStyleForBlurOverlay = (side: string) => {
+        const el = getTargetEl();
+
+        if (el) {
+            const rect = el.getBoundingClientRect();
+
+            switch (side) {
+                case 'top':
+                    return {
+                        top: 0,
+                        left: 0,
+                        width: window.innerWidth,
+                        height: rect.top,
+                    };
+                case 'right':
+                    return {
+                        top: rect.top,
+                        left: rect.right,
+                        width: window.innerWidth - rect.right,
+                        height: rect.height,
+                    };
+                case 'bottom':
+                    return {
+                        top: rect.bottom,
+                        left: 0,
+                        width: window.innerWidth,
+                        height: window.innerHeight - rect.bottom,
+                    };
+                case 'left':
+                    return {
+                        top: rect.top,
+                        left: 0,
+                        width: rect.left,
+                        height: rect.height,
+                    };
+            }
+        }
+    };
+
     const navButtons = (forTooltip?: boolean) => (
         <>
             {forTooltip && isMobile ? (
@@ -415,8 +454,23 @@ function TutorialComponent(props: propsIF) {
     return (
         <div>
             <div className={styles.tutorial_overlay} onClick={nextStep}></div>
+            <div
+                className={styles.tutorial_blur}
+                style={getStyleForBlurOverlay('top')}
+            ></div>
+            <div
+                className={styles.tutorial_blur}
+                style={getStyleForBlurOverlay('right')}
+            ></div>
+            <div
+                className={styles.tutorial_blur}
+                style={getStyleForBlurOverlay('bottom')}
+            ></div>
+            <div
+                className={styles.tutorial_blur}
+                style={getStyleForBlurOverlay('left')}
+            ></div>
             <div ref={focusOverlay} className={styles.focus_outline}></div>
-
             {step && (
                 <div ref={tooltipWrapper} className={styles.tooltip_wrapper}>
                     <div className={styles.tooltip_title}>
