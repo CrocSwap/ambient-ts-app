@@ -136,32 +136,10 @@ function InfiniteScroll(props: propsIF) {
     };
 
     const mergePageDataCounts = (hotTxsCount: number) => {
-        const counts = pageDataCountRef.current?.counts || pageDataCount.counts;
-        const newCounts = counts.map((e) => {
-            if (e < dataPerPage && hotTxsCount > 0) {
-                const gap = dataPerPage - e;
-                if (hotTxsCount > gap) {
-                    e += gap;
-                    hotTxsCount -= gap;
-                } else {
-                    e += hotTxsCount;
-                    hotTxsCount = 0;
-                }
-            }
-            return e;
-        });
-
-        if (hotTxsCount > 0) {
-            for (let i = 0; i < hotTxsCount / dataPerPage - 1; i++) {
-                newCounts.push(dataPerPage);
-            }
-            newCounts.push(hotTxsCount % dataPerPage);
-        }
-
         setPageDataCount((prev) => {
             return {
                 pair: prev.pair,
-                counts: newCounts,
+                counts: [prev.counts[0] + hotTxsCount, ...prev.counts.slice(1)],
             };
         });
     };
@@ -654,7 +632,10 @@ function InfiniteScroll(props: propsIF) {
                                 },
                             );
                             break;
+                        default:
+                            break;
                     }
+                    mergePageDataCounts(newTxs.length);
                 } else {
                     updateHotTransactions(newTxs);
                 }
@@ -687,8 +668,12 @@ function InfiniteScroll(props: propsIF) {
                     ...(hotTransactions as PositionIF[]),
                     ...(prev as PositionIF[]),
                 ]);
+            } else {
+                setFetchedTransactions((prev) => [
+                    ...(hotTransactions as TransactionIF[]),
+                    ...(prev as TransactionIF[]),
+                ]);
             }
-
             mergePageDataCounts(hotTransactions.length);
             setHotTransactions([]);
         }
