@@ -244,14 +244,6 @@ function Orders(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
-    const shouldDisplayNoTableData = useMemo(
-        () =>
-            !isLoading &&
-            !limitOrderData.length &&
-            relevantTransactionsByType.length === 0,
-        [isLoading, limitOrderData.length, relevantTransactionsByType.length],
-    );
-
     const [
         sortBy,
         setSortBy,
@@ -265,6 +257,14 @@ function Orders(props: propsIF) {
         type: 'Order',
         data: sortedLimits,
     });
+
+    const shouldDisplayNoTableData = useMemo(
+        () =>
+            !isLoading &&
+            !mergedData.length &&
+            relevantTransactionsByType.length === 0,
+        [isLoading, mergedData.length, relevantTransactionsByType.length],
+    );
 
     const sortedLimitsToDisplayAccount = useMemo(() => {
         return mergedData;
