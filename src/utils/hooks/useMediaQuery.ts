@@ -12,6 +12,9 @@ function useMediaQuery(query: centralQueries | string): boolean {
         return false;
     };
 
+    const isWidescreen = window.matchMedia('(min-width: 1921px)');
+    console.log(isWidescreen.matches);
+
     const [matches, setMatches] = useState<boolean>(getMatches(query));
 
     function handleChange() {
