@@ -3,6 +3,15 @@ import { maxWidth, minWidth } from '../../ambient-utils/types/mediaQueries';
 
 type centralQueries = maxWidth | minWidth;
 
+interface BaseMediaQueryStringsIF {
+    isWidescreen: string;
+    isDesktop: string;
+    isLaptop: string;
+    isTabletWide: string;
+    isTabletNarrow: string;
+    isCellphone: string;
+}
+
 export interface MediaQueryResultsIF {
     isWidescreen: boolean;
     isDesktop: boolean;
@@ -10,6 +19,8 @@ export interface MediaQueryResultsIF {
     isTabletWide: boolean;
     isTabletNarrow: boolean;
     isCellphone: boolean;
+    isComputer: boolean;
+    isMobile: boolean;
 }
 
 export function useMediaQuery(): MediaQueryResultsIF;
@@ -23,7 +34,7 @@ export function useMediaQuery(
         if (high) output += `and (max-width: ${high.toString()}px)`;
         return output;
     }
-    const defaultQueries = {
+    const defaultQueries: BaseMediaQueryStringsIF = {
         isWidescreen: makeQueryString(1921),
         isDesktop: makeQueryString(1281, 1920),
         isLaptop: makeQueryString(1025, 1280),
@@ -48,16 +59,32 @@ export function useMediaQuery(
     };
 
     function runQueries(q?: string): boolean | MediaQueryResultsIF {
+        let output: boolean | MediaQueryResultsIF;
         if (q) {
-            return getMatches(q);
+            output = getMatches(q);
         } else {
-            return (
-                Object.keys(defaultQueries) as (keyof MediaQueryResultsIF)[]
+            const rawOutput = (
+                Object.keys(defaultQueries) as (keyof BaseMediaQueryStringsIF)[]
             ).reduce(function (acc, key) {
                 acc[key] = getMatches(defaultQueries[key]);
                 return acc;
             }, {} as MediaQueryResultsIF);
+            const {
+                isWidescreen,
+                isDesktop,
+                isLaptop,
+                isTabletWide,
+                isTabletNarrow,
+                isCellphone,
+            } = rawOutput;
+            const processedOutput = {
+                ...rawOutput,
+                isComputer: isWidescreen || isDesktop || isLaptop,
+                isMobile: isTabletWide || isTabletNarrow || isCellphone,
+            };
+            output = processedOutput;
         }
+        return output;
     }
 
     useEffect(() => {
