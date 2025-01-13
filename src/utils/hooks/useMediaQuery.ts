@@ -3,19 +3,17 @@ import { maxWidth, minWidth } from '../../ambient-utils/types/mediaQueries';
 
 type centralQueries = maxWidth | minWidth;
 
-// all atomic screen range sizes and their query strings
-interface BaseMediaQueryStringsIF {
-    isWidescreen: string;
-    isDesktop: string;
-    isLaptop: string;
-    isTabletWide: string;
-    isTabletNarrow: string;
-    isCellphone: string;
-}
+// all atomic screen ranges
+type baseMediaQueries =
+    | 'isWidescreen'
+    | 'isDesktop'
+    | 'isLaptop'
+    | 'isTabletWide'
+    | 'isTabletNarrow'
+    | 'isCellphone';
 
 // booleans for all atomic screen range sizes and union sizes
-export interface MediaQueryResultsIF
-    extends Record<keyof BaseMediaQueryStringsIF, boolean> {
+export interface MediaQueryResultsIF extends Record<baseMediaQueries, boolean> {
     // isWidescreen || isDesktop || isLaptop
     isComputer: boolean;
     // isTabletWide || isTabletNarrow || isCellphone
@@ -39,7 +37,7 @@ export function useMediaQuery(
     }
 
     // all atomic media queries (does not have union data)
-    const defaultQueries: BaseMediaQueryStringsIF = {
+    const defaultQueries: Record<baseMediaQueries, string> = {
         isWidescreen: makeQueryString(1921),
         isDesktop: makeQueryString(1281, 1920),
         isLaptop: makeQueryString(1025, 1280),
@@ -73,7 +71,7 @@ export function useMediaQuery(
         } else {
             // result of all base (atomic) media queries
             const rawOutput = (
-                Object.keys(defaultQueries) as (keyof BaseMediaQueryStringsIF)[]
+                Object.keys(defaultQueries) as baseMediaQueries[]
             ).reduce(function (acc, key) {
                 acc[key] = getMatches(defaultQueries[key]);
                 return acc;
