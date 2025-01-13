@@ -84,9 +84,9 @@ const useGenFakeTableRow = () => {
 
         const usdValue = pendingTx.txDetails.isBid
             ? (1 / poolPriceNonDisplay) *
-              parseFloat(pendingTx.txDetails.initialTokenQty || '1')
+              parseFloat(pendingTx.txDetails.initialTokenQty || '0')
             : (1 / highTickPrice) *
-              parseFloat(pendingTx.txDetails.initialTokenQty || '1');
+              parseFloat(pendingTx.txDetails.initialTokenQty || '0');
 
         const positionLiqBase = bigIntToFloat(
             baseTokenForConcLiq(

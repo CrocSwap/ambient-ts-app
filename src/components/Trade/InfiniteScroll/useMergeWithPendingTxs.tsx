@@ -172,7 +172,10 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 60;
             if (isFresh) {
                 if (props.type === 'Order') {
-                    if (e.action !== 'Remove') {
+                    if (
+                        e.action !== 'Remove' &&
+                        e.position.totalValueUSD > 0.01
+                    ) {
                         (recentlyUpdatedToShow as LimitOrderIF[]).push(
                             e.position as LimitOrderIF,
                         );
