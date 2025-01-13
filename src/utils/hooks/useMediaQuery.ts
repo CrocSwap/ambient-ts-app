@@ -3,7 +3,7 @@ import { maxWidth, minWidth } from '../../ambient-utils/types/mediaQueries';
 
 type centralQueries = maxWidth | minWidth;
 
-type MediaQueryResults = {
+type MediaQueryResultsIF = {
     xs: boolean; // 1px - 599px
     sm: boolean; // 600px - 899px
     md: boolean; // 900px - 1199px
@@ -12,12 +12,12 @@ type MediaQueryResults = {
     ultra: boolean; // 1920px and above
 };
 
-export function useMediaQuery(): MediaQueryResults;
+export function useMediaQuery(): MediaQueryResultsIF;
 export function useMediaQuery(query: centralQueries | string): boolean;
 
 export function useMediaQuery(
     query?: centralQueries | string,
-): boolean | MediaQueryResults {
+): boolean | MediaQueryResultsIF {
     const defaultQueries = {
         xs: '(min-width: 1px) and (max-width: 599px)',
         sm: '(min-width: 600px) and (max-width: 899px)',
@@ -34,18 +34,20 @@ export function useMediaQuery(
         return false;
     };
 
-    const [matches, setMatches] = useState<boolean | MediaQueryResults>(() => {
-        if (query) {
-            return getMatches(query);
-        } else {
-            return (
-                Object.keys(defaultQueries) as (keyof MediaQueryResults)[]
-            ).reduce((acc, key) => {
-                acc[key] = getMatches(defaultQueries[key]);
-                return acc;
-            }, {} as MediaQueryResults);
-        }
-    });
+    const [matches, setMatches] = useState<boolean | MediaQueryResultsIF>(
+        () => {
+            if (query) {
+                return getMatches(query);
+            } else {
+                return (
+                    Object.keys(defaultQueries) as (keyof MediaQueryResultsIF)[]
+                ).reduce((acc, key) => {
+                    acc[key] = getMatches(defaultQueries[key]);
+                    return acc;
+                }, {} as MediaQueryResultsIF);
+            }
+        },
+    );
 
     const handleChange = () => {
         if (query) {
@@ -53,11 +55,11 @@ export function useMediaQuery(
         } else {
             setMatches(
                 (
-                    Object.keys(defaultQueries) as (keyof MediaQueryResults)[]
+                    Object.keys(defaultQueries) as (keyof MediaQueryResultsIF)[]
                 ).reduce((acc, key) => {
                     acc[key] = getMatches(defaultQueries[key]);
                     return acc;
-                }, {} as MediaQueryResults),
+                }, {} as MediaQueryResultsIF),
             );
         }
     };
