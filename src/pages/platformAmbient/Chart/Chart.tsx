@@ -322,11 +322,6 @@ export default function Chart(props: propsIF) {
     const [discontinuityProvider, setDiscontinuityProvider] =
         useState(undefined);
 
-    const lineSellColor =
-        chartThemeColors?.text2?.toString() ?? 'rgb(139, 152, 165)';
-    const lineBuyColor =
-        chartThemeColors?.text2?.toString() ?? 'rgb(139, 152, 165)';
-
     const {
         showFeeRate,
         showTvl,
@@ -5683,16 +5678,12 @@ export default function Chart(props: propsIF) {
         liqTransitionPointforDepth: liquidityData
             ? liquidityData?.liqTransitionPointforDepth
             : poolPriceDisplay,
-        lineSellColor: lineSellColor,
-        lineBuyColor: lineBuyColor,
     };
 
     const limitCanvasProps = {
         scaleData,
         isDenomBase,
         period,
-        lineSellColor,
-        lineBuyColor,
         isUserConnected,
         setLimit,
         limit,
@@ -5712,8 +5703,6 @@ export default function Chart(props: propsIF) {
         liqTransitionPointforDepth: liquidityData
             ? liquidityData?.liqTransitionPointforDepth
             : poolPriceDisplay,
-        lineSellColor,
-        lineBuyColor,
         ranges,
         limit,
         isAmbientOrAdvanced: simpleRangeWidth !== 100 || advancedMode,

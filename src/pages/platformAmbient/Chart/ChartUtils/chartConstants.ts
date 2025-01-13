@@ -8,16 +8,3 @@ export const initialDisplayCandleCountForMobile = 30;
 export const xAxisHeightPixel = 32;
 export const mainCanvasElementId = 'main-canvas';
 export const maxRequestCountForCondensed = 2;
-
-export const chartDefaultColorVariables = {
-    upCandleBodyColor: '--chart-positive-body',
-    upCandleBorderColor: '--chart-positive-border',
-    downCandleBodyColor: '--chart-negative-body',
-    downCandleBorderColor: '--chart-negative-border',
-    selectedDateFillColor: '--chart-selected-color',
-    selectedDateStrokeColor: '--chart-selected-color',
-    liqAskColor: '--liq-ask-color',
-    liqBidColor: '--liq-bid-color',
-    drawngShapeDefaultColor: '--accent1',
-    textColor: '',
-};

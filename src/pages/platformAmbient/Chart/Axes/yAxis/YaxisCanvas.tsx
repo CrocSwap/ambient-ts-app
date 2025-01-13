@@ -40,8 +40,6 @@ interface yAxisIF {
     liqMode: string;
     liqTransitionPointforCurve: number;
     liqTransitionPointforDepth: number;
-    lineSellColor: string;
-    lineBuyColor: string;
     ranges: Array<lineValue>;
     limit: number;
     isAmbientOrAdvanced: boolean;
@@ -85,7 +83,6 @@ function YAxisCanvas(props: yAxisIF) {
         chartPoolPrice,
         isAmbientOrAdvanced,
         limit,
-        checkLimitOrder,
         sellOrderStyle,
         crosshairActive,
         crosshairData,
@@ -420,33 +417,19 @@ function YAxisCanvas(props: yAxisIF) {
 
                 const { tick, tickSubString } = prepareTickLabel(limit);
 
-                if (checkLimitOrder) {
-                    createRectLabel(
-                        context,
-                        isSameLocation ? sameLocationData : yScale(limit),
-                        X,
-                        labelBackgroundColor,
-                        labelTextColor,
-                        tick,
-                        undefined,
-                        yAxisCanvasWidth,
-                        tickSubString,
-                        isTradeDollarizationEnabled,
-                    );
-                } else {
-                    createRectLabel(
-                        context,
-                        isSameLocation ? sameLocationData : yScale(limit),
-                        X,
-                        'rgba(235, 235, 255)',
-                        'black',
-                        tick,
-                        undefined,
-                        yAxisCanvasWidth,
-                        tickSubString,
-                        isTradeDollarizationEnabled,
-                    );
-                }
+                createRectLabel(
+                    context,
+                    isSameLocation ? sameLocationData : yScale(limit),
+                    X,
+                    labelBackgroundColor,
+                    labelTextColor,
+                    tick,
+                    undefined,
+                    yAxisCanvasWidth,
+                    tickSubString,
+                    isTradeDollarizationEnabled,
+                );
+
                 addYaxisLabel(
                     isSameLocation ? sameLocationData : yScale(limit),
                 );
@@ -874,7 +857,6 @@ function YAxisCanvas(props: yAxisIF) {
         yAxisCanvasWidth,
         reset,
         sellOrderStyle,
-        checkLimitOrder,
         location,
         crosshairActive,
         selectedDrawnShape,
