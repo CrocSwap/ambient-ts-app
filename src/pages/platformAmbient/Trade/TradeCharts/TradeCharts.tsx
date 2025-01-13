@@ -308,9 +308,13 @@ function TradeCharts(props: propsIF) {
                             setRescale(true);
                         }}
                         className={
-                            reset
-                                ? styles.active_selected_button
-                                : styles.non_active_selected_button
+                            ['futa'].includes(platformName)
+                                ? reset
+                                    ? styles.futa_active_selected_button
+                                    : styles.futa_non_active_selected_button
+                                : reset
+                                  ? styles.active_selected_button
+                                  : styles.non_active_selected_button
                         }
                         aria-label='Reset.'
                     >
@@ -326,9 +330,13 @@ function TradeCharts(props: propsIF) {
                             });
                         }}
                         className={
-                            rescale
-                                ? styles.active_selected_button
-                                : styles.non_active_selected_button
+                            ['futa'].includes(platformName)
+                                ? rescale
+                                    ? styles.futa_active_selected_button
+                                    : styles.futa_non_active_selected_button
+                                : rescale
+                                  ? styles.active_selected_button
+                                  : styles.non_active_selected_button
                         }
                         aria-label='Auto rescale.'
                     >
