@@ -2,9 +2,10 @@ import circleSvg from './Circle.svg';
 import styles from './FutaLanding2.module.css';
 export default function FutaLanding2() {
     return (
+        // <div className={styles.containerMain}>
         <div className={styles.container}>
             <div className={styles.content}>
-                <h3>/FAIR AUCTIONS</h3>
+                <h3>/Fair Auctions</h3>
 
                 <p>Tickers are auctioned over a set period.</p>
                 <p>
@@ -19,5 +20,6 @@ export default function FutaLanding2() {
                 <img src={circleSvg} alt='circle svg' />
             </div>
         </div>
+        // </div>
     );
 }

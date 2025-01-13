@@ -10,7 +10,7 @@ export default function FutaLanding5() {
 
     return (
         <div className={styles.container}>
-            <h3>/LINKS</h3>
+            <h3>/Links</h3>
             <div className={styles.content}>
                 <a href={TWITTER_LINK} target='_blank' rel='noreferrer'>
                     X Profile
