@@ -1,6 +1,9 @@
 /* eslint-disable no-irregular-whitespace */
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { LimitOrderIF } from '../../../../ambient-utils/types';
+import {
+    LimitOrderIF,
+    LimitOrderServerIF,
+} from '../../../../ambient-utils/types';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -8,8 +11,17 @@ import NoTableData from '../NoTableData/NoTableData';
 import { useSortedLimits } from '../useSortedLimits';
 import OrderHeader from './OrderTable/OrderHeader';
 
+import {
+    filterLimitArray,
+    getLimitOrderData,
+} from '../../../../ambient-utils/dataLayer';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { AppStateContext } from '../../../../contexts';
+import {
+    AppStateContext,
+    CachedDataContext,
+    CrocEnvContext,
+    TokenContext,
+} from '../../../../contexts';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
@@ -38,12 +50,20 @@ function Orders(props: propsIF) {
         unselectCandle,
     } = props;
     const { showAllData: showAllDataSelection } = useContext(TradeTableContext);
+    const { tokens } = useContext(TokenContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
 
     const {
-        activeNetwork: { poolIndex },
+        activeNetwork: { poolIndex, GCGO_URL, chainId },
     } = useContext(AppStateContext);
 
     // only show all data when on trade tabs page
@@ -54,6 +74,7 @@ function Orders(props: propsIF) {
         userLimitOrdersByPool,
         limitOrdersByPool,
         unindexedNonFailedSessionLimitOrderUpdates,
+        setUserLimitOrdersByPool,
     } = useContext(GraphDataContext);
 
     const dataLoadingStatus = useContext(DataLoadingContext);
@@ -97,6 +118,78 @@ function Orders(props: propsIF) {
             limitOrdersByPool.limitOrders, // infinite scroll
         ],
     );
+
+    useEffect(() => {
+        if (
+            showAllData ||
+            !userAddress ||
+            !baseToken ||
+            !quoteToken ||
+            !poolIndex ||
+            !GCGO_URL ||
+            !crocEnv
+        )
+            return;
+        // retrieve user_pool_limit_orders
+        const userPoolLimitOrdersCacheEndpoint =
+            GCGO_URL + '/user_pool_limit_orders?';
+        fetch(
+            userPoolLimitOrdersCacheEndpoint +
+                new URLSearchParams({
+                    user: userAddress,
+                    base: baseToken.address.toLowerCase(),
+                    quote: quoteToken.address.toLowerCase(),
+                    poolIdx: poolIndex.toString(),
+                    chainId: chainId,
+                }),
+        )
+            .then((response) => response?.json())
+            .then((json) => {
+                const userPoolLimitOrderStates = json?.data;
+                if (userPoolLimitOrderStates) {
+                    Promise.all(
+                        userPoolLimitOrderStates.map(
+                            (limitOrder: LimitOrderServerIF) => {
+                                return getLimitOrderData(
+                                    limitOrder,
+                                    tokens.tokenUniv,
+                                    crocEnv,
+                                    provider,
+                                    chainId,
+                                    cachedFetchTokenPrice,
+                                    cachedQuerySpotPrice,
+                                    cachedTokenDetails,
+                                    cachedEnsResolve,
+                                );
+                            },
+                        ),
+                    ).then((updatedLimitOrderStates) => {
+                        const filteredData = filterLimitArray(
+                            updatedLimitOrderStates,
+                        );
+                        setUserLimitOrdersByPool({
+                            dataReceived: true,
+                            limitOrders: filteredData,
+                        });
+
+                        dataLoadingStatus.setDataLoadingStatus({
+                            datasetName: 'isConnectedUserPoolOrderDataLoading',
+                            loadingStatus: false,
+                        });
+                    });
+                } else {
+                    setUserLimitOrdersByPool({
+                        dataReceived: false,
+                        limitOrders: [],
+                    });
+                    dataLoadingStatus.setDataLoadingStatus({
+                        datasetName: 'isConnectedUserPoolOrderDataLoading',
+                        loadingStatus: false,
+                    });
+                }
+            })
+            .catch(console.error);
+    }, [userAddress, showAllData]);
 
     const activeUserLimitOrdersLength = useMemo(
         () =>
@@ -151,10 +244,13 @@ function Orders(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
-    const shouldDisplayNoTableData =
-        !isLoading &&
-        !limitOrderData.length &&
-        relevantTransactionsByType.length === 0;
+    const shouldDisplayNoTableData = useMemo(
+        () =>
+            !isLoading &&
+            !limitOrderData.length &&
+            relevantTransactionsByType.length === 0,
+        [isLoading, limitOrderData.length, relevantTransactionsByType.length],
+    );
 
     const [
         sortBy,
@@ -223,7 +319,7 @@ function Orders(props: propsIF) {
             <p>Side</p>
         </>
     );
-    const tokens = isAccountView ? (
+    const tokensElement = isAccountView ? (
         <>Tokens</>
     ) : (
         <>
@@ -318,7 +414,7 @@ function Orders(props: propsIF) {
             alignRight: true,
         },
         {
-            name: tokens,
+            name: tokensElement,
             className: 'tokens',
             show: tableView === 'medium',
             slug: 'tokens',
