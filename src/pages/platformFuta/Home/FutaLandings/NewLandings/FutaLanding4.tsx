@@ -2,7 +2,7 @@ import styles from './FutaLanding4.module.css';
 export default function FutaLanding4() {
     return (
         <div className={styles.container}>
-            <h3>/HOW IT WORKS</h3>
+            <h3>/How It Works</h3>
             <div className={styles.content}>
                 <div className={styles.list}>
                     <div className={styles.number}>01</div>

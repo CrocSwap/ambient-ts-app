@@ -42,7 +42,7 @@
     /* align-items: end; */
     justify-content: flex-end;
     flex: 1;
-    gap: 39px;
+    gap: 16px;
 
    
     
@@ -163,6 +163,7 @@ color: #AACFD1;
 
     .container{
         padding-bottom: 2rem;
+        background: transparent;
     }
     .desktopFuta{
         display: flex;
@@ -195,6 +196,10 @@ color: #AACFD1;
 
 .numberList button{
     font-size: 24px;
+}
+
+.centerSection{
+    gap: 39px;
 }
 
 }
