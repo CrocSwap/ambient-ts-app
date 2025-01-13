@@ -38,13 +38,6 @@ export function useMediaQuery(
         isCellphone: makeQueryString(1, 480),
     };
 
-    const getMatches = (query: string): boolean => {
-        if (typeof window !== 'undefined') {
-            return window.matchMedia(query).matches;
-        }
-        return false;
-    };
-
     const [matches, setMatches] = useState<boolean | MediaQueryResultsIF>(() =>
         runQueries(query),
     );
@@ -54,6 +47,12 @@ export function useMediaQuery(
     };
 
     function runQueries(q?: string): boolean | MediaQueryResultsIF {
+        const getMatches = (query: string): boolean => {
+            if (typeof window !== 'undefined') {
+                return window.matchMedia(query).matches;
+            }
+            return false;
+        };
         let output: boolean | MediaQueryResultsIF;
         if (q) {
             output = getMatches(q);
