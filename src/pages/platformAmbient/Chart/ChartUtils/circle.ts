@@ -30,11 +30,12 @@ export function createCircle(
         .decorate((context: any) => {
             if (chartThemeColors) {
                 const strokeColor = isBuy
-                    ? chartThemeColors.upCandleBodyColor.toString()
-                    : chartThemeColors.downCandleBodyColor.toString();
-                const circleFillColor = isBuy
                     ? chartThemeColors.upCandleBorderColor.copy()
                     : chartThemeColors.downCandleBorderColor.copy();
+
+                const circleFillColor = isBuy
+                    ? chartThemeColors.upCandleBodyColor.copy()
+                    : chartThemeColors.downCandleBodyColor.copy();
 
                 circleFillColor.opacity = 0.3;
 
