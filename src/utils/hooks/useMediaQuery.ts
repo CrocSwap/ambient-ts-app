@@ -97,7 +97,7 @@ export function useMediaQuery(
     }
 
     // event listener for DOM
-    const handleChange = () => setMatches(runQueries(query));
+    const handleChange = (): void => setMatches(runQueries(query));
 
     // logic to handle event listener in DOM
     useEffect(() => {
