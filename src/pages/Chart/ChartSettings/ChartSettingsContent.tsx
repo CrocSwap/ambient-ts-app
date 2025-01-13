@@ -181,68 +181,6 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         }
     };
 
-    // const memoizedChartSettings = useMemo<LocalChartSettingsIF>(() => {
-    //     if (isSaving) {
-    //         const localSettings = {
-    //             chartColors: {
-    //                 upCandleBodyColor: chartThemeColors.upCandleBodyColor.toString(),
-    //                 downCandleBodyColor: chartThemeColors.downCandleBodyColor
-    //                     ? chartThemeColors.downCandleBodyColor.toString()
-    //                     : '--dark2',
-    //                 selectedDateFillColor:
-    //                     chartThemeColors.selectedDateFillColor
-    //                         ? chartThemeColors.selectedDateFillColor.toString()
-    //                         : '--accent2',
-    //                 upCandleBorderColor: chartThemeColors.upCandleBorderColor
-    //                     ? chartThemeColors.upCandleBorderColor.toString()
-    //                     : '--accent5',
-    //                 downCandleBorderColor:
-    //                     chartThemeColors.downCandleBorderColor
-    //                         ? chartThemeColors.downCandleBorderColor.toString()
-    //                         : '--accent1',
-    //                 liqAskColor: chartThemeColors.liqAskColor
-    //                     ? chartThemeColors.liqAskColor.toString()
-    //                     : '--accent5',
-    //                 liqBidColor: chartThemeColors.liqBidColor
-    //                     ? chartThemeColors.liqBidColor.toString()
-    //                     : '--accent1',
-    //                 selectedDateStrokeColor:
-    //                     chartThemeColors.selectedDateStrokeColor
-    //                         ? chartThemeColors.selectedDateStrokeColor.toString()
-    //                         : '--accent2',
-    //                 textColor: chartThemeColors.textColor
-    //                     ? chartThemeColors.textColor.toString()
-    //                     : '',
-    //             },
-    //             isTradeDollarizationEnabled: isTradeDollarizationEnabled,
-    //             showVolume: showVolume,
-    //             showTvl: showTvl,
-    //             showFeeRate: showFeeRate,
-    //         };
-
-    //         // Saves to local storage
-    //         localStorage.setItem(
-    //             LS_KEY_CHART_CONTEXT_SETTINGS,
-    //             JSON.stringify(localSettings),
-    //         );
-
-    //         return localSettings;
-    //     } else {
-    //         const CHART_CONTEXT_SETTINGS_LOCAL_STORAGE = localStorage.getItem(
-    //             LS_KEY_CHART_CONTEXT_SETTINGS,
-    //         );
-
-    //         if (CHART_CONTEXT_SETTINGS_LOCAL_STORAGE) {
-    //             const parsedContextData = JSON.parse(
-    //                 CHART_CONTEXT_SETTINGS_LOCAL_STORAGE,
-    //             ) as LocalChartSettingsIF;
-    //             return parsedContextData;
-    //         } else {
-    //             return defaultChartSettings;
-    //         }
-    //     }
-    // }, [isSaving]);
-
     useEffect(() => {
         if (applyDefault && defaultChartSettings) {
             Object.assign(chartThemeColors, defaultChartSettings.chartColors);
@@ -263,29 +201,6 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             clearTimeout(applyTimeOut);
         };
     }, [applyDefault]);
-
-    /*  const handleApplyChartThemeChanges = (
-        chartSettings: LocalChartSettingsIF,
-    ) => {
-        setApplyDefault(true);
-
-        setShowVolume(chartSettings.showVolume);
-        setShowTvl(chartSettings.showTvl);
-        setShowFeeRate(chartSettings.showFeeRate);
-
-        setColorChangeTrigger(true);
-
-        setIsTradeDollarizationEnabled(
-            chartSettings.isTradeDollarizationEnabled,
-        );
-
-        const applyTimeOut = setTimeout(() => {
-            setApplyDefault(false);
-        }, 1000);
-        return () => {
-            clearTimeout(applyTimeOut);
-        };
-    }; */
 
     const handleCancelChanges = () => {
         const CHART_CONTEXT_SETTINGS_LOCAL_STORAGE = localStorage.getItem(

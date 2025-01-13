@@ -5978,6 +5978,7 @@ export default function Chart(props: propsIF) {
                             circleScale={circleScale}
                             isSelectedOrderHistory={isSelectedOrderHistory}
                             selectedOrderHistory={selectedOrderHistory}
+                            chartThemeColors={chartThemeColors}
                         />
                     )}
 
