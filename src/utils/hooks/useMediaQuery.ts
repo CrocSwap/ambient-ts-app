@@ -39,35 +39,26 @@ export function useMediaQuery(
         return false;
     };
 
-    const [matches, setMatches] = useState<boolean | MediaQueryResultsIF>(
-        () => {
-            if (query) {
-                return getMatches(query);
-            } else {
-                return (
-                    Object.keys(defaultQueries) as (keyof MediaQueryResultsIF)[]
-                ).reduce((acc, key) => {
-                    acc[key] = getMatches(defaultQueries[key]);
-                    return acc;
-                }, {} as MediaQueryResultsIF);
-            }
-        },
+    const [matches, setMatches] = useState<boolean | MediaQueryResultsIF>(() =>
+        runQueries(query),
     );
 
     const handleChange = () => {
-        if (query) {
-            setMatches(getMatches(query));
-        } else {
-            setMatches(
-                (
-                    Object.keys(defaultQueries) as (keyof MediaQueryResultsIF)[]
-                ).reduce((acc, key) => {
-                    acc[key] = getMatches(defaultQueries[key]);
-                    return acc;
-                }, {} as MediaQueryResultsIF),
-            );
-        }
+        setMatches(runQueries(query));
     };
+
+    function runQueries(q?: string): boolean | MediaQueryResultsIF {
+        if (q) {
+            return getMatches(q);
+        } else {
+            return (
+                Object.keys(defaultQueries) as (keyof MediaQueryResultsIF)[]
+            ).reduce(function (acc, key) {
+                acc[key] = getMatches(defaultQueries[key]);
+                return acc;
+            }, {} as MediaQueryResultsIF);
+        }
+    }
 
     useEffect(() => {
         if (query) {
