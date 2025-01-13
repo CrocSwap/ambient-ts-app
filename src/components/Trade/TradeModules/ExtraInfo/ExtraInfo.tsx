@@ -9,6 +9,7 @@ import {
 
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
+import { brand } from '../../../../ambient-utils/constants';
 
 interface PropsIF {
     extraInfo: {
@@ -33,6 +34,8 @@ export const ExtraInfo = (props: PropsIF) => {
         priceImpactExceedsThreshold,
     } = props;
 
+    const isFuta = brand === 'futa';
+
     const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
 
     const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
@@ -54,6 +57,7 @@ export const ExtraInfo = (props: PropsIF) => {
     return (
         <>
             <ExtraInfoContainer
+                style={{ textTransform: isFuta ? 'uppercase' : 'none' }}
                 role='button'
                 justifyContent='space-between'
                 alignItems='center'
