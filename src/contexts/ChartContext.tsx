@@ -150,10 +150,11 @@ export interface ChartThemeIF {
 
     selectedDateStrokeColor: d3.RGBColor | d3.HSLColor;
     text2: d3.RGBColor | d3.HSLColor;
+    text1: d3.RGBColor | d3.HSLColor;
     accent1: d3.RGBColor | d3.HSLColor;
     accent3: d3.RGBColor | d3.HSLColor;
     dark1: d3.RGBColor | d3.HSLColor;
-
+    dark4: d3.RGBColor | d3.HSLColor;
     [key: string]: d3.RGBColor | d3.HSLColor;
 }
 
@@ -446,10 +447,12 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             triangleColor: getCssVariable(skin.active, '--triangle-color'),
             drawngShapeDefaultColor: getCssVariable(skin.active, '--accent1'),
             textColor: getCssVariable(skin.active, '--text2'),
+            text1: getCssVariable(skin.active, '--text1'),
             text2: getCssVariable(skin.active, '--text2'),
             accent3: getCssVariable(skin.active, '--accent3'),
             accent1: getCssVariable(skin.active, '--accent1'),
             dark1: getCssVariable(skin.active, '--dark1'),
+            dark4: getCssVariable(skin.active, '--dark4'),
         };
 
         setDefaultChartSettings({
@@ -513,10 +516,12 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
                         'drawngShapeDefaultColor',
                     ),
                     textColor: getColorFromLocalStorageOrDefault('textColor'),
+                    text1: getColorFromLocalStorageOrDefault('text1'),
                     text2: getColorFromLocalStorageOrDefault('text2'),
                     accent3: getColorFromLocalStorageOrDefault('accent3'),
                     accent1: getColorFromLocalStorageOrDefault('accent1'),
                     dark1: getColorFromLocalStorageOrDefault('dark1'),
+                    dark4: getColorFromLocalStorageOrDefault('dark4'),
                 };
 
                 setChartThemeColors(() => chartDefaultColorVariables);
