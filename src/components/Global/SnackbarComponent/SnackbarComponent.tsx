@@ -60,7 +60,6 @@ function SnackbarComponent() {
         if (isSnackbarOpen && isSmallScreen) {
             timeoutId = setTimeout(() => {
                 handleClose();
-                // change this back to 8,000
             }, duration);
         }
 
