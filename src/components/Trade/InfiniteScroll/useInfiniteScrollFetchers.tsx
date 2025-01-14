@@ -170,10 +170,6 @@ const useInfiniteScrollFetchers = () => {
                             userChangesJsonData.filter(
                                 (tx) => tx.changeType !== 'cross',
                             );
-                        console.log({
-                            userChangesJsonData,
-                            userTransactionsWithoutFills,
-                        });
                         resolve(
                             userTransactionsWithoutFills as TransactionIF[],
                         );
