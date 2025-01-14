@@ -19,6 +19,8 @@ import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
 import styles from './TutorialOverlayUrlBased.module.css';
 import { ambientMarketSteps } from '../../../utils/tutorial/MarketSteps';
+import { BrandContext } from '../../../contexts/BrandContext';
+import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
 // import{ MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
@@ -41,6 +43,8 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     const [stepsFiltered, setStepsFiltered] = useState<Step[]>([]);
 
     const [showTutorial, setShowTutorial] = useState<boolean>(false);
+
+    const { platformName } = useContext(BrandContext);
 
     const {
         walletModal: { open: openWalletModal },
@@ -196,7 +200,10 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         isTutoBuild &&
         selectedTutorialRef.current &&
         !selectedTutorialRef.current.disableDefault &&
-        showTutosLocalStorage;
+        showTutosLocalStorage &&
+        platformName === 'ambient' &&
+        selectedTutorialRef.current?.showDefault;
+    !DISABLE_ALL_TUTOS;
 
     if (!shouldTutoComponentShown && filterRenderedSteps().length > 0) {
         if (tutorialBtnRef.current?.style) {

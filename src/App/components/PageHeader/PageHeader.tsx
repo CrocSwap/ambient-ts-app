@@ -43,6 +43,7 @@ import styles from './PageHeader.module.css';
 import UserMenu from './UserMenu/UserMenu';
 import TutorialOverlayUrlBased from '../../../components/Global/TutorialOverlay/TutorialOverlayUrlBased';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
 
 const PageHeader = function () {
     const {
@@ -476,14 +477,16 @@ const PageHeader = function () {
                                 overflow='visible'
                             >
                                 <NetworkSelector />
-                                <div
-                                    className={styles.tutorialBtn}
-                                    ref={tutorialBtnRef}
-                                    onClick={() => setReplayTutorial(true)}
-                                >
-                                    {' '}
-                                    <AiOutlineQuestionCircle /> Help
-                                </div>
+                                {!DISABLE_ALL_TUTOS && (
+                                    <div
+                                        className={styles.tutorialBtn}
+                                        ref={tutorialBtnRef}
+                                        onClick={() => setReplayTutorial(true)}
+                                    >
+                                        {' '}
+                                        <AiOutlineQuestionCircle /> Help
+                                    </div>
+                                )}
                                 {!isUserConnected && connectWalletButton}
                                 <UserMenu {...userMenuProps} />
                             </FlexContainer>
@@ -491,11 +494,13 @@ const PageHeader = function () {
                     )}
                 </div>
             </header>
-            <TutorialOverlayUrlBased
-                replayTutorial={replayTutorial}
-                setReplayTutorial={setReplayTutorial}
-                tutorialBtnRef={tutorialBtnRef}
-            />
+            {!DISABLE_ALL_TUTOS && (
+                <TutorialOverlayUrlBased
+                    replayTutorial={replayTutorial}
+                    setReplayTutorial={setReplayTutorial}
+                    tutorialBtnRef={tutorialBtnRef}
+                />
+            )}
         </>
     );
 };

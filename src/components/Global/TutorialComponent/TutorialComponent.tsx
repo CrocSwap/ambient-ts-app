@@ -21,10 +21,8 @@ interface propsIF {
 
 function TutorialComponent(props: propsIF) {
     const { platformName } = useContext(BrandContext);
-    console.log('>>> platformName : ', platformName);
 
     const { steps, tutoKey, initialStep, showSteps, onComplete } = props;
-    console.log(tutoKey, steps);
 
     const [hasTriggered, setHasTriggered] = useState<boolean>(false);
     const hasTriggeredRef = useRef<boolean>(false);
