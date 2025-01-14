@@ -21,9 +21,10 @@ const ChartSettingsContainer = styled.div<{
     overflow: visible;
 
     z-index: 999999;
+    font: var(--font-family);
 `;
 
-const ContextMenu = styled.div`
+const ContextMenu = styled.div<{ isFuta?: boolean }>`
     width: 284px;
 
     padding: 8px 16px 8px 16px;
@@ -34,9 +35,14 @@ const ContextMenu = styled.div`
 
     border: 1px solid var(--accent1);
 
-    box-shadow: 0px 0px 20px 0px #7371fc66 inset;
-
-    box-shadow: 0px 0px 20px 0px #7371fc33;
+    ${({ isFuta }) =>
+        isFuta
+            ? `
+                box-shadow: none;
+            `
+            : `
+                box-shadow: 0px 0px 20px 0px #7371fc66 inset, 0px 0px 20px 0px #7371fc33;
+            `}
 `;
 
 const ContextMenuHeader = styled.div`
@@ -50,7 +56,7 @@ const ContextMenuHeader = styled.div`
 `;
 
 const ContextMenuHeaderText = styled.div`
-    font-family: Lexend Deca;
+    font-family: var(--font-family);
 
     font-size: 16px;
 
@@ -66,7 +72,7 @@ const ContextMenuHeaderText = styled.div`
 `;
 
 const ContextMenuContextText = styled.div`
-    font-family: Lexend Deca;
+    font-family: var(--font-family);
     font-size: 12px;
     font-weight: 300;
 

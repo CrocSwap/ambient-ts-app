@@ -44,6 +44,7 @@ import {
     scrollRswETH,
     scrollSOLVBTC,
     scrollSTONE,
+    scrollSUSDe,
     scrollSepoliaUSDC,
     scrollUSDC,
     scrollUSDE,
@@ -53,7 +54,6 @@ import {
     scrollWeETH,
     scrollWrsETH,
     scrollWstETH,
-    scrollsUSDe,
     sepoliaUSDC,
     sepoliaWBTC,
     swellEZETH,
@@ -61,7 +61,9 @@ import {
     swellRSETH,
     swellRSWETH,
     swellSTBTC,
+    swellSUSDe,
     swellSWBTC,
+    swellSWELL,
     swellSWETH,
     swellSepoliaUSDC,
     swellSepoliaUSDT,
@@ -165,11 +167,12 @@ export const STABLE_USD_TOKENS = [
     scrollDAI,
     scrollAxlUSDC,
     scrollUSDE,
-    scrollsUSDe,
+    scrollSUSDe,
     plumeSepoliaUSD,
     plumeSepoliaNEV,
     swellSepoliaUSDT,
     swellUSDE,
+    swellSUSDe,
     baseSepoliaUSDT,
     plumeNTBILL,
     plumeNYIELD,
@@ -214,9 +217,10 @@ export const STAKED_ETH_TOKENS = [
     swellRSWETH,
 ].map((x) => x.address.toLowerCase());
 
-export const USD_EXCLUDED_TOKENS = [mainnetSWELL.address].map((x) =>
-    x.toLowerCase(),
-);
+export const USD_EXCLUDED_TOKENS = [
+    mainnetSWELL.address,
+    swellSWELL.address,
+].map((x) => x.toLowerCase());
 
 export const STAKED_BTC_TOKENS = [
     scrollSOLVBTC,

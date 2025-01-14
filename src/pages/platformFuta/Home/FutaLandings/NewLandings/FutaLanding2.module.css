@@ -7,7 +7,7 @@
     align-items: center;
     gap: 48px;
     padding: 0 16px;
-    background-color: transparent;
+    background-color: var(--dark1);
     background: url('../../../../../assets/futa/home/background.png') no-repeat center center fixed; 
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -84,7 +84,9 @@ width: 100%;
        display: grid;
        grid-template-columns: 1fr 1fr;
        align-items: center;
-       padding: 0 130px;
+       padding:0  130px;
+       height: 100svh;
+       padding-bottom: 130px;
     }
     .imgContainer{
         display: flex;

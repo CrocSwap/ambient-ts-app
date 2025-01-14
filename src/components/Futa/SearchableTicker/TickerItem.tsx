@@ -155,9 +155,7 @@ export default function TickerItem(props: propsIF) {
             ? filledMarketCapUsdValue
                 ? getFormattedNumber({
                       value: filledMarketCapUsdValue,
-                      minFracDigits: 0,
-                      maxFracDigits: 0,
-                      isUSD: true,
+                      isTickerDisplay: true,
                   })
                 : '$0'
             : undefined;
