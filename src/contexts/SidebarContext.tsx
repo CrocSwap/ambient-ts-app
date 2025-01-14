@@ -14,10 +14,10 @@ import {
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import { diffHashSig, getChainExplorer } from '../ambient-utils/dataLayer';
+import { FlexContainer } from '../styled/Common';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { AppStateContext } from './AppStateContext';
 import { ReceiptContext } from './ReceiptContext';
-import { FlexContainer } from '../styled/Common';
 
 export interface SidebarContextIF {
     recentPools: recentPoolsMethodsIF;
@@ -38,7 +38,7 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
     } = useContext(AppStateContext);
 
     // all receipts stored in the current user session (array of stringified JSONs)
-    const { allReceipts } = useContext(ReceiptContext);
+    const { allReceipts, transactionsByType } = useContext(ReceiptContext);
 
     // parsed JSON on the most recent receipt in the stack
     const lastReceipt: TransactionReceipt | null =
@@ -91,7 +91,12 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
 
     // logic to show a snackbar notification when a new receipt is received
     // I'm not really sure why we put this logic in this file? should move later
-    const blockExplorer = getChainExplorer(chainId);
+    const lastReceiptChainId = transactionsByType.find(
+        (e) => e.txHash === lastReceipt?.hash,
+    )?.chainId;
+    const blockExplorer = lastReceiptChainId
+        ? getChainExplorer(lastReceiptChainId)
+        : getChainExplorer(chainId);
 
     const snackBarContentDisplay = (
         <FlexContainer flexDirection='column' gap={8} alignItems='center'>
@@ -106,7 +111,7 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
                 rel='noreferrer'
                 className='customLink'
             >
-                View On Explorer
+                View on Explorer
             </a>
         </FlexContainer>
     );
