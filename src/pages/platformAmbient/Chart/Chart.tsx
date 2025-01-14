@@ -5568,6 +5568,12 @@ export default function Chart(props: propsIF) {
 
                                     totalValueUSD =
                                         totalValueUSD + merged.totalValueUSD;
+
+                                    tokenFlowDecimalCorrected =
+                                        tokenFlowDecimalCorrected +
+                                        (denomInBase
+                                            ? merged.baseFlowDecimalCorrected
+                                            : merged.quoteFlowDecimalCorrected);
                                 });
                             }
 
