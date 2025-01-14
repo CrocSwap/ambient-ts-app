@@ -17,11 +17,11 @@ import NotificationTable from './NotificationTable/NotificationTable';
 const NotificationCenter = () => {
     const [showNotificationTable, setShowNotificationTable] =
         useState<boolean>(false);
-    const [showRedDot, setShowRedDot] = useState(true);
 
     const smallScreen = useMediaQuery('(max-width: 768px)');
 
-    const { pendingTransactions, sessionReceipts } = useContext(ReceiptContext);
+    const { pendingTransactions, sessionReceipts, showRedDot, setShowRedDot } =
+        useContext(ReceiptContext);
 
     const txCount = pendingTransactions.length + sessionReceipts.length;
 
