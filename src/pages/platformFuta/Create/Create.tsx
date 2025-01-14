@@ -160,19 +160,33 @@ export default function Create() {
                 <label htmlFor={TICKER_INPUT_ID}>
                     <h4>Token Ticker</h4>
                 </label>
-                <div className={styles.inputContainer}>
+                <div
+                    className={`${styles.inputContainer}
+                    ${tickerInput.length > TICKER_MAX_LENGTH ? styles.errorInput : ''}
+                
+                    `}
+                >
                     <input
                         name={TICKER_INPUT_ID}
                         id={TICKER_INPUT_ID}
                         value={tickerInput}
                         type='text'
-                        maxLength={TICKER_MAX_LENGTH}
+                        // maxLength={TICKER_MAX_LENGTH}
                         onChange={(e) => handleChange(e.target.value)}
                         autoCorrect='off'
                         spellCheck='false'
                         autoComplete='off'
                     />
-                    <p>{TICKER_MAX_LENGTH - tickerInput.length}</p>
+
+                    <p
+                        className={
+                            tickerInput.length > TICKER_MAX_LENGTH
+                                ? styles.errorText
+                                : ''
+                        }
+                    >
+                        {TICKER_MAX_LENGTH - tickerInput.length}
+                    </p>
                 </div>
             </div>
         </div>
