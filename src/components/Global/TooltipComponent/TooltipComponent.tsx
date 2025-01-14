@@ -7,7 +7,6 @@ import {
     TextOnlyTooltip,
 } from '../StyledTooltip/StyledTooltip';
 import styles from './TooltipComponent.module.css';
-import { brand } from '../../../ambient-utils/constants';
 
 interface TooltipComponentProps {
     title: string | JSX.Element;
@@ -35,7 +34,6 @@ function TooltipComponent(props: TooltipComponentProps) {
     const [open, setOpen] = useState(false);
     const isMobile = useMediaQuery('(max-width:600px)');
     const containerRef = useRef<HTMLDivElement>(null);
-    const isFuta = brand === 'futa';
 
     const clickOutsideHandler = () => {
         setOpen(false);

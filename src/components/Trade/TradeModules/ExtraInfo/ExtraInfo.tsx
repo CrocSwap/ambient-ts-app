@@ -12,11 +12,13 @@ import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent'
 import { brand } from '../../../../ambient-utils/constants';
 
 interface PropsIF {
-    extraInfo: {
-        title: string;
-        tooltipTitle: string;
-        data: React.ReactNode;
-    }[];
+    extraInfo:
+        | null
+        | {
+              title: string;
+              tooltipTitle: string;
+              data: React.ReactNode;
+          }[];
     conversionRate: string;
     gasPrice: string | undefined;
     showDropdown: boolean;
@@ -103,7 +105,7 @@ export const ExtraInfo = (props: PropsIF) => {
                 <ExtraDetailsContainer
                     style={{ textTransform: isFuta ? 'uppercase' : 'none' }}
                 >
-                    {extraInfo.map((item, idx) => (
+                    {extraInfo?.map((item, idx) => (
                         <FlexContainer
                             key={idx}
                             justifyContent='space-between'
