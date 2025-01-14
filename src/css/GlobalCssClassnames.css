@@ -67,6 +67,13 @@
 .customLink:hover{
     color: var(--text1)
 }
+
+.flexColumn{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
 /* apy */
 
 .apy_positive {

@@ -14,7 +14,6 @@ import {
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import { diffHashSig, getChainExplorer } from '../ambient-utils/dataLayer';
-import { FlexContainer } from '../styled/Common';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { AppStateContext } from './AppStateContext';
 import { ReceiptContext } from './ReceiptContext';
@@ -99,7 +98,7 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
         : getChainExplorer(chainId);
 
     const snackBarContentDisplay = (
-        <FlexContainer flexDirection='column' gap={8} alignItems='center'>
+        <div className='flexColumn'>
             {lastReceipt
                 ? isLastReceiptSuccess
                     ? `Transaction ${lastReceipt.hash} successfully completed`
@@ -113,7 +112,7 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
             >
                 View on Explorer
             </a>
-        </FlexContainer>
+        </div>
     );
     useEffect(() => {
         if (lastReceiptHash) {
