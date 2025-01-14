@@ -10,10 +10,7 @@ import {
     TradeDataContext,
     UserDataContext,
 } from '../../../contexts';
-import {
-    ReceiptContext,
-    TransactionByType,
-} from '../../../contexts/ReceiptContext';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import useGenFakeTableRow from './useGenFakeTableRow';
 
 export type RecentlyUpdatedPositionIF = {
@@ -41,10 +38,6 @@ const useMergeWithPendingTxs = (props: propsIF) => {
     const { userAddress } = useContext(UserDataContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
-    const [relevantTransactions, setRelevantTransactions] = useState<
-        TransactionByType[]
-    >([]);
-
     const [recentlyUpdatedPositions, setRecentlyUpdatedPositions] = useState<
         RecentlyUpdatedPositionIF[]
     >([]);
@@ -55,7 +48,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
         activeNetwork: { poolIndex },
     } = useContext(AppStateContext);
 
-    useEffect(() => {
+    const relevantTransactions = useMemo(() => {
         if (props.type === 'Order') {
             let relTxs = transactionsByType.filter(
                 (tx) =>
@@ -76,7 +69,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 return tx.txType === 'Limit';
             });
 
-            setRelevantTransactions(relTxs);
+            return relTxs;
         } else if (props.type === 'Range') {
             let relTxs = transactionsByType.filter(
                 (tx) =>
@@ -102,11 +95,24 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 );
             });
 
-            setRelevantTransactions(relTxs);
+            return relTxs;
         }
-    }, [transactionsByType]);
+    }, [
+        transactionsByType,
+        unindexedNonFailedSessionLimitOrderUpdates,
+        unindexedNonFailedSessionPositionUpdates,
+        baseToken,
+        quoteToken,
+        userAddress,
+        poolIndex,
+    ]);
 
     useEffect(() => {
+        if (!relevantTransactions) {
+            setRecentlyUpdatedPositions([]);
+            return;
+        }
+
         if (relevantTransactions.length === 0) {
             setRecentlyUpdatedPositions([]);
             return;
@@ -169,7 +175,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
         recentlyUpdatedPositions.forEach((e) => {
             const isFresh =
                 Math.floor(e.timestamp / 1000) - Math.floor(Date.now() / 1000) <
-                60;
+                120;
             if (isFresh) {
                 if (props.type === 'Order') {
                     if (
