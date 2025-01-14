@@ -1060,6 +1060,8 @@ function TradeCandleStickChart(props: propsIF) {
         prevPeriod === period &&
         scaleData &&
         period === candleData?.duration &&
+        candleData.pool.baseAddress === baseTokenAddress &&
+        candleData.pool.quoteAddress === quoteTokenAddress &&
         !isFetchingCandle &&
         !isFetchingEnoughData;
 
