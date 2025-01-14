@@ -50,6 +50,7 @@ export interface CandleContextIF {
     setIsCondensedModeEnabled: Dispatch<SetStateAction<boolean>>;
     showFutaCandles: boolean;
     setShowFutaCandles: Dispatch<SetStateAction<boolean>>;
+    setIsChartOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export const CandleContext = createContext({} as CandleContextIF);
@@ -83,6 +84,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext(CachedDataContext);
 
+    const baseTokenAddressRef = useRef(baseTokenAddress);
+    const quoteTokenAddressRef = useRef(quoteTokenAddress);
+
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const [candleData, setCandleData] = useState<
@@ -110,6 +114,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     });
 
     const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timeout>();
+
+    const [isChartOpen, setIsChartOpen] = useState(false);
+
     const offlineFetcherRef = useRef<NodeJS.Timeout>();
     offlineFetcherRef.current = offlineFetcher;
 
@@ -179,6 +186,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setIsCondensedModeEnabled,
         showFutaCandles,
         setShowFutaCandles,
+        setIsChartOpen,
     };
 
     useEffect(() => {
@@ -191,6 +199,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             setTimeOfEndCandle(undefined);
             setIsCondensedModeEnabled(true);
         }
+
+        baseTokenAddressRef.current = baseTokenAddress;
+        quoteTokenAddressRef.current = quoteTokenAddress;
     }, [poolTokenAddress, chainId]);
 
     // only works when the period changes
@@ -209,6 +220,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
                 isChartEnabled &&
+                baseTokenAddressRef.current === baseTokenAddress &&
+                quoteTokenAddressRef.current === quoteTokenAddress &&
                 candleData === undefined
             ) {
                 fetchCandles();
@@ -224,6 +237,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleData === undefined,
         crocEnv,
         chainId,
+        baseTokenAddressRef.current === baseTokenAddress &&
+            quoteTokenAddressRef.current === quoteTokenAddress,
     ]);
 
     useEffect(() => {
@@ -231,7 +246,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             isChartEnabled &&
             isUserOnline &&
             candleScale.isShowLatestCandle &&
-            !isFetchingCandle &&
+            isChartOpen &&
             location.pathname.includes('/trade')
         ) {
             if (
@@ -250,7 +265,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserIdle
             ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
             : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
-        poolTokenAddress,
         candleScale.isShowLatestCandle,
     ]);
 
@@ -333,28 +347,33 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 poolPriceRef.current,
             )
                 .then((candles) => {
-                    setCandleData(candles);
-                    const candleSeries = candles?.candles;
-                    if (candleSeries && candleSeries.length > 0) {
-                        if (candles?.candles.length < nCandles) {
-                            const localCandles = candles?.candles;
+                    if (
+                        baseTokenAddressRef.current === baseTokenAddress &&
+                        quoteTokenAddressRef.current === quoteTokenAddress
+                    ) {
+                        setCandleData(candles);
+                        const candleSeries = candles?.candles;
+                        if (candleSeries && candleSeries.length > 0) {
+                            if (candles?.candles.length < nCandles) {
+                                const localCandles = candles?.candles;
 
-                            setTimeOfEndCandle(
-                                localCandles[localCandles.length - 1].time *
-                                    1000,
-                            );
+                                setTimeOfEndCandle(
+                                    localCandles[localCandles.length - 1].time *
+                                        1000,
+                                );
+                            }
+                            setIsCandleDataNull(false);
+                        } else {
+                            setIsCandleDataNull(true);
                         }
-                        setIsCandleDataNull(false);
-                    } else {
-                        setIsCandleDataNull(true);
-                    }
 
-                    if (candleSeries && candleSeries.length > 0) {
-                        setIsFetchingCandle(false);
-                    }
-                    setIsFirstFetch(false);
+                        if (candleSeries && candleSeries.length > 0) {
+                            setIsFetchingCandle(false);
+                        }
+                        setIsFirstFetch(false);
 
-                    return candles;
+                        return candles;
+                    }
                 })
                 .then(() => {
                     setIsFinishRequest(true);
@@ -482,7 +501,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
-                if (numDurationsNeeded > 0 && !isFetchingCandle) {
+                if (numDurationsNeeded > 0 && isChartOpen) {
                     minTimeMemo &&
                         fetchCandlesByNumDurations(
                             numDurationsNeeded > 2999
