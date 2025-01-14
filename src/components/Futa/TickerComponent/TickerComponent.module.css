@@ -14,7 +14,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     gap: 8px;
     scrollbar-color: var(--dark2) var(--dark2);
@@ -35,12 +35,14 @@
 .tickerContainer {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    /* outline: 1px solid green; */
 }
 
-.openBidContainer,
+.openBidContainer {
+    padding-top: 8px;
+}
+
 .maxMarketContainer {
-    /* border-top: 1px solid var(--dark3); */
     padding-top: 8px;
 }
 
@@ -55,11 +57,18 @@
 
 .tickerContainer h3 {
     color: var(--text1, #f0f0f8);
-
     font-size: 24px;
     text-transform: uppercase;
 }
-.tickerRow,
+
+.tickerRow {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    font-size: 18px;
+}
+
 .maxRow {
     display: flex;
     justify-content: space-between;
