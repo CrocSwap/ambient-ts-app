@@ -33,11 +33,12 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
     // logic to open a snackbar notification
     const {
         activeNetwork: { chainId },
-        snackbar: { open: openSnackbar },
+        snackbar: { open: openSnackbar, close: closeSnackbar },
     } = useContext(AppStateContext);
 
     // all receipts stored in the current user session (array of stringified JSONs)
-    const { allReceipts, transactionsByType } = useContext(ReceiptContext);
+    const { allReceipts, transactionsByType, setShowRedDot } =
+        useContext(ReceiptContext);
 
     // parsed JSON on the most recent receipt in the stack
     const lastReceipt: TransactionReceipt | null =
@@ -109,6 +110,10 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
                 target='_blank'
                 rel='noreferrer'
                 className='customLink'
+                onClick={() => {
+                    setShowRedDot(false);
+                    closeSnackbar();
+                }}
             >
                 View on Explorer
             </a>
