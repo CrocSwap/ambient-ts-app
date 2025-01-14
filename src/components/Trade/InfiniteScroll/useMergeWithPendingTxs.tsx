@@ -27,7 +27,7 @@ interface propsIF {
 }
 
 const useMergeWithPendingTxs = (props: propsIF) => {
-    const { data } = props;
+    const { data, type } = props;
 
     const { transactionsByType } = useContext(ReceiptContext);
     const {
@@ -49,7 +49,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
     } = useContext(AppStateContext);
 
     const relevantTransactions = useMemo(() => {
-        if (props.type === 'Order') {
+        if (type === 'Order') {
             let relTxs = transactionsByType.filter(
                 (tx) =>
                     !tx.isRemoved &&
@@ -70,7 +70,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
             });
 
             return relTxs;
-        } else if (props.type === 'Range') {
+        } else if (type === 'Range') {
             let relTxs = transactionsByType.filter(
                 (tx) =>
                     !tx.isRemoved &&
@@ -98,6 +98,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
             return relTxs;
         }
     }, [
+        type,
         transactionsByType,
         unindexedNonFailedSessionLimitOrderUpdates,
         unindexedNonFailedSessionPositionUpdates,
@@ -119,7 +120,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
         }
 
         (async () => {
-            if (props.type === 'Order') {
+            if (type === 'Order') {
                 Promise.all(
                     relevantTransactions.map((tx) => {
                         return genFakeLimitOrder(tx);
@@ -127,7 +128,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 ).then((rows) => {
                     updateRelevantTransactions(rows);
                 });
-            } else if (props.type === 'Range') {
+            } else if (type === 'Range') {
                 Promise.all(
                     relevantTransactions.map((tx) => {
                         return genFakePosition(tx);
@@ -137,7 +138,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 });
             }
         })();
-    }, [relevantTransactions]);
+    }, [relevantTransactions, type]);
 
     const updateRelevantTransactions = (
         recentRelevantTxs: RecentlyUpdatedPositionIF[],
@@ -177,7 +178,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 Math.floor(e.timestamp / 1000) - Math.floor(Date.now() / 1000) <
                 120;
             if (isFresh) {
-                if (props.type === 'Order') {
+                if (type === 'Order') {
                     if (
                         e.action !== 'Remove' &&
                         e.position.totalValueUSD > 0.01
@@ -186,10 +187,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                             e.position as LimitOrderIF,
                         );
                     }
-                } else if (
-                    props.type === 'Range' &&
-                    e.position.positionLiq !== 0
-                ) {
+                } else if (type === 'Range' && e.position.positionLiq !== 0) {
                     (recentlyUpdatedToShow as PositionIF[]).push(
                         e.position as PositionIF,
                     );
@@ -199,7 +197,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
         });
 
         let clearedData: LimitOrderIF[] | PositionIF[] = [];
-        if (props.type === 'Order') {
+        if (type === 'Order') {
             clearedData = (data as LimitOrderIF[]).filter(
                 (e) => !recentlyUpdatedHashes.has(e.positionHash),
             );
@@ -207,7 +205,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 ...recentlyUpdatedToShow.reverse(),
                 ...clearedData,
             ] as LimitOrderIF[];
-        } else if (props.type === 'Range') {
+        } else if (type === 'Range') {
             clearedData = (data as PositionIF[]).filter(
                 (e) => !recentlyUpdatedHashes.has(e.positionId),
             );
@@ -215,14 +213,14 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 ...recentlyUpdatedToShow.reverse(),
                 ...clearedData,
             ] as PositionIF[];
-        } else if (props.type === 'Transaction') {
+        } else if (type === 'Transaction') {
             return (data as TransactionIF[]).filter(
                 (e) => !recentlyUpdatedHashes.has(e.txHash),
             ) as TransactionIF[];
         }
 
         return [];
-    }, [data, recentlyUpdatedPositions]);
+    }, [type, data, recentlyUpdatedPositions]);
 
     return {
         mergedData,
