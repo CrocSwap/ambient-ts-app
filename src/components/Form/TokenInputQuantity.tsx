@@ -239,7 +239,7 @@ function TokenInputQuantity(props: propsIF) {
         <button
             className={`${styles.tokenSelectButton} ${
                 noModals ? styles.justDisplay : ''
-            }`}
+            } ${showPulseAnimation && styles.pulseAnimation}`}
             id={fieldId ? `${fieldId}_token_selector` : undefined}
             onClick={noModals ? undefined : openTokenSelect}
             tabIndex={0}
@@ -350,9 +350,7 @@ function TokenInputQuantity(props: propsIF) {
         >
             {label && <span className={styles.text}>{label}</span>}
             <div
-                className={`${styles.tokenQuantityContainer} ${
-                    showPulseAnimation && styles.pulseAnimation
-                }`}
+                className={styles.tokenQuantityContainer}
                 style={{ marginBottom: !includeWallet ? '8px' : '0' }}
             >
                 {inputDisplay}
