@@ -268,10 +268,11 @@ function Orders(props: propsIF) {
         sortData,
     ] = useSortedLimits('time', limitOrderData);
 
-    const { mergedData, recentlyUpdatedPositions } = useMergeWithPendingTxs({
-        type: 'Order',
-        data: sortedLimits,
-    });
+    const { mergedData, recentlyUpdatedPositions, blackList } =
+        useMergeWithPendingTxs({
+            type: 'Order',
+            data: sortedLimits,
+        });
 
     const shouldDisplayNoTableData = useMemo(
         () =>
@@ -282,8 +283,10 @@ function Orders(props: propsIF) {
     );
 
     const sortedLimitsToDisplayAccount = useMemo(() => {
-        return mergedData;
-    }, [mergedData]);
+        return (mergedData as LimitOrderIF[]).filter(
+            (e) => !blackList?.has(e.positionHash),
+        );
+    }, [mergedData, blackList]);
 
     const pendingPositionsToDisplayPlaceholder = useMemo(() => {
         return relevantTransactionsByType.filter((pos) => {

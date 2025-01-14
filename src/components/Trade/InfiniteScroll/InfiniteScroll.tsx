@@ -623,7 +623,6 @@ function InfiniteScroll(props: propsIF) {
                             );
                             break;
                         case 'Range':
-                            console.log('>>> newTxs : ', newTxs);
                             setFetchedTransactions(
                                 (
                                     prev:
@@ -732,10 +731,11 @@ function InfiniteScroll(props: propsIF) {
         return ret;
     };
 
-    const { mergedData, recentlyUpdatedPositions } = useMergeWithPendingTxs({
-        type: props.type,
-        data: fetchedTransactions,
-    });
+    const { mergedData, recentlyUpdatedPositions, blackList } =
+        useMergeWithPendingTxs({
+            type: props.type,
+            data: fetchedTransactions,
+        });
 
     const dataToDisplay = useMemo(() => {
         const startIndex = getIndexForPages(true);
@@ -744,7 +744,17 @@ function InfiniteScroll(props: propsIF) {
             recentlyUpdatedPositions.length,
         );
 
-        return mergedData.slice(startIndex, endIndex);
+        if (props.type === 'Order') {
+            return (mergedData as LimitOrderIF[]).filter(
+                (e) => !blackList?.has(e.positionHash),
+            );
+        } else if (props.type === 'Range') {
+            return (mergedData as PositionIF[]).filter(
+                (e) => !blackList?.has(e.positionId),
+            );
+        } else {
+            return mergedData.slice(startIndex, endIndex);
+        }
     }, [pagesVisible, mergedData, recentlyUpdatedPositions]);
 
     useEffect(() => {

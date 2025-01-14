@@ -48,11 +48,13 @@ const useMergeWithPendingTxs = (props: propsIF) => {
         activeNetwork: { poolIndex },
     } = useContext(AppStateContext);
 
+    const [blackList, setBlackList] = useState<Set<string>>();
+
     const relevantTransactions = useMemo(() => {
         if (props.type === 'Order') {
             let relTxs = transactionsByType.filter(
                 (tx) =>
-                    !tx.isRemoved &&
+                    // !tx.isRemoved &&
                     unindexedNonFailedSessionLimitOrderUpdates.some(
                         (update) => update.txHash === tx.txHash,
                     ) &&
@@ -185,14 +187,21 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                         (recentlyUpdatedToShow as LimitOrderIF[]).push(
                             e.position as LimitOrderIF,
                         );
+                    } else {
+                        setBlackList((prev) => {
+                            return new Set([...(prev || []), e.positionHash]);
+                        });
                     }
-                } else if (
-                    props.type === 'Range' &&
-                    e.position.positionLiq !== 0
-                ) {
-                    (recentlyUpdatedToShow as PositionIF[]).push(
-                        e.position as PositionIF,
-                    );
+                } else if (props.type === 'Range') {
+                    if (e.position.positionLiq > 0.01) {
+                        (recentlyUpdatedToShow as PositionIF[]).push(
+                            e.position as PositionIF,
+                        );
+                    } else {
+                        setBlackList((prev) => {
+                            return new Set([...(prev || []), e.positionHash]);
+                        });
+                    }
                 }
                 recentlyUpdatedHashes.add(e.positionHash);
             }
@@ -227,6 +236,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
     return {
         mergedData,
         recentlyUpdatedPositions,
+        blackList,
     };
 };
 

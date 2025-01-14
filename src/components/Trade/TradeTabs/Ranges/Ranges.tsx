@@ -528,10 +528,11 @@ function Ranges(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
-    const { mergedData, recentlyUpdatedPositions } = useMergeWithPendingTxs({
-        type: 'Range',
-        data: sortedPositions,
-    });
+    const { mergedData, recentlyUpdatedPositions, blackList } =
+        useMergeWithPendingTxs({
+            type: 'Range',
+            data: sortedPositions,
+        });
 
     const shouldDisplayNoTableData = useMemo(
         () =>
@@ -542,12 +543,14 @@ function Ranges(props: propsIF) {
     );
 
     const sortedPositionsToDisplayAccount = useMemo(() => {
-        return (mergedData as PositionIF[]).filter(
-            (pos) =>
-                (isAccountView && !hideEmptyPositionsOnAccount) ||
-                pos.positionLiq !== 0,
-        );
-    }, [mergedData]);
+        return (mergedData as PositionIF[])
+            .filter((e) => !blackList?.has(e.positionId))
+            .filter(
+                (pos) =>
+                    (isAccountView && !hideEmptyPositionsOnAccount) ||
+                    pos.positionLiq !== 0,
+            );
+    }, [mergedData, blackList]);
 
     const pendingPositionsToDisplayPlaceholder = useMemo(() => {
         return relevantTransactionsByType.filter((pos) => {
