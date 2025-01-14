@@ -6,6 +6,7 @@ import {
     swellETH,
     swellEZETH,
     swellRSWETH,
+    swellSWELL,
     swellUSDE,
     swellWEETH,
 } from '../defaultTokens';
@@ -60,7 +61,8 @@ export const swellMainnet: NetworkIF = {
         new TopPool(swellETH, swellUSDE, chainSpecFromSDK.poolIndex),
         new TopPool(swellWEETH, swellRSWETH, chainSpecFromSDK.poolIndex),
         new TopPool(swellEZETH, swellETH, chainSpecFromSDK.poolIndex),
-        new TopPool(swellWEETH, swellETH, chainSpecFromSDK.poolIndex),
+        new TopPool(swellRSWETH, swellETH, chainSpecFromSDK.poolIndex),
+        new TopPool(swellETH, swellSWELL, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
