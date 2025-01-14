@@ -974,6 +974,15 @@ export const swellUSDE: TokenIF = registerToken({
     logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29470.png',
 });
 
+export const swellENA: TokenIF = registerToken({
+    name: 'Ethena',
+    address: '0x58538e6A46E07434d7E7375Bc268D3cb839C0133',
+    symbol: 'ENA',
+    decimals: 18,
+    chainId: 1923,
+    logoURI: 'https://mantlescan.xyz/token/images/ethena_32.png',
+});
+
 export const plumeNativeETH: TokenIF = registerToken({
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',

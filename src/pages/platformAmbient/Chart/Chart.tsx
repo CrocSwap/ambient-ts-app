@@ -244,7 +244,6 @@ export default function Chart(props: propsIF) {
         isMagnetActiveLocal,
         setChartContainerOptions,
         chartThemeColors,
-        setChartThemeColors,
         contextmenu,
         setContextmenu,
         contextMenuPlacement,
@@ -322,11 +321,6 @@ export default function Chart(props: propsIF) {
 
     const [discontinuityProvider, setDiscontinuityProvider] =
         useState(undefined);
-
-    const lineSellColor =
-        chartThemeColors?.text2?.toString() ?? 'rgb(139, 152, 165)';
-    const lineBuyColor =
-        chartThemeColors?.text2?.toString() ?? 'rgb(139, 152, 165)';
 
     const {
         showFeeRate,
@@ -5684,16 +5678,12 @@ export default function Chart(props: propsIF) {
         liqTransitionPointforDepth: liquidityData
             ? liquidityData?.liqTransitionPointforDepth
             : poolPriceDisplay,
-        lineSellColor: lineSellColor,
-        lineBuyColor: lineBuyColor,
     };
 
     const limitCanvasProps = {
         scaleData,
         isDenomBase,
         period,
-        lineSellColor,
-        lineBuyColor,
         isUserConnected,
         setLimit,
         limit,
@@ -5713,8 +5703,6 @@ export default function Chart(props: propsIF) {
         liqTransitionPointforDepth: liquidityData
             ? liquidityData?.liqTransitionPointforDepth
             : poolPriceDisplay,
-        lineSellColor,
-        lineBuyColor,
         ranges,
         limit,
         isAmbientOrAdvanced: simpleRangeWidth !== 100 || advancedMode,
@@ -5960,6 +5948,7 @@ export default function Chart(props: propsIF) {
                             circleScale={circleScale}
                             isSelectedOrderHistory={isSelectedOrderHistory}
                             selectedOrderHistory={selectedOrderHistory}
+                            chartThemeColors={chartThemeColors}
                         />
                     )}
 
@@ -6199,7 +6188,6 @@ export default function Chart(props: propsIF) {
                     setContextmenu={setContextmenu}
                     chartItemStates={props.chartItemStates}
                     chartThemeColors={chartThemeColors}
-                    setChartThemeColors={setChartThemeColors}
                     render={render}
                     isCondensedModeEnabled={isCondensedModeEnabled}
                     setIsCondensedModeEnabled={setIsCondensedModeEnabled}
