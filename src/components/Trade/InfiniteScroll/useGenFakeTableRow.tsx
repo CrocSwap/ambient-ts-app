@@ -351,7 +351,7 @@ const useGenFakeTableRow = () => {
             isBid: pendingTx.txDetails.isBid,
             user: pendingTx.userAddress,
             timeFirstMint: 0, // unknown
-            latestUpdateTime: 0,
+            latestUpdateTime: Math.floor(Date.now() / 1000),
             lastMintTx: '', // unknown
             firstMintTx: '', // unknown
             positionType: pendingTx.txDetails.isAmbient
