@@ -59,6 +59,14 @@
     border-color: var(--accent1) !important;
 }
 
+.customLink{
+    color: var(--accent1);
+    transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
+}
+.customLink:hover{
+    color: var(--text1)
+}
 /* apy */
 
 .apy_positive {

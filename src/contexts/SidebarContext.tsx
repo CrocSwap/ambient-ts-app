@@ -13,10 +13,11 @@ import {
 } from '../App/hooks/useRecentPools';
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
-import { diffHashSig } from '../ambient-utils/dataLayer';
+import { diffHashSig, getChainExplorer } from '../ambient-utils/dataLayer';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { AppStateContext } from './AppStateContext';
 import { ReceiptContext } from './ReceiptContext';
+import { FlexContainer } from '../styled/Common';
 
 export interface SidebarContextIF {
     recentPools: recentPoolsMethodsIF;
@@ -90,15 +91,30 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
 
     // logic to show a snackbar notification when a new receipt is received
     // I'm not really sure why we put this logic in this file? should move later
+    const blockExplorer = getChainExplorer(chainId);
+
+    const snackBarContentDisplay = (
+        <FlexContainer flexDirection='column' gap={8} alignItems='center'>
+            {lastReceipt
+                ? isLastReceiptSuccess
+                    ? `Transaction ${lastReceipt.hash} successfully completed`
+                    : `Transaction ${lastReceipt.hash} failed`
+                : ''}
+            <a
+                href={`${blockExplorer}tx/${lastReceipt?.hash}`}
+                target='_blank'
+                rel='noreferrer'
+                className='customLink'
+            >
+                View On Explorer
+            </a>
+        </FlexContainer>
+    );
     useEffect(() => {
         if (lastReceiptHash) {
             IS_LOCAL_ENV && console.debug('new receipt to display');
             openSnackbar(
-                lastReceipt
-                    ? isLastReceiptSuccess
-                        ? `Transaction ${lastReceipt.hash} successfully completed`
-                        : `Transaction ${lastReceipt.hash} failed`
-                    : '',
+                snackBarContentDisplay,
                 isLastReceiptSuccess ? 'info' : 'warning',
             );
         }

@@ -15,6 +15,9 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import styles from './SnackbarComponent.module.css';
 
+// const duration = 8000
+const duration = 280000;
+
 const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
     function SnackbarAlert(props, ref) {
         return (
@@ -58,7 +61,8 @@ function SnackbarComponent() {
         if (isSnackbarOpen && isSmallScreen) {
             timeoutId = setTimeout(() => {
                 handleClose();
-            }, 8000);
+                // change this back to 8,000
+            }, duration);
         }
 
         return () => {
@@ -88,7 +92,7 @@ function SnackbarComponent() {
         <motion.div>
             <Snackbar
                 open={isSnackbarOpen}
-                autoHideDuration={8000}
+                autoHideDuration={duration}
                 onClose={handleClose}
                 anchorOrigin={anchorOrigin}
                 // z-index needs to be greater than globalPopup
