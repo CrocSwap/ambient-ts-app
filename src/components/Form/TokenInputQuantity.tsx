@@ -24,6 +24,7 @@ import TokenIcon from '../Global/TokenIcon/TokenIcon';
 import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
 import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSelectModal';
 import styles from './TokenInputQuantity.module.css';
+import { brand } from '../../ambient-utils/constants';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -80,6 +81,8 @@ function TokenInputQuantity(props: propsIF) {
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
+
+    const isFuta = brand === 'futa';
 
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
@@ -296,15 +299,20 @@ function TokenInputQuantity(props: propsIF) {
             <div className={styles.futaLayoutRight}>
                 <button
                     className={styles.tokenButton}
-                    style={{ cursor: 'default' }}
+                    style={{
+                        cursor: 'default',
+                        justifyContent: isFuta ? 'center' : 'space-between',
+                    }}
                     onClick={() => setIsTickerModalOpen(true)}
                 >
-                    <TokenIcon
-                        token={token}
-                        src={uriToHttp(token.logoURI)}
-                        alt={token.symbol}
-                        size='xl'
-                    />
+                    {!isFuta && (
+                        <TokenIcon
+                            token={token}
+                            src={uriToHttp(token.logoURI)}
+                            alt={token.symbol}
+                            size='xl'
+                        />
+                    )}
                     {tokenSymbol}
                 </button>
                 <button

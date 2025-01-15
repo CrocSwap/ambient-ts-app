@@ -201,7 +201,7 @@ export default function Chart(props: propsIF) {
         setIsCompletedFetchData,
         setChartResetStatus,
         chartResetStatus,
-        openMobileSettingsModal,
+        // openMobileSettingsModal,
     } = props;
 
     const {
@@ -1353,7 +1353,7 @@ export default function Chart(props: propsIF) {
 
                                     event.preventDefault();
                                 } else {
-                                    openMobileSettingsModal();
+                                    // openMobileSettingsModal();
                                 }
                             }
 
@@ -4639,7 +4639,7 @@ export default function Chart(props: propsIF) {
                 (event: PointerEvent) => {
                     if (mobileView) {
                         event.preventDefault();
-                        openMobileSettingsModal();
+                        // openMobileSettingsModal();
                     } else {
                         if (!event.shiftKey) {
                             event.preventDefault();
