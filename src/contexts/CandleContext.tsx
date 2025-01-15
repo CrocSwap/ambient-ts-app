@@ -200,8 +200,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             setIsCondensedModeEnabled(true);
         }
 
-        baseTokenAddressRef.current = baseTokenAddress;
-        quoteTokenAddressRef.current = quoteTokenAddress;
+        baseTokenAddressRef.current =
+            baseTokenAddress.toLocaleLowerCase('en-US');
+        quoteTokenAddressRef.current =
+            quoteTokenAddress.toLocaleLowerCase('en-US');
     }, [poolTokenAddress, chainId]);
 
     // only works when the period changes
@@ -220,8 +222,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
                 isChartEnabled &&
-                baseTokenAddressRef.current === baseTokenAddress &&
-                quoteTokenAddressRef.current === quoteTokenAddress &&
+                baseTokenAddressRef.current ===
+                    baseTokenAddress.toLocaleLowerCase('en-US') &&
+                quoteTokenAddressRef.current ===
+                    quoteTokenAddress.toLocaleLowerCase('en-US') &&
                 candleData === undefined
             ) {
                 fetchCandles();
@@ -237,8 +241,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleData === undefined,
         crocEnv,
         chainId,
-        baseTokenAddressRef.current === baseTokenAddress &&
-            quoteTokenAddressRef.current === quoteTokenAddress,
+        baseTokenAddressRef.current ===
+            baseTokenAddress.toLocaleLowerCase('en-US'),
+        quoteTokenAddressRef.current ===
+            quoteTokenAddress.toLocaleLowerCase('en-US'),
     ]);
 
     useEffect(() => {
@@ -348,8 +354,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             )
                 .then((candles) => {
                     if (
-                        baseTokenAddressRef.current === baseTokenAddress &&
-                        quoteTokenAddressRef.current === quoteTokenAddress
+                        baseTokenAddressRef.current ===
+                            baseTokenAddress.toLocaleLowerCase('en-US') &&
+                        quoteTokenAddressRef.current ===
+                            quoteTokenAddress.toLocaleLowerCase('en-US')
                     ) {
                         setCandleData(candles);
                         const candleSeries = candles?.candles;
