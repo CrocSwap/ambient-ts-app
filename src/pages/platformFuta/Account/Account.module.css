@@ -13,7 +13,7 @@ main {
 /* left side of `Account.tsx` (contains ticker table and chart) */
 .tickers_and_chart {
     flex-grow: 1;
-    outline: 1px solid green;
+    /* outline: 1px solid green; */
 }
 
 /* in-page 'ACCOUNT' title (only on mobile devices) */
@@ -31,7 +31,7 @@ main {
     color: var(--text2);
     font-size: 12px;
     text-align: center;
-    outline: 1px solid blue;
+    /* outline: 1px solid blue; */
 }
 
 .claim {
