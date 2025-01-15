@@ -94,6 +94,7 @@ function TradeCandleStickChart(props: propsIF) {
         isCondensedModeEnabled,
         candleDomains,
         setCandleDomains,
+        setIsChartOpen,
     } = useContext(CandleContext);
     const { chartSettings, isChangeScaleChart, setSelectedDrawnShape } =
         useContext(ChartContext);
@@ -1059,8 +1060,17 @@ function TradeCandleStickChart(props: propsIF) {
         prevPeriod === period &&
         scaleData &&
         period === candleData?.duration &&
+        candleData.pool.baseAddress.toLowerCase() ===
+            baseTokenAddress.toLowerCase() &&
+        candleData.pool.quoteAddress.toLowerCase() ===
+            quoteTokenAddress.toLowerCase() &&
         !isFetchingCandle &&
         !isFetchingEnoughData;
+
+    useEffect(() => {
+        isOpenChart !== undefined &&
+            setIsChartOpen(isOpenChart && !isCompletedFetchData);
+    }, [isOpenChart, isCompletedFetchData]);
 
     const loadingText = (
         <div
