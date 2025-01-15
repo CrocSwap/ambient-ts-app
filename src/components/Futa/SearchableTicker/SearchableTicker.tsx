@@ -58,7 +58,7 @@ export default function SearchableTicker(props: propsIF) {
     } = useContext(FutaSearchableTickerContext);
 
     const tableParentRef = useRef<HTMLDivElement>(null);
-
+    const tickerTableRef = useRef<HTMLDivElement>(null);
     // logic to expand table to full height if no data is available, this
     // ... keeps the 'no data available' msg centered in the visual space,
     useEffect(() => {
@@ -239,11 +239,12 @@ export default function SearchableTicker(props: propsIF) {
             !isMouseEnter
         ) {
             const itemRef = tickerItemRefs.current[hoveredTicker];
-            const tableRef = containerRef.current;
+            const tableRef = tickerTableRef.current;
+            const localContainerRef = containerRef.current;
 
-            if (itemRef && containerRef.current && tableRef) {
-                containerRef.current.scrollTo({
-                    top: itemRef.offsetTop - tableRef.offsetTop,
+            if (itemRef && tableRef && localContainerRef) {
+                tickerTableRef.current.scrollTo({
+                    top: itemRef.offsetTop - localContainerRef.offsetTop,
                     behavior: 'smooth',
                 });
             }
@@ -464,7 +465,7 @@ export default function SearchableTicker(props: propsIF) {
     }, []);
 
     const searchableContent = (
-        <div className={styles.ticker_table}>
+        <div className={styles.ticker_table} ref={tickerTableRef}>
             {filteredData.length ? (
                 <header>
                     <p className={styles.cell_left}>
