@@ -445,16 +445,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         setCandleData(incrCandles);
                     } else {
                         const newCandles: CandleDataIF[] = [];
-                        if (incrCandles.candles.length === 0) {
-                            candleData.candles.sort(
-                                (a: CandleDataIF, b: CandleDataIF) =>
-                                    b.time - a.time,
+                        if (
+                            incrCandles.candles.length === 0 ||
+                            incrCandles.candles.length < numDurations - 1
+                        ) {
+                            const minDate = Math.min(
+                                ...incrCandles.candles.map((i) => i.time),
                             );
-                            setTimeOfEndCandle(
-                                candleData.candles[
-                                    candleData.candles.length - 1
-                                ].time * 1000,
-                            );
+                            minDate && setTimeOfEndCandle(minDate * 1000);
                         }
 
                         for (
