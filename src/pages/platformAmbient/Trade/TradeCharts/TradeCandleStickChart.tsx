@@ -79,7 +79,7 @@ function TradeCandleStickChart(props: propsIF) {
 
     const {
         activeNetwork: { gridSize, poolIndex, chainId },
-        isUserIdle40min,
+        isUserIdle60min,
     } = useContext(AppStateContext);
 
     const { setMinRangePrice: setMinPrice, setMaxRangePrice: setMaxPrice } =
@@ -1131,7 +1131,7 @@ function TradeCandleStickChart(props: propsIF) {
                         </div>
                     </>
                 )}
-                {isOpenChart && !isUserIdle40min && (
+                {isOpenChart && !isUserIdle60min && (
                     <>
                         <ChartTooltip
                             currentData={currentData}
@@ -1179,7 +1179,7 @@ function TradeCandleStickChart(props: propsIF) {
                 )}
 
                 {!(!isOpenChart || isCompletedFetchData) &&
-                    isUserIdle40min &&
+                    isUserIdle60min &&
                     skeletonChart}
             </div>
         </>
