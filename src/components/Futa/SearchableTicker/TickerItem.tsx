@@ -38,7 +38,8 @@ export default function TickerItem(props: PropsIF) {
         useRefTicker,
     } = props;
 
-    const { accountData, setHoveredTicker } = useContext(AuctionsContext);
+    const { accountData, hoveredTicker, setHoveredTicker } =
+        useContext(AuctionsContext);
 
     const {
         ticker,
@@ -154,9 +155,7 @@ export default function TickerItem(props: PropsIF) {
             ? filledMarketCapUsdValue
                 ? getFormattedNumber({
                       value: filledMarketCapUsdValue,
-                      minFracDigits: 0,
-                      maxFracDigits: 0,
-                      isUSD: true,
+                      isTickerDisplay: true,
                   })
                 : '$0'
             : undefined;
@@ -191,6 +190,12 @@ export default function TickerItem(props: PropsIF) {
                             ? 'active'
                             : 'inactive'
                     ],
+                styles[
+                    auction?.ticker === hoveredTicker &&
+                    hoveredTicker !== selectedTicker
+                        ? 'hoverActive'
+                        : ''
+                ],
             ].join(' ')}
             to={'/auctions/v1/' + ticker}
             onClick={() => {
@@ -212,20 +217,7 @@ export default function TickerItem(props: PropsIF) {
             </div>
             <p className={styles.market_cap}>{formattedMarketCap}</p>
             <p className={styles.auction_status}>{statusText}</p>
-            <p
-                style={{
-                    color:
-                        // set color to orange if time remaining is less than 2 hours
-                        timeRemainingInSec <= 0
-                            ? 'var(--accent1)'
-                            : timeRemainingInSec > 7200
-                              ? 'var(--text1)'
-                              : 'var(--orange)',
-                }}
-                className={styles.time_remaining}
-            >
-                {timeRemaining}
-            </p>
+            <p className={styles.time_remaining}>{timeRemaining}</p>
             {isCreated && (
                 <p className={styles.native_tkn_committed}>
                     {auction.nativeTokenCommitted &&

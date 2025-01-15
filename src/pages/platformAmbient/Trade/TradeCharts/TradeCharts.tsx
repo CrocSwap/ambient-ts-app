@@ -229,9 +229,11 @@ function TradeCharts(props: propsIF) {
 
     const [applyDefault, setApplyDefault] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isSettingsClosing, setIsSettingsClosing] = useState(false);
 
     const handleModalOnClose = () => {
         if (shouldDisableChartSettings && !isSelecboxActive) {
+            setIsSettingsClosing(true);
             closeMobileSettingsModal();
         } else {
             setShouldDisableChartSettings(true);
@@ -452,7 +454,7 @@ function TradeCharts(props: propsIF) {
                 isSaving={isSaving}
                 setIsSaving={setIsSaving}
                 isMobile={true}
-                // render={render}
+                isSettingsClosing={isSettingsClosing}
             />
         </section>
     );

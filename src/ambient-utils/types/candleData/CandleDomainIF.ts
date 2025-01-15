@@ -3,4 +3,5 @@ export interface CandleDomainIF {
     domainBoundry: number | undefined;
     isAbortedRequest: boolean;
     isResetRequest: boolean;
+    isCondensedFetching: boolean;
 }

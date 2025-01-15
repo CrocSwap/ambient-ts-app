@@ -28,8 +28,6 @@ import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeDataContext } from './TradeDataContext';
 import { TradeTokenContext } from './TradeTokenContext';
-import { UserDataContext } from './UserDataContext';
-
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
     setCandleData: Dispatch<
@@ -74,9 +72,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = useContext(AppStateContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
-    const { poolPriceNonDisplay: poolPriceDisplay, setPoolPriceNonDisplay } =
+    const { poolPriceNonDisplay: poolPriceDisplay } =
         useContext(TradeDataContext);
-    const { isUserConnected } = useContext(UserDataContext);
+
+    const poolPriceRef = useRef(poolPriceDisplay);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -86,20 +85,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
-    const [abortController] = useState<{
-        abortController: AbortController | null;
-    }>({ abortController: null });
-
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDurationIF | undefined
     >();
     const [isCandleSelected, setIsCandleSelected] = useState<
         boolean | undefined
     >();
-
-    const [isZoomRequestCanceled, setIsZoomRequestCanceled] = useState({
-        value: false,
-    });
 
     const [timeOfEndCandle, setTimeOfEndCandle] = useState<
         number | undefined
@@ -115,13 +106,20 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         domainBoundry: undefined,
         isAbortedRequest: false,
         isResetRequest: false,
+        isCondensedFetching: false,
     });
 
     const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timeout>();
     const offlineFetcherRef = useRef<NodeJS.Timeout>();
     offlineFetcherRef.current = offlineFetcher;
 
-    const checkUserConnected = useRef(isUserConnected);
+    const poolTokenAddress = (
+        baseTokenAddress + quoteTokenAddress
+    ).toLocaleLowerCase('en-US');
+
+    useEffect(() => {
+        poolPriceRef.current = poolPriceDisplay;
+    }, [poolPriceDisplay]);
 
     useEffect(() => {
         if (isFinishRequest) {
@@ -184,59 +182,58 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        if (isFirstFetch) {
-            const controller = new AbortController();
-            abortController.abortController = controller;
-            setIsZoomRequestCanceled({ value: false });
-        }
         setIsFirstFetch(true);
     }, [isFirstFetch]);
 
     useEffect(() => {
+        if (candleData !== undefined) {
+            setCandleData(undefined);
+            setTimeOfEndCandle(undefined);
+            setIsCondensedModeEnabled(true);
+        }
+    }, [poolTokenAddress, chainId]);
+
+    // only works when the period changes
+    useEffect(() => {
         setCandleData(undefined);
         setTimeOfEndCandle(undefined);
-        setIsCondensedModeEnabled(true);
-        setPoolPriceNonDisplay(0);
-    }, [baseTokenAddress + quoteTokenAddress]);
+    }, [candleScale?.isFetchForTimeframe]);
 
+    /**
+     * this is for the first fetch (initial load, switching network, changing period, or switching pool).
+     */
     useEffect(() => {
         (async () => {
-            const isChangeUserConnected =
-                checkUserConnected.current === isUserConnected;
-
             if (
                 crocEnv &&
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
-                isChangeUserConnected &&
-                poolPriceDisplay &&
-                isChartEnabled
+                isChartEnabled &&
+                candleData === undefined
             ) {
-                fetchCandles(true);
+                fetchCandles();
                 if (isManualCandleFetchRequested)
                     setIsManualCandleFetchRequested(false);
             }
-            checkUserConnected.current = isUserConnected;
         })();
     }, [
         isManualCandleFetchRequested,
         isChartEnabled,
-        crocEnv,
         isUserOnline,
-        baseTokenAddress + quoteTokenAddress,
         isPoolInitialized,
+        candleData === undefined,
+        crocEnv,
         chainId,
-        poolPriceDisplay === 0,
-        isUserConnected,
     ]);
 
-    // only works when the period changes
     useEffect(() => {
-        fetchCandles();
-    }, [candleScale?.isFetchForTimeframe]);
-
-    useEffect(() => {
-        if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
+        if (
+            isChartEnabled &&
+            isUserOnline &&
+            candleScale.isShowLatestCandle &&
+            !isFetchingCandle &&
+            location.pathname.includes('/trade')
+        ) {
             if (
                 candleData &&
                 candleData.candles &&
@@ -244,7 +241,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 !isCandleDataNull
             ) {
                 const nowTime = Math.floor(Date.now() / 1000);
-
                 fetchCandlesByNumDurations(200, nowTime);
             }
         }
@@ -254,11 +250,23 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserIdle
             ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
             : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
-        baseTokenAddress + quoteTokenAddress,
-        candleScale?.isFetchForTimeframe,
-        // candleScale.nCandles,
+        poolTokenAddress,
         candleScale.isShowLatestCandle,
     ]);
+
+    /**
+     * only works if have not enough candle data on condensed mode
+     */
+    useEffect(() => {
+        (async () => {
+            if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
+                const lastDate = new Date(
+                    (candleDomains?.lastCandleDate as number) / 1000,
+                ).getTime();
+                fetchCandlesByNumDurations(2999, lastDate);
+            }
+        })();
+    }, [candleDomains.isCondensedFetching]);
 
     useEffect(() => {
         if (isCandleDataNull) {
@@ -285,18 +293,15 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         };
     }, [isCandleDataNull]);
 
-    const fetchCandles = (bypassSpinner = false) => {
+    const fetchCandles = () => {
         if (
             isChartEnabled &&
             isServerEnabled &&
             isUserOnline &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            crocEnv &&
-            poolPriceDisplay
+            crocEnv
         ) {
-            setIsZoomRequestCanceled({ value: true });
-
             const candleTime = candleScale.isShowLatestCandle
                 ? Math.floor(Date.now() / 1000)
                 : candleScale.lastCandleDate || 0;
@@ -304,7 +309,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             const nCandles = Math.min(Math.max(candleScale?.nCandles), 2999);
 
             setIsFinishRequest(false);
-            !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);
 
             const chartSettings: chartSettingsIF | null = JSON.parse(
@@ -326,7 +330,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
-                poolPriceDisplay,
+                poolPriceRef.current,
             )
                 .then((candles) => {
                     setCandleData(candles);
@@ -390,32 +394,16 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             ? 3 * numDurationsForVisibleArea
             : 2 * numDurationsForVisibleArea;
 
-        return numDurations > 2999 ? 2999 : numDurations;
+        return numDurations;
     }, [minTimeMemo, domainBoundaryInSeconds]);
 
     const fetchCandlesByNumDurations = (
         numDurations: number,
         minTimeMemo: number,
     ) => {
-        if (!crocEnv || !candleTimeLocal || !poolPriceDisplay) {
+        if (!crocEnv || !candleTimeLocal || candleData === undefined) {
             return;
         }
-
-        if (candleDomains.isResetRequest) {
-            if (abortController.abortController) {
-                abortController.abortController.abort();
-                setCandleDomains((prev) => {
-                    return prev ? { ...prev, isResetRequest: false } : prev;
-                });
-            }
-        }
-        if (candleDomains?.isAbortedRequest) {
-            const controller = new AbortController();
-            abortController.abortController = controller;
-            isZoomRequestCanceled.value = false;
-        }
-
-        const signal = abortController.abortController?.signal; // used cancel the request when the pool or timeframe changes before the zoom request end
 
         fetchCandleSeriesHybrid(
             true,
@@ -430,11 +418,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedQuerySpotPrice,
-            poolPriceDisplay,
-            signal,
+            poolPriceRef.current,
         )
             .then((incrCandles) => {
-                if (incrCandles && candleData && !isZoomRequestCanceled.value) {
+                if (incrCandles && candleData) {
                     if (candleDomains.isResetRequest) {
                         setCandleData(incrCandles);
                     } else {
@@ -479,15 +466,15 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 }
             })
             .catch((e) => {
-                if (e.name === 'AbortError') {
-                    console.warn('Zoom request cancelled');
-                } else {
-                    console.error(e);
-                }
+                console.error(e);
+
                 setIsCandleDataNull(false);
             });
     };
 
+    /**
+     * only works for zoom
+     */
     useEffect(() => {
         (async () => {
             if (
@@ -495,22 +482,18 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
-                if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
+                if (numDurationsNeeded > 0 && !isFetchingCandle) {
                     minTimeMemo &&
                         fetchCandlesByNumDurations(
-                            numDurationsNeeded,
+                            numDurationsNeeded > 2999
+                                ? 2999
+                                : numDurationsNeeded,
                             minTimeMemo,
                         );
                 }
             }
         })();
-    }, [numDurationsNeeded, minTimeMemo, crocEnv, chainId]);
-
-    useEffect(() => {
-        if (abortController.abortController && isZoomRequestCanceled.value) {
-            abortController.abortController.abort();
-        }
-    }, [isZoomRequestCanceled.value]);
+    }, [numDurationsNeeded]);
 
     return (
         <CandleContext.Provider value={candleContext}>

@@ -257,6 +257,7 @@
     display: flex;
     flex-direction: column;
     row-gap: 4px;
+    overflow-y: scroll;
 }
 
 .cell_left {

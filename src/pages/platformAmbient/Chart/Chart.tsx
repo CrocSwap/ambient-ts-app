@@ -36,7 +36,6 @@ import {
 import {
     CandleDataIF,
     CandleDomainIF,
-    CandleScaleIF,
     CandlesByPoolAndDurationIF,
     TransactionIF,
 } from '../../../ambient-utils/types';
@@ -245,7 +244,6 @@ export default function Chart(props: propsIF) {
         isMagnetActiveLocal,
         setChartContainerOptions,
         chartThemeColors,
-        setChartThemeColors,
         contextmenu,
         setContextmenu,
         contextMenuPlacement,
@@ -258,6 +256,8 @@ export default function Chart(props: propsIF) {
     const {
         setCandleDomains,
         setCandleScale,
+        candleScale,
+        candleDomains,
         timeOfEndCandle,
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
@@ -280,6 +280,7 @@ export default function Chart(props: propsIF) {
             domainBoundry: undefined,
             isAbortedRequest: false,
             isResetRequest: false,
+            isCondensedFetching: false,
         });
 
     const {
@@ -320,8 +321,6 @@ export default function Chart(props: propsIF) {
 
     const [discontinuityProvider, setDiscontinuityProvider] =
         useState(undefined);
-    const [lineSellColor, setLineSellColor] = useState('rgba(115, 113, 252)');
-    const [lineBuyColor, setLineBuyColor] = useState('rgba(205, 193, 255)');
 
     const {
         showFeeRate,
@@ -346,27 +345,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasCrosshair = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        if (
-            chartThemeColors &&
-            chartThemeColors.downCandleBorderColor !== null
-        ) {
-            setLineSellColor((prev) => {
-                if (chartThemeColors.downCandleBorderColor)
-                    return chartThemeColors.downCandleBorderColor.toString();
-
-                return prev;
-            });
-
-            setLineBuyColor((prev) => {
-                if (chartThemeColors.upCandleBodyColor)
-                    return chartThemeColors.upCandleBodyColor.toString();
-
-                return prev;
-            });
-        }
-    }, [chartThemeColors]);
 
     const location = useLocation();
 
@@ -706,7 +684,12 @@ export default function Chart(props: propsIF) {
     const debouncedGetNewCandleDataRight = useDebounce(localCandleDomains, 500);
 
     const zoomBase = useMemo(() => {
-        return new Zoom(setLocalCandleDomains, period, isCondensedModeEnabled);
+        return new Zoom(
+            setLocalCandleDomains,
+            period,
+            isCondensedModeEnabled,
+            candleDomains,
+        );
     }, [period, isCondensedModeEnabled]);
 
     const chartPoolPrice = useMemo(() => {
@@ -975,6 +958,9 @@ export default function Chart(props: propsIF) {
                     } else {
                         setIsCompletedFetchData(false);
                     }
+                } else {
+                    setReset(true);
+                    setIsCompletedFetchData(false);
                 }
             } else {
                 setIsCompletedFetchData(false);
@@ -1081,9 +1067,9 @@ export default function Chart(props: propsIF) {
                 scaleData?.xScale,
             );
 
-            setCandleScale((prev: CandleScaleIF) => {
+            setCandleScale(() => {
                 return {
-                    isFetchForTimeframe: prev.isFetchForTimeframe,
+                    isFetchForTimeframe: candleScale.isFetchForTimeframe,
                     lastCandleDate: Math.floor(domainMax / 1000),
                     nCandles: nCandles,
                     isShowLatestCandle: isShowLatestCandle,
@@ -2581,14 +2567,15 @@ export default function Chart(props: propsIF) {
     function fetchCandleForResetOrLatest(isReset = false) {
         const nowDate = Date.now();
         if (isReset) {
-            const candleDomain = {
+            const localCandleDomain = {
                 lastCandleDate: nowDate,
                 domainBoundry: nowDate - 200 * 1000 * period,
                 isAbortedRequest: true,
                 isResetRequest: isReset,
+                isCondensedFetching: candleDomains.isCondensedFetching,
             };
 
-            setCandleDomains(candleDomain);
+            setCandleDomains(localCandleDomain);
         } else {
             if ((reset || latest) && scaleData) {
                 const lastCandleDataTime =
@@ -2602,6 +2589,7 @@ export default function Chart(props: propsIF) {
                             : lastCandleDataTime,
                     isAbortedRequest: false,
                     isResetRequest: isReset,
+                    isCondensedFetching: candleDomains.isCondensedFetching,
                 };
 
                 if (!isReset) {
@@ -5690,16 +5678,12 @@ export default function Chart(props: propsIF) {
         liqTransitionPointforDepth: liquidityData
             ? liquidityData?.liqTransitionPointforDepth
             : poolPriceDisplay,
-        lineSellColor: lineSellColor,
-        lineBuyColor: lineBuyColor,
     };
 
     const limitCanvasProps = {
         scaleData,
         isDenomBase,
         period,
-        lineSellColor,
-        lineBuyColor,
         isUserConnected,
         setLimit,
         limit,
@@ -5719,8 +5703,6 @@ export default function Chart(props: propsIF) {
         liqTransitionPointforDepth: liquidityData
             ? liquidityData?.liqTransitionPointforDepth
             : poolPriceDisplay,
-        lineSellColor,
-        lineBuyColor,
         ranges,
         limit,
         isAmbientOrAdvanced: simpleRangeWidth !== 100 || advancedMode,
@@ -5966,6 +5948,7 @@ export default function Chart(props: propsIF) {
                             circleScale={circleScale}
                             isSelectedOrderHistory={isSelectedOrderHistory}
                             selectedOrderHistory={selectedOrderHistory}
+                            chartThemeColors={chartThemeColors}
                         />
                     )}
 
@@ -6205,7 +6188,6 @@ export default function Chart(props: propsIF) {
                     setContextmenu={setContextmenu}
                     chartItemStates={props.chartItemStates}
                     chartThemeColors={chartThemeColors}
-                    setChartThemeColors={setChartThemeColors}
                     render={render}
                     isCondensedModeEnabled={isCondensedModeEnabled}
                     setIsCondensedModeEnabled={setIsCondensedModeEnabled}
