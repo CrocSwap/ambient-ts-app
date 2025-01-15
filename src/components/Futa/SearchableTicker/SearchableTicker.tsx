@@ -597,6 +597,7 @@ export default function SearchableTicker(props: propsIF) {
             className={styles.searchable_ticker}
             style={{
                 gridTemplateRows: isAccount ? 'auto 100%' : '',
+                height: isAccount ? '' : '100%',
             }}
             ref={canvasRef}
         >
