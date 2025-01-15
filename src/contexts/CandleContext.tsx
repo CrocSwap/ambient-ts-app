@@ -122,7 +122,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const poolTokenAddress = (
         baseTokenAddress + quoteTokenAddress
-    ).toLocaleLowerCase('en-US');
+    ).toLowerCase();
 
     useEffect(() => {
         poolPriceRef.current = poolPriceDisplay;
@@ -200,10 +200,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             setIsCondensedModeEnabled(true);
         }
 
-        baseTokenAddressRef.current =
-            baseTokenAddress.toLocaleLowerCase('en-US');
-        quoteTokenAddressRef.current =
-            quoteTokenAddress.toLocaleLowerCase('en-US');
+        baseTokenAddressRef.current = baseTokenAddress.toLowerCase();
+        quoteTokenAddressRef.current = quoteTokenAddress.toLowerCase();
     }, [poolTokenAddress, chainId]);
 
     // only works when the period changes
@@ -223,9 +221,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 (await crocEnv.context).chain.chainId === chainId &&
                 isChartEnabled &&
                 baseTokenAddressRef.current ===
-                    baseTokenAddress.toLocaleLowerCase('en-US') &&
+                    baseTokenAddress.toLowerCase() &&
                 quoteTokenAddressRef.current ===
-                    quoteTokenAddress.toLocaleLowerCase('en-US') &&
+                    quoteTokenAddress.toLowerCase() &&
                 candleData === undefined
             ) {
                 fetchCandles();
@@ -241,10 +239,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleData === undefined,
         crocEnv,
         chainId,
-        baseTokenAddressRef.current ===
-            baseTokenAddress.toLocaleLowerCase('en-US'),
-        quoteTokenAddressRef.current ===
-            quoteTokenAddress.toLocaleLowerCase('en-US'),
+        baseTokenAddressRef.current === baseTokenAddress.toLowerCase(),
+        quoteTokenAddressRef.current === quoteTokenAddress.toLowerCase(),
     ]);
 
     useEffect(() => {
@@ -355,9 +351,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 .then((candles) => {
                     if (
                         baseTokenAddressRef.current ===
-                            baseTokenAddress.toLocaleLowerCase('en-US') &&
+                            baseTokenAddress.toLowerCase() &&
                         quoteTokenAddressRef.current ===
-                            quoteTokenAddress.toLocaleLowerCase('en-US')
+                            quoteTokenAddress.toLowerCase()
                     ) {
                         setCandleData(candles);
                         const candleSeries = candles?.candles;

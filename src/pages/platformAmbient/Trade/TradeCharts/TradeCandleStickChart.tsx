@@ -1060,10 +1060,10 @@ function TradeCandleStickChart(props: propsIF) {
         prevPeriod === period &&
         scaleData &&
         period === candleData?.duration &&
-        candleData.pool.baseAddress.toLocaleLowerCase('en-US') ===
-            baseTokenAddress.toLocaleLowerCase('en-US') &&
-        candleData.pool.quoteAddress.toLocaleLowerCase('en-US') ===
-            quoteTokenAddress.toLocaleLowerCase('en-US') &&
+        candleData.pool.baseAddress.toLowerCase() ===
+            baseTokenAddress.toLowerCase() &&
+        candleData.pool.quoteAddress.toLowerCase() ===
+            quoteTokenAddress.toLowerCase() &&
         !isFetchingCandle &&
         !isFetchingEnoughData;
 
