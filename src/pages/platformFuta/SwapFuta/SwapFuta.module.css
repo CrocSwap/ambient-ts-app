@@ -84,6 +84,8 @@
     color: #5C6F72;
     text-transform: uppercase;
     padding: 0 8px;
+
+    height: 18px;
 }
 
 @media (min-width: 768px) {
