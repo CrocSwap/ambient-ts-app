@@ -570,7 +570,9 @@ export const getCssVariable = (activeSkin: skins, variableName: string) => {
         .getPropertyValue(variableName)
         .trim();
 
-    return d3.color(value);
+    const res = d3.color(value);
+
+    return res as d3.RGBColor | d3.HSLColor;
 };
 
 export const getLast15Minutes = (period: number) => {
