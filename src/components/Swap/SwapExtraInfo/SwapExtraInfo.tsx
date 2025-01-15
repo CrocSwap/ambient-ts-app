@@ -1,5 +1,6 @@
 import { CrocImpact } from '@crocswap-libs/sdk';
 import { memo, useContext } from 'react';
+import { brand } from '../../../ambient-utils/constants';
 import {
     getFormattedNumber,
     getPriceImpactString,
@@ -7,7 +8,6 @@ import {
 import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ExtraInfo } from '../../Trade/TradeModules/ExtraInfo/ExtraInfo';
-import { brand } from '../../../ambient-utils/constants';
 
 interface propsIF {
     priceImpact: CrocImpact | undefined;
@@ -146,8 +146,8 @@ function SwapExtraInfo(props: propsIF) {
         ...(isFuta
             ? [
                   {
-                      title: 'Gas Price',
-                      tooltipTitle: `Gas cost is ${swapGasPriceinDollars}. Conversion rate is ${conversionRate}.`,
+                      title: 'Network Fee',
+                      tooltipTitle: `Estimated cost of gas for this swap is ${swapGasPriceinDollars}`,
                       data: swapGasPriceinDollars,
                       placement: 'bottom',
                   },
