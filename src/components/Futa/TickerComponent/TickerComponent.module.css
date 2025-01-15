@@ -42,8 +42,18 @@
     padding-top: 8px;
 }
 
+/* empty space between divider and begining of content */
+.openBidContainer > *:first-child {
+    margin-bottom: 8px;
+}
+
 .maxMarketContainer {
     padding-top: 8px;
+}
+
+/* empty space between divider and begining of content */
+.maxMarketContainer > *:first-child {
+    margin-bottom: 8px;
 }
 
 .tickerContainer h2 {
