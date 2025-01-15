@@ -146,9 +146,9 @@ function SwapExtraInfo(props: propsIF) {
         ...(isFuta
             ? [
                   {
-                      title: 'Gas Prie',
+                      title: 'Gas Price',
                       tooltipTitle: `Gas cost is ${swapGasPriceinDollars}. Conversion rate is ${conversionRate}.`,
-                      data: conversionRate,
+                      data: swapGasPriceinDollars,
                       placement: 'bottom',
                   },
               ]

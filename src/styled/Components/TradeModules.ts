@@ -599,8 +599,10 @@ export const LPButton = styled.button`
     letter-spacing: -0.36px;
     text-decoration-line: underline;
     transition: color 0.3s ease;
-    cursor: pointer;
+    cursor: pointer !important;
     text-transform: uppercase;
+    width: 150px;
+    margin: 0 auto;
 
     &:hover {
         color: var(--accent2);
