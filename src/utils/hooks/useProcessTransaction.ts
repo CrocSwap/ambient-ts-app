@@ -418,7 +418,9 @@ export const useProcessTransaction = (
                         : 'buy'
                   : tx.changeType === 'recover'
                     ? 'claim'
-                    : 'remove'
+                    : tx.changeType === 'cross'
+                      ? 'fill'
+                      : 'remove'
               : isAccountView
                 ? isBaseTokenMoneynessGreaterOrEqual
                     ? isBuy

@@ -211,7 +211,13 @@ export default function PortfolioTabs(props: propsIF) {
             })
                 .then((updatedTransactions) => {
                     if (updatedTransactions) {
-                        setLookupAccountTransactionData(updatedTransactions);
+                        const userTransactionsWithoutFills =
+                            updatedTransactions.filter(
+                                (tx) => tx.changeType !== 'cross',
+                            );
+                        setLookupAccountTransactionData(
+                            userTransactionsWithoutFills,
+                        );
                     }
                 })
                 .finally(() => {
