@@ -1207,7 +1207,7 @@ export default function TransactionDetailsGraph(
                             if (tx.claimableLiq > 0) {
                                 addExtraCandle(
                                     time / 1000,
-                                    tx.bidTickInvPriceDecimalCorrected,
+                                    tx.askTickInvPriceDecimalCorrected,
                                     tx.bidTickPriceDecimalCorrected,
                                 );
                                 crossPointJoin(svg, [
@@ -1219,7 +1219,7 @@ export default function TransactionDetailsGraph(
                                                     ? isDenomBase
                                                     : !isBaseTokenMoneynessGreaterOrEqual
                                             )
-                                                ? tx.bidTickInvPriceDecimalCorrected
+                                                ? tx.askTickInvPriceDecimalCorrected
                                                 : tx.bidTickPriceDecimalCorrected,
                                         },
                                     ],
@@ -1232,7 +1232,7 @@ export default function TransactionDetailsGraph(
                                                 ? isDenomBase
                                                 : !isBaseTokenMoneynessGreaterOrEqual
                                         )
-                                            ? tx.bidTickInvPriceDecimalCorrected
+                                            ? tx.askTickInvPriceDecimalCorrected
                                             : tx.bidTickPriceDecimalCorrected,
 
                                         x: time,
