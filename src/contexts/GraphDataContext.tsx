@@ -23,6 +23,8 @@ import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
 import { TokenContext } from './TokenContext';
 import { TradeDataContext } from './TradeDataContext';
 import { UserDataContext } from './UserDataContext';
+import { RecentlyUpdatedPositionIF } from '../components/Trade/InfiniteScroll/useMergeWithPendingTxs';
+import useGenFakeTableRow from '../components/Trade/InfiniteScroll/useGenFakeTableRow';
 
 export interface Changes {
     dataReceived: boolean;
@@ -87,6 +89,7 @@ export interface GraphDataContextIF {
         React.SetStateAction<LimitOrdersByPool>
     >;
     resetUserGraphData: () => void;
+    recentlyUpdatedPositions: RecentlyUpdatedPositionIF[];
 }
 
 function normalizeAddr(addr: string): string {
@@ -98,14 +101,18 @@ export const GraphDataContext = createContext({} as GraphDataContextIF);
 
 export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { GCGO_URL, chainId },
+        activeNetwork: { GCGO_URL, chainId, poolIndex },
         server: { isEnabled: isServerEnabled },
         isUserIdle,
         isUserOnline,
     } = useContext(AppStateContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
-    const { pendingTransactions, allReceipts, sessionPositionUpdates } =
-        useContext(ReceiptContext);
+    const {
+        pendingTransactions,
+        allReceipts,
+        sessionPositionUpdates,
+        transactionsByType,
+    } = useContext(ReceiptContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         cachedQuerySpotPrice,
@@ -117,6 +124,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const { tokens } = useContext(TokenContext);
     const { userAddress: userDefaultAddress, isUserConnected } =
         useContext(UserDataContext);
+    const { genFakeLimitOrder, genFakePosition } = useGenFakeTableRow();
 
     const [positionsByUser, setPositionsByUser] = useState<PositionsByUser>({
         dataReceived: false,
@@ -167,6 +175,10 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     >(undefined);
 
     const [liquidityFee, setLiquidityFee] = useState<number | undefined>();
+
+    const [recentlyUpdatedPositions, setRecentlyUpdatedPositions] = useState<
+        RecentlyUpdatedPositionIF[]
+    >([]);
 
     const userAddress = userDefaultAddress;
 
@@ -419,6 +431,91 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         ],
     );
 
+    const addIntoRelevantPositions = (
+        relevantLimitOrders: RecentlyUpdatedPositionIF[],
+    ) => {
+        setRecentlyUpdatedPositions((prev) => [
+            ...prev.filter(
+                (e) =>
+                    !relevantLimitOrders.some(
+                        (e2) => e2.positionHash === e.positionHash,
+                    ),
+            ),
+            ...relevantLimitOrders,
+        ]);
+    };
+
+    const tempBool = false;
+
+    useEffect(() => {
+        console.log('>>> useEffect 1 ');
+        console.log(
+            '>>> unindexedNonFailedSessionLimitOrderUpdates',
+            unindexedNonFailedSessionLimitOrderUpdates,
+        );
+        console.log('>>> transactionsByType', transactionsByType);
+        if (tempBool) return;
+
+        const relevantLimitOrders = transactionsByType.filter(
+            (tx) =>
+                !tx.isRemoved &&
+                unindexedNonFailedSessionLimitOrderUpdates.some(
+                    (update) => update.txHash === tx.txHash,
+                ) &&
+                tx.userAddress.toLowerCase() ===
+                    (userAddress || '').toLowerCase() &&
+                tx.txDetails?.baseAddress.toLowerCase() ===
+                    baseToken.address.toLowerCase() &&
+                tx.txDetails?.quoteAddress.toLowerCase() ===
+                    quoteToken.address.toLowerCase() &&
+                tx.txDetails?.poolIdx === poolIndex &&
+                tx.txType === 'Limit',
+        );
+
+        Promise.all(
+            relevantLimitOrders.map((tx) => genFakeLimitOrder(tx)),
+        ).then((rows) => {
+            addIntoRelevantPositions(rows);
+        });
+    }, [
+        unindexedNonFailedSessionLimitOrderUpdates.length,
+        transactionsByType.length,
+    ]);
+
+    useEffect(() => {
+        console.log('>>> useEffect 2 ');
+        if (tempBool) return;
+
+        const relevantPositions = transactionsByType.filter(
+            (tx) =>
+                !tx.isRemoved &&
+                unindexedNonFailedSessionPositionUpdates.some(
+                    (update) => update.txHash === tx.txHash,
+                ) &&
+                tx.userAddress.toLowerCase() ===
+                    (userAddress || '').toLowerCase() &&
+                tx.txDetails?.baseAddress.toLowerCase() ===
+                    baseToken.address.toLowerCase() &&
+                tx.txDetails?.quoteAddress.toLowerCase() ===
+                    quoteToken.address.toLowerCase() &&
+                tx.txDetails?.poolIdx === poolIndex &&
+                (tx.txAction === 'Add' ||
+                    tx.txAction === 'Reposition' ||
+                    tx.txAction === 'Remove' ||
+                    tx.txAction === 'Harvest'),
+            // tx.txType === 'Range'
+        );
+
+        Promise.all(relevantPositions.map((tx) => genFakePosition(tx))).then(
+            (rows) => {
+                addIntoRelevantPositions(rows);
+            },
+        );
+    }, [
+        unindexedNonFailedSessionPositionUpdates.length,
+        transactionsByType.length,
+    ]);
+
     const onAccountRoute = location.pathname.includes('account');
 
     const userDataByPoolLength = useMemo(
@@ -566,6 +663,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         setLiquidity,
         liquidityFee,
         setLiquidityFee,
+        recentlyUpdatedPositions,
     };
 
     return (

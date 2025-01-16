@@ -238,6 +238,10 @@ const useGenFakeTableRow = () => {
             position: onChainOrder,
             type: pendingTx.txType,
             action: pendingTx.txAction || '',
+            pair: pendingTx.txDetails.baseAddress.concat(
+                '-',
+                pendingTx.txDetails.quoteAddress,
+            ),
         };
     };
 
@@ -419,6 +423,10 @@ const useGenFakeTableRow = () => {
             position: onChainPosition,
             type: pendingTx.txType,
             action: pendingTx.txAction || '',
+            pair: pendingTx.txDetails.baseAddress.concat(
+                '-',
+                pendingTx.txDetails.quoteAddress,
+            ),
         };
     };
 
