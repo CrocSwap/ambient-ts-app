@@ -86,6 +86,13 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         drawSettings['Brush'].line,
     );
 
+    const limitLineSeries = createLinearLineSeries(
+        scaleData?.xScale,
+        scaleData?.yScale,
+        denomInBase,
+        drawSettings['Brush'].line,
+    );
+
     const liquidityLineSeries = createLinearLineSeries(
         scaleData?.xScale,
         scaleData?.yScale,
@@ -198,10 +205,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     }
                 });
 
-                setLimitCircleSeries(() => {
-                    return limitCircleSerieArray;
-                });
-
                 setLimitLineData(() => {
                     return limitLineDataArray;
                 });
@@ -246,6 +249,30 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
             if (showSwap && filteredLimitTxData && circleScale) {
                 filteredLimitTxData.forEach((transaction) => {
+                    const lineData: Array<{
+                        x: number;
+                        y: number;
+                        denomInBase: boolean;
+                        isBid: boolean;
+                    }> = [];
+
+                    lineData.push({
+                        x: transaction.order.timeFirstMint * 1000,
+                        y: denomInBase
+                            ? transaction.order.invLimitPriceDecimalCorrected
+                            : transaction.order.limitPriceDecimalCorrected,
+                        denomInBase: denomInBase,
+                        isBid: transaction.order.isBid,
+                    });
+                    lineData.push({
+                        x: transaction.order.crossTime * 1000,
+                        y: denomInBase
+                            ? transaction.order.invLimitPriceDecimalCorrected
+                            : transaction.order.limitPriceDecimalCorrected,
+                        denomInBase: denomInBase,
+                        isBid: transaction.order.isBid,
+                    });
+
                     const circleSerie = createCircle(
                         scaleData?.xScale,
                         scaleData?.yScale,
@@ -274,13 +301,18 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         },
                     ];
 
-                    circleSerieArray.push({
-                        id: transaction.order.positionHash,
+                    limitCircleSerieArray.push({
+                        id: transaction.order.limitOrderId,
                         data: circleData,
                         serie: circleSerie,
+                        lineData: lineData,
                     });
                 });
             }
+
+            setLimitCircleSeries(() => {
+                return limitCircleSerieArray;
+            });
 
             setCircleSeries(() => {
                 return circleSerieArray;
@@ -378,6 +410,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         }
     }, [
         filteredTransactionalData,
+        filteredLimitTxData,
         userPositionsByPool,
         userLimitOrdersByPool,
         circleScale,
@@ -394,10 +427,47 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
-        if (scaleData) {
+        if (scaleData && ctx) {
+            const decorateCircle = (
+                context: CanvasRenderingContext2D,
+                element: any,
+                isHighlighted: boolean,
+            ) => {
+                const colorPalette = calculateCircleColor(
+                    context,
+                    '--accent1',
+                    ['futa'].includes(platformName)
+                        ? '--negative'
+                        : '--accent5',
+                    isHighlighted,
+                );
+
+                const isBuy =
+                    (denomInBase && !element.data[0].isBuy) ||
+                    (!denomInBase && element.data[0].isBuy);
+
+                context.strokeStyle = isBuy
+                    ? colorPalette.circleBuyStrokeColor
+                    : colorPalette.circleStrokeColor;
+
+                context.fillStyle = isBuy
+                    ? colorPalette.buyFill
+                    : colorPalette.sellFill;
+
+                context.lineWidth = 1;
+            };
+
             d3.select(d3OrderCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
+
+                    const style = getComputedStyle(ctx.canvas);
+
+                    const sellColor = style.getPropertyValue('--accent1');
+                    const buyColor = style.getPropertyValue('--accent5');
+
+                    const buyColorHex = d3.color(buyColor);
+                    const sellColorHex = d3.color(sellColor);
 
                     if (showHistorical) {
                         if (
@@ -489,20 +559,9 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             limitLineData &&
                             limitLineData.length > 0 &&
                             lineSeries &&
-                            triangleLimit &&
-                            ctx
+                            triangleLimit
                         ) {
                             limitLineData.forEach((limitData: any) => {
-                                const style = getComputedStyle(ctx.canvas);
-
-                                const sellColor =
-                                    style.getPropertyValue('--accent1');
-                                const buyColor =
-                                    style.getPropertyValue('--accent5');
-
-                                const buyColorHex = d3.color(buyColor);
-                                const sellColorHex = d3.color(sellColor);
-
                                 const isShapeSelected =
                                     (selectedOrderHistory &&
                                         isSelectedOrderHistory &&
@@ -637,6 +696,64 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         }
                     }
 
+                    if (
+                        showSwap &&
+                        limitCircleSeries &&
+                        limitCircleSeries.length > 0
+                    ) {
+                        limitCircleSeries.forEach((element: any) => {
+                            const isShapeSelected =
+                                (selectedOrderHistory &&
+                                    isSelectedOrderHistory &&
+                                    selectedOrderHistory.type ===
+                                        'claimableLimit' &&
+                                    selectedOrderHistory.id === element.id) ||
+                                (hoveredOrderHistory &&
+                                    isHoveredOrderHistory &&
+                                    hoveredOrderHistory.type ===
+                                        'claimableLimit' &&
+                                    hoveredOrderHistory.id === element.id);
+
+                            if (isShapeSelected) {
+                                element.serie.decorate(
+                                    (context: CanvasRenderingContext2D) =>
+                                        decorateCircle(context, element, true),
+                                );
+
+                                limitLineSeries.decorate(
+                                    (context: CanvasRenderingContext2D) => {
+                                        context.strokeStyle =
+                                            (denomInBase &&
+                                                !element.lineData[0].isBid) ||
+                                            (!denomInBase &&
+                                                element.lineData[0].isBid)
+                                                ? buyColor?.toString()
+                                                : sellColor?.toString();
+
+                                        context.setLineDash([4, 2]);
+
+                                        context.lineWidth = 1;
+                                    },
+                                );
+
+                                limitLineSeries(element.lineData);
+
+                                if (ctx) ctx.setLineDash([0, 0]);
+
+                                if (ctx) ctx.restore();
+                            } else {
+                                element.serie.decorate(
+                                    (context: CanvasRenderingContext2D) =>
+                                        decorateCircle(context, element, false),
+                                );
+
+                                if (ctx) ctx.restore();
+                            }
+
+                            element.serie(element.data);
+                        });
+                    }
+
                     if (showSwap && circleSeries && circleSeries.length > 0) {
                         circleSeries.forEach((element: any) => {
                             const isShapeSelected =
@@ -655,65 +772,15 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
                             if (isShapeSelected) {
                                 element.serie.decorate(
-                                    (context: CanvasRenderingContext2D) => {
-                                        const colorPalette =
-                                            calculateCircleColor(
-                                                context,
-                                                '--accent1',
-                                                ['futa'].includes(platformName)
-                                                    ? '--negative'
-                                                    : '--accent5',
-                                                true,
-                                            );
-
-                                        const isBuy =
-                                            (denomInBase &&
-                                                !element.data[0].isBuy) ||
-                                            (!denomInBase &&
-                                                element.data[0].isBuy);
-
-                                        context.strokeStyle = isBuy
-                                            ? colorPalette.circleBuyStrokeColor
-                                            : colorPalette.circleStrokeColor;
-
-                                        context.fillStyle = isBuy
-                                            ? colorPalette.buyFill
-                                            : colorPalette.sellFill;
-
-                                        context.lineWidth = 1;
-                                    },
+                                    (context: CanvasRenderingContext2D) =>
+                                        decorateCircle(context, element, true),
                                 );
 
                                 if (ctx) ctx.restore();
                             } else {
                                 element.serie.decorate(
-                                    (context: CanvasRenderingContext2D) => {
-                                        const colorPalette =
-                                            calculateCircleColor(
-                                                context,
-                                                '--accent1',
-                                                ['futa'].includes(platformName)
-                                                    ? '--negative'
-                                                    : '--accent5',
-                                                false,
-                                            );
-
-                                        const isBuy =
-                                            (denomInBase &&
-                                                !element.data[0].isBuy) ||
-                                            (!denomInBase &&
-                                                element.data[0].isBuy);
-
-                                        context.strokeStyle = isBuy
-                                            ? colorPalette.circleBuyStrokeColor
-                                            : colorPalette.circleStrokeColor;
-
-                                        context.fillStyle = isBuy
-                                            ? colorPalette.buyFill
-                                            : colorPalette.sellFill;
-
-                                        context.lineWidth = 1;
-                                    },
+                                    (context: CanvasRenderingContext2D) =>
+                                        decorateCircle(context, element, false),
                                 );
 
                                 if (ctx) ctx.restore();
@@ -725,6 +792,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 })
                 .on('measure', () => {
                     if (lineSeries !== undefined) lineSeries.context(ctx);
+                    if (limitLineSeries !== undefined)
+                        limitLineSeries.context(ctx);
                     if (triangleLimit !== undefined) triangleLimit.context(ctx);
                     if (liquidityLineSeries !== undefined)
                         liquidityLineSeries.context(ctx);
@@ -758,6 +827,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         renderCanvasArray([d3OrderCanvas]);
     }, [
         diffHashSig(filteredTransactionalData),
+        diffHashSig(filteredLimitTxData),
         diffHashSig(userLimitOrdersByPool),
         lineSeries,
         triangleLimit,

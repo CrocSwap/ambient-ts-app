@@ -793,11 +793,26 @@ export default function Chart(props: propsIF) {
                 tokenFlowDecimalCorrected: number;
                 mergedIds: Array<{ hash: string; type: string }>;
             }> = [];
+            const mergedLimitSellArray: Array<{
+                order: TransactionIF;
+                totalValueUSD: number;
+                tokenFlowDecimalCorrected: number;
+                mergedIds: Array<{ hash: string; type: string }>;
+            }> = [];
+            const mergedLimitBuyArray: Array<{
+                order: TransactionIF;
+                totalValueUSD: number;
+                tokenFlowDecimalCorrected: number;
+                mergedIds: Array<{ hash: string; type: string }>;
+            }> = [];
 
             const leftDomain = scaleData.xScale.domain()[0] / 1000;
             const rightDomain = scaleData.xScale.domain()[1] / 1000;
 
             const userSwaps: Array<TransactionIF> = [];
+            // userTransactionData.filter(
+            //     (transaction) => transaction.entityType === 'swap',
+            // );
 
             const userClaimedLimit = userTransactionData.filter(
                 (transaction) =>
@@ -889,8 +904,12 @@ export default function Chart(props: propsIF) {
                                   : swap.quoteFlowDecimalCorrected;
 
                         const selectedArray = swap.isBuy
-                            ? mergedBuyArray
-                            : mergedSellArray;
+                            ? swap.entityType === 'limitOrder'
+                                ? mergedLimitBuyArray
+                                : mergedBuyArray
+                            : swap.entityType === 'limitOrder'
+                              ? mergedLimitSellArray
+                              : mergedSellArray;
 
                         if (selectedArray.length > 0) {
                             const nearestSwap = closestValue(
@@ -944,7 +963,12 @@ export default function Chart(props: propsIF) {
                 });
             }
 
-            return mergedBuyArray.concat(mergedSellArray);
+            return [
+                ...mergedBuyArray,
+                ...mergedSellArray,
+                ...mergedLimitBuyArray,
+                ...mergedLimitSellArray,
+            ];
         }
 
         return undefined;
@@ -5861,7 +5885,7 @@ export default function Chart(props: propsIF) {
                         )
                     ) {
                         resElement = {
-                            id: element.order.positionHash,
+                            id: element.order.limitOrderId,
                             type: 'claimableLimit',
                             order: element,
                             totalValueUSD: element.totalValueUSD,
