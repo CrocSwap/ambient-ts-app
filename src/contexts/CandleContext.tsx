@@ -28,6 +28,7 @@ import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeDataContext } from './TradeDataContext';
 import { TradeTokenContext } from './TradeTokenContext';
+import { updateZeroPriceCandles } from '../pages/platformAmbient/Chart/ChartUtils/candleDataUtils';
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
     setCandleData: Dispatch<
@@ -346,7 +347,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
-                poolPriceRef.current,
             )
                 .then((candles) => {
                     if (
@@ -355,28 +355,39 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         quoteTokenAddressRef.current ===
                             quoteTokenAddress.toLowerCase()
                     ) {
-                        setCandleData(candles);
-                        const candleSeries = candles?.candles;
-                        if (candleSeries && candleSeries.length > 0) {
-                            if (candles?.candles.length < nCandles) {
-                                const localCandles = candles?.candles;
+                        if (candles) {
+                            const updatedZeroCandles = updateZeroPriceCandles(
+                                candles.candles,
+                                poolPriceRef.current,
+                            );
 
-                                setTimeOfEndCandle(
-                                    localCandles[localCandles.length - 1].time *
-                                        1000,
-                                );
+                            setCandleData({
+                                ...candles,
+                                candles: updatedZeroCandles,
+                            });
+
+                            const candleSeries = candles?.candles;
+                            if (candleSeries && candleSeries.length > 0) {
+                                if (candles?.candles.length < nCandles) {
+                                    const localCandles = candles?.candles;
+
+                                    setTimeOfEndCandle(
+                                        localCandles[localCandles.length - 1]
+                                            .time * 1000,
+                                    );
+                                }
+                                setIsCandleDataNull(false);
+                            } else {
+                                setIsCandleDataNull(true);
                             }
-                            setIsCandleDataNull(false);
-                        } else {
-                            setIsCandleDataNull(true);
-                        }
 
-                        if (candleSeries && candleSeries.length > 0) {
-                            setIsFetchingCandle(false);
-                        }
-                        setIsFirstFetch(false);
+                            if (candleSeries && candleSeries.length > 0) {
+                                setIsFetchingCandle(false);
+                            }
+                            setIsFirstFetch(false);
 
-                        return candles;
+                            return candles;
+                        }
                     }
                 })
                 .then(() => {
@@ -441,12 +452,19 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedQuerySpotPrice,
-            poolPriceRef.current,
         )
             .then((incrCandles) => {
                 if (incrCandles && candleData) {
                     if (candleDomains.isResetRequest) {
-                        setCandleData(incrCandles);
+                        const updatedZeroCandles = updateZeroPriceCandles(
+                            incrCandles.candles,
+                            poolPriceRef.current,
+                        );
+
+                        setCandleData({
+                            ...incrCandles,
+                            candles: updatedZeroCandles,
+                        });
                     } else {
                         const newCandles: CandleDataIF[] = [];
                         if (
@@ -482,7 +500,16 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         const newSeries = Object.assign({}, candleData, {
                             candles: candleData.candles.concat(newCandles),
                         });
-                        setCandleData(newSeries);
+
+                        const updatedZeroCandles = updateZeroPriceCandles(
+                            newSeries.candles,
+                            poolPriceRef.current,
+                        );
+
+                        setCandleData({
+                            ...newSeries,
+                            candles: updatedZeroCandles,
+                        });
                     }
                 }
             })
