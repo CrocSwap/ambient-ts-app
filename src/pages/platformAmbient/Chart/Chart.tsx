@@ -956,6 +956,7 @@ export default function Chart(props: propsIF) {
     const filteredLimitTxData = useMemo(() => {
         if (
             userTransactionData &&
+            userLimitOrdersByPool &&
             showSwap &&
             scaleData &&
             d3CanvasMain.current !== null
@@ -5724,15 +5725,52 @@ export default function Chart(props: propsIF) {
                 });
             }
 
-            if (userLimitOrdersByPool && showLiquidity) {
+            if (userLimitOrdersByPool && showLiquidity && userTransactionData) {
+                const userLimitOrderHistory = userTransactionData.filter(
+                    (transaction) =>
+                        transaction.entityType === 'limitOrder' &&
+                        transaction.changeType === 'mint',
+                );
+
+                const processLimitOrder = (entity: LimitOrderIF) => {
+                    const mintedInTick = userLimitOrderHistory.filter(
+                        (his) =>
+                            his.isBuy === entity.isBid &&
+                            his.bidTick === entity.bidTick &&
+                            his.askTick === entity.askTick,
+                    );
+
+                    if (mintedInTick?.length > 0) {
+                        return mintedInTick;
+                    }
+                };
+
                 userLimitOrdersByPool.limitOrders.forEach((limitOrder) => {
                     if (limitOrder.claimableLiq === 0) {
-                        const tokenFlowDecimalCorrected = denomInBase
-                            ? limitOrder.isBid
+                        const mergedIds: Array<{ hash: string; type: string }> =
+                            [];
+
+                        const mintedInTick = processLimitOrder(limitOrder);
+
+                        mintedInTick?.forEach((mint) => {
+                            const isIn = mergedIds.find(
+                                (id) => id.hash === mint.txHash,
+                            );
+
+                            if (isIn === undefined) {
+                                mergedIds.push({
+                                    hash: mint.txHash,
+                                    type: mint.entityType,
+                                });
+                            }
+                        });
+
+                        const tokenFlowDecimalCorrected = limitOrder.isBid
+                            ? denomInBase
                                 ? limitOrder.originalPositionLiqBaseDecimalCorrected
-                                : limitOrder.expectedPositionLiqBaseDecimalCorrected
-                            : limitOrder.isBid
-                              ? limitOrder.expectedPositionLiqQuoteDecimalCorrected
+                                : limitOrder.expectedPositionLiqQuoteDecimalCorrected
+                            : denomInBase
+                              ? limitOrder.expectedPositionLiqBaseDecimalCorrected
                               : limitOrder.originalPositionLiqQuoteDecimalCorrected;
 
                         const swapOrderData = [
@@ -5761,12 +5799,7 @@ export default function Chart(props: propsIF) {
                                 totalValueUSD: limitOrder.totalValueUSD,
                                 tokenFlowDecimalCorrected:
                                     tokenFlowDecimalCorrected,
-                                mergedIds: [
-                                    {
-                                        hash: limitOrder.positionHash,
-                                        type: 'historical',
-                                    },
-                                ],
+                                mergedIds: mergedIds,
                             };
                         }
 
@@ -5791,12 +5824,7 @@ export default function Chart(props: propsIF) {
                                 totalValueUSD: limitOrder.totalValueUSD,
                                 tokenFlowDecimalCorrected:
                                     tokenFlowDecimalCorrected,
-                                mergedIds: [
-                                    {
-                                        hash: limitOrder.positionHash,
-                                        type: 'historical',
-                                    },
-                                ],
+                                mergedIds: mergedIds,
                             };
                         }
                     }

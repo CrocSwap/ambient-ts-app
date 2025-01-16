@@ -241,19 +241,16 @@ export default function OrderHistoryTooltip(props: {
                     : 'Sell') + ': '}
             </StyledHeader>
             <StyledHeader color={'white'} size={'15px'}>
-                {formatSubscript(
-                    denomInBase
-                        ? hoveredOrderHistory.order.isBid
-                            ? hoveredOrderHistory.order
-                                  .originalPositionLiqBaseDecimalCorrected
-                            : hoveredOrderHistory.order
-                                  .expectedPositionLiqBaseDecimalCorrected
-                        : hoveredOrderHistory.order.isBid
-                          ? hoveredOrderHistory.order
-                                .expectedPositionLiqQuoteDecimalCorrected
-                          : hoveredOrderHistory.order
-                                .originalPositionLiqQuoteDecimalCorrected,
-                )}
+                {hoveredOrderHistory.tokenFlowDecimalCorrected < 1
+                    ? formatSubscript(
+                          hoveredOrderHistory.tokenFlowDecimalCorrected,
+                      )
+                    : getFormattedNumber({
+                          value: Math.abs(
+                              hoveredOrderHistory.tokenFlowDecimalCorrected,
+                          ),
+                          abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                      })}
             </StyledHeader>
             <StyledHeader color={'white'} size={'15px'}>
                 {denomInBase
@@ -408,6 +405,7 @@ export default function OrderHistoryTooltip(props: {
 
                         {(hoveredOrderHistory.type === 'swap' ||
                             hoveredOrderHistory.type === 'limitOrder' ||
+                            hoveredOrderHistory.type === 'limitSwapLine' ||
                             hoveredOrderHistory.type === 'claimableLimit') &&
                             hoveredOrderHistory.mergedIds.length > 5 &&
                             showUpArrow &&
@@ -415,6 +413,7 @@ export default function OrderHistoryTooltip(props: {
 
                         {(hoveredOrderHistory.type === 'swap' ||
                             hoveredOrderHistory.type === 'limitOrder' ||
+                            hoveredOrderHistory.type === 'limitSwapLine' ||
                             hoveredOrderHistory.type === 'claimableLimit') && (
                             <IdContainer>
                                 <LinkContainer
@@ -470,6 +469,7 @@ export default function OrderHistoryTooltip(props: {
 
                         {(hoveredOrderHistory.type === 'swap' ||
                             hoveredOrderHistory.type === 'limitOrder' ||
+                            hoveredOrderHistory.type === 'limitSwapLine' ||
                             hoveredOrderHistory.type === 'claimableLimit') &&
                             hoveredOrderHistory.mergedIds.length > 5 &&
                             showDownArrow &&
