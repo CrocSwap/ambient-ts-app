@@ -950,11 +950,17 @@
 }
 
 .has_day_separator.thread_top_msg.replied_message_container .msg_bubble_front {
+    position: relative;
     padding-top: 2rem;
 }
 .has_day_separator.thread_top_msg.replied_message_container .day_separator {
     margin-top: -6rem;
 }
+
+.has_day_separator.thread_top_msg.replied_message_container .sent_message_body_with_mention {
+    padding-top: 3.4rem;
+}
+
 
 /* .replied_msg_wrapper{
     background: red;
