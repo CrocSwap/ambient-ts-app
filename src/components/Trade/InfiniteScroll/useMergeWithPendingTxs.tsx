@@ -31,9 +31,6 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                         `${baseToken.address}-${quoteToken.address}`.toLocaleLowerCase(),
                 )
                 .forEach((e) => {
-                    // const isFresh =                // Math.floor(Date.now() / 1000) - Math.floor(e.timestamp / 1000) <
-                    //     120;
-                    // if (isFresh) {
                     if (type === 'Order' && e.type === 'Limit') {
                         if (
                             e.action !== 'Remove' &&
@@ -65,7 +62,6 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                         }
                     }
                     recentlyUpdatedHashes.add(e.positionHash);
-                    // }
                 });
         }
 
