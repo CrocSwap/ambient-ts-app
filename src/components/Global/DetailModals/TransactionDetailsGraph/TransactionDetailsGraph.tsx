@@ -13,6 +13,7 @@ import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { updateZeroPriceCandles } from '../../../../pages/platformAmbient/Chart/ChartUtils/candleDataUtils';
 import {
     lineValue,
     renderCanvasArray,
@@ -25,7 +26,6 @@ import {
 } from '../../../../utils/numbers';
 import Spinner from '../../Spinner/Spinner';
 import './TransactionDetailsGraph.css';
-import { updateZeroPriceCandles } from '../../../../pages/platformAmbient/Chart/ChartUtils/candleDataUtils';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -1207,8 +1207,8 @@ export default function TransactionDetailsGraph(
                             if (tx.claimableLiq > 0) {
                                 addExtraCandle(
                                     time / 1000,
-                                    tx.askTickInvPriceDecimalCorrected,
-                                    tx.askTickPriceDecimalCorrected,
+                                    tx.bidTickInvPriceDecimalCorrected,
+                                    tx.bidTickPriceDecimalCorrected,
                                 );
                                 crossPointJoin(svg, [
                                     [
@@ -1219,8 +1219,8 @@ export default function TransactionDetailsGraph(
                                                     ? isDenomBase
                                                     : !isBaseTokenMoneynessGreaterOrEqual
                                             )
-                                                ? tx.askTickInvPriceDecimalCorrected
-                                                : tx.askTickPriceDecimalCorrected,
+                                                ? tx.bidTickInvPriceDecimalCorrected
+                                                : tx.bidTickPriceDecimalCorrected,
                                         },
                                     ],
                                 ]).call(crossPoint);
@@ -1232,8 +1232,8 @@ export default function TransactionDetailsGraph(
                                                 ? isDenomBase
                                                 : !isBaseTokenMoneynessGreaterOrEqual
                                         )
-                                            ? tx.askTickInvPriceDecimalCorrected
-                                            : tx.askTickPriceDecimalCorrected,
+                                            ? tx.bidTickInvPriceDecimalCorrected
+                                            : tx.bidTickPriceDecimalCorrected,
 
                                         x: time,
                                     },
