@@ -6,15 +6,6 @@ import { LimitOrderIF } from '../../../ambient-utils/types/limitOrder';
 import { PositionIF } from '../../../ambient-utils/types/position';
 import { GraphDataContext, TradeDataContext } from '../../../contexts';
 
-export type RecentlyUpdatedPositionIF = {
-    positionHash: string;
-    timestamp: number;
-    position: LimitOrderIF | PositionIF;
-    type: string;
-    action: string;
-    pair: string;
-};
-
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
     data: LimitOrderIF[] | PositionIF[] | TransactionIF[];
@@ -43,7 +34,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                     // const isFresh =                // Math.floor(Date.now() / 1000) - Math.floor(e.timestamp / 1000) <
                     //     120;
                     // if (isFresh) {
-                    if (type === 'Order') {
+                    if (type === 'Order' && e.type === 'Limit') {
                         if (
                             e.action !== 'Remove' &&
                             e.position.totalValueUSD > 0.01
@@ -59,7 +50,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                                 ]);
                             });
                         }
-                    } else if (props.type === 'Range') {
+                    } else if (props.type === 'Range' && e.type === 'Range') {
                         if (e.position.positionLiq > 0.01) {
                             (recentlyUpdatedToShow as PositionIF[]).push(
                                 e.position as PositionIF,

@@ -28,7 +28,7 @@ import { TransactionByType } from '../../../contexts/ReceiptContext';
 
 import { getPositionData } from '../../../ambient-utils/dataLayer/functions/getPositionData';
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { RecentlyUpdatedPositionIF } from './useMergeWithPendingTxs';
+import { RecentlyUpdatedPositionIF } from '../../../contexts/GraphDataContext';
 
 const useGenFakeTableRow = () => {
     const { crocEnv, provider } = useContext(CrocEnvContext);

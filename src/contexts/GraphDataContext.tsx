@@ -23,7 +23,6 @@ import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
 import { TokenContext } from './TokenContext';
 import { TradeDataContext } from './TradeDataContext';
 import { UserDataContext } from './UserDataContext';
-import { RecentlyUpdatedPositionIF } from '../components/Trade/InfiniteScroll/useMergeWithPendingTxs';
 import useGenFakeTableRow from '../components/Trade/InfiniteScroll/useGenFakeTableRow';
 
 export interface Changes {
@@ -53,6 +52,15 @@ interface PoolRequestParams {
     poolIndex: number;
     chainId: string;
 }
+
+export type RecentlyUpdatedPositionIF = {
+    positionHash: string;
+    timestamp: number;
+    position: LimitOrderIF | PositionIF;
+    type: string;
+    action: string;
+    pair: string;
+};
 
 export interface GraphDataContextIF {
     positionsByUser: PositionsByUser;
@@ -448,12 +456,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const tempBool = false;
 
     useEffect(() => {
-        console.log('>>> useEffect 1 ');
-        console.log(
-            '>>> unindexedNonFailedSessionLimitOrderUpdates',
-            unindexedNonFailedSessionLimitOrderUpdates,
-        );
-        console.log('>>> transactionsByType', transactionsByType);
         if (tempBool) return;
 
         const relevantLimitOrders = transactionsByType.filter(
@@ -483,7 +485,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     ]);
 
     useEffect(() => {
-        console.log('>>> useEffect 2 ');
         if (tempBool) return;
 
         const relevantPositions = transactionsByType.filter(
