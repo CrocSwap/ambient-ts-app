@@ -14,6 +14,8 @@ import { useLocation } from 'react-router-dom';
 import {
     pinTickLower,
     pinTickUpper,
+    priceHalfAboveTick,
+    priceHalfBelowTick,
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
@@ -37,6 +39,7 @@ import {
     CandleDataIF,
     CandleDomainIF,
     CandlesByPoolAndDurationIF,
+    LimitOrderIF,
     TransactionIF,
 } from '../../../ambient-utils/types';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -122,6 +125,7 @@ import RangeLinesChart from './RangeLine/RangeLinesChart';
 import TvlChart from './Tvl/TvlChart';
 import VolumeBarCanvas from './Volume/VolumeBarCanvas';
 import { GraphDataContext } from '../../../contexts';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -666,7 +670,12 @@ export default function Chart(props: propsIF) {
     ]);
 
     const closestValue = (
-        data: Array<{ order: TransactionIF; mergedTx: Array<TransactionIF> }>,
+        data: Array<{
+            order: TransactionIF;
+            totalValueUSD: number;
+            tokenFlowDecimalCorrected: number;
+            mergedIds: Array<{ hash: string; type: string }>;
+        }>,
         pointX: number,
         pointY: number,
     ) => {
@@ -690,7 +699,57 @@ export default function Chart(props: propsIF) {
             return data
                 .map(function (dataPoint: {
                     order: TransactionIF;
-                    mergedTx: Array<TransactionIF>;
+                    totalValueUSD: number;
+                    tokenFlowDecimalCorrected: number;
+                    mergedIds: Array<{ hash: string; type: string }>;
+                }) {
+                    return [accessor(dataPoint.order), dataPoint];
+                })
+                .reduce(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    function (accumulator: any, dataPoint: any) {
+                        return accumulator[0] > dataPoint[0]
+                            ? dataPoint
+                            : accumulator;
+                    },
+                    [Number.MAX_VALUE, null],
+                );
+        }
+    };
+
+    const closestLimitValue = (
+        data: Array<{
+            order: LimitOrderIF;
+            totalValueUSD: number;
+            tokenFlowDecimalCorrected: number;
+            mergedIds: Array<{ hash: string; type: string }>;
+        }>,
+        pointX: number,
+        pointY: number,
+    ) => {
+        const xScale = scaleData?.xScale;
+        const yScale = scaleData?.yScale;
+
+        if (xScale && yScale) {
+            const accessor = (d: LimitOrderIF) =>
+                Math.sqrt(
+                    Math.pow(pointX - xScale(d.crossTime * 1000), 2) +
+                        Math.pow(
+                            pointY -
+                                yScale(
+                                    denomInBase
+                                        ? d.invLimitPriceDecimalCorrected
+                                        : d.limitPriceDecimalCorrected,
+                                ),
+                            2,
+                        ),
+                );
+            return data
+                .map(function (dataPoint: {
+                    order: LimitOrderIF;
+                    totalValueUSD: number;
+                    tokenFlowDecimalCorrected: number;
+                    mergedIds: Array<{ hash: string; type: string }>;
                 }) {
                     return [accessor(dataPoint.order), dataPoint];
                 })
@@ -724,51 +783,39 @@ export default function Chart(props: propsIF) {
 
             const mergedSellArray: Array<{
                 order: TransactionIF;
-                mergedTx: Array<TransactionIF>;
+                totalValueUSD: number;
+                tokenFlowDecimalCorrected: number;
+                mergedIds: Array<{ hash: string; type: string }>;
             }> = [];
             const mergedBuyArray: Array<{
                 order: TransactionIF;
-                mergedTx: Array<TransactionIF>;
+                totalValueUSD: number;
+                tokenFlowDecimalCorrected: number;
+                mergedIds: Array<{ hash: string; type: string }>;
             }> = [];
 
             const leftDomain = scaleData.xScale.domain()[0] / 1000;
             const rightDomain = scaleData.xScale.domain()[1] / 1000;
 
-            const userLimitTx = userLimitOrdersByPool.limitOrders;
-
             const userSwaps: Array<TransactionIF> = [];
 
-            // const userLimitOrderHistory = userTransactionData.filter(
-            //     (transaction) =>
-            //         transaction.entityType === 'limitOrder' &&
-            //         transaction.changeType === 'mint',
-            // );
+            const userClaimedLimit = userTransactionData.filter(
+                (transaction) =>
+                    transaction.entityType === 'limitOrder' &&
+                    transaction.changeType === 'recover',
+            );
 
-            userLimitTx.forEach((limitTx) => {
-                if (limitTx.claimableLiq > 0) {
-                    userSwaps.push({
-                        entityType: 'limitOrder',
-                        txId: limitTx.limitOrderId,
-                        txTime: limitTx.crossTime,
-                        swapInvPriceDecimalCorrected:
-                            limitTx.invLimitPriceDecimalCorrected,
-                        swapPriceDecimalCorrected:
-                            limitTx.limitPriceDecimalCorrected,
-                        totalValueUSD: limitTx.totalValueUSD,
-                        isBuy: limitTx.isBid,
-                        baseFlowDecimalCorrected: limitTx.isBid
-                            ? limitTx.originalPositionLiqBaseDecimalCorrected
-                            : limitTx.expectedPositionLiqBaseDecimalCorrected,
-                        quoteFlowDecimalCorrected: limitTx.isBid
-                            ? limitTx.originalPositionLiqQuoteDecimalCorrected
-                            : limitTx.expectedPositionLiqQuoteDecimalCorrected,
-                        bidTick: limitTx.bidTick,
-                        askTick: limitTx.askTick,
-                        baseSymbol: limitTx.baseSymbol,
-                        quoteSymbol: limitTx.quoteSymbol,
-                    } as TransactionIF);
-                }
+            userClaimedLimit.forEach((limit) => {
+                limit.swapInvPriceDecimalCorrected =
+                    limit.invLimitPriceDecimalCorrected;
+                limit.swapPriceDecimalCorrected =
+                    limit.limitPriceDecimalCorrected;
+                limit.baseFlowDecimalCorrected = Math.abs(
+                    limit.baseFlowDecimalCorrected,
+                );
             });
+
+            userSwaps.push(...userClaimedLimit);
 
             const sortedUserSwaps = userSwaps.sort((a, b) =>
                 d3.descending(a.txTime, b.txTime),
@@ -777,6 +824,70 @@ export default function Chart(props: propsIF) {
             if (leftDomain !== undefined && rightDomain !== undefined) {
                 sortedUserSwaps.map((swap) => {
                     if (swap.txTime > leftDomain && swap.txTime < rightDomain) {
+                        const mergedIds: Array<{ hash: string; type: string }> =
+                            [];
+
+                        mergedIds.push({
+                            hash: swap.txHash,
+                            type: swap.entityType,
+                        });
+
+                        const totalValueUSD = swap.totalValueUSD;
+
+                        const limitTick = swap.isBid
+                            ? swap.askTick
+                            : swap.bidTick;
+
+                        const gridSize = lookupChain(swap.chainId).gridSize;
+
+                        const priceHalfAbove = toDisplayPrice(
+                            priceHalfAboveTick(limitTick, gridSize),
+                            swap.baseDecimals,
+                            swap.quoteDecimals,
+                        );
+                        const priceHalfBelow = toDisplayPrice(
+                            priceHalfBelowTick(limitTick, gridSize),
+                            swap.baseDecimals,
+                            swap.quoteDecimals,
+                        );
+
+                        const middlePriceDisplayNum = isDenomBase
+                            ? swap.isBid
+                                ? 1 / priceHalfBelow
+                                : 1 / priceHalfAbove
+                            : swap.isBid
+                              ? priceHalfBelow
+                              : priceHalfAbove;
+
+                        const baseFlowAbsNum = swap.baseFlowDecimalCorrected;
+
+                        const quoteFlowDisplayNum =
+                            swap.quoteFlowDecimalCorrected;
+                        const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
+
+                        const estimatedBaseFlowDisplay = isDenomBase
+                            ? quoteFlowAbsNum / middlePriceDisplayNum
+                            : quoteFlowAbsNum * middlePriceDisplayNum;
+
+                        const estimatedQuoteFlowDisplay = isDenomBase
+                            ? baseFlowAbsNum * middlePriceDisplayNum
+                            : baseFlowAbsNum / middlePriceDisplayNum;
+
+                        const tokenFlowDecimalCorrected =
+                            swap.entityType === 'limitOrder'
+                                ? Math.abs(
+                                      swap.isBuy
+                                          ? denomInBase
+                                              ? estimatedBaseFlowDisplay
+                                              : swap.quoteFlowDecimalCorrected
+                                          : denomInBase
+                                            ? swap.baseFlowDecimalCorrected
+                                            : estimatedQuoteFlowDisplay,
+                                  )
+                                : denomInBase
+                                  ? swap.baseFlowDecimalCorrected
+                                  : swap.quoteFlowDecimalCorrected;
+
                         const selectedArray = swap.isBuy
                             ? mergedBuyArray
                             : mergedSellArray;
@@ -800,25 +911,33 @@ export default function Chart(props: propsIF) {
                                     nearestSwap[1].order.totalValueUSD
                                         ? swap
                                         : nearestSwap[1].order;
-                                const mergedSwap =
-                                    swap.totalValueUSD >
-                                    nearestSwap[1].order.totalValueUSD
-                                        ? nearestSwap[1].order
-                                        : swap;
+
+                                const mergedMergeIds = nearestSwap[1].mergedIds;
 
                                 nearestSwap[1].order = order;
 
-                                nearestSwap[1].mergedTx.push(mergedSwap);
+                                nearestSwap[1].mergedIds =
+                                    mergedIds.concat(mergedMergeIds);
+
+                                nearestSwap[1].totalValueUSD += totalValueUSD;
+                                nearestSwap[1].tokenFlowDecimalCorrected +=
+                                    tokenFlowDecimalCorrected;
                             } else {
                                 selectedArray.push({
                                     order: swap,
-                                    mergedTx: [],
+                                    mergedIds: mergedIds,
+                                    totalValueUSD: totalValueUSD,
+                                    tokenFlowDecimalCorrected:
+                                        tokenFlowDecimalCorrected,
                                 });
                             }
                         } else {
                             selectedArray.push({
                                 order: swap,
-                                mergedTx: [],
+                                mergedIds: mergedIds,
+                                totalValueUSD: totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
                             });
                         }
                     }
@@ -829,7 +948,203 @@ export default function Chart(props: propsIF) {
         }
 
         return undefined;
-    }, [userTransactionData, diffHashSigScaleData(scaleData, 'x'), showSwap]);
+    }, [
+        userTransactionData,
+        diffHashSigScaleData(scaleData, 'x'),
+        showSwap,
+        denomInBase,
+    ]);
+
+    const filteredLimitTxData = useMemo(() => {
+        if (
+            userTransactionData &&
+            showSwap &&
+            scaleData &&
+            d3CanvasMain.current !== null
+        ) {
+            const userLimitOrderHistory = userTransactionData.filter(
+                (transaction) =>
+                    transaction.entityType === 'limitOrder' &&
+                    transaction.changeType === 'mint',
+            );
+
+            const processLimitOrder = (entity: LimitOrderIF) => {
+                const mintedInTick = userLimitOrderHistory.filter(
+                    (his) =>
+                        his.isBuy === entity.isBid &&
+                        his.bidTick === entity.bidTick &&
+                        his.askTick === entity.askTick,
+                );
+
+                if (mintedInTick?.length > 0) {
+                    return mintedInTick;
+                }
+            };
+
+            const canvas = d3
+                .select(d3CanvasMain.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const rectCanvas = canvas.getBoundingClientRect();
+            const width = rectCanvas.width;
+            scaleData.xScale.range([0, width]);
+
+            const mergedSellArray: Array<{
+                order: LimitOrderIF;
+                totalValueUSD: number;
+                tokenFlowDecimalCorrected: number;
+                mergedIds: Array<{ hash: string; type: string }>;
+            }> = [];
+            const mergedBuyArray: Array<{
+                order: LimitOrderIF;
+                totalValueUSD: number;
+                tokenFlowDecimalCorrected: number;
+                mergedIds: Array<{ hash: string; type: string }>;
+            }> = [];
+
+            const leftDomain = scaleData.xScale.domain()[0] / 1000;
+            const rightDomain = scaleData.xScale.domain()[1] / 1000;
+
+            const userLimitTx: Array<LimitOrderIF> =
+                userLimitOrdersByPool.limitOrders;
+
+            const sortedUserLimits = userLimitTx?.sort((a, b) =>
+                d3.descending(a.crossTime, b.crossTime),
+            );
+
+            if (leftDomain !== undefined && rightDomain !== undefined) {
+                sortedUserLimits.map((limit) => {
+                    if (
+                        limit.crossTime > leftDomain &&
+                        limit.crossTime < rightDomain
+                    ) {
+                        const mergedIds: Array<{ hash: string; type: string }> =
+                            [];
+
+                        const selectedArray = limit.isBid
+                            ? mergedBuyArray
+                            : mergedSellArray;
+
+                        const mintedInTick = processLimitOrder(limit);
+
+                        mintedInTick?.forEach((mint) => {
+                            const isIn = mergedIds.find(
+                                (id) => id.hash === mint.txHash,
+                            );
+
+                            if (isIn === undefined) {
+                                mergedIds.push({
+                                    hash: mint.txHash,
+                                    type: mint.entityType,
+                                });
+                            }
+                        });
+
+                        const tokenFlowDecimalCorrected = limit.isBid
+                            ? denomInBase
+                                ? limit.originalPositionLiqBaseDecimalCorrected
+                                : limit.expectedPositionLiqQuoteDecimalCorrected
+                            : denomInBase
+                              ? limit.expectedPositionLiqBaseDecimalCorrected
+                              : limit.originalPositionLiqQuoteDecimalCorrected;
+
+                        if (selectedArray.length > 0) {
+                            const nearestSwap = closestLimitValue(
+                                selectedArray,
+                                scaleData.xScale(limit.crossTime * 1000),
+                                scaleData.yScale(
+                                    denomInBase
+                                        ? limit.invLimitPriceDecimalCorrected
+                                        : limit.limitPriceDecimalCorrected,
+                                ),
+                            );
+
+                            const shouldMerge = nearestSwap[0] < 30;
+
+                            if (shouldMerge) {
+                                const order =
+                                    limit.totalValueUSD >
+                                    nearestSwap[1].totalValueUSD
+                                        ? limit
+                                        : nearestSwap[1];
+
+                                const mergedmergeIds: Array<{
+                                    hash: string;
+                                    type: string;
+                                }> = nearestSwap[1].mergedIds;
+
+                                const mergedMintedInTick = processLimitOrder(
+                                    nearestSwap[1],
+                                );
+
+                                mergedMintedInTick?.forEach((mint) => {
+                                    const isIn = mergedmergeIds.find(
+                                        (id) => id.hash === mint.txHash,
+                                    );
+
+                                    if (isIn === undefined) {
+                                        mergedmergeIds.push({
+                                            hash: mint.txHash,
+                                            type: mint.entityType,
+                                        });
+                                    }
+                                });
+
+                                nearestSwap[1] = order;
+
+                                nearestSwap[1].mergedIds =
+                                    mergedIds.concat(mergedmergeIds);
+
+                                nearestSwap[1].totalValueUSD +=
+                                    order.totalValueUSD;
+
+                                const limitMergedTokenFlowDecimalCorrected =
+                                    nearestSwap[1].isBid
+                                        ? denomInBase
+                                            ? nearestSwap[1]
+                                                  .originalPositionLiqBaseDecimalCorrected
+                                            : nearestSwap[1]
+                                                  .expectedPositionLiqQuoteDecimalCorrected
+                                        : denomInBase
+                                          ? nearestSwap[1]
+                                                .expectedPositionLiqBaseDecimalCorrected
+                                          : nearestSwap[1]
+                                                .originalPositionLiqQuoteDecimalCorrected;
+
+                                nearestSwap[1].tokenFlowDecimalCorrected =
+                                    tokenFlowDecimalCorrected +
+                                    limitMergedTokenFlowDecimalCorrected;
+                            } else {
+                                selectedArray.push({
+                                    order: limit,
+                                    mergedIds: mergedIds,
+                                    totalValueUSD: limit.totalValueUSD,
+                                    tokenFlowDecimalCorrected:
+                                        tokenFlowDecimalCorrected,
+                                });
+                            }
+                        } else {
+                            selectedArray.push({
+                                order: limit,
+                                mergedIds: mergedIds,
+                                totalValueUSD: limit.totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
+                            });
+                        }
+                    }
+                });
+            }
+
+            return mergedBuyArray.concat(mergedSellArray);
+        }
+    }, [
+        userTransactionData,
+        diffHashSigScaleData(scaleData, 'x'),
+        showSwap,
+        denomInBase,
+    ]);
 
     const lastCandleData = unparsedData.candles?.reduce(
         function (prev, current) {
@@ -5310,15 +5625,23 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        if (filteredTransactionalData) {
-            const domainRight = d3.max(
-                filteredTransactionalData,
-                (data) => data.order.totalValueUSD,
+        const totalValueUSDArr: Array<number> = [];
+
+        if (filteredTransactionalData && filteredTransactionalData.length > 0) {
+            filteredTransactionalData.map((data) =>
+                totalValueUSDArr.push(data.totalValueUSD),
             );
-            const domainLeft = d3.min(
-                filteredTransactionalData,
-                (data) => data.order.totalValueUSD,
+        }
+
+        if (filteredLimitTxData && filteredLimitTxData.length > 0) {
+            filteredLimitTxData?.map((data) =>
+                totalValueUSDArr.push(data.totalValueUSD),
             );
+        }
+
+        if (totalValueUSDArr && totalValueUSDArr.length > 0) {
+            const domainRight = d3.max(totalValueUSDArr, (data) => data);
+            const domainLeft = d3.min(totalValueUSDArr, (data) => data);
 
             if (domainRight && domainLeft) {
                 const scale = d3
@@ -5331,7 +5654,7 @@ export default function Chart(props: propsIF) {
                 });
             }
         }
-    }, [filteredTransactionalData, denomInBase]);
+    }, [filteredTransactionalData, filteredLimitTxData, denomInBase]);
 
     const handleCardClick = (id: string): void => {
         setSelectedDate(undefined);
@@ -5483,12 +5806,6 @@ export default function Chart(props: propsIF) {
             }
 
             if (filteredTransactionalData && showSwap && userTransactionData) {
-                const userLimitOrderHistory = userTransactionData.filter(
-                    (transaction) =>
-                        transaction.entityType === 'limitOrder' &&
-                        transaction.changeType === 'mint',
-                );
-
                 filteredTransactionalData.forEach((element) => {
                     if (showSwap) {
                         const swapOrderData = [
@@ -5501,142 +5818,57 @@ export default function Chart(props: propsIF) {
                             },
                         ];
 
-                        let totalValueUSD = element.order.totalValueUSD;
-
-                        let tokenFlowDecimalCorrected = denomInBase
-                            ? element.order.baseFlowDecimalCorrected
-                            : element.order.quoteFlowDecimalCorrected;
-
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const mergedIds: Array<{ hash: string; type: string }> =
-                            element.order.entityType === 'limitOrder'
-                                ? []
-                                : [
-                                      {
-                                          hash: element.order.txHash,
-                                          type: element.order.entityType,
-                                      },
-                                  ];
-
-                        if (element.order.entityType == 'limitOrder') {
-                            const processLimitOrder = (
-                                entity: TransactionIF,
-                            ) => {
-                                const mintedInTick =
-                                    userLimitOrderHistory.filter(
-                                        (his) =>
-                                            his.isBuy === entity.isBuy &&
-                                            his.bidTick === entity.bidTick &&
-                                            his.askTick === entity.askTick,
-                                    );
-
-                                if (mintedInTick?.length > 0) {
-                                    return mintedInTick;
-                                }
-                            };
-
-                            if (element.mergedTx.length > 0) {
-                                element.mergedTx.forEach((merged) => {
-                                    if (merged.entityType === 'limitOrder') {
-                                        const mintedInTick =
-                                            processLimitOrder(merged);
-
-                                        mintedInTick?.forEach((mint) => {
-                                            const isIn = mergedIds.find(
-                                                (id) => id.hash === mint.txHash,
-                                            );
-
-                                            if (isIn === undefined) {
-                                                mergedIds.push({
-                                                    hash: mint.txHash,
-                                                    type: mint.entityType,
-                                                });
-                                            }
-                                        });
-                                    } else {
-                                        const isIn = mergedIds.find(
-                                            (id) => id.hash === merged.txHash,
-                                        );
-
-                                        if (isIn === undefined) {
-                                            mergedIds.push({
-                                                hash: merged.txHash,
-                                                type: merged.entityType,
-                                            });
-                                        }
-                                    }
-
-                                    totalValueUSD =
-                                        totalValueUSD + merged.totalValueUSD;
-
-                                    tokenFlowDecimalCorrected =
-                                        tokenFlowDecimalCorrected +
-                                        (denomInBase
-                                            ? merged.baseFlowDecimalCorrected
-                                            : merged.quoteFlowDecimalCorrected);
-                                });
-                            }
-
-                            const mintedInTick = processLimitOrder(
-                                element.order,
-                            );
-
-                            mintedInTick?.forEach((mint) => {
-                                const isIn = mergedIds.find(
-                                    (id) => id.hash === mint.txHash,
-                                );
-
-                                if (isIn === undefined) {
-                                    mergedIds.push({
-                                        hash: mint.txHash,
-                                        type: mint.entityType,
-                                    });
-                                }
-                            });
-                        } else {
-                            if (element.mergedTx.length > 0) {
-                                element.mergedTx.map((merged) => {
-                                    const isIn = mergedIds.find(
-                                        (id) => id.hash === merged.txHash,
-                                    );
-
-                                    if (isIn === undefined) {
-                                        mergedIds.push({
-                                            hash: merged.txHash,
-                                            type: merged.entityType,
-                                        });
-                                    }
-
-                                    totalValueUSD =
-                                        totalValueUSD + merged.totalValueUSD;
-
-                                    tokenFlowDecimalCorrected =
-                                        tokenFlowDecimalCorrected +
-                                        (denomInBase
-                                            ? merged.baseFlowDecimalCorrected
-                                            : merged.quoteFlowDecimalCorrected);
-                                });
-                            }
-                        }
-
                         if (
                             checkSwapLoation(
                                 swapOrderData,
                                 mouseX,
                                 mouseY,
-                                totalValueUSD,
+                                element.totalValueUSD,
                             )
                         ) {
                             resElement = {
                                 id: element.order.txId,
                                 type: element.order.entityType,
                                 order: element,
-                                totalValueUSD: totalValueUSD,
+                                totalValueUSD: element.totalValueUSD,
                                 tokenFlowDecimalCorrected:
-                                    tokenFlowDecimalCorrected,
-                                mergedIds: mergedIds,
+                                    element.tokenFlowDecimalCorrected,
+                                mergedIds: element.mergedIds,
                             };
                         }
+                    }
+                });
+            }
+
+            if (filteredLimitTxData && userTransactionData && showSwap) {
+                filteredLimitTxData.forEach((element) => {
+                    const swapOrderData = [
+                        {
+                            x: element.order.crossTime * 1000,
+                            y: denomInBase
+                                ? element.order.invLimitPriceDecimalCorrected
+                                : element.order.limitPriceDecimalCorrected,
+                            denomInBase: denomInBase,
+                        },
+                    ];
+
+                    if (
+                        checkSwapLoation(
+                            swapOrderData,
+                            mouseX,
+                            mouseY,
+                            element.totalValueUSD,
+                        )
+                    ) {
+                        resElement = {
+                            id: element.order.positionHash,
+                            type: 'claimableLimit',
+                            order: element,
+                            totalValueUSD: element.totalValueUSD,
+                            tokenFlowDecimalCorrected:
+                                element.tokenFlowDecimalCorrected,
+                            mergedIds: element.mergedIds,
+                        };
                     }
                 });
             }
@@ -6317,6 +6549,74 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (
+                    circleScale &&
+                    showSwap &&
+                    hoveredOrderHistory.type === 'claimableLimit'
+                ) {
+                    setHoveredOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? hoveredOrderHistory.order.order
+                                      .invLimitPriceDecimalCorrected
+                                : hoveredOrderHistory.order.order
+                                      .limitPriceDecimalCorrected,
+                        );
+
+                        let left =
+                            scaleData?.xScale(
+                                hoveredOrderHistory.order.order.crossTime *
+                                    1000,
+                            ) +
+                            scale(
+                                circleScale(hoveredOrderHistory.totalValueUSD),
+                            );
+
+                        let isOnLeftSide = false;
+                        if (
+                            isSelectedOrderHistory &&
+                            selectedOrderTooltipPlacement
+                        ) {
+                            const { isOverLeft, isOverTop } = isShapeOverlaps(
+                                left,
+                                top,
+                                selectedOrderTooltipPlacement.left,
+                                selectedOrderTooltipPlacement.top,
+                            );
+
+                            isOnLeftSide = !!(isOverLeft && isOverTop);
+
+                            left =
+                                scaleData?.xScale(
+                                    hoveredOrderHistory.order.order.crossTime *
+                                        1000,
+                                ) +
+                                (isOverLeft && isOverTop
+                                    ? -scale(
+                                          circleScale(
+                                              hoveredOrderHistory.totalValueUSD,
+                                          ),
+                                      ) +
+                                      (circleScale(
+                                          hoveredOrderHistory.totalValueUSD,
+                                      ) < 1500
+                                          ? -105
+                                          : -90)
+                                    : +scale(
+                                          circleScale(
+                                              hoveredOrderHistory.totalValueUSD,
+                                          ),
+                                      ));
+                        }
+
+                        return {
+                            top,
+                            left,
+                            isOnLeftSide,
+                        };
+                    });
+                }
+
+                if (
                     hoveredOrderHistory.type === 'historical' &&
                     showHistorical
                 ) {
@@ -6464,6 +6764,32 @@ export default function Chart(props: propsIF) {
                         const left =
                             scaleData?.xScale(
                                 selectedOrderHistory.order.order.txTime * 1000,
+                            ) +
+                            scale(
+                                circleScale(selectedOrderHistory.totalValueUSD),
+                            );
+
+                        return { top, left, isOnLeftSide: false };
+                    });
+                }
+
+                if (
+                    selectedOrderHistory.type === 'claimableLimit' &&
+                    circleScale &&
+                    showSwap
+                ) {
+                    setSelectedOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? selectedOrderHistory.order.order
+                                      .invLimitPriceDecimalCorrected
+                                : selectedOrderHistory.order.order
+                                      .limitPriceDecimalCorrected,
+                        );
+                        const left =
+                            scaleData?.xScale(
+                                selectedOrderHistory.order.order.crossTime *
+                                    1000,
                             ) +
                             scale(
                                 circleScale(selectedOrderHistory.totalValueUSD),
@@ -6689,6 +7015,7 @@ export default function Chart(props: propsIF) {
                             filteredTransactionalData={
                                 filteredTransactionalData
                             }
+                            filteredLimitTxData={filteredLimitTxData}
                             circleScale={circleScale}
                             isSelectedOrderHistory={isSelectedOrderHistory}
                             selectedOrderHistory={selectedOrderHistory}
@@ -6908,7 +7235,8 @@ export default function Chart(props: propsIF) {
                 selectedOrderHistory &&
                 ((showSwap &&
                     (selectedOrderHistory.type === 'swap' ||
-                        selectedOrderHistory.type === 'limitOrder')) ||
+                        selectedOrderHistory.type === 'limitOrder' ||
+                        selectedOrderHistory.type === 'claimableLimit')) ||
                     (showLiquidity &&
                         selectedOrderHistory.type === 'limitSwapLine') ||
                     (showHistorical &&

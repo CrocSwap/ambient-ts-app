@@ -12,7 +12,7 @@ import { calculateCircleColor, createCircle } from '../ChartUtils/circle';
 import { createLinearLineSeries } from '../Draw/DrawCanvas/LinearLineSeries';
 import { createBandArea } from '../Draw/DrawCanvas/BandArea';
 import { diffHashSig } from '../../../../ambient-utils/dataLayer';
-import { TransactionIF } from '../../../../ambient-utils/types';
+import { LimitOrderIF, TransactionIF } from '../../../../ambient-utils/types';
 import { BrandContext } from '../../../../contexts/BrandContext';
 import { GraphDataContext } from '../../../../contexts';
 
@@ -33,7 +33,17 @@ interface OrderHistoryCanvasProps {
     filteredTransactionalData:
         | Array<{
               order: TransactionIF;
-              mergedTx: Array<TransactionIF>;
+              totalValueUSD: number;
+              tokenFlowDecimalCorrected: number;
+              mergedIds: Array<{ hash: string; type: string }>;
+          }>
+        | undefined;
+    filteredLimitTxData:
+        | Array<{
+              order: LimitOrderIF;
+              totalValueUSD: number;
+              tokenFlowDecimalCorrected: number;
+              mergedIds: Array<{ hash: string; type: string }>;
           }>
         | undefined;
     circleScale: d3.ScaleLinear<number, number> | undefined;
@@ -52,6 +62,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         isSelectedOrderHistory,
         drawSettings,
         filteredTransactionalData,
+        filteredLimitTxData,
         circleScale,
     } = props;
 
@@ -198,19 +209,10 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
             if (showSwap && filteredTransactionalData && circleScale) {
                 filteredTransactionalData.forEach((transaction) => {
-                    let totalValueUSD = transaction.order.totalValueUSD;
-
-                    if (transaction.mergedTx.length > 0) {
-                        transaction.mergedTx.map((merged) => {
-                            totalValueUSD =
-                                totalValueUSD + merged.totalValueUSD;
-                        });
-                    }
-
                     const circleSerie = createCircle(
                         scaleData?.xScale,
                         scaleData?.yScale,
-                        circleScale(totalValueUSD),
+                        circleScale(transaction.totalValueUSD),
                         1,
                         denomInBase,
                         false,
@@ -240,11 +242,49 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         serie: circleSerie,
                     });
                 });
+            }
 
-                setCircleSeries(() => {
-                    return circleSerieArray;
+            if (showSwap && filteredLimitTxData && circleScale) {
+                filteredLimitTxData.forEach((transaction) => {
+                    const circleSerie = createCircle(
+                        scaleData?.xScale,
+                        scaleData?.yScale,
+                        circleScale(transaction.totalValueUSD),
+                        1,
+                        denomInBase,
+                        false,
+                        false,
+                        (denomInBase && !transaction.order.isBid) ||
+                            (!denomInBase && transaction.order.isBid),
+                        '--accent1',
+                        ['futa'].includes(platformName)
+                            ? '--negative'
+                            : '--accent5',
+                    );
+
+                    const circleData = [
+                        {
+                            x: transaction.order.crossTime * 1000,
+                            y: denomInBase
+                                ? transaction.order
+                                      .invLimitPriceDecimalCorrected
+                                : transaction.order.limitPriceDecimalCorrected,
+                            denomInBase: denomInBase,
+                            isBuy: transaction.order.isBid,
+                        },
+                    ];
+
+                    circleSerieArray.push({
+                        id: transaction.order.positionHash,
+                        data: circleData,
+                        serie: circleSerie,
+                    });
                 });
             }
+
+            setCircleSeries(() => {
+                return circleSerieArray;
+            });
 
             if (showHistorical && historicalUserPositionsByPool) {
                 historicalUserPositionsByPool.forEach((order) => {

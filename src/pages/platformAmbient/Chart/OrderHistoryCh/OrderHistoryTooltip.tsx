@@ -163,7 +163,8 @@ export default function OrderHistoryTooltip(props: {
     );
 
     const swapHeader = (hoveredOrderHistory.type === 'swap' ||
-        hoveredOrderHistory.type === 'limitOrder') && (
+        hoveredOrderHistory.type === 'limitOrder' ||
+        hoveredOrderHistory.type === 'claimableLimit') && (
         <OrderHistoryHeader>
             <StyledHeader
                 color={
@@ -183,7 +184,8 @@ export default function OrderHistoryTooltip(props: {
             </StyledHeader>
 
             <StyledHeader color={'white'} size={'15px'}>
-                {hoveredOrderHistory.type === 'limitOrder' &&
+                {(hoveredOrderHistory.type === 'limitOrder' ||
+                    hoveredOrderHistory.type === 'claimableLimit') &&
                 hoveredOrderHistory.tokenFlowDecimalCorrected < 1
                     ? formatSubscript(
                           hoveredOrderHistory.tokenFlowDecimalCorrected,
@@ -197,36 +199,21 @@ export default function OrderHistoryTooltip(props: {
             </StyledHeader>
 
             <StyledHeader color={'white'} size={'15px'}>
-                {hoveredOrderHistory.type === 'limitOrder'
-                    ? hoveredOrderHistory.order.order.isBuy
-                        ? hoveredOrderHistory.order.order.baseSymbol
-                        : hoveredOrderHistory.order.order.quoteSymbol
-                    : denomInBase
-                      ? hoveredOrderHistory.order.order.baseSymbol
-                      : hoveredOrderHistory.order.order.quoteSymbol}
+                {denomInBase
+                    ? hoveredOrderHistory.order.order.baseSymbol
+                    : hoveredOrderHistory.order.order.quoteSymbol}
             </StyledHeader>
 
             {(
-                hoveredOrderHistory.type === 'limitOrder'
-                    ? hoveredOrderHistory.order.order.isBuy
-                        ? hoveredOrderHistory.order.order.baseTokenLogoURI
-                        : hoveredOrderHistory.order.order.quoteTokenLogoURI
-                    : denomInBase
-                      ? hoveredOrderHistory.order.order.baseTokenLogoURI
-                      : hoveredOrderHistory.order.order.quoteTokenLogoURI
+                denomInBase
+                    ? hoveredOrderHistory.order.order.baseTokenLogoURI
+                    : hoveredOrderHistory.order.order.quoteTokenLogoURI
             ) ? (
                 <img
                     src={uriToHttp(
-                        hoveredOrderHistory.type === 'limitOrder'
-                            ? hoveredOrderHistory.order.order.isBuy
-                                ? hoveredOrderHistory.order.order
-                                      .baseTokenLogoURI
-                                : hoveredOrderHistory.order.order
-                                      .quoteTokenLogoURI
-                            : denomInBase
-                              ? hoveredOrderHistory.order.order.baseTokenLogoURI
-                              : hoveredOrderHistory.order.order
-                                    .quoteTokenLogoURI,
+                        denomInBase
+                            ? hoveredOrderHistory.order.order.baseTokenLogoURI
+                            : hoveredOrderHistory.order.order.quoteTokenLogoURI,
                     )}
                     alt='base token'
                     style={{ width: '18px' }}
@@ -391,7 +378,8 @@ export default function OrderHistoryTooltip(props: {
                     }}
                 >
                     {(hoveredOrderHistory.type === 'swap' ||
-                        hoveredOrderHistory.type === 'limitOrder') &&
+                        hoveredOrderHistory.type === 'limitOrder' ||
+                        hoveredOrderHistory.type === 'claimableLimit') &&
                         swapHeader}
                     {hoveredOrderHistory.type === 'limitSwapLine' &&
                         limitOrderHeader}
@@ -404,7 +392,8 @@ export default function OrderHistoryTooltip(props: {
                     >
                         {hoveredOrderHistory.type === 'swap' && swapTypeText}
                         {(hoveredOrderHistory.type === 'limitSwapLine' ||
-                            hoveredOrderHistory.type === 'limitOrder') &&
+                            hoveredOrderHistory.type === 'limitOrder' ||
+                            hoveredOrderHistory.type === 'claimableLimit') &&
                             LimitTypeText}
                         {hoveredOrderHistory.type === 'historical' &&
                             historicalTypeText}
@@ -418,13 +407,15 @@ export default function OrderHistoryTooltip(props: {
                         </StyledHeader>
 
                         {(hoveredOrderHistory.type === 'swap' ||
-                            hoveredOrderHistory.type === 'limitOrder') &&
+                            hoveredOrderHistory.type === 'limitOrder' ||
+                            hoveredOrderHistory.type === 'claimableLimit') &&
                             hoveredOrderHistory.mergedIds.length > 5 &&
                             showUpArrow &&
                             upArrow}
 
                         {(hoveredOrderHistory.type === 'swap' ||
-                            hoveredOrderHistory.type === 'limitOrder') && (
+                            hoveredOrderHistory.type === 'limitOrder' ||
+                            hoveredOrderHistory.type === 'claimableLimit') && (
                             <IdContainer>
                                 <LinkContainer
                                     isHover={false}
@@ -478,7 +469,8 @@ export default function OrderHistoryTooltip(props: {
                         )}
 
                         {(hoveredOrderHistory.type === 'swap' ||
-                            hoveredOrderHistory.type === 'limitOrder') &&
+                            hoveredOrderHistory.type === 'limitOrder' ||
+                            hoveredOrderHistory.type === 'claimableLimit') &&
                             hoveredOrderHistory.mergedIds.length > 5 &&
                             showDownArrow &&
                             downArrow}
