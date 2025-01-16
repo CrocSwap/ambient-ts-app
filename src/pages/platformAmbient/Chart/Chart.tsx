@@ -5645,7 +5645,6 @@ export default function Chart(props: propsIF) {
                 (data) => data.totalValueUSD,
             );
 
-            console.log(domainLeft, domainRight);
             if (domainRight && domainLeft) {
                 const scale = d3
                     .scaleLinear()
