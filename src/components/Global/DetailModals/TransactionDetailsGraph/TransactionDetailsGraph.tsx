@@ -13,6 +13,7 @@ import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { updateZeroPriceCandles } from '../../../../pages/platformAmbient/Chart/ChartUtils/candleDataUtils';
 import {
     lineValue,
     renderCanvasArray,
@@ -25,7 +26,6 @@ import {
 } from '../../../../utils/numbers';
 import Spinner from '../../Spinner/Spinner';
 import './TransactionDetailsGraph.css';
-import { updateZeroPriceCandles } from '../../../../pages/platformAmbient/Chart/ChartUtils/candleDataUtils';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -1208,7 +1208,7 @@ export default function TransactionDetailsGraph(
                                 addExtraCandle(
                                     time / 1000,
                                     tx.askTickInvPriceDecimalCorrected,
-                                    tx.askTickPriceDecimalCorrected,
+                                    tx.bidTickPriceDecimalCorrected,
                                 );
                                 crossPointJoin(svg, [
                                     [
@@ -1220,7 +1220,7 @@ export default function TransactionDetailsGraph(
                                                     : !isBaseTokenMoneynessGreaterOrEqual
                                             )
                                                 ? tx.askTickInvPriceDecimalCorrected
-                                                : tx.askTickPriceDecimalCorrected,
+                                                : tx.bidTickPriceDecimalCorrected,
                                         },
                                     ],
                                 ]).call(crossPoint);
@@ -1233,7 +1233,7 @@ export default function TransactionDetailsGraph(
                                                 : !isBaseTokenMoneynessGreaterOrEqual
                                         )
                                             ? tx.askTickInvPriceDecimalCorrected
-                                            : tx.askTickPriceDecimalCorrected,
+                                            : tx.bidTickPriceDecimalCorrected,
 
                                         x: time,
                                     },
