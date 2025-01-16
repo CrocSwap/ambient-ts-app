@@ -366,8 +366,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             selection: 'Liquidity Area',
             actionHandler: 'liq',
             action: handleCandleColorPicker,
-            downColor: 'liqBidColor',
-            upColor: 'liqAskColor',
+            downColor: 'liqAskColor',
+            upColor: 'liqBidColor',
             exclude: ['futa'],
         },
     ];
