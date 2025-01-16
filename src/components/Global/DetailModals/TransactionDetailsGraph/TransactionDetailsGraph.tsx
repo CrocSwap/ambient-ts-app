@@ -26,6 +26,7 @@ import {
 import Spinner from '../../Spinner/Spinner';
 import './TransactionDetailsGraph.css';
 import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
+import { updateZeroPriceCandles } from '../../../../pages/platformAmbient/Chart/ChartUtils/candleDataUtils';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -279,13 +280,16 @@ export default function TransactionDetailsGraph(
                         crocEnv,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
-                        poolPriceDisplay,
                     );
 
                     if (graphData) {
                         setIsDataEmpty(false);
+                        const updatedZeroCandles = updateZeroPriceCandles(
+                            graphData.candles,
+                            poolPrice,
+                        );
                         setGraphData(() => {
-                            return graphData.candles;
+                            return updatedZeroCandles;
                         });
                     } else {
                         setGraphData(() => {
