@@ -117,7 +117,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                     ? 'CLOSED'
                     : 'OPEN'
                 : '-',
-            color: 'var(--accent1)',
+            color: 'var(--text2)',
             tooltipLabel: 'The current status of the auction - open or closed',
         },
         {
@@ -140,7 +140,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                   ' / ' +
                   currentMarketCapUsdFormatted
                 : '-',
-            color: 'var(--text1)',
+            color: 'var(--text2)',
             tooltipLabel: isAuctionCompleted
                 ? 'Filled market cap at the end of the auction in ETH'
                 : 'CURRENT FILLED MARKET CAP OF THE AUCTION IN ETH',
@@ -304,49 +304,45 @@ export const tickerDisplayElements = (props: PropsIF) => {
     // Opened bid data
     const openedBidData = [
         {
-            label: 'market cap (ETH)',
-            value: !placeholderTicker ? formattedOpenBidMarketCapEthValue : '-',
-            color: 'var(--text1)',
-            tooltipLabel: 'Current open bid market cap in ETH terms',
-        },
-        {
-            label: 'market cap ($)',
-            value: !placeholderTicker ? currentOpenBidUsdValueFormatted : '-',
-            color: 'var(--text1)',
+            label: 'market cap',
+            value: !placeholderTicker
+                ? formattedOpenBidMarketCapEthValue +
+                  ' / ' +
+                  currentOpenBidUsdValueFormatted
+                : '-',
+            color: 'var(--text2)',
             tooltipLabel:
-                'Current open bid market cap in dollar terms based on the current price of ETH',
+                'Current open bid market cap in ETH terms and in dollar terms based on the current price of ETH',
         },
         {
             label: 'bid size',
             value: !placeholderTicker ? formattedOpenBidStatus : '-',
-            color: 'var(--accent1)',
+            color: 'var(--text2)',
             tooltipLabel: 'CURRENT OPEN BID TOTAL FILL SIZE',
         },
     ];
     // Your bid data
     const yourBidData = [
         {
-            label: 'Max Market cap (ETH)',
-            value: !placeholderTicker ? formattedUserBidMarketCapEthValue : '-',
-            color: 'var(--text1)',
-            tooltipLabel: 'THE MAX MARKET CAP YOUR CURRENT BID WILL BID UP TO',
-        },
-        {
-            label: 'Max Market cap ($)',
-            value: !placeholderTicker ? formattedUserBidMarketCapUsdValue : '-',
-            color: 'var(--text1)',
+            label: 'max market cap',
+            value: !placeholderTicker
+                ? formattedUserBidMarketCapEthValue +
+                  ' / ' +
+                  formattedUserBidMarketCapUsdValue
+                : '-',
+            color: 'var(--text2)',
             tooltipLabel: 'THE MAX MARKET CAP YOUR CURRENT BID WILL BID UP TO',
         },
         {
             label: 'Bid size',
             value: !placeholderTicker ? formattedBidSizeEthValue : '-',
-            color: 'var(--text1)',
+            color: 'var(--text2)',
             tooltipLabel: 'THE MAX BID SIZE YOU ARE WILLING TO GET FILLED',
         },
         {
             label: 'Filled Amount',
             value: !placeholderTicker ? formattedFilledBidEthValue : '-',
-            color: 'var(--text1)',
+            color: 'var(--text2)',
             tooltipLabel: 'THE AMOUNT OF YOUR BID SIZE ALREADY FILLED',
         },
     ];
@@ -420,7 +416,14 @@ export const tickerDisplayElements = (props: PropsIF) => {
                             itemTitle={item.label}
                             tooltipTitle={item.tooltipLabel}
                         />
-                        <p style={{ color: item.color }}>{item.value}</p>
+                        <p
+                            style={{
+                                color: item.color,
+                                fontSize: '14px',
+                            }}
+                        >
+                            {item.value}
+                        </p>
                     </div>
                 ))}
         </div>
@@ -437,7 +440,14 @@ export const tickerDisplayElements = (props: PropsIF) => {
                         itemTitle={item.label}
                         tooltipTitle={item.tooltipLabel}
                     />
-                    <p style={{ color: item.color }}>{item.value}</p>
+                    <p
+                        style={{
+                            color: item.color,
+                            fontSize: '14px',
+                        }}
+                    >
+                        {item.value}
+                    </p>
                 </div>
             ))}
             <div className={styles.progressContainer}>
@@ -461,7 +471,14 @@ export const tickerDisplayElements = (props: PropsIF) => {
                         itemTitle={item.label}
                         tooltipTitle={item.tooltipLabel}
                     />
-                    <p style={{ color: item.color }}>{item.value}</p>
+                    <p
+                        style={{
+                            color: item.color,
+                            fontSize: '14px',
+                        }}
+                    >
+                        {item.value}
+                    </p>
                 </div>
             ))}
         </div>
