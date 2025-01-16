@@ -25,7 +25,6 @@ import {
 } from '../../../../utils/numbers';
 import Spinner from '../../Spinner/Spinner';
 import './TransactionDetailsGraph.css';
-import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
 import { updateZeroPriceCandles } from '../../../../pages/platformAmbient/Chart/ChartUtils/candleDataUtils';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -64,17 +63,8 @@ export default function TransactionDetailsGraph(
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 
-    const {
-        isDenomBase,
-        currentPoolPriceTick,
-        baseToken: baseOnTrade,
-        quoteToken: quoteOnTrade,
-    } = useContext(TradeDataContext);
+    const { isDenomBase } = useContext(TradeDataContext);
     const { chartThemeColors } = useContext(ChartContext);
-
-    const txPoolMatchesTrade =
-        baseTokenAddress.toLowerCase() === baseOnTrade.address.toLowerCase() &&
-        quoteTokenAddress.toLowerCase() === quoteOnTrade.address.toLowerCase();
 
     const [graphData, setGraphData] = useState<any>();
 
@@ -95,8 +85,6 @@ export default function TransactionDetailsGraph(
     const [period, setPeriod] = useState<number | undefined>();
     const [yAxis, setYaxis] = useState<any>();
     const [xAxis, setXaxis] = useState<any>();
-    const [poolPricePixel, setPoolPricePixel] = useState(0);
-    const [poolPrice, setPoolPrice] = useState(0);
     const takeSmallerPeriodForRemoveRange = (diff: number) => {
         if (diff <= 600) {
             return 300;
@@ -256,16 +244,6 @@ export default function TransactionDetailsGraph(
                         baseDecimals,
                         quoteDecimals,
                     );
-
-                    const poolPriceDisplay = (
-                        !isAccountView
-                            ? isDenomBase
-                            : !isBaseTokenMoneynessGreaterOrEqual
-                    )
-                        ? 1 / poolPrice
-                        : poolPrice;
-
-                    setPoolPrice(poolPriceDisplay);
 
                     const graphData = await fetchCandleSeriesCroc(
                         fetchEnabled,
@@ -578,9 +556,7 @@ export default function TransactionDetailsGraph(
                     if (svgWidth !== width) {
                         setSvgWidth(width);
                     } else {
-                        graphData &&
-                            transactionType !== 'liqchange' &&
-                            setIsDataLoading(false);
+                        graphData && setIsDataLoading(false);
                     }
                 });
 
@@ -908,31 +884,6 @@ export default function TransactionDetailsGraph(
             });
         }
     }, [scaleData]);
-
-    useEffect(() => {
-        if (
-            poolPricePixel &&
-            scaleData &&
-            graphData.length > 0 &&
-            transactionType === 'liqchange'
-        ) {
-            const lastDataPixel = scaleData.xScale(graphData[0].time * 1000);
-            const diff = lastDataPixel - poolPricePixel * 10 + 10;
-
-            if (lastDataPixel > poolPricePixel * 10) {
-                const newMaxDomain = scaleData?.xScale
-                    .invert(svgWidth + diff)
-                    .getTime();
-
-                const oldMaxDomain = scaleData?.xScale.domain()[1];
-                scaleData?.xScale.domain([
-                    scaleData?.xScale.domain()[0],
-                    Math.max(newMaxDomain, oldMaxDomain),
-                ]);
-            }
-            render();
-        }
-    }, [scaleData, poolPricePixel, graphData]);
 
     useEffect(() => {
         if (scaleData) {
@@ -1563,32 +1514,6 @@ export default function TransactionDetailsGraph(
                                 'minmax(0em, max-content) auto 1fr auto',
                         }}
                     >
-                        {transactionType === 'liqchange' && (
-                            <TransactionDetailsLiquidityGraph
-                                tx={tx}
-                                isDenomBase={
-                                    !(!isAccountView
-                                        ? isDenomBase
-                                        : !isBaseTokenMoneynessGreaterOrEqual)
-                                }
-                                yScale={scaleData?.yScale}
-                                transactionType={transactionType}
-                                poolPriceDisplay={poolPrice}
-                                setPoolPricePixel={setPoolPricePixel}
-                                poolPricePixel={poolPricePixel}
-                                svgWidth={svgWidth}
-                                lastCandleData={
-                                    graphData ? graphData[0] : undefined
-                                }
-                                setIsDataLoading={setIsDataLoading}
-                                chartThemeColors={chartThemeColors}
-                                currentPoolPriceTick={
-                                    isAccountView && !txPoolMatchesTrade
-                                        ? undefined
-                                        : currentPoolPriceTick
-                                }
-                            />
-                        )}
                         <d3fc-svg
                             id='d3PlotGraph'
                             ref={d3PlotGraph}
