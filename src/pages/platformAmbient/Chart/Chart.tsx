@@ -5624,24 +5624,28 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        const totalValueUSDArr: Array<number> = [];
-
-        if (filteredTransactionalData && filteredTransactionalData.length > 0) {
-            filteredTransactionalData.map((data) =>
-                totalValueUSDArr.push(data.totalValueUSD),
+        if (userTransactionData) {
+            const domainRight = d3.max(
+                userTransactionData.filter(
+                    (transaction) =>
+                        (transaction.entityType === 'limitOrder' ||
+                            transaction.entityType === 'swap') &&
+                        transaction.totalValueUSD > 0,
+                ),
+                (data) => data.totalValueUSD,
             );
-        }
 
-        if (filteredLimitTxData && filteredLimitTxData.length > 0) {
-            filteredLimitTxData?.map((data) =>
-                totalValueUSDArr.push(data.totalValueUSD),
+            const domainLeft = d3.min(
+                userTransactionData.filter(
+                    (transaction) =>
+                        (transaction.entityType === 'limitOrder' ||
+                            transaction.entityType === 'swap') &&
+                        transaction.totalValueUSD > 0,
+                ),
+                (data) => data.totalValueUSD,
             );
-        }
 
-        if (totalValueUSDArr && totalValueUSDArr.length > 0) {
-            const domainRight = d3.max(totalValueUSDArr, (data) => data);
-            const domainLeft = d3.min(totalValueUSDArr, (data) => data);
-
+            console.log(domainLeft, domainRight);
             if (domainRight && domainLeft) {
                 const scale = d3
                     .scaleLinear()
@@ -5653,7 +5657,7 @@ export default function Chart(props: propsIF) {
                 });
             }
         }
-    }, [filteredTransactionalData, filteredLimitTxData, denomInBase]);
+    }, [userTransactionData, denomInBase]);
 
     const handleCardClick = (id: string): void => {
         setSelectedDate(undefined);
