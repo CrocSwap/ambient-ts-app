@@ -34,6 +34,8 @@ interface TransactionDetailsGraphIF {
     transactionType: string;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
+    middlePriceDisplay?: string | undefined;
+    middlePriceDisplayDenomByMoneyness?: string | undefined;
 }
 
 export default function TransactionDetailsGraph(
@@ -45,6 +47,8 @@ export default function TransactionDetailsGraph(
         transactionType,
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
+        middlePriceDisplay,
+        middlePriceDisplayDenomByMoneyness,
     } = props;
     const {
         activeNetwork: { GCGO_URL, chainId, poolIndex },
@@ -1158,6 +1162,15 @@ export default function TransactionDetailsGraph(
         });
     };
 
+    const middlePriceDisplayNum = parseFloat(middlePriceDisplay || '0');
+    const middlePriceDisplayDenomByMoneynessNum = parseFloat(
+        middlePriceDisplayDenomByMoneyness || '0',
+    );
+
+    const middlePriceNum = isAccountView
+        ? middlePriceDisplayDenomByMoneynessNum
+        : middlePriceDisplayNum;
+
     const drawChart = useCallback(
         (
             graphData: any,
@@ -1207,20 +1220,14 @@ export default function TransactionDetailsGraph(
                             if (tx.claimableLiq > 0) {
                                 addExtraCandle(
                                     time / 1000,
-                                    tx.askTickInvPriceDecimalCorrected,
-                                    tx.bidTickPriceDecimalCorrected,
+                                    middlePriceNum,
+                                    middlePriceNum,
                                 );
                                 crossPointJoin(svg, [
                                     [
                                         {
                                             x: time,
-                                            y: (
-                                                !isAccountView
-                                                    ? isDenomBase
-                                                    : !isBaseTokenMoneynessGreaterOrEqual
-                                            )
-                                                ? tx.askTickInvPriceDecimalCorrected
-                                                : tx.bidTickPriceDecimalCorrected,
+                                            y: middlePriceNum,
                                         },
                                     ],
                                 ]).call(crossPoint);
