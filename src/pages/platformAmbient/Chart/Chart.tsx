@@ -809,10 +809,9 @@ export default function Chart(props: propsIF) {
             const leftDomain = scaleData.xScale.domain()[0] / 1000;
             const rightDomain = scaleData.xScale.domain()[1] / 1000;
 
-            const userSwaps: Array<TransactionIF> = [];
-            // userTransactionData.filter(
-            //     (transaction) => transaction.entityType === 'swap',
-            // );
+            const userSwaps: Array<TransactionIF> = userTransactionData.filter(
+                (transaction) => transaction.entityType === 'swap',
+            );
 
             const userClaimedLimit = userTransactionData.filter(
                 (transaction) =>
