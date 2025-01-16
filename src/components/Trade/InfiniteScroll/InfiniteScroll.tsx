@@ -257,17 +257,23 @@ function InfiniteScroll(props: propsIF) {
                 txs = fetchedTransactionsRef.current
                     ? (fetchedTransactionsRef.current as LimitOrderIF[])
                     : (fetchedTransactions as LimitOrderIF[]);
-                const existingTxs = new Set(txs.map((e) => e.limitOrderId));
+                const existingTxs = new Set(
+                    txs.map((e) => e.limitOrderId + ',' + e.positionLiq),
+                );
                 ret = (dirtyData as LimitOrderIF[]).filter(
-                    (e) => !existingTxs.has(e.limitOrderId),
+                    (e) =>
+                        !existingTxs.has(e.limitOrderId + ',' + e.positionLiq),
                 );
             } else {
                 txs = fetchedTransactionsRef.current
                     ? (fetchedTransactionsRef.current as PositionIF[])
                     : (fetchedTransactions as PositionIF[]);
-                const existingTxs = new Set(txs.map((e) => e.positionId));
+                const existingTxs = new Set(
+                    txs.map((e) => e.positionId + ',' + e.positionLiq),
+                );
+
                 ret = (dirtyData as PositionIF[]).filter(
-                    (e) => !existingTxs.has(e.positionId),
+                    (e) => !existingTxs.has(e.positionId + ',' + e.positionLiq),
                 );
             }
 
@@ -584,6 +590,18 @@ function InfiniteScroll(props: propsIF) {
             setFetchedTransactions(assignInitialFetchedTransactions());
         } else {
             const newTxs = dataDiffCheck(data);
+            let idSet: Set<string>;
+
+            if (props.type === 'Order') {
+                idSet = new Set(
+                    (newTxs as LimitOrderIF[]).map((e) => e.limitOrderId),
+                );
+            } else if (props.type === 'Range') {
+                idSet = new Set(
+                    (newTxs as PositionIF[]).map((e) => e.positionId),
+                );
+            }
+
             if (newTxs.length > 0) {
                 if (pagesVisible[0] == 0) {
                     switch (props.type) {
@@ -597,7 +615,9 @@ function InfiniteScroll(props: propsIF) {
                                 ) => {
                                     return [
                                         ...(newTxs as LimitOrderIF[]),
-                                        ...(prev as LimitOrderIF[]),
+                                        ...(prev as LimitOrderIF[]).filter(
+                                            (e) => !idSet.has(e.limitOrderId),
+                                        ),
                                     ];
                                 },
                             );
@@ -612,7 +632,9 @@ function InfiniteScroll(props: propsIF) {
                                 ) => {
                                     return [
                                         ...(newTxs as PositionIF[]),
-                                        ...(prev as PositionIF[]),
+                                        ...(prev as PositionIF[]).filter(
+                                            (e) => !idSet.has(e.positionId),
+                                        ),
                                     ];
                                 },
                             );
@@ -709,10 +731,11 @@ function InfiniteScroll(props: propsIF) {
         return ret;
     };
 
-    const { mergedData, recentlyUpdatedPositions } = useMergeWithPendingTxs({
-        type: props.type,
-        data: fetchedTransactions,
-    });
+    const { mergedData, recentlyUpdatedPositions, blackList } =
+        useMergeWithPendingTxs({
+            type: props.type,
+            data: fetchedTransactions,
+        });
 
     const dataToDisplay = useMemo(() => {
         const startIndex = getIndexForPages(true);
@@ -721,7 +744,17 @@ function InfiniteScroll(props: propsIF) {
             recentlyUpdatedPositions.length,
         );
 
-        return mergedData.slice(startIndex, endIndex);
+        if (props.type === 'Order') {
+            return (mergedData as LimitOrderIF[]).filter(
+                (e) => !blackList?.has(e.positionHash),
+            );
+        } else if (props.type === 'Range') {
+            return (mergedData as PositionIF[]).filter(
+                (e) => !blackList?.has(e.positionId),
+            );
+        } else {
+            return mergedData.slice(startIndex, endIndex);
+        }
     }, [pagesVisible, mergedData, recentlyUpdatedPositions]);
 
     useEffect(() => {

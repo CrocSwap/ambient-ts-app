@@ -41,7 +41,6 @@ import {
     LS_USER_VERIFY_TOKEN,
 } from '../ChatConstants/ChatConstants';
 import { ChatWsQueryParams, LikeDislikePayload } from '../ChatIFs';
-import { domDebug, getTimeForLog } from '../DomDebugger/DomDebuggerUtils';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
 
@@ -89,10 +88,6 @@ const useChatSocket = (
     const { userAddress: address, ensName } = useContext(UserDataContext);
     const { isUserIdle } = useContext(AppStateContext);
 
-    if (address) {
-        domDebug('usechatsocket', address?.substring(0, 4) + '|' + ensName);
-    }
-
     const { updateUserAvatarData } = useContext(UserDataContext);
 
     const url = CHAT_BACKEND_URL + '/chat/api/subscribe/';
@@ -107,8 +102,6 @@ const useChatSocket = (
     if (ensName && ensName.length > 0) {
         qp.ensName = ensName;
     }
-
-    domDebug('room', qp.roomId);
 
     const {
         lastMessage: socketLastMessage,
@@ -127,31 +120,19 @@ const useChatSocket = (
             Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
         share: true,
         onOpen: () => {
-            domDebug('connected', getTimeForLog(new Date()));
             doHandshake();
         },
-        onClose: () => {
-            domDebug('disconnected', getTimeForLog(new Date()));
-        },
-        onError: () => {
-            domDebug('ERR_error_time', getTimeForLog(new Date()));
-        },
+        // onClose: () => {
+        // },
+        // onError: () => {
+        // },
         heartbeat: {
             interval: 60000,
             timeout: 55000,
         },
     });
 
-    const connectionStatus = {
-        [ReadyState.CONNECTING]: 'Connecting',
-        [ReadyState.OPEN]: 'Open',
-        [ReadyState.CLOSING]: 'Closing',
-        [ReadyState.CLOSED]: 'Closed',
-        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-    }[readyState];
-
     const isWsConnected = readyState == ReadyState.OPEN;
-    domDebug('connection status', connectionStatus);
 
     useEffect(() => {
         if (isChatOpen) {
@@ -248,7 +229,6 @@ const useChatSocket = (
         const encodedRoomInfo = encodeURIComponent(roomInfo);
         const queryParams = 'p=' + p;
         const url = `${CHAT_BACKEND_URL}${getMessageWithRestWithPaginationEndpoint}${encodedRoomInfo}?${queryParams}`;
-        domDebug('get prevs ', url);
         const response = await fetch(url, {
             method: 'GET',
         });

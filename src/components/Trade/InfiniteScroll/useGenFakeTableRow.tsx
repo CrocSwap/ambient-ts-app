@@ -28,7 +28,7 @@ import { TransactionByType } from '../../../contexts/ReceiptContext';
 
 import { getPositionData } from '../../../ambient-utils/dataLayer/functions/getPositionData';
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { RecentlyUpdatedPositionIF } from './useMergeWithPendingTxs';
+import { RecentlyUpdatedPositionIF } from '../../../contexts/GraphDataContext';
 
 const useGenFakeTableRow = () => {
     const { crocEnv, provider } = useContext(CrocEnvContext);
@@ -238,6 +238,10 @@ const useGenFakeTableRow = () => {
             position: onChainOrder,
             type: pendingTx.txType,
             action: pendingTx.txAction || '',
+            pair: pendingTx.txDetails.baseAddress.concat(
+                '-',
+                pendingTx.txDetails.quoteAddress,
+            ),
         };
     };
 
@@ -351,7 +355,7 @@ const useGenFakeTableRow = () => {
             isBid: pendingTx.txDetails.isBid,
             user: pendingTx.userAddress,
             timeFirstMint: 0, // unknown
-            latestUpdateTime: 0,
+            latestUpdateTime: Math.floor(Date.now() / 1000),
             lastMintTx: '', // unknown
             firstMintTx: '', // unknown
             positionType: pendingTx.txDetails.isAmbient
@@ -419,6 +423,10 @@ const useGenFakeTableRow = () => {
             position: onChainPosition,
             type: pendingTx.txType,
             action: pendingTx.txAction || '',
+            pair: pendingTx.txDetails.baseAddress.concat(
+                '-',
+                pendingTx.txDetails.quoteAddress,
+            ),
         };
     };
 

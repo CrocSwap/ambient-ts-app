@@ -110,15 +110,8 @@ const useCommentsWS = (
             Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
         share: true,
         onOpen: () => {
-            // domDebug('connected', getTimeForLog(new Date()));
             doHandshake();
         },
-        // onClose: () => {
-        //     domDebug('disconnected', getTimeForLog(new Date()));
-        // },
-        // onError: () => {
-        //     domDebug('ERR_error_time', getTimeForLog(new Date()));
-        // },
         heartbeat: {
             interval: 60000,
             timeout: 55000,
