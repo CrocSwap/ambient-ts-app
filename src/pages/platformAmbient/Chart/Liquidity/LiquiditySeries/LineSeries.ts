@@ -4,8 +4,8 @@ import { LiquidityRangeIF } from '../../../../../ambient-utils/types';
 import { ChartThemeIF } from '../../../../../contexts/ChartContext';
 import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import { getActiveLiqDepth } from './AreaSeries';
-const lineSellColor = 'rgba(115, 113, 252)';
-const lineBuyColor = 'rgba(205, 193, 255)';
+const lineSellColor = 'rgba(239, 83, 80)';
+const lineBuyColor = 'rgba(38,166,154)';
 
 export function createLineSeries(
     xScale: d3.ScaleLinear<number, number>,

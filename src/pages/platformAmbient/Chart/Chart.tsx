@@ -206,7 +206,7 @@ export default function Chart(props: propsIF) {
         setIsCompletedFetchData,
         setChartResetStatus,
         chartResetStatus,
-        openMobileSettingsModal,
+        // openMobileSettingsModal,
     } = props;
 
     const {
@@ -249,7 +249,6 @@ export default function Chart(props: propsIF) {
         isMagnetActiveLocal,
         setChartContainerOptions,
         chartThemeColors,
-        setChartThemeColors,
         contextmenu,
         setContextmenu,
         contextMenuPlacement,
@@ -330,8 +329,6 @@ export default function Chart(props: propsIF) {
 
     const [discontinuityProvider, setDiscontinuityProvider] =
         useState(undefined);
-    const [lineSellColor, setLineSellColor] = useState('rgba(115, 113, 252)');
-    const [lineBuyColor, setLineBuyColor] = useState('rgba(205, 193, 255)');
 
     const {
         showFeeRate,
@@ -356,28 +353,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasCrosshair = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        if (
-            chartThemeColors &&
-            chartThemeColors.liqBidColor !== null &&
-            chartThemeColors.liqAskColor !== null
-        ) {
-            setLineSellColor((prev) => {
-                if (chartThemeColors.liqBidColor)
-                    return chartThemeColors.liqBidColor.toString();
-
-                return prev;
-            });
-
-            setLineBuyColor((prev) => {
-                if (chartThemeColors.liqAskColor)
-                    return chartThemeColors.liqAskColor.toString();
-
-                return prev;
-            });
-        }
-    }, [chartThemeColors?.liqAskColor, chartThemeColors?.liqBidColor]);
 
     const location = useLocation();
 
@@ -1920,7 +1895,7 @@ export default function Chart(props: propsIF) {
 
                                     event.preventDefault();
                                 } else {
-                                    openMobileSettingsModal();
+                                    // openMobileSettingsModal();
                                 }
                             }
 
@@ -5208,7 +5183,7 @@ export default function Chart(props: propsIF) {
                 (event: PointerEvent) => {
                     if (mobileView) {
                         event.preventDefault();
-                        openMobileSettingsModal();
+                        // openMobileSettingsModal();
                     } else {
                         if (!event.shiftKey) {
                             event.preventDefault();
@@ -6409,16 +6384,12 @@ export default function Chart(props: propsIF) {
         liqTransitionPointforDepth: liquidityData
             ? liquidityData?.liqTransitionPointforDepth
             : poolPriceDisplay,
-        lineSellColor: lineSellColor,
-        lineBuyColor: lineBuyColor,
     };
 
     const limitCanvasProps = {
         scaleData,
         isDenomBase,
         period,
-        lineSellColor,
-        lineBuyColor,
         isUserConnected,
         setLimit,
         limit,
@@ -6438,8 +6409,6 @@ export default function Chart(props: propsIF) {
         liqTransitionPointforDepth: liquidityData
             ? liquidityData?.liqTransitionPointforDepth
             : poolPriceDisplay,
-        lineSellColor,
-        lineBuyColor,
         ranges,
         limit,
         isAmbientOrAdvanced: simpleRangeWidth !== 100 || advancedMode,
@@ -7042,6 +7011,7 @@ export default function Chart(props: propsIF) {
                             circleScale={circleScale}
                             isSelectedOrderHistory={isSelectedOrderHistory}
                             selectedOrderHistory={selectedOrderHistory}
+                            chartThemeColors={chartThemeColors}
                         />
                     )}
 
@@ -7288,7 +7258,6 @@ export default function Chart(props: propsIF) {
                     setContextmenu={setContextmenu}
                     chartItemStates={props.chartItemStates}
                     chartThemeColors={chartThemeColors}
-                    setChartThemeColors={setChartThemeColors}
                     render={render}
                     isCondensedModeEnabled={isCondensedModeEnabled}
                     setIsCondensedModeEnabled={setIsCondensedModeEnabled}

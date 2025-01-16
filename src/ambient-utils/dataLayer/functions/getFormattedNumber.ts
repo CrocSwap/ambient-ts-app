@@ -18,6 +18,7 @@ type FormatParams = {
     isPercentage?: boolean;
     mantissa?: number;
     removeExtraTrailingZeros?: boolean;
+    isTickerDisplay?: boolean;
 };
 
 export function getFormattedNumber({
@@ -38,6 +39,7 @@ export function getFormattedNumber({
     isPercentage = false,
     mantissa = 2,
     removeExtraTrailingZeros = false,
+    isTickerDisplay = false,
 }: FormatParams) {
     let valueString = '';
     if (value === 0) {
@@ -46,6 +48,16 @@ export function getFormattedNumber({
         return nullDisplay;
     } else if (value === Infinity) {
         valueString = '∞';
+    } else if (isTickerDisplay) {
+        valueString =
+            value <= 1000
+                ? formatAbbrev(value, false, 0)
+                : value < 100000
+                  ? formatAbbrev(value, false, 1)
+                  : value < 1000000
+                    ? formatAbbrev(value, false, 0)
+                    : formatAbbrev(value, false, 1);
+        prefix = '$';
     } else if (isUSD) {
         // only display two decimal points for USD values
         valueString = value.toLocaleString('en-US', {
@@ -167,7 +179,9 @@ export const formatSubscript = (value: number, precision = 3) => {
 const formatAbbrev = (value: number, isTvl?: boolean, mantissa = 2) => {
     return numbro(value).format({
         average: true,
-        ...(isTvl && { roundingFunction: (num: number) => Math.floor(num) }),
+        ...(isTvl
+            ? { roundingFunction: (num: number) => Math.floor(num) }
+            : { roundingFunction: (num: number) => num }),
         mantissa: mantissa,
         abbreviations: {
             thousand: 'k',

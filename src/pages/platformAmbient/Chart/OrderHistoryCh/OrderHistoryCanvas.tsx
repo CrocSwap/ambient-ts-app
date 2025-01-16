@@ -13,8 +13,8 @@ import { createLinearLineSeries } from '../Draw/DrawCanvas/LinearLineSeries';
 import { createBandArea } from '../Draw/DrawCanvas/BandArea';
 import { diffHashSig } from '../../../../ambient-utils/dataLayer';
 import { LimitOrderIF, TransactionIF } from '../../../../ambient-utils/types';
-import { BrandContext } from '../../../../contexts/BrandContext';
 import { GraphDataContext } from '../../../../contexts';
+import { ChartThemeIF } from '../../../../contexts/ChartContext';
 
 interface OrderHistoryCanvasProps {
     scaleData: scaleData;
@@ -47,6 +47,7 @@ interface OrderHistoryCanvasProps {
           }>
         | undefined;
     circleScale: d3.ScaleLinear<number, number> | undefined;
+    chartThemeColors: ChartThemeIF | undefined;
 }
 
 export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
@@ -64,11 +65,10 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         filteredTransactionalData,
         filteredLimitTxData,
         circleScale,
+        chartThemeColors,
     } = props;
 
     const d3OrderCanvas = useRef<HTMLDivElement | null>(null);
-
-    const { platformName } = useContext(BrandContext);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [bandAreaHistorical, setBandAreaHistorical] = useState<any>();
@@ -218,14 +218,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         circleScale(transaction.totalValueUSD),
                         1,
                         denomInBase,
-                        false,
-                        false,
-                        (denomInBase && !transaction.order.isBuy) ||
-                            (!denomInBase && transaction.order.isBuy),
-                        '--accent1',
-                        ['futa'].includes(platformName)
-                            ? '--negative'
-                            : '--accent5',
+                        transaction.order.isBuy,
+                        chartThemeColors,
                     );
 
                     const circleData = [
@@ -279,14 +273,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         circleScale(transaction.totalValueUSD),
                         1,
                         denomInBase,
-                        false,
-                        false,
-                        (denomInBase && !transaction.order.isBid) ||
-                            (!denomInBase && transaction.order.isBid),
-                        '--accent1',
-                        ['futa'].includes(platformName)
-                            ? '--negative'
-                            : '--accent5',
+                        transaction.order.isBid,
+                        chartThemeColors,
                     );
 
                     const circleData = [
@@ -427,18 +415,17 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
-        if (scaleData && ctx) {
+        if (scaleData && ctx && chartThemeColors) {
             const decorateCircle = (
                 context: CanvasRenderingContext2D,
                 element: any,
                 isHighlighted: boolean,
             ) => {
                 const colorPalette = calculateCircleColor(
-                    context,
-                    '--accent1',
-                    ['futa'].includes(platformName)
-                        ? '--negative'
-                        : '--accent5',
+                    chartThemeColors.downCandleBodyColor.copy(),
+                    chartThemeColors.downCandleBorderColor.copy(),
+                    chartThemeColors.upCandleBodyColor.copy(),
+                    chartThemeColors.upCandleBorderColor.copy(),
                     isHighlighted,
                 );
 
@@ -448,7 +435,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
                 context.strokeStyle = isBuy
                     ? colorPalette.circleBuyStrokeColor
-                    : colorPalette.circleStrokeColor;
+                    : colorPalette.circleSellStrokeColor;
 
                 context.fillStyle = isBuy
                     ? colorPalette.buyFill
@@ -461,13 +448,9 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
 
-                    const style = getComputedStyle(ctx.canvas);
-
-                    const sellColor = style.getPropertyValue('--accent1');
-                    const buyColor = style.getPropertyValue('--accent5');
-
-                    const buyColorHex = d3.color(buyColor);
-                    const sellColorHex = d3.color(sellColor);
+                    const sellColor =
+                        chartThemeColors.downCandleBodyColor.copy();
+                    const buyColor = chartThemeColors.upCandleBodyColor.copy();
 
                     if (showHistorical) {
                         if (
@@ -585,8 +568,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                                         .isBid) ||
                                                 (!denomInBase &&
                                                     limitData.lineData[0].isBid)
-                                                    ? sellColor?.toString()
-                                                    : buyColor?.toString();
+                                                    ? sellColor.toString()
+                                                    : buyColor.toString();
 
                                             context.setLineDash([4, 2]);
 
@@ -607,8 +590,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                                         .isBid) ||
                                                 (!denomInBase &&
                                                     limitData.lineData[0].isBid)
-                                                    ? sellColor
-                                                    : buyColor;
+                                                    ? sellColor.toString()
+                                                    : buyColor.toString();
 
                                             context.fillStyle =
                                                 (denomInBase &&
@@ -616,8 +599,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                                         .isBid) ||
                                                 (!denomInBase &&
                                                     limitData.lineData[0].isBid)
-                                                    ? sellColor
-                                                    : buyColor;
+                                                    ? sellColor.toString()
+                                                    : buyColor.toString();
 
                                             context.lineWidth = 1;
                                         },
@@ -626,6 +609,10 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                     lineSeries.decorate(
                                         (context: CanvasRenderingContext2D) => {
                                             context.setLineDash([4, 2]);
+
+                                            const buyColorHex = buyColor.copy();
+                                            const sellColorHex =
+                                                sellColor.copy();
 
                                             if (buyColorHex && sellColorHex) {
                                                 buyColorHex.opacity = 0.7;
@@ -653,6 +640,10 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                             context.rotate(
                                                 (rotateDegree * Math.PI) / 180,
                                             );
+
+                                            const buyColorHex = buyColor.copy();
+                                            const sellColorHex =
+                                                sellColor.copy();
 
                                             if (buyColorHex && sellColorHex) {
                                                 buyColorHex.opacity = 0.7;
@@ -840,6 +831,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         showSwap,
         liquidityLineSeries,
         scaleData,
+        chartThemeColors,
     ]);
 
     return <d3fc-canvas className='d3_order_canvas' ref={d3OrderCanvas} />;

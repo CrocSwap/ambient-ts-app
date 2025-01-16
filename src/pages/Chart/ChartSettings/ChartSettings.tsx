@@ -14,15 +14,13 @@ import { BrandContext } from '../../../contexts/BrandContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { chartItemStates } from '../../platformAmbient/Chart/ChartUtils/chartUtils';
 import ChartSettingsContent from './ChartSettingsContent';
+import { brand } from '../../../ambient-utils/constants';
 
 interface ContextMenuIF {
     contextMenuPlacement?: { top: number; left: number; isReversed: boolean };
     setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
     chartItemStates: chartItemStates;
     chartThemeColors: ChartThemeIF;
-    setChartThemeColors: React.Dispatch<
-        React.SetStateAction<ChartThemeIF | undefined>
-    >;
     isCondensedModeEnabled: boolean;
     closeOutherChartSetting: boolean;
     setIsCondensedModeEnabled: React.Dispatch<React.SetStateAction<boolean>>;
@@ -44,10 +42,7 @@ export interface ColorObjIF {
 export default function ChartSettings(props: ContextMenuIF) {
     const {
         contextMenuPlacement,
-        setContextmenu,
         chartThemeColors,
-        // setChartThemeColors,
-        // render,
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
         setShouldDisableChartSettings,
@@ -58,10 +53,13 @@ export default function ChartSettings(props: ContextMenuIF) {
     const contextMenuRef = useRef<HTMLInputElement | null>(null);
 
     const { platformName } = useContext(BrandContext);
+    const isFuta = brand === 'futa';
 
     const [isSaving, setIsSaving] = useState(false);
     const [applyDefault, setApplyDefault] = useState(false);
     const [reverseColorObj, setReverseColorObj] = useState(false);
+
+    const [isSettingsClosing, setIsSettingsClosing] = useState(false);
 
     const tabletView = useMediaQuery(
         '(min-width: 768px) and (max-width: 1200px)',
@@ -91,6 +89,7 @@ export default function ChartSettings(props: ContextMenuIF) {
 
     useEffect(() => {
         if (closeOutherChartSetting) {
+            setIsSettingsClosing(true);
             setSelectedColorObj(undefined);
             setShouldDisableChartSettings(true);
             setCloseOutherChartSetting(false);
@@ -117,14 +116,14 @@ export default function ChartSettings(props: ContextMenuIF) {
                 setIsSelecboxActive(false);
             }}
         >
-            <ContextMenu>
+            <ContextMenu isFuta={isFuta}>
                 <ContextMenuHeader>
                     <ContextMenuHeaderText>
                         {['futa'].includes(platformName)
                             ? 'CHART SETTINGS'
                             : 'Chart Settings'}
                     </ContextMenuHeaderText>
-                    <CloseButton onClick={() => setContextmenu(false)}>
+                    <CloseButton onClick={() => setIsSettingsClosing(true)}>
                         <VscClose size={24} />
                     </CloseButton>
                 </ContextMenuHeader>
@@ -147,7 +146,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                     isSaving={isSaving}
                     setIsSaving={setIsSaving}
                     isMobile={tabletView}
-                    // render={render}
+                    isSettingsClosing={isSettingsClosing}
                 />
             </ContextMenu>
         </ChartSettingsContainer>

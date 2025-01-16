@@ -2,45 +2,41 @@ import { drawDataHistory, lineData, scaleData } from './chartUtils';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
+import { ChartThemeIF } from '../../../../contexts/ChartContext';
 
 export const selectedCircleSize = 80;
 
-const selectedCircleFillColor = 'wheat';
-
-const circleOrderSellFillColor = 'rgba(115, 113, 252, 0.3)';
-const circleOrderBuyFillColor = 'rgba(205, 193, 255, 0.3)';
 // const howeredCircleFillColor = 'wheat';
 
 export function calculateCircleColor(
-    context: CanvasRenderingContext2D,
-    sellColor: string,
-    buyColor: string,
+    sellFillColor: d3.RGBColor | d3.HSLColor,
+    sellStrokeColor: d3.RGBColor | d3.HSLColor,
+    buyFillColor: d3.RGBColor | d3.HSLColor,
+    buyStrokeColor: d3.RGBColor | d3.HSLColor,
     isHighlighted: boolean,
 ) {
-    const style = getComputedStyle(context.canvas);
+    const d3BuyStrokeColorBacground = buyStrokeColor;
+    const d3SellStrokeColorBacground = sellStrokeColor;
 
-    const circleStrokeColor = style.getPropertyValue(sellColor);
-    const circleBuyStrokeColor = style.getPropertyValue(buyColor);
-
-    const circleStrokeColorBackground = style.getPropertyValue(sellColor);
-    const circleBuyStrokeColorBackground = style.getPropertyValue(buyColor);
-
-    const d3BuyStrokeColorBacground = d3.color(circleBuyStrokeColorBackground);
-    const d3SellStrokeColorBacground = d3.color(circleStrokeColorBackground);
+    const d3BuyFillColorBacground = buyFillColor;
+    const d3SellFillColorBacground = sellFillColor;
 
     if (d3BuyStrokeColorBacground)
         d3BuyStrokeColorBacground.opacity = isHighlighted ? 0.6 : 0.3;
     if (d3SellStrokeColorBacground)
         d3SellStrokeColorBacground.opacity = isHighlighted ? 0.6 : 0.3;
 
-    const buyFill = d3BuyStrokeColorBacground
-        ? d3BuyStrokeColorBacground.toString()
-        : circleOrderBuyFillColor;
-    const sellFill = d3SellStrokeColorBacground
-        ? d3SellStrokeColorBacground.toString()
-        : circleOrderSellFillColor;
+    if (d3BuyFillColorBacground)
+        d3BuyFillColorBacground.opacity = isHighlighted ? 0.6 : 0.3;
+    if (d3SellFillColorBacground)
+        d3SellFillColorBacground.opacity = isHighlighted ? 0.6 : 0.3;
 
-    return { buyFill, sellFill, circleBuyStrokeColor, circleStrokeColor };
+    return {
+        buyFill: d3BuyFillColorBacground.toString(),
+        sellFill: d3SellFillColorBacground.toString(),
+        circleBuyStrokeColor: d3BuyStrokeColorBacground.toString(),
+        circleSellStrokeColor: d3SellStrokeColorBacground.toString(),
+    };
 }
 
 export function createCircle(
@@ -49,11 +45,8 @@ export function createCircle(
     size: number,
     lineWidth: number,
     denomInBase: boolean,
-    isSelected = false,
-    isTransparent = false,
     isBuy: boolean | undefined = undefined,
-    sellColor = '--accent1',
-    buyColor = '--accent5',
+    chartThemeColors?: ChartThemeIF,
 ) {
     return d3fc
         .seriesCanvasPoint()
@@ -66,31 +59,33 @@ export function createCircle(
         .size(size)
         .type(d3.symbolCircle)
         .decorate((context: CanvasRenderingContext2D) => {
-            const colorPalette = calculateCircleColor(
-                context,
-                sellColor,
-                buyColor,
-                false,
-            );
+            if (chartThemeColors) {
+                // const strokeColor = isBuy
+                //     ? chartThemeColors.upCandleBorderColor.copy()
+                //     : chartThemeColors.downCandleBorderColor.copy();
 
-            context.strokeStyle =
-                isBuy !== undefined
-                    ? isBuy
-                        ? colorPalette.circleBuyStrokeColor
-                        : colorPalette.circleStrokeColor
-                    : colorPalette.circleStrokeColor;
+                // const circleFillColor = isBuy
+                //     ? chartThemeColors.upCandleBodyColor.copy()
+                //     : chartThemeColors.downCandleBodyColor.copy();
 
-            context.fillStyle = isTransparent
-                ? 'transparent'
-                : isSelected
-                  ? selectedCircleFillColor
-                  : isBuy !== undefined
-                    ? isBuy
-                        ? colorPalette.buyFill
-                        : colorPalette.sellFill
-                    : colorPalette.circleStrokeColor;
+                const colorPalette = calculateCircleColor(
+                    chartThemeColors.downCandleBodyColor.copy(),
+                    chartThemeColors.downCandleBorderColor.copy(),
+                    chartThemeColors.upCandleBodyColor.copy(),
+                    chartThemeColors.upCandleBorderColor.copy(),
+                    false,
+                );
 
-            context.lineWidth = lineWidth;
+                context.strokeStyle = isBuy
+                    ? colorPalette.circleBuyStrokeColor
+                    : colorPalette.circleSellStrokeColor;
+
+                context.fillStyle = isBuy
+                    ? colorPalette.buyFill
+                    : colorPalette.sellFill;
+
+                context.lineWidth = lineWidth;
+            }
         });
 }
 
