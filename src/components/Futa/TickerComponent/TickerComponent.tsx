@@ -822,27 +822,25 @@ export default function TickerComponent(props: PropsIF) {
     }, []);
 
     const unCompletedDisplay = (
-        <>
-            <div className={styles.content} ref={containerRef}>
-                {!isAuctionPage && <BreadCrumb />}
-                {tickerDisplay}
-                <div className={styles.flexColumn}>
-                    {showComments && <Comments />}
-                </div>
-
-                {!showComments && (
-                    <>
-                        {openedBidDisplay}
-                        {yourBidDisplay}
-                        <div className={styles.flexColumn}>
-                            {maxFdvDisplay}
-                            {bidSizeDisplay}
-                            {extraInfoDisplay}
-                        </div>
-                    </>
-                )}
+        <div className={styles.content} ref={containerRef}>
+            {!isAuctionPage && <BreadCrumb />}
+            {tickerDisplay}
+            <div className={styles.flexColumn}>
+                {showComments && <Comments />}
             </div>
-        </>
+
+            {!showComments && (
+                <>
+                    {openedBidDisplay}
+                    {yourBidDisplay}
+                    <div className={styles.flexColumn}>
+                        {maxFdvDisplay}
+                        {bidSizeDisplay}
+                        {extraInfoDisplay}
+                    </div>
+                </>
+            )}
+        </div>
     );
 
     return (
