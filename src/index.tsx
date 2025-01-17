@@ -211,7 +211,7 @@ root.render(
                 <StyleSheetManager
                     shouldForwardProp={(propName) => isValidProp(propName)}
                 >
-                    <ErrorBoundary fallback={<GlobalErrorFallback />}>
+                    <ErrorBoundary fallback={GlobalErrorFallback}>
                         <App />
                     </ErrorBoundary>
                 </StyleSheetManager>
