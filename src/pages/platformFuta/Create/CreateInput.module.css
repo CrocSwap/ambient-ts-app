@@ -46,11 +46,12 @@
 
 .hiddenInput {
     width: 100%;
-    background-color: transparent;
+    background-color: var(--dark2);
     border: none;
     outline: none;
-    opacity: 0;
-    caret-color: var(--text1);
+    /* opacity: 0; */
+    caret-color: var(--text1) !important;
+    caret-shape: auto !important;
 }
 
 .textOverlay {
