@@ -51,6 +51,7 @@ const useGenFakeTableRow = () => {
     const genFakeLimitOrder = async (
         pendingTx: TransactionByType,
     ): Promise<RecentlyUpdatedPositionIF> => {
+        console.log('>>> genFakeLimitOrder');
         if (!crocEnv || !pendingTx.txDetails)
             return {} as RecentlyUpdatedPositionIF;
 
@@ -60,12 +61,23 @@ const useGenFakeTableRow = () => {
             pendingTx.userAddress,
         );
 
+        // console.log('??? pos', pos)
+
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             crocEnv,
             pendingTx.txDetails.baseAddress,
             pendingTx.txDetails.quoteAddress,
             chainId,
             lastBlockNumber,
+        );
+
+        console.log(
+            '??? pendingTx.txDetails.lowTick',
+            pendingTx.txDetails.lowTick,
+        );
+        console.log(
+            '??? pendingTx.txDetails.highTick',
+            pendingTx.txDetails.highTick,
         );
 
         const position = await pos.queryKnockoutLivePos(
@@ -80,13 +92,21 @@ const useGenFakeTableRow = () => {
         const liqBigInt = position.liq;
         const liqNum = bigIntToFloat(liqBigInt);
 
+        console.log('??? position', position);
+        console.log('??? position.liq', position.liq);
+        console.log('??? liqNum', liqNum);
+
         const highTickPrice = tickToPrice(pendingTx.txDetails.highTick || 0);
+
+        console.log('??? highTickPrice', highTickPrice);
 
         const usdValue = pendingTx.txDetails.isBid
             ? (1 / poolPriceNonDisplay) *
               parseFloat(pendingTx.txDetails.initialTokenQty || '0')
             : (1 / highTickPrice) *
               parseFloat(pendingTx.txDetails.initialTokenQty || '0');
+
+        console.log('??? usdValue', usdValue);
 
         const positionLiqBase = bigIntToFloat(
             baseTokenForConcLiq(
@@ -144,6 +164,25 @@ const useGenFakeTableRow = () => {
             cachedTokenDetails,
             cachedEnsResolve,
         );
+
+        console.log('??? limitOrderData', limitOrderData);
+
+        console.log('>>> cachedQueryPrice', poolPriceNonDisplay);
+
+        // const {
+        //     pool,
+        //     isPoolInitialized,
+        //     isTradeDollarizationEnabled,
+        //     usdPriceInverse,
+        //     poolData,
+        // } = useContext(PoolContext);
+
+        // const { basePrice, quotePrice } = poolData;
+        // console.log('>>> poolData', poolData);
+        // console.log('>>> pool', pool);
+
+        // console.log('>>> basePrice', basePrice);
+        // console.log('>>> quotePrice', quotePrice);
 
         let totalValueUSD: number = usdValue;
         if (limitOrderData.totalValueUSD) {
@@ -416,6 +455,10 @@ const useGenFakeTableRow = () => {
             positionId: positionData.positionId,
             onChainConstructedPosition: true,
         } as PositionIF;
+
+        console.log(
+            '>>> EOF -------------------------------------------------------------------------------',
+        );
 
         return {
             positionHash: posHash,
