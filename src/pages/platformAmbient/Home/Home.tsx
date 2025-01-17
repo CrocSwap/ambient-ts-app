@@ -14,12 +14,12 @@ export default function Home() {
     // hook to consume and alter search params on the index page
 
     const { showDexStats } = useContext(BrandContext);
-
-    if (showMobileVersion) return <MobileLandingSections />;
     // Simulate a random error 50% of the time
     if (Math.random() < 0.5) {
         throw new Error('Test error: Something went wrong randomly!');
     }
+
+    if (showMobileVersion) return <MobileLandingSections />;
     return (
         <section data-testid={'home'}>
             <div style={{ width: '100%', height: '480px' }}>
