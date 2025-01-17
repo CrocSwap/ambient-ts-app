@@ -570,7 +570,7 @@ export const getCssVariable = (activeSkin: skins, variableName: string) => {
         console.error(
             `theme element not found while accessing CSS variable: ${variableName}`,
         );
-        return ''; // or provide a fallback value
+        return d3.rgb(128, 128, 128); // Neutral gray as fallback
     }
 
     const value = getComputedStyle(themeElement)
