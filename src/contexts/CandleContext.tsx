@@ -26,9 +26,7 @@ import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
-import { TradeDataContext } from './TradeDataContext';
 import { TradeTokenContext } from './TradeTokenContext';
-import { updateZeroPriceCandles } from '../pages/platformAmbient/Chart/ChartUtils/candleDataUtils';
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
     setCandleData: Dispatch<
@@ -52,6 +50,9 @@ export interface CandleContextIF {
     showFutaCandles: boolean;
     setShowFutaCandles: Dispatch<SetStateAction<boolean>>;
     setIsChartOpen: Dispatch<SetStateAction<boolean>>;
+    setUrlPoolAddress: Dispatch<
+        SetStateAction<{ tokenA: string; tokenB: string }>
+    >;
 }
 
 export const CandleContext = createContext({} as CandleContextIF);
@@ -74,10 +75,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = useContext(AppStateContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
-    const { poolPriceNonDisplay: poolPriceDisplay } =
-        useContext(TradeDataContext);
-
-    const poolPriceRef = useRef(poolPriceDisplay);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -88,6 +85,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const baseTokenAddressRef = useRef(baseTokenAddress);
     const quoteTokenAddressRef = useRef(quoteTokenAddress);
 
+    const [urlPoolAddress, setUrlPoolAddress] = useState({
+        tokenA: baseTokenAddress,
+        tokenB: quoteTokenAddress,
+    });
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const [candleData, setCandleData] = useState<
@@ -122,12 +123,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     offlineFetcherRef.current = offlineFetcher;
 
     const poolTokenAddress = (
-        baseTokenAddress + quoteTokenAddress
+        urlPoolAddress.tokenA + urlPoolAddress.tokenB
     ).toLowerCase();
-
-    useEffect(() => {
-        poolPriceRef.current = poolPriceDisplay;
-    }, [poolPriceDisplay]);
 
     useEffect(() => {
         if (isFinishRequest) {
@@ -188,6 +185,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         showFutaCandles,
         setShowFutaCandles,
         setIsChartOpen,
+        setUrlPoolAddress,
     };
 
     useEffect(() => {
@@ -201,8 +199,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             setIsCondensedModeEnabled(true);
         }
 
-        baseTokenAddressRef.current = baseTokenAddress.toLowerCase();
-        quoteTokenAddressRef.current = quoteTokenAddress.toLowerCase();
+        baseTokenAddressRef.current = urlPoolAddress.tokenA.toLowerCase();
+        quoteTokenAddressRef.current = urlPoolAddress.tokenB.toLowerCase();
     }, [poolTokenAddress, chainId]);
 
     // only works when the period changes
@@ -221,10 +219,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
                 isChartEnabled &&
-                baseTokenAddressRef.current ===
-                    baseTokenAddress.toLowerCase() &&
-                quoteTokenAddressRef.current ===
-                    quoteTokenAddress.toLowerCase() &&
+                baseTokenAddressRef.current === urlPoolAddress.tokenA &&
+                quoteTokenAddressRef.current === urlPoolAddress.tokenB &&
                 candleData === undefined
             ) {
                 fetchCandles();
@@ -240,8 +236,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleData === undefined,
         crocEnv,
         chainId,
-        baseTokenAddressRef.current === baseTokenAddress.toLowerCase(),
-        quoteTokenAddressRef.current === quoteTokenAddress.toLowerCase(),
+        baseTokenAddressRef.current === urlPoolAddress.tokenA,
+        quoteTokenAddressRef.current === urlPoolAddress.tokenB,
     ]);
 
     useEffect(() => {
@@ -315,8 +311,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             isChartEnabled &&
             isServerEnabled &&
             isUserOnline &&
-            baseTokenAddress &&
-            quoteTokenAddress &&
+            urlPoolAddress.tokenA &&
+            urlPoolAddress.tokenB &&
             crocEnv
         ) {
             const candleTime = candleScale.isShowLatestCandle
@@ -340,8 +336,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 poolIndex,
                 GCGO_URL,
                 candleTimeLocal || defaultCandleDuration,
-                baseTokenAddress,
-                quoteTokenAddress,
+                urlPoolAddress.tokenA,
+                urlPoolAddress.tokenB,
                 candleTime,
                 nCandles,
                 crocEnv,
@@ -350,21 +346,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             )
                 .then((candles) => {
                     if (
-                        baseTokenAddressRef.current ===
-                            baseTokenAddress.toLowerCase() &&
-                        quoteTokenAddressRef.current ===
-                            quoteTokenAddress.toLowerCase()
+                        baseTokenAddressRef.current === urlPoolAddress.tokenA &&
+                        quoteTokenAddressRef.current === urlPoolAddress.tokenB
                     ) {
                         if (candles) {
-                            const updatedZeroCandles = updateZeroPriceCandles(
-                                candles.candles,
-                                poolPriceRef.current,
-                            );
-
-                            setCandleData({
-                                ...candles,
-                                candles: updatedZeroCandles,
-                            });
+                            setCandleData(candles);
 
                             const candleSeries = candles?.candles;
                             if (candleSeries && candleSeries.length > 0) {
@@ -445,8 +431,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             poolIndex,
             GCGO_URL,
             candleTimeLocal,
-            baseTokenAddress,
-            quoteTokenAddress,
+            urlPoolAddress.tokenA,
+            urlPoolAddress.tokenB,
             minTimeMemo ? minTimeMemo : 0,
             numDurations,
             crocEnv,
@@ -456,15 +442,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             .then((incrCandles) => {
                 if (incrCandles && candleData) {
                     if (candleDomains.isResetRequest) {
-                        const updatedZeroCandles = updateZeroPriceCandles(
-                            incrCandles.candles,
-                            poolPriceRef.current,
-                        );
-
-                        setCandleData({
-                            ...incrCandles,
-                            candles: updatedZeroCandles,
-                        });
+                        setCandleData(incrCandles);
                     } else {
                         const newCandles: CandleDataIF[] = [];
                         if (
@@ -501,15 +479,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                             candles: candleData.candles.concat(newCandles),
                         });
 
-                        const updatedZeroCandles = updateZeroPriceCandles(
-                            newSeries.candles,
-                            poolPriceRef.current,
-                        );
-
-                        setCandleData({
-                            ...newSeries,
-                            candles: updatedZeroCandles,
-                        });
+                        setCandleData(newSeries);
                     }
                 }
             })

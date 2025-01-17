@@ -55,7 +55,8 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const { setIsCandleSelected } = useContext(CandleContext);
+    const { setIsCandleSelected, setUrlPoolAddress } =
+        useContext(CandleContext);
 
     const {
         isFullScreen: isChartFullScreen,
@@ -90,6 +91,17 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const tradeTableRef = useRef<HTMLDivElement>(null);
 
     const [hasInitialized, setHasInitialized] = useState(false);
+
+    useEffect(() => {
+        const tknA = urlParamMap.get('tokenA') as string;
+        const tknB = urlParamMap.get('tokenB') as string;
+        if (tknA && tknB) {
+            setUrlPoolAddress({
+                tokenA: tknA.toLowerCase(),
+                tokenB: tknB.toLowerCase(),
+            });
+        }
+    }, [urlParamMap]);
 
     const changeState = useCallback(
         (isOpen: boolean | undefined, candleData: CandleDataIF | undefined) => {

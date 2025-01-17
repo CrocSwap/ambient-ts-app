@@ -121,6 +121,7 @@ import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
 import RangeLinesChart from './RangeLine/RangeLinesChart';
 import TvlChart from './Tvl/TvlChart';
 import VolumeBarCanvas from './Volume/VolumeBarCanvas';
+import { updateZeroPriceCandles } from './ChartUtils/candleDataUtils';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -551,8 +552,12 @@ export default function Chart(props: propsIF) {
     };
 
     const unparsedCandleData = useMemo(() => {
-        const data = filterCandleWithTransaction(
+        const updatedZeroCandles = updateZeroPriceCandles(
             unparsedData.candles,
+            poolPriceDisplay,
+        );
+        const data = filterCandleWithTransaction(
+            updatedZeroCandles,
             period,
         ).sort((a, b) => b.time - a.time);
 
@@ -696,14 +701,19 @@ export default function Chart(props: propsIF) {
         let poolPrice = poolPriceDisplay;
         const currentTime = findSnapTime(Date.now(), period) - period * 1000;
         if (unparsedData.candles.some((i) => i.time * 1000 === currentTime)) {
-            poolPrice = isDenomBase
+            const marketPrice = isDenomBase
                 ? lastCandleData.invPriceCloseDecimalCorrected
                 : lastCandleData.priceCloseDecimalCorrected;
+
+            if (marketPrice !== 0 && Math.abs(marketPrice) !== Infinity) {
+                poolPrice = marketPrice;
+            }
         }
 
         return poolPrice;
     }, [
-        lastCandleData,
+        lastCandleData.invMaxPriceDecimalCorrected,
+        lastCandleData.priceCloseDecimalCorrected,
         diffHashSigScaleData(scaleData, 'x'),
         poolPriceDisplay,
         isDenomBase,
