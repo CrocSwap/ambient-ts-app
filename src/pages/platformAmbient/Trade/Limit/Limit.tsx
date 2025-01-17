@@ -264,7 +264,7 @@ export default function Limit() {
             if (!pool) return;
 
             const initialLimitRateNonDisplay =
-                poolPriceNonDisplay * (isSellTokenBase ? 0.985 : 1.015);
+                poolPriceNonDisplay * (isSellTokenBase ? 0.99 : 1.01);
 
             const pinnedTick: number = isSellTokenBase
                 ? pinTickLower(initialLimitRateNonDisplay, gridSize)
