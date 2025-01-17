@@ -865,8 +865,6 @@ function YAxisCanvas(props: yAxisIF) {
         selectedDrawnShape,
         isUpdatingShape,
         getDollarPrice,
-        lineBuyColor,
-        lineSellColor,
     ]);
 
     function addYaxisLabel(y: number) {
