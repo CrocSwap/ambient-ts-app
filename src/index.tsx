@@ -16,16 +16,17 @@ import {
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
 import { getLocalStorageItem } from './ambient-utils/dataLayer';
-import baseSepoliaLogo from './assets/images/networks/base_network_logo_with_margin.webp';
+// import baseLogo from './assets/images/networks/base_network_logo_with_margin.webp';
+import baseSepoliaLogo from './assets/images/networks/base_sepolia.webp';
 import blastLogo from './assets/images/networks/blast_logo.png';
-import blastSepoliaLogo from './assets/images/networks/blast_sepolia_logo.webp';
+import blastSepoliaLogo from './assets/images/networks/blast_sepolia.webp';
 import ethLogo from './assets/images/networks/ethereum_logo.svg';
+import sepoliaLogo from './assets/images/networks/ethereum_sepolia.webp';
 import plumeLogo from './assets/images/networks/plume_mainnet_logo_small.webp';
-import plumeSepoliaLogo from './assets/images/networks/plume_sepolia_logo_small.webp';
+import plumeSepoliaLogo from './assets/images/networks/plume_sepolia.webp';
 import scrollLogo from './assets/images/networks/scroll_logo.webp';
-import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia_logo.webp';
-import sepoliaLogo from './assets/images/networks/sepolia_logo.webp';
-import swellLogo from './assets/images/networks/swell_network_logo_with_margin.webp';
+import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia.webp';
+import swellLogo from './assets/images/networks/swell_logo.webp';
 import swellSepoliaLogo from './assets/images/networks/swell_sepolia.webp';
 import { GlobalContexts } from './contexts/GlobalContexts';
 
@@ -81,7 +82,7 @@ const modal = createWeb3Modal({
         '--w3m-color-mix': 'var(--dark2)',
         '--w3m-color-mix-strength': 10,
         '--w3m-font-family': 'var(--font-family)',
-        '--w3m-accent': brand === 'futa' ? '#0CCDFF' : 'var(--accent1)',
+        '--w3m-accent': brand === 'futa' ? '#aacfd1' : 'var(--accent1)',
     },
     featuredWalletIds: [
         'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask

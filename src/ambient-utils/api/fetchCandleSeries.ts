@@ -21,8 +21,6 @@ export async function fetchCandleSeriesHybrid(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
-    poolPriceDisplay: number,
-    signal?: AbortSignal,
 ): Promise<CandlesByPoolAndDurationIF | undefined> {
     const candles = await fetchCandleSeriesCroc(
         isFetchEnabled,
@@ -37,8 +35,6 @@ export async function fetchCandleSeriesHybrid(
         crocEnv,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
-        poolPriceDisplay,
-        signal,
     );
 
     if (!candles) {
@@ -70,8 +66,6 @@ export async function fetchCandleSeriesCroc(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
-    poolPriceDisplay: number,
-    signal?: AbortSignal,
 ): Promise<CandlesByPoolAndDurationIF | undefined> {
     if (!isFetchEnabled) {
         return undefined;
@@ -96,7 +90,7 @@ export async function fetchCandleSeriesCroc(
         chainId: chainId,
     });
 
-    return fetch(candleSeriesEndpoint + '?' + reqOptions, { signal })
+    return fetch(candleSeriesEndpoint + '?' + reqOptions)
         .then((response) => response?.json())
         .then(async (json) => {
             if (!json?.data) {
@@ -112,7 +106,6 @@ export async function fetchCandleSeriesCroc(
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
-                poolPriceDisplay,
             );
 
             return {
@@ -162,7 +155,6 @@ async function expandPoolStatsCandle(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
-    poolPriceDisplay: number,
 ): Promise<CandleDataIF[]> {
     const baseDecimals = await crocEnv.token(base).decimals;
     const quoteDecimals = await crocEnv.token(quote).decimals;
@@ -202,7 +194,6 @@ async function expandPoolStatsCandle(
         quoteDecimals,
         basePrice,
         quotePrice,
-        poolPriceDisplay,
     ).reverse();
 }
 
@@ -212,7 +203,6 @@ function decorateCandleData(
     quoteDecimals: number,
     basePrice: number,
     quotePrice: number,
-    poolPriceDisplay: number,
 ): CandleDataIF[] {
     const PRE_BURN_TIME = 1686176723; // Based on mainnet deployment
 
@@ -225,20 +215,10 @@ function decorateCandleData(
             const quoteUsdMult = quoteDecMult * quotePrice;
             const priceDecMult = baseDecMult / quoteDecMult;
 
-            let openPrice = p.priceOpen;
-            let closePrice = p.priceClose;
-            let maxPrice = p.maxPrice;
-            let minPrice = p.minPrice;
-
-            if (openPrice === 0) {
-                const prices = [p.priceClose, p.maxPrice, p.minPrice];
-
-                const nonZeroPrices = prices.find((price) => price !== 0);
-                openPrice = nonZeroPrices ? nonZeroPrices : poolPriceDisplay;
-                closePrice = nonZeroPrices ? nonZeroPrices : poolPriceDisplay;
-                maxPrice = nonZeroPrices ? nonZeroPrices : poolPriceDisplay;
-                minPrice = nonZeroPrices ? nonZeroPrices : poolPriceDisplay;
-            }
+            const openPrice = p.priceOpen;
+            const closePrice = p.priceClose;
+            const maxPrice = p.maxPrice;
+            const minPrice = p.minPrice;
 
             return {
                 time: p.time,

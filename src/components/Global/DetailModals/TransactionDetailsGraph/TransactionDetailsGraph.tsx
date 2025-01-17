@@ -13,6 +13,7 @@ import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { updateZeroPriceCandles } from '../../../../pages/platformAmbient/Chart/ChartUtils/candleDataUtils';
 import {
     lineValue,
     renderCanvasArray,
@@ -25,7 +26,6 @@ import {
 } from '../../../../utils/numbers';
 import Spinner from '../../Spinner/Spinner';
 import './TransactionDetailsGraph.css';
-import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -63,17 +63,8 @@ export default function TransactionDetailsGraph(
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 
-    const {
-        isDenomBase,
-        currentPoolPriceTick,
-        baseToken: baseOnTrade,
-        quoteToken: quoteOnTrade,
-    } = useContext(TradeDataContext);
+    const { isDenomBase } = useContext(TradeDataContext);
     const { chartThemeColors } = useContext(ChartContext);
-
-    const txPoolMatchesTrade =
-        baseTokenAddress.toLowerCase() === baseOnTrade.address.toLowerCase() &&
-        quoteTokenAddress.toLowerCase() === quoteOnTrade.address.toLowerCase();
 
     const [graphData, setGraphData] = useState<any>();
 
@@ -94,8 +85,6 @@ export default function TransactionDetailsGraph(
     const [period, setPeriod] = useState<number | undefined>();
     const [yAxis, setYaxis] = useState<any>();
     const [xAxis, setXaxis] = useState<any>();
-    const [poolPricePixel, setPoolPricePixel] = useState(0);
-    const [poolPrice, setPoolPrice] = useState(0);
     const takeSmallerPeriodForRemoveRange = (diff: number) => {
         if (diff <= 600) {
             return 300;
@@ -256,16 +245,6 @@ export default function TransactionDetailsGraph(
                         quoteDecimals,
                     );
 
-                    const poolPriceDisplay = (
-                        !isAccountView
-                            ? isDenomBase
-                            : !isBaseTokenMoneynessGreaterOrEqual
-                    )
-                        ? 1 / poolPrice
-                        : poolPrice;
-
-                    setPoolPrice(poolPriceDisplay);
-
                     const graphData = await fetchCandleSeriesCroc(
                         fetchEnabled,
                         chainId,
@@ -279,13 +258,16 @@ export default function TransactionDetailsGraph(
                         crocEnv,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
-                        poolPriceDisplay,
                     );
 
                     if (graphData) {
                         setIsDataEmpty(false);
+                        const updatedZeroCandles = updateZeroPriceCandles(
+                            graphData.candles,
+                            poolPrice,
+                        );
                         setGraphData(() => {
-                            return graphData.candles;
+                            return updatedZeroCandles;
                         });
                     } else {
                         setGraphData(() => {
@@ -302,14 +284,6 @@ export default function TransactionDetailsGraph(
 
     useEffect(() => {
         if (scaleData !== undefined && chartThemeColors) {
-            const d3LineColor = chartThemeColors.downCandleBorderColor?.copy();
-            const d3RangeTriangleColor =
-                chartThemeColors.downCandleBorderColor?.copy();
-            const d3BandColor = chartThemeColors.downCandleBorderColor?.copy();
-
-            if (d3RangeTriangleColor) d3RangeTriangleColor.opacity = 0.8;
-            if (d3BandColor) d3BandColor.opacity = 0.075;
-
             const lineSeries = d3fc
                 .seriesSvgLine()
                 .xScale(scaleData?.xScale)
@@ -327,10 +301,7 @@ export default function TransactionDetailsGraph(
                 .decorate((selection: any) => {
                     selection
                         .enter()
-                        .style(
-                            'stroke',
-                            d3LineColor ? d3LineColor.toString() : '#7371FC',
-                        );
+                        .style('stroke', chartThemeColors.shareableLineColor);
                 });
 
             setLineSeries(() => {
@@ -348,12 +319,7 @@ export default function TransactionDetailsGraph(
                 selection.enter().attr('class', 'priceLine');
                 selection
                     .enter()
-                    .attr(
-                        'stroke',
-                        d3RangeTriangleColor
-                            ? d3RangeTriangleColor.toString()
-                            : 'rgba(97, 71, 247, 0.8)',
-                    );
+                    .attr('stroke', chartThemeColors.triangleColor);
             });
 
             setPriceLine(() => {
@@ -460,15 +426,11 @@ export default function TransactionDetailsGraph(
                             )
                             .style(
                                 'stroke',
-                                d3RangeTriangleColor
-                                    ? d3RangeTriangleColor.toString()
-                                    : 'rgba(97, 71, 247, 0.8)',
+                                chartThemeColors.triangleColor.toString(),
                             )
                             .style(
                                 'fill',
-                                d3RangeTriangleColor
-                                    ? d3RangeTriangleColor.toString()
-                                    : 'rgba(97, 71, 247, 0.8)',
+                                chartThemeColors.triangleColor.toString(),
                             );
                     });
                 });
@@ -522,6 +484,10 @@ export default function TransactionDetailsGraph(
                 return crossPoint;
             });
 
+            const fillColor = chartThemeColors.rangeLinesColor.copy();
+
+            fillColor.opacity = 0.075;
+
             const horizontalBand = d3fc
                 .annotationSvgBand()
                 .xScale(scaleData.xScaleCopy)
@@ -541,12 +507,7 @@ export default function TransactionDetailsGraph(
                             'transform',
                             'translateX(' + scaleData.xScale(time) + 'px )',
                         );
-                    selection
-                        .select('path')
-                        .attr(
-                            'fill',
-                            d3BandColor ? d3BandColor.toString() : '#7371FC1A',
-                        );
+                    selection.select('path').attr('fill', fillColor);
                 });
 
             setHorizontalBand(() => {
@@ -595,9 +556,7 @@ export default function TransactionDetailsGraph(
                     if (svgWidth !== width) {
                         setSvgWidth(width);
                     } else {
-                        graphData &&
-                            transactionType !== 'liqchange' &&
-                            setIsDataLoading(false);
+                        graphData && setIsDataLoading(false);
                     }
                 });
 
@@ -927,31 +886,6 @@ export default function TransactionDetailsGraph(
     }, [scaleData]);
 
     useEffect(() => {
-        if (
-            poolPricePixel &&
-            scaleData &&
-            graphData.length > 0 &&
-            transactionType === 'liqchange'
-        ) {
-            const lastDataPixel = scaleData.xScale(graphData[0].time * 1000);
-            const diff = lastDataPixel - poolPricePixel * 10 + 10;
-
-            if (lastDataPixel > poolPricePixel * 10) {
-                const newMaxDomain = scaleData?.xScale
-                    .invert(svgWidth + diff)
-                    .getTime();
-
-                const oldMaxDomain = scaleData?.xScale.domain()[1];
-                scaleData?.xScale.domain([
-                    scaleData?.xScale.domain()[0],
-                    Math.max(newMaxDomain, oldMaxDomain),
-                ]);
-            }
-            render();
-        }
-    }, [scaleData, poolPricePixel, graphData]);
-
-    useEffect(() => {
         if (scaleData) {
             const d3XaxisCanvas = d3
                 .select(d3Xaxis.current)
@@ -1274,7 +1208,7 @@ export default function TransactionDetailsGraph(
                                 addExtraCandle(
                                     time / 1000,
                                     tx.askTickInvPriceDecimalCorrected,
-                                    tx.askTickPriceDecimalCorrected,
+                                    tx.bidTickPriceDecimalCorrected,
                                 );
                                 crossPointJoin(svg, [
                                     [
@@ -1286,7 +1220,7 @@ export default function TransactionDetailsGraph(
                                                     : !isBaseTokenMoneynessGreaterOrEqual
                                             )
                                                 ? tx.askTickInvPriceDecimalCorrected
-                                                : tx.askTickPriceDecimalCorrected,
+                                                : tx.bidTickPriceDecimalCorrected,
                                         },
                                     ],
                                 ]).call(crossPoint);
@@ -1299,7 +1233,7 @@ export default function TransactionDetailsGraph(
                                                 : !isBaseTokenMoneynessGreaterOrEqual
                                         )
                                             ? tx.askTickInvPriceDecimalCorrected
-                                            : tx.askTickPriceDecimalCorrected,
+                                            : tx.bidTickPriceDecimalCorrected,
 
                                         x: time,
                                     },
@@ -1580,32 +1514,6 @@ export default function TransactionDetailsGraph(
                                 'minmax(0em, max-content) auto 1fr auto',
                         }}
                     >
-                        {transactionType === 'liqchange' && (
-                            <TransactionDetailsLiquidityGraph
-                                tx={tx}
-                                isDenomBase={
-                                    !(!isAccountView
-                                        ? isDenomBase
-                                        : !isBaseTokenMoneynessGreaterOrEqual)
-                                }
-                                yScale={scaleData?.yScale}
-                                transactionType={transactionType}
-                                poolPriceDisplay={poolPrice}
-                                setPoolPricePixel={setPoolPricePixel}
-                                poolPricePixel={poolPricePixel}
-                                svgWidth={svgWidth}
-                                lastCandleData={
-                                    graphData ? graphData[0] : undefined
-                                }
-                                setIsDataLoading={setIsDataLoading}
-                                chartThemeColors={chartThemeColors}
-                                currentPoolPriceTick={
-                                    isAccountView && !txPoolMatchesTrade
-                                        ? undefined
-                                        : currentPoolPriceTick
-                                }
-                            />
-                        )}
                         <d3fc-svg
                             id='d3PlotGraph'
                             ref={d3PlotGraph}

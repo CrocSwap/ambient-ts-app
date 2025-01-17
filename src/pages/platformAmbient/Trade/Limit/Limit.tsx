@@ -591,14 +591,6 @@ export default function Limit() {
                 NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
-            console.log({
-                gasPriceInDollarsNum,
-                extraL1GasFeeLimit,
-                gasPriceInGwei,
-                averageLimitCostInGasDrops,
-                NUM_GWEI_IN_WEI,
-                ethMainnetUsdPrice,
-            });
             setOrderGasPriceInDollars(
                 getFormattedNumber({
                     value: gasPriceInDollarsNum + extraL1GasFeeLimit,

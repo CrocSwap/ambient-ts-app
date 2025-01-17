@@ -2,6 +2,7 @@ import { Dispatch, KeyboardEvent, SetStateAction } from 'react';
 import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
 import { Chip } from '../../Form/Chip';
 import styles from './SlippageTolerance.module.css';
+import { brand } from '../../../ambient-utils/constants';
 
 interface propsIF {
     persistedSlippage: number;
@@ -18,6 +19,7 @@ export default function SlippageTolerance(props: propsIF) {
         persistedSlippage,
         setCurrentSlippage,
     );
+    const isFuta = brand === 'futa';
 
     // type derived from preset values received in props
     type presetValues = (typeof presets)[number];
@@ -50,6 +52,8 @@ export default function SlippageTolerance(props: propsIF) {
                                 id={`slippage-preset-button-${humanReadable}`}
                                 onClick={() => takeNewSlippage(preset)}
                                 ariaLabel={`set slippage to ${humanReadable}`}
+                                isFuta={isFuta}
+                                selected={Number(slip) === preset}
                             >
                                 {humanReadable}
                             </Chip>

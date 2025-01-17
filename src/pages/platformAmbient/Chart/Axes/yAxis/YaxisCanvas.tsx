@@ -33,6 +33,7 @@ import {
 } from '../../ChartUtils/chartUtils';
 import useDollarPrice from '../../ChartUtils/getDollarPrice';
 import { createRectLabel } from './YaxisUtils';
+import { ChartContext } from '../../../../../contexts';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;
@@ -40,8 +41,6 @@ interface yAxisIF {
     liqMode: string;
     liqTransitionPointforCurve: number;
     liqTransitionPointforDepth: number;
-    lineSellColor: string;
-    lineBuyColor: string;
     ranges: Array<lineValue>;
     limit: number;
     isAmbientOrAdvanced: boolean;
@@ -82,14 +81,9 @@ function YAxisCanvas(props: yAxisIF) {
         scaleData,
         ranges,
         liqMode,
-        lineSellColor,
-        lineBuyColor,
         chartPoolPrice,
-        liqTransitionPointforCurve,
-        liqTransitionPointforDepth,
         isAmbientOrAdvanced,
         limit,
-        checkLimitOrder,
         sellOrderStyle,
         crosshairActive,
         crosshairData,
@@ -105,7 +99,6 @@ function YAxisCanvas(props: yAxisIF) {
         setYaxisWidth,
         yAxisWidth,
         simpleRangeWidth,
-        poolPriceDisplay,
         isChartZoom,
         selectedDrawnShape,
         isUpdatingShape,
@@ -128,6 +121,7 @@ function YAxisCanvas(props: yAxisIF) {
     const location = useLocation();
 
     const getDollarPrice = useDollarPrice();
+    const { chartThemeColors } = useContext(ChartContext);
 
     const { platformName } = useContext(BrandContext);
 
@@ -323,7 +317,13 @@ function YAxisCanvas(props: yAxisIF) {
             .select('canvas')
             .node() as HTMLCanvasElement;
 
-        if (canvas !== null) {
+        if (canvas !== null && chartThemeColors) {
+            const labelTextColor = chartThemeColors.text1.toString();
+            const labelBackgroundColor =
+                chartThemeColors.rangeLinesColor.toString();
+            const poolPriceTextColor = chartThemeColors.dark4.toString();
+            const poolPriceBackGroundColor = chartThemeColors.text1.toString();
+
             const height = canvas.height;
             const width = canvas.width;
 
@@ -405,8 +405,8 @@ function YAxisCanvas(props: yAxisIF) {
                     context,
                     yScale(chartPoolPrice),
                     X,
-                    'white',
-                    'black',
+                    poolPriceBackGroundColor,
+                    poolPriceTextColor,
                     tick,
                     undefined,
                     yAxisCanvasWidth,
@@ -420,35 +420,19 @@ function YAxisCanvas(props: yAxisIF) {
 
                 const { tick, tickSubString } = prepareTickLabel(limit);
 
-                if (checkLimitOrder) {
-                    createRectLabel(
-                        context,
-                        isSameLocation ? sameLocationData : yScale(limit),
-                        X,
-                        sellOrderStyle === 'order_sell'
-                            ? lineSellColor
-                            : lineBuyColor,
-                        sellOrderStyle === 'order_sell' ? 'white' : 'black',
-                        tick,
-                        undefined,
-                        yAxisCanvasWidth,
-                        tickSubString,
-                        isTradeDollarizationEnabled,
-                    );
-                } else {
-                    createRectLabel(
-                        context,
-                        isSameLocation ? sameLocationData : yScale(limit),
-                        X,
-                        'rgba(235, 235, 255)',
-                        'black',
-                        tick,
-                        undefined,
-                        yAxisCanvasWidth,
-                        tickSubString,
-                        isTradeDollarizationEnabled,
-                    );
-                }
+                createRectLabel(
+                    context,
+                    isSameLocation ? sameLocationData : yScale(limit),
+                    X,
+                    labelBackgroundColor,
+                    labelTextColor,
+                    tick,
+                    undefined,
+                    yAxisCanvasWidth,
+                    tickSubString,
+                    isTradeDollarizationEnabled,
+                );
+
                 addYaxisLabel(
                     isSameLocation ? sameLocationData : yScale(limit),
                 );
@@ -465,12 +449,6 @@ function YAxisCanvas(props: yAxisIF) {
                     sameLocationDataMax: sameLocationDataMax,
                 } = sameLocationRange();
 
-                const passValue = liquidityData
-                    ? liqMode === 'curve'
-                        ? liqTransitionPointforCurve
-                        : liqTransitionPointforDepth
-                    : poolPriceDisplay;
-
                 if (
                     (simpleRangeWidth !== 100 || advancedMode) &&
                     !(low === 0 && high === 0)
@@ -482,8 +460,8 @@ function YAxisCanvas(props: yAxisIF) {
                         context,
                         isSameLocationMin ? sameLocationDataMin : yScale(low),
                         X,
-                        low > passValue ? lineSellColor : lineBuyColor,
-                        low > passValue ? 'white' : 'black',
+                        labelBackgroundColor,
+                        labelTextColor,
                         lowTick,
                         undefined,
                         yAxisCanvasWidth,
@@ -501,8 +479,8 @@ function YAxisCanvas(props: yAxisIF) {
                         context,
                         isSameLocationMax ? sameLocationDataMax : yScale(high),
                         X,
-                        high > passValue ? lineSellColor : lineBuyColor,
-                        high > passValue ? 'white' : 'black',
+                        labelBackgroundColor,
+                        labelTextColor,
                         highTick,
                         undefined,
                         yAxisCanvasWidth,
@@ -587,7 +565,7 @@ function YAxisCanvas(props: yAxisIF) {
                     yScale(crosshairYValue),
                     X,
                     '#242F3F',
-                    'white',
+                    labelTextColor,
                     crosshairY,
                     undefined,
                     yAxisCanvasWidth,
@@ -882,7 +860,6 @@ function YAxisCanvas(props: yAxisIF) {
         yAxisCanvasWidth,
         reset,
         sellOrderStyle,
-        checkLimitOrder,
         location,
         crosshairActive,
         selectedDrawnShape,

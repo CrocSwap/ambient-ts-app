@@ -6,12 +6,14 @@ interface defaultsConstructorArgsIF {
     vals: {
         stable: number;
         volatile: number;
-        l2: number;
+        l2Stable: number;
+        l2Volatile: number;
     };
     presets: {
         stable: slippagePresetsType;
         volatile: slippagePresetsType;
-        l2: slippagePresetsType;
+        l2Stable: slippagePresetsType;
+        l2Volatile: slippagePresetsType;
     };
 }
 
@@ -29,18 +31,20 @@ class SlippageDefaults implements slippageDefaultsIF {
     vals: {
         stable: number;
         volatile: number;
-        l2: number;
+        l2Stable: number;
+        l2Volatile: number;
     };
     presets: {
         stable: slippagePresetsType;
         volatile: slippagePresetsType;
-        l2: slippagePresetsType;
+        l2Stable: slippagePresetsType;
+        l2Volatile: slippagePresetsType;
     };
     getPresets(isL2: boolean) {
-        const { stable, volatile, l2 } = this.presets;
+        const { stable, volatile, l2Stable, l2Volatile } = this.presets;
         return {
-            stable: isL2 ? l2 : stable,
-            volatile: isL2 ? l2 : volatile,
+            stable: isL2 ? l2Stable : stable,
+            volatile: isL2 ? l2Volatile : volatile,
         };
     }
     constructor(args: defaultsConstructorArgsIF) {
@@ -52,42 +56,48 @@ class SlippageDefaults implements slippageDefaultsIF {
 // default values to consume for a swap tx
 const SWAP_DEFAULTS: defaultsConstructorArgsIF = {
     vals: {
-        stable: 0.1,
-        volatile: 0.1,
-        l2: 1,
+        stable: 0.25,
+        l2Stable: 0.25,
+        volatile: 1,
+        l2Volatile: 1,
     },
     presets: {
-        stable: [0.1, 0.3, 0.5],
-        volatile: [0.1, 0.3, 0.5],
-        l2: [0.5, 1, 3],
+        stable: [0.1, 0.25, 0.5],
+        l2Stable: [0.1, 0.25, 0.5],
+        volatile: [0.5, 1, 5],
+        l2Volatile: [0.5, 1, 5],
     },
 };
 
 // default values to consume for a mint tx
 const MINT_DEFAULTS: defaultsConstructorArgsIF = {
     vals: {
-        stable: 1,
-        volatile: 3,
-        l2: 3,
+        stable: 0.25,
+        l2Stable: 0.25,
+        volatile: 1,
+        l2Volatile: 1,
     },
     presets: {
-        stable: [1, 2, 3],
-        volatile: [1, 2, 3],
-        l2: [0.5, 1, 3],
+        stable: [0.1, 0.25, 0.5],
+        l2Stable: [0.1, 0.25, 0.5],
+        volatile: [0.5, 1, 5],
+        l2Volatile: [0.5, 1, 5],
     },
 };
 
 // default values to consume for a reposition tx
 const REPO_DEFAULTS: defaultsConstructorArgsIF = {
     vals: {
-        stable: 0.1,
-        volatile: 0.5,
-        l2: 1,
+        stable: 0.25,
+        l2Stable: 0.25,
+        volatile: 1,
+        l2Volatile: 1,
     },
     presets: {
-        stable: [0.1, 0.3, 0.5],
-        volatile: [0.1, 0.3, 0.5],
-        l2: [0.5, 1, 3],
+        stable: [0.1, 0.25, 0.5],
+        l2Stable: [0.1, 0.25, 0.5],
+        volatile: [0.5, 1, 5],
+        l2Volatile: [0.5, 1, 5],
     },
 };
 

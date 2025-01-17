@@ -22,10 +22,10 @@ import {
     MARKET_CAP_MULTIPLIER_BIG_INT,
     maxMarketCapWeiValues,
 } from '../../../pages/platformFuta/mockAuctionData';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { CurrencySelector } from '../../Form/CurrencySelector';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import TooltipLabel from '../TooltipLabel/TooltipLabel';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 // Props interface
 export interface PropsIF {
@@ -481,7 +481,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
             ? fdvUsdValue
                 ? getFormattedNumber({
                       value: fdvUsdValue,
-                      isUSD: true,
+                      isTickerDisplay: true,
                   })
                 : '$0.00'
             : '...';
@@ -551,7 +551,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                                     ? fdvUsdValue
                                         ? getFormattedNumber({
                                               value: fdvUsdValue,
-                                              isUSD: true,
+                                              isTickerDisplay: true,
                                           })
                                         : '$0.00'
                                     : undefined;

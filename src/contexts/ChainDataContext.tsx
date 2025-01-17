@@ -168,7 +168,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     // array of network IDs for supported L2 networks
     const L1_NETWORKS: string[] = [
         '0x1', // ethereum mainnet
-        '0xaa36a7', // ethereum sepolia
+        // '0xaa36a7', // ethereum sepolia // removing to test base network slippage on sepolia
     ];
 
     // boolean representing whether the active network is an L2

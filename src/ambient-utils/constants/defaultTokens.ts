@@ -671,13 +671,13 @@ export const scrollAxlUSDC: TokenIF = registerToken({
     logoURI: '',
 });
 
-export const scrollsUSDe: TokenIF = registerToken({
+export const scrollSUSDe: TokenIF = registerToken({
     name: 'Staked USDe',
     address: '0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2',
     symbol: 'sUSDe',
     decimals: 18,
     chainId: 534352,
-    logoURI: '',
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29471.png',
 });
 
 export const scrollUSDE: TokenIF = registerToken({
@@ -974,6 +974,24 @@ export const swellUSDE: TokenIF = registerToken({
     logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29470.png',
 });
 
+export const swellSUSDe: TokenIF = registerToken({
+    name: 'Staked USDe',
+    address: '0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2',
+    symbol: 'sUSDe',
+    decimals: 18,
+    chainId: 1923,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29471.png',
+});
+
+export const swellENA: TokenIF = registerToken({
+    name: 'Ethena',
+    address: '0x58538e6A46E07434d7E7375Bc268D3cb839C0133',
+    symbol: 'ENA',
+    decimals: 18,
+    chainId: 1923,
+    logoURI: 'https://mantlescan.xyz/token/images/ethena_32.png',
+});
+
 export const plumeNativeETH: TokenIF = registerToken({
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
@@ -1023,6 +1041,24 @@ export const plumeNRWA: TokenIF = registerToken({
     name: 'Nest RWA Vault',
     address: '0x81537d879ACc8a290a1846635a0cAA908f8ca3a6',
     symbol: 'nRWA',
+    decimals: 6,
+    chainId: 98865,
+    logoURI: '',
+});
+
+export const plumeNTBILL: TokenIF = registerToken({
+    name: 'Nest Treasuries Vault',
+    address: '0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9',
+    symbol: 'nTBILL',
+    decimals: 6,
+    chainId: 98865,
+    logoURI: '',
+});
+
+export const plumeNYIELD: TokenIF = registerToken({
+    name: 'Nest Yield Vault',
+    address: '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8',
+    symbol: 'nYIELD',
     decimals: 6,
     chainId: 98865,
     logoURI: '',
