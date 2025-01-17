@@ -395,13 +395,18 @@ export default function OrderHistoryTooltip(props: {
                         {hoveredOrderHistory.type === 'historical' &&
                             historicalTypeText}
 
-                        <StyledHeader color={'var(--text2)'} size={'13px'}>
-                            {'$' +
-                                getFormattedNumber({
-                                    value: hoveredOrderHistory.totalValueUSD,
-                                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                                })}
-                        </StyledHeader>
+                        {!(
+                            hoveredOrderHistory.type === 'historical' &&
+                            hoveredOrderHistory.order.positionLiq === 0
+                        ) && (
+                            <StyledHeader color={'var(--text2)'} size={'13px'}>
+                                {'$' +
+                                    getFormattedNumber({
+                                        value: hoveredOrderHistory.totalValueUSD,
+                                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                                    })}
+                            </StyledHeader>
+                        )}
 
                         {(hoveredOrderHistory.type === 'swap' ||
                             hoveredOrderHistory.type === 'limitOrder' ||
