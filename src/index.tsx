@@ -28,8 +28,8 @@ import scrollLogo from './assets/images/networks/scroll_logo.webp';
 import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia.webp';
 import swellLogo from './assets/images/networks/swell_logo.webp';
 import swellSepoliaLogo from './assets/images/networks/swell_sepolia.webp';
+import ErrorBoundary from './components/Error/ErrorBoundary';
 import GlobalErrorFallback from './components/Error/GlobalErrorFallback';
-import ErrorBoundary from './components/Error/errorBoundary';
 import { GlobalContexts } from './contexts/GlobalContexts';
 
 const metadata = {
