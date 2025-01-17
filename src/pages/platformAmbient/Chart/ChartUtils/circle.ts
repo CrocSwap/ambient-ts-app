@@ -8,6 +8,37 @@ export const selectedCircleSize = 80;
 
 // const howeredCircleFillColor = 'wheat';
 
+export function calculateCircleColor(
+    sellFillColor: d3.RGBColor | d3.HSLColor,
+    sellStrokeColor: d3.RGBColor | d3.HSLColor,
+    buyFillColor: d3.RGBColor | d3.HSLColor,
+    buyStrokeColor: d3.RGBColor | d3.HSLColor,
+    isHighlighted: boolean,
+) {
+    const d3BuyStrokeColorBacground = buyStrokeColor;
+    const d3SellStrokeColorBacground = sellStrokeColor;
+
+    const d3BuyFillColorBacground = buyFillColor;
+    const d3SellFillColorBacground = sellFillColor;
+
+    if (d3BuyStrokeColorBacground)
+        d3BuyStrokeColorBacground.opacity = isHighlighted ? 0.6 : 0.3;
+    if (d3SellStrokeColorBacground)
+        d3SellStrokeColorBacground.opacity = isHighlighted ? 0.6 : 0.3;
+
+    if (d3BuyFillColorBacground)
+        d3BuyFillColorBacground.opacity = isHighlighted ? 0.6 : 0.3;
+    if (d3SellFillColorBacground)
+        d3SellFillColorBacground.opacity = isHighlighted ? 0.6 : 0.3;
+
+    return {
+        buyFill: d3BuyFillColorBacground.toString(),
+        sellFill: d3SellFillColorBacground.toString(),
+        circleBuyStrokeColor: d3BuyStrokeColorBacground.toString(),
+        circleSellStrokeColor: d3SellStrokeColorBacground.toString(),
+    };
+}
+
 export function createCircle(
     xScale: any,
     yScale: any,
@@ -27,20 +58,31 @@ export function createCircle(
         )
         .size(size)
         .type(d3.symbolCircle)
-        .decorate((context: any) => {
+        .decorate((context: CanvasRenderingContext2D) => {
             if (chartThemeColors) {
-                const strokeColor = isBuy
-                    ? chartThemeColors.upCandleBorderColor.copy()
-                    : chartThemeColors.downCandleBorderColor.copy();
+                // const strokeColor = isBuy
+                //     ? chartThemeColors.upCandleBorderColor.copy()
+                //     : chartThemeColors.downCandleBorderColor.copy();
 
-                const circleFillColor = isBuy
-                    ? chartThemeColors.upCandleBodyColor.copy()
-                    : chartThemeColors.downCandleBodyColor.copy();
+                // const circleFillColor = isBuy
+                //     ? chartThemeColors.upCandleBodyColor.copy()
+                //     : chartThemeColors.downCandleBodyColor.copy();
 
-                circleFillColor.opacity = 0.3;
+                const colorPalette = calculateCircleColor(
+                    chartThemeColors.downCandleBodyColor.copy(),
+                    chartThemeColors.downCandleBorderColor.copy(),
+                    chartThemeColors.upCandleBodyColor.copy(),
+                    chartThemeColors.upCandleBorderColor.copy(),
+                    false,
+                );
 
-                context.strokeStyle = strokeColor;
-                context.fillStyle = circleFillColor;
+                context.strokeStyle = isBuy
+                    ? colorPalette.circleBuyStrokeColor
+                    : colorPalette.circleSellStrokeColor;
+
+                context.fillStyle = isBuy
+                    ? colorPalette.buyFill
+                    : colorPalette.sellFill;
 
                 context.lineWidth = lineWidth;
             }
