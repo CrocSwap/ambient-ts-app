@@ -566,6 +566,13 @@ export const getCssVariable = (activeSkin: skins, variableName: string) => {
         '[data-theme="' + activeSkin + '"]',
     ) as Element;
 
+    if (!themeElement) {
+        console.error(
+            `theme element not found while accessing CSS variable: ${variableName}`,
+        );
+        return ''; // or provide a fallback value
+    }
+
     const value = getComputedStyle(themeElement)
         .getPropertyValue(variableName)
         .trim();
