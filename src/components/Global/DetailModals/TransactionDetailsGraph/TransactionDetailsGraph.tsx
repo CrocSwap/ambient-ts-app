@@ -479,9 +479,21 @@ export default function TransactionDetailsGraph(
                 .crossValue((d: any) => d.x)
                 .mainValue((d: any) => d.y)
                 .size(400)
-                .decorate((sel: any) => {
-                    sel.enter().attr('fill', 'rgba(255, 255, 255, 0.2)');
-                    sel.enter().attr('stroke', 'rgba(255, 255, 255, 0.6)');
+                .decorate((sel: any, d: any) => {
+                    if (d.length > 0 && d[0].isBuy !== undefined) {
+                        const strokeColor = d[0].isBuy
+                            ? chartThemeColors.upCandleBorderColor.copy()
+                            : chartThemeColors.downCandleBorderColor.copy();
+
+                        const circleFillColor = d[0].isBuy
+                            ? chartThemeColors.upCandleBodyColor.copy()
+                            : chartThemeColors.downCandleBodyColor.copy();
+
+                        circleFillColor.opacity = 0.3;
+
+                        sel.enter().attr('fill', circleFillColor);
+                        sel.enter().attr('stroke', strokeColor);
+                    }
                 });
 
             setCrossPoint(() => {
@@ -548,26 +560,30 @@ export default function TransactionDetailsGraph(
     }
 
     useEffect(() => {
-        if (d3PlotGraph) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const svgDiv = d3.select(d3PlotGraph.current) as any;
-
-            if (svgDiv) {
+        try {
+            if (d3PlotGraph) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const resizeObserver = new ResizeObserver((result: any) => {
-                    const width = result[0].contentRect.width;
+                const svgDiv = d3.select(d3PlotGraph.current) as any;
 
-                    if (svgWidth !== width) {
-                        setSvgWidth(width);
-                    } else {
-                        graphData && setIsDataLoading(false);
-                    }
-                });
+                if (svgDiv) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const resizeObserver = new ResizeObserver((result: any) => {
+                        const width = result[0].contentRect.width;
 
-                resizeObserver.observe(svgDiv.node());
+                        if (svgWidth !== width) {
+                            setSvgWidth(width);
+                        } else {
+                            graphData && setIsDataLoading(false);
+                        }
+                    });
 
-                return () => resizeObserver.unobserve(svgDiv.node());
+                    resizeObserver.observe(svgDiv.node());
+
+                    return () => resizeObserver.unobserve(svgDiv.node());
+                }
             }
+        } catch (error) {
+            console.warn();
         }
     }, [graphData, svgWidth]);
 
@@ -1162,9 +1178,11 @@ export default function TransactionDetailsGraph(
         });
     };
 
-    const middlePriceDisplayNum = parseFloat(middlePriceDisplay || '0');
+    const middlePriceDisplayNum = parseFloat(
+        middlePriceDisplay?.replace(',', '') || '0',
+    );
     const middlePriceDisplayDenomByMoneynessNum = parseFloat(
-        middlePriceDisplayDenomByMoneyness || '0',
+        middlePriceDisplayDenomByMoneyness?.replace(',', '') || '0',
     );
 
     const middlePriceNum = isAccountView
@@ -1223,11 +1241,20 @@ export default function TransactionDetailsGraph(
                                     middlePriceNum,
                                     middlePriceNum,
                                 );
+
+                                const isDenomBaseLocal = isAccountView
+                                    ? !isBaseTokenMoneynessGreaterOrEqual
+                                    : isDenomBase;
+
                                 crossPointJoin(svg, [
                                     [
                                         {
                                             x: time,
                                             y: middlePriceNum,
+                                            isBuy:
+                                                (isDenomBaseLocal &&
+                                                    !tx.isBid) ||
+                                                (!isDenomBaseLocal && tx.isBid),
                                         },
                                     ],
                                 ]).call(crossPoint);
@@ -1433,17 +1460,21 @@ export default function TransactionDetailsGraph(
                         }
 
                         if (transactionType === 'swap' && tx !== undefined) {
+                            const isDenomBaseLocal = isAccountView
+                                ? !isBaseTokenMoneynessGreaterOrEqual
+                                : isDenomBase;
+
                             crossPointJoin(svg, [
                                 [
                                     {
                                         x: tx.txTime * 1000,
-                                        y: (
-                                            !isAccountView
-                                                ? isDenomBase
-                                                : !isBaseTokenMoneynessGreaterOrEqual
-                                        )
+                                        y: isDenomBaseLocal
                                             ? tx.swapInvPriceDecimalCorrected
                                             : tx.swapPriceDecimalCorrected,
+
+                                        isBuy: isDenomBaseLocal
+                                            ? !tx.isBuy
+                                            : tx.isBuy,
                                     },
                                 ],
                             ]).call(crossPoint);
