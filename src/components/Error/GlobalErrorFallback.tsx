@@ -24,7 +24,11 @@ const GlobalErrorFallback: React.FC<GlobalErrorFallbackProps> = ({ error }) => {
             {error && <pre style={{ color: 'red' }}>{error.message}</pre>}
             <button
                 onClick={handleCopyError}
-                style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}
+                style={{
+                    marginTop: '1rem',
+                    padding: '0.5rem 1rem',
+                    cursor: 'pointer',
+                }}
             >
                 Copy Error Details
             </button>
