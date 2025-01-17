@@ -1162,9 +1162,11 @@ export default function TransactionDetailsGraph(
         });
     };
 
-    const middlePriceDisplayNum = parseFloat(middlePriceDisplay || '0');
+    const middlePriceDisplayNum = parseFloat(
+        middlePriceDisplay?.replace(',', '') || '0',
+    );
     const middlePriceDisplayDenomByMoneynessNum = parseFloat(
-        middlePriceDisplayDenomByMoneyness || '0',
+        middlePriceDisplayDenomByMoneyness?.replace(',', '') || '0',
     );
 
     const middlePriceNum = isAccountView
