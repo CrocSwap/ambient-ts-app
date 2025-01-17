@@ -16,7 +16,10 @@ export default function Home() {
     const { showDexStats } = useContext(BrandContext);
 
     if (showMobileVersion) return <MobileLandingSections />;
-
+    // Simulate a random error 50% of the time
+    if (Math.random() < 0.5) {
+        throw new Error('Test error: Something went wrong randomly!');
+    }
     return (
         <section data-testid={'home'}>
             <div style={{ width: '100%', height: '480px' }}>
