@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
     bandLineData,
     lineData,
@@ -122,14 +122,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
     const { userLimitOrdersByPool, userPositionsByPool } =
         useContext(GraphDataContext);
 
-    const historicalUserPositionsByPool = useMemo(
-        () =>
-            userPositionsByPool?.positions.filter(
-                (position) => position.positionLiq === 0,
-            ),
-        [userPositionsByPool],
-    );
-
     useEffect(() => {
         if (scaleData) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -151,6 +143,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 data: any;
                 serie: any;
                 lineData: any[];
+                isActive: boolean;
             }> = [];
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const limitLineDataArray: any[] = [];
@@ -306,89 +299,106 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 return circleSerieArray;
             });
 
-            if (showHistorical && historicalUserPositionsByPool) {
-                historicalUserPositionsByPool.forEach((order) => {
-                    const newBandScale = createScaleForBandArea(
-                        order?.timeFirstMint * 1000,
-                        order?.latestUpdateTime * 1000,
-                    );
+            if (userPositionsByPool) {
+                userPositionsByPool.positions.forEach((order) => {
+                    if (
+                        (order.positionLiq === 0 && showHistorical) ||
+                        (order.positionLiq > 0 && showLiquidity)
+                    ) {
+                        const newBandScale = createScaleForBandArea(
+                            order?.timeFirstMint * 1000,
+                            order.positionLiq > 0
+                                ? new Date().getTime() + 5 * 86400 * 1000
+                                : order?.latestUpdateTime * 1000,
+                        );
 
-                    let bandColor = 'rgba(95, 255, 242, 0.15)';
+                        let bandColor = 'rgba(95, 255, 242, 0.15)';
 
-                    if (ctx) {
-                        const style = getComputedStyle(ctx.canvas);
+                        if (ctx) {
+                            const style = getComputedStyle(ctx.canvas);
 
-                        const accent3RgbaColor =
-                            style.getPropertyValue('--accent3');
+                            const accent3RgbaColor =
+                                style.getPropertyValue('--accent3');
 
-                        const highlightedBandColor = d3.color(accent3RgbaColor);
+                            const highlightedBandColor =
+                                d3.color(accent3RgbaColor);
 
-                        if (highlightedBandColor) {
-                            highlightedBandColor.opacity = 0.15;
+                            if (highlightedBandColor) {
+                                highlightedBandColor.opacity = 0.15;
 
-                            bandColor = highlightedBandColor.toString();
+                                bandColor = highlightedBandColor.toString();
+                            }
                         }
+
+                        const bandArea = createBandArea(
+                            newBandScale,
+                            scaleData?.yScale,
+                            denomInBase,
+                            { background: { color: bandColor } },
+                        );
+
+                        const bandData = {
+                            fromValue: denomInBase
+                                ? order.bidTickInvPriceDecimalCorrected
+                                : order.bidTickPriceDecimalCorrected,
+                            toValue: denomInBase
+                                ? order.askTickInvPriceDecimalCorrected
+                                : order.askTickPriceDecimalCorrected,
+                            denomInBase: denomInBase,
+                        } as bandLineData;
+
+                        const lineData: lineData[][] = [];
+
+                        lineData.push([
+                            {
+                                x: order.timeFirstMint * 1000,
+                                y: denomInBase
+                                    ? order.askTickInvPriceDecimalCorrected
+                                    : order.askTickPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                            {
+                                x:
+                                    order.positionLiq > 0
+                                        ? new Date().getTime() +
+                                          5 * 86400 * 1000
+                                        : order.latestUpdateTime * 1000,
+                                y: denomInBase
+                                    ? order.askTickInvPriceDecimalCorrected
+                                    : order.askTickPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ]);
+
+                        lineData.push([
+                            {
+                                x: order.timeFirstMint * 1000,
+                                y: denomInBase
+                                    ? order.bidTickInvPriceDecimalCorrected
+                                    : order.bidTickPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                            {
+                                x:
+                                    order.positionLiq > 0
+                                        ? new Date().getTime() +
+                                          5 * 86400 * 1000
+                                        : order.latestUpdateTime * 1000,
+                                y: denomInBase
+                                    ? order.bidTickInvPriceDecimalCorrected
+                                    : order.bidTickPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ]);
+
+                        bandAreaArrayHistorical.push({
+                            id: order.positionId,
+                            serie: bandArea,
+                            data: bandData,
+                            lineData: lineData,
+                            isActive: order.positionLiq > 0,
+                        });
                     }
-
-                    const bandArea = createBandArea(
-                        newBandScale,
-                        scaleData?.yScale,
-                        denomInBase,
-                        { background: { color: bandColor } },
-                    );
-
-                    const bandData = {
-                        fromValue: denomInBase
-                            ? order.bidTickInvPriceDecimalCorrected
-                            : order.bidTickPriceDecimalCorrected,
-                        toValue: denomInBase
-                            ? order.askTickInvPriceDecimalCorrected
-                            : order.askTickPriceDecimalCorrected,
-                        denomInBase: denomInBase,
-                    } as bandLineData;
-
-                    const lineData: lineData[][] = [];
-
-                    lineData.push([
-                        {
-                            x: order.timeFirstMint * 1000,
-                            y: denomInBase
-                                ? order.askTickInvPriceDecimalCorrected
-                                : order.askTickPriceDecimalCorrected,
-                            denomInBase: denomInBase,
-                        },
-                        {
-                            x: order.latestUpdateTime * 1000,
-                            y: denomInBase
-                                ? order.askTickInvPriceDecimalCorrected
-                                : order.askTickPriceDecimalCorrected,
-                            denomInBase: denomInBase,
-                        },
-                    ]);
-
-                    lineData.push([
-                        {
-                            x: order.timeFirstMint * 1000,
-                            y: denomInBase
-                                ? order.bidTickInvPriceDecimalCorrected
-                                : order.bidTickPriceDecimalCorrected,
-                            denomInBase: denomInBase,
-                        },
-                        {
-                            x: order.latestUpdateTime * 1000,
-                            y: denomInBase
-                                ? order.bidTickInvPriceDecimalCorrected
-                                : order.bidTickPriceDecimalCorrected,
-                            denomInBase: denomInBase,
-                        },
-                    ]);
-
-                    bandAreaArrayHistorical.push({
-                        id: order.positionId,
-                        serie: bandArea,
-                        data: bandData,
-                        lineData: lineData,
-                    });
                 });
 
                 setBandAreaHistorical(() => {
@@ -452,12 +462,12 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         chartThemeColors.downCandleBodyColor.copy();
                     const buyColor = chartThemeColors.upCandleBodyColor.copy();
 
-                    if (showHistorical) {
-                        if (
-                            bandAreaHistorical &&
-                            bandAreaHistorical.length > 0
-                        ) {
-                            bandAreaHistorical.forEach((element: any) => {
+                    if (bandAreaHistorical && bandAreaHistorical.length > 0) {
+                        bandAreaHistorical.forEach((element: any) => {
+                            if (
+                                (element.isActive && showLiquidity) ||
+                                (!element.isActive && showHistorical)
+                            ) {
                                 const isShapeSelected =
                                     (selectedOrderHistory &&
                                         isSelectedOrderHistory &&
@@ -533,8 +543,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                 element.serie([element.data]);
 
                                 if (ctx) ctx.restore();
-                            });
-                        }
+                            }
+                        });
                     }
 
                     if (showLiquidity) {

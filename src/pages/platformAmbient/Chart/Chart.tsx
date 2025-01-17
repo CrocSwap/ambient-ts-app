@@ -5682,9 +5682,12 @@ export default function Chart(props: propsIF) {
         let resElement: any = undefined;
 
         if (scaleData) {
-            if (userPositionsByPool && showHistorical) {
+            if (userPositionsByPool) {
                 userPositionsByPool.positions.forEach((position) => {
-                    if (position.positionLiq === 0) {
+                    if (
+                        (position.positionLiq === 0 && showHistorical) ||
+                        (position.positionLiq > 0 && showLiquidity)
+                    ) {
                         const rectLocation = [
                             {
                                 x: position?.timeFirstMint * 1000,
@@ -5694,7 +5697,11 @@ export default function Chart(props: propsIF) {
                                 denomInBase: denomInBase,
                             },
                             {
-                                x: position?.latestUpdateTime * 1000,
+                                x:
+                                    position.positionLiq > 0
+                                        ? new Date().getTime() +
+                                          5 * 86400 * 1000
+                                        : position?.latestUpdateTime * 1000,
                                 y: denomInBase
                                     ? position.askTickInvPriceDecimalCorrected
                                     : position.askTickPriceDecimalCorrected,
@@ -5714,7 +5721,7 @@ export default function Chart(props: propsIF) {
                                 id: position.positionId,
                                 type: 'historical',
                                 order: position,
-                                totalValue: position.totalValueUSD,
+                                totalValueUSD: position.totalValueUSD,
                                 tokenFlowDecimalCorrected: 0,
                                 mergedIds: [
                                     {
@@ -6641,7 +6648,7 @@ export default function Chart(props: propsIF) {
 
                 if (
                     hoveredOrderHistory.type === 'historical' &&
-                    showHistorical
+                    (showHistorical || showLiquidity)
                 ) {
                     const minPrice = denomInBase
                         ? hoveredOrderHistory.order
