@@ -1,10 +1,10 @@
 {
     "name": "ambient-ts-app",
-    "version": "3.1.14",
+    "version": "3.1.15",
     "private": true,
     "type": "module",
     "dependencies": {
-        "@crocswap-libs/sdk": "^2.0.0",
+        "@crocswap-libs/sdk": "^2.0.1",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
