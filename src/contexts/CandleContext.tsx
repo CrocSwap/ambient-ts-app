@@ -27,6 +27,7 @@ import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
+import { TokenContext } from './TokenContext';
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
     setCandleData: Dispatch<
@@ -50,9 +51,6 @@ export interface CandleContextIF {
     showFutaCandles: boolean;
     setShowFutaCandles: Dispatch<SetStateAction<boolean>>;
     setIsChartOpen: Dispatch<SetStateAction<boolean>>;
-    setUrlPoolAddress: Dispatch<
-        SetStateAction<{ tokenA: string; tokenB: string }>
-    >;
 }
 
 export const CandleContext = createContext({} as CandleContextIF);
@@ -75,6 +73,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = useContext(AppStateContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
+    const { tokens } = useContext(TokenContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -85,10 +84,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const baseTokenAddressRef = useRef(baseTokenAddress);
     const quoteTokenAddressRef = useRef(quoteTokenAddress);
 
-    const [urlPoolAddress, setUrlPoolAddress] = useState({
-        tokenA: baseTokenAddress,
-        tokenB: quoteTokenAddress,
-    });
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const [candleData, setCandleData] = useState<
@@ -123,7 +118,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     offlineFetcherRef.current = offlineFetcher;
 
     const poolTokenAddress = (
-        urlPoolAddress.tokenA + urlPoolAddress.tokenB
+        baseTokenAddress + quoteTokenAddress
     ).toLowerCase();
 
     useEffect(() => {
@@ -185,7 +180,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         showFutaCandles,
         setShowFutaCandles,
         setIsChartOpen,
-        setUrlPoolAddress,
     };
 
     useEffect(() => {
@@ -199,9 +193,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             setIsCondensedModeEnabled(true);
         }
 
-        baseTokenAddressRef.current = urlPoolAddress.tokenA.toLowerCase();
-        quoteTokenAddressRef.current = urlPoolAddress.tokenB.toLowerCase();
-    }, [poolTokenAddress, chainId]);
+        baseTokenAddressRef.current = baseTokenAddress.toLowerCase();
+        quoteTokenAddressRef.current = quoteTokenAddress.toLowerCase();
+    }, [poolTokenAddress, chainId, tokens.tokenUniv.length]);
 
     // only works when the period changes
     useEffect(() => {
@@ -219,8 +213,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
                 isChartEnabled &&
-                baseTokenAddressRef.current === urlPoolAddress.tokenA &&
-                quoteTokenAddressRef.current === urlPoolAddress.tokenB &&
+                baseTokenAddressRef.current ===
+                    baseTokenAddress.toLowerCase() &&
+                quoteTokenAddressRef.current ===
+                    quoteTokenAddress.toLowerCase() &&
                 candleData === undefined
             ) {
                 fetchCandles();
@@ -236,8 +232,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleData === undefined,
         crocEnv,
         chainId,
-        baseTokenAddressRef.current === urlPoolAddress.tokenA,
-        quoteTokenAddressRef.current === urlPoolAddress.tokenB,
+        baseTokenAddressRef.current === baseTokenAddress.toLowerCase(),
+        quoteTokenAddressRef.current === quoteTokenAddress.toLowerCase(),
     ]);
 
     useEffect(() => {
@@ -311,8 +307,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             isChartEnabled &&
             isServerEnabled &&
             isUserOnline &&
-            urlPoolAddress.tokenA &&
-            urlPoolAddress.tokenB &&
+            baseTokenAddress &&
+            quoteTokenAddress &&
             crocEnv
         ) {
             const candleTime = candleScale.isShowLatestCandle
@@ -336,8 +332,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 poolIndex,
                 GCGO_URL,
                 candleTimeLocal || defaultCandleDuration,
-                urlPoolAddress.tokenA,
-                urlPoolAddress.tokenB,
+                baseTokenAddress,
+                quoteTokenAddress,
                 candleTime,
                 nCandles,
                 crocEnv,
@@ -346,8 +342,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             )
                 .then((candles) => {
                     if (
-                        baseTokenAddressRef.current === urlPoolAddress.tokenA &&
-                        quoteTokenAddressRef.current === urlPoolAddress.tokenB
+                        baseTokenAddressRef.current ===
+                            baseTokenAddress.toLowerCase() &&
+                        quoteTokenAddressRef.current ===
+                            quoteTokenAddress.toLowerCase()
                     ) {
                         if (candles) {
                             setCandleData(candles);
@@ -431,8 +429,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             poolIndex,
             GCGO_URL,
             candleTimeLocal,
-            urlPoolAddress.tokenA,
-            urlPoolAddress.tokenB,
+            baseTokenAddress,
+            quoteTokenAddress,
             minTimeMemo ? minTimeMemo : 0,
             numDurations,
             crocEnv,
@@ -441,46 +439,42 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         )
             .then((incrCandles) => {
                 if (incrCandles && candleData) {
-                    if (candleDomains.isResetRequest) {
-                        setCandleData(incrCandles);
-                    } else {
-                        const newCandles: CandleDataIF[] = [];
-                        if (
-                            incrCandles.candles.length === 0 ||
-                            incrCandles.candles.length < numDurations - 1
-                        ) {
-                            const minDate = Math.min(
-                                ...incrCandles.candles.map((i) => i.time),
-                            );
-                            minDate && setTimeOfEndCandle(minDate * 1000);
-                        }
-
-                        for (
-                            let index = 0;
-                            index < incrCandles.candles.length;
-                            index++
-                        ) {
-                            const messageCandle = incrCandles.candles[index];
-                            const indexOfExistingCandle =
-                                candleData.candles.findIndex(
-                                    (savedCandle) =>
-                                        savedCandle.time === messageCandle.time,
-                                );
-
-                            if (indexOfExistingCandle === -1) {
-                                newCandles.push(messageCandle);
-                            } else {
-                                candleData.candles[indexOfExistingCandle] =
-                                    messageCandle;
-                            }
-                        }
-
-                        const newSeries = Object.assign({}, candleData, {
-                            candles: candleData.candles.concat(newCandles),
-                        });
-
-                        setCandleData(newSeries);
+                    const newCandles: CandleDataIF[] = [];
+                    if (
+                        incrCandles.candles.length === 0 ||
+                        incrCandles.candles.length < numDurations - 1
+                    ) {
+                        const minDate = Math.min(
+                            ...incrCandles.candles.map((i) => i.time),
+                        );
+                        minDate && setTimeOfEndCandle(minDate * 1000);
                     }
+
+                    for (
+                        let index = 0;
+                        index < incrCandles.candles.length;
+                        index++
+                    ) {
+                        const messageCandle = incrCandles.candles[index];
+                        const indexOfExistingCandle =
+                            candleData.candles.findIndex(
+                                (savedCandle) =>
+                                    savedCandle.time === messageCandle.time,
+                            );
+
+                        if (indexOfExistingCandle === -1) {
+                            newCandles.push(messageCandle);
+                        } else {
+                            candleData.candles[indexOfExistingCandle] =
+                                messageCandle;
+                        }
+                    }
+
+                    const newSeries = Object.assign({}, candleData, {
+                        candles: candleData.candles.concat(newCandles),
+                    });
+
+                    setCandleData(newSeries);
                 }
             })
             .catch((e) => {
