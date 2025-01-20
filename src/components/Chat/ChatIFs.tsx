@@ -64,7 +64,8 @@ export interface TutorialStepExternalComponent {
 export interface TutorialIF {
     lsKey: string;
     steps: Step[];
-    disableDefault?: boolean;
+    disableDefault?: boolean; // for futa if want to disable tutorial steps by default (in ambient its already not showing if showDefault is not set)
+    showDefault?: boolean; // for ambient if want to show tutorial steps by default
     externalComponents?: Map<string, TutorialStepExternalComponent>;
 }
 
