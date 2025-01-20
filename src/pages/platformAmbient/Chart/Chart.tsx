@@ -160,8 +160,6 @@ interface propsIF {
     updateURL: (changes: updatesIF) => void;
     userTransactionData: Array<TransactionIF> | undefined;
     setPrevCandleCount: React.Dispatch<React.SetStateAction<number>>;
-    isCompletedFetchData: boolean;
-    setIsCompletedFetchData: React.Dispatch<React.SetStateAction<boolean>>;
     setChartResetStatus: React.Dispatch<
         React.SetStateAction<{
             isResetChart: boolean;
@@ -198,8 +196,6 @@ export default function Chart(props: propsIF) {
         updateURL,
         userTransactionData,
         setPrevCandleCount,
-        isCompletedFetchData,
-        setIsCompletedFetchData,
         setChartResetStatus,
         chartResetStatus,
         // openMobileSettingsModal,
@@ -319,9 +315,6 @@ export default function Chart(props: propsIF) {
         useState<MouseEvent<HTMLDivElement>>();
     const [chartZoomEvent, setChartZoomEvent] = useState('');
     const [timeGaps, setTimeGaps] = useState<timeGapsValue[]>([]);
-
-    const [discontinuityProvider, setDiscontinuityProvider] =
-        useState(undefined);
 
     const {
         showFeeRate,
@@ -915,8 +908,6 @@ export default function Chart(props: propsIF) {
                     ...data,
                 );
 
-                setDiscontinuityProvider(newDiscontinuityProvider);
-
                 scaleData.xScale.discontinuityProvider(
                     newDiscontinuityProvider,
                 );
@@ -931,52 +922,6 @@ export default function Chart(props: propsIF) {
         diffHashSigScaleData(scaleData, 'x'),
         isCondensedModeEnabled,
     ]);
-
-    useEffect(() => {
-        if (discontinuityProvider) {
-            if (!chartResetStatus.isResetChart) {
-                const xmin = scaleData?.xScale.domain()[0];
-                const xmax = scaleData?.xScale.domain()[1];
-                const data = visibleCandleData.filter(
-                    (i) => i.time * 1000 <= xmax && i.time * 1000 >= xmin,
-                );
-                if (data.length > 0) {
-                    const width = scaleData?.xScale.range()[1];
-
-                    const minDate = data[data.length - 1].time * 1000;
-                    const maxDate = data[0].time * 1000;
-
-                    const diffPixel =
-                        (isShowLatestCandle
-                            ? width
-                            : scaleData?.xScale(maxDate)) -
-                        scaleData?.xScale(minDate);
-
-                    const percentPixel = diffPixel / width;
-
-                    const isIncludeTimeOfEndCanlde = timeOfEndCandle
-                        ? timeOfEndCandle < scaleData?.xScale.domain()[1] &&
-                          timeOfEndCandle > scaleData?.xScale.domain()[0]
-                        : false;
-
-                    if (
-                        percentPixel < 0.75 &&
-                        isCondensedModeEnabled &&
-                        !isIncludeTimeOfEndCanlde
-                    ) {
-                        resetFunc(true);
-                    } else {
-                        setIsCompletedFetchData(false);
-                    }
-                } else {
-                    setReset(true);
-                    setIsCompletedFetchData(false);
-                }
-            } else {
-                setIsCompletedFetchData(false);
-            }
-        }
-    }, [discontinuityProvider === undefined]);
 
     useEffect(() => {
         updateDrawnShapeHistoryonLocalStorage();
@@ -2578,8 +2523,8 @@ export default function Chart(props: propsIF) {
         const nowDate = Date.now();
         if (isReset) {
             const localCandleDomain = {
-                lastCandleDate: nowDate,
-                domainBoundry: nowDate - 200 * 1000 * period,
+                lastCandleDate: candleDomains.lastCandleDate,
+                domainBoundry: candleDomains.domainBoundry,
                 isAbortedRequest: true,
                 isResetRequest: isReset,
                 isCondensedFetching: candleDomains.isCondensedFetching,
@@ -2990,7 +2935,7 @@ export default function Chart(props: propsIF) {
 
             return () => resizeObserver.unobserve(canvasDiv.node());
         }
-    }, [handleDocumentEvent, isCompletedFetchData]);
+    }, [handleDocumentEvent]);
 
     useEffect(() => {
         const canvas = d3
@@ -5864,7 +5809,6 @@ export default function Chart(props: propsIF) {
                 gridColumnEnd: 1,
                 gridRowStart: 1,
                 gridRowEnd: 3,
-                visibility: isCompletedFetchData ? 'hidden' : 'visible',
                 paddingLeft: toolbarWidth + 'px',
             }}
         >
