@@ -337,6 +337,7 @@ export default function Navbar() {
                     <NotificationCenter />
                     <div className={styles.moreContainer} ref={dropdownRef}>
                         <FiMoreHorizontal
+                            size={25}
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         />
                         {/* <AnimatePresence> */}

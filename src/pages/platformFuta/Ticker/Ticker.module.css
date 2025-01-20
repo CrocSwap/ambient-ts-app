@@ -7,6 +7,6 @@
 }
 
 .container {
-    height: calc(100svh - 130px);
-    padding: 8px 16px;
+    height: calc(100svh - 110px);
+    padding: 0px 16px;
 }

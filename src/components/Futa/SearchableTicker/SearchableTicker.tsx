@@ -58,7 +58,7 @@ export default function SearchableTicker(props: propsIF) {
     } = useContext(FutaSearchableTickerContext);
 
     const tableParentRef = useRef<HTMLDivElement>(null);
-
+    const tickerTableRef = useRef<HTMLDivElement>(null);
     // logic to expand table to full height if no data is available, this
     // ... keeps the 'no data available' msg centered in the visual space,
     useEffect(() => {
@@ -86,9 +86,9 @@ export default function SearchableTicker(props: propsIF) {
     const [isMouseEnter, setIsMouseEnter] = useState(false);
     const customLoading = false;
 
-    const isMobile = useMediaQuery('(max-width: 767px)');
+    const isMobile = useMediaQuery('(max-width: 1024px)');
     const isTabletScreen = useMediaQuery(
-        '(min-width: 768px) and (max-width: 1200px)',
+        '(min-width: 769px) and (max-width: 1024px)',
     );
     // shape of data to create filter dropdown menu options
     interface filterOptionIF {
@@ -239,11 +239,12 @@ export default function SearchableTicker(props: propsIF) {
             !isMouseEnter
         ) {
             const itemRef = tickerItemRefs.current[hoveredTicker];
-            const tableRef = containerRef.current;
+            const tableRef = tickerTableRef.current;
+            const localContainerRef = containerRef.current;
 
-            if (itemRef && containerRef.current && tableRef) {
-                containerRef.current.scrollTo({
-                    top: itemRef.offsetTop - tableRef.offsetTop,
+            if (itemRef && tableRef && localContainerRef) {
+                tickerTableRef.current.scrollTo({
+                    top: itemRef.offsetTop - localContainerRef.offsetTop,
                     behavior: 'smooth',
                 });
             }
@@ -268,10 +269,8 @@ export default function SearchableTicker(props: propsIF) {
     // apply a consistent size to all icons inside buttons
     const BUTTON_ICON_SIZE = 17;
 
-    const smallScreen: boolean = useMediaQuery('(max-width: 400px)');
-
     const headerDisplay = (
-        <div className={styles.header}>
+        <search className={styles.header}>
             <div className={styles.search_and_sort}>
                 <div className={styles.text_search_box}>
                     <BiSearch
@@ -301,7 +300,7 @@ export default function SearchableTicker(props: propsIF) {
                 <div className={styles.sort_clickable} ref={timeDropdownRef}>
                     <div className={styles.sort_selection}>
                         <div
-                            className={styles.timeDropdownButton}
+                            className={styles.open_dropdown_clickable}
                             onClick={() =>
                                 setIsSortDropdownOpen(!isSortDropdownOpen)
                             }
@@ -310,7 +309,17 @@ export default function SearchableTicker(props: propsIF) {
                             {isSortDropdownOpen ? (
                                 <IoIosArrowUp color='var(--accent1)' />
                             ) : (
-                                <IoIosArrowDown color='var(--accent1)' />
+                                <IoIosArrowDown
+                                    onClick={(e) => {
+                                        // without this handler the click will not register
+                                        // ... properly to open the dropdown menu
+                                        e.stopPropagation();
+                                        setIsSortDropdownOpen(
+                                            !isSortDropdownOpen,
+                                        );
+                                    }}
+                                    color='var(--accent1)'
+                                />
                             )}
                         </div>
                         <div
@@ -340,8 +349,14 @@ export default function SearchableTicker(props: propsIF) {
                         <div className={styles.dropdown}>
                             {sortDropdownOptions.map((item, idx) => (
                                 <p
-                                    className={styles.timeItem}
                                     key={idx}
+                                    className={
+                                        styles[
+                                            activeSortOption.slug === item.slug
+                                                ? 'active_sort'
+                                                : 'inactive_sort'
+                                        ]
+                                    }
                                     onClick={() => {
                                         setActiveSortOption(item);
                                         setIsSortDropdownOpen(false);
@@ -398,7 +413,7 @@ export default function SearchableTicker(props: propsIF) {
                     </button>
                 ) : null}
             </div>
-        </div>
+        </search>
     );
 
     const noAuctionsContent = (
@@ -450,7 +465,7 @@ export default function SearchableTicker(props: propsIF) {
     }, []);
 
     const searchableContent = (
-        <div className={styles.ticker_table}>
+        <div className={styles.ticker_table} ref={tickerTableRef}>
             {filteredData.length ? (
                 <header>
                     <p className={styles.cell_left}>
@@ -459,10 +474,12 @@ export default function SearchableTicker(props: propsIF) {
                             // ... way to keep the header text aligned
                             // ... with the content below
                         }
-                        <GoChevronRight
-                            size={20}
-                            className={styles.ticker_col_header_spacer}
-                        />
+                        {isMobile || (
+                            <GoChevronRight
+                                size={20}
+                                className={styles.ticker_col_header_spacer}
+                            />
+                        )}
                         TICKER
                     </p>
                     <p className={styles.cell_right}>MARKET CAP</p>
@@ -494,7 +511,7 @@ export default function SearchableTicker(props: propsIF) {
                               key={JSON.stringify(auction)}
                               auction={auction}
                               isAccount={isAccount}
-                              isMobile={smallScreen}
+                              isMobile={isMobile}
                               selectedTicker={selectedTicker}
                               setSelectedTicker={setSelectedTicker}
                               setShowComplete={setShowComplete}
@@ -577,16 +594,16 @@ export default function SearchableTicker(props: propsIF) {
 
     return (
         <div
-            className={styles.container}
+            className={styles.searchable_ticker}
             style={{
                 gridTemplateRows: isAccount ? 'auto 100%' : '',
+                height: isAccount ? '' : '100%',
             }}
             ref={canvasRef}
         >
             <FlexContainer
                 flexDirection='column'
                 fullHeight
-                className={styles.contentContainer}
                 ref={tableParentRef}
             >
                 {resizableChart}

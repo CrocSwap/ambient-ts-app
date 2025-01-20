@@ -17,7 +17,6 @@ interface propsIF {
 
 export default function Auctions(props: propsIF) {
     const { hideTicker, placeholderTicker } = props;
-    // placeholder data until the platform has live data
 
     const {
         globalAuctionList,
@@ -80,7 +79,6 @@ export default function Auctions(props: propsIF) {
     return (
         <div className={styles.mobileContainer}>
             <h3>AUCTIONS</h3>
-
             <span id='auctions_search_wrapper'>
                 <SearchableTicker
                     auctions={sorted}

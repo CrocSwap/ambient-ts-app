@@ -1,20 +1,36 @@
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import styles from './TooltipLabel.module.css';
 // Tooltip Label Component
-interface TooltipTitleProps {
+
+interface propsIF {
     itemTitle: string;
     tooltipTitle: string;
     isHeader?: boolean;
+    fontSize?: number | `${string}px`;
 }
-const TooltipLabel = (props: TooltipTitleProps) => {
-    const { itemTitle, tooltipTitle, isHeader } = props;
+const TooltipLabel = (props: propsIF) => {
+    const { itemTitle, tooltipTitle, isHeader, fontSize } = props;
+
+    // decision tree to determine font size
+    let fontSizeToConsume: string;
+    if (fontSize) {
+        fontSizeToConsume =
+            typeof fontSize === 'number'
+                ? fontSize.toString() + 'px'
+                : fontSize;
+    } else if (isHeader) {
+        fontSizeToConsume = '24px';
+    } else {
+        fontSizeToConsume = '14px';
+    }
+
     return (
         <div className={styles.tooltipLabelContainer}>
             <p
                 className={styles.tickerLabel}
                 style={{
                     color: isHeader ? 'var(--text1)' : 'var(--text2)',
-                    fontSize: isHeader ? '24px' : '14px',
+                    fontSize: fontSizeToConsume,
                 }}
             >
                 {itemTitle}
