@@ -105,8 +105,11 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         reset,
     } = props.chartItemStates;
 
-    const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
-        useContext(PoolContext);
+    const {
+        isTradeDollarizationEnabled,
+        setIsTradeDollarizationEnabled,
+        isDefaultTradeDollarization,
+    } = useContext(PoolContext);
 
     const { platformName } = useContext(BrandContext);
     const {
@@ -194,9 +197,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             setShowVolume(defaultChartSettings.showVolume);
             setShowTvl(defaultChartSettings.showTvl);
             setShowFeeRate(defaultChartSettings.showFeeRate);
-            setIsTradeDollarizationEnabled(
-                defaultChartSettings.isTradeDollarizationEnabled,
-            );
+            setIsTradeDollarizationEnabled(isDefaultTradeDollarization);
         }
 
         const applyTimeOut = setTimeout(() => {

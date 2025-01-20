@@ -16,7 +16,6 @@ export default function Home() {
     const { showDexStats } = useContext(BrandContext);
 
     if (showMobileVersion) return <MobileLandingSections />;
-
     return (
         <section data-testid={'home'}>
             <div style={{ width: '100%', height: '480px' }}>
