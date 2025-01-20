@@ -45,6 +45,7 @@ import {
     StyledCheckbox,
     StyledSelectbox,
 } from './ChartSettingsCss';
+import { useMediaQuery } from '@material-ui/core';
 
 interface ContextMenuContentIF {
     chartThemeColors: ChartThemeIF;
@@ -124,6 +125,10 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         quoteToken: { symbol: quoteTokenSymbol },
         isDenomBase,
     } = useContext(TradeDataContext);
+
+    const isTablet = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     const { isUserConnected } = useContext(UserDataContext);
 
@@ -705,7 +710,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 </ColorPickerContainer>
             </>
 
-            {!isMobile && (
+            {(!isMobile || isTablet) && (
                 <ContextMenuFooter>
                     <FooterButtons
                         backgroundColor={
