@@ -105,8 +105,11 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         reset,
     } = props.chartItemStates;
 
-    const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
-        useContext(PoolContext);
+    const {
+        isTradeDollarizationEnabled,
+        setIsTradeDollarizationEnabled,
+        isDefaultTradeDollarization,
+    } = useContext(PoolContext);
 
     const { platformName } = useContext(BrandContext);
     const {
@@ -194,9 +197,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             setShowVolume(defaultChartSettings.showVolume);
             setShowTvl(defaultChartSettings.showTvl);
             setShowFeeRate(defaultChartSettings.showFeeRate);
-            setIsTradeDollarizationEnabled(
-                defaultChartSettings.isTradeDollarizationEnabled,
-            );
+            setIsTradeDollarizationEnabled(isDefaultTradeDollarization);
         }
 
         const applyTimeOut = setTimeout(() => {
@@ -562,42 +563,6 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                                     </ContextMenuContextText>
 
                                     <ColorOptions>
-                                        <OptionColor
-                                            backgroundColor={chartThemeColors[
-                                                item.upColor
-                                            ]?.toString()}
-                                            onClick={(
-                                                event: MouseEvent<HTMLElement>,
-                                            ) => {
-                                                event.stopPropagation();
-                                                setSelectedColorObj((prev) => {
-                                                    const selectedObj = {
-                                                        selectedColor:
-                                                            chartThemeColors[
-                                                                item.upColor
-                                                            ]?.toString(),
-                                                        replaceSelector:
-                                                            item.upColor,
-                                                        index: index,
-                                                        placement: 'left',
-                                                    };
-
-                                                    const result =
-                                                        prev === undefined ||
-                                                        prev.index !== index ||
-                                                        prev.placement !==
-                                                            'left'
-                                                            ? selectedObj
-                                                            : undefined;
-
-                                                    setShouldDisableChartSettings(
-                                                        result === undefined,
-                                                    );
-
-                                                    return result;
-                                                });
-                                            }}
-                                        ></OptionColor>
                                         {item.downColor !== '' && (
                                             <OptionColor
                                                 backgroundColor={chartThemeColors[
@@ -644,6 +609,42 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                                                 }}
                                             ></OptionColor>
                                         )}
+                                        <OptionColor
+                                            backgroundColor={chartThemeColors[
+                                                item.upColor
+                                            ]?.toString()}
+                                            onClick={(
+                                                event: MouseEvent<HTMLElement>,
+                                            ) => {
+                                                event.stopPropagation();
+                                                setSelectedColorObj((prev) => {
+                                                    const selectedObj = {
+                                                        selectedColor:
+                                                            chartThemeColors[
+                                                                item.upColor
+                                                            ]?.toString(),
+                                                        replaceSelector:
+                                                            item.upColor,
+                                                        index: index,
+                                                        placement: 'left',
+                                                    };
+
+                                                    const result =
+                                                        prev === undefined ||
+                                                        prev.index !== index ||
+                                                        prev.placement !==
+                                                            'left'
+                                                            ? selectedObj
+                                                            : undefined;
+
+                                                    setShouldDisableChartSettings(
+                                                        result === undefined,
+                                                    );
+
+                                                    return result;
+                                                });
+                                            }}
+                                        ></OptionColor>
 
                                         {selectedColorObj &&
                                             selectedColorObj.index ===
