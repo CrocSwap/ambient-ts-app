@@ -28,7 +28,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import { MainContainer } from '../../../../styled/Components/Chart';
 import { TutorialButton } from '../../../../styled/Components/Tutorial';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
 import { ColorObjIF } from '../../../Chart/ChartSettings/ChartSettings';

@@ -17,7 +17,7 @@ import {
     ScrollToTopButton,
     ScrollToTopButtonMobile,
 } from '../../../styled/Components/TransactionTable';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
 import TableRows from './TableRows';
 import styles from './TableRowsInfiniteScroll.module.css';

@@ -3,7 +3,7 @@ import coins from '../../../../assets/images/coins.svg';
 import Modal from '../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../components/Global/ModalHeader/ModalHeader';
 import ExchangeBalance from '../../../../components/Portfolio/ExchangeBalance/ExchangeBalance';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import useKeyPress from '../../../hooks/useKeyPress';
 import NavItem from '../NavItem/NavItem';
 import styles from './ExchangeBalanceDropdown.module.css';

@@ -7,7 +7,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { AccordionHeader, ArrowIcon } from '../../../styled/Components/Sidebar';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
 
 // interface for React functional component props

@@ -18,7 +18,7 @@ import {
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import Modal from '../../Modal/Modal';
 import ModalHeader from '../../ModalHeader/ModalHeader';
 import DetailsHeader from '../DetailsHeader/DetailsHeader';

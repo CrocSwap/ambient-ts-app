@@ -17,7 +17,7 @@ import {
     InvestorsContent,
     MobileContainer,
 } from '../../../styled/Components/Home';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 export default function Investors() {
     const row1 = (
         <InvestorRow row={1}>

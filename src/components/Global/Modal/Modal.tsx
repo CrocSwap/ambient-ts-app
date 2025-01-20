@@ -8,7 +8,7 @@ import {
 } from '../../../ambient-utils/constants';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 import { Container } from '../../../styled/Common';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import GlobalModalPortal from '../../GlobalModalPortal';
 import styles from './Modal.module.css';
 

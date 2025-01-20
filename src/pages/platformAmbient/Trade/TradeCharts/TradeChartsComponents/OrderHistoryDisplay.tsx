@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, memo, useContext } from 'react';
 import { LS_KEY_ORDER_HISTORY_SETTINGS } from '../../../../../ambient-utils/constants';
 import { BrandContext } from '../../../../../contexts/BrandContext';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 import styles from './VolumeTVLFee.module.css';
 
 interface OrderHistoryDisplayPropsIF {

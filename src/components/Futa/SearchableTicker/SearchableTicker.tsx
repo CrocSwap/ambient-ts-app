@@ -13,7 +13,7 @@ import {
     sortedAuctionsIF,
 } from '../../../pages/platformFuta/Auctions/useSortedAuctions';
 import { FlexContainer } from '../../../styled/Common';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
 import Chart from '../Chart/Chart';

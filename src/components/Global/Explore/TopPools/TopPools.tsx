@@ -3,7 +3,7 @@ import checkPoolForWETH from '../../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../../ambient-utils/types';
 import { PoolDataIF } from '../../../../contexts/ExploreContext';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
 import AssignSort from '../AssignSort';
 import ExploreToggle from '../ExploreToggle/ExploreToggle';

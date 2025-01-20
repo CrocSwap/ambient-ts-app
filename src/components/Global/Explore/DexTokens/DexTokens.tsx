@@ -4,7 +4,7 @@ import { SinglePoolDataIF } from '../../../../ambient-utils/types';
 import { ChainDataContext } from '../../../../contexts';
 import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useTokenStats';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
 import AssignSort from '../AssignSort';
 import ExploreToggle from '../ExploreToggle/ExploreToggle';

@@ -5,7 +5,7 @@ import { RiScreenshot2Fill } from 'react-icons/ri';
 import { TbListDetails } from 'react-icons/tb';
 import logo from '../../../../assets/images/logos/logo_mark.svg';
 import logoText from '../../../../assets/images/logos/logo_text.png';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
 import styles from './DetailsHeader.module.css';
 interface DetailsHeaderPropsIF {

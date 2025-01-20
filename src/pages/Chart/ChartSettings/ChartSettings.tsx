@@ -11,7 +11,7 @@ import {
 } from './ChartSettingsCss';
 
 import { BrandContext } from '../../../contexts/BrandContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import { chartItemStates } from '../../platformAmbient/Chart/ChartUtils/chartUtils';
 import ChartSettingsContent from './ChartSettingsContent';
 import { brand } from '../../../ambient-utils/constants';

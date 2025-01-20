@@ -30,7 +30,7 @@ import {
     swapParamsIF,
     useLinkGen,
 } from '../../../utils/hooks/useLinkGen';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import styles from './PageHeader.module.css';
 import UserMenu from './UserMenu/UserMenu';

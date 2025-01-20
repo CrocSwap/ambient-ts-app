@@ -19,7 +19,7 @@ import {
     HeaderButtons,
 } from '../../../../../styled/Components/Chart';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
 // import{ IoSettingsOutline } from 'react-icons/io5';
 

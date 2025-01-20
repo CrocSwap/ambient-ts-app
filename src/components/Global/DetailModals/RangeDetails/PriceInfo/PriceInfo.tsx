@@ -9,7 +9,7 @@ import {
 } from '../../../../../ambient-utils/types';
 import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 import Apy from '../../../Tabs/Apy/Apy';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 

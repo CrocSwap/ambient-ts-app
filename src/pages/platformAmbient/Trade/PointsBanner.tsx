@@ -6,7 +6,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { FlexContainer, Text } from '../../../styled/Common';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import styles from './PointsBanner.module.css';
 interface propsIF {
     dismissElem: () => void;

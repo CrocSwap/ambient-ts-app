@@ -7,7 +7,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { chainNumToString } from '../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import DesktopFooter from './DesktopFooter';
 import styles from './Footer.module.css';
 

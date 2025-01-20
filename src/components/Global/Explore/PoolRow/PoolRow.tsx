@@ -10,7 +10,7 @@ import TokenIcon from '../../TokenIcon/TokenIcon';
 import { useMemo } from 'react';
 import { GrLineChart } from 'react-icons/gr';
 import { FlexContainer } from '../../../../styled/Common';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import styles from './PoolRow.module.css';
 interface propsIF {
     pool: PoolDataIF;

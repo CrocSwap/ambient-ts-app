@@ -2,7 +2,7 @@ import { motion, PanInfo, useAnimation } from 'framer-motion';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RiCloseFill } from 'react-icons/ri';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import styles from './BottomSheet.module.css';
 

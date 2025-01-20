@@ -29,7 +29,7 @@ import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 import ChartTooltip from '../../../Chart/ChartTooltip/ChartTooltip';
 import { filterCandleWithTransaction } from '../../../Chart/ChartUtils/discontinuityScaleUtils';

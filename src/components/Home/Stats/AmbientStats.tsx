@@ -8,7 +8,7 @@ import {
     StatContainer,
     StatValue,
 } from '../../../styled/Components/Home';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 
 interface StatCardProps {
     title: string;

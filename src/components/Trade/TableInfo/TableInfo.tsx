@@ -8,7 +8,7 @@ import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import { DetailedBox } from './DetailedBox';
 import { FeaturedBox } from './FeaturedBox';
 

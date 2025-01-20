@@ -4,7 +4,7 @@ import { FaAngleDown } from 'react-icons/fa';
 import useKeyPress from '../../../App/hooks/useKeyPress';
 import { brand } from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
 import Modal from '../Modal/Modal';

@@ -14,7 +14,7 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';

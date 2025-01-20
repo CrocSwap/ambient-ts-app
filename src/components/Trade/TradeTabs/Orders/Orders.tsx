@@ -3,7 +3,7 @@ import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { LimitOrderIF } from '../../../../ambient-utils/types';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import NoTableData from '../NoTableData/NoTableData';
 import { useSortedLimits } from '../useSortedLimits';
 import OrderHeader from './OrderTable/OrderHeader';

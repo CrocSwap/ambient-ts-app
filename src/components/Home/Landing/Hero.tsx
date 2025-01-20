@@ -3,7 +3,7 @@ import { heroItem } from '../../../assets/branding/types';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { HeroContainer } from '../../../styled/Components/Home';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import styles from './BackgroundImages.module.css';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 

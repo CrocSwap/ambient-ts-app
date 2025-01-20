@@ -10,7 +10,7 @@ import {
     RowContainer,
     SlideContainer,
 } from '../../../styled/Components/Home';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import Footer from '../../Footer/Footer';
 import Investors from './Investors';
 import TradeNowButton from './TradeNowButton/TradeNowButton';

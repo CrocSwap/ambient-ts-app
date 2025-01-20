@@ -4,7 +4,7 @@ import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
 import { BrandContext } from '../../../../contexts/BrandContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { FlexContainer } from '../../../../styled/Common';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import Modal from '../../Modal/Modal';
 import ModalHeader from '../../ModalHeader/ModalHeader';
 import styles from './NotificationTable.module.css';

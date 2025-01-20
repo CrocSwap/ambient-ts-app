@@ -1,4 +1,4 @@
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import styles from './PoolRow.module.css';
 
 export default function PoolRowSkeleton() {

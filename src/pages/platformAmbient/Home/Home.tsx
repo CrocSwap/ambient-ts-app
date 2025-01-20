@@ -5,7 +5,7 @@ import MobileLandingSections from '../../../components/Home/Landing/MobileLandin
 import Stats from '../../../components/Home/Stats/AmbientStats';
 import TopPoolsHome from '../../../components/Home/TopPoolsHome/TopPoolsHome';
 import { BrandContext } from '../../../contexts/BrandContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');

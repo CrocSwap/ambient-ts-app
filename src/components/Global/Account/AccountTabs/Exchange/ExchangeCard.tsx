@@ -17,7 +17,7 @@ import {
     CrocEnvContext,
 } from '../../../../../contexts';
 import { TokenContext } from '../../../../../contexts/TokenContext';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 import styles from './ExchangeCard.module.css';

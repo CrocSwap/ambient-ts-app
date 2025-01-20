@@ -1,6 +1,6 @@
 import { memo, useRef, useState } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import {
     DefaultTooltip,

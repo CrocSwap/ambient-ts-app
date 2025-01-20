@@ -33,7 +33,7 @@ import {
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import { FlexContainer, Text } from '../../../styled/Common';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import Level from '../Level/Level';
 import styles from './Portfolio.module.css';
 

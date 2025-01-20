@@ -34,7 +34,7 @@ import {
     HideEmptyPositionContainer,
     RangeRow as RangeRowStyled,
 } from '../../../../styled/Components/TransactionTable';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import { PageDataCountIF } from '../../../Chat/ChatIFs';
 import Toggle from '../../../Form/Toggle';
 import Spinner from '../../../Global/Spinner/Spinner';

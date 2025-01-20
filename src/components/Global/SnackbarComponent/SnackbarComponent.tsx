@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { IoMdClose } from 'react-icons/io';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import styles from './SnackbarComponent.module.css';
 

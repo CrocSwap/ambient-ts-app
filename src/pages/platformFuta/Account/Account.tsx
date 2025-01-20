@@ -15,7 +15,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import {
     sortedAuctionsIF,
     useSortedAuctions,

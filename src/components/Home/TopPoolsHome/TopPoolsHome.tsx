@@ -9,7 +9,7 @@ import {
     TopPoolContainer,
     TopPoolViewMore,
 } from '../../../styled/Components/Home';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import PoolCard from '../../Global/PoolCard/PoolCard';
 
 interface TopPoolsPropsIF {

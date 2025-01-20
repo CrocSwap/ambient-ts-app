@@ -21,7 +21,7 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import Modal from '../../../../Global/Modal/Modal';
 import ModalHeader from '../../../ModalHeader/ModalHeader';

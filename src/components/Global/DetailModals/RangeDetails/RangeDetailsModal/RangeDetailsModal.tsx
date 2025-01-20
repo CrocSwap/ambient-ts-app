@@ -27,7 +27,7 @@ import { TokenContext } from '../../../../../contexts/TokenContext';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import Modal from '../../../Modal/Modal';
 import ModalHeader from '../../../ModalHeader/ModalHeader';

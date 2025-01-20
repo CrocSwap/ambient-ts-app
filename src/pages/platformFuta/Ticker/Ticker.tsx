@@ -1,7 +1,7 @@
 // import{ useEffect, useState } from 'react';
 import styles from './Ticker.module.css';
 
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import Auctions from '../Auctions/Auctions';
 // import{ useParams } from 'react-router-dom';
 

@@ -17,7 +17,7 @@ import Learn from '../pages/platformFuta/Learn/Learn';
 import LimitFuta from '../pages/platformFuta/LimitFuta/LimitFuta';
 import SwapFuta from '../pages/platformFuta/SwapFuta/SwapFuta';
 import Ticker from '../pages/platformFuta/Ticker/Ticker';
-import useMediaQuery from '../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../utils/hooks/useMediaQuery';
 
 const PlatformFutaRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
