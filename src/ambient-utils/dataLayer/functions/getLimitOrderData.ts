@@ -313,28 +313,15 @@ export const getLimitOrderData = async (
         newOrder.totalValueUSD =
             quotePrice.usdPrice * totalQuoteLiq +
             basePrice.usdPrice * totalBaseLiq;
-        if (newOrder.totalValueUSD > 0.0) {
-            console.log('zzz totalValueUSD', newOrder.totalValueUSD);
-            // console.log('??? newOrder', newOrder)
-        } else {
-            console.log('??? assign 1 totalBaseLiq', totalBaseLiq);
-            console.log('??? assign 1 totalQuoteLiq', totalQuoteLiq);
-            console.log('??? assign 1 baseUSD', basePrice.usdPrice);
-            console.log('??? assign 1 quoteUSD', quotePrice.usdPrice);
-            console.log('??? assign 1, value zero', newOrder.totalValueUSD);
-        }
     } else if (basePrice) {
-        console.log('??? assign 2');
         const quotePrice = basePrice.usdPrice * poolPrice;
         newOrder.totalValueUSD =
             quotePrice * totalQuoteLiq + basePrice.usdPrice * totalBaseLiq;
     } else if (quotePrice) {
-        console.log('??? assign 3');
         const basePrice = quotePrice.usdPrice / poolPrice;
         newOrder.totalValueUSD =
             basePrice * totalBaseLiq + quotePrice.usdPrice * totalQuoteLiq;
     } else {
-        console.log('??? assign 4   (ZEROO)');
         newOrder.totalValueUSD = 0.0;
     }
 

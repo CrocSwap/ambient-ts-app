@@ -51,7 +51,6 @@ const useGenFakeTableRow = () => {
     const genFakeLimitOrder = async (
         pendingTx: TransactionByType,
     ): Promise<RecentlyUpdatedPositionIF> => {
-        console.log('>>> genFakeLimitOrder');
         if (!crocEnv || !pendingTx.txDetails)
             return {} as RecentlyUpdatedPositionIF;
 
@@ -71,15 +70,6 @@ const useGenFakeTableRow = () => {
             lastBlockNumber,
         );
 
-        console.log(
-            '??? pendingTx.txDetails.lowTick',
-            pendingTx.txDetails.lowTick,
-        );
-        console.log(
-            '??? pendingTx.txDetails.highTick',
-            pendingTx.txDetails.highTick,
-        );
-
         const position = await pos.queryKnockoutLivePos(
             pendingTx.txAction === 'Buy',
             pendingTx.txDetails.lowTick || 0,
@@ -91,22 +81,6 @@ const useGenFakeTableRow = () => {
 
         const liqBigInt = position.liq;
         const liqNum = bigIntToFloat(liqBigInt);
-
-        console.log('??? position', position);
-        console.log('??? position.liq', position.liq);
-        console.log('??? liqNum', liqNum);
-
-        const highTickPrice = tickToPrice(pendingTx.txDetails.highTick || 0);
-
-        console.log('??? highTickPrice', highTickPrice);
-
-        const usdValue = pendingTx.txDetails.isBid
-            ? (1 / poolPriceNonDisplay) *
-              parseFloat(pendingTx.txDetails.initialTokenQty || '0')
-            : (1 / highTickPrice) *
-              parseFloat(pendingTx.txDetails.initialTokenQty || '0');
-
-        console.log('??? usdValue', usdValue);
 
         const positionLiqBase = bigIntToFloat(
             baseTokenForConcLiq(
@@ -165,34 +139,18 @@ const useGenFakeTableRow = () => {
             cachedEnsResolve,
         );
 
-        console.log('??? limitOrderData', limitOrderData);
+        const basePrice = limitOrderData.baseUsdPrice || 0;
+        const quotePrice = limitOrderData.quoteUsdPrice || 0;
 
-        console.log('>>> cachedQueryPrice', poolPriceNonDisplay);
+        const backupUsdValue = pendingTx.txDetails.isBid
+            ? parseFloat(pendingTx.txDetails.initialTokenQty || '0') * basePrice
+            : parseFloat(pendingTx.txDetails.secondaryTokenQty || '0') *
+              quotePrice;
 
-        // const {
-        //     pool,
-        //     isPoolInitialized,
-        //     isTradeDollarizationEnabled,
-        //     usdPriceInverse,
-        //     poolData,
-        // } = useContext(PoolContext);
-
-        // const { basePrice, quotePrice } = poolData;
-        // console.log('>>> poolData', poolData);
-        // console.log('>>> pool', pool);
-
-        // console.log('>>> basePrice', basePrice);
-        // console.log('>>> quotePrice', quotePrice);
-
-        let totalValueUSD: number = usdValue;
+        let totalValueUSD: number = backupUsdValue;
         if (limitOrderData.totalValueUSD) {
-            totalValueUSD += limitOrderData.totalValueUSD as number;
+            totalValueUSD = limitOrderData.totalValueUSD as number;
         }
-        console.log(
-            '>>> totalUsdValue',
-            usdValue,
-            limitOrderData.totalValueUSD,
-        );
 
         const onChainOrder: LimitOrderIF = {
             positionLiq: liqNum,
@@ -311,6 +269,8 @@ const useGenFakeTableRow = () => {
                   pendingTx.txDetails.highTick || 0,
               );
 
+        console.log('??? pendingTx', pendingTx);
+
         const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
 
         let positionLiqBase, positionLiqQuote;
@@ -384,6 +344,32 @@ const useGenFakeTableRow = () => {
             skipENSFetch,
         );
 
+        let backupUsdValue = 0;
+
+        if (
+            pendingTx.txDetails.initialTokenQty &&
+            pendingTx.txDetails.secondaryTokenQty &&
+            positionData.baseUsdPrice &&
+            positionData.quoteUsdPrice
+        ) {
+            backupUsdValue =
+                parseFloat(pendingTx.txDetails.initialTokenQty) *
+                    positionData.baseUsdPrice +
+                parseFloat(pendingTx.txDetails.secondaryTokenQty) *
+                    positionData.quoteUsdPrice;
+        }
+
+        if (positionData.totalValueUSD > 0) {
+            console.log(
+                '??? positionData.totalValueUSD',
+                positionData.totalValueUSD,
+            );
+        } else {
+            console.log('??? GONNA USE BACKUP USD VALUE', backupUsdValue);
+        }
+
+        console.log('??? positionData', positionData);
+
         const onChainPosition: PositionIF = {
             chainId: chainId,
             base: pendingTx.txDetails.baseAddress,
@@ -450,15 +436,13 @@ const useGenFakeTableRow = () => {
                 positionData.positionLiqQuoteDecimalCorrected,
             positionLiqBaseTruncated: positionData.positionLiqBaseTruncated,
             positionLiqQuoteTruncated: positionData.positionLiqQuoteTruncated,
-            totalValueUSD: positionData.totalValueUSD,
+            totalValueUSD: positionData.totalValueUSD
+                ? positionData.totalValueUSD
+                : backupUsdValue,
             apy: positionData.apy,
             positionId: positionData.positionId,
             onChainConstructedPosition: true,
         } as PositionIF;
-
-        console.log(
-            '>>> EOF -------------------------------------------------------------------------------',
-        );
 
         return {
             positionHash: posHash,

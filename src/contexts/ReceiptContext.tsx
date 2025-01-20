@@ -15,6 +15,8 @@ export interface ReceiptContextIF {
     removePendingTx: (pendingTx: string, isRemoved?: boolean) => void;
     removeReceipt: (txHash: string) => void;
     resetReceiptData: () => void;
+    showRedDot: boolean;
+    setShowRedDot: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface TransactionByType {
@@ -55,6 +57,7 @@ export interface TransactionByType {
         originalLowTick?: number;
         originalHighTick?: number;
         initialTokenQty?: string;
+        secondaryTokenQty?: string;
     };
     isRemoved?: boolean;
 }
@@ -91,6 +94,8 @@ export const ReceiptContextProvider = (props: {
     const [transactionsByType, setTransactionsByType] = React.useState<
         TransactionByType[]
     >([]);
+
+    const [showRedDot, setShowRedDot] = React.useState(true);
 
     const addTransactionByType = (txByType: TransactionByType) => {
         setTransactionsByType((prev) => [...prev, txByType]);
@@ -165,6 +170,8 @@ export const ReceiptContextProvider = (props: {
         removePendingTx,
         removeReceipt,
         resetReceiptData,
+        showRedDot,
+        setShowRedDot,
     };
 
     return (

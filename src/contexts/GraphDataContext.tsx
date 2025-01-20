@@ -24,6 +24,7 @@ import { TokenContext } from './TokenContext';
 import { TradeDataContext } from './TradeDataContext';
 import { UserDataContext } from './UserDataContext';
 import useGenFakeTableRow from '../components/Trade/InfiniteScroll/useGenFakeTableRow';
+import { diffHashSig } from '../ambient-utils/dataLayer';
 
 export interface Changes {
     dataReceived: boolean;
@@ -455,6 +456,8 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
 
     const tempBool = false;
 
+    // console.log('>>> unindexedLimitOrderUpdates', unindexedNonFailedSessionLimitOrderUpdates)
+
     useEffect(() => {
         if (tempBool) return;
 
@@ -474,6 +477,10 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                 tx.txType === 'Limit',
         );
 
+        console.log(
+            '>>> relevantLimitOrders',
+            diffHashSig(relevantLimitOrders),
+        );
         Promise.all(
             relevantLimitOrders.map((tx) => genFakeLimitOrder(tx)),
         ).then((rows) => {

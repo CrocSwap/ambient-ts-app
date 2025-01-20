@@ -19,12 +19,9 @@ export default function Home() {
 
     return (
         <section data-testid={'home'}>
-            {!showMobileVersion && (
-                <div style={{ width: '100%', height: '480px' }}>
-                    <Hero />
-                </div>
-            )}
-
+            <div style={{ width: '100%', height: '480px' }}>
+                <Hero />
+            </div>
             <div>
                 <TopPoolsHome />
                 {showDexStats && <Stats />}

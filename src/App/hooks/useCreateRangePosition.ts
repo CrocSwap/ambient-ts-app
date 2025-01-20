@@ -187,6 +187,8 @@ export function useCreateRangePosition() {
                         lowTick: defaultLowTick,
                         highTick: defaultHighTick,
                         gridSize: gridSize,
+                        initialTokenQty: tokenAInputQty,
+                        secondaryTokenQty: tokenBInputQty,
                     },
                 });
 
