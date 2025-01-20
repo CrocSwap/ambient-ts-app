@@ -14,10 +14,6 @@ export default function Home() {
     // hook to consume and alter search params on the index page
 
     const { showDexStats } = useContext(BrandContext);
-    // Simulate a random error 50% of the time
-    if (Math.random() < 0.5) {
-        throw new Error('Test error: Something went wrong randomly!');
-    }
 
     if (showMobileVersion) return <MobileLandingSections />;
     return (
