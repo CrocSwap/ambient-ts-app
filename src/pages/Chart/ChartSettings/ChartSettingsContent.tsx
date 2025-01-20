@@ -191,6 +191,16 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
     };
 
     useEffect(() => {
+        setPriceInOption(
+            !isTradeDollarizationEnabled
+                ? isDenomBase
+                    ? quoteTokenSymbol
+                    : baseTokenSymbol
+                : 'USD',
+        );
+    }, [isTradeDollarizationEnabled]);
+
+    useEffect(() => {
         if (applyDefault && defaultChartSettings) {
             Object.assign(chartThemeColors, defaultChartSettings.chartColors);
 
