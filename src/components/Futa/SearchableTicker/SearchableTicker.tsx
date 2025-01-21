@@ -540,8 +540,10 @@ export default function SearchableTicker(props: propsIF) {
                 height:
                     !isMobile || isTabletScreen
                         ? isAccount && tableParentRef.current
-                            ? tableParentRef.current.getBoundingClientRect()
-                                  .height * 0.99
+                            ? !isMobile
+                                ? tableParentRef.current.getBoundingClientRect()
+                                      .height * 0.99
+                                : '90%'
                             : searchableTickerHeights.current
                         : '90%',
             }}
@@ -597,7 +599,7 @@ export default function SearchableTicker(props: propsIF) {
             className={styles.searchable_ticker}
             style={{
                 gridTemplateRows: isAccount ? 'auto 100%' : '',
-                height: isAccount ? '' : '100%',
+                height: '100%',
             }}
             ref={canvasRef}
         >

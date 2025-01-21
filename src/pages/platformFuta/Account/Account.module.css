@@ -82,6 +82,7 @@ main {
 @media screen and (max-width: 1024px) {
     main {
         flex-direction: column;
+        height: calc(100% - 90px);
     }
 
     .data_detail {
