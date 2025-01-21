@@ -32,7 +32,7 @@ export default function Auctions(props: propsIF) {
         globalAuctionList.data || [],
     );
 
-    const desktopScreen: boolean = useMediaQuery('(min-width: 968px)');
+    const desktopScreen: boolean = useMediaQuery('(min-width: 1024px)');
 
     const cacheFrequency = Math.floor(Date.now() / 30000);
 
