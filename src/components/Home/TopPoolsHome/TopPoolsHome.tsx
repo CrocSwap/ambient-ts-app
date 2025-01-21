@@ -63,10 +63,22 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         () =>
             (!allPoolData.length
                 ? hardcodedTopPools
-                : sortAndFilter(allPoolData, 'volume', 1000).length
-                  ? sortAndFilter(allPoolData, 'volume', 1000)
-                  : sortAndFilter(allPoolData, 'volume', 100).length
-                    ? sortAndFilter(allPoolData, 'volume', 100)
+                : sortAndFilter(allPoolData, 'volume', 1000).length >= 3
+                  ? sortAndFilter(allPoolData, 'volume', 1000).slice(
+                        0,
+                        Math.max(
+                            hardcodedTopPools.length,
+                            sortAndFilter(allPoolData, 'volume', 1000).length,
+                        ),
+                    )
+                  : sortAndFilter(allPoolData, 'volume', 100).length >= 3
+                    ? sortAndFilter(allPoolData, 'volume', 100).slice(
+                          0,
+                          Math.max(
+                              hardcodedTopPools.length,
+                              sortAndFilter(allPoolData, 'volume', 100).length,
+                          ),
+                      )
                     : sortAndFilter(allPoolData, 'volume', 0).slice(0, 1)
             ).slice(
                 0,
