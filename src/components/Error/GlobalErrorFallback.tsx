@@ -15,11 +15,13 @@ const GlobalErrorFallback: React.FC<GlobalErrorFallbackProps> = ({ error }) => {
         if (error) {
             navigator.clipboard
                 .writeText(
-                    error.message +
-                        ' | ' +
-                        error.stack +
-                        ' | ' +
-                        window.location,
+                    error.stack?.includes(error.message)
+                        ? error.stack + ' | ' + window.location
+                        : error.message +
+                              ' | ' +
+                              error.stack +
+                              ' | ' +
+                              window.location,
                 )
                 .then(
                     () => {
