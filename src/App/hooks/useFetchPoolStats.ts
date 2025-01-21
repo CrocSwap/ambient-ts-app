@@ -88,12 +88,12 @@ const useFetchPoolStats = (
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
-            pool.base.address && pool.quote.address
+            pool.base.symbol && pool.quote.symbol
                 ? getMoneynessRank(pool.base.symbol) -
                       getMoneynessRank(pool.quote.symbol) >=
                   0
                 : false,
-        [pool.base.address, pool.quote.address],
+        [pool.base.symbol, pool.quote.symbol],
     );
 
     const shouldInvertDisplay = !isBaseTokenMoneynessGreaterOrEqual;
