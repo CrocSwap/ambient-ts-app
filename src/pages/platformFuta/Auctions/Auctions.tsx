@@ -60,7 +60,7 @@ export default function Auctions({ hideTicker, placeholderTicker }: Props) {
     }, [userAddress, chainId, cacheFrequency]);
 
     // Components
-    const ResizableChart = (
+    const ResizableTickers = (
         <ResizableComponent
             tableParentRef={tableParentRef}
             searchableTickerHeights={searchableTickerHeights}
@@ -96,7 +96,7 @@ export default function Auctions({ hideTicker, placeholderTicker }: Props) {
                                 fullHeight
                                 ref={tableParentRef}
                             >
-                                {ResizableChart}
+                                {ResizableTickers}
                                 {!isMobile && <Chart />}
                             </FlexContainer>
                         </div>
@@ -121,7 +121,7 @@ export default function Auctions({ hideTicker, placeholderTicker }: Props) {
     return (
         <div className={styles.mobileContainer}>
             <h3>AUCTIONS</h3>
-            <span id='auctions_search_wrapper'>{ResizableChart}</span>
+            <span id='auctions_search_wrapper'>{ResizableTickers}</span>
         </div>
     );
 }

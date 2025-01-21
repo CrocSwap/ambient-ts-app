@@ -22,6 +22,7 @@ import {
 } from '../Auctions/useSortedAuctions';
 import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
 import HexReveal from '../Home/Animations/HexReveal';
+import ClaimComponent from './ClaimComponent/ClaimComponent';
 
 export type auctionDataSets = 'bids' | 'created';
 
@@ -218,7 +219,7 @@ export default function Account() {
     }
 
     return (
-        <main>
+        <main className={styles.main}>
             <div className={styles.tickers_and_chart}>
                 {isMobile && (
                     <>
@@ -226,63 +227,26 @@ export default function Account() {
                         <h2>Account</h2>
                     </>
                 )}
-                <SearchableTicker
-                    auctions={filtered}
-                    dataState={{
-                        active: tickerSet,
-                        toggle: toggleData,
-                    }}
-                    isAccount
-                />
+                <div className={styles.searchable_ticker}>
+                    <SearchableTicker
+                        auctions={filtered}
+                        dataState={{
+                            active: tickerSet,
+                            toggle: toggleData,
+                        }}
+                        isAccount
+                    />
+                </div>
             </div>
 
-            <div className={styles.rightLayout}>
-                <HexReveal>
-                    <p className={styles.label}>CLAIM</p>
-                    <FutaDivider2 />
-                </HexReveal>
-                {connectedAccountActive && (
-                    <div className={styles.data_detail}>
-                        {isMobile || (
-                            <div>
-                                <p className={styles.label}>CLAIM</p>
-                                <FutaDivider2 />
-                            </div>
-                        )}
-                        <div className={styles.claim}>
-                            <h3>CLAIM ALL</h3>
-                            <p className={styles.claimAllText}>
-                                CLAIM ALL TOKENS FROM WINNING AUCTIONS AND
-                                UNUSED BIDS
-                            </p>
-                            <div className={styles.extraFeeContainer}>
-                                <div className={styles.justifyRow}>
-                                    <TooltipLabel
-                                        itemTitle='NETWORK FEE'
-                                        tooltipTitle='NETWORK FEE PAID IN ORDER TO TRANSACT'
-                                    />
-                                    <p
-                                        style={{
-                                            color: 'var(--text2)',
-                                            fontSize: '14px',
-                                        }}
-                                    >
-                                        ~0.01
-                                    </p>
-                                </div>
-                            </div>
-                            <button
-                                id='futa_account_claim_all_button'
-                                className={styles.claim_btn}
-                                disabled={isButtonDisabled}
-                                onClick={sendClaimAndReturnAllTransaction}
-                            >
-                                {buttonText.toUpperCase()}
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </div>
+            <ClaimComponent
+                connectedAccountActive={connectedAccountActive}
+                isButtonDisabled={isButtonDisabled}
+                sendClaimAndReturnAllTransaction={
+                    sendClaimAndReturnAllTransaction
+                }
+                buttonText={buttonText}
+            />
         </main>
     );
 }
