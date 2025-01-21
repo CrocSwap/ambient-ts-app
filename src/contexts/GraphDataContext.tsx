@@ -60,7 +60,6 @@ export type RecentlyUpdatedPositionIF = {
     position: LimitOrderIF | PositionIF;
     type: string;
     action: string;
-    pair: string;
 };
 
 export interface GraphDataContextIF {

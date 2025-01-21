@@ -30,6 +30,8 @@ import { getPositionData } from '../../../ambient-utils/dataLayer/functions/getP
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { RecentlyUpdatedPositionIF } from '../../../contexts/GraphDataContext';
 
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const useGenFakeTableRow = () => {
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -39,6 +41,10 @@ const useGenFakeTableRow = () => {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
+
+    const getDelayTime = () => {
+        return 1000;
+    };
 
     const {
         activeNetwork: { chainId, poolIndex },
@@ -53,6 +59,8 @@ const useGenFakeTableRow = () => {
     ): Promise<RecentlyUpdatedPositionIF> => {
         if (!crocEnv || !pendingTx.txDetails)
             return {} as RecentlyUpdatedPositionIF;
+
+        await wait(getDelayTime());
 
         const pos = crocEnv.positions(
             pendingTx.txDetails.quoteAddress,
@@ -235,10 +243,6 @@ const useGenFakeTableRow = () => {
             position: onChainOrder,
             type: pendingTx.txType,
             action: pendingTx.txAction || '',
-            pair: pendingTx.txDetails.baseAddress.concat(
-                '-',
-                pendingTx.txDetails.quoteAddress,
-            ),
         };
     };
 
@@ -248,11 +252,17 @@ const useGenFakeTableRow = () => {
         if (!crocEnv || !pendingTx.txDetails)
             return {} as RecentlyUpdatedPositionIF;
 
+        console.log('??? genFakePosition - ', new Date().getTime());
+
+        await wait(getDelayTime());
+
         const pos = crocEnv.positions(
             pendingTx.txDetails.baseAddress,
             pendingTx.txDetails.quoteAddress,
             pendingTx.userAddress,
         );
+
+        console.log('??? genFakePosition2 - ', new Date().getTime());
 
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             crocEnv,
@@ -450,10 +460,6 @@ const useGenFakeTableRow = () => {
             position: onChainPosition,
             type: pendingTx.txType,
             action: pendingTx.txAction || '',
-            pair: pendingTx.txDetails.baseAddress.concat(
-                '-',
-                pendingTx.txDetails.quoteAddress,
-            ),
         };
     };
 

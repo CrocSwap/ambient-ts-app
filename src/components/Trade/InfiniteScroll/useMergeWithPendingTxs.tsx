@@ -27,7 +27,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
             recentlyUpdatedPositions
                 .filter(
                     (e) =>
-                        e.pair.toLocaleLowerCase() ===
+                        `${e.position.base}-${e.position.quote}`.toLocaleLowerCase() ===
                         `${baseToken.address}-${quoteToken.address}`.toLocaleLowerCase(),
                 )
                 .forEach((e) => {
