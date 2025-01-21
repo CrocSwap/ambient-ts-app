@@ -1,23 +1,29 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
+import Chart from '../../../components/Futa/Chart/Chart';
+import HexReveal from '../Home/Animations/HexReveal';
+import ResizableComponent from './ResizeableComponent';
+
 import { AppStateContext } from '../../../contexts';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import HexReveal from '../Home/Animations/HexReveal';
-import styles from './Auctions.module.css';
-import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
+import { FutaSearchableTickerContext } from '../../../contexts/Futa/FutaSearchableTickerContext';
 
-interface propsIF {
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
+import { FlexContainer } from '../../../styled/Common';
+
+import styles from './Auctions.module.css';
+
+interface Props {
     hideTicker?: boolean;
     placeholderTicker?: boolean;
 }
 
-export default function Auctions(props: propsIF) {
-    const { hideTicker, placeholderTicker } = props;
-
+export default function Auctions({ hideTicker, placeholderTicker }: Props) {
+    // Contexts
     const {
         globalAuctionList,
         updateGlobalAuctionsList,
@@ -27,25 +33,50 @@ export default function Auctions(props: propsIF) {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
+    const {
+        searchableTickerHeights,
+        setSearchableTickerHeight,
+        setIsSearchableTickerHeightMinimum,
+        canvasRef,
+    } = useContext(FutaSearchableTickerContext);
 
+    // Hooks
+    const isMobile = useMediaQuery('(max-width: 768px)');
+    const desktopScreen = useMediaQuery('(min-width: 1024px)');
+
+    // Refs
+    const tableParentRef = useRef<HTMLDivElement>(null);
+
+    // Derived Values
     const sorted: sortedAuctionsIF = useSortedAuctions(
         globalAuctionList.data || [],
     );
-
-    const desktopScreen: boolean = useMediaQuery('(min-width: 1024px)');
-
     const cacheFrequency = Math.floor(Date.now() / 30000);
 
+    // Effects
     useEffect(() => {
         updateGlobalAuctionsList();
-        if (userAddress) {
-            updateUserAuctionsList(userAddress);
-        } else {
-            updateUserAuctionsList('');
-        }
+        updateUserAuctionsList(userAddress || '');
     }, [userAddress, chainId, cacheFrequency]);
 
-    if (desktopScreen)
+    // Components
+    const ResizableChart = (
+        <ResizableComponent
+            tableParentRef={tableParentRef}
+            searchableTickerHeights={searchableTickerHeights}
+            setSearchableTickerHeight={setSearchableTickerHeight}
+            setIsSearchableTickerHeightMinimum={
+                setIsSearchableTickerHeightMinimum
+            }
+        >
+            <SearchableTicker
+                auctions={sorted}
+                placeholderTicker={placeholderTicker}
+            />
+        </ResizableComponent>
+    );
+
+    if (desktopScreen) {
         return (
             <div className={styles.desktopContainer}>
                 <div
@@ -55,10 +86,20 @@ export default function Auctions(props: propsIF) {
                     }}
                 >
                     <div id='auctions_search_wrapper'>
-                        <SearchableTicker
-                            auctions={sorted}
-                            placeholderTicker={placeholderTicker}
-                        />
+                        <div
+                            className={styles.searchable_ticker}
+                            style={{ height: '100%' }}
+                            ref={canvasRef}
+                        >
+                            <FlexContainer
+                                flexDirection='column'
+                                fullHeight
+                                ref={tableParentRef}
+                            >
+                                {ResizableChart}
+                                {!isMobile && <Chart />}
+                            </FlexContainer>
+                        </div>
                     </div>
                     <div className={styles.flexColumn}>
                         <HexReveal>
@@ -75,16 +116,12 @@ export default function Auctions(props: propsIF) {
                 </div>
             </div>
         );
+    }
 
     return (
         <div className={styles.mobileContainer}>
             <h3>AUCTIONS</h3>
-            <span id='auctions_search_wrapper'>
-                <SearchableTicker
-                    auctions={sorted}
-                    placeholderTicker={placeholderTicker}
-                />
-            </span>
+            <span id='auctions_search_wrapper'>{ResizableChart}</span>
         </div>
     );
 }

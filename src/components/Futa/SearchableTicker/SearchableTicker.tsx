@@ -10,13 +10,15 @@ import {
 import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
-import Chart from '../Chart/Chart';
 // import Divider from '../Divider/FutaDivider';
 import { auctionDataSets } from '../../../pages/platformFuta/Account/Account';
 import styles from './SearchableTicker.module.css';
 
 import useDeviceDetection from '../../../utils/hooks/useDeviceDetection';
-import ResizeableTable from '../ResizeableTable/ResizeableTable';
+import ResizeableTableHeader from '../ResizeableTable/ResizeableTableHeader/ResizeableTableHeader';
+import Typewriter from '../TypeWriter/TypeWriter';
+import { GoChevronRight } from 'react-icons/go';
+import TickerItem from './TickerItem';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
@@ -29,11 +31,13 @@ interface propsIF {
 }
 
 export default function SearchableTicker(props: propsIF) {
-    const { auctions, placeholderTicker, isAccount } = props;
+    const { auctions, placeholderTicker, isAccount, dataState } = props;
 
     const {
         hoveredTicker,
         setSelectedTicker,
+        selectedTicker,
+        setHoveredTicker,
 
         showComplete,
         setShowComplete,
@@ -41,10 +45,10 @@ export default function SearchableTicker(props: propsIF) {
         setFilteredAuctionList,
     } = useContext(AuctionsContext);
 
-    const { searchableTickerHeights, setSearchableTickerHeight, canvasRef } =
-        useContext(FutaSearchableTickerContext);
+    const { searchableTickerHeights, setSearchableTickerHeight } = useContext(
+        FutaSearchableTickerContext,
+    );
 
-    const tableParentRef = useRef<HTMLDivElement>(null);
     const tickerTableRef = useRef<HTMLDivElement>(null);
     // logic to expand table to full height if no data is available, this
     // ... keeps the 'no data available' msg centered in the visual space,
@@ -231,35 +235,95 @@ export default function SearchableTicker(props: propsIF) {
         };
     }, []);
 
-    return (
-        <div
-            className={styles.searchable_ticker}
-            style={{
-                gridTemplateRows: isAccount ? 'auto 100%' : '',
-                height: '100%',
-            }}
-            ref={canvasRef}
-        >
-            <FlexContainer
-                flexDirection='column'
-                fullHeight
-                ref={tableParentRef}
-            >
-                {/* {resizableTable} */}
-                <ResizeableTable
-                    auctions={auctions}
-                    filteredData={filteredData}
-                    isMouseEnter={isMouseEnter}
-                    setIsMouseEnter={setIsMouseEnter}
-                    containerRef={containerRef}
-                    tickerItemRefs={tickerItemRefs}
-                    searchInputRaw={searchInputRaw}
-                    setSearchInputRaw={setSearchInputRaw}
-                    activeSortOption={activeSortOption}
-                    setActiveSortOption={setActiveSortOption}
-                />
-                {!isAccount && !isMobile && <Chart />}
-            </FlexContainer>
+    const noAuctionsContent = (
+        <div className={styles.no_auctions_content}>
+            <Typewriter
+                text={
+                    watchlists.shouldDisplay
+                        ? 'No tickers found in your watchlist'
+                        : 'No tickers to display'
+                }
+            />
+            {watchlists.shouldDisplay && <p>Consider viewing all tickers</p>}
+            {watchlists.shouldDisplay && (
+                <button onClick={() => watchlists.toggle()}>
+                    View all tickers
+                </button>
+            )}
         </div>
+    );
+    const searchableContent = (
+        <div className={styles.ticker_table} ref={tickerTableRef}>
+            {filteredData.length ? (
+                <header>
+                    <p className={styles.cell_left}>
+                        {
+                            // this icon is a stupid but effective way
+                            // ... way to keep the header text aligned
+                            // ... with the content below
+                        }
+                        {isMobile || (
+                            <GoChevronRight
+                                size={20}
+                                className={styles.ticker_col_header_spacer}
+                            />
+                        )}
+                        TICKER
+                    </p>
+                    <p className={styles.cell_right}>MARKET CAP</p>
+                    <p className={styles.cell_center}>STATUS</p>
+                    <p className={styles.cell_right}>TIME</p>
+                    {dataState?.active === 'created' && (
+                        <p className={styles.cell_right}>ETH Committed</p>
+                    )}
+                    {dataState?.active === 'created' && (
+                        <p className={styles.cell_right}>ETH Rewards</p>
+                    )}
+                </header>
+            ) : null}
+            <div
+                className={styles.ticker_table_content}
+                onMouseEnter={() => setIsMouseEnter(true)}
+                onMouseLeave={() => {
+                    setIsMouseEnter(false);
+                    setHoveredTicker(undefined);
+                }}
+                ref={containerRef}
+            >
+                {filteredData.length
+                    ? (showComplete && auctions.active === 'timeLeft'
+                          ? [...filteredData].reverse()
+                          : [...filteredData]
+                      ).map((auction: AuctionDataIF) => (
+                          <TickerItem
+                              key={JSON.stringify(auction)}
+                              auction={auction}
+                              isAccount={isAccount}
+                              isMobile={isMobile}
+                              selectedTicker={selectedTicker}
+                              setSelectedTicker={setSelectedTicker}
+                              setShowComplete={setShowComplete}
+                              useRefTicker={tickerItemRefs}
+                              isCreated={dataState?.active === 'created'}
+                          />
+                      ))
+                    : noAuctionsContent}
+            </div>
+        </div>
+    );
+
+    return (
+        <FlexContainer flexDirection='column' fullHeight fullWidth>
+            <ResizeableTableHeader
+                auctions={auctions}
+                dataState={dataState}
+                searchInputRaw={searchInputRaw}
+                setSearchInputRaw={setSearchInputRaw}
+                filteredData={filteredData}
+                activeSortOption={activeSortOption}
+                setActiveSortOption={setActiveSortOption}
+            />
+            {searchableContent}
+        </FlexContainer>
     );
 }

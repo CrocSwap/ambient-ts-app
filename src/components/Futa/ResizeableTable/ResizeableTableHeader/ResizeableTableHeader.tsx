@@ -1,49 +1,63 @@
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { BiSearch } from 'react-icons/bi';
-import styles from './ResizeableTableHeader.module.css';
 import { MdClose } from 'react-icons/md';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import {
-    auctionSorts,
-    sortedAuctionsIF,
-} from '../../../../pages/platformFuta/Auctions/useSortedAuctions';
+import { LuCheck, LuPencil } from 'react-icons/lu';
+import { FaEye } from 'react-icons/fa';
+
+import styles from './ResizeableTableHeader.module.css';
+import { AuctionsContext } from '../../../../contexts';
+import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import {
     AuctionDataIF,
     diffHashSig,
 } from '../../../../ambient-utils/dataLayer';
+import {
+    auctionSorts,
+    sortedAuctionsIF,
+} from '../../../../pages/platformFuta/Auctions/useSortedAuctions';
 import { auctionDataSets } from '../../../../pages/platformFuta/Account/Account';
-import { AuctionsContext } from '../../../../contexts';
-import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-import { LuCheck, LuPencil } from 'react-icons/lu';
-import { FaEye } from 'react-icons/fa';
-interface filterOptionIF {
+
+interface FilterOptionIF {
     label: string;
     value: string;
     slug: auctionSorts;
     default: 'asc' | 'desc';
 }
 
-interface propsIF {
+interface ResizeableTableHeaderProps {
     auctions: sortedAuctionsIF;
     dataState?: {
         active: auctionDataSets;
         toggle: (set?: auctionDataSets) => void;
     };
     isAccount?: boolean;
-    placeholderTicker?: boolean | undefined;
+    placeholderTicker?: boolean;
     searchInputRaw: string;
     setSearchInputRaw: React.Dispatch<React.SetStateAction<string>>;
     filteredData: AuctionDataIF[];
-    activeSortOption: filterOptionIF;
-    setActiveSortOption: React.Dispatch<React.SetStateAction<filterOptionIF>>;
+    activeSortOption: FilterOptionIF;
+    setActiveSortOption: React.Dispatch<React.SetStateAction<FilterOptionIF>>;
 }
-export default function ResizeableTableHeader(props: propsIF) {
-    const {
-        showComplete,
-        setShowComplete,
-        watchlists,
-        setFilteredAuctionList,
-    } = useContext(AuctionsContext);
+
+const SORT_OPTIONS = [
+    {
+        label: 'Time Remaining',
+        value: 'Time Remaining',
+        slug: 'timeLeft',
+        default: 'asc',
+    },
+    {
+        label: 'Market Cap',
+        value: 'Market Cap',
+        slug: 'marketCap',
+        default: 'desc',
+    },
+] as const;
+
+export default function ResizeableTableHeader(
+    props: ResizeableTableHeaderProps,
+) {
     const {
         auctions,
         isAccount,
@@ -55,132 +69,83 @@ export default function ResizeableTableHeader(props: propsIF) {
         setActiveSortOption,
     } = props;
 
-    const [isSortDropdownOpen, setIsSortDropdownOpen] =
-        useState<boolean>(false);
-    // scrolling is disabled when hover on table
+    const {
+        showComplete,
+        setShowComplete,
+        watchlists,
+        setFilteredAuctionList,
+    } = useContext(AuctionsContext);
 
-    // shape of data to create filter dropdown menu options
-    interface filterOptionIF {
-        label: string;
-        value: string;
-        slug: auctionSorts;
-        default: 'asc' | 'desc';
-    }
+    const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const sortDropdownOptions: filterOptionIF[] = [
-        {
-            label: 'Time Remaining',
-            value: 'Time Remaining',
-            slug: 'timeLeft',
-            default: 'asc',
-        },
-        {
-            label: 'Market Cap',
-            value: 'Market Cap',
-            slug: 'marketCap',
-            default: 'desc',
-        },
-    ];
+    useOnClickOutside(dropdownRef, () => setIsSortDropdownOpen(false));
 
-    // DOM id for search input field
-    const INPUT_DOM_ID = 'ticker_auction_search_input';
-
-    // fn to clear search input and re-focus the input element
-    function clearInput(): void {
-        setSearchInputRaw('');
-        focusInput();
-    }
-
-    function focusInput(): void {
-        document.getElementById(INPUT_DOM_ID)?.focus();
-    }
-
-    // clear search input on ESC keypress
     useEffect(() => {
-        const handleEscape = (e: KeyboardEvent): void => {
-            if (document.activeElement?.id === INPUT_DOM_ID) {
-                e.code === 'Escape' && clearInput();
+        const handleEscape = (e: KeyboardEvent) => {
+            if (
+                e.code === 'Escape' &&
+                document.activeElement?.id === 'ticker_auction_search_input'
+            ) {
+                setSearchInputRaw('');
+                document.getElementById('ticker_auction_search_input')?.focus();
             }
         };
         document.body.addEventListener('keydown', handleEscape);
-        return function cleanUp() {
-            document.body.removeEventListener('keydown', handleEscape);
-        };
-    });
-
-    // split auction data into complete vs incomplete subsets
-    // runs any time new data is received by the components
-    const [incompleteAuctions, completeAuctions] = useMemo<
-        [AuctionDataIF[], AuctionDataIF[]]
-    >(() => {
-        // declare output variables
-        const complete: AuctionDataIF[] = [];
-        const incomplete: AuctionDataIF[] = [];
-        // function to push an auction into the relevant output variables
-        function categorize(a: AuctionDataIF): void {
-            const isComplete: boolean =
-                a.createdAt <= (Date.now() - a.auctionLength * 1000) / 1000;
-            isComplete ? complete.push(a) : incomplete.push(a);
-        }
-        // iterate over auction data to split into complete vs incomplete subsets
-        auctions.data.forEach((auction: AuctionDataIF) => categorize(auction));
-        // return output variables
-        return [incomplete, complete];
-        // remove completed auctions from incomplete auctions list every 5 seconds
-    }, [auctions.data, Math.floor(Date.now() / 1000 / 5)]);
-
-    // auto switch to complete auctions if user only has complete auctions
-    useEffect(() => {
-        if (!incompleteAuctions.length && completeAuctions.length) {
-            setShowComplete(true);
-        }
-    }, [incompleteAuctions.length, completeAuctions.length]);
-
-    const timeDropdownRef = useRef<HTMLDivElement>(null);
-
-    // fn to close the sort filter menu when user clicks outside
-    const clickOutsideHandler = (): void => {
-        setIsSortDropdownOpen(false);
-    };
-
-    // hook to handle user click outside of the dropdown modal
-    useOnClickOutside(timeDropdownRef, clickOutsideHandler);
-
-    // useEffect(() => {
-    //     if (placeholderTicker) setSelectedTicker(undefined);
-    // }, [placeholderTicker]);
+        return () => document.body.removeEventListener('keydown', handleEscape);
+    }, [searchInputRaw, searchInputRaw]);
 
     useEffect(() => {
         setFilteredAuctionList(filteredData);
     }, [diffHashSig(filteredData)]);
 
-    // fn to determine directionality sort arrows should indicate
-    function getArrowDirection(): 'up' | 'down' | null {
-        let output: 'up' | 'down' | null = null;
-        if (auctions.active === 'marketCap') {
-            output = auctions.isReversed ? 'up' : 'down';
-        } else if (auctions.active === 'timeLeft') {
-            output = auctions.isReversed ? 'down' : 'up';
-        }
-        return output;
-    }
+    const [incomplete, complete] = useMemo(() => {
+        return auctions.data.reduce<[AuctionDataIF[], AuctionDataIF[]]>(
+            (acc, auction) => {
+                const isComplete =
+                    auction.createdAt <=
+                    (Date.now() - auction.auctionLength * 1000) / 1000;
+                acc[isComplete ? 1 : 0].push(auction);
+                return acc;
+            },
+            [[], []],
+        );
+    }, [auctions.data, Math.floor(Date.now() / 1000 / 5)]);
 
-    // apply a consistent size to all icons inside buttons
-    const BUTTON_ICON_SIZE = 17;
+    useEffect(() => {
+        if (!incomplete.length && complete.length) {
+            setShowComplete(true);
+        }
+    }, [incomplete.length, complete.length]);
+
+    const sortDirection =
+        auctions.active === 'marketCap'
+            ? auctions.isReversed
+                ? 'up'
+                : 'down'
+            : auctions.active === 'timeLeft'
+              ? auctions.isReversed
+                  ? 'down'
+                  : 'up'
+              : null;
 
     return (
         <search className={styles.header}>
             <div className={styles.search_and_sort}>
+                {/* Search Input */}
                 <div className={styles.text_search_box}>
                     <BiSearch
                         size={20}
                         color='var(--text2)'
-                        id='searchable_ticker_input'
-                        onClick={() => focusInput()}
+                        onClick={() =>
+                            document
+                                .getElementById('ticker_auction_search_input')
+                                ?.focus()
+                        }
                     />
                     <input
+                        id='ticker_auction_search_input'
                         type='text'
-                        id={INPUT_DOM_ID}
                         value={searchInputRaw}
                         onChange={(e) => setSearchInputRaw(e.target.value)}
                         placeholder='SEARCH...'
@@ -192,11 +157,20 @@ export default function ResizeableTableHeader(props: propsIF) {
                         <MdClose
                             size={20}
                             color='var(--text2)'
-                            onClick={() => clearInput()}
+                            onClick={() => {
+                                setSearchInputRaw('');
+                                document
+                                    .getElementById(
+                                        'ticker_auction_search_input',
+                                    )
+                                    ?.focus();
+                            }}
                         />
                     )}
                 </div>
-                <div className={styles.sort_clickable} ref={timeDropdownRef}>
+
+                {/* Sort Dropdown */}
+                <div className={styles.sort_clickable} ref={dropdownRef}>
                     <div className={styles.sort_selection}>
                         <div
                             className={styles.open_dropdown_clickable}
@@ -208,19 +182,10 @@ export default function ResizeableTableHeader(props: propsIF) {
                             {isSortDropdownOpen ? (
                                 <IoIosArrowUp color='var(--accent1)' />
                             ) : (
-                                <IoIosArrowDown
-                                    onClick={(e) => {
-                                        // without this handler the click will not register
-                                        // ... properly to open the dropdown menu
-                                        e.stopPropagation();
-                                        setIsSortDropdownOpen(
-                                            !isSortDropdownOpen,
-                                        );
-                                    }}
-                                    color='var(--accent1)'
-                                />
+                                <IoIosArrowDown color='var(--accent1)' />
                             )}
                         </div>
+
                         <div
                             className={styles.sort_direction}
                             onClick={() => auctions.reverse()}
@@ -228,49 +193,50 @@ export default function ResizeableTableHeader(props: propsIF) {
                             <IoIosArrowUp
                                 size={14}
                                 color={
-                                    getArrowDirection() === 'up'
+                                    sortDirection === 'up'
                                         ? 'var(--accent1)'
                                         : ''
                                 }
                             />
-
                             <IoIosArrowDown
                                 size={14}
                                 color={
-                                    getArrowDirection() === 'down'
+                                    sortDirection === 'down'
                                         ? 'var(--accent1)'
                                         : ''
                                 }
                             />
                         </div>
                     </div>
+
                     {isSortDropdownOpen && (
                         <div className={styles.dropdown}>
-                            {sortDropdownOptions.map((item, idx) => (
+                            {SORT_OPTIONS.map((option) => (
                                 <p
-                                    key={idx}
+                                    key={option.slug}
                                     className={
                                         styles[
-                                            activeSortOption.slug === item.slug
+                                            activeSortOption.slug ===
+                                            option.slug
                                                 ? 'active_sort'
                                                 : 'inactive_sort'
                                         ]
                                     }
                                     onClick={() => {
-                                        setActiveSortOption(item);
+                                        setActiveSortOption(option);
                                         setIsSortDropdownOpen(false);
-                                        auctions.update(
-                                            item.slug as auctionSorts,
-                                        );
+                                        auctions.update(option.slug);
                                     }}
                                 >
-                                    {item.label}
+                                    {option.label}
                                 </p>
                             ))}
                         </div>
                     )}
                 </div>
             </div>
+
+            {/* Filter Buttons */}
             <div className={styles.filters}>
                 <button
                     onClick={() => setShowComplete(!showComplete)}
@@ -278,12 +244,13 @@ export default function ResizeableTableHeader(props: propsIF) {
                         styles[showComplete ? 'button_on' : 'button_off']
                     }
                 >
-                    <LuCheck size={BUTTON_ICON_SIZE} />
+                    <LuCheck size={17} />
                     <div>COMPLETED</div>
                 </button>
-                {isAccount || (
+
+                {!isAccount && (
                     <button
-                        onClick={() => watchlists.toggle()}
+                        onClick={watchlists.toggle}
                         className={
                             styles[
                                 watchlists.shouldDisplay
@@ -292,11 +259,12 @@ export default function ResizeableTableHeader(props: propsIF) {
                             ]
                         }
                     >
-                        <FaEye size={BUTTON_ICON_SIZE} />
+                        <FaEye size={17} />
                         <div>WATCHLIST</div>
                     </button>
                 )}
-                {isAccount ? (
+
+                {isAccount && (
                     <button
                         className={
                             styles[
@@ -307,10 +275,10 @@ export default function ResizeableTableHeader(props: propsIF) {
                         }
                         onClick={() => dataState?.toggle && dataState.toggle()}
                     >
-                        <LuPencil size={BUTTON_ICON_SIZE} />
+                        <LuPencil size={17} />
                         <div>CREATED</div>
                     </button>
-                ) : null}
+                )}
             </div>
         </search>
     );
