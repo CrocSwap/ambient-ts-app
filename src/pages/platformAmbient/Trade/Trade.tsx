@@ -202,6 +202,10 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         poolPriceChangeString,
     };
 
+    // Simulate a random error 50% of the time
+    if (Math.random() < 0.5) {
+        throw new Error('Test error: Something went wrong randomly!');
+    }
     if (showMobileVersion) return <TradeMobile {...tradeMobileProps} />;
 
     return (
