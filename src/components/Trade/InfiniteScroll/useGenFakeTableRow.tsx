@@ -43,7 +43,7 @@ const useGenFakeTableRow = () => {
     } = useContext(CachedDataContext);
 
     const getDelayTime = () => {
-        return 1000;
+        return 2000;
     };
 
     const {
