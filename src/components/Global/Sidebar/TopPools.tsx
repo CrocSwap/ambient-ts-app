@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import { PoolQueryFn } from '../../../ambient-utils/dataLayer';
 import { AppStateContext, ExploreContext } from '../../../contexts';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { PoolDataIF } from '../../../contexts/ExploreContext';
 import { FlexContainer } from '../../../styled/Common';
 import {
     ItemHeaderContainer,
@@ -20,9 +19,9 @@ interface propsIF {
 export default function TopPools(props: propsIF) {
     const { cachedQuerySpotPrice } = props;
 
-    const { topPools: hardcodedTopPools, crocEnv } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const {
-        pools: { all: allPoolData },
+        pools: { topPools },
     } = useContext(ExploreContext);
 
     const {
@@ -38,45 +37,10 @@ export default function TopPools(props: propsIF) {
 
     const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
 
-    const sortAndFilter = (
-        poolData: PoolDataIF[],
-        filter: 'volume' | 'tvl',
-        threshold: number,
-    ): PoolDataIF[] =>
-        poolData
-            .filter((pool) => {
-                if (filter === 'tvl') return pool.tvl > threshold;
-                return pool.volume > threshold;
-            })
-            .sort(
-                (poolA: PoolDataIF, poolB: PoolDataIF) =>
-                    poolB[filter] - poolA[filter],
-            );
+    const top5pools = useMemo(
+        () => topPools.slice(0, 5),
 
-    const poolData = useMemo(
-        () =>
-            (!allPoolData.length
-                ? hardcodedTopPools
-                : sortAndFilter(allPoolData, 'volume', 1000).length >= 3
-                  ? sortAndFilter(allPoolData, 'volume', 1000).slice(
-                        0,
-                        Math.max(
-                            hardcodedTopPools.length,
-                            sortAndFilter(allPoolData, 'volume', 1000).length,
-                        ),
-                    )
-                  : sortAndFilter(allPoolData, 'volume', 100).length >= 3
-                    ? sortAndFilter(allPoolData, 'volume', 100).slice(
-                          0,
-                          Math.max(
-                              hardcodedTopPools.length,
-                              sortAndFilter(allPoolData, 'volume', 100).length,
-                          ),
-                      )
-                    : sortAndFilter(allPoolData, 'volume', 0).slice(0, 1)
-            ).slice(0, 5),
-
-        [hardcodedTopPools, allPoolData],
+        [topPools],
     );
 
     useEffect(() => {
@@ -85,7 +49,7 @@ export default function TopPools(props: propsIF) {
         const fetchSpotPrices = async () => {
             if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
                 return;
-            const spotPricePromises = poolData.map((pool) =>
+            const spotPricePromises = top5pools.map((pool) =>
                 cachedQuerySpotPrice(
                     crocEnv,
                     pool.base.address,
@@ -106,7 +70,7 @@ export default function TopPools(props: propsIF) {
         };
 
         fetchSpotPrices();
-    }, [crocEnv, chainId, poolPriceCacheTime]);
+    }, [crocEnv, chainId, poolPriceCacheTime, top5pools]);
 
     return (
         <FlexContainer
@@ -123,7 +87,7 @@ export default function TopPools(props: propsIF) {
                 )}
             </ItemHeaderContainer>
             <ItemsContainer>
-                {poolData.map((pool, idx) => (
+                {top5pools.map((pool, idx) => (
                     <PoolsListItem
                         pool={pool}
                         key={idx}

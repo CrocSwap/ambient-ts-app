@@ -7,7 +7,6 @@ import {
 } from '../../../contexts';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { PoolDataIF } from '../../../contexts/ExploreContext';
 import {
     HomeContent,
     HomeTitle,
@@ -25,13 +24,9 @@ interface TopPoolsPropsIF {
 // eslint-disable-next-line
 export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
-        topPools: hardcodedTopPools,
-        crocEnv,
-        provider,
-    } = useContext(CrocEnvContext);
-    const {
-        pools: { all: allPoolData },
+        pools: { topPools },
     } = useContext(ExploreContext);
 
     const { blockPollingUrl } = useContext(ChainDataContext);
@@ -44,43 +39,9 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const show4TopPools = useMediaQuery('(max-width: 1500px)');
     const show3TopPools = useMediaQuery('(min-height: 700px)');
 
-    const sortAndFilter = (
-        poolData: PoolDataIF[],
-        filter: 'volume' | 'tvl',
-        threshold: number,
-    ): PoolDataIF[] =>
-        poolData
-            .filter((pool) => {
-                if (filter === 'tvl') return pool.tvl > threshold;
-                return pool.volume > threshold;
-            })
-            .sort(
-                (poolA: PoolDataIF, poolB: PoolDataIF) =>
-                    poolB[filter] - poolA[filter],
-            );
-
     const poolData = useMemo(
         () =>
-            (!allPoolData.length
-                ? hardcodedTopPools
-                : sortAndFilter(allPoolData, 'volume', 1000).length >= 3
-                  ? sortAndFilter(allPoolData, 'volume', 1000).slice(
-                        0,
-                        Math.max(
-                            hardcodedTopPools.length,
-                            sortAndFilter(allPoolData, 'volume', 1000).length,
-                        ),
-                    )
-                  : sortAndFilter(allPoolData, 'volume', 100).length >= 3
-                    ? sortAndFilter(allPoolData, 'volume', 100).slice(
-                          0,
-                          Math.max(
-                              hardcodedTopPools.length,
-                              sortAndFilter(allPoolData, 'volume', 100).length,
-                          ),
-                      )
-                    : sortAndFilter(allPoolData, 'volume', 0).slice(0, 1)
-            ).slice(
+            topPools.slice(
                 0,
                 showMobileVersion
                     ? show3TopPools
@@ -91,13 +52,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
                       : 5,
             ),
 
-        [
-            hardcodedTopPools,
-            showMobileVersion,
-            show3TopPools,
-            show4TopPools,
-            allPoolData,
-        ],
+        [topPools, showMobileVersion, show3TopPools, show4TopPools],
     );
 
     const poolPriceCacheTime = Math.floor(Date.now() / 10000); // 10 second cache
