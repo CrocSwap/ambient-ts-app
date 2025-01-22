@@ -230,6 +230,11 @@ export const hiddenTokens = [
         address: '0x360822f796975cEccD8095c10720c57567b4199f',
         chainId: 98865,
     },
+    {
+        // old WTT on Base Testnet
+        address: '0xfefd8bcb0034a2b0e3cc22e2f5a59279fae67128',
+        chainId: 84532,
+    },
 ];
 
 const embargoedTokens = [
