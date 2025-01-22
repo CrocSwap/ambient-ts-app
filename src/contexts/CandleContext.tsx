@@ -27,7 +27,6 @@ import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
-import { TokenContext } from './TokenContext';
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
     setCandleData: Dispatch<
@@ -73,7 +72,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = useContext(AppStateContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
-    const { tokens } = useContext(TokenContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -195,7 +193,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
         baseTokenAddressRef.current = baseTokenAddress.toLowerCase();
         quoteTokenAddressRef.current = quoteTokenAddress.toLowerCase();
-    }, [poolTokenAddress, chainId, tokens.tokenUniv.length]);
+    }, [poolTokenAddress, chainId]);
 
     // only works when the period changes
     useEffect(() => {

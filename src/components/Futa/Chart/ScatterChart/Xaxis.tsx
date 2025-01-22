@@ -10,6 +10,7 @@ interface AxisIF {
     axisColor: string;
     textColor: string;
     showDayCount: number;
+    calculateXTickStep: (showDayCount: number) => number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     chartSize: any;
     showComplete: boolean;
@@ -23,6 +24,7 @@ export default function Xaxis(props: AxisIF) {
         axisColor,
         textColor,
         showDayCount,
+        calculateXTickStep,
         chartSize,
         showComplete,
     } = props;
@@ -34,13 +36,11 @@ export default function Xaxis(props: AxisIF) {
                 .tickValues(
                     afterOneWeek && !showComplete
                         ? d3.range(0, 1441, 60)
-                        : showDayCount > 30
-                          ? d3.range(0, scale.domain()[0], 1441 * 7)
-                          : d3.range(
-                                0,
-                                scale.domain()[0],
-                                showDayCount > 7 ? 1441 : 1441 / 2,
-                            ),
+                        : d3.range(
+                              0,
+                              scale.domain()[0],
+                              calculateXTickStep(showDayCount) * 2,
+                          ),
                 )
                 .tickFormat((d) => {
                     if (Number.isInteger(d)) {
@@ -55,6 +55,12 @@ export default function Xaxis(props: AxisIF) {
                         }
 
                         const day = d.valueOf() / 1441;
+
+                        if (showDayCount > 20) {
+                            if (day % 2 === 1) {
+                                return '';
+                            }
+                        }
                         return day.toString() + 'd';
                     }
 
