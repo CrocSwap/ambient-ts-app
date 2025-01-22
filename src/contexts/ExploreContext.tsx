@@ -7,6 +7,7 @@ import {
     createContext,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from 'react';
 import {
@@ -29,6 +30,7 @@ import { TokenContext } from './TokenContext';
 export interface ExploreContextIF {
     pools: {
         all: Array<PoolDataIF>;
+        topPools: PoolIF[];
         getAllPools: (
             poolList: PoolIF[],
             crocEnv: CrocEnv,
@@ -66,7 +68,11 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
-    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const {
+        topPools: hardcodedTopPools,
+        crocEnv,
+        provider,
+    } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { allPoolStats, isActiveNetworkPlume, isActiveNetworkSwell } =
         useContext(ChainDataContext);
@@ -375,6 +381,46 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             });
     }
 
+    const sortAndFilter = (
+        poolData: PoolDataIF[],
+        filter: 'volume' | 'tvl',
+        threshold: number,
+    ): PoolDataIF[] =>
+        poolData
+            .filter((pool) => {
+                if (filter === 'tvl') return pool.tvl > threshold;
+                return pool.volume > threshold;
+            })
+            .sort(
+                (poolA: PoolDataIF, poolB: PoolDataIF) =>
+                    poolB[filter] - poolA[filter],
+            );
+
+    const topPools = useMemo(
+        () =>
+            !allPools.length
+                ? hardcodedTopPools
+                : sortAndFilter(allPools, 'volume', 1000).length >= 3
+                  ? sortAndFilter(allPools, 'volume', 1000).slice(
+                        0,
+                        Math.max(
+                            hardcodedTopPools.length,
+                            sortAndFilter(allPools, 'volume', 1000).length,
+                        ),
+                    )
+                  : sortAndFilter(allPools, 'volume', 100).length >= 2
+                    ? sortAndFilter(allPools, 'volume', 100).slice(
+                          0,
+                          Math.max(
+                              hardcodedTopPools.length,
+                              sortAndFilter(allPools, 'volume', 100).length,
+                          ),
+                      )
+                    : sortAndFilter(allPools, 'volume', 0).slice(0, 1),
+
+        [hardcodedTopPools, allPools],
+    );
+
     const dexTokens: useTokenStatsIF = useTokenStats(
         activeNetwork.chainId,
         crocEnv,
@@ -389,6 +435,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         pools: {
             all: allPools,
             getAllPools: getAllPools,
+            topPools: topPools,
             reset: () => {
                 setIntermediaryPoolData([]);
             },

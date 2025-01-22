@@ -74,7 +74,7 @@ export default function PoolCard(props: propsIF) {
 
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
-            {poolPrice === undefined || spotPrice === undefined
+            {poolPrice === undefined
                 ? '…'
                 : isHovered || denomTokenIsUsdStableToken
                   ? denomTokenIsWBTCToken ||
@@ -133,9 +133,7 @@ export default function PoolCard(props: propsIF) {
                         : styles.change_negative
                 }
             >
-                {spotPrice === undefined ||
-                poolPrice === undefined ||
-                poolPriceChangePercent === undefined
+                {poolPrice === undefined || poolPriceChangePercent === undefined
                     ? '…'
                     : poolPriceChangePercent}
             </div>
