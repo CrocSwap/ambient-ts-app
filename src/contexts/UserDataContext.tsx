@@ -93,6 +93,7 @@ export const UserDataContextProvider = (props: {
                 // TODO: Remove this after web3modal upgrade
                 await walletProvider.request({
                     method: 'wallet_revokePermissions',
+                    // eslint-disable-next-line camelcase
                     params: [{ eth_accounts: {} }],
                 });
             } catch (error) {
