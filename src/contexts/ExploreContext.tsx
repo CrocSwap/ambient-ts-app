@@ -389,7 +389,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         poolData
             .filter((pool) => {
                 if (filter === 'tvl') return pool.tvl > threshold;
-                return pool.volume > threshold;
+                return pool.volume >= threshold;
             })
             .sort(
                 (poolA: PoolDataIF, poolB: PoolDataIF) =>
@@ -416,7 +416,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                               sortAndFilter(allPools, 'volume', 100).length,
                           ),
                       )
-                    : sortAndFilter(allPools, 'volume', 0).slice(0, 1),
+                    : sortAndFilter(allPools, 'volume', 0).slice(0, 3),
 
         [hardcodedTopPools, allPools],
     );
