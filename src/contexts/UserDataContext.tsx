@@ -1,4 +1,8 @@
-import { useDisconnect, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import {
+    useDisconnect,
+    useWeb3ModalAccount,
+    useWeb3ModalProvider,
+} from '@web3modal/ethers/react';
 import React, {
     Dispatch,
     SetStateAction,
@@ -81,7 +85,23 @@ export const UserDataContextProvider = (props: {
 
     const { isUserOnline } = useContext(AppStateContext);
 
-    const { disconnect: disconnectUser } = useDisconnect();
+    const { disconnect } = useDisconnect();
+    const { walletProvider } = useWeb3ModalProvider();
+    async function disconnectUser(): Promise<void> {
+        if (walletProvider) {
+            try {
+                // TODO: Remove this after web3modal upgrade
+                await walletProvider.request({
+                    method: 'wallet_revokePermissions',
+                    params: [{ eth_accounts: {} }],
+                });
+            } catch (error) {
+                console.error('disconnect error', { error });
+            }
+        }
+        await disconnect();
+    }
+
     const isBlacklisted = userAddress ? checkBlacklist(userAddress) : false;
     if (isBlacklisted) disconnectUser();
 
