@@ -95,7 +95,6 @@ export default defineConfig({
                     } else if (id.toLowerCase().includes('web3modal')) {
                         return 'web3modal';
                     } else if (
-                        id.toLowerCase().includes('material-ui') ||
                         id.toLowerCase().includes('popper') ||
                         id.toLowerCase().includes('mui') ||
                         id.toLowerCase().includes('react-color') ||
