@@ -1,5 +1,4 @@
-import { Snackbar } from '@material-ui/core';
-import { Alert, AlertProps } from '@mui/material';
+import { Alert, AlertProps, Snackbar } from '@mui/material';
 import { motion } from 'framer-motion';
 import {
     forwardRef,

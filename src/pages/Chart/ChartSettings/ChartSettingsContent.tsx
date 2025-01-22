@@ -1,4 +1,4 @@
-import Divider from '@material-ui/core/Divider/Divider';
+import { Divider } from '@mui/material';
 import * as d3 from 'd3';
 import { MouseEvent, useContext, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
@@ -8,6 +8,7 @@ import { ChartContext, ChartThemeIF } from '../../../contexts/ChartContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../../platformAmbient/Chart/ChartUtils/chartConstants';
 import {
     chartItemStates,
@@ -45,7 +46,6 @@ import {
     StyledCheckbox,
     StyledSelectbox,
 } from './ChartSettingsCss';
-import { useMediaQuery } from '@material-ui/core';
 
 interface ContextMenuContentIF {
     chartThemeColors: ChartThemeIF;

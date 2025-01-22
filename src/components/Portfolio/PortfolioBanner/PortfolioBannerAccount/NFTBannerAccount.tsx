@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
@@ -13,6 +12,7 @@ import {
     NftListByChain,
 } from '../../../../contexts/TokenBalanceContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { getAvatarForType } from '../../../Chat/ChatRenderUtils';
 import ChatToaster from '../../../Chat/ChatToaster/ChatToaster';

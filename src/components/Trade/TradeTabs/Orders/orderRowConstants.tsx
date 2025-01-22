@@ -117,7 +117,6 @@ export const orderRowConstants = (props: propsIF) => {
     const IDWithTooltip = (
         <RowItem hover data-label='id' role='button' tabIndex={0}>
             <TextOnlyTooltip
-                interactive
                 title={
                     <FlexContainer
                         justifyContent='center'
@@ -180,7 +179,6 @@ export const orderRowConstants = (props: propsIF) => {
             style={ensName ? { textTransform: 'lowercase' } : undefined}
         >
             <TextOnlyTooltip
-                interactive
                 title={
                     <FlexContainer
                         justifyContent='center'
@@ -366,7 +364,6 @@ export const orderRowConstants = (props: propsIF) => {
             <>
                 {limitOrder.latestUpdateTime ? (
                     <TextOnlyTooltip
-                        interactive
                         title={
                             <FlexContainer
                                 fullWidth

@@ -1,4 +1,4 @@
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { BsArrowLeft } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMediaQuery } from '@material-ui/core';
 import { EmojiClickData } from 'emoji-picker-react';
 import {
     Dispatch,
@@ -30,6 +29,7 @@ import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import ChatConfirmationPanel from '../ChatConfirmationPanel/ChatConfirmationPanel';
 import { ChatGoToChatParamsIF } from '../ChatIFs';
 import ChatNotificationBubble from '../ChatNotification/ChatNotificationBubble';

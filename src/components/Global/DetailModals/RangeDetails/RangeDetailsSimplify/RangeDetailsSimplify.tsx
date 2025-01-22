@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import moment from 'moment';
 import { memo, useContext } from 'react';
 import { FiCopy } from 'react-icons/fi';
@@ -13,6 +12,7 @@ import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import InfoRow from '../../../InfoRow';
 import styles from './RangeDetailsSimplify.module.css';
@@ -80,7 +80,7 @@ function RangeDetailsSimplify(props: propsIF) {
         elapsedTimeSinceFirstMintString,
     } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
-    const showFullAddresses = useMediaQuery<boolean>('(min-width: 768px)');
+    const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
     const {
         snackbar: { open: openSnackbar },

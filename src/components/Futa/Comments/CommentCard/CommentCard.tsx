@@ -1,4 +1,4 @@
-import { CSSProperties } from '@material-ui/core/styles/withStyles';
+import { CSSProperties } from '@mui/material/styles/createMixins';
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {

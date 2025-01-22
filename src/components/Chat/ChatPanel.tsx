@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import { EmojiClickData } from 'emoji-picker-react';
 import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
@@ -16,6 +15,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import NotFound from '../../pages/common/NotFound/NotFound';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';

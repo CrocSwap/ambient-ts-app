@@ -11,7 +11,6 @@ interface OpenOrderStatusProps {
 export default function OpenOrderStatus(props: OpenOrderStatusProps) {
     const filledWithTooltip = (
         <DefaultTooltip
-            interactive
             title={'100% Filled'}
             placement={'right'}
             arrow

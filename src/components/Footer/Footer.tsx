@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@mui/material';
 import { BsGithub, BsMedium, BsTwitter } from 'react-icons/bs';
 import { FaDiscord } from 'react-icons/fa';
 import { IoDocumentTextSharp } from 'react-icons/io5';
@@ -16,6 +15,7 @@ import {
     TWITTER_LINK,
 } from '../../ambient-utils/constants';
 import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
+import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import FooterCard from './FooterCard';
 
 export interface footerItemIF {

@@ -123,7 +123,6 @@ export default function rangeRowConstants(props: propsIF) {
     const IDWithTooltip = (
         <RowItem hover data-label='id' role='button' tabIndex={0}>
             <TextOnlyTooltip
-                interactive
                 title={
                     <FlexContainer
                         justifyContent='center'
@@ -185,7 +184,6 @@ export default function rangeRowConstants(props: propsIF) {
             style={ensName ? { textTransform: 'lowercase' } : undefined}
         >
             <TextOnlyTooltip
-                interactive
                 title={
                     <FlexContainer
                         justifyContent='center'
@@ -392,7 +390,6 @@ export default function rangeRowConstants(props: propsIF) {
             <>
                 {position.latestUpdateTime ? (
                     <TextOnlyTooltip
-                        interactive
                         title={
                             <FlexContainer
                                 fullWidth
