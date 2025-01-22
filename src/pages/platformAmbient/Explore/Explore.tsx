@@ -1,10 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { LuRefreshCcw, LuSearch } from 'react-icons/lu';
-import {
-    excludedTokenAddressesLowercase,
-    hiddenTokens,
-} from '../../../ambient-utils/constants';
+import { hiddenTokens } from '../../../ambient-utils/constants';
 import { PoolIF } from '../../../ambient-utils/types';
 import DexTokens from '../../../components/Global/Explore/DexTokens/DexTokens';
 import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
@@ -105,34 +102,9 @@ export default function Explore(props: ExploreIF) {
     const [searchQueryPool, setSearchQueryPool] = useState<string>('');
     const [searchQueryToken, setSearchQueryToken] = useState<string>('');
 
-    // Filter out excluded addresses
-    const filteredPoolsNoExcludedTokens = pools.all.filter(
-        (pool) =>
-            !excludedTokenAddressesLowercase.includes(
-                pool.base.address.toLowerCase(),
-            ) &&
-            !excludedTokenAddressesLowercase.includes(
-                pool.quote.address.toLowerCase(),
-            ),
-    );
-
-    const filteredPoolsNoHiddenTokens = filteredPoolsNoExcludedTokens.filter(
-        (p) => {
-            // check if pool contains tokenin hidden token list
-            return !hiddenTokens.some(
-                (excluded) =>
-                    (excluded.address.toLowerCase() ===
-                        p.base.address.toLowerCase() ||
-                        excluded.address.toLowerCase() ===
-                            p.quote.address.toLowerCase()) &&
-                    excluded.chainId === parseInt(p.chainId),
-            );
-        },
-    );
-
     const filteredPools =
         searchQueryPool.length >= 2
-            ? filteredPoolsNoHiddenTokens.filter((pool: PoolIF) => {
+            ? pools.all.filter((pool: PoolIF) => {
                   const lowerCaseQuery = searchQueryPool.toLowerCase();
                   return (
                       pool.base.name.toLowerCase().includes(lowerCaseQuery) ||
@@ -141,7 +113,7 @@ export default function Explore(props: ExploreIF) {
                       pool.quote.symbol.toLowerCase().includes(lowerCaseQuery)
                   );
               })
-            : filteredPoolsNoHiddenTokens;
+            : pools.all;
 
     const filteredTokens =
         searchQueryToken.length >= 2

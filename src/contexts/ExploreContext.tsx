@@ -11,6 +11,10 @@ import {
     useState,
 } from 'react';
 import {
+    excludedTokenAddressesLowercase,
+    hiddenTokens,
+} from '../ambient-utils/constants';
+import {
     expandPoolStats,
     getFormattedNumber,
     getMoneynessRank,
@@ -396,29 +400,80 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                     poolB[filter] - poolA[filter],
             );
 
+    // Filter out excluded addresses and hidden tokens
+    const filteredPoolsNoExcludedOrHiddenTokens = useMemo(
+        () =>
+            allPools.filter(
+                (pool) =>
+                    !excludedTokenAddressesLowercase.includes(
+                        pool.base.address.toLowerCase(),
+                    ) &&
+                    !excludedTokenAddressesLowercase.includes(
+                        pool.quote.address.toLowerCase(),
+                    ) &&
+                    !hiddenTokens.some(
+                        (excluded) =>
+                            (excluded.address.toLowerCase() ===
+                                pool.base.address.toLowerCase() ||
+                                excluded.address.toLowerCase() ===
+                                    pool.quote.address.toLowerCase()) &&
+                            excluded.chainId === parseInt(pool.chainId),
+                    ),
+            ),
+        [allPools],
+    );
+
     const topPools = useMemo(
         () =>
-            !allPools.length
+            !filteredPoolsNoExcludedOrHiddenTokens.length
                 ? hardcodedTopPools
-                : sortAndFilter(allPools, 'volume', 1000).length >= 3
-                  ? sortAndFilter(allPools, 'volume', 1000).slice(
+                : sortAndFilter(
+                        filteredPoolsNoExcludedOrHiddenTokens,
+                        'volume',
+                        1000,
+                    ).length >= 3
+                  ? sortAndFilter(
+                        filteredPoolsNoExcludedOrHiddenTokens,
+                        'volume',
+                        1000,
+                    ).slice(
                         0,
                         Math.max(
                             hardcodedTopPools.length,
-                            sortAndFilter(allPools, 'volume', 1000).length,
+                            sortAndFilter(
+                                filteredPoolsNoExcludedOrHiddenTokens,
+                                'volume',
+                                1000,
+                            ).length,
                         ),
                     )
-                  : sortAndFilter(allPools, 'volume', 100).length >= 2
-                    ? sortAndFilter(allPools, 'volume', 100).slice(
+                  : sortAndFilter(
+                          filteredPoolsNoExcludedOrHiddenTokens,
+                          'volume',
+                          100,
+                      ).length >= 2
+                    ? sortAndFilter(
+                          filteredPoolsNoExcludedOrHiddenTokens,
+                          'volume',
+                          100,
+                      ).slice(
                           0,
                           Math.max(
                               hardcodedTopPools.length,
-                              sortAndFilter(allPools, 'volume', 100).length,
+                              sortAndFilter(
+                                  filteredPoolsNoExcludedOrHiddenTokens,
+                                  'volume',
+                                  100,
+                              ).length,
                           ),
                       )
-                    : sortAndFilter(allPools, 'volume', 0).slice(0, 3),
+                    : sortAndFilter(
+                          filteredPoolsNoExcludedOrHiddenTokens,
+                          'volume',
+                          0,
+                      ).slice(0, 3),
 
-        [hardcodedTopPools, allPools],
+        [hardcodedTopPools, filteredPoolsNoExcludedOrHiddenTokens],
     );
 
     const dexTokens: useTokenStatsIF = useTokenStats(
@@ -433,7 +488,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     const exploreContext: ExploreContextIF = {
         pools: {
-            all: allPools,
+            all: filteredPoolsNoExcludedOrHiddenTokens,
             getAllPools: getAllPools,
             topPools: topPools,
             reset: () => {

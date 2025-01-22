@@ -58,9 +58,9 @@ export const scrollMainnet: NetworkIF = {
     topPools: [
         new TopPool(scrollETH, scrollUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(scrollWeETH, scrollETH, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollUSDT, scrollUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(scrollETH, scrollUSDT, chainSpecFromSDK.poolIndex),
         new TopPool(scrollSCR, scrollETH, chainSpecFromSDK.poolIndex),
-        new TopPool(scrollUSDT, scrollUSDC, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
