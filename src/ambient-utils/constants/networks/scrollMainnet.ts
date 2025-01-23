@@ -4,10 +4,10 @@ import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
 import {
     scrollETH,
-    scrollSCR,
     scrollUSDC,
     scrollUSDT,
     scrollWBTC,
+    scrollWeETH,
 } from '../defaultTokens';
 import { GCGO_SCROLL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
@@ -58,8 +58,8 @@ export const scrollMainnet: NetworkIF = {
     topPools: [
         new TopPool(scrollETH, scrollUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(scrollUSDT, scrollUSDC, chainSpecFromSDK.poolIndex),
-        new TopPool(scrollSCR, scrollETH, chainSpecFromSDK.poolIndex),
         new TopPool(scrollETH, scrollUSDT, chainSpecFromSDK.poolIndex),
+        new TopPool(scrollWeETH, scrollETH, chainSpecFromSDK.poolIndex),
         new TopPool(scrollETH, scrollWBTC, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {

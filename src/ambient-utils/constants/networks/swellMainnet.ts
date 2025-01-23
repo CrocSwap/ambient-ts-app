@@ -5,7 +5,8 @@ import { NetworkIF } from '../../types/NetworkIF';
 import {
     swellENA,
     swellETH,
-    swellRSETH,
+    swellEZETH,
+    swellPZETH,
     swellRSWETH,
     swellSWELL,
     swellUSDE,
@@ -60,10 +61,10 @@ export const swellMainnet: NetworkIF = {
     tempestApiNetworkName: 'swell',
     topPools: [
         new TopPool(swellETH, swellUSDE, chainSpecFromSDK.poolIndex),
-        new TopPool(swellWEETH, swellRSWETH, chainSpecFromSDK.poolIndex),
-        new TopPool(swellETH, swellSWELL, chainSpecFromSDK.poolIndex),
         new TopPool(swellENA, swellUSDE, chainSpecFromSDK.poolIndex),
-        new TopPool(swellRSETH, swellWEETH, chainSpecFromSDK.poolIndex),
+        new TopPool(swellETH, swellSWELL, chainSpecFromSDK.poolIndex),
+        new TopPool(swellWEETH, swellRSWETH, chainSpecFromSDK.poolIndex),
+        new TopPool(swellPZETH, swellEZETH, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
