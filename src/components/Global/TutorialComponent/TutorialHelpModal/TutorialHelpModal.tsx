@@ -1,8 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any  */
-/* eslint-disable @typescript-eslint/no-unused-vars  */
-
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { memo } from 'react';
 import styles from './TutorialHelpModal.module.css';
 import { AuctionHelpModal } from './TutorialHelpModalContents';
 
