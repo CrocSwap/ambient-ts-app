@@ -25,6 +25,7 @@
   for = "/testnet-token-list.json" 
   [headers.values]
     Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=3600, immutable"
 
 [[headers]]
   for = "/icons/*"
