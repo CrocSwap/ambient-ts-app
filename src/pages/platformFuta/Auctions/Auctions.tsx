@@ -41,8 +41,11 @@ export default function Auctions({ hideTicker, placeholderTicker }: Props) {
     } = useContext(FutaSearchableTickerContext);
 
     // Hooks
-    const isMobile = useMediaQuery('(max-width: 768px)');
-    const desktopScreen = useMediaQuery('(min-width: 1024px)');
+    const isTabletPortrait = useMediaQuery('tabletPortrait');
+    const isTabletLandscape = useMediaQuery('tabletLandscape');
+    const isDesktop = useMediaQuery('desktop');
+    // const isMobile =
+    //     useMediaQuery('mobilePortrait') || useMediaQuery('mobileLandscape');
 
     // Refs
     const tableParentRef = useRef<HTMLDivElement>(null);
@@ -76,7 +79,43 @@ export default function Auctions({ hideTicker, placeholderTicker }: Props) {
         </ResizableComponent>
     );
 
-    if (desktopScreen) {
+    const tickerComponentDisplay = (
+        <div className={styles.flexColumn}>
+            <HexReveal>
+                <p className={styles.label}>TICKER</p>
+            </HexReveal>
+            <FutaDivider2 />
+            {!hideTicker && (
+                <TickerComponent
+                    isAuctionPage
+                    placeholderTicker={placeholderTicker}
+                />
+            )}
+        </div>
+    );
+
+    const resizableComponentDisplay = (
+        <div id='auctions_search_wrapper'>
+            <div
+                className={styles.searchable_ticker}
+                style={{
+                    height: isTabletPortrait ? 'calc(100svh - 60px)' : '100%',
+                }}
+                ref={canvasRef}
+            >
+                <FlexContainer
+                    flexDirection='column'
+                    fullHeight
+                    ref={tableParentRef}
+                >
+                    {ResizableTickers}
+                    {<Chart />}
+                </FlexContainer>
+            </div>
+        </div>
+    );
+
+    if (isDesktop || isTabletLandscape) {
         return (
             <div className={styles.desktopContainer}>
                 <div
@@ -85,43 +124,49 @@ export default function Auctions({ hideTicker, placeholderTicker }: Props) {
                         gridTemplateColumns: hideTicker ? '1fr' : '1fr 390px',
                     }}
                 >
-                    <div id='auctions_search_wrapper'>
-                        <div
-                            className={styles.searchable_ticker}
-                            style={{ height: '100%' }}
-                            ref={canvasRef}
-                        >
-                            <FlexContainer
-                                flexDirection='column'
-                                fullHeight
-                                ref={tableParentRef}
-                            >
-                                {ResizableTickers}
-                                {!isMobile && <Chart />}
-                            </FlexContainer>
-                        </div>
-                    </div>
-                    <div className={styles.flexColumn}>
-                        <HexReveal>
-                            <p className={styles.label}>TICKER</p>
-                        </HexReveal>
-                        <FutaDivider2 />
-                        {!hideTicker && (
-                            <TickerComponent
-                                isAuctionPage
-                                placeholderTicker={placeholderTicker}
-                            />
-                        )}
-                    </div>
+                    {resizableComponentDisplay}
+                    {tickerComponentDisplay}
                 </div>
             </div>
         );
     }
 
+    if (isTabletPortrait) {
+        return (
+            <div className={styles.tabletPortraitColumn}>
+                <div className={styles.tabletPortraitRow}>
+                    <div
+                        style={{
+                            border: 'var(--futa-box-border)',
+                            padding: '0 8px',
+                        }}
+                    >
+                        <SearchableTicker
+                            auctions={sorted}
+                            placeholderTicker={placeholderTicker}
+                        />
+                    </div>
+                    {tickerComponentDisplay}
+                </div>
+                <div style={{ marginTop: 'auto', height: '100%' }}>
+                    <Chart />
+                </div>
+            </div>
+        );
+    }
+    // mobile
     return (
         <div className={styles.mobileContainer}>
             <h3>AUCTIONS</h3>
-            <span id='auctions_search_wrapper'>{ResizableTickers}</span>
+            <div
+                id='auctions_search_wrapper'
+                className={styles.auctions_search_wrapper}
+            >
+                <SearchableTicker
+                    auctions={sorted}
+                    placeholderTicker={placeholderTicker}
+                />
+            </div>
         </div>
     );
 }

@@ -49,3 +49,47 @@
     text-transform: uppercase;
     padding: 0 8px;
 }
+@media screen and (max-width: 768px) {
+    /* .resizable {
+        
+        border: none;
+        
+    } */
+
+}
+
+
+
+.tabletPortraitColumn{
+  height: calc(100svh - 64px);  
+  width: calc(100% - 16px);
+  gap: 16px;
+  display: grid;
+  grid-template-rows: 76% 24%;
+  margin: 0 auto;
+}
+
+.tabletPortraitColumn .flexColumn{
+    overflow-y: scroll;
+}
+
+
+.tabletPortraitRow{
+    display: grid;
+    grid-template-columns: 55% 45%;
+    /* width: calc(100svw - 64px) !important; */
+    gap: 16px;
+    padding: 0 8px;
+    width: 100%;
+    overflow-x: hidden;
+
+ 
+
+    overflow-y: scroll;
+    margin: 0 auto;
+    
+}
+
+.auctions_search_wrapper{
+    height: 100%;
+}

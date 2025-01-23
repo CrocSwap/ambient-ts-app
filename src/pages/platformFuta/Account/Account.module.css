@@ -28,7 +28,7 @@
 /* left side of `Account.tsx` (contains ticker table and chart) */
 .tickers_and_chart {
     flex-grow: 1;
-    /* outline: 1px solid green; */
+    height: 100%;
 }
 
 /* in-page 'ACCOUNT' title (only on mobile devices) */
@@ -38,26 +38,6 @@
     text-transform: uppercase;
 }
 
-/* tablets and cellphones */
-@media screen and (max-width: 1024px) {
-    main {
-        flex-direction: column;
-        height: calc(100% - 90px);
-    }
-}
-
-.desktopContainer {
-    background: var(--dark1);
-    display: grid;
-    grid-template-columns: auto 390px;
-    padding: 0 16px;
-    height: calc(100vh - 56px);
-    gap: 16px;
-}
-
-.separatorContainer {
-    height: calc(100vh - 80px);
-}
 
 .connectWalletContent {
     width: 100%;
@@ -99,9 +79,31 @@
     color: var(--dark1);
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
-    .container {
-        width: 100%;
-        height: calc(100svh - 154px);
+/* tablets and cellphones */
+@media screen and (max-width: 1024px) {
+    .main {
+        flex-direction: column;
+        height: calc(100% - 90px);
+        display: grid;
+        grid-template-rows: 1fr 344px;
+     
+    }
+    .searchable_ticker{
+        border: none;
     }
 }
+
+@media screen and (max-width: 768px) {
+
+    .main{
+        height: calc(100% - 120px);
+    }
+    .tickers_and_chart{
+
+        max-width: 100svw;
+        padding: 0 8px;
+    }
+
+  
+}
+

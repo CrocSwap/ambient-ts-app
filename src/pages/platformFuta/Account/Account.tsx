@@ -9,7 +9,6 @@ import {
     claimAndReturnAll,
 } from '../../../ambient-utils/dataLayer';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
-import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
 import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
@@ -20,8 +19,7 @@ import {
     sortedAuctionsIF,
     useSortedAuctions,
 } from '../Auctions/useSortedAuctions';
-import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
-import HexReveal from '../Home/Animations/HexReveal';
+
 import ClaimComponent from './ClaimComponent/ClaimComponent';
 
 export type auctionDataSets = 'bids' | 'created';
@@ -224,7 +222,6 @@ export default function Account() {
                 {isMobile && (
                     <>
                         <BreadCrumb />
-                        <h2>Account</h2>
                     </>
                 )}
                 <div className={styles.searchable_ticker}>

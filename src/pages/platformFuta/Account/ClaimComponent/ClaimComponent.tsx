@@ -1,4 +1,3 @@
-import FutaDivider2 from '../../../../components/Futa/Divider/FutaDivider2';
 import TooltipLabel from '../../../../components/Futa/TooltipLabel/TooltipLabel';
 import HexReveal from '../../Home/Animations/HexReveal';
 import styles from './ClaimComponent.module.css';
@@ -52,18 +51,6 @@ export default function ClaimComponent(props: PropsIF) {
                     >
                         {buttonText.toUpperCase()}
                     </button>
-
-                    {/* <div className={styles.claim}>
-                        <button
-                            id='futa_account_claim_all_button'
-                            className={styles.claim_btn}
-                            disabled={isButtonDisabled}
-                            onClick={sendClaimAndReturnAllTransaction}
-                        >
-                            {buttonText.toUpperCase()}
-                        </button>
-                    
-                    </div> */}
                 </div>
             )}
         </div>

@@ -178,6 +178,7 @@ export default function Navbar() {
     // Custom Hooks
     useOnClickOutside(dropdownRef, clickOutsideHandler);
     const desktopScreen = useMediaQuery('(min-width: 768px)');
+    const isTabletPortrait = useMediaQuery('tabletPortrait');
 
     // Data
     const dropdownData = [
@@ -227,7 +228,11 @@ export default function Navbar() {
             onClick={openWalletModal}
             className={styles.connectButton}
         >
-            {desktopScreen ? 'CONNECT WALLET' : 'CONNECT'}
+            {isTabletPortrait
+                ? 'CONNECT'
+                : desktopScreen
+                  ? 'CONNECT WALLET'
+                  : 'CONNECT'}
         </button>
     );
 

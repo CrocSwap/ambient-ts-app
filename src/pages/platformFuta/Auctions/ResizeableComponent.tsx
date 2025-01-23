@@ -31,6 +31,19 @@ export default function ResizableComponent({
     );
 
     const isAccount = false;
+
+    const isParentHeightApplicable = !isMobile || isTabletScreen;
+    const isAccountHeightApplicable = isAccount && tableParentRef.current;
+    const parentHeight = tableParentRef.current
+        ? tableParentRef.current.getBoundingClientRect().height * 0.99
+        : 0;
+
+    const calculatedHeight = isParentHeightApplicable
+        ? isAccountHeightApplicable
+            ? parentHeight
+            : searchableTickerHeights.current
+        : '90%';
+
     return (
         <Resizable
             enable={{
@@ -44,15 +57,7 @@ export default function ResizableComponent({
                 bottomRight: false,
             }}
             size={{
-                height:
-                    !isMobile || isTabletScreen
-                        ? isAccount && tableParentRef.current
-                            ? !isMobile
-                                ? tableParentRef.current.getBoundingClientRect()
-                                      .height * 0.99
-                                : '90%'
-                            : searchableTickerHeights.current
-                        : '90%',
+                height: isMobile ? 'calc(100vh - 100px)' : calculatedHeight,
             }}
             minHeight={200}
             maxHeight={
