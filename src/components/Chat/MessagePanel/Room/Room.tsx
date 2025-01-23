@@ -323,6 +323,7 @@ export default function Room(props: propsIF) {
         setShowCurrentPoolButton(false);
         setIsActive(false);
         setIsCurrentPool(true);
+        setIsHovering(false);
     }
 
     function handleNotiDot(key: string) {
