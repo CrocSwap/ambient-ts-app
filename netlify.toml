@@ -5,11 +5,6 @@
   status = 200
 
 [[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
   for = "/ambient-token-list.json"
   [headers.values]
     Access-Control-Allow-Origin = "*"
@@ -31,11 +26,13 @@
   for = "/icons/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=3600, immutable"
 
 [[headers]]
   for = "/screenshots/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=3600, immutable"
 
 [[headers]]
   for = "/scroll-badge/*"
