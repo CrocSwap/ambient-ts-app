@@ -210,7 +210,7 @@ export default function Create() {
                               ? 'Validating Ticker...'
                               : isValidated
                                 ? 'Create Auction'
-                                : `${invalidReason}: ${tickerInput}`}
+                                : `${invalidReason}`}
             </button>
         </footer>
     );
