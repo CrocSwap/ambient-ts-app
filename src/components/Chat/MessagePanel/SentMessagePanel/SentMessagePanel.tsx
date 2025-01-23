@@ -821,7 +821,8 @@ function SentMessagePanel(props: SentMessageProps) {
                                         {/* {myJazzicon} */}
                                         {!BASIC_CHAT_MODE &&
                                             props.message &&
-                                            props.message.chainId && (
+                                            props.message.chainId &&
+                                            props.room === 'Admins' && (
                                                 <img
                                                     className={`${styles.chain_logo} ${isChainNameTestnet(lookupChain(props.message.chainId).displayName) ? styles.testnet : ' '} `}
                                                     src={

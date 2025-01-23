@@ -482,7 +482,7 @@ function FullChat(props: FullChatPropsIF) {
                                     : 'var(--text3)',
                             }}
                         >
-                            Current Pool
+                            Go to Current Pool
                         </p>
                         <div>{setCurrentPoolInfo_(pool)}</div>
                     </div>

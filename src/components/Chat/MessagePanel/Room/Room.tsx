@@ -368,13 +368,12 @@ export default function Room(props: propsIF) {
                                     : styles.current_pool_text
                             }
                         >
-                            Current Pool
+                            Go to Current Pool
                         </div>
                     </div>
                 ) : (
                     ''
                 )}
-                <div onClick={() => handleDropdownMenu()}> </div>
                 <div onClick={() => handleDropdownMenu()}>
                     <RiArrowDownSLine
                         className={styles.star_icon + ' ' + styles.m_hidden}
