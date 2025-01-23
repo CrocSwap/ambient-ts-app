@@ -145,7 +145,7 @@ export default function Room(props: propsIF) {
             if (!found) {
                 newRoomList.push({
                     name: getRoomNameFromPool(pool),
-                    shownName: getRoomNameFromPool(pool) + ' ❤️',
+                    shownName: getRoomNameFromPool(pool),
                     base: pool.base.symbol,
                     quote: pool.quote.symbol,
                     isFavourite: true,
@@ -168,9 +168,10 @@ export default function Room(props: propsIF) {
                 baseToken.symbol,
                 quoteToken.symbol,
             );
-            currentPoolRoomObj.shownName =
-                getRoomNameFromBaseQuote(baseToken.symbol, quoteToken.symbol) +
-                ' 📈';
+            currentPoolRoomObj.shownName = getRoomNameFromBaseQuote(
+                baseToken.symbol,
+                quoteToken.symbol,
+            );
             newRoomList.push(currentPoolRoomObj);
         }
 
