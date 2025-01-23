@@ -45,7 +45,7 @@ export default function CommentInput(props: CommentInputProps) {
         const currentText = e.currentTarget.value;
         const newText = currentText + pastedText;
         if (newText.length > _characterLimit) {
-            e.preventDefault(); // Prevent the default paste action
+            e.preventDefault();
             const truncatedText = newText.substring(0, _characterLimit);
             setMessage(truncatedText);
             setInputLength(truncatedText.length);
