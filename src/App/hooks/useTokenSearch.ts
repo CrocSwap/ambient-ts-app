@@ -153,7 +153,8 @@ export const useTokenSearch = (
                         : chainId === '0xaa36a7'
                           ? patchLists(
                                 tokens.getTokensFromList(tokenListURIs.ambient),
-                                tokens.getTokensFromList(tokenListURIs.futa),
+                                tokens.getTokensFromList(tokenListURIs.testnet),
+                                // , tokens.getTokensFromList(tokenListURIs.futa),
                             )
                           : patchLists(
                                 tokens.getTokensFromList(tokenListURIs.ambient),
