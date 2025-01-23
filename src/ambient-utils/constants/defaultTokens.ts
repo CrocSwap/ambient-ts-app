@@ -1075,7 +1075,7 @@ export const baseSepoliaUSDT: TokenIF = registerToken({
 
 export const baseSepoliaWTT: TokenIF = registerToken({
     name: 'Wolski Test Token',
-    address: '0xfefd8bcb0034a2b0e3cc22e2f5a59279fae67128',
+    address: '0x5f8201BC9A7abbE5F8e89a7bF15137b174c19041',
     symbol: 'WTT',
     decimals: 6,
     chainId: 84532,
