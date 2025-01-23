@@ -63,3 +63,14 @@
 }
 
 
+
+@media only screen and (max-width: 600px) {
+
+    .tuto_help_modal_body {
+        max-width: 96vw;
+        min-width: 90vw;
+        max-height: 80vh;
+    }
+
+}
+

@@ -20,8 +20,14 @@ function TutorialHelpModal(props: propsIF) {
     };
 
     return (
-        <div className={styles.tuto_help_modal_overlay}>
-            <div className={styles.tuto_help_modal_body}>
+        <div
+            className={styles.tuto_help_modal_overlay}
+            onClick={props.negativeBtnAction}
+        >
+            <div
+                className={styles.tuto_help_modal_body}
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div className={styles.tuto_help_modal_header}>
                     {props.title || 'WHAT IS THIS?'}
                 </div>
