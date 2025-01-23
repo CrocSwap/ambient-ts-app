@@ -19,8 +19,8 @@
 }
 
 .comment_card_wrapper {
-    margin-top: 0.3rem;
-    padding-top: 0.3rem;
+    margin-top: 0.25rem;
+    padding-top: 0.25rem;
     position: relative;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     opacity: 0;
@@ -71,7 +71,7 @@
 
 .comment_bottom_info {
     position: absolute;
-    bottom: 0.3rem;
+    bottom: 0.25rem;
     right: 0.5rem;
     font-size: 0.8rem;
     animation: kf_comment_bottom_info_anim 0.9s ease-in-out 1 forwards;
