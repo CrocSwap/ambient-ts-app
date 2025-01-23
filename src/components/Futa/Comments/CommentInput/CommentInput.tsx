@@ -36,7 +36,7 @@ export default function CommentInput(props: CommentInputProps) {
         setMessage(newMessage);
         setInputLength(newMessage.length);
         if (inputRef.current) {
-            inputRef.current.value = newMessage; // Update the value in the input field
+            inputRef.current.value = newMessage;
         }
     };
 
