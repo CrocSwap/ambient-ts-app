@@ -29,9 +29,30 @@ export default function CommentInput(props: CommentInputProps) {
     const fillPercentage = (inputLength / _characterLimit) * 84;
 
     const handleInputChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        const newMessage = e.currentTarget.value;
+        let newMessage = e.currentTarget.value;
+        if (newMessage.length > _characterLimit) {
+            newMessage = newMessage.substring(0, _characterLimit);
+        }
         setMessage(newMessage);
         setInputLength(newMessage.length);
+        if (inputRef.current) {
+            inputRef.current.value = newMessage; // Update the value in the input field
+        }
+    };
+
+    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+        const pastedText = e.clipboardData.getData('text');
+        const currentText = e.currentTarget.value;
+        const newText = currentText + pastedText;
+        if (newText.length > _characterLimit) {
+            e.preventDefault(); // Prevent the default paste action
+            const truncatedText = newText.substring(0, _characterLimit);
+            setMessage(truncatedText);
+            setInputLength(truncatedText.length);
+            if (inputRef.current) {
+                inputRef.current.value = truncatedText;
+            }
+        }
     };
 
     const {
@@ -73,6 +94,7 @@ export default function CommentInput(props: CommentInputProps) {
                             onKeyUp={_onKeyUp}
                             onKeyDown={_onKeyDown}
                             onInput={handleInputChange}
+                            onPaste={handlePaste}
                             className={`${inputLength > 126 ? styles.about_filled : ''} `}
                         />
                         <AiOutlineSend
