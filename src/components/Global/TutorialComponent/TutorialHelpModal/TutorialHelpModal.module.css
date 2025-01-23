@@ -1,0 +1,65 @@
+.tuto_help_modal_overlay {
+    backdrop-filter: blur(4px);
+    position: fixed;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: block;
+    width: 100vw;
+    height: 100vh;
+}
+
+
+.tuto_help_modal_body {
+    background-color: var(--dark2);
+    position: fixed;
+    z-index: 100;
+    max-width: 40vw;
+    min-width: 40vw;
+    display: block;
+    left: 50vw;
+    top: 50vh;
+    transform: translate(-50%, -50%);
+    padding: 1rem;
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
+    font-size: .9rem;
+}   
+
+.tuto_help_modal_header{
+    margin-bottom: 1rem ;
+    text-align: center;
+    font-size: 1.4rem;
+}
+
+
+.tuto_help_modal_footer{
+    display: flex;
+    justify-content: center;
+    gap: .5rem;
+    flex-direction: row;
+    margin-top: 1rem;
+}
+
+.help_modal_btn{
+    font-size: 1.1rem;
+    background-color: var(--accent1);
+    border: 1px solid var(--accent1);
+    color: var(--dark2);
+    padding: .1rem 1rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+}
+
+.help_modal_btn:hover{
+    opacity: .8;
+}
+
+
+.help_modal_btn.secondary{
+    background-color: var(--dark2);
+    color: var(--accent1);
+}
+
+

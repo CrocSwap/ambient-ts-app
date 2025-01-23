@@ -18,6 +18,7 @@ import { TutorialIF, TutorialStepExternalComponent } from '../../Chat/ChatIFs';
 import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
 import styles from './TutorialOverlayUrlBased.module.css';
+import TutorialHelpModal from '../TutorialComponent/TutorialHelpModal/TutorialHelpModal';
 // import{ MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
@@ -40,6 +41,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     const [stepsFiltered, setStepsFiltered] = useState<Step[]>([]);
 
     const [showTutorial, setShowTutorial] = useState<boolean>(false);
+    const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
 
     const {
         walletModal: { open: openWalletModal },
@@ -57,15 +59,42 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         </button>
     );
 
+    const pulseTutorialBtn = () => {
+        if (tutorialBtnRef.current) {
+            tutorialBtnRef.current.classList.add(styles.pulseAnim);
+            setTimeout(() => {
+                tutorialBtnRef.current?.classList.remove(styles.pulseAnim);
+            }, 5000);
+        }
+    };
+
     const getTutorialObjectForPage = (page: string) => {
         switch (page) {
             case 'auctions':
-                return { lsKey: 'tuto_auctions', steps: futaAuctionsSteps };
+                return {
+                    lsKey: 'tuto_auctions',
+                    steps: futaAuctionsSteps,
+                    helpModal: {
+                        title: 'WHAT IS THIS?',
+                        content: (
+                            <TutorialHelpModal
+                                positiveBtnAction={() => {
+                                    setShowHelpModal(false);
+                                }}
+                                negativeBtnAction={() => {
+                                    setShowTutorial(false);
+                                    pulseTutorialBtn();
+                                    handleHardFinish();
+                                }}
+                                page='auction'
+                            />
+                        ),
+                    },
+                };
             case 'account':
                 return {
                     lsKey: 'tuto_futa_account',
                     steps: futaAccountSteps,
-                    disableDefault: true,
                 };
             case 'auctionCreate':
                 return {
@@ -141,6 +170,14 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         setReplayTutorial(false);
     };
 
+    const handleHardFinish = () => {
+        setShowTutorial(false);
+        setReplayTutorial(false);
+        if (selectedTutorialRef.current?.lsKey) {
+            setLS(selectedTutorialRef.current?.lsKey, new Date().toISOString());
+        }
+    };
+
     const filterRenderedSteps = () => {
         const filteredSteps: Step[] = [];
 
@@ -183,6 +220,15 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     useEffect(() => {
         handleTutoBuild();
         setReplayTutorial(false);
+        if (
+            selectedTutorial &&
+            selectedTutorial.helpModal &&
+            !getLS(selectedTutorial.lsKey)
+        ) {
+            setShowHelpModal(true);
+        } else {
+            setShowHelpModal(false);
+        }
     }, [selectedTutorial]);
 
     const shouldTutoComponentShown =
@@ -190,8 +236,8 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         stepsFiltered.length > 0 &&
         showTutorial &&
         isTutoBuild &&
-        selectedTutorialRef.current &&
-        !selectedTutorialRef.current.disableDefault &&
+        (selectedTutorialRef.current?.showDefault ||
+            selectedTutorialRef.current?.helpModal) &&
         showTutosLocalStorage;
 
     if (!shouldTutoComponentShown && filterRenderedSteps().length > 0) {
@@ -209,17 +255,22 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
             {(shouldTutoComponentShown || replayTutorial) &&
                 selectedTutorialRef.current && (
                     <>
-                        <TutorialComponent
-                            key={selectedTutorialRef.current.lsKey}
-                            tutoKey={selectedTutorialRef.current.lsKey}
-                            steps={filterRenderedSteps()}
-                            showSteps={true}
-                            onComplete={handleTutoFinish}
-                            initialTimeout={600}
-                            externalComponents={
-                                selectedTutorialRef.current.externalComponents
-                            }
-                        />
+                        {showHelpModal ? (
+                            selectedTutorialRef.current.helpModal?.content
+                        ) : (
+                            <TutorialComponent
+                                key={selectedTutorialRef.current.lsKey}
+                                tutoKey={selectedTutorialRef.current.lsKey}
+                                steps={filterRenderedSteps()}
+                                showSteps={true}
+                                onComplete={handleTutoFinish}
+                                initialTimeout={600}
+                                externalComponents={
+                                    selectedTutorialRef.current
+                                        .externalComponents
+                                }
+                            />
+                        )}
                     </>
                 )}
         </>
