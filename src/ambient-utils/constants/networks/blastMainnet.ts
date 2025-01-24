@@ -51,8 +51,8 @@ export const blastMainnet: NetworkIF = {
     tempestApiNetworkName: '',
     topPools: [
         new TopPool(blastETH, blastUSDB, chainSpecFromSDK.poolIndex),
-        new TopPool(blastBLAST, blastETH, chainSpecFromSDK.poolIndex),
         new TopPool(blastEzETH, blastUSDB, chainSpecFromSDK.poolIndex),
+        new TopPool(blastBLAST, blastETH, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

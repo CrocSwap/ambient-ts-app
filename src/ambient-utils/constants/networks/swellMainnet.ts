@@ -5,8 +5,6 @@ import { NetworkIF } from '../../types/NetworkIF';
 import {
     swellENA,
     swellETH,
-    swellEZETH,
-    swellPZETH,
     swellRSWETH,
     swellSWELL,
     swellUSDE,
@@ -64,7 +62,6 @@ export const swellMainnet: NetworkIF = {
         new TopPool(swellENA, swellUSDE, chainSpecFromSDK.poolIndex),
         new TopPool(swellETH, swellSWELL, chainSpecFromSDK.poolIndex),
         new TopPool(swellWEETH, swellRSWETH, chainSpecFromSDK.poolIndex),
-        new TopPool(swellPZETH, swellEZETH, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
