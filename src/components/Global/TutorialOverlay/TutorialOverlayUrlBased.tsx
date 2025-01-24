@@ -173,7 +173,6 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     const handleHardFinish = () => {
         setShowTutorial(false);
         setReplayTutorial(false);
-        setShowHelpModal(false);
         if (selectedTutorialRef.current?.lsKey) {
             setLS(selectedTutorialRef.current?.lsKey, new Date().toISOString());
         }
@@ -221,16 +220,20 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     useEffect(() => {
         handleTutoBuild();
         setReplayTutorial(false);
-        if (
-            selectedTutorial &&
-            selectedTutorial.helpModal &&
-            !getLS(selectedTutorial.lsKey)
-        ) {
+        if (selectedTutorial?.helpModal) {
             setShowHelpModal(true);
         } else {
             setShowHelpModal(false);
         }
     }, [selectedTutorial]);
+
+    useEffect(() => {
+        if (replayTutorial) {
+            setShowHelpModal(
+                selectedTutorialRef.current?.helpModal ? true : false,
+            );
+        }
+    }, [replayTutorial]);
 
     const shouldTutoComponentShown =
         validateURL() &&
