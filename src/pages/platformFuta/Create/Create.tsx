@@ -171,6 +171,29 @@ export default function Create() {
         tickerCreationResponse?.isSuccess === false ||
         (isUserConnected && (isValidationInProgress || !isValidated));
 
+    // Helper function to determine button text
+    function getButtonText() {
+        if (!isUserConnected) return 'Connect Wallet';
+        if (displayPendingTxMessage) return 'Creation Pending...';
+        if (tickerCreationFailed) return 'Creation Failed';
+        if (tickerCreationSucceeded) return 'Go To Auction';
+        if (tickerInput === '') return 'Enter a Token Ticker';
+        if (isValidationInProgress) return 'Validating Ticker...';
+        if (isValidated) return 'Create Auction';
+        return invalidReason;
+    }
+
+    // Helper function to handle button click
+    function handleButtonClick() {
+        if (!isUserConnected) {
+            openWalletModal();
+        } else if (tickerCreationSucceeded) {
+            navigate(`/auctions/v${CURRENT_AUCTION_VERSION}/${tickerInput}`);
+        } else {
+            sendCreationTransaction(crocEnv, tickerInput);
+        }
+    }
+
     const footerDisplay = (
         <footer className={styles.footerContainer}>
             {extraInfoDisplay}
@@ -185,32 +208,10 @@ export default function Create() {
                         ? styles.create_button
                         : styles.create_button_disabled
                 }
-                onClick={() =>
-                    !isUserConnected
-                        ? openWalletModal()
-                        : tickerCreationSucceeded
-                          ? navigate(
-                                `/auctions/v${CURRENT_AUCTION_VERSION}/${tickerInput}`,
-                            )
-                          : sendCreationTransaction(crocEnv, tickerInput)
-                }
+                onClick={handleButtonClick}
                 disabled={isButtonDisabled}
             >
-                {!isUserConnected
-                    ? 'Connect Wallet'
-                    : displayPendingTxMessage
-                      ? 'Creation Pending...'
-                      : tickerCreationFailed
-                        ? 'Creation Failed'
-                        : tickerCreationSucceeded
-                          ? 'Go To Auction'
-                          : tickerInput === ''
-                            ? 'Enter a Token Ticker'
-                            : isValidationInProgress
-                              ? 'Validating Ticker...'
-                              : isValidated
-                                ? 'Create Auction'
-                                : `${invalidReason}`}
+                {getButtonText()}
             </button>
         </footer>
     );

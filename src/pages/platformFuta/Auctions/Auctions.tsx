@@ -5,6 +5,7 @@ import TickerComponent from '../../../components/Futa/TickerComponent/TickerComp
 import Chart from '../../../components/Futa/Chart/Chart';
 import HexReveal from '../Home/Animations/HexReveal';
 import ResizableComponent from './ResizeableComponent';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { AppStateContext } from '../../../contexts';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
@@ -80,18 +81,26 @@ export default function Auctions({ hideTicker, placeholderTicker }: Props) {
     );
 
     const tickerComponentDisplay = (
-        <div className={styles.flexColumn}>
-            <HexReveal>
-                <p className={styles.label}>TICKER</p>
-            </HexReveal>
-            <FutaDivider2 />
-            {!hideTicker && (
-                <TickerComponent
-                    isAuctionPage
-                    placeholderTicker={placeholderTicker}
-                />
-            )}
-        </div>
+        <AnimatePresence>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+                className={styles.flexColumn}
+            >
+                <HexReveal>
+                    <p className={styles.label}>TICKER</p>
+                </HexReveal>
+                <FutaDivider2 />
+                {!hideTicker && (
+                    <TickerComponent
+                        isAuctionPage
+                        placeholderTicker={placeholderTicker}
+                    />
+                )}
+            </motion.div>
+        </AnimatePresence>
     );
 
     const resizableComponentDisplay = (

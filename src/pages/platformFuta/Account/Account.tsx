@@ -217,14 +217,21 @@ export default function Account() {
     }
 
     return (
-        <main className={styles.main}>
+        <main
+            className={connectedAccountActive ? styles.main : styles.main_full}
+        >
             <div className={styles.tickers_and_chart}>
                 {isMobile && (
                     <>
                         <BreadCrumb />
                     </>
                 )}
-                <div className={styles.searchable_ticker}>
+                <div
+                    className={styles.searchable_ticker}
+                    style={{
+                        border: !connectedAccountActive ? 'none' : '',
+                    }}
+                >
                     <SearchableTicker
                         auctions={filtered}
                         dataState={{
@@ -236,14 +243,16 @@ export default function Account() {
                 </div>
             </div>
 
-            <ClaimComponent
-                connectedAccountActive={connectedAccountActive}
-                isButtonDisabled={isButtonDisabled}
-                sendClaimAndReturnAllTransaction={
-                    sendClaimAndReturnAllTransaction
-                }
-                buttonText={buttonText}
-            />
+            {connectedAccountActive && (
+                <ClaimComponent
+                    connectedAccountActive={connectedAccountActive}
+                    isButtonDisabled={isButtonDisabled}
+                    sendClaimAndReturnAllTransaction={
+                        sendClaimAndReturnAllTransaction
+                    }
+                    buttonText={buttonText}
+                />
+            )}
         </main>
     );
 }

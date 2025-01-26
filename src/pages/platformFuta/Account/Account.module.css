@@ -1,5 +1,5 @@
 /* top-level element returned by `Account.tsx` file */
-.main {
+.main, .main_full {
     display: flex;
     flex-direction: row;
     height: calc(100% - 19px);
@@ -9,6 +9,9 @@
     font-weight: 400;
     line-height: normal;
     padding-bottom: 8px;
+/* 
+    display: grid;
+    grid-template-columns: auto 390px; */
 }
 
 .searchable_ticker {
@@ -16,7 +19,6 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 0 8px 8px 8px;
     gap: 8px;
 
     align-items: flex-start;
@@ -78,24 +80,37 @@
     background: var(--accent2);
     color: var(--dark1);
 }
+@media screen and (min-width: 1367px) {
+    .main{
 
+        display: grid;
+        grid-template-columns: auto 390px
+    }
+    .main_full{
+        grid-template-columns: auto;
+    }
+
+
+
+}
 /* tablets and cellphones */
 @media screen and (max-width: 1024px) {
-    .main {
+    .main, .main_full {
         flex-direction: column;
         height: calc(100% - 90px);
         display: grid;
         grid-template-rows: 1fr 344px;
-     
+        
     }
     .searchable_ticker{
         border: none;
     }
+
 }
 
 @media screen and (max-width: 768px) {
 
-    .main{
+    .main, .main_full{
         height: calc(100% - 120px);
     }
     .tickers_and_chart{

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-
+import { motion } from 'framer-motion';
 import { AuctionDataIF, diffHashSig } from '../../../ambient-utils/dataLayer';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { FutaSearchableTickerContext } from '../../../contexts/Futa/FutaSearchableTickerContext';
@@ -252,6 +252,11 @@ export default function SearchableTicker(props: propsIF) {
             )}
         </div>
     );
+    const orderedData =
+        showComplete && auctions.active === 'timeLeft'
+            ? [...filteredData].reverse()
+            : [...filteredData];
+
     const searchableContent = (
         <div className={styles.ticker_table} ref={tickerTableRef}>
             {filteredData.length ? (
@@ -281,7 +286,7 @@ export default function SearchableTicker(props: propsIF) {
                     )}
                 </header>
             ) : null}
-            <div
+            <motion.div
                 className={styles.ticker_table_content}
                 onMouseEnter={() => setIsMouseEnter(true)}
                 onMouseLeave={() => {
@@ -289,12 +294,13 @@ export default function SearchableTicker(props: propsIF) {
                     setHoveredTicker(undefined);
                 }}
                 ref={containerRef}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6 }}
             >
                 {filteredData.length
-                    ? (showComplete && auctions.active === 'timeLeft'
-                          ? [...filteredData].reverse()
-                          : [...filteredData]
-                      ).map((auction: AuctionDataIF) => (
+                    ? orderedData.map((auction: AuctionDataIF) => (
                           <TickerItem
                               key={JSON.stringify(auction)}
                               auction={auction}
@@ -308,7 +314,7 @@ export default function SearchableTicker(props: propsIF) {
                           />
                       ))
                     : noAuctionsContent}
-            </div>
+            </motion.div>
         </div>
     );
 

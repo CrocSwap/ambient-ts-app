@@ -13,7 +13,7 @@
     color: var(--text2);
     font-size: 12px;
     text-align: center;
-    padding: 0 8px;
+    /* padding: 0 8px; */
     gap: 8px;
 }
 
@@ -30,7 +30,7 @@ font-size: var(--body-size, 12px);
 font-style: normal;
 font-weight: 500;
 line-height: normal;
-padding: 0 8px;
+padding:  8px;
 }
 
 .extraFeeContainer {

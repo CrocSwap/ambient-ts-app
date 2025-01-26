@@ -11,7 +11,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 0 8px 8px 8px;
+    /* padding: 0 8px 8px 8px; */
     gap: 8px;
 }
 
@@ -21,7 +21,7 @@
 }
 
 .desktopContainer {
-    padding: 0px 16px;
+    padding: 0px 8px;
     color: var(--accent1);
 }
 
@@ -41,7 +41,7 @@
 .auctionsTickerContainer {
     height: 100%;
     display: grid;
-    gap: 1rem;
+    
 }
 .label{
     font-size: var(--body-size);
@@ -73,7 +73,9 @@
     overflow-y: scroll;
 }
 
-
+.flexColumn{
+    padding: 0 8px;
+}
 .tabletPortraitRow{
     display: grid;
     grid-template-columns: 55% 45%;

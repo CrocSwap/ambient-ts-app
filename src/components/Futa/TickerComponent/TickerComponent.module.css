@@ -36,6 +36,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    padding: 0 8px;
     /* outline: 1px solid green; */
 }
 
@@ -233,6 +234,7 @@
     transition: all var(--animation-speed) ease-in-out;
     font-size: 24px;
     text-transform: uppercase;
+    margin: 0 8px;
 }
 
 .bidButtonDisabled {
@@ -260,6 +262,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    padding: 0 8px;
 }
 
 .allocationContainer h3 {
@@ -281,6 +284,7 @@
     grid-template-columns: auto 150px;
     gap: 8px;
     align-items: center;
+    margin: 0 -8px !important
 }
 
 .commentWatchlistContainer {
@@ -341,7 +345,7 @@
     }
 
     .bidButton {
-        margin: 0 auto;
+        margin: 0 8px;
         width: 100%;
     }
 }
