@@ -1,4 +1,4 @@
-import { defaultTokens } from '../../constants/defaultTokens';
+import ambientTokenList from '../../constants/ambient-token-list.json';
 
 export const getTranslatedSymbol = (tokenSymbol: string) =>
     tokenSymbol?.toUpperCase() === 'USD+'
@@ -67,7 +67,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
 
 export const getMoneynessRankByAddr = (tokenAddress: string): number => {
     let moneynessRank = 0;
-    defaultTokens.forEach((token) => {
+    ambientTokenList.tokens.forEach((token) => {
         if (token.address.toLowerCase() === tokenAddress.toLowerCase()) {
             const translatedSymbol = getTranslatedSymbol(token.symbol);
 
