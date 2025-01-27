@@ -31,7 +31,7 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import styles from './NetworkSelector.module.css';
 interface propsIF {

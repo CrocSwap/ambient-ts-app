@@ -1,6 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 import { CandleDataIF, TransactionIF } from '../../../../ambient-utils/types';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 
 import {
     Dispatch,

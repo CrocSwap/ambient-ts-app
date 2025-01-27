@@ -21,7 +21,7 @@ import NotificationCenter from '../../../../components/Global/NotificationCenter
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import LevelDropdown from './LevelDropdown/LevelDropdown';
 import styles from './UserMenu.module.css';
 // TODO: use user context instead of UseAccount

@@ -6,7 +6,7 @@ import {
     PositionIF,
     RangeModalAction,
 } from '../../../../../ambient-utils/types';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import styles from './TableMenus.module.css';
 

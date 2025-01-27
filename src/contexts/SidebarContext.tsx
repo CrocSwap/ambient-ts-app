@@ -14,7 +14,7 @@ import {
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import { diffHashSig, getChainExplorer } from '../ambient-utils/dataLayer';
-import useMediaQuery from '../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../utils/hooks/useMediaQuery';
 import { AppStateContext } from './AppStateContext';
 import { ReceiptContext } from './ReceiptContext';
 

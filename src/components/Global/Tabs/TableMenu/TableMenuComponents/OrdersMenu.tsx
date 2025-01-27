@@ -16,7 +16,7 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../../utils/hooks/useLinkGen';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { Chip } from '../../../../Form/Chip';
 import styles from './TableMenus.module.css';

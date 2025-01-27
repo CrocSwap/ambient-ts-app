@@ -3,7 +3,7 @@ import { MouseEvent, useContext, useEffect, useRef } from 'react';
 import { diffHashSigScaleData } from '../../../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../../../ambient-utils/types';
 import { ChartContext } from '../../../../../contexts/ChartContext';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 import {
     CandleDataChart,
     drawDataHistory,

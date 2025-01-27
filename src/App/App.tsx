@@ -17,7 +17,7 @@ import useKeyPress from './hooks/useKeyPress';
 
 import FooterNav from '../components/Global/FooterNav/FooterNav';
 import { FlexContainer } from '../styled/Common';
-import useMediaQuery from '../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../utils/hooks/useMediaQuery';
 
 import Footer from '../components/Futa/Footer/Footer';
 import Navbar from '../components/Futa/Navbar/Navbar';

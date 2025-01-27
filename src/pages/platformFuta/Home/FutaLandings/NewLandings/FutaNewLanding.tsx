@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFutaHomeContext } from '../../../../../contexts/Futa/FutaHomeContext';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 import FadingTextGrid from '../../Animations/FadingTextGrid';
 import FutaLandingNav from '../FutaLandingNav';
 import FutaLanding from './FutaLanding1';

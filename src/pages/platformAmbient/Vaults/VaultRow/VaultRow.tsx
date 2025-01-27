@@ -20,7 +20,7 @@ import {
 } from '../../../../contexts';
 import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
 import { FlexContainer } from '../../../../styled/Common';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import { formatDollarAmount } from '../../../../utils/numbers';
 import VaultDeposit from '../VaultActionModal/VaultDeposit/VaultDeposit';
 import VaultWithdraw from '../VaultActionModal/VaultWithdraw/VaultWithdraw';

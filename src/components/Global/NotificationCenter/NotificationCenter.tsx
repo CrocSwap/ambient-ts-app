@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { getReceiptTxHashes } from '../../../ambient-utils/dataLayer';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
 import NotificationTable from './NotificationTable/NotificationTable';

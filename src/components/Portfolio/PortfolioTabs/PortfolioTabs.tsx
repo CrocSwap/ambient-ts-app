@@ -31,7 +31,7 @@ import {
     BlastUserXpDataIF,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import Points from '../../Global/Account/AccountTabs/Points/Points';
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';

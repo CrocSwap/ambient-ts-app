@@ -22,7 +22,7 @@ import { openInNewTab } from '../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import TradeLinks from './TradeLinks';
 
 interface PropsIF {

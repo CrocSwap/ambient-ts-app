@@ -5,7 +5,7 @@ import { GraphDataContext } from '../../../../../contexts/GraphDataContext';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import { textColors } from '../../../../../styled/Common/Types';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../../utils/hooks/useMediaQuery';
 interface PairDataItemIF {
     label: string;
     value: string;

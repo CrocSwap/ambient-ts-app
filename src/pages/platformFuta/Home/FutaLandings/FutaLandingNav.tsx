@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import styles from './FutaLandingNav.module.css';
 import { BsChevronDown } from 'react-icons/bs';
 

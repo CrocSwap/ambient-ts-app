@@ -13,7 +13,7 @@ import {
     NftListByChain,
 } from '../../../contexts/TokenBalanceContext';
 import { UserXpDataIF } from '../../../contexts/UserDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import AddressPrint from './AddressPrint';

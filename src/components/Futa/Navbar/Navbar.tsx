@@ -32,7 +32,7 @@ import {
     swapParamsIF,
     useLinkGen,
 } from '../../../utils/hooks/useLinkGen';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Toggle from '../../Form/Toggle';
 import NotificationCenter from '../../Global/NotificationCenter/NotificationCenter';

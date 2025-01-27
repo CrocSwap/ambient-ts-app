@@ -17,7 +17,7 @@ import {
     poolParamsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import Medal from '../../../Global/Medal/Medal';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';

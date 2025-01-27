@@ -6,7 +6,7 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../../utils/hooks/useMediaQuery';
 import Toggle from '../../../Form/Toggle';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 

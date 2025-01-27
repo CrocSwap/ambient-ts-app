@@ -18,7 +18,7 @@ import {
     pageNames,
     useLinkGen,
 } from '../../../utils/hooks/useLinkGen';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import FavButton from './FavButton';
 

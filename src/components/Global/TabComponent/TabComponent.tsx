@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import '../../../App/App.css';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import styles from './TabComponent.module.css';
 

@@ -13,7 +13,7 @@ import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
 import { AppStateContext } from '../../../contexts';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMediaQuery } from '../../../utils/hooks/useMediaQuery';
 import { useModal } from '../../Global/Modal/useModal';
 import TradeLinks from './TradeLinks';
 import styles from './TradeModuleHeader.module.css';
