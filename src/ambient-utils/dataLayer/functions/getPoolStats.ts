@@ -6,7 +6,7 @@ import {
     ethereumMainnet,
     excludedTokenAddressesLowercase,
 } from '../../constants';
-import { mainnetETH } from '../../constants/networks/ethereumMainnet';
+import { MAINNET_TOKENS } from '../../constants/networks/ethereumMainnet';
 import { SinglePoolDataIF, TokenIF } from '../../types';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
@@ -202,7 +202,7 @@ export async function expandPoolStats(
 
     const getEthPrice = async () => {
         const mainnetEthPrice = await cachedFetchTokenPrice(
-            mainnetETH.address,
+            MAINNET_TOKENS.ETH.address,
             ethereumMainnet.chainId,
         );
         return mainnetEthPrice?.usdPrice;

@@ -35,23 +35,31 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://sepolia.etherscan.io/',
 };
 
-export const sepoliaETH: TokenIF = testnetTokenList.tokens.find(
-    (token) =>
-        token.address === '0x0000000000000000000000000000000000000000' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const findTokenByAddress = (address: string): TokenIF =>
+    testnetTokenList.tokens.find(
+        (token) =>
+            token.address.toLowerCase() === address.toLowerCase() &&
+            token.chainId === Number(chainIdHex),
+    ) as TokenIF;
 
-export const sepoliaUSDC: TokenIF = testnetTokenList.tokens.find(
-    (token) =>
-        token.address === '0x60bBA138A74C5e7326885De5090700626950d509' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const defaultTokenEntries = [
+    ['ETH', '0x0000000000000000000000000000000000000000'],
+    ['USDC', '0x60bBA138A74C5e7326885De5090700626950d509'],
+    ['WBTC', '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328'],
+] as const;
 
-export const sepoliaWBTC: TokenIF = testnetTokenList.tokens.find(
-    (token) =>
-        token.address === '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+// Infer the type of the keys and define the resulting type
+type SepoliaTokens = {
+    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
+};
+
+// Safely construct the object with type inference
+export const SEPOLIA_TOKENS: SepoliaTokens = Object.fromEntries(
+    defaultTokenEntries.map(([key, address]) => [
+        key,
+        findTokenByAddress(address),
+    ]),
+) as SepoliaTokens;
 
 export const ethereumSepolia: NetworkIF = {
     chainId: chainIdHex,
@@ -60,8 +68,8 @@ export const ethereumSepolia: NetworkIF = {
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [sepoliaETH, sepoliaUSDC],
-    defaultPairFuta: [sepoliaETH, sepoliaWBTC],
+    defaultPair: [SEPOLIA_TOKENS.ETH, SEPOLIA_TOKENS.USDC],
+    defaultPairFuta: [SEPOLIA_TOKENS.ETH, SEPOLIA_TOKENS.WBTC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
@@ -70,9 +78,21 @@ export const ethereumSepolia: NetworkIF = {
     vaultsEnabled: false,
     tempestApiNetworkName: '',
     topPools: [
-        new TopPool(sepoliaETH, sepoliaUSDC, chainSpecFromSDK.poolIndex),
-        new TopPool(sepoliaETH, sepoliaWBTC, chainSpecFromSDK.poolIndex),
-        new TopPool(sepoliaUSDC, sepoliaWBTC, chainSpecFromSDK.poolIndex),
+        new TopPool(
+            SEPOLIA_TOKENS.ETH,
+            SEPOLIA_TOKENS.USDC,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            SEPOLIA_TOKENS.ETH,
+            SEPOLIA_TOKENS.WBTC,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            SEPOLIA_TOKENS.USDC,
+            SEPOLIA_TOKENS.WBTC,
+            chainSpecFromSDK.poolIndex,
+        ),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

@@ -35,95 +35,41 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://explorer.swellnetwork.io/',
 };
 
-export const swellETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x0000000000000000000000000000000000000000' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const findTokenByAddress = (address: string): TokenIF =>
+    ambientTokenList.tokens.find(
+        (token) =>
+            token.address.toLowerCase() === address.toLowerCase() &&
+            token.chainId === Number(chainIdHex),
+    ) as TokenIF;
 
-export const swellUSDE: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const defaultTokenEntries = [
+    ['ETH', '0x0000000000000000000000000000000000000000'],
+    ['USDE', '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34'],
+    ['ENA', '0x58538e6A46E07434d7E7375Bc268D3cb839C0133'],
+    ['SWELL', '0x2826D136F5630adA89C1678b64A61620Aab77Aea'],
+    ['weETH', '0xA6cB988942610f6731e664379D15fFcfBf282b44'],
+    ['rswETH', '0x18d33689AE5d02649a859A1CF16c9f0563975258'],
+    ['SUSDe', '0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2'],
+    ['wstETH', '0x7c98E0779EB5924b3ba8cE3B17648539ed5b0Ecc'],
+    ['pzETH', '0x9cb41CD74D01ae4b4f640EC40f7A60cA1bCF83E7'],
+    ['ezETH', '0x2416092f143378750bb29b79eD961ab195CcEea5'],
+    ['rsETH', '0xc3eACf0612346366Db554C991D7858716db09f58'],
+    ['swETH', '0x09341022ea237a4DB1644DE7CCf8FA0e489D85B7'],
+    ['UBTC', '0xFA3198ecF05303a6d96E57a45E6c815055D255b1'],
+    ['swBTC', '0x1cf7b5f266A0F39d6f9408B90340E3E71dF8BF7B'],
+    ['stBTC', '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3'],
+] as const;
 
-export const swellENA: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x58538e6A46E07434d7E7375Bc268D3cb839C0133' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+type SwellTokens = {
+    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
+};
 
-export const swellSWELL: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x2826D136F5630adA89C1678b64A61620Aab77Aea' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const swellWEETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0xA6cB988942610f6731e664379D15fFcfBf282b44' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const swellRSWETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x18d33689AE5d02649a859A1CF16c9f0563975258' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const swellSUSDe: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const swellWSTETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x7c98E0779EB5924b3ba8cE3B17648539ed5b0Ecc' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const swellPZETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x9cb41CD74D01ae4b4f640EC40f7A60cA1bCF83E7' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const swellEZETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x2416092f143378750bb29b79eD961ab195CcEea5' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const swellRSETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0xc3eACf0612346366Db554C991D7858716db09f58' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const swellSWETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x09341022ea237a4DB1644DE7CCf8FA0e489D85B7' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const swellUBTC: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0xFA3198ecF05303a6d96E57a45E6c815055D255b1' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const swellSWBTC: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x1cf7b5f266A0F39d6f9408B90340E3E71dF8BF7B' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const swellSTBTC: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+export const SWELL_TOKENS: SwellTokens = Object.fromEntries(
+    defaultTokenEntries.map(([key, address]) => [
+        key,
+        findTokenByAddress(address),
+    ]),
+) as SwellTokens;
 
 export const swellMainnet: NetworkIF = {
     chainId: chainIdHex,
@@ -132,8 +78,8 @@ export const swellMainnet: NetworkIF = {
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [swellETH, swellUSDE],
-    defaultPairFuta: [swellETH, swellUSDE],
+    defaultPair: [SWELL_TOKENS.ETH, SWELL_TOKENS.USDE],
+    defaultPairFuta: [SWELL_TOKENS.ETH, SWELL_TOKENS.USDE],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
@@ -142,10 +88,26 @@ export const swellMainnet: NetworkIF = {
     vaultsEnabled: true,
     tempestApiNetworkName: 'swell',
     topPools: [
-        new TopPool(swellETH, swellUSDE, chainSpecFromSDK.poolIndex),
-        new TopPool(swellENA, swellUSDE, chainSpecFromSDK.poolIndex),
-        new TopPool(swellETH, swellSWELL, chainSpecFromSDK.poolIndex),
-        new TopPool(swellWEETH, swellRSWETH, chainSpecFromSDK.poolIndex),
+        new TopPool(
+            SWELL_TOKENS.ETH,
+            SWELL_TOKENS.USDE,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            SWELL_TOKENS.ENA,
+            SWELL_TOKENS.USDE,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            SWELL_TOKENS.ETH,
+            SWELL_TOKENS.SWELL,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            SWELL_TOKENS.weETH,
+            SWELL_TOKENS.rswETH,
+            chainSpecFromSDK.poolIndex,
+        ),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

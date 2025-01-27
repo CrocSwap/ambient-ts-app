@@ -35,23 +35,31 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://swell-testnet-explorer.alt.technology/',
 };
 
-export const baseSepoliaETH: TokenIF = testnetTokenList.tokens.find(
-    (token) =>
-        token.address === '0x0000000000000000000000000000000000000000' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const findTokenByAddress = (address: string): TokenIF =>
+    testnetTokenList.tokens.find(
+        (token) =>
+            token.address.toLowerCase() === address.toLowerCase() &&
+            token.chainId === Number(chainIdHex),
+    ) as TokenIF;
 
-export const baseSepoliaUSDC: TokenIF = testnetTokenList.tokens.find(
-    (token) =>
-        token.address === '0x1B98743bB9297A60FF9e75EA2630A77bf72bc17c' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const defaultTokenEntries = [
+    ['ETH', '0x0000000000000000000000000000000000000000'],
+    ['USDC', '0x1B98743bB9297A60FF9e75EA2630A77bf72bc17c'],
+    ['USDT', '0x868cFD46ad326354AD214bEA9f08fD8EfBfac3b9'],
+] as const;
 
-export const baseSepoliaUSDT: TokenIF = testnetTokenList.tokens.find(
-    (token) =>
-        token.address === '0x868cFD46ad326354AD214bEA9f08fD8EfBfac3b9' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+// Infer the type of the keys and define the resulting type
+type BaseSepoliaTokens = {
+    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
+};
+
+// Safely construct the object with type inference
+export const BASE_SEPOLIA_TOKENS: BaseSepoliaTokens = Object.fromEntries(
+    defaultTokenEntries.map(([key, address]) => [
+        key,
+        findTokenByAddress(address),
+    ]),
+) as BaseSepoliaTokens;
 
 export const baseSepolia: NetworkIF = {
     chainId: chainIdHex,
@@ -60,8 +68,8 @@ export const baseSepolia: NetworkIF = {
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [baseSepoliaETH, baseSepoliaUSDC],
-    defaultPairFuta: [baseSepoliaETH, baseSepoliaUSDC],
+    defaultPair: [BASE_SEPOLIA_TOKENS.ETH, BASE_SEPOLIA_TOKENS.USDC],
+    defaultPairFuta: [BASE_SEPOLIA_TOKENS.ETH, BASE_SEPOLIA_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
@@ -71,13 +79,13 @@ export const baseSepolia: NetworkIF = {
     tempestApiNetworkName: '',
     topPools: [
         new TopPool(
-            baseSepoliaETH,
-            baseSepoliaUSDC,
+            BASE_SEPOLIA_TOKENS.ETH,
+            BASE_SEPOLIA_TOKENS.USDC,
             chainSpecFromSDK.poolIndex,
         ),
         new TopPool(
-            baseSepoliaETH,
-            baseSepoliaUSDT,
+            BASE_SEPOLIA_TOKENS.ETH,
+            BASE_SEPOLIA_TOKENS.USDT,
             chainSpecFromSDK.poolIndex,
         ),
     ],

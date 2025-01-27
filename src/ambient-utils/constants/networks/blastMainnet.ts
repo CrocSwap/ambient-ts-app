@@ -35,47 +35,33 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://blastscan.io/',
 };
 
-export const blastETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x0000000000000000000000000000000000000000' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const findTokenByAddress = (address: string): TokenIF =>
+    ambientTokenList.tokens.find(
+        (token) =>
+            token.address.toLowerCase() === address.toLowerCase() &&
+            token.chainId === Number(chainIdHex),
+    ) as TokenIF;
 
-export const blastUSDB: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x4300000000000000000000000000000000000003' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const defaultTokenEntries = [
+    ['ETH', '0x0000000000000000000000000000000000000000'],
+    ['USDB', '0x4300000000000000000000000000000000000003'],
+    ['ezETH', '0x2416092f143378750bb29b79eD961ab195CcEea5'],
+    ['BLAST', '0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad'],
+    ['USDPLUS', '0x4fee793d435c6d2c10c135983bb9d6d4fc7b9bbd'],
+    ['wrsETH', '0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd'],
+    ['weETH', '0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A'],
+] as const;
 
-export const blastEzETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x2416092f143378750bb29b79eD961ab195CcEea5' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+type BlastTokens = {
+    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
+};
 
-export const blastBLAST: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const blastUSDPLUS: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x4fee793d435c6d2c10c135983bb9d6d4fc7b9bbd' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const blastWrsETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const blastWEETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+export const BLAST_TOKENS: BlastTokens = Object.fromEntries(
+    defaultTokenEntries.map(([key, address]) => [
+        key,
+        findTokenByAddress(address),
+    ]),
+) as BlastTokens;
 
 export const blastMainnet: NetworkIF = {
     chainId: chainIdHex,
@@ -86,16 +72,28 @@ export const blastMainnet: NetworkIF = {
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [blastETH, blastUSDB],
+    defaultPair: [BLAST_TOKENS.ETH, BLAST_TOKENS.USDB],
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,
     tokenPriceQueryAssetPlatform: 'blast',
     vaultsEnabled: false,
     tempestApiNetworkName: '',
     topPools: [
-        new TopPool(blastETH, blastUSDB, chainSpecFromSDK.poolIndex),
-        new TopPool(blastEzETH, blastUSDB, chainSpecFromSDK.poolIndex),
-        new TopPool(blastBLAST, blastETH, chainSpecFromSDK.poolIndex),
+        new TopPool(
+            BLAST_TOKENS.ETH,
+            BLAST_TOKENS.USDB,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            BLAST_TOKENS.ezETH,
+            BLAST_TOKENS.USDB,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            BLAST_TOKENS.BLAST,
+            BLAST_TOKENS.ETH,
+            chainSpecFromSDK.poolIndex,
+        ),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

@@ -10,7 +10,7 @@ import {
     useState,
 } from 'react';
 import { getDefaultPairForChain } from '../ambient-utils/constants';
-import { mainnetETH } from '../ambient-utils/constants/networks/ethereumMainnet';
+import { MAINNET_TOKENS } from '../ambient-utils/constants/networks/ethereumMainnet';
 import {
     isBtcPair,
     isETHPair,
@@ -189,7 +189,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
 
-    const [soloToken, setSoloToken] = useState<TokenIF>(mainnetETH);
+    const [soloToken, setSoloToken] = useState<TokenIF>(MAINNET_TOKENS.ETH);
 
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         useState<boolean>(false);

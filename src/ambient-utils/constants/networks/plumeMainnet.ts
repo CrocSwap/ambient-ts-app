@@ -7,22 +7,14 @@ import ambientTokenList from '../ambient-token-list.json';
 import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-const PUBLIC_RPC_URL = 'https://phoenix-rpc.plumenetwork.xyz';
-const SECONDARY_PUBLIC_RPC_URL = 'https://phoenix-rpc.plumenetwork.xyz';
+const RPC_URLS = {
+    PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
+    RESTRICTED: import.meta.env.VITE_PLUME_RPC_URL,
+};
 
-const RESTRICTED_RPC_URL =
-    import.meta.env.VITE_PLUME_RPC_URL !== undefined
-        ? import.meta.env.VITE_PLUME_RPC_URL
-        : undefined;
-
-const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
-    ? RESTRICTED_RPC_URL
-    : PUBLIC_RPC_URL;
-
+const PRIMARY_RPC_URL = RPC_URLS.RESTRICTED || RPC_URLS.PUBLIC;
 const FALLBACK_RPC_URL =
-    PRIMARY_RPC_URL === PUBLIC_RPC_URL
-        ? SECONDARY_PUBLIC_RPC_URL
-        : PUBLIC_RPC_URL;
+    PRIMARY_RPC_URL === RPC_URLS.PUBLIC ? RPC_URLS.PUBLIC : RPC_URLS.RESTRICTED;
 
 const chainIdHex = '0x18231';
 const chainSpecFromSDK = lookupChain(chainIdHex);
@@ -31,51 +23,38 @@ const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
     name: 'Plume Mainnet',
     currency: 'ETH',
-    rpcUrl: PUBLIC_RPC_URL,
+    rpcUrl: RPC_URLS.PUBLIC,
     explorerUrl: 'https://phoenix-explorer.plumenetwork.xyz/',
 };
 
-export const plumeNativeETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x0000000000000000000000000000000000000000' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const findTokenByAddress = (address: string): TokenIF =>
+    ambientTokenList.tokens.find(
+        (token) =>
+            token.address.toLowerCase() === address.toLowerCase() &&
+            token.chainId === Number(chainIdHex),
+    ) as TokenIF;
 
-export const plumePETH: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0xD630fb6A07c9c723cf709d2DaA9B63325d0E0B73' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const defaultTokenEntries = [
+    ['ETH', '0x0000000000000000000000000000000000000000'],
+    ['PETH', '0xD630fb6A07c9c723cf709d2DaA9B63325d0E0B73'],
+    ['pUSD', '0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F'],
+    ['USDC', '0x3938A812c54304fEffD266C7E2E70B48F9475aD6'],
+    ['USDT', '0xA849026cDA282eeeBC3C39Afcbe87a69424F16B4'],
+    ['NRWA', '0x81537d879ACc8a290a1846635a0cAA908f8ca3a6'],
+    ['NTBILL', '0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9'],
+    ['NYIELD', '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8'],
+] as const;
 
-export const plumePUSD: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+type PlumeTokens = {
+    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
+};
 
-export const plumeUSDC: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x3938A812c54304fEffD266C7E2E70B48F9475aD6' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const plumeNRWA: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x81537d879ACc8a290a1846635a0cAA908f8ca3a6' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const plumeNTBILL: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
-
-export const plumeNYIELD: TokenIF = ambientTokenList.tokens.find(
-    (token) =>
-        token.address === '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+export const PLUME_TOKENS: PlumeTokens = Object.fromEntries(
+    defaultTokenEntries.map(([key, address]) => [
+        key,
+        findTokenByAddress(address),
+    ]),
+) as PlumeTokens;
 
 export const plumeMainnet: NetworkIF = {
     chainId: chainIdHex,
@@ -83,9 +62,9 @@ export const plumeMainnet: NetworkIF = {
     GCGO_URL: GCGO_PLUME_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [plumePETH, plumePUSD],
-    defaultPairFuta: [plumePETH, plumePUSD],
+    chainSpecForWalletConnector,
+    defaultPair: [PLUME_TOKENS.PETH, PLUME_TOKENS.pUSD],
+    defaultPairFuta: [PLUME_TOKENS.PETH, PLUME_TOKENS.pUSD],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
@@ -94,9 +73,21 @@ export const plumeMainnet: NetworkIF = {
     vaultsEnabled: false,
     tempestApiNetworkName: '',
     topPools: [
-        new TopPool(plumeNativeETH, plumeUSDC, chainSpecFromSDK.poolIndex),
-        new TopPool(plumePETH, plumeUSDC, chainSpecFromSDK.poolIndex),
-        new TopPool(plumePETH, plumePUSD, chainSpecFromSDK.poolIndex),
+        new TopPool(
+            PLUME_TOKENS.ETH,
+            PLUME_TOKENS.USDC,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            PLUME_TOKENS.PETH,
+            PLUME_TOKENS.USDC,
+            chainSpecFromSDK.poolIndex,
+        ),
+        new TopPool(
+            PLUME_TOKENS.PETH,
+            PLUME_TOKENS.pUSD,
+            chainSpecFromSDK.poolIndex,
+        ),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

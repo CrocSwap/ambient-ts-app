@@ -35,23 +35,29 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://sepolia.scrollscan.dev/',
 };
 
-export const scrollSepoliaETH: TokenIF = testnetTokenList.tokens.find(
-    (token) =>
-        token.address === '0x0000000000000000000000000000000000000000' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const findTokenByAddress = (address: string): TokenIF =>
+    testnetTokenList.tokens.find(
+        (token) =>
+            token.address.toLowerCase() === address.toLowerCase() &&
+            token.chainId === Number(chainIdHex),
+    ) as TokenIF;
 
-export const scrollSepoliaUSDC: TokenIF = testnetTokenList.tokens.find(
-    (token) =>
-        token.address === '0x4D65fB724CEd0CFC6ABFD03231C9CDC2C36A587B' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const defaultTokenEntries = [
+    ['ETH', '0x0000000000000000000000000000000000000000'],
+    ['USDC', '0x4D65fB724CEd0CFC6ABFD03231C9CDC2C36A587B'],
+    ['WBTC', '0xb3B942b6d4a4858838aAb8f94DdaEdd479CD1594'],
+] as const;
 
-export const scrollSepoliaWBTC: TokenIF = testnetTokenList.tokens.find(
-    (token) =>
-        token.address === '0xb3B942b6d4a4858838aAb8f94DdaEdd479CD1594' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+type ScrollSepoliaTokens = {
+    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
+};
+
+export const SCROLL_SEPOLIA_TOKENS: ScrollSepoliaTokens = Object.fromEntries(
+    defaultTokenEntries.map(([key, address]) => [
+        key,
+        findTokenByAddress(address),
+    ]),
+) as ScrollSepoliaTokens;
 
 export const scrollSepolia: NetworkIF = {
     chainId: chainIdHex,
@@ -60,7 +66,7 @@ export const scrollSepolia: NetworkIF = {
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [scrollSepoliaETH, scrollSepoliaUSDC],
+    defaultPair: [SCROLL_SEPOLIA_TOKENS.ETH, SCROLL_SEPOLIA_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
@@ -70,18 +76,18 @@ export const scrollSepolia: NetworkIF = {
     tempestApiNetworkName: '',
     topPools: [
         new TopPool(
-            scrollSepoliaETH,
-            scrollSepoliaUSDC,
+            SCROLL_SEPOLIA_TOKENS.ETH,
+            SCROLL_SEPOLIA_TOKENS.USDC,
             chainSpecFromSDK.poolIndex,
         ),
         new TopPool(
-            scrollSepoliaETH,
-            scrollSepoliaWBTC,
+            SCROLL_SEPOLIA_TOKENS.ETH,
+            SCROLL_SEPOLIA_TOKENS.WBTC,
             chainSpecFromSDK.poolIndex,
         ),
         new TopPool(
-            scrollSepoliaUSDC,
-            scrollSepoliaWBTC,
+            SCROLL_SEPOLIA_TOKENS.USDC,
+            SCROLL_SEPOLIA_TOKENS.WBTC,
             chainSpecFromSDK.poolIndex,
         ),
     ],

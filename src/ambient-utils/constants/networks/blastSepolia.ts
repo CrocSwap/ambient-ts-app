@@ -35,17 +35,30 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://testnet.blastscan.io/',
 };
 
-export const blastSepoliaETH: TokenIF = testnetTokenList.tokens.find(
-    (token) =>
-        token.address === '0x0000000000000000000000000000000000000000' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const findTokenByAddress = (address: string): TokenIF =>
+    testnetTokenList.tokens.find(
+        (token) =>
+            token.address.toLowerCase() === address.toLowerCase() &&
+            token.chainId === Number(chainIdHex),
+    ) as TokenIF;
 
-export const blastSepoliaUSDB: TokenIF = testnetTokenList.tokens.find(
-    (token) =>
-        token.address === '0x4200000000000000000000000000000000000022' &&
-        token.chainId === Number(chainIdHex),
-) as TokenIF;
+const defaultTokenEntries = [
+    ['ETH', '0x0000000000000000000000000000000000000000'],
+    ['USDB', '0x4200000000000000000000000000000000000022'],
+] as const;
+
+// Infer the type of the keys and define the resulting type
+type BlastSepoliaTokens = {
+    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
+};
+
+// Safely construct the object with type inference
+export const BLAST_SEPOLIA_TOKENS: BlastSepoliaTokens = Object.fromEntries(
+    defaultTokenEntries.map(([key, address]) => [
+        key,
+        findTokenByAddress(address),
+    ]),
+) as BlastSepoliaTokens;
 
 export const blastSepolia: NetworkIF = {
     chainId: chainIdHex,
@@ -54,7 +67,7 @@ export const blastSepolia: NetworkIF = {
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [blastSepoliaETH, blastSepoliaUSDB],
+    defaultPair: [BLAST_SEPOLIA_TOKENS.ETH, BLAST_SEPOLIA_TOKENS.USDB],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     displayName: 'Blast Testnet',
@@ -63,8 +76,8 @@ export const blastSepolia: NetworkIF = {
     tempestApiNetworkName: '',
     topPools: [
         new TopPool(
-            blastSepoliaETH,
-            blastSepoliaUSDB,
+            BLAST_SEPOLIA_TOKENS.ETH,
+            BLAST_SEPOLIA_TOKENS.USDB,
             chainSpecFromSDK.poolIndex,
         ),
     ],
