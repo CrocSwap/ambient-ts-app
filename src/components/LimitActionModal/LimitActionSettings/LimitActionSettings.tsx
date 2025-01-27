@@ -1,7 +1,7 @@
-import { Button } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { BsArrowLeft } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
+import Button from '../../Form/Button';
 import styles from './LimitActionSettings.module.css';
 
 interface propsIF {
@@ -70,7 +70,11 @@ export default function LimitActionSettings(props: propsIF) {
                     </div>
                 </div>
             </div>
-            <Button title='CONFIRM' action={() => setShowSettings(false)} />
+            <Button
+                title='CONFIRM'
+                action={() => setShowSettings(false)}
+                idForDOM='limit_action_settings_button'
+            />
         </div>
     );
 }

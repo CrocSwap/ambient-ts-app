@@ -2,7 +2,12 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
 import { NetworkIF } from '../../types/NetworkIF';
-import { mainnetETH, mainnetUSDC, mainnetUSDT } from '../defaultTokens';
+import {
+    mainnetETH,
+    mainnetUSDC,
+    mainnetUSDT,
+    mainnetWBTC,
+} from '../defaultTokens';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -52,6 +57,7 @@ export const ethereumMainnet: NetworkIF = {
     topPools: [
         new TopPool(mainnetETH, mainnetUSDC, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetETH, mainnetUSDT, chainSpecFromSDK.poolIndex),
+        new TopPool(mainnetETH, mainnetWBTC, chainSpecFromSDK.poolIndex),
         new TopPool(mainnetUSDT, mainnetUSDC, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {

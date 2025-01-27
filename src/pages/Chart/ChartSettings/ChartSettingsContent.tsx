@@ -1,7 +1,7 @@
-import { Divider } from '@mui/material';
 import * as d3 from 'd3';
 import { MouseEvent, useContext, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
+import Divider from '../../../components/Global/Divider/Divider';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { ChartContext, ChartThemeIF } from '../../../contexts/ChartContext';
@@ -439,14 +439,14 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
 
     const extendedOptions = (
         <ContextOptions>
-            <Divider></Divider>
+            <Divider />
 
             <ContextOptionsSection>
                 <OptionsHeader>Chart Scale:</OptionsHeader>
                 <OptionsContent>{resetAndRescaleMobileDisplay}</OptionsContent>
             </ContextOptionsSection>
 
-            <Divider></Divider>
+            <Divider />
 
             <ContextOptionsSection>
                 <OptionsHeader>Curve/Depth:</OptionsHeader>

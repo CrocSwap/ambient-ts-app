@@ -1,4 +1,4 @@
-import { CSSProperties } from '@mui/material/styles/createMixins';
+import { CSSProperties } from 'react';
 import styles from './Spinner.module.css';
 
 interface SpinnerPropsIF {

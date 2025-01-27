@@ -1,5 +1,4 @@
-import { CSSProperties } from '@mui/material/styles/createMixins';
-import { memo } from 'react';
+import { CSSProperties, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     formatMessageTime,

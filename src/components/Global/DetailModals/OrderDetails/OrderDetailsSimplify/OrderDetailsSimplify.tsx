@@ -95,7 +95,6 @@ function OrderDetailsSimplify(props: propsIF) {
     } = useProcessOrder(limitOrder, crocEnv, userAddress, isAccountView);
 
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
-    const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
     const [_, copy] = useCopyToClipboard();
 
@@ -132,7 +131,7 @@ function OrderDetailsSimplify(props: propsIF) {
             style={{ cursor: 'pointer' }}
         >
             <p style={!ensName ? { fontFamily: 'monospace' } : undefined}>
-                {showFullAddresses
+                {!showMobileVersion
                     ? ensName
                         ? ensName
                         : ownerId
