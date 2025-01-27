@@ -1,12 +1,5 @@
 import { AnimateSharedLayout, motion } from 'framer-motion';
-import {
-    memo,
-    useCallback,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
     chainNumToString,
@@ -80,7 +73,7 @@ const PageHeader = function () {
     const accountAddress =
         isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
-    const clickLogout = useCallback(async () => {
+    const clickLogout = async () => {
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -91,7 +84,7 @@ const PageHeader = function () {
         setShowAllData(true);
         disconnectUser();
         setCrocEnv(undefined);
-    }, []);
+    };
 
     const userMenuProps = {
         accountAddress: accountAddress,
@@ -372,7 +365,7 @@ const PageHeader = function () {
                                 ? styles.activeNavigationLink
                                 : ''
                         }
-                        
+
                         `}
                             tabIndex={0}
                             to={link.destination}

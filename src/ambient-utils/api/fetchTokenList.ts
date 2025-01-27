@@ -16,15 +16,15 @@ export default async function fetchTokenList(
     uri: string,
     isUserImported = false,
 ): Promise<TokenListIF> {
-    function isRunningOnLocalhost(): boolean {
-        const hostname = window.location.hostname;
-        return (
-            hostname === 'localhost' ||
-            hostname === '127.0.0.1' ||
-            hostname.startsWith('192.168') ||
-            hostname === '[::1]'
-        );
-    }
+    // function isRunningOnLocalhost(): boolean {
+    //     const hostname = window.location.hostname;
+    //     return (
+    //         hostname === 'localhost' ||
+    //         hostname === '127.0.0.1' ||
+    //         hostname.startsWith('192.168') ||
+    //         hostname === '[::1]'
+    //     );
+    // }
 
     // Handle manual lists
     const tokenListMap = new Map<string, any>([
@@ -32,7 +32,8 @@ export default async function fetchTokenList(
         ['testnet-token-list.json', testnetTokenList],
     ]);
 
-    if (uri.startsWith('/') && isRunningOnLocalhost()) {
+    if (uri.startsWith('/')) {
+        // if (uri.startsWith('/') && isRunningOnLocalhost()) {
         for (const [key, value] of tokenListMap) {
             if (uri.includes(key)) {
                 return Promise.resolve({

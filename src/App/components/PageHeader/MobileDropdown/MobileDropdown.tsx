@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { openInNewTab, trimString } from '../../../../ambient-utils/dataLayer';
 import {
     AppStateContext,
@@ -81,7 +81,7 @@ export default function MobileDropdown() {
         openSnackbar(`${accountAddressFull} copied`, 'info');
     }
 
-    const clickLogout = useCallback(async () => {
+    const clickLogout = async () => {
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -92,7 +92,7 @@ export default function MobileDropdown() {
         setShowAllData(true);
         disconnectUser();
         setCrocEnv(undefined);
-    }, []);
+    };
 
     const actionsContainer = (
         <div className={styles.actionsContainer}>
