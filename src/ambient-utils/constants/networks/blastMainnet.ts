@@ -1,8 +1,9 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import { blastBLAST, blastETH, blastEzETH, blastUSDB } from '../defaultTokens';
+import ambientTokenList from '../ambient-token-list.json';
 import { GCGO_BLAST_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -33,6 +34,48 @@ const chainSpecForWalletConnector = {
     rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://blastscan.io/',
 };
+
+export const blastETH: TokenIF = ambientTokenList.tokens.find(
+    (token) =>
+        token.address === '0x0000000000000000000000000000000000000000' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const blastUSDB: TokenIF = ambientTokenList.tokens.find(
+    (token) =>
+        token.address === '0x4300000000000000000000000000000000000003' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const blastEzETH: TokenIF = ambientTokenList.tokens.find(
+    (token) =>
+        token.address === '0x2416092f143378750bb29b79eD961ab195CcEea5' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const blastBLAST: TokenIF = ambientTokenList.tokens.find(
+    (token) =>
+        token.address === '0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const blastUSDPLUS: TokenIF = ambientTokenList.tokens.find(
+    (token) =>
+        token.address === '0x4fee793d435c6d2c10c135983bb9d6d4fc7b9bbd' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const blastWrsETH: TokenIF = ambientTokenList.tokens.find(
+    (token) =>
+        token.address === '0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const blastWEETH: TokenIF = ambientTokenList.tokens.find(
+    (token) =>
+        token.address === '0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
 
 export const blastMainnet: NetworkIF = {
     chainId: chainIdHex,

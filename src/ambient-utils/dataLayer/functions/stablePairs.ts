@@ -8,15 +8,18 @@ import { ZERO_ADDRESS } from '../../constants';
 import {
     baseSepoliaUSDC,
     baseSepoliaUSDT,
+} from '../../constants/networks/baseSepolia';
+import {
     blastBLAST,
     blastEzETH,
-    blastSepoliaUSDB,
     blastUSDB,
     blastUSDPLUS,
     blastWEETH,
     blastWrsETH,
+} from '../../constants/networks/blastMainnet';
+import { blastSepoliaUSDB } from '../../constants/networks/blastSepolia';
+import {
     mainnetDAI,
-    mainnetLUSD,
     mainnetRSETH,
     mainnetRSWETH,
     mainnetSTONE,
@@ -26,15 +29,24 @@ import {
     mainnetUSDC,
     mainnetUSDT,
     mainnetWBTC,
-    mainnetWstETH,
+} from '../../constants/networks/ethereumMainnet';
+import {
+    sepoliaUSDC,
+    sepoliaWBTC,
+} from '../../constants/networks/ethereumSepolia';
+import {
     plumeNRWA,
     plumeNTBILL,
     plumeNYIELD,
     plumePETH,
     plumePUSD,
+    plumeUSDC,
+} from '../../constants/networks/plumeMainnet';
+import {
     plumeSepoliaNEV,
     plumeSepoliaUSD,
-    plumeUSDC,
+} from '../../constants/networks/plumeSepolia';
+import {
     scrollAxlUSDC,
     scrollDAI,
     scrollPufETH,
@@ -45,17 +57,17 @@ import {
     scrollSOLVBTC,
     scrollSTONE,
     scrollSUSDe,
-    scrollSepoliaUSDC,
+    scrollUniETH,
     scrollUSDC,
     scrollUSDE,
     scrollUSDT,
-    scrollUniETH,
     scrollWBTC,
     scrollWeETH,
     scrollWrsETH,
     scrollWstETH,
-    sepoliaUSDC,
-    sepoliaWBTC,
+} from '../../constants/networks/scrollMainnet';
+import { scrollSepoliaUSDC } from '../../constants/networks/scrollSepolia';
+import {
     swellEZETH,
     swellPZETH,
     swellRSETH,
@@ -65,13 +77,15 @@ import {
     swellSWBTC,
     swellSWELL,
     swellSWETH,
-    swellSepoliaUSDC,
-    swellSepoliaUSDT,
     swellUBTC,
     swellUSDE,
     swellWEETH,
     swellWSTETH,
-} from '../../constants/defaultTokens';
+} from '../../constants/networks/swellMainnet';
+import {
+    swellSepoliaUSDC,
+    swellSepoliaUSDT,
+} from '../../constants/networks/swellSepolia';
 
 //       any sort of specific guaranteed relation between the tokens.
 export function isStablePair(addr1: string, addr2: string): boolean {
@@ -159,7 +173,6 @@ export const USDC_TOKENS = [
 export const STABLE_USD_TOKENS = [
     mainnetDAI,
     mainnetUSDT,
-    mainnetLUSD,
     plumeNRWA,
     plumePUSD,
     blastUSDPLUS,
@@ -189,7 +202,6 @@ export const WBTC_TOKENS = [mainnetWBTC, scrollWBTC, sepoliaWBTC].map((x) =>
 );
 
 export const STAKED_ETH_TOKENS = [
-    mainnetWstETH,
     mainnetSWETH,
     mainnetRSETH,
     mainnetRSWETH,

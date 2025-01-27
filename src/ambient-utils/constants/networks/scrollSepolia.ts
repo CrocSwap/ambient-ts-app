@@ -1,13 +1,10 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import {
-    scrollSepoliaETH,
-    scrollSepoliaUSDC,
-    scrollSepoliaWBTC,
-} from '../defaultTokens';
 import { GCGO_TESTNET_URL } from '../gcgo';
+import testnetTokenList from '../testnet-token-list.json';
 import { TopPool } from './TopPool';
 
 const PUBLIC_RPC_URL = 'https://sepolia-rpc.scroll.io';
@@ -37,6 +34,24 @@ const chainSpecForWalletConnector = {
     rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://sepolia.scrollscan.dev/',
 };
+
+export const scrollSepoliaETH: TokenIF = testnetTokenList.tokens.find(
+    (token) =>
+        token.address === '0x0000000000000000000000000000000000000000' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const scrollSepoliaUSDC: TokenIF = testnetTokenList.tokens.find(
+    (token) =>
+        token.address === '0x4D65fB724CEd0CFC6ABFD03231C9CDC2C36A587B' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const scrollSepoliaWBTC: TokenIF = testnetTokenList.tokens.find(
+    (token) =>
+        token.address === '0xb3B942b6d4a4858838aAb8f94DdaEdd479CD1594' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
 
 export const scrollSepolia: NetworkIF = {
     chainId: chainIdHex,

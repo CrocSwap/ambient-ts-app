@@ -1,14 +1,10 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import {
-    baseSepoliaETH,
-    baseSepoliaUSDC,
-    baseSepoliaUSDT,
-    baseSepoliaWTT,
-} from '../defaultTokens';
 import { GCGO_TESTNET_URL } from '../gcgo';
+import testnetTokenList from '../testnet-token-list.json';
 import { TopPool } from './TopPool';
 
 const PUBLIC_RPC_URL = 'https://sepolia.base.org';
@@ -39,6 +35,24 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://swell-testnet-explorer.alt.technology/',
 };
 
+export const baseSepoliaETH: TokenIF = testnetTokenList.tokens.find(
+    (token) =>
+        token.address === '0x0000000000000000000000000000000000000000' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const baseSepoliaUSDC: TokenIF = testnetTokenList.tokens.find(
+    (token) =>
+        token.address === '0x1B98743bB9297A60FF9e75EA2630A77bf72bc17c' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const baseSepoliaUSDT: TokenIF = testnetTokenList.tokens.find(
+    (token) =>
+        token.address === '0x868cFD46ad326354AD214bEA9f08fD8EfBfac3b9' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
 export const baseSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
@@ -66,7 +80,6 @@ export const baseSepolia: NetworkIF = {
             baseSepoliaUSDT,
             chainSpecFromSDK.poolIndex,
         ),
-        new TopPool(baseSepoliaETH, baseSepoliaWTT, chainSpecFromSDK.poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

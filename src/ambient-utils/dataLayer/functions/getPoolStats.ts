@@ -5,8 +5,8 @@ import {
     ZERO_ADDRESS,
     ethereumMainnet,
     excludedTokenAddressesLowercase,
-    mainnetETH,
 } from '../../constants';
+import { mainnetETH } from '../../constants/networks/ethereumMainnet';
 import { SinglePoolDataIF, TokenIF } from '../../types';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 

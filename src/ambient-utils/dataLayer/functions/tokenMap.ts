@@ -1,9 +1,7 @@
-import {
-    ZERO_ADDRESS,
-    mainnetUSDC,
-    scrollSepoliaUSDC,
-    sepoliaUSDC,
-} from '../../constants';
+import { ZERO_ADDRESS } from '../../constants';
+import { mainnetUSDC } from '../../constants/networks/ethereumMainnet';
+import { sepoliaUSDC } from '../../constants/networks/ethereumSepolia';
+import { scrollSepoliaUSDC } from '../../constants/networks/scrollSepolia';
 import { TokenIF } from '../../types';
 
 /* Translates testnet token addresses to their canonical production network

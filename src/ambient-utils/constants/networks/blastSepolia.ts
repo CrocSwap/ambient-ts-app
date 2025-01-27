@@ -1,9 +1,10 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import { blastSepoliaETH, blastSepoliaUSDB } from '../defaultTokens';
 import { GCGO_TESTNET_URL } from '../gcgo';
+import testnetTokenList from '../testnet-token-list.json';
 import { TopPool } from './TopPool';
 
 const PUBLIC_RPC_URL = 'https://sepolia.blast.io';
@@ -33,6 +34,18 @@ const chainSpecForWalletConnector = {
     rpcUrl: 'https://sepolia.blast.io/',
     explorerUrl: 'https://testnet.blastscan.io/',
 };
+
+export const blastSepoliaETH: TokenIF = testnetTokenList.tokens.find(
+    (token) =>
+        token.address === '0x0000000000000000000000000000000000000000' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const blastSepoliaUSDB: TokenIF = testnetTokenList.tokens.find(
+    (token) =>
+        token.address === '0x4200000000000000000000000000000000000022' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
 
 export const blastSepolia: NetworkIF = {
     chainId: chainIdHex,

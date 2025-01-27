@@ -1,13 +1,10 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import {
-    plumeSepoliaETH,
-    plumeSepoliaNEV,
-    plumeSepoliaUSD,
-} from '../defaultTokens';
 import { GCGO_TESTNET_URL } from '../gcgo';
+import testnetTokenList from '../testnet-token-list.json';
 import { TopPool } from './TopPool';
 
 const PUBLIC_RPC_URL = 'https://test-rpc.plumenetwork.xyz';
@@ -37,6 +34,24 @@ const chainSpecForWalletConnector = {
     rpcUrl: PUBLIC_RPC_URL,
     explorerUrl: 'https://test-explorer.plumenetwork.xyz/',
 };
+
+export const plumeSepoliaETH: TokenIF = testnetTokenList.tokens.find(
+    (token) =>
+        token.address === '0x0000000000000000000000000000000000000000' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const plumeSepoliaUSD: TokenIF = testnetTokenList.tokens.find(
+    (token) =>
+        token.address === '0xe644F07B1316f28a7F134998e021eA9f7135F351' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
+
+export const plumeSepoliaNEV: TokenIF = testnetTokenList.tokens.find(
+    (token) =>
+        token.address === '0x659619AEdf381c3739B0375082C2d61eC1fD8835' &&
+        token.chainId === Number(chainIdHex),
+) as TokenIF;
 
 export const plumeSepolia: NetworkIF = {
     chainId: chainIdHex,

@@ -9,7 +9,8 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { getDefaultPairForChain, mainnetETH } from '../ambient-utils/constants';
+import { getDefaultPairForChain } from '../ambient-utils/constants';
+import { mainnetETH } from '../ambient-utils/constants/networks/ethereumMainnet';
 import {
     isBtcPair,
     isETHPair,
