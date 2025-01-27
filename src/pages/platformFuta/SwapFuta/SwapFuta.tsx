@@ -8,6 +8,7 @@ import Trade from '../../platformAmbient/Trade/Trade';
 import styles from './SwapFuta.module.css';
 import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
 import HexReveal from '../Home/Animations/HexReveal';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function SwapFuta() {
     const tradeWrapperID = 'swapFutaTradeWrapper';
@@ -115,24 +116,31 @@ function SwapFuta() {
             </div>
 
             {!isFullScreen && (
-                <div>
-                    <span id={tradeWrapperID}>
+                <AnimatePresence>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.4 }}
+                    >
+                        <span id={tradeWrapperID}>
+                            <HexReveal>
+                                <p className={styles.label}>order</p>
+                            </HexReveal>
+                            <FutaDivider2 />
+                            <Swap isOnTradeRoute />
+                        </span>
                         <HexReveal>
-                            <p className={styles.label}>order</p>
+                            <p className={styles.label}>comments</p>
                         </HexReveal>
                         <FutaDivider2 />
-                        <Swap isOnTradeRoute />
-                    </span>
-                    <HexReveal>
-                        <p className={styles.label}>comments</p>
-                    </HexReveal>
-                    <FutaDivider2 />
-                    <Comments
-                        isForTrade={true}
-                        isSmall={true}
-                        resizeEffectorSelector={tradeWrapperID}
-                    />
-                </div>
+                        <Comments
+                            isForTrade={true}
+                            isSmall={true}
+                            resizeEffectorSelector={tradeWrapperID}
+                        />
+                    </motion.div>
+                </AnimatePresence>
             )}
         </section>
     );
