@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { hiddenTokens, tokenListURIs } from '../../ambient-utils/constants';
 import ambientTokenList from '../../ambient-utils/constants/ambient-token-list.json';
 import testnetTokenList from '../../ambient-utils/constants/testnet-token-list.json';
@@ -8,6 +8,7 @@ import {
     uriToHttp,
 } from '../../ambient-utils/dataLayer';
 import { TokenIF, TokenListIF } from '../../ambient-utils/types';
+import { AppStateContext, TokenBalanceContext } from '../../contexts';
 
 export interface tokenMethodsIF {
     verify: (addr: string) => boolean;
@@ -66,12 +67,14 @@ function getAckTokensFromLS(): TokenIF[] {
 const INIT_LIST: TokenListIF[] = getTokenListsFromLS();
 const INIT_ACK: TokenIF[] = getAckTokensFromLS();
 
-export const useTokens = (
-    chainId: string,
-    tokenBalances: TokenIF[] | undefined,
-): tokenMethodsIF => {
+export const useTokens = (): tokenMethodsIF => {
     // Token universe
     const [tokenLists, setTokenLists] = useState<TokenListIF[]>(INIT_LIST);
+
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
 
     // User acknowledge tokens
     const [ackTokens, setAckTokens] = useState<TokenIF[]>(INIT_ACK);
