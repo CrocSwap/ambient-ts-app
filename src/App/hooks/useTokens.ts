@@ -10,8 +10,6 @@ import {
 import { TokenIF, TokenListIF } from '../../ambient-utils/types';
 
 export interface tokenMethodsIF {
-    allDefaultTokens: TokenIF[];
-    defaultTokens: TokenIF[];
     verify: (addr: string) => boolean;
     acknowledge: (tkn: TokenIF) => void;
     tokenUniv: TokenIF[];
@@ -199,17 +197,6 @@ export const useTokens = (
             symbol: tkn.symbol,
         };
     }
-
-    const defaultTokensInUniv: TokenIF[] = useMemo(
-        () =>
-            tokenUniv.filter((tkn) => {
-                return (
-                    chainNumToString(tkn.chainId) === chainId &&
-                    tkn.listedBy?.includes(tokenListURIs.ambient)
-                );
-            }),
-        [chainId, tokenUniv.length],
-    );
 
     // Load token lists from local storage for fast load, but asynchronously
     // fetch tokens from external URLs and update with latest values
@@ -421,8 +408,6 @@ export const useTokens = (
 
     return useMemo(
         () => ({
-            allDefaultTokens: ambientTokenList.tokens,
-            defaultTokens: defaultTokensInUniv,
             verify: verifyToken,
             acknowledge: ackToken,
             tokenUniv: tokenUniv,

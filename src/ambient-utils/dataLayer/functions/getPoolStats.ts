@@ -402,7 +402,7 @@ export async function getChainStats(
     GCGO_URL: string,
     cachedFetchTokenPrice: TokenPriceFn,
     tokenCount: number,
-    allDefaultTokens?: TokenIF[],
+    ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF | undefined>;
 
 // fn signature to return chain stats as individual data points
@@ -413,7 +413,7 @@ export async function getChainStats(
     GCGO_URL: string,
     cachedFetchTokenPrice: TokenPriceFn,
     tokenCount: number,
-    allDefaultTokens?: TokenIF[],
+    ambientTokenList?: TokenIF[],
 ): Promise<DexTokenAggServerIF[] | undefined>;
 
 // overloaded fn to return chain stats in expanded or cumulative form
@@ -424,7 +424,7 @@ export async function getChainStats(
     GCGO_URL: string,
     cachedFetchTokenPrice: TokenPriceFn,
     tokenCount: number,
-    allDefaultTokens?: TokenIF[],
+    ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF | DexTokenAggServerIF[] | undefined> {
     const chainStatsFreshEndpoint = GCGO_URL + '/chain_stats?';
 
@@ -458,7 +458,7 @@ export async function getChainStats(
                     chainId,
                     crocEnv,
                     cachedFetchTokenPrice,
-                    allDefaultTokens,
+                    ambientTokenList,
                 );
             }
         })
@@ -473,7 +473,7 @@ async function expandChainStats(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
-    allDefaultTokens?: TokenIF[],
+    ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF> {
     const subAggs = await Promise.all(
         tokenStats.map((t) =>
@@ -482,7 +482,7 @@ async function expandChainStats(
                 chainId,
                 crocEnv,
                 cachedFetchTokenPrice,
-                allDefaultTokens,
+                ambientTokenList,
             ),
         ),
     );
@@ -509,10 +509,10 @@ async function expandTokenStats(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
-    allDefaultTokens?: TokenIF[],
+    ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF> {
     // check if tokenUniv includes the token's decimals value
-    const token = allDefaultTokens?.find(
+    const token = ambientTokenList?.find(
         (t) => t.address.toLowerCase() === stats.tokenAddr.toLowerCase(),
     );
     const decimals = token?.decimals || crocEnv.token(stats.tokenAddr).decimals;
