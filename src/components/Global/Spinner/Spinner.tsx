@@ -1,4 +1,4 @@
-import { CSSProperties } from '@material-ui/core/styles/withStyles';
+import { CSSProperties } from 'react';
 import styles from './Spinner.module.css';
 
 interface SpinnerPropsIF {

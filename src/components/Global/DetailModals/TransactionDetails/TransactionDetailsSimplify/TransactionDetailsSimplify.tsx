@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import moment from 'moment';
 import { memo, useContext } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
@@ -11,6 +10,7 @@ import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import InfoRow from '../../../InfoRow';
 import styles from './TransactionDetailsSimplify.module.css';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;

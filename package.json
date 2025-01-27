@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "3.1.21",
+    "version": "3.1.22",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -83,7 +83,7 @@
         "adm-zip": "^0.5.10",
         "dotenv": "^16.4.7",
         "eslint": "^7.32.0",
-        "eslint-config-prettier": "^9.1.0",
+        "eslint-config-prettier": "^10.0.1",
         "eslint-import-resolver-typescript": "^3.7.0",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-prettier": "^4.0.0",
@@ -99,6 +99,6 @@
         "vite": "^6.0.3",
         "vite-plugin-babel-macros": "^1.0.6",
         "vite-plugin-checker": "^0.8.0",
-        "vitest": "^3.0.2"
+        "vitest": "^3.0.4"
     }
 }

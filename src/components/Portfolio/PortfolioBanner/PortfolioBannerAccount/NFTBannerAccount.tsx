@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
@@ -44,6 +43,7 @@ import {
     SelectedNftCotainer,
     SelectedNFTImg,
 } from './NFTBannerAccountCss';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 interface NFTBannerAccountProps {
     showNFTPage: boolean;
     setShowNFTPage: React.Dispatch<boolean>;

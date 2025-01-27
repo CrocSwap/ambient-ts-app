@@ -342,7 +342,7 @@ const useFetchPoolStats = (
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
-                tokens.allDefaultTokens,
+                tokens.tokenUniv,
                 enableTotalSupply,
             );
 
@@ -369,7 +369,7 @@ const useFetchPoolStats = (
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
-                tokens.allDefaultTokens,
+                tokens.tokenUniv,
             );
 
             const volumeTotalNow = expandedPoolStatsNow?.volumeTotalUsd;
