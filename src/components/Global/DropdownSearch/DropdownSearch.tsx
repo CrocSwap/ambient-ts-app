@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
     ChangeEvent,
@@ -38,6 +37,7 @@ import RecentPools from '../Sidebar/RecentPools';
 import TopPools from '../Sidebar/TopPools';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import styles from './DropdownSearch.module.css';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface optionItem {
     id: number;

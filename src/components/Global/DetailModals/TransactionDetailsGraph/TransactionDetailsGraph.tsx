@@ -3,7 +3,6 @@ import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { toDisplayPrice } from '@crocswap-libs/sdk';
-import { useMediaQuery } from '@material-ui/core';
 import moment from 'moment';
 import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
@@ -26,6 +25,7 @@ import {
 } from '../../../../utils/numbers';
 import Spinner from '../../Spinner/Spinner';
 import './TransactionDetailsGraph.css';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {

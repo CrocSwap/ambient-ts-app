@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import moment from 'moment';
 import { memo, useContext } from 'react';
 import { FiCopy } from 'react-icons/fi';
@@ -16,6 +15,7 @@ import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import InfoRow from '../../../InfoRow';
 import styles from './RangeDetailsSimplify.module.css';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     position: PositionIF;
@@ -80,7 +80,7 @@ function RangeDetailsSimplify(props: propsIF) {
         elapsedTimeSinceFirstMintString,
     } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
-    const showFullAddresses = useMediaQuery<boolean>('(min-width: 768px)');
+    const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
     const {
         snackbar: { open: openSnackbar },

@@ -9,3 +9,9 @@
     height: 12px;
     background: var(--accent1);
 }
+
+@media screen and (max-width: 420px) {
+    .progressBar {
+        width: 22px;
+    }
+}

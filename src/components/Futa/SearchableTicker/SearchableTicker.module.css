@@ -1,11 +1,15 @@
-.container {
+/* top-level container element in SearchableTicker.tsx file */
+.searchable_ticker {
     width: 100%;
-    height: 100%;
+    /* height: 100%; */
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
+.scrolling {
+    scrollbar-color: var(--accent1) var(--dark2);
+}
 /* styling for the resizable table element */
 .resizable {
     display: flex;
@@ -13,209 +17,10 @@
     align-items: flex-start;
     justify-content: flex-start;
     --width-for-scrollbar: 8px;
-    padding: 6px var(--width-for-scrollbar) 6px 2px;
     border: var(--futa-box-border);
 }
 
-/* element with search and filter interactables */
-.header {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 8px;
-    gap: 8px;
-    width: 100%;
-    height: auto;
-}
-
-/* text search input and sort toggle */
-.search_and_sort {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 4px;
-    height: 100%;
-}
-
-/* wrapper for search input icon, text field, and 'clear' button */
-/* WHY DOES THIS NOT EXPAND TO FULL HEIGHT OF THE PARENT?? */
-.text_search_box {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    max-width: 400px;
-    gap: 4px;
-    background-color: var(--dark2);
-    height: 100%;
-}
-
-/* text entry box for search input */
-.text_search_box > input {
-    width: 100%;
-    padding: 0 8px;
-    background: transparent;
-    color: var(--text1);
-    outline: none;
-    border: none;
-    opacity: 1;
-    transition: all var(--animation-speed) ease-in;
-    cursor: normal;
-    font-size: 12px;
-}
-
-/* wrapper for all toggles for different data filters */
-.filters {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    height: 100%;
-}
-
-/* individual data filter toggle buttons */
-.filters > button {
-    min-width: 110px;
-    height: 25px;
-    border: 1px solid var(--dark3);
-    background: var(--dark3);
-    color: var(--text2);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    gap: 10px;
-    font-size: 12px;
-    cursor: pointer;
-    outline: none;
-}
-
-/* hover state for filter toggle buttons */
-.filters > button:hover {
-    transition: all var(--animation-speed) ease-in-out;
-    color: var(--accent1);
-    border: 1px solid var(--accent1);
-}
-
-/* add border to header buttons when state is active */
-.button_on {
-    border: 1px solid var(--accent1) !important;
-}
-
-/* change color of button contents when state is active */
-.button_on * {
-    color: var(--accent1);
-}
-
-.button_off{
-    border: 1px solid var(--dark3) !important;
-    color: var(--text2) !important;
-
-}
-
-.button_off *{
-    color: var(--text2) !important;
-}
-
-/* clickable to open the sort dropdown menu */
-.sort_clickable {
-    position: relative;
-    width: 220px;
-}
-
-/* active sort option in dropdown */
-.sort_selection {
-    display: flex;
-    gap: 4px;
-}
-
-.timeDropdownButton {
-    border-left: 4px solid var(--accent1, #62ebf1);
-    background-color: var(--dark2);
-    display: flex;
-    padding: 4px 4px 4px 8px;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    width: 160px;
-    text-transform: uppercase;
-}
-
-/* text rendered in clickable to launch dropdown */
-.timeDropdownButton p {
-    font-size: 14px;
-    color: var(--accent1);
-}
-
-/* arrows to indicate current sort direction asc vs desc */
-.sort_direction {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-}
-
-/* dropdown menu for sort options */
-.dropdown {
-    height: auto;
-    width: calc(100% - 25px);
-    background-color: var(--dark2);
-    position: absolute;
-    top: 30px;
-    overflow-y: scroll;
-    padding: 4px;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.timeItem {
-    font-size: 12px;
-    color: var(--text1);
-    transition: all var(--animation-speed) ease-in-out;
-    cursor: pointer;
-    padding: 0 4px;
-    text-transform: uppercase;
-}
-
-.timeItem:hover {
-    background: var(--accent3);
-}
-
-.ticker_name {
-    letter-spacing: 0.5px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-.ticker_name_arrow {
-    padding-left: 4px;
-    opacity: 0;
-    transition: all var(--animation-speed) ease-in-out;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-
-.tickerItemContainer:hover .ticker_name_arrow {
-    opacity: 1;
-}
-
-.statusContainer {
-    text-align: end;
-}
-
-.tickerStatus {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-}
-
-/* wrapper for ticker table rows and column headers */
+/* Wrapper for ticker table rows and column headers */
 .ticker_table {
     flex-direction: column;
     width: 100%;
@@ -223,13 +28,12 @@
     gap: 8px;
     overflow-y: auto;
     scrollbar-gutter: stable;
-    /* background-color: red; */
+    padding-right: 8px;
 }
 
-/* header of the ticker table */
+/* Header of the ticker table */
 .ticker_table > header {
-    /* `position` and `top` keep header visible when scrolling */
-    position: sticky;
+    position: sticky; /* Keeps header visible when scrolling */
     top: 0;
     display: flex;
     flex-direction: row;
@@ -237,54 +41,47 @@
     justify-content: space-between;
     gap: 8px;
     background-color: var(--dark1);
-    color: var(--text3);
+    color: var(--text2);
     font-size: 12px;
 }
 
-/* individual column headers in the ticker table */
+/* Individual column headers in the ticker table */
 .ticker_table > header > * {
     width: 120px;
     flex: 1 10 auto;
 }
 
-/* spacer to keep `TICKER` col header aligned with table data */
+/* Spacer to keep TICKER column header aligned with table data */
 .ticker_col_header_spacer {
     visibility: hidden;
 }
 
-/* container for ticker line items */
+/* Container for ticker line items */
 .ticker_table_content {
     display: flex;
     flex-direction: column;
     row-gap: 4px;
-    overflow-y: scroll;
 }
 
+/* Left-aligned cell */
 .cell_left {
     display: flex;
     justify-content: flex-start;
 }
 
+/* Center-aligned cell */
 .cell_center {
     display: flex;
     justify-content: center;
 }
 
+/* Right-aligned cell */
 .cell_right {
     display: flex;
     justify-content: flex-end;
 }
 
-.scrolling {
-    scrollbar-color: var(--accent1) var(--dark2);
-}
-
-.marketCap,
-.timeRemaining {
-    text-align: end;
-}
-
-/* differential content when length of data array is zero */
+/* Differential content when length of data array is zero */
 .no_auctions_content {
     display: flex;
     flex-direction: column;
@@ -318,88 +115,69 @@
     background: var(--accent2);
 }
 
-.container {
+/* Scrolling styles */
+.scrolling {
+    scrollbar-color: var(--accent1) var(--dark2);
+}
+
+/* Market cap and time remaining styles */
+.marketCap,
+.timeRemaining {
+    text-align: end;
+}
+
+/* Ticker name alignment */
+.ticker_name {
+    letter-spacing: 0.5px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
 }
 
+/* Hover effect for ticker name arrow */
+.ticker_name_arrow {
+    padding-left: 4px;
+    opacity: 0;
+    transition: all var(--animation-speed) ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.tickerItemContainer:hover .ticker_name_arrow {
+    opacity: 1;
+}
+
+/* Status container styles */
+.statusContainer {
+    text-align: end;
+}
+
+.tickerStatus {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+/* Responsive styles */
 @media (max-width: 500px) {
-    /* remove visible border from table on small screens */
-    .resizable {
-        border: none;
-    }
-
-    /* remove left margin from table on small screens */
-    /* helps fit everything in the viewport */
     .ticker_table {
-        margin-left: 0px;
-    }
-
-    /* remove spacer icon in `TICKER` col header on small screens */
-    .ticker_col_header_spacer {
-        display: none;
-    .tickerItemContainer,
-    .tickerHeader {
-        grid-template-columns: 1fr 1fr 50px 60px;
-    }
-}}
-
-@media (min-width: 768px) {
-    .container {
-        display: flex
-    }
-
-    .header{
-        height: 28px;
-        padding: 0 8px;
-    }
-    .filters > button {
-        height: auto;
-}
-}
-@media (min-width: 1280px) {
-    .content h2 {
-        color: var(--text1, #ceffff);
-        font-size: 36px;
-        text-transform: uppercase;
+        margin-left: 0px; /* Helps fit everything in the viewport */
     }
 }
-
-/* @media (min-width: 768px) and (max-width: 1024px) {
-    .contentContainer {
-        height: calc(100dvh - 100px) !important;
-        justify-content: space-between;
-    }
-    .header {
-        flex-direction: row;
-    }
-} */
-
-@media (max-width: 767px) {
-    .header {
-        flex-direction: column;
-    }
-}
-
 
 @media (max-width: 400px) {
-    .header {
-        display: grid;
-        grid-template-areas:
-            'top'
-            'bottom';
-    }
-
-    .search_and_sort {
-        grid-area: top;
-    }
-
-    .filters {
-        grid-area: bottom;
-    }
-
-    /* individual column headers in the ticker table */
     .ticker_table > header > * {
         font-size: 10px;
     }
 }
+
+@media (max-width: 1024px) {
+  
+    .resizable {
+        border: none;
+    }
+
+}
+

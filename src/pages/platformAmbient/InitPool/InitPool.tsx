@@ -29,7 +29,6 @@ import InitConfirmation from './InitConfirmation';
 import InitSkeleton from './InitSkeleton';
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useMediaQuery } from '@material-ui/core';
 import { useCreateRangePosition } from '../../../App/hooks/useCreateRangePosition';
 import {
     exponentialNumRegEx,
@@ -79,6 +78,7 @@ import { RangeContext } from '../../../contexts/RangeContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { isTransactionDeniedError } from '../../../utils/TransactionError';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 // react functional component
 export default function InitPool() {
     const { crocEnv, provider, ethMainnetUsdPrice } =
