@@ -7,22 +7,16 @@ import ambientTokenList from '../ambient-token-list.json';
 import { GCGO_SCROLL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-const PUBLIC_RPC_URL = 'https://scroll-rpc.publicnode.com';
-const SECONDARY_PUBLIC_RPC_URL = 'https://rpc.scroll.io';
-
-const RESTRICTED_RPC_URL =
-    import.meta.env.VITE_SCROLL_RPC_URL !== undefined
-        ? import.meta.env.VITE_SCROLL_RPC_URL
-        : undefined;
-
-const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
-    ? RESTRICTED_RPC_URL
-    : PUBLIC_RPC_URL;
-
+const RPC_URLS = {
+    PUBLIC: 'https://scroll-rpc.publicnode.com',
+    SECONDARY_PUBLIC: 'https://rpc.scroll.io',
+    RESTRICTED: import.meta.env.VITE_SCROLL_RPC_URL,
+};
+const PRIMARY_RPC_URL = RPC_URLS.RESTRICTED || RPC_URLS.PUBLIC;
 const FALLBACK_RPC_URL =
-    PRIMARY_RPC_URL === PUBLIC_RPC_URL
-        ? SECONDARY_PUBLIC_RPC_URL
-        : PUBLIC_RPC_URL;
+    PRIMARY_RPC_URL === RPC_URLS.PUBLIC
+        ? RPC_URLS.SECONDARY_PUBLIC
+        : RPC_URLS.PUBLIC;
 
 const chainIdHex = '0x82750';
 const chainSpecFromSDK = lookupChain(chainIdHex);
@@ -31,7 +25,7 @@ const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
     name: 'Scroll',
     currency: 'ETH',
-    rpcUrl: PUBLIC_RPC_URL,
+    rpcUrl: RPC_URLS.PUBLIC,
     explorerUrl: 'https://scrollscan.com/',
 };
 
@@ -62,17 +56,42 @@ const defaultTokenEntries = [
     ['pufETH', '0xc4d46E8402F476F269c379677C99F18E22Ea030e'],
     ['rETH', '0x53878B874283351D26d206FA512aEcE1Bef6C0dD'],
     ['SolvBTC', '0x3Ba89d490AB1C0c9CC2313385b30710e838370a4'],
+    ['SCR', '0xd29687c813d741e2f938f4ac377128810e217b1b'],
 ] as const;
 
-type ScrollTokens = {
-    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
-};
-export const SCROLL_TOKENS: ScrollTokens = Object.fromEntries(
+type ScrollTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
+
+export const SCROLL_TOKENS = Object.fromEntries(
     defaultTokenEntries.map(([key, address]) => [
         key,
         findTokenByAddress(address),
     ]),
 ) as ScrollTokens;
+
+const curentTopPoolsList: [keyof ScrollTokens, keyof ScrollTokens][] = [
+    ['ETH', 'USDC'],
+    ['ETH', 'USDT'],
+    ['SCR', 'ETH'],
+    ['USDT', 'USDC'],
+    ['ETH', 'WBTC'],
+];
+
+const topPools = curentTopPoolsList.map(
+    ([tokenA, tokenB]) =>
+        new TopPool(
+            SCROLL_TOKENS[tokenA],
+            SCROLL_TOKENS[tokenB],
+            chainSpecFromSDK.poolIndex,
+        ),
+);
+
+const getGasPriceInGwei = async (provider?: Provider) => {
+    if (!provider) return 0;
+    return (
+        bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
+        1e-9
+    );
+};
 
 export const scrollMainnet: NetworkIF = {
     chainId: chainIdHex,
@@ -80,7 +99,7 @@ export const scrollMainnet: NetworkIF = {
     GCGO_URL: GCGO_SCROLL_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector: chainSpecForWalletConnector,
+    chainSpecForWalletConnector,
     defaultPair: [SCROLL_TOKENS.ETH, SCROLL_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
@@ -89,38 +108,6 @@ export const scrollMainnet: NetworkIF = {
     tokenPriceQueryAssetPlatform: 'scroll',
     vaultsEnabled: true,
     tempestApiNetworkName: 'scroll',
-    topPools: [
-        new TopPool(
-            SCROLL_TOKENS.ETH,
-            SCROLL_TOKENS.USDC,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            SCROLL_TOKENS.USDT,
-            SCROLL_TOKENS.USDC,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            SCROLL_TOKENS.ETH,
-            SCROLL_TOKENS.USDT,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            SCROLL_TOKENS.ETH,
-            SCROLL_TOKENS.WBTC,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            SCROLL_TOKENS.wrsETH,
-            SCROLL_TOKENS.ETH,
-            chainSpecFromSDK.poolIndex,
-        ),
-    ],
-    getGasPriceInGwei: async (provider?: Provider) => {
-        if (!provider) return 0;
-        return (
-            bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
-            1e-9
-        );
-    },
+    topPools,
+    getGasPriceInGwei,
 };

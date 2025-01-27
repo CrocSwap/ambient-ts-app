@@ -36,7 +36,7 @@ const findTokenByAddress = (address: string): TokenIF =>
 
 const defaultTokenEntries = [
     ['ETH', '0x0000000000000000000000000000000000000000'],
-    ['PETH', '0xD630fb6A07c9c723cf709d2DaA9B63325d0E0B73'],
+    ['pETH', '0xD630fb6A07c9c723cf709d2DaA9B63325d0E0B73'],
     ['pUSD', '0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F'],
     ['USDC', '0x3938A812c54304fEffD266C7E2E70B48F9475aD6'],
     ['USDT', '0xA849026cDA282eeeBC3C39Afcbe87a69424F16B4'],
@@ -45,9 +45,7 @@ const defaultTokenEntries = [
     ['NYIELD', '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8'],
 ] as const;
 
-type PlumeTokens = {
-    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
-};
+type PlumeTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
 
 export const PLUME_TOKENS: PlumeTokens = Object.fromEntries(
     defaultTokenEntries.map(([key, address]) => [
@@ -56,6 +54,29 @@ export const PLUME_TOKENS: PlumeTokens = Object.fromEntries(
     ]),
 ) as PlumeTokens;
 
+const curentTopPoolsList: [keyof PlumeTokens, keyof PlumeTokens][] = [
+    ['ETH', 'USDC'],
+    ['pETH', 'ETH'],
+    ['pETH', 'USDC'],
+];
+
+const topPools = curentTopPoolsList.map(
+    ([tokenA, tokenB]) =>
+        new TopPool(
+            PLUME_TOKENS[tokenA],
+            PLUME_TOKENS[tokenB],
+            chainSpecFromSDK.poolIndex,
+        ),
+);
+
+const getGasPriceInGwei = async (provider?: Provider) => {
+    if (!provider) return 0;
+    return (
+        bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
+        1e-9
+    );
+};
+
 export const plumeMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
@@ -63,8 +84,8 @@ export const plumeMainnet: NetworkIF = {
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector,
-    defaultPair: [PLUME_TOKENS.PETH, PLUME_TOKENS.pUSD],
-    defaultPairFuta: [PLUME_TOKENS.PETH, PLUME_TOKENS.pUSD],
+    defaultPair: [PLUME_TOKENS.pETH, PLUME_TOKENS.pUSD],
+    defaultPairFuta: [PLUME_TOKENS.pETH, PLUME_TOKENS.pUSD],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
@@ -72,28 +93,6 @@ export const plumeMainnet: NetworkIF = {
     tokenPriceQueryAssetPlatform: 'plume',
     vaultsEnabled: false,
     tempestApiNetworkName: '',
-    topPools: [
-        new TopPool(
-            PLUME_TOKENS.ETH,
-            PLUME_TOKENS.USDC,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            PLUME_TOKENS.PETH,
-            PLUME_TOKENS.USDC,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            PLUME_TOKENS.PETH,
-            PLUME_TOKENS.pUSD,
-            chainSpecFromSDK.poolIndex,
-        ),
-    ],
-    getGasPriceInGwei: async (provider?: Provider) => {
-        if (!provider) return 0;
-        return (
-            bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
-            1e-9
-        );
-    },
+    topPools,
+    getGasPriceInGwei,
 };

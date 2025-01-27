@@ -7,22 +7,16 @@ import ambientTokenList from '../ambient-token-list.json';
 import { GCGO_SWELL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-const PUBLIC_RPC_URL = 'https://swell-mainnet.alt.technology';
-const SECONDARY_PUBLIC_RPC_URL = 'https://rpc.ankr.com/swell';
-
-const RESTRICTED_RPC_URL =
-    import.meta.env.VITE_SWELL_RPC_URL !== undefined
-        ? import.meta.env.VITE_SWELL_RPC_URL
-        : undefined;
-
-const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
-    ? RESTRICTED_RPC_URL
-    : PUBLIC_RPC_URL;
-
+const RPC_URLS = {
+    PUBLIC: 'https://swell-mainnet.alt.technology',
+    SECONDARY_PUBLIC: 'https://rpc.ankr.com/swell',
+    RESTRICTED: import.meta.env.VITE_SWELL_RPC_URL,
+};
+const PRIMARY_RPC_URL = RPC_URLS.RESTRICTED || RPC_URLS.PUBLIC;
 const FALLBACK_RPC_URL =
-    PRIMARY_RPC_URL === PUBLIC_RPC_URL
-        ? SECONDARY_PUBLIC_RPC_URL
-        : PUBLIC_RPC_URL;
+    PRIMARY_RPC_URL === RPC_URLS.PUBLIC
+        ? RPC_URLS.SECONDARY_PUBLIC
+        : RPC_URLS.PUBLIC;
 
 const chainIdHex = '0x783';
 const chainSpecFromSDK = lookupChain(chainIdHex);
@@ -31,7 +25,7 @@ const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
     name: 'Swellchain',
     currency: 'ETH',
-    rpcUrl: PUBLIC_RPC_URL,
+    rpcUrl: RPC_URLS.PUBLIC,
     explorerUrl: 'https://explorer.swellnetwork.io/',
 };
 
@@ -60,9 +54,7 @@ const defaultTokenEntries = [
     ['stBTC', '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3'],
 ] as const;
 
-type SwellTokens = {
-    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
-};
+type SwellTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
 
 export const SWELL_TOKENS: SwellTokens = Object.fromEntries(
     defaultTokenEntries.map(([key, address]) => [
@@ -70,6 +62,29 @@ export const SWELL_TOKENS: SwellTokens = Object.fromEntries(
         findTokenByAddress(address),
     ]),
 ) as SwellTokens;
+
+const curentTopPoolsList: [keyof SwellTokens, keyof SwellTokens][] = [
+    ['ETH', 'USDE'],
+    ['ENA', 'USDE'],
+    ['ETH', 'SWELL'],
+];
+
+const topPools = curentTopPoolsList.map(
+    ([tokenA, tokenB]) =>
+        new TopPool(
+            SWELL_TOKENS[tokenA],
+            SWELL_TOKENS[tokenB],
+            chainSpecFromSDK.poolIndex,
+        ),
+);
+
+const getGasPriceInGwei = async (provider?: Provider) => {
+    if (!provider) return 0;
+    return (
+        bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
+        1e-9
+    );
+};
 
 export const swellMainnet: NetworkIF = {
     chainId: chainIdHex,
@@ -87,33 +102,6 @@ export const swellMainnet: NetworkIF = {
     tokenPriceQueryAssetPlatform: 'swell',
     vaultsEnabled: true,
     tempestApiNetworkName: 'swell',
-    topPools: [
-        new TopPool(
-            SWELL_TOKENS.ETH,
-            SWELL_TOKENS.USDE,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            SWELL_TOKENS.ENA,
-            SWELL_TOKENS.USDE,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            SWELL_TOKENS.ETH,
-            SWELL_TOKENS.SWELL,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            SWELL_TOKENS.weETH,
-            SWELL_TOKENS.rswETH,
-            chainSpecFromSDK.poolIndex,
-        ),
-    ],
-    getGasPriceInGwei: async (provider?: Provider) => {
-        if (!provider) return 0;
-        return (
-            bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
-            1e-9
-        );
-    },
+    topPools,
+    getGasPriceInGwei,
 };

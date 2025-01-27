@@ -7,31 +7,27 @@ import ambientTokenList from '../ambient-token-list.json';
 import { GCGO_BLAST_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-const PUBLIC_RPC_URL = 'https://blast-rpc.publicnode.com';
-const SECONDARY_PUBLIC_RPC_URL = 'https://rpc.blast.io';
+const RPC_URLS = {
+    PUBLIC: 'https://blast-rpc.publicnode.com',
+    SECONDARY_PUBLIC: 'https://rpc.blast.io',
+    RESTRICTED: import.meta.env.VITE_BLAST_RPC_URL,
+};
 
-const RESTRICTED_RPC_URL =
-    import.meta.env.VITE_BLAST_RPC_URL !== undefined
-        ? import.meta.env.VITE_BLAST_RPC_URL
-        : undefined;
-
-const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
-    ? RESTRICTED_RPC_URL
-    : PUBLIC_RPC_URL;
-
+const PRIMARY_RPC_URL = RPC_URLS.RESTRICTED || RPC_URLS.PUBLIC;
 const FALLBACK_RPC_URL =
-    PRIMARY_RPC_URL === PUBLIC_RPC_URL
-        ? SECONDARY_PUBLIC_RPC_URL
-        : PUBLIC_RPC_URL;
+    PRIMARY_RPC_URL === RPC_URLS.PUBLIC
+        ? RPC_URLS.SECONDARY_PUBLIC
+        : RPC_URLS.PUBLIC;
 
 const chainIdHex = '0x13e31';
+
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
 const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
     name: 'Blast',
     currency: 'ETH',
-    rpcUrl: PUBLIC_RPC_URL,
+    rpcUrl: RPC_URLS.PUBLIC,
     explorerUrl: 'https://blastscan.io/',
 };
 
@@ -52,9 +48,7 @@ const defaultTokenEntries = [
     ['weETH', '0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A'],
 ] as const;
 
-type BlastTokens = {
-    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
-};
+type BlastTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
 
 export const BLAST_TOKENS: BlastTokens = Object.fromEntries(
     defaultTokenEntries.map(([key, address]) => [
@@ -62,6 +56,29 @@ export const BLAST_TOKENS: BlastTokens = Object.fromEntries(
         findTokenByAddress(address),
     ]),
 ) as BlastTokens;
+
+const curentTopPoolsList: [keyof BlastTokens, keyof BlastTokens][] = [
+    ['ETH', 'USDB'],
+    ['ezETH', 'USDB'],
+    ['BLAST', 'ETH'],
+];
+
+const topPools = curentTopPoolsList.map(
+    ([tokenA, tokenB]) =>
+        new TopPool(
+            BLAST_TOKENS[tokenA],
+            BLAST_TOKENS[tokenB],
+            chainSpecFromSDK.poolIndex,
+        ),
+);
+
+const getGasPriceInGwei = async (provider?: Provider) => {
+    if (!provider) return 0;
+    return (
+        bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
+        1e-9
+    );
+};
 
 export const blastMainnet: NetworkIF = {
     chainId: chainIdHex,
@@ -78,28 +95,6 @@ export const blastMainnet: NetworkIF = {
     tokenPriceQueryAssetPlatform: 'blast',
     vaultsEnabled: false,
     tempestApiNetworkName: '',
-    topPools: [
-        new TopPool(
-            BLAST_TOKENS.ETH,
-            BLAST_TOKENS.USDB,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            BLAST_TOKENS.ezETH,
-            BLAST_TOKENS.USDB,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            BLAST_TOKENS.BLAST,
-            BLAST_TOKENS.ETH,
-            chainSpecFromSDK.poolIndex,
-        ),
-    ],
-    getGasPriceInGwei: async (provider?: Provider) => {
-        if (!provider) return 0;
-        return (
-            bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
-            1e-9
-        );
-    },
+    topPools,
+    getGasPriceInGwei,
 };

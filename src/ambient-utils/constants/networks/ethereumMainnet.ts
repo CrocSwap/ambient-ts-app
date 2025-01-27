@@ -10,7 +10,7 @@ import { TopPool } from './TopPool';
 const RPC_URLS = {
     PUBLIC: 'https://ethereum-rpc.publicnode.com',
     SECONDARY_PUBLIC: 'https://eth.llamarpc.com',
-    RESTRICTED: import.meta.env.VITE_MAINNET_RPC_URL || undefined,
+    RESTRICTED: import.meta.env.VITE_MAINNET_RPC_URL,
 };
 
 const PRIMARY_RPC_URL = RPC_URLS.RESTRICTED || RPC_URLS.PUBLIC;
@@ -51,10 +51,7 @@ const defaultTokenEntries = [
     ['TBTC', '0x18084fbA666a33d37592fA2633fD49a74DD93a88'],
 ] as const;
 
-// Infer the type of the keys and define the resulting type
-type MainnetTokens = {
-    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
-};
+type MainnetTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
 
 // Safely construct the object with type inference
 export const MAINNET_TOKENS: MainnetTokens = Object.fromEntries(
@@ -63,6 +60,30 @@ export const MAINNET_TOKENS: MainnetTokens = Object.fromEntries(
         findTokenByAddress(address),
     ]),
 ) as MainnetTokens;
+
+const curentTopPoolsList: [keyof MainnetTokens, keyof MainnetTokens][] = [
+    ['ETH', 'USDC'],
+    ['USDT', 'USDC'],
+    ['ETH', 'USDT'],
+    ['ETH', 'WBTC'],
+];
+
+const topPools = curentTopPoolsList.map(
+    ([tokenA, tokenB]) =>
+        new TopPool(
+            MAINNET_TOKENS[tokenA],
+            MAINNET_TOKENS[tokenB],
+            chainSpecFromSDK.poolIndex,
+        ),
+);
+
+const getGasPriceInGwei = async (provider?: Provider) => {
+    if (!provider) return 0;
+    return (
+        bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
+        1e-9
+    );
+};
 
 export const ethereumMainnet: NetworkIF = {
     chainId: chainIdHex,
@@ -79,33 +100,6 @@ export const ethereumMainnet: NetworkIF = {
     tokenPriceQueryAssetPlatform: 'ethereum',
     vaultsEnabled: true,
     tempestApiNetworkName: 'ethereum',
-    topPools: [
-        new TopPool(
-            MAINNET_TOKENS.ETH,
-            MAINNET_TOKENS.USDC,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            MAINNET_TOKENS.ETH,
-            MAINNET_TOKENS.USDT,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            MAINNET_TOKENS.ETH,
-            MAINNET_TOKENS.WBTC,
-            chainSpecFromSDK.poolIndex,
-        ),
-        new TopPool(
-            MAINNET_TOKENS.USDT,
-            MAINNET_TOKENS.USDC,
-            chainSpecFromSDK.poolIndex,
-        ),
-    ],
-    getGasPriceInGwei: async (provider?: Provider) => {
-        if (!provider) return 0;
-        return (
-            bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
-            1e-9
-        );
-    },
+    topPools,
+    getGasPriceInGwei,
 };
