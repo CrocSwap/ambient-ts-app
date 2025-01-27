@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMediaQuery } from '@material-ui/core';
 import { EmojiClickData } from 'emoji-picker-react';
 import {
     Dispatch,
@@ -37,6 +36,7 @@ import ChatToaster from '../ChatToaster/ChatToaster';
 import Room from '../MessagePanel/Room/Room';
 import { Message } from '../Model/MessageModel';
 import styles from './FullChat.module.css';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;

@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import { useContext, useRef, useState } from 'react';
 import DeleteSvg from '../../../../../assets/images/icons/draw/DeleteSvg';
 import DpRangeSvg from '../../../../../assets/images/icons/draw/DpRangeSvg';
@@ -32,6 +31,7 @@ import {
     UndoButtonSvg,
     UndoRedoButtonActive,
 } from './ToolbarCss';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 /* interface ToolbarProps {
   

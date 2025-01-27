@@ -1,4 +1,3 @@
-import Divider from '@material-ui/core/Divider/Divider';
 import * as d3 from 'd3';
 import { MouseEvent, useContext, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
@@ -45,7 +44,8 @@ import {
     StyledCheckbox,
     StyledSelectbox,
 } from './ChartSettingsCss';
-import { useMediaQuery } from '@material-ui/core';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import Divider from '../../../components/Global/Divider/Divider';
 
 interface ContextMenuContentIF {
     chartThemeColors: ChartThemeIF;
@@ -439,14 +439,14 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
 
     const extendedOptions = (
         <ContextOptions>
-            <Divider></Divider>
+            <Divider />
 
             <ContextOptionsSection>
                 <OptionsHeader>Chart Scale:</OptionsHeader>
                 <OptionsContent>{resetAndRescaleMobileDisplay}</OptionsContent>
             </ContextOptionsSection>
 
-            <Divider></Divider>
+            <Divider />
 
             <ContextOptionsSection>
                 <OptionsHeader>Curve/Depth:</OptionsHeader>
