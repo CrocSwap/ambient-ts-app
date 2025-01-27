@@ -4,6 +4,7 @@ import {
     useContext,
     useEffect,
     useMemo,
+    useRef,
     useState,
 } from 'react';
 import { fetchRecords, fetchUserRecentChanges } from '../ambient-utils/api';
@@ -187,6 +188,9 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const [recentlyUpdatedPositions, setRecentlyUpdatedPositions] = useState<
         RecentlyUpdatedPositionIF[]
     >([]);
+
+    const recentlyUpdatedPositionsRef = useRef<RecentlyUpdatedPositionIF[]>([]);
+    recentlyUpdatedPositionsRef.current = recentlyUpdatedPositions;
 
     const userAddress = userDefaultAddress;
 
@@ -442,15 +446,17 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const addIntoRelevantPositions = (
         relevantLimitOrders: RecentlyUpdatedPositionIF[],
     ) => {
-        setRecentlyUpdatedPositions((prev) => [
-            ...prev.filter(
-                (e) =>
-                    !relevantLimitOrders.some(
-                        (e2) => e2.positionHash === e.positionHash,
-                    ),
-            ),
-            ...relevantLimitOrders,
-        ]);
+        if (recentlyUpdatedPositionsRef.current) {
+            setRecentlyUpdatedPositions([
+                ...recentlyUpdatedPositionsRef.current.filter(
+                    (e) =>
+                        !relevantLimitOrders.some(
+                            (e2) => e2.positionHash === e.positionHash,
+                        ),
+                ),
+                ...relevantLimitOrders,
+            ]);
+        }
     };
 
     const tempBool = false;
@@ -489,6 +495,10 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         unindexedNonFailedSessionLimitOrderUpdates.length,
         transactionsByType.length,
     ]);
+
+    useEffect(() => {
+        console.log('>>> recentlyUpdatedPositions', recentlyUpdatedPositions);
+    }, [recentlyUpdatedPositions]);
 
     useEffect(() => {
         if (tempBool) return;

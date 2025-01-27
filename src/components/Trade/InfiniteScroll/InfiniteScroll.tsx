@@ -731,11 +731,10 @@ function InfiniteScroll(props: propsIF) {
         return ret;
     };
 
-    const { mergedData, recentlyUpdatedPositions, blackList } =
-        useMergeWithPendingTxs({
-            type: props.type,
-            data: fetchedTransactions,
-        });
+    const { mergedData, recentlyUpdatedPositions } = useMergeWithPendingTxs({
+        type: props.type,
+        data: fetchedTransactions,
+    });
 
     const dataToDisplay = useMemo(() => {
         const startIndex = getIndexForPages(true);
@@ -745,13 +744,15 @@ function InfiniteScroll(props: propsIF) {
         );
 
         if (props.type === 'Order') {
-            return (mergedData as LimitOrderIF[]).filter(
-                (e) => !blackList?.has(e.positionHash),
-            );
+            return mergedData;
+            // return (mergedData as LimitOrderIF[]).filter(
+            //     (e) => !blackList?.has(e.positionHash),
+            // );
         } else if (props.type === 'Range') {
-            return (mergedData as PositionIF[]).filter(
-                (e) => !blackList?.has(e.positionId),
-            );
+            return mergedData;
+            // return (mergedData as PositionIF[]).filter(
+            //     (e) => !blackList?.has(e.positionId),
+            // );
         } else {
             return mergedData.slice(startIndex, endIndex);
         }

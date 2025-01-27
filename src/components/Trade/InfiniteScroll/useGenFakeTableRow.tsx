@@ -35,6 +35,7 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const useGenFakeTableRow = () => {
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
@@ -42,13 +43,18 @@ const useGenFakeTableRow = () => {
         cachedEnsResolve,
     } = useContext(CachedDataContext);
 
-    const getDelayTime = () => {
-        return 2000;
-    };
-
     const {
         activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
+
+    const getDelayTime = () => {
+        switch (chainId) {
+            case '0x14a34':
+                return 2000;
+            default:
+                return 300;
+        }
+    };
 
     const {
         tokens: { tokenUniv: tokenList },
@@ -252,8 +258,6 @@ const useGenFakeTableRow = () => {
         if (!crocEnv || !pendingTx.txDetails)
             return {} as RecentlyUpdatedPositionIF;
 
-        console.log('??? genFakePosition - ', new Date().getTime());
-
         await wait(getDelayTime());
 
         const pos = crocEnv.positions(
@@ -261,8 +265,6 @@ const useGenFakeTableRow = () => {
             pendingTx.txDetails.quoteAddress,
             pendingTx.userAddress,
         );
-
-        console.log('??? genFakePosition2 - ', new Date().getTime());
 
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             crocEnv,

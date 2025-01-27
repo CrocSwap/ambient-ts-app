@@ -1,6 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo } from 'react';
 import { TransactionIF } from '../../../ambient-utils/types';
 import { LimitOrderIF } from '../../../ambient-utils/types/limitOrder';
 import { PositionIF } from '../../../ambient-utils/types/position';
@@ -16,8 +16,6 @@ const useMergeWithPendingTxs = (props: propsIF) => {
 
     const { recentlyUpdatedPositions } = useContext(GraphDataContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
-
-    const [blackList, setBlackList] = useState<Set<string>>();
 
     const mergedData = useMemo(() => {
         const recentlyUpdatedHashes = new Set();
@@ -39,26 +37,12 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                             (recentlyUpdatedToShow as LimitOrderIF[]).push(
                                 e.position as LimitOrderIF,
                             );
-                        } else {
-                            setBlackList((prev) => {
-                                return new Set([
-                                    ...(prev || []),
-                                    e.positionHash,
-                                ]);
-                            });
                         }
                     } else if (props.type === 'Range' && e.type === 'Range') {
                         if (e.position.positionLiq > 0.01) {
                             (recentlyUpdatedToShow as PositionIF[]).push(
                                 e.position as PositionIF,
                             );
-                        } else {
-                            setBlackList((prev) => {
-                                return new Set([
-                                    ...(prev || []),
-                                    e.positionHash,
-                                ]);
-                            });
                         }
                     }
                     recentlyUpdatedHashes.add(e.positionHash);
@@ -94,7 +78,6 @@ const useMergeWithPendingTxs = (props: propsIF) => {
     return {
         mergedData,
         recentlyUpdatedPositions: recentlyUpdatedPositions || [],
-        blackList,
     };
 };
 
