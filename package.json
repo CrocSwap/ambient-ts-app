@@ -33,7 +33,7 @@
         "react-router-dom": "^6.27.0",
         "react-transition-group": "^4.4.2",
         "react-use-websocket": "^4.11.1",
-        "styled-components": "6.0.3",
+        "styled-components": "^6.1.14",
         "web-vitals": "^2.1.0"
     },
     "resolutions": {
@@ -54,7 +54,8 @@
         "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
         "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
         "prepare": "husky",
-        "postbuild": "node generateManifest.js"
+        "postbuild": "node generateManifest.js",
+        "test-serve": "yarn build && npx serve build"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx,json}": [
@@ -77,7 +78,6 @@
         "@types/react-color": "^3.0.12",
         "@typescript-eslint/eslint-plugin": "^5.22.0",
         "@typescript-eslint/parser": "^7.1.0",
-        "@vitejs/plugin-react": "^4.3.4",
         "@vitejs/plugin-react-swc": "^3.7.2",
         "adm-zip": "^0.5.10",
         "dotenv": "^16.4.7",
