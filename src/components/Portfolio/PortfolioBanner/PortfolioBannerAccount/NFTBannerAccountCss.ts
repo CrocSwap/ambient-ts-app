@@ -412,6 +412,6 @@ export {
     SaveButton,
     ScrollableContainer,
     SelectedJazzIcon,
-    SelectedNFTImg,
     SelectedNftCotainer,
+    SelectedNFTImg,
 };
