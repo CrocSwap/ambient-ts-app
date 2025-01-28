@@ -1,7 +1,6 @@
 import { TokenIF } from './TokenIF';
 
 export interface TokenMethodsIF {
-    defaultTokens: TokenIF[];
     verify: (addr: string) => boolean;
     acknowledge: (tkn: TokenIF) => void;
     tokenUniv: TokenIF[];

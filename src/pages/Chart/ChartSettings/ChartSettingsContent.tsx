@@ -1,4 +1,3 @@
-import Divider from '@material-ui/core/Divider/Divider';
 import * as d3 from 'd3';
 import { MouseEvent, useContext, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
@@ -45,6 +44,8 @@ import {
     StyledCheckbox,
     StyledSelectbox,
 } from './ChartSettingsCss';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import Divider from '../../../components/Global/Divider/Divider';
 
 interface ContextMenuContentIF {
     chartThemeColors: ChartThemeIF;
@@ -105,8 +106,11 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         reset,
     } = props.chartItemStates;
 
-    const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
-        useContext(PoolContext);
+    const {
+        isTradeDollarizationEnabled,
+        setIsTradeDollarizationEnabled,
+        isDefaultTradeDollarization,
+    } = useContext(PoolContext);
 
     const { platformName } = useContext(BrandContext);
     const {
@@ -121,6 +125,10 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         quoteToken: { symbol: quoteTokenSymbol },
         isDenomBase,
     } = useContext(TradeDataContext);
+
+    const isTablet = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     const { isUserConnected } = useContext(UserDataContext);
 
@@ -188,15 +196,23 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
     };
 
     useEffect(() => {
+        setPriceInOption(
+            !isTradeDollarizationEnabled
+                ? isDenomBase
+                    ? quoteTokenSymbol
+                    : baseTokenSymbol
+                : 'USD',
+        );
+    }, [isTradeDollarizationEnabled]);
+
+    useEffect(() => {
         if (applyDefault && defaultChartSettings) {
             Object.assign(chartThemeColors, defaultChartSettings.chartColors);
 
             setShowVolume(defaultChartSettings.showVolume);
             setShowTvl(defaultChartSettings.showTvl);
             setShowFeeRate(defaultChartSettings.showFeeRate);
-            setIsTradeDollarizationEnabled(
-                defaultChartSettings.isTradeDollarizationEnabled,
-            );
+            setIsTradeDollarizationEnabled(isDefaultTradeDollarization);
         }
 
         const applyTimeOut = setTimeout(() => {
@@ -423,14 +439,14 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
 
     const extendedOptions = (
         <ContextOptions>
-            <Divider></Divider>
+            <Divider />
 
             <ContextOptionsSection>
                 <OptionsHeader>Chart Scale:</OptionsHeader>
                 <OptionsContent>{resetAndRescaleMobileDisplay}</OptionsContent>
             </ContextOptionsSection>
 
-            <Divider></Divider>
+            <Divider />
 
             <ContextOptionsSection>
                 <OptionsHeader>Curve/Depth:</OptionsHeader>
@@ -694,7 +710,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 </ColorPickerContainer>
             </>
 
-            {!isMobile && (
+            {(!isMobile || isTablet) && (
                 <ContextMenuFooter>
                     <FooterButtons
                         backgroundColor={

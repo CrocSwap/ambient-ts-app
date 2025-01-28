@@ -1,7 +1,7 @@
 // Imports
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { motion } from 'framer-motion';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -162,7 +162,7 @@ export default function Navbar() {
     const accountAddress =
         isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
-    const clickLogout = useCallback(async () => {
+    const clickLogout = async () => {
         setCrocEnv(undefined);
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
@@ -173,11 +173,12 @@ export default function Navbar() {
         resetTokenBalances();
         setShowAllData(true);
         disconnectUser();
-    }, []);
+    };
 
     // Custom Hooks
     useOnClickOutside(dropdownRef, clickOutsideHandler);
     const desktopScreen = useMediaQuery('(min-width: 768px)');
+    const isTabletPortrait = useMediaQuery('tabletPortrait');
 
     // Data
     const dropdownData = [
@@ -227,7 +228,11 @@ export default function Navbar() {
             onClick={openWalletModal}
             className={styles.connectButton}
         >
-            {desktopScreen ? 'CONNECT WALLET' : 'CONNECT'}
+            {isTabletPortrait
+                ? 'CONNECT'
+                : desktopScreen
+                  ? 'CONNECT WALLET'
+                  : 'CONNECT'}
         </button>
     );
 
@@ -337,6 +342,7 @@ export default function Navbar() {
                     <NotificationCenter />
                     <div className={styles.moreContainer} ref={dropdownRef}>
                         <FiMoreHorizontal
+                            size={25}
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         />
                         {/* <AnimatePresence> */}

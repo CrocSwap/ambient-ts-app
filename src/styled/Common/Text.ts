@@ -1,4 +1,4 @@
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import { FontSizes, FontWeights, Fonts, textColors } from './Types';
 
 interface TextProps {
