@@ -13,14 +13,14 @@ const useOnBoundryChange = (
     handler: (newBoundries: ElementBoundry) => void,
 ) => {
     const [boundryChecker, setBoundryChecker] = useState<NodeJS.Timeout>();
-    const checkerRef = useRef<NodeJS.Timeout>();
+    const checkerRef = useRef<NodeJS.Timeout>(undefined);
     checkerRef.current = boundryChecker;
 
     const [elementWidth, setElementWidth] = useState<number>();
-    const widthRef = useRef<number>();
+    const widthRef = useRef<number>(undefined);
     widthRef.current = elementWidth;
     const [elementHeight, setElementHeight] = useState<number>();
-    const heightRef = useRef<number>();
+    const heightRef = useRef<number>(undefined);
     heightRef.current = elementHeight;
 
     const bindListener = () => {
