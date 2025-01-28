@@ -65,8 +65,10 @@ export const SWELL_TOKENS: SwellTokens = Object.fromEntries(
 
 const curentTopPoolsList: [keyof SwellTokens, keyof SwellTokens][] = [
     ['ETH', 'USDE'],
-    ['ENA', 'USDE'],
     ['ETH', 'SWELL'],
+    ['ENA', 'USDE'],
+    ['weETH', 'rswETH'],
+    ['weETH', 'rsETH'],
 ];
 
 const topPools = curentTopPoolsList.map(
