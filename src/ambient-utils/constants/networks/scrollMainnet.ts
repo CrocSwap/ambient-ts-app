@@ -70,9 +70,9 @@ export const SCROLL_TOKENS = Object.fromEntries(
 
 const curentTopPoolsList: [keyof ScrollTokens, keyof ScrollTokens][] = [
     ['ETH', 'USDC'],
-    ['ETH', 'USDT'],
     ['SCR', 'ETH'],
-    ['USDT', 'USDC'],
+    ['ETH', 'USDT'],
+    ['wrsETH', 'ETH'],
     ['ETH', 'WBTC'],
 ];
 
