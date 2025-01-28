@@ -461,9 +461,7 @@ const useFetchPoolStats = (
             }
 
             try {
-                if (priceChangeResult === undefined || volumeChange24h === 0) {
-                    setPoolPriceChangePercent(undefined);
-                    setIsPoolPriceChangePositive(true);
+                if (priceChangeResult === undefined) {
                     return;
                 }
                 const priceChangePercent = priceChangeResult * 100;

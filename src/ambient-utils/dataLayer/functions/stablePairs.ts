@@ -37,6 +37,10 @@ export function isBlastRewardToken(addr: string): boolean {
     return BLAST_REWARD_TOKENS.includes(addr.toLowerCase());
 }
 
+export function isUSDQtoken(addr: string): boolean {
+    return SCROLL_TOKENS.USDQ.address.toLowerCase() === addr.toLowerCase();
+}
+
 export function isETHorStakedEthToken(addr: string): boolean {
     return (
         addr === ZERO_ADDRESS || STAKED_ETH_TOKENS.includes(addr.toLowerCase())
@@ -110,6 +114,7 @@ export const STABLE_USD_TOKENS = [
     PLUME_TOKENS.NYIELD,
     BLAST_TOKENS.USDPLUS,
     SCROLL_TOKENS.USDT,
+    SCROLL_TOKENS.USDQ,
     SCROLL_TOKENS.DAI,
     SCROLL_TOKENS.axlUSDC,
     SCROLL_TOKENS.USDE,

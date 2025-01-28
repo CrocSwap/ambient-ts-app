@@ -57,6 +57,7 @@ const defaultTokenEntries = [
     ['rETH', '0x53878B874283351D26d206FA512aEcE1Bef6C0dD'],
     ['SolvBTC', '0x3Ba89d490AB1C0c9CC2313385b30710e838370a4'],
     ['SCR', '0xd29687c813d741e2f938f4ac377128810e217b1b'],
+    ['USDQ', '0x6f2a1a886dbf8e36c4fa9f25a517861a930fbf3a'],
 ] as const;
 
 type ScrollTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
@@ -85,6 +86,12 @@ const topPools = curentTopPoolsList.map(
         ),
 );
 
+const priorityPool = new TopPool(
+    SCROLL_TOKENS['USDQ'],
+    SCROLL_TOKENS['USDC'],
+    chainSpecFromSDK.poolIndex,
+);
+
 const getGasPriceInGwei = async (provider?: Provider) => {
     if (!provider) return 0;
     return (
@@ -109,5 +116,6 @@ export const scrollMainnet: NetworkIF = {
     vaultsEnabled: true,
     tempestApiNetworkName: 'scroll',
     topPools,
+    priorityPool,
     getGasPriceInGwei,
 };
