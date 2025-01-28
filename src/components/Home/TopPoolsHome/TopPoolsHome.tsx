@@ -59,13 +59,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
                       : 5,
             ),
 
-        [
-            topPools,
-            showMobileVersion,
-            show3TopPools,
-            show4TopPools,
-            priorityPool,
-        ],
+        [topPoolsWithPriority, showMobileVersion, show3TopPools, show4TopPools],
     );
 
     const poolPriceCacheTime = Math.floor(Date.now() / 10000); // 10 second cache
