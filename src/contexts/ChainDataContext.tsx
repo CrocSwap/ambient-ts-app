@@ -31,6 +31,7 @@ import {
     vaultSupportedNetworkIds,
     ZERO_ADDRESS,
 } from '../ambient-utils/constants';
+import { tokens as AMBIENT_TOKEN_LIST } from '../ambient-utils/constants/ambient-token-list.json';
 import { getChainStats, getFormattedNumber } from '../ambient-utils/dataLayer';
 import {
     AllVaultsServerIF,
@@ -119,8 +120,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
     const { showDexStats } = useContext(BrandContext);
-
-    const allDefaultTokens = tokens.allDefaultTokens;
 
     const {
         userAddress,
@@ -623,7 +622,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             swellCrocEnv !== undefined &&
             blastCrocEnv !== undefined &&
             plumeCrocEnv !== undefined &&
-            allDefaultTokens.length > 0
+            AMBIENT_TOKEN_LIST.length > 0
         ) {
             let tvlTotalUsd = 0,
                 volumeTotalUsd = 0,
@@ -639,7 +638,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_ETHEREUM_URL,
                 cachedFetchTokenPrice,
                 10,
-                allDefaultTokens,
+                AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
                     return;
@@ -683,7 +682,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_SCROLL_URL,
                 cachedFetchTokenPrice,
                 20,
-                allDefaultTokens,
+                AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
                     return;
@@ -726,7 +725,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_SWELL_URL,
                 cachedFetchTokenPrice,
                 10,
-                allDefaultTokens,
+                AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
                     return;
@@ -768,7 +767,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_BLAST_URL,
                 cachedFetchTokenPrice,
                 10,
-                allDefaultTokens,
+                AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
                     return;
@@ -810,7 +809,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_PLUME_URL,
                 cachedFetchTokenPrice,
                 10,
-                allDefaultTokens,
+                AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
                     return;
@@ -850,7 +849,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         mainnetCrocEnv !== undefined &&
             scrollCrocEnv !== undefined &&
             blastCrocEnv !== undefined &&
-            allDefaultTokens.length > 0,
+            AMBIENT_TOKEN_LIST.length > 0,
     ]);
 
     const chainDataContext = {

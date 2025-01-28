@@ -75,11 +75,14 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = useMemo(() => {
+        if (tokenA.chainId !== Number(chainId)) return false;
         return !tokens.verify(tokenA.address);
-    }, [tokenA.address, tokens]);
+    }, [tokenA.address, tokens, chainId]);
+
     const needConfirmTokenB = useMemo(() => {
+        if (tokenB.chainId !== Number(chainId)) return false;
         return !tokens.verify(tokenB.address);
-    }, [tokenB.address, tokens]);
+    }, [tokenB.address, tokens, chainId]);
 
     const smallScreen = useMediaQuery('(max-width: 768px)');
 

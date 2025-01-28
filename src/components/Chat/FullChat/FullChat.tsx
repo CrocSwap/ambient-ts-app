@@ -24,7 +24,7 @@ import {
 } from 'react-icons/tb';
 import { Link, useParams } from 'react-router-dom';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
-import { defaultTokens } from '../../../ambient-utils/constants';
+import ambientTokenList from '../../../ambient-utils/constants/ambient-token-list.json';
 import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -206,10 +206,10 @@ function FullChat(props: FullChatPropsIF) {
                 if (
                     currencies &&
                     currencies[0] !== currencies[1] &&
-                    defaultTokens.some(
+                    ambientTokenList.tokens.some(
                         ({ symbol }) =>
                             symbol === currencies[0].toUpperCase() &&
-                            defaultTokens.some(
+                            ambientTokenList.tokens.some(
                                 ({ symbol }) =>
                                     symbol === currencies[1].toUpperCase(),
                             ),
