@@ -74,8 +74,6 @@ const useGenFakeTableRow = () => {
             pendingTx.userAddress,
         );
 
-        // console.log('??? pos', pos)
-
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             crocEnv,
             pendingTx.txDetails.baseAddress,
@@ -249,6 +247,7 @@ const useGenFakeTableRow = () => {
             position: onChainOrder,
             type: pendingTx.txType,
             action: pendingTx.txAction || '',
+            status: 'onchain',
         };
     };
 
@@ -280,8 +279,6 @@ const useGenFakeTableRow = () => {
                   pendingTx.txDetails.lowTick || 0,
                   pendingTx.txDetails.highTick || 0,
               );
-
-        console.log('??? pendingTx', pendingTx);
 
         const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
 
@@ -371,17 +368,6 @@ const useGenFakeTableRow = () => {
                     positionData.quoteUsdPrice;
         }
 
-        if (positionData.totalValueUSD > 0) {
-            console.log(
-                '??? positionData.totalValueUSD',
-                positionData.totalValueUSD,
-            );
-        } else {
-            console.log('??? GONNA USE BACKUP USD VALUE', backupUsdValue);
-        }
-
-        console.log('??? positionData', positionData);
-
         const onChainPosition: PositionIF = {
             chainId: chainId,
             base: pendingTx.txDetails.baseAddress,
@@ -462,6 +448,7 @@ const useGenFakeTableRow = () => {
             position: onChainPosition,
             type: pendingTx.txType,
             action: pendingTx.txAction || '',
+            status: 'onchain',
         };
     };
 

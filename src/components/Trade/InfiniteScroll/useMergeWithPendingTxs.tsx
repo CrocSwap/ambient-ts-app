@@ -25,13 +25,15 @@ const useMergeWithPendingTxs = (props: propsIF) => {
             recentlyUpdatedPositions
                 .filter(
                     (e) =>
+                        e.position &&
                         `${e.position.base}-${e.position.quote}`.toLocaleLowerCase() ===
-                        `${baseToken.address}-${quoteToken.address}`.toLocaleLowerCase(),
+                            `${baseToken.address}-${quoteToken.address}`.toLocaleLowerCase(),
                 )
                 .forEach((e) => {
                     if (type === 'Order' && e.type === 'Limit') {
                         if (
                             e.action !== 'Remove' &&
+                            e.position &&
                             e.position.totalValueUSD > 0.01
                         ) {
                             (recentlyUpdatedToShow as LimitOrderIF[]).push(
@@ -39,7 +41,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                             );
                         }
                     } else if (props.type === 'Range' && e.type === 'Range') {
-                        if (e.position.positionLiq > 0.01) {
+                        if (e.position && e.position.positionLiq > 0.01) {
                             (recentlyUpdatedToShow as PositionIF[]).push(
                                 e.position as PositionIF,
                             );

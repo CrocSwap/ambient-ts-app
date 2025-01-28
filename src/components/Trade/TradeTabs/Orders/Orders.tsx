@@ -15,7 +15,6 @@ import {
     filterLimitArray,
     getLimitOrderData,
 } from '../../../../ambient-utils/dataLayer';
-import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import {
     AppStateContext,
     CachedDataContext,
@@ -75,6 +74,7 @@ function Orders(props: propsIF) {
         limitOrdersByPool,
         unindexedNonFailedSessionLimitOrderUpdates,
         setUserLimitOrdersByPool,
+        pendingRecentlyUpdatedPositions,
     } = useContext(GraphDataContext);
 
     const dataLoadingStatus = useContext(DataLoadingContext);
@@ -268,7 +268,7 @@ function Orders(props: propsIF) {
         sortData,
     ] = useSortedLimits('time', limitOrderData);
 
-    const { mergedData, recentlyUpdatedPositions } = useMergeWithPendingTxs({
+    const { mergedData } = useMergeWithPendingTxs({
         type: 'Order',
         data: sortedLimits,
     });
@@ -288,26 +288,31 @@ function Orders(props: propsIF) {
         // );
     }, [mergedData]);
 
-    const pendingPositionsToDisplayPlaceholder = useMemo(() => {
-        return relevantTransactionsByType.filter((pos) => {
-            const pendingPosHash = getPositionHash(undefined, {
-                isPositionTypeAmbient: false,
-                user: pos.userAddress,
-                baseAddress: pos.txDetails?.baseAddress || '',
-                quoteAddress: pos.txDetails?.quoteAddress || '',
-                poolIdx: pos.txDetails?.poolIdx || 0,
-                bidTick: pos.txDetails?.lowTick || 0,
-                askTick: pos.txDetails?.highTick || 0,
-            });
+    // const pendingPositionsToDisplayPlaceholder = useMemo(() => {
 
-            const matchingPosition = recentlyUpdatedPositions.find(
-                (recentlyUpdatedOrder) => {
-                    return pendingPosHash === recentlyUpdatedOrder.positionHash;
-                },
-            );
-            return !matchingPosition;
-        });
-    }, [relevantTransactionsByType, recentlyUpdatedPositions]);
+    //     pendingRecentlyUpdatedPositions.forEach(e => {
+
+    //     });
+
+    //     return relevantTransactionsByType.filter((pos) => {
+    //         const pendingPosHash = getPositionHash(undefined, {
+    //             isPositionTypeAmbient: false,
+    //             user: pos.userAddress,
+    //             baseAddress: pos.txDetails?.baseAddress || '',
+    //             quoteAddress: pos.txDetails?.quoteAddress || '',
+    //             poolIdx: pos.txDetails?.poolIdx || 0,
+    //             bidTick: pos.txDetails?.lowTick || 0,
+    //             askTick: pos.txDetails?.highTick || 0,
+    //         });
+
+    //         const matchingPosition = recentlyUpdatedPositions.find(
+    //             (recentlyUpdatedOrder) => {
+    //                 return pendingPosHash === recentlyUpdatedOrder.positionHash;
+    //             },
+    //         );
+    //         return !matchingPosition;
+    //     });
+    // }, [pendingRecentlyUpdatedPositions, recentlyUpdatedPositions]);
 
     // -----------------------------------------------------------------------------------------------------------------------------
 
@@ -533,25 +538,24 @@ function Orders(props: propsIF) {
                 }
             >
                 {!isAccountView &&
-                    pendingPositionsToDisplayPlaceholder.length > 0 &&
-                    pendingPositionsToDisplayPlaceholder
-                        .reverse()
-                        .map((tx, idx) => (
-                            <OrderRowPlaceholder
-                                key={idx}
-                                transaction={{
-                                    hash: tx.txHash,
-                                    baseSymbol:
-                                        tx.txDetails?.baseSymbol ?? '...',
-                                    quoteSymbol:
-                                        tx.txDetails?.quoteSymbol ?? '...',
-                                    side: tx.txAction,
-                                    type: tx.txType,
-                                    details: tx.txDetails,
-                                }}
-                                tableView={tableView}
-                            />
-                        ))}
+                    pendingRecentlyUpdatedPositions.length > 0 &&
+                    pendingRecentlyUpdatedPositions.reverse().map((tx, idx) => (
+                        <OrderRowPlaceholder
+                            key={idx}
+                            transaction={{
+                                hash: tx.txByType?.txHash || '',
+                                baseSymbol:
+                                    tx.txByType?.txDetails?.baseSymbol ?? '...',
+                                quoteSymbol:
+                                    tx.txByType?.txDetails?.quoteSymbol ??
+                                    '...',
+                                side: tx.txByType?.txAction || '',
+                                type: tx.txByType?.txType || '',
+                                details: tx.txByType?.txDetails,
+                            }}
+                            tableView={tableView}
+                        />
+                    ))}
                 {showInfiniteScroll ? (
                     <InfiniteScroll
                         type='Order'

@@ -20,12 +20,15 @@ import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { DataLoadingContext } from './DataLoadingContext';
-import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
+import {
+    PositionUpdateIF,
+    ReceiptContext,
+    TransactionByType,
+} from './ReceiptContext';
 import { TokenContext } from './TokenContext';
 import { TradeDataContext } from './TradeDataContext';
 import { UserDataContext } from './UserDataContext';
 import useGenFakeTableRow from '../components/Trade/InfiniteScroll/useGenFakeTableRow';
-import { diffHashSig } from '../ambient-utils/dataLayer';
 
 export interface Changes {
     dataReceived: boolean;
@@ -55,12 +58,16 @@ interface PoolRequestParams {
     chainId: string;
 }
 
+export type RecentlyUpdatedPositionStatus = 'pending' | 'onchain' | 'indexed';
+
 export type RecentlyUpdatedPositionIF = {
     positionHash: string;
     timestamp: number;
-    position: LimitOrderIF | PositionIF;
+    position?: LimitOrderIF | PositionIF;
     type: string;
     action: string;
+    status: RecentlyUpdatedPositionStatus;
+    txByType?: TransactionByType;
 };
 
 export interface GraphDataContextIF {
@@ -99,6 +106,7 @@ export interface GraphDataContextIF {
     >;
     resetUserGraphData: () => void;
     recentlyUpdatedPositions: RecentlyUpdatedPositionIF[];
+    pendingRecentlyUpdatedPositions: RecentlyUpdatedPositionIF[];
 }
 
 function normalizeAddr(addr: string): string {
@@ -459,9 +467,30 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         }
     };
 
-    const tempBool = false;
+    const addPendingRelevantPosition = (pending: RecentlyUpdatedPositionIF) => {
+        if (recentlyUpdatedPositionsRef.current) {
+            setRecentlyUpdatedPositions([
+                ...recentlyUpdatedPositionsRef.current.filter(
+                    (e) => pending.positionHash !== e.positionHash,
+                ),
+                pending,
+            ]);
+        }
+    };
 
-    // console.log('>>> unindexedLimitOrderUpdates', unindexedNonFailedSessionLimitOrderUpdates)
+    const getPositionHashForTxByType = (tbt: TransactionByType) => {
+        return getPositionHash(undefined, {
+            isPositionTypeAmbient: false,
+            user: tbt.userAddress,
+            baseAddress: tbt.txDetails?.baseAddress || '',
+            quoteAddress: tbt.txDetails?.quoteAddress || '',
+            poolIdx: tbt.txDetails?.poolIdx || 0,
+            bidTick: tbt.txDetails?.lowTick || 0,
+            askTick: tbt.txDetails?.highTick || 0,
+        });
+    };
+
+    const tempBool = false;
 
     useEffect(() => {
         if (tempBool) return;
@@ -482,10 +511,18 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                 tx.txType === 'Limit',
         );
 
-        console.log(
-            '>>> relevantLimitOrders',
-            diffHashSig(relevantLimitOrders),
-        );
+        relevantLimitOrders.forEach((tx) => {
+            console.log('>>> add pending', tx);
+            addPendingRelevantPosition({
+                positionHash: getPositionHashForTxByType(tx),
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                type: 'Limit',
+                action: tx.txAction || '',
+                status: 'pending',
+                txByType: tx,
+            });
+        });
+
         Promise.all(
             relevantLimitOrders.map((tx) => genFakeLimitOrder(tx)),
         ).then((rows) => {
@@ -495,10 +532,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         unindexedNonFailedSessionLimitOrderUpdates.length,
         transactionsByType.length,
     ]);
-
-    useEffect(() => {
-        console.log('>>> recentlyUpdatedPositions', recentlyUpdatedPositions);
-    }, [recentlyUpdatedPositions]);
 
     useEffect(() => {
         if (tempBool) return;
@@ -542,6 +575,16 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
             userPositionsByPool.positions.length,
         [transactionsByUser, userLimitOrdersByPool, userPositionsByPool],
     );
+
+    const pendingRecentlyUpdatedPositions = useMemo(() => {
+        return [
+            ...recentlyUpdatedPositions.filter((e) => e.status === 'pending'),
+        ];
+    }, [recentlyUpdatedPositions]);
+
+    useEffect(() => {
+        console.log('>>> pendings', pendingRecentlyUpdatedPositions);
+    }, [pendingRecentlyUpdatedPositions]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -681,6 +724,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         liquidityFee,
         setLiquidityFee,
         recentlyUpdatedPositions,
+        pendingRecentlyUpdatedPositions,
     };
 
     return (
