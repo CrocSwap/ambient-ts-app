@@ -1,6 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PoolIF } from '../../../ambient-utils/types';
 import {
     AppStateContext,
     ChainDataContext,
@@ -27,7 +26,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
-        pools: { topPools },
+        pools: { topPools, visibleTopPoolData, setVisibleTopPoolData },
     } = useContext(ExploreContext);
 
     const { blockPollingUrl } = useContext(ChainDataContext);
@@ -42,7 +41,6 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
 
     // State for fade animation
     const [isFading, setIsFading] = useState(false);
-    const [visiblePoolData, setVisiblePoolData] = useState<PoolIF[]>([]);
 
     const topPoolsWithPriority = useMemo(() => {
         if (!topPools.length) return [];
@@ -81,16 +79,18 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
 
     useEffect(() => {
         if (chainId !== topPoolMap.chainId) {
-            setVisiblePoolData([]);
+            setVisibleTopPoolData([]);
             return;
         }
-        // Trigger fade-out effect
-        setIsFading(true);
-        // After fade-out duration (1s), update pool data and fade back in
-        setTimeout(() => {
-            setVisiblePoolData(poolData);
-            setIsFading(false);
-        }, 1000); // Match the fade-out duration
+        if (JSON.stringify(poolData) !== JSON.stringify(visibleTopPoolData)) {
+            // Trigger fade-out effect
+            setIsFading(true);
+            // After fade-out duration (1s), update pool data and fade back in
+            setTimeout(() => {
+                setVisibleTopPoolData(poolData);
+                setIsFading(false);
+            }, 1000); // Match the fade-out duration
+        }
     }, [topPoolMap.topPoolsString, chainId]);
 
     const poolPriceCacheTime = Math.floor(Date.now() / 10000); // 10 second cache
@@ -161,7 +161,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
                 Top Pools
             </HomeTitle>
             <HomeContent minHeight='120px' isFading={isFading}>
-                {visiblePoolData.map((pool, idx) => (
+                {visibleTopPoolData.map((pool, idx) => (
                     <PoolCard
                         key={idx}
                         pool={pool}

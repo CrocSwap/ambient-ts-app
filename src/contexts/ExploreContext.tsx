@@ -35,6 +35,8 @@ export interface ExploreContextIF {
     pools: {
         all: Array<PoolDataIF>;
         topPools: PoolIF[];
+        visibleTopPoolData: PoolIF[];
+        setVisibleTopPoolData: Dispatch<SetStateAction<PoolIF[]>>;
         getAllPools: (
             poolList: PoolIF[],
             crocEnv: CrocEnv,
@@ -86,6 +88,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const [intermediaryPoolData, setIntermediaryPoolData] = useState<
         Array<PoolDataIF>
     >([]);
+    const [visibleTopPoolData, setVisibleTopPoolData] = useState<PoolIF[]>([]);
     const [isFetchError, setIsFetchError] = useState(false);
     const [isExploreDollarizationEnabled, setIsExploreDollarizationEnabled] =
         useState(
@@ -447,6 +450,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             all: filteredPoolsNoExcludedOrHiddenTokens,
             getAllPools: getAllPools,
             topPools: topPools,
+            visibleTopPoolData,
+            setVisibleTopPoolData,
             reset: () => {
                 setIntermediaryPoolData([]);
             },
