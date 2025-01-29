@@ -1,5 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { PoolIF } from '../../../ambient-utils/types';
 import {
     AppStateContext,
     ChainDataContext,
@@ -39,12 +40,20 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const show4TopPools = useMediaQuery('(max-width: 1500px)');
     const show3TopPools = useMediaQuery('(min-height: 700px)');
 
+    // State for fade animation
+    const [isFading, setIsFading] = useState(false);
+    const [visiblePoolData, setVisiblePoolData] = useState<PoolIF[]>([]);
+
     const topPoolsWithPriority = useMemo(() => {
         if (!priorityPool) return topPools;
         const updatedPools = [...topPools];
         updatedPools.splice(2, 0, priorityPool);
         return updatedPools;
     }, [topPools, priorityPool]);
+
+    const topPoolsNames = useMemo(() => {
+        return topPoolsWithPriority.map((pool) => pool.name);
+    }, [topPoolsWithPriority]);
 
     const poolData = useMemo(
         () =>
@@ -61,6 +70,17 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
 
         [topPoolsWithPriority, showMobileVersion, show3TopPools, show4TopPools],
     );
+
+    useEffect(() => {
+        // Trigger fade-out effect
+        setIsFading(true);
+
+        // After fade-out duration (1s), update pool data and fade back in
+        setTimeout(() => {
+            setVisiblePoolData(poolData);
+            setIsFading(false);
+        }, 1000); // Match the fade-out duration
+    }, [topPoolsNames]);
 
     const poolPriceCacheTime = Math.floor(Date.now() / 10000); // 10 second cache
     const poolPriceUpdateInterval = Math.floor(Date.now() / 2000); // 2 second interval
@@ -129,8 +149,8 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
             <HomeTitle tabIndex={0} aria-label='Top Pools'>
                 Top Pools
             </HomeTitle>
-            <HomeContent minHeight='120px'>
-                {poolData.map((pool, idx) => (
+            <HomeContent minHeight='120px' isFading={isFading}>
+                {visiblePoolData.map((pool, idx) => (
                     <PoolCard
                         key={idx}
                         pool={pool}
