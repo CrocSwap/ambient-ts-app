@@ -1,35 +1,33 @@
 import styles from './BackgroundImages.module.css';
 
-import Footer from '../../Footer/Footer';
+import { Fade } from 'react-reveal';
 import liquidityImage from '../../../assets/images/home/liquidity.png';
 import orderImage from '../../../assets/images/home/orders.png';
-import { Fade } from 'react-reveal';
-import blastLogo from '../../../assets/images/logos/blast_logo.svg';
-import scrollLogo from '../../../assets/images/logos/scroll_brand_logo.svg';
+import Footer from '../../Footer/Footer';
 
-import Stats from '../Stats/AmbientStats';
-import TradeNowButton from './TradeNowButton/TradeNowButton';
-import TopPools from '../TopPoolsHome/TopPoolsHome';
-import Investors from './Investors';
 import { useContext, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { BrandContext } from '../../../contexts/BrandContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { FlexContainer, Text } from '../../../styled/Common';
 import {
     MobileBg1,
     MobileBg2,
     MobileBg3,
     MobileBg4,
+    MobileCard,
     MobileMainContainer,
     MobileMainLogo,
-    MobileCard,
 } from '../../../styled/Components/Home';
-import { FlexContainer, Text } from '../../../styled/Common';
-import { Link } from 'react-router-dom';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { BrandContext } from '../../../contexts/BrandContext';
+import Stats from '../Stats/AmbientStats';
+import TopPools from '../TopPoolsHome/TopPoolsHome';
+import Investors from './Investors';
+import TradeNowButton from './TradeNowButton/TradeNowButton';
 
 export default function MobileLandingSections() {
-    const { isActiveNetworkBlast, isActiveNetworkScroll } =
-        useContext(ChainDataContext);
-    const { showPoints } = useContext(BrandContext);
+    const { isActiveNetworkL2 } = useContext(ChainDataContext);
+    const { showPoints, cobrandingLogo, showDexStats } =
+        useContext(BrandContext);
 
     const [isIPhone, setIsIPhone] = useState(false);
     useEffect(() => {
@@ -51,7 +49,7 @@ export default function MobileLandingSections() {
             fullHeight
         >
             <>
-                {isActiveNetworkBlast ? (
+                {isActiveNetworkL2 ? (
                     <MobileMainLogo
                         justifyContent='center'
                         alignItems='center'
@@ -79,38 +77,12 @@ export default function MobileLandingSections() {
                             >
                                 X
                             </Text>
-                            <img src={blastLogo} alt='' width='140px' />
-                        </FlexContainer>
-                    </MobileMainLogo>
-                ) : isActiveNetworkScroll ? (
-                    <MobileMainLogo
-                        justifyContent='center'
-                        alignItems='center'
-                        fullWidth
-                        className={styles.home_wallpaper_mobile}
-                    >
-                        <FlexContainer
-                            flexDirection={'column'}
-                            alignItems='center'
-                            gap={4}
-                        >
-                            <p
-                                className={styles.ambient_blast_logo}
-                                style={{ fontSize: '30px' }}
-                            >
-                                ambient
-                            </p>
-                            <Text
-                                fontWeight='100'
-                                color='text1'
-                                align='center'
-                                style={{
-                                    fontSize: '20px',
-                                }}
-                            >
-                                X
-                            </Text>
-                            <img src={scrollLogo} alt='' width='130px' />
+                            <img
+                                src={cobrandingLogo}
+                                alt=''
+                                width='140px'
+                                height='55px'
+                            />
                         </FlexContainer>
                     </MobileMainLogo>
                 ) : (
@@ -164,7 +136,7 @@ export default function MobileLandingSections() {
         </FlexContainer>
     );
 
-    const statsSection = (
+    const statsSection = showDexStats ? (
         <MobileCard
             flexDirection='column'
             fullWidth
@@ -174,7 +146,7 @@ export default function MobileLandingSections() {
             <MobileBg4 className={styles.home4} />
             <Stats />
         </MobileCard>
-    );
+    ) : null;
 
     const secondRow = (
         <MobileCard

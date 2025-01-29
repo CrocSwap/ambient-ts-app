@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useContext, useState, useMemo, ReactNode } from 'react';
+import { ReactNode, useContext, useMemo, useState } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -10,21 +10,20 @@ import {
     LPButton,
 } from '../../../styled/Components/TradeModules';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
+import Button from '../../Form/Button';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
 import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
-import Button from '../../Form/Button';
 
-import TradeLinks from './TradeLinks';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import {
     brand,
     excludedTokenAddressesLowercase,
 } from '../../../ambient-utils/constants';
-import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
 import { openInNewTab } from '../../../ambient-utils/dataLayer';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import TradeLinks from './TradeLinks';
 
 interface PropsIF {
     chainId: string;
@@ -76,11 +75,14 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = useMemo(() => {
+        if (tokenA.chainId !== Number(chainId)) return false;
         return !tokens.verify(tokenA.address);
-    }, [tokenA.address, tokens]);
+    }, [tokenA.address, tokens, chainId]);
+
     const needConfirmTokenB = useMemo(() => {
+        if (tokenB.chainId !== Number(chainId)) return false;
         return !tokens.verify(tokenB.address);
-    }, [tokenB.address, tokens]);
+    }, [tokenB.address, tokens, chainId]);
 
     const smallScreen = useMediaQuery('(max-width: 768px)');
 
@@ -132,7 +134,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     ]);
 
     const formattedAckTokenMessage = ackTokenMessage.replace(
-        /\b(not|(?<!many\s)fraudulent)\b/gi,
+        /\b(not|fraudulent)\b/i,
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
 
@@ -200,10 +202,9 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     flexDirection='column'
                     gap={8}
                     margin='8px 0 0 0'
-                    padding={isFuta ? '0 16px' : '0 32px'}
+                    padding={isFuta ? '0 16px' : '0 32px 30px 32px'}
                 >
                     {transactionDetails}
-                    <SmolRefuelLink />
                     {isUserConnected === undefined ||
                     !areDefaultTokensUpdatedForChain ? null : isUserConnected ===
                       true ? (

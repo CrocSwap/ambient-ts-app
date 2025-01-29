@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import '../Chart.css';
-import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
-import { CandleDataIF } from '../../../../ambient-utils/types';
-import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../../ambient-utils/dataLayer';
+import { CandleDataIF } from '../../../../ambient-utils/types';
 import { ChartThemeIF } from '../../../../contexts/ChartContext';
+import '../Chart.css';
+import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
+import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 
 interface FreeRateData {
     feeData: Array<CandleDataIF>;
@@ -176,7 +176,7 @@ function FeeRateChart(props: FreeRateData) {
             scaleData !== undefined &&
             chartThemeColors
         ) {
-            const d3Feerate = chartThemeColors.downCandleBorderColor?.copy();
+            const d3Feerate = chartThemeColors.accent1?.copy();
 
             const lineSeries = d3fc
                 .seriesCanvasLine()

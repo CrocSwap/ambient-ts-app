@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import styles from './TypeWriter.module.css';
 
 interface TypewriterProps {

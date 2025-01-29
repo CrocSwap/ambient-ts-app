@@ -1,8 +1,8 @@
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
-import { FlexContainer, Text, GridContainer } from '../Common';
-import { hideScrollbarCss } from '../Common/Container';
 import { Link } from 'react-router-dom';
+import { FlexContainer, GridContainer, Text } from '../Common';
+import { hideScrollbarCss } from '../Common/Container';
 
 export const HomeTitle = styled.div`
     font-style: normal;

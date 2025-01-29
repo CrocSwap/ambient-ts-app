@@ -1,19 +1,19 @@
-import { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../ambient-utils/dataLayer';
+import { CandleDataIF } from '../../../../ambient-utils/types';
+import { ChartContext, ChartThemeIF } from '../../../../contexts/ChartContext';
 import {
     CandleDataChart,
     renderCanvasArray,
     scaleData,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
-import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
-import { ChartContext, ChartThemeIF } from '../../../../contexts/ChartContext';
-import { CandleDataIF } from '../../../../ambient-utils/types';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../../ambient-utils/dataLayer';
 
 interface LineChartIF {
     period: number;
@@ -124,7 +124,10 @@ export default function CandleLineChart(props: LineChartIF) {
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
-                    scaleData?.drawingLinearxScale.range([0, event.detail.width]);
+                    scaleData?.drawingLinearxScale.range([
+                        0,
+                        event.detail.width,
+                    ]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     candleLine.context(ctx);
                 });

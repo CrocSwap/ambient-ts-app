@@ -1,3 +1,4 @@
+import { ZeroAddress } from 'ethers';
 import { useMemo, useState } from 'react';
 import { dexTokenData } from '../../../pages/platformAmbient/Explore/useTokenStats';
 import { columnSlugs } from './DexTokens/DexTokens';
@@ -51,7 +52,12 @@ export const useSortedDexTokens = (
 
     function sortByTime(tkns: dexTokenData[]): dexTokenData[] {
         const data = tkns.sort((a: dexTokenData, b: dexTokenData) => {
-            return b.latestTime - a.latestTime;
+            // sort ETH to top if in top two tokens
+            return b.latestTime - a.latestTime === 0
+                ? a.tokenAddr === ZeroAddress
+                    ? -1
+                    : 1
+                : b.latestTime - a.latestTime;
         });
         return data;
     }

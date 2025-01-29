@@ -1,18 +1,19 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { RiChat3Line } from 'react-icons/ri';
-import { MdOutlineExplore } from 'react-icons/md';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { CiVault } from 'react-icons/ci';
 import { HiArrowsRightLeft } from 'react-icons/hi2';
+import { MdOutlineExplore } from 'react-icons/md';
+import { RiChat3Line } from 'react-icons/ri';
 import { VscAccount } from 'react-icons/vsc';
+import { Link, useLocation } from 'react-router-dom';
 
-import styles from './FooterNav.module.css';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import {
     chainNumToString,
     checkEoaHexAddress,
+    someSupportedNetworkIsVaultSupportedNetwork,
 } from '../../../ambient-utils/dataLayer';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import styles from './FooterNav.module.css';
 
 // Memoize the FooterNav component
 const FooterNav: React.FC = React.memo(() => {
@@ -42,11 +43,32 @@ const FooterNav: React.FC = React.memo(() => {
             title: 'Trade',
             destination: `${tradeDestination}${paramsSlug}`,
             icon: HiArrowsRightLeft,
+            shouldDisplay: true,
         },
-        { title: 'Explore', destination: '/explore', icon: MdOutlineExplore },
-        { title: 'Vaults', destination: '/vaults', icon: CiVault },
-        { title: 'Account', destination: '/account/', icon: VscAccount },
-        { title: 'Chat', destination: '/chat/', icon: RiChat3Line },
+        {
+            title: 'Explore',
+            destination: '/explore',
+            icon: MdOutlineExplore,
+            shouldDisplay: true,
+        },
+        {
+            title: 'Vaults',
+            destination: '/vaults',
+            icon: CiVault,
+            shouldDisplay: someSupportedNetworkIsVaultSupportedNetwork,
+        },
+        {
+            title: 'Account',
+            destination: '/account/',
+            icon: VscAccount,
+            shouldDisplay: true,
+        },
+        {
+            title: 'Chat',
+            destination: '/chat/',
+            icon: RiChat3Line,
+            shouldDisplay: true,
+        },
     ];
 
     const path = location.pathname;
@@ -83,26 +105,31 @@ const FooterNav: React.FC = React.memo(() => {
 
     return (
         <div className={styles.nav}>
-            {linksData.map((link, index) => (
-                <div
-                    key={index}
-                    className={`${styles.navItem} ${index === activeIndex ? styles.active : ''}`}
-                    onClick={() => handleNavClick(index)} // Use memoized handler
-                >
-                    <Link to={link.destination} className={styles.link}>
-                        <link.icon
-                            size={24}
-                            color={
-                                index === activeIndex
-                                    ? 'var(--accent1)'
-                                    : 'var(--text1)'
-                            }
-                            className={styles.icon}
-                        />
-                        <span className={styles.navText}>{link.title}</span>
-                    </Link>
-                </div>
-            ))}
+            {linksData.map(
+                (link, index) =>
+                    link.shouldDisplay && (
+                        <div
+                            key={index}
+                            className={`${styles.navItem} ${index === activeIndex ? styles.active : ''}`}
+                            onClick={() => handleNavClick(index)} // Use memoized handler
+                        >
+                            <Link to={link.destination} className={styles.link}>
+                                <link.icon
+                                    size={24}
+                                    color={
+                                        index === activeIndex
+                                            ? 'var(--accent1)'
+                                            : 'var(--text1)'
+                                    }
+                                    className={styles.icon}
+                                />
+                                <span className={styles.navText}>
+                                    {link.title}
+                                </span>
+                            </Link>
+                        </div>
+                    ),
+            )}
         </div>
     );
 });

@@ -1,44 +1,29 @@
-import styles from '../TransactionDetailsModal.module.css';
-import { useState, useRef, useContext, useEffect, memo } from 'react';
-import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import {
-    TransactionIF,
     PositionServerIF,
+    TransactionIF,
 } from '../../../../ambient-utils/types';
-import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
-import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
 import modalBackground from '../../../../assets/images/backgrounds/background.png';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+import styles from '../TransactionDetailsModal.module.css';
+import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
+import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
 
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    GCGO_OVERRIDE_URL,
-} from '../../../../ambient-utils/constants';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
 import {
     getPositionData,
     printDomToImage,
 } from '../../../../ambient-utils/dataLayer';
-import {
-    TokenContext,
-    TokenContextIF,
-} from '../../../../contexts/TokenContext';
-import {
-    CachedDataContext,
-    CachedDataContextIF,
-} from '../../../../contexts/CachedDataContext';
-import Modal from '../../Modal/Modal';
-import DetailsHeader from '../DetailsHeader/DetailsHeader';
-import ModalHeader from '../../ModalHeader/ModalHeader';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import TransactionDetailsGraph from '../TransactionDetailsGraph/TransactionDetailsGraph';
+import Modal from '../../Modal/Modal';
+import ModalHeader from '../../ModalHeader/ModalHeader';
+import DetailsHeader from '../DetailsHeader/DetailsHeader';
 import MobileDetailTabs from '../MobileDetailTabs/MobileDetailTabs';
+import TransactionDetailsGraph from '../TransactionDetailsGraph/TransactionDetailsGraph';
 
 interface propsIF {
     tx: TransactionIF;
@@ -53,20 +38,20 @@ function TransactionDetailsModal(props: propsIF) {
     const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView, onClose } =
         props;
     const {
-        activeNetwork: { chainId, graphCacheUrl },
+        activeNetwork: { chainId, GCGO_URL },
         snackbar: { open: openSnackbar },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
 
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
-    } = useContext<CachedDataContextIF>(CachedDataContext);
+    } = useContext(CachedDataContext);
 
-    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
 
-    const { tokens } = useContext<TokenContextIF>(TokenContext);
+    const { tokens } = useContext(TokenContext);
 
     const [updatedPositionApy, setUpdatedPositionApy] = useState<
         number | undefined
@@ -75,9 +60,7 @@ function TransactionDetailsModal(props: propsIF) {
     useEffect(() => {
         if (tx.entityType !== 'liqchange') return;
 
-        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
-            ? GCGO_OVERRIDE_URL + '/position_stats?'
-            : graphCacheUrl + '/position_stats?';
+        const positionStatsCacheEndpoint = GCGO_URL + '/position_stats?';
 
         fetch(
             positionStatsCacheEndpoint +

@@ -1,12 +1,12 @@
 import { useContext } from 'react';
 import { CandleDataIF, TokenIF } from '../../../ambient-utils/types';
+import { BrandContext } from '../../../contexts/BrandContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { formatDollarAmountAxis } from '../../../utils/numbers';
-import { ChartTooltipDiv, CurrentDataDiv } from './ChartTooltipStyles';
-import useDollarPrice from '../../platformAmbient/Chart/ChartUtils/getDollarPrice';
-import { BrandContext } from '../../../contexts/BrandContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { formatDollarAmountAxis } from '../../../utils/numbers';
+import useDollarPrice from '../../platformAmbient/Chart/ChartUtils/getDollarPrice';
+import { ChartTooltipDiv, CurrentDataDiv } from './ChartTooltipStyles';
 
 interface propsIF {
     showTooltip: boolean;
@@ -47,7 +47,7 @@ export default function ChartTooltip(props: propsIF) {
             {showTooltip && currentData ? (
                 <CurrentDataDiv isFuta={isFuta}>
                     <p>
-                        {(isFuta && !mobileView) ||
+                        {(isFuta && smallScreen) ||
                         (!isFuta && smallScreen && mobileView)
                             ? ''
                             : `${topToken.symbol}/${bottomToken.symbol} ${matchingCandleTime?.readable} `}

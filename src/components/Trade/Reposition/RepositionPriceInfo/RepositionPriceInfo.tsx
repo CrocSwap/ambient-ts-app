@@ -1,13 +1,13 @@
 import { useContext, useMemo, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import styles from './RepositionPriceInfo.module.css';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { PositionIF } from '../../../../ambient-utils/types';
-import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
+import styles from './RepositionPriceInfo.module.css';
 
 interface IRepositionPriceInfoProps {
     position: PositionIF;
@@ -60,6 +60,13 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
     const { isDenomBase } = useContext(TradeDataContext);
 
+    const liquidityProviderFeeString = liquidityFee
+        ? (liquidityFee * 100).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          }) + '%'
+        : '...';
+
     const usdRemovalValue = useMemo(
         () =>
             getFormattedNumber({
@@ -103,7 +110,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                 isDenomBase ? baseSymbol : quoteSymbol
             } / ${isDenomBase ? quoteSymbol : baseSymbol} liquidity providers.`,
             // eslint-disable-next-line no-irregular-whitespace
-            data: `${liquidityFee * 100} %`,
+            data: liquidityProviderFeeString,
             placement: 'bottom',
         },
     ];

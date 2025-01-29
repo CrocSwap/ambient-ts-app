@@ -1,23 +1,23 @@
-import SidebarRangePositionsCard from './SidebarRangePositionsCard';
-import { PositionIF } from '../../../../ambient-utils/types';
-import { useLocation } from 'react-router-dom';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { useContext } from 'react';
-import {
-    useLinkGen,
-    linkGenMethodsIF,
-    poolParamsIF,
-} from '../../../../utils/hooks/useLinkGen';
+import { useLocation } from 'react-router-dom';
+import { PositionIF } from '../../../../ambient-utils/types';
+import { AppStateContext } from '../../../../contexts';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import {
     ItemsContainer,
     RangeHeaderGrid,
     ViewMoreFlex,
 } from '../../../../styled/Components/Sidebar';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { AppStateContext } from '../../../../contexts';
+import {
+    linkGenMethodsIF,
+    poolParamsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
+import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 
 interface propsIF {
     userPositions?: PositionIF[];

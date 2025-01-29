@@ -1,7 +1,7 @@
-import { chromium, Page, BrowserContext, Browser } from 'playwright';
-import * as path from 'path';
 import * as dotenv from 'dotenv';
 import fs from 'fs';
+import * as path from 'path';
+import { BrowserContext, chromium, Page } from 'playwright';
 
 dotenv.config({ path: '.env.local' });
 

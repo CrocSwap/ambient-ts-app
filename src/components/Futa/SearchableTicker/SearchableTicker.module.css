@@ -1,280 +1,102 @@
-.container,
-.content {
+/* top-level container element in SearchableTicker.tsx file */
+.searchable_ticker {
     width: 100%;
-    height: 100%;
+    /* height: 100%; */
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.header {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-}
-
-.header > h3 {
-    font-size: 36px;
-    text-transform: uppercase;
-}
-
-.filter_options {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-    align-items: center;
-}
-
-.search_and_filter {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    gap: 10px;
-}
-
-.text_search_box {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    height: 24px;
-    padding: 0px 4px 0px 8px;
-    gap: 4px;
-    background-color: var(--dark2);
-}
-
-.text_search_box > input {
-    width: 100%;
-    padding: 0 8px;
-    background: transparent;
-    color: var(--text1);
-    outline: none;
-    border: none;
-    opacity: 1;
-    transition: all var(--animation-speed) ease-in;
-    cursor: normal;
-    font-size: 12px;
-}
-
-.searchInput::placeholder {
-    color: var(--text2);
-}
-
-.sort_toggles {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 8px;
-}
-
-.buttonOn,
-.buttonOff {
-    width: 110px;
-    height: 25px;
-    border: 1px solid var(--dark3);
-    background: var(--dark3);
-    color: var(--text2);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    gap: 10px;
-    font-size: 12px;
-    cursor: pointer;
-    outline: none;
-}
-
-.buttonOn,
-.buttonOff:hover {
-    transition: all var(--animation-speed) ease-in-out;
-    color: var(--accent1);
-    border: 1px solid var(--accent1);
-}
-
-.eyeOn {
-    transition: all var(--animation-speed) ease-in-out;
-    color: var(--accent1);
-}
-
-.filters {
-    position: relative;
-}
-
-.timeDropdownContent {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 180px 25px;
-    align-items: center;
-}
-.timeDropdownButton {
-    border-left: 4px solid var(--accent1, #62ebf1);
-    background: var(--dark2);
-    display: flex;
-    padding: 4px 4px 4px 8px;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    height: 25px;
-    width: 100%;
-    text-transform: uppercase;
-}
-.timeDropdownButton p {
-    font-size: 14px;
-    color: var(--accent1);
-}
-
-.sort_direction {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-}
-
-.hi:hover {
-    color: var(--accent1);
-    opacity: 50%;
-}
-.dropdown {
-    height: auto;
-    width: calc(100% - 25px);
-    background-color: var(--dark2);
-    position: absolute;
-    top: 30px;
-    overflow-y: scroll;
-    padding: 4px;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-.timeItem {
-    font-size: 12px;
-    color: var(--text1);
-    transition: all var(--animation-speed) ease-in-out;
-    cursor: pointer;
-    padding: 0 4px;
-    text-transform: uppercase;
-}
-
-.timeItem:hover {
-    background: var(--accent3);
-}
-
-.tickerItemContainer {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 30px;
-    border-left: 4px solid var(--accent2);
-    border-right: 4px solid var(--accent2);
-    align-items: center;
-
-    font-size: 18px;
-    color: var(--text1);
-    transition: all var(--animation-speed) ease-in-out;
-    cursor: pointer;
-    vertical-align: middle;
-
-    height: 32px;
-}
-
-.tickerItemContainer:hover {
-    background: var(--dark4);
-}
-.tickerItemContainer p:first-of-type {
-    text-transform: uppercase;
-}
-.tickerItemContainer p:not(:nth-of-type(3)) {
-    padding: 0 8px;
-}
-
-.tickerItemContainer p:nth-of-type(3),
-.tickerHeader p:nth-of-type(3) {
-    text-align: end;
-}
-
-.statusContainer {
-    width: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.tickerStatus {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-}
-.tickerTableContainer {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.tickerHeader {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 30px;
-    color: var(--text3);
-    font-size: 12px;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    padding-left: 12px;
-}
-
-.tickerHeader span {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--text3);
-}
-.tickerTableContent {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    height: 100%;
-    overflow-y: scroll;
-    scrollbar-color: var(--dark2) var(--dark2);
-    padding-bottom: 1rem;
-}
 .scrolling {
     scrollbar-color: var(--accent1) var(--dark2);
 }
-
-.active {
-    background: #28585d;
-}
-.hoverActive {
-    background: var(--dark4);
-}
-.marketCap {
-    text-align: end;
-}
-
-.marketCapHeader {
-    text-align: end;
-    padding: 0 12px;
+/* styling for the resizable table element */
+.resizable {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    --width-for-scrollbar: 8px;
+    border: var(--futa-box-border);
 }
 
-.noAuctionsContent {
+/* Wrapper for ticker table rows and column headers */
+.ticker_table {
+    flex-direction: column;
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    padding-right: 8px;
+}
+
+/* Header of the ticker table */
+.ticker_table > header {
+    position: sticky; /* Keeps header visible when scrolling */
+    top: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 8px;
+    background-color: var(--dark1);
+    color: var(--text2);
+    font-size: 12px;
+}
+
+/* Individual column headers in the ticker table */
+.ticker_table > header > * {
+    width: 120px;
+    flex: 1 10 auto;
+}
+
+/* Spacer to keep TICKER column header aligned with table data */
+.ticker_col_header_spacer {
+    visibility: hidden;
+}
+
+/* Container for ticker line items */
+.ticker_table_content {
+    display: flex;
+    flex-direction: column;
+    row-gap: 4px;
+}
+
+/* Left-aligned cell */
+.cell_left {
+    display: flex;
+    justify-content: flex-start;
+}
+
+/* Center-aligned cell */
+.cell_center {
+    display: flex;
+    justify-content: center;
+}
+
+/* Right-aligned cell */
+.cell_right {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Differential content when length of data array is zero */
+.no_auctions_content {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     padding: 2rem 0;
+    height: 100%;
 }
 
-.noAuctionsContent p {
+.no_auctions_content > p {
     color: var(--text2);
 }
 
-.noAuctionsContent button {
+.no_auctions_content > button {
     display: flex;
     padding: 2px 8px;
     justify-content: center;
@@ -284,65 +106,78 @@
     outline: none;
     background: var(--accent1, #0ccdff);
     color: var(--dark1);
-    border: none;
-    cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
     margin: 0 auto;
     text-transform: uppercase;
 }
 
-.noAuctionsContent button:hover {
+.no_auctions_content > button:hover {
     background: var(--accent2);
 }
-@media (min-width: 780px) {
-    .container {
-        display: grid;
-    }
 
-    .tickerTableContainer {
-        height: 100%;
-    }
-    .tickerTableContent {
-        height: 100%;
-    }
+/* Scrolling styles */
+.scrolling {
+    scrollbar-color: var(--accent1) var(--dark2);
 }
 
-@media (min-width: 1280px) {
-    .content h2 {
-        color: var(--text1, #ceffff);
-        font-size: 36px;
-        text-transform: uppercase;
-    }
+/* Market cap and time remaining styles */
+.marketCap,
+.timeRemaining {
+    text-align: end;
 }
 
-@media (max-width: 968px) {
-    .filter_options {
-        flex-wrap: wrap;
-    }
-
-    .sort_toggles {
-        width: 100%;
-        justify-content: flex-start;
-    }
-
-    .contentContainer {
-        height: calc(100vh - 186px) !important;
-        justify-content: space-between;
-        padding-bottom: 1rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .contentContainer {
-        padding-bottom: 0;
-    }
-
-    .tickerTableContent {
-        margin-bottom: 3rem;
-    }
-}
-
-.container {
+/* Ticker name alignment */
+.ticker_name {
+    letter-spacing: 0.5px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
 }
+
+/* Hover effect for ticker name arrow */
+.ticker_name_arrow {
+    padding-left: 4px;
+    opacity: 0;
+    transition: all var(--animation-speed) ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.tickerItemContainer:hover .ticker_name_arrow {
+    opacity: 1;
+}
+
+/* Status container styles */
+.statusContainer {
+    text-align: end;
+}
+
+.tickerStatus {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+/* Responsive styles */
+@media (max-width: 500px) {
+    .ticker_table {
+        margin-left: 0px; /* Helps fit everything in the viewport */
+    }
+}
+
+@media (max-width: 400px) {
+    .ticker_table > header > * {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 1024px) {
+  
+    .resizable {
+        border: none;
+    }
+
+}
+

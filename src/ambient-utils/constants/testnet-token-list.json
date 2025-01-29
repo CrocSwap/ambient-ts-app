@@ -1,10 +1,10 @@
 {
     "name": "Testnet Token List",
-    "logoURI": "https://ambient-finance.netlify.app/rings_192.png",
-    "timestamp": "2022-03-17T15:02:53.363Z",
+    "logoURI": "https://ambient.finance/icons/ambient_icon_x180.png",
+    "timestamp": "2024-12-06T16:20:57.774Z",
     "version": {
         "major": 1,
-        "minor": 0,
+        "minor": 1,
         "patch": 0
     },
     "tags": {},
@@ -15,24 +15,168 @@
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",
             "decimals": 18,
-            "chainId": 5,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+            "chainId": 11155111,
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
         },
         {
-            "name": "Dai Stablecoin",
-            "address": "0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60",
-            "symbol": "DAI",
-            "decimals": 18,
-            "chainId": 5,
-            "logoURI": "https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png"
+            "name": "USDC",
+            "address": "0x60bBA138A74C5e7326885De5090700626950d509",
+            "symbol": "USDC",
+            "decimals": 6,
+            "chainId": 11155111,
+            "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
         },
         {
-            "name": "PEPE Croc Token",
-            "address": "0x630f8b9d8f517af8f5b8670e6a167b6c0240d583",
-            "symbol": "PEPE",
+            "name": "Wrapped BTC",
+            "address": "0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328",
+            "symbol": "WBTC",
+            "decimals": 8,
+            "chainId": 11155111,
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
+        },
+        {
+            "name": "ZirCat",
+            "address": "0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3",
+            "symbol": "ZCAT",
             "decimals": 18,
-            "chainId": 5,
-            "logoURI": "https://assets.coingecko.com/coins/images/29850/thumb/pepe-token.jpeg"
+            "chainId": 11155111,
+            "logoURI": "https://ambient.finance/zcat_32.png"
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 168587773,
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
+        },
+        {
+            "name": "USDB",
+            "address": "0x4200000000000000000000000000000000000022",
+            "symbol": "USDB",
+            "decimals": 18,
+            "chainId": 168587773,
+            "logoURI": "https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png"
+        },
+        {
+            "name": "ZirCat",
+            "address": "0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3",
+            "symbol": "ZCAT",
+            "decimals": 18,
+            "chainId": 168587773,
+            "logoURI": "https://ambient.finance/zcat_32.png"
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 534351,
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
+        },
+        {
+            "name": "Bridged USD Coin",
+            "address": "0x4D65fB724CEd0CFC6ABFD03231C9CDC2C36A587B",
+            "symbol": "USDC",
+            "decimals": 6,
+            "chainId": 534351,
+            "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
+        },
+        {
+            "name": "Bridged Wrapped Bitcoin",
+            "chainId": 534351,
+            "address": "0xb3B942b6d4a4858838aAb8f94DdaEdd479CD1594",
+            "symbol": "WBTC",
+            "decimals": 8,
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 98864,
+            "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg"
+        },
+        {
+            "name": "Plume USD",
+            "address": "0xe644F07B1316f28a7F134998e021eA9f7135F351",
+            "symbol": "pUSD",
+            "decimals": 6,
+            "chainId": 98864,
+            "logoURI": "https://img.cryptorank.io/coins/plume_network1716480863760.png"
+        },
+        {
+            "name": "Nest Egg Vault",
+            "address": "0x659619AEdf381c3739B0375082C2d61eC1fD8835",
+            "symbol": "NEV",
+            "decimals": 6,
+            "chainId": 98864,
+            "logoURI": ""
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 1924,
+            "logoURI": ""
+        },
+        {
+            "name": "Ambient USDC",
+            "address": "0xfEfD8bCB0034A2B0E3CC22e2f5A59279FAe67128",
+            "symbol": "USDC",
+            "decimals": 6,
+            "chainId": 1924,
+            "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
+        },
+        {
+            "name": "Ambient USDT",
+            "address": "0x60bBA138A74C5e7326885De5090700626950d509",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 1924,
+            "logoURI": ""
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 84532,
+            "logoURI": ""
+        },
+        {
+            "name": "Ambient USDC",
+            "address": "0x1B98743bB9297A60FF9e75EA2630A77bf72bc17c",
+            "symbol": "USDC",
+            "decimals": 6,
+            "chainId": 84532,
+            "logoURI": ""
+        },
+        {
+            "name": "Ambient USDT",
+            "address": "0x868cFD46ad326354AD214bEA9f08fD8EfBfac3b9",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 84532,
+            "logoURI": ""
+        },
+        {
+            "name": "Wolski Test Token",
+            "address": "0x5f8201BC9A7abbE5F8e89a7bF15137b174c19041",
+            "symbol": "WTT",
+            "decimals": 6,
+            "chainId": 84532,
+            "logoURI": ""
+        },
+        {
+            "name": "Wolski Test Token",
+            "address": "0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3",
+            "symbol": "WTT",
+            "decimals": 6,
+            "chainId": 98865,
+            "logoURI": ""
         }
     ]
 }

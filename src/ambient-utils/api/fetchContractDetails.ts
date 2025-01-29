@@ -1,8 +1,8 @@
 import { ERC20_ABI } from '@crocswap-libs/sdk';
 import { Contract, ethers } from 'ethers';
+import { ZERO_ADDRESS } from '../constants';
 import { memoizeProviderFn } from '../dataLayer/functions/memoizePromiseFn';
 import { TokenIF, otherTokenSources } from '../types/token/TokenIF';
-import { ZERO_ADDRESS } from '../constants';
 
 export interface ContractDetails {
     address: string;
@@ -30,8 +30,7 @@ export const fetchContractDetails = async (
             symbol: 'ETH',
             name: 'Native Ether',
             fromList: 'ambient',
-            logoURI:
-                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+            logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
         };
     }
 

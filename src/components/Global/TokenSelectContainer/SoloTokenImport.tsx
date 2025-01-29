@@ -1,17 +1,17 @@
+import { useContext } from 'react';
+import styled from 'styled-components';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
+import { AppStateContext } from '../../../contexts';
+import { FlexContainer } from '../../../styled/Common';
 import Button from '../../Form/Button';
 import DividerDark from '../DividerDark/DividerDark';
 import TokenIcon from '../TokenIcon/TokenIcon';
-import { uriToHttp } from '../../../ambient-utils/dataLayer';
 interface propsIF {
     customToken: TokenIF | null | 'querying';
     chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
     chainId: string;
 }
-import styled from 'styled-components';
-import { FlexContainer } from '../../../styled/Common';
-import { AppStateContext } from '../../../contexts';
-import { useContext } from 'react';
 
 export const MainContainer = styled.div`
     width: 100%;

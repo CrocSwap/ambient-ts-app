@@ -1,25 +1,16 @@
-import { TransactionIF } from '../../../../../ambient-utils/types';
-import { RiExternalLinkLine } from 'react-icons/ri';
-import styles from './TransactionDetailsSimplify.module.css';
-import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
-import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import moment from 'moment';
 import { memo, useContext } from 'react';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../../contexts/CrocEnvContext';
-import { useMediaQuery } from '@material-ui/core';
-import {
-    UserDataContext,
-    UserDataContextIF,
-} from '../../../../../contexts/UserDataContext';
-import InfoRow from '../../../InfoRow';
+import { RiExternalLinkLine } from 'react-icons/ri';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import { getElapsedTime } from '../../../../../ambient-utils/dataLayer';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../../contexts/AppStateContext';
+import { TransactionIF } from '../../../../../ambient-utils/types';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
+import InfoRow from '../../../InfoRow';
+import styles from './TransactionDetailsSimplify.module.css';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
@@ -30,9 +21,9 @@ interface TransactionDetailsSimplifyPropsIF {
 // TODO: refactor to using styled-components
 function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
     const { tx, isAccountView, timeFirstMintMemo } = props;
-    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
-    const { userAddress } = useContext<UserDataContextIF>(UserDataContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { activeNetwork } = useContext(AppStateContext);
+    const { userAddress } = useContext(UserDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const {
         ensName,

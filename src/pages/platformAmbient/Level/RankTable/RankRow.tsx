@@ -1,8 +1,8 @@
 import { RiWallet3Line } from 'react-icons/ri';
-import { FlexContainer, Text } from '../../../../styled/Common';
-import styles from './RankTable.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useFetchBatch } from '../../../../App/hooks/useFetchBatch';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import styles from './RankTable.module.css';
 
 interface PropsIF {
     data: {

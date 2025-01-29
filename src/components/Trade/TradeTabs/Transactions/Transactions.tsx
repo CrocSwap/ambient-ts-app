@@ -16,59 +16,33 @@ import {
     fetchUserRecentChanges,
 } from '../../../../ambient-utils/api';
 
+import { fetchPoolUserChanges } from '../../../../ambient-utils/api/fetchPoolUserChanges';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
+import { UserDataContext } from '../../../../contexts';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import {
-    CandleContext,
-    CandleContextIF,
-} from '../../../../contexts/CandleContext';
-import {
-    ChartContext,
-    ChartContextIF,
-} from '../../../../contexts/ChartContext';
+import { CandleContext } from '../../../../contexts/CandleContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import {
-    DataLoadingContext,
-    DataLoadingContextIF,
-} from '../../../../contexts/DataLoadingContext';
+import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import {
     Changes,
     GraphDataContext,
-    GraphDataContextIF,
 } from '../../../../contexts/GraphDataContext';
-import {
-    ReceiptContext,
-    ReceiptContextIF,
-} from '../../../../contexts/ReceiptContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
-import {
-    TokenContext,
-    TokenContextIF,
-} from '../../../../contexts/TokenContext';
-import {
-    TradeDataContext,
-    TradeDataContextIF,
-} from '../../../../contexts/TradeDataContext';
-import {
-    TradeTableContext,
-    TradeTableContextIF,
-} from '../../../../contexts/TradeTableContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { FlexContainer } from '../../../../styled/Common';
 import { TransactionRow as TransactionRowStyled } from '../../../../styled/Components/TransactionTable';
 import Spinner from '../../../Global/Spinner/Spinner';
 import NoTableData from '../NoTableData/NoTableData';
-// import TableRows from '../TableRows';
 import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 import { useSortedTxs } from '../useSortedTxs';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
-import { fetchPoolUserChanges } from '../../../../ambient-utils/api/fetchPoolUserChanges';
-import { UserDataContext } from '../../../../contexts';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -79,6 +53,7 @@ interface propsIF {
     setSelectedInsideTab?: Dispatch<number>;
     fullLayoutActive?: boolean;
     accountAddress?: string | undefined;
+    unselectCandle?: () => void;
 }
 
 function Transactions(props: propsIF) {
@@ -91,27 +66,28 @@ function Transactions(props: propsIF) {
         isAccountView,
         fullLayoutActive,
         accountAddress,
+        unselectCandle,
     } = props;
 
     const {
         server: { isEnabled: isServerEnabled },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { isCandleSelected } = useContext<CandleContextIF>(CandleContext);
+    } = useContext(AppStateContext);
+    const { isCandleSelected } = useContext(CandleContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { chartSettings } = useContext<ChartContextIF>(ChartContext);
+    const { chartSettings } = useContext(ChartContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
-        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+        activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
 
     const { setOutsideControl, showAllData: showAllDataSelection } =
-        useContext<TradeTableContextIF>(TradeTableContext);
-    const { tokens } = useContext<TokenContextIF>(TokenContext);
+        useContext(TradeTableContext);
+    const { tokens } = useContext(TokenContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -121,18 +97,16 @@ function Transactions(props: propsIF) {
 
     const candleTime: candleTimeIF = chartSettings.candleTime.global;
 
-    const dataLoadingStatus =
-        useContext<DataLoadingContextIF>(DataLoadingContext);
+    const dataLoadingStatus = useContext(DataLoadingContext);
     const {
         transactionsByUser,
         userTransactionsByPool,
         transactionsByPool,
         unindexedNonFailedSessionTransactionHashes,
-    } = useContext<GraphDataContextIF>(GraphDataContext);
+    } = useContext(GraphDataContext);
 
-    const { transactionsByType } = useContext<ReceiptContextIF>(ReceiptContext);
-    const { baseToken, quoteToken } =
-        useContext<TradeDataContextIF>(TradeDataContext);
+    const { transactionsByType } = useContext(ReceiptContext);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
@@ -167,6 +141,9 @@ function Transactions(props: propsIF) {
         dataReceived: false,
         changes: [...getInitialChangesData()],
     });
+
+    const [infiniteScrollLock, setInfiniteScrollLock] =
+        useState<boolean>(false);
 
     const [hotTransactions, setHotTransactions] = useState<TransactionIF[]>([]);
 
@@ -259,8 +236,8 @@ function Transactions(props: propsIF) {
             });
         }
     }, [
-        transactionsByPool.changes,
-        userTransactionsByPool.changes,
+        transactionsByPool,
+        userTransactionsByPool,
         activeAccountTransactionData,
     ]);
 
@@ -370,13 +347,13 @@ function Transactions(props: propsIF) {
     }, [pagesVisible[0]]);
 
     const oldestTxTime = useMemo(() => {
-        const dataToFilter = fetchedTransactions.changes;
+        const dataToFilter = fetchedTransactionsRef.current?.changes || [];
         return dataToFilter.length > 0
             ? dataToFilter.reduce((min, transaction) => {
                   return transaction.txTime < min ? transaction.txTime : min;
               }, dataToFilter[0].txTime)
             : 0;
-    }, [fetchedTransactions.changes, showAllData, isAccountView]);
+    }, [fetchedTransactions, showAllData, isAccountView]);
 
     const oldestTxTimeRef = useRef<number>(oldestTxTime);
     oldestTxTimeRef.current = oldestTxTime;
@@ -394,12 +371,20 @@ function Transactions(props: propsIF) {
     useEffect(() => {
         if (!isCandleSelected) {
             setCandleTransactionData([]);
+            setInfiniteScrollLock(false);
             dataLoadingStatus.setDataLoadingStatus({
                 datasetName: 'isCandleDataLoading',
                 loadingStatus: true,
             });
         }
     }, [isCandleSelected]);
+
+    useEffect(() => {
+        if (isCandleSelected) {
+            setInfiniteScrollLock(true);
+            setPagesVisible([0, 1]);
+        }
+    }, [candleTransactionData]);
 
     const isLoading = useMemo<boolean>(
         () =>
@@ -425,6 +410,7 @@ function Transactions(props: propsIF) {
 
     const unindexedNonFailedTransactions = transactionsByType.filter(
         (tx) =>
+            !tx.isRemoved &&
             unindexedNonFailedSessionTransactionHashes.includes(tx.txHash) &&
             tx.txDetails?.baseAddress.toLowerCase() ===
                 baseToken.address.toLowerCase() &&
@@ -460,11 +446,11 @@ function Transactions(props: propsIF) {
             quote: selectedQuoteAddress,
             poolIdx: poolIndex,
             chainId: chainId,
-            n: 100,
+            n: 200,
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
-            graphCacheUrl: graphCacheUrl,
+            GCGO_URL: GCGO_URL,
             provider,
             cachedFetchTokenPrice: cachedFetchTokenPrice,
             cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -714,7 +700,7 @@ function Transactions(props: propsIF) {
                     n: 50,
                     timeBefore: oldestTxTimeRef.current,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -736,7 +722,7 @@ function Transactions(props: propsIF) {
                     n: 50,
                     timeBefore: oldestTxTimeRef.current,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -757,7 +743,7 @@ function Transactions(props: propsIF) {
                     n: 50,
                     timeBefore: oldestTxTimeRef.current,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -807,6 +793,7 @@ function Transactions(props: propsIF) {
             setDebouncedIsLoading(isLoading);
         }
     }, [isLoading, txDataToDisplay.length]);
+
     const shouldDisplayNoTableData: boolean =
         !debouncedIsLoading &&
         !txDataToDisplay.length &&
@@ -821,6 +808,7 @@ function Transactions(props: propsIF) {
             activeUserPositionsByPoolLength={
                 userTransactionsByPool.changes.length
             }
+            unselectCandle={unselectCandle}
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
@@ -959,6 +947,7 @@ function Transactions(props: propsIF) {
                     lastFetchedCount={lastFetchedCount}
                     setLastFetchedCount={setLastFetchedCount}
                     moreDataLoading={moreDataLoading}
+                    componentLock={infiniteScrollLock}
                 />
             </ul>
         </div>

@@ -1,27 +1,24 @@
-// START: Import React and Dongles
-import { SidebarContext } from '../../../../contexts/SidebarContext';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
-// START: Import Local Files
 import { TransactionIF } from '../../../../ambient-utils/types';
 
-// START: Import JSX Components
-import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
-import {
-    useLinkGen,
-    linkGenMethodsIF,
-} from '../../../../utils/hooks/useLinkGen';
+import { AppStateContext } from '../../../../contexts';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import {
     HeaderGrid,
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../../styled/Components/Sidebar';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { AppStateContext } from '../../../../contexts';
+import {
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
+import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
 
 interface propsIF {
     mostRecentTransactions: TransactionIF[];

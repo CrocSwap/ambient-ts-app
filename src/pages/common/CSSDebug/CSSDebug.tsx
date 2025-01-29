@@ -1,9 +1,9 @@
 import { useContext, useState } from 'react';
+import { skins } from '../../../App/hooks/useSkin';
+import { BrandContext } from '../../../contexts/BrandContext';
 import Swap from '../../platformAmbient/Swap/Swap';
 import styles from './CSSDebug.module.css';
 import ColorToggle from './ColorToggle';
-import { skins } from '../../../App/hooks/useSkin';
-import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 
 export type colorFormats = 'text' | 'background' | 'border';
 
@@ -57,7 +57,7 @@ interface propsIF {
 
 export default function CSSDebug(props: propsIF) {
     const { noSwap } = props;
-    const { skin } = useContext<BrandContextIF>(BrandContext);
+    const { skin } = useContext(BrandContext);
     const SAMPLE_TEXT = 'Zero-to-One Decentralized Trading Protocol';
     const [sampleText, setSampleText] = useState<string>(SAMPLE_TEXT);
 

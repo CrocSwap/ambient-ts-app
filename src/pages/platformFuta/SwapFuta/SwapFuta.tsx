@@ -1,17 +1,14 @@
 import { useContext, useState } from 'react';
-import Divider from '../../../components/Futa/Divider/FutaDivider';
-import Separator from '../../../components/Futa/Separator/Separator';
+import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import Comments from '../../../components/Futa/Comments/Comments';
+import { ChartContext } from '../../../contexts/ChartContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Swap from '../../platformAmbient/Trade/Swap/Swap';
-
 import Trade from '../../platformAmbient/Trade/Trade';
 import styles from './SwapFuta.module.css';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-
-import { ChartContext } from '../../../contexts/ChartContext';
-import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
-
-// import logo from '../../../assets/futa/logos/homeLogo.svg';
+import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
+import HexReveal from '../Home/Animations/HexReveal';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function SwapFuta() {
     const tradeWrapperID = 'swapFutaTradeWrapper';
@@ -107,33 +104,44 @@ function SwapFuta() {
 
     if (showActiveMobileComponent) return mobileSwap;
 
+    // !important:  the top-level component CSS grid and as such, the three
+    // !important:  ... `<div>` elems need to stay in place to preserve
+    // !important:  ... layout, more permanently we should switch to a CSS
+    // !important:  ... flexbox layout or refactor to change grid alignment
+
     return (
         <section className={styles.mainSection}>
-            <div
-                className={styles.chartSection}
-                style={
-                    isFullScreen ? { gridColumnStart: 1, gridColumnEnd: 4 } : {}
-                }
-            >
-                <Divider count={2} />
+            <div className={styles.chartSection}>
                 <Trade futaActiveTab={activeTab} />
             </div>
 
-            <div style={{ paddingBottom: '4px' }}>
-                <Separator dots={100} />
-            </div>
-            <div>
-                <span id={tradeWrapperID}>
-                    <Divider count={2} />
-                    <Swap isOnTradeRoute />
-                </span>
-                <Divider count={2} />
-                <Comments
-                    isForTrade={true}
-                    isSmall={true}
-                    resizeEffectorSelector={tradeWrapperID}
-                />
-            </div>
+            {!isFullScreen && (
+                <AnimatePresence>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.4 }}
+                    >
+                        <span id={tradeWrapperID}>
+                            <HexReveal>
+                                <p className={styles.label}>order</p>
+                            </HexReveal>
+                            <FutaDivider2 />
+                            <Swap isOnTradeRoute />
+                        </span>
+                        <HexReveal>
+                            <p className={styles.label}>comments</p>
+                        </HexReveal>
+                        <FutaDivider2 />
+                        <Comments
+                            isForTrade={true}
+                            isSmall={true}
+                            resizeEffectorSelector={tradeWrapperID}
+                        />
+                    </motion.div>
+                </AnimatePresence>
+            )}
         </section>
     );
 }

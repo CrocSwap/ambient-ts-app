@@ -1,10 +1,10 @@
 import { SetStateAction, useContext } from 'react';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import { TokenIF } from '../../../ambient-utils/types';
+import { TokenContext } from '../../../contexts/TokenContext';
 import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './RangeActionTokenHeader.module.css';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { TokenIF } from '../../../ambient-utils/types';
-import { uriToHttp } from '../../../ambient-utils/dataLayer';
 
 interface propsIF {
     isPositionInRange: boolean;

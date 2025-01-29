@@ -1,24 +1,23 @@
-// START: Import React and Dongles
-import { useRef, useEffect, memo, useContext } from 'react';
-import { CSSTransition } from 'react-transition-group';
+import { memo, useContext, useEffect, useRef } from 'react';
 import { AiFillTwitterCircle } from 'react-icons/ai';
-import { IoDocumentTextSharp } from 'react-icons/io5';
 import { BsMedium } from 'react-icons/bs';
-import { SiGitbook } from 'react-icons/si';
-import { RiSpyFill } from 'react-icons/ri';
 import { FaDiscord, FaQuestion } from 'react-icons/fa';
-import '../../../App.css';
-import useKeyPress from '../../../hooks/useKeyPress';
-import { openInNewTab } from '../../../../ambient-utils/dataLayer';
+import { IoDocumentTextSharp } from 'react-icons/io5';
+import { RiSpyFill } from 'react-icons/ri';
+import { SiGitbook } from 'react-icons/si';
+import { CSSTransition } from 'react-transition-group';
 import {
     DISCORD_LINK,
     DOCS_LINK,
     MEDIUM_LINK,
     TWITTER_LINK,
 } from '../../../../ambient-utils/constants';
-import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
+import { openInNewTab } from '../../../../ambient-utils/dataLayer';
 import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import '../../../App.css';
+import useKeyPress from '../../../hooks/useKeyPress';
+import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
 
 import { motion } from 'framer-motion';
 import NavbarDropdownItem from './NavbarDropdownItem';

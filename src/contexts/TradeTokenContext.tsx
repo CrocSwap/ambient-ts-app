@@ -1,3 +1,4 @@
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
     createContext,
     ReactNode,
@@ -12,10 +13,9 @@ import { ZERO_ADDRESS } from '../ambient-utils/constants';
 import { AppStateContext } from './AppStateContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
-import { toDisplayQty } from '@crocswap-libs/sdk';
-import { UserDataContext } from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
 import { TradeDataContext } from './TradeDataContext';
+import { UserDataContext } from './UserDataContext';
 
 export interface TradeTokenContextIF {
     baseToken: {
@@ -48,12 +48,13 @@ export interface TradeTokenContextIF {
     contextMatchesParams: boolean;
 }
 
-export const TradeTokenContext = createContext<TradeTokenContextIF>(
-    {} as TradeTokenContextIF,
-);
+export const TradeTokenContext = createContext({} as TradeTokenContextIF);
 
 export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
-    const { isUserIdle } = useContext(AppStateContext);
+    const {
+        isUserIdle,
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -156,82 +157,92 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
 
     // useEffect to update selected token balances
     useEffect(() => {
-        if (
-            !isUserIdle &&
-            crocEnv &&
-            userAddress &&
-            isUserConnected &&
-            baseToken.address &&
-            quoteToken.address &&
-            baseTokenDecimals &&
-            quoteTokenDecimals
-        ) {
-            crocEnv
-                .token(baseToken.address)
-                .wallet(userAddress)
-                .then((bal: bigint) => {
-                    const displayBalance = toDisplayQty(bal, baseTokenDecimals);
-                    if (displayBalance !== baseTokenBalance) {
-                        setBaseTokenBalance(displayBalance);
+        (async () => {
+            if (
+                !isUserIdle &&
+                crocEnv &&
+                userAddress &&
+                isUserConnected &&
+                baseToken.address &&
+                quoteToken.address &&
+                baseTokenDecimals &&
+                quoteTokenDecimals &&
+                (await crocEnv.context).chain.chainId === chainId
+            ) {
+                crocEnv
+                    .token(baseToken.address)
+                    .wallet(userAddress)
+                    .then((bal: bigint) => {
+                        const displayBalance = toDisplayQty(
+                            bal,
+                            baseTokenDecimals,
+                        );
+                        if (displayBalance !== baseTokenBalance) {
+                            setBaseTokenBalance(displayBalance);
 
-                        setTokenBalance({
-                            tokenAddress: baseToken.address,
-                            walletBalance: bal.toString(),
-                        });
-                    }
-                })
-                .catch(console.error);
-            crocEnv
-                .token(baseToken.address)
-                .balance(userAddress)
-                .then((bal: bigint) => {
-                    const displayBalance = toDisplayQty(bal, baseTokenDecimals);
-                    if (displayBalance !== baseTokenDexBalance) {
-                        setBaseTokenDexBalance(displayBalance);
-                        setTokenBalance({
-                            tokenAddress: baseToken.address,
-                            dexBalance: bal.toString(),
-                        });
-                    }
-                })
-                .catch(console.error);
-            crocEnv
-                .token(quoteToken.address)
-                .wallet(userAddress)
-                .then((bal: bigint) => {
-                    const displayBalance = toDisplayQty(
-                        bal,
-                        quoteTokenDecimals,
-                    );
-                    if (displayBalance !== quoteTokenBalance) {
-                        setQuoteTokenBalance(displayBalance);
-                        setTokenBalance({
-                            tokenAddress: quoteToken.address,
-                            walletBalance: bal.toString(),
-                        });
-                    }
-                })
-                .catch(console.error);
-            crocEnv
-                .token(quoteToken.address)
-                .balance(userAddress)
-                .then((bal: bigint) => {
-                    const displayBalance = toDisplayQty(
-                        bal,
-                        quoteTokenDecimals,
-                    );
-                    if (displayBalance !== quoteTokenDexBalance) {
-                        setQuoteTokenDexBalance(displayBalance);
-                        setTokenBalance({
-                            tokenAddress: quoteToken.address,
-                            dexBalance: bal.toString(),
-                        });
-                    }
-                })
-                .catch(console.error);
-        }
+                            setTokenBalance({
+                                tokenAddress: baseToken.address,
+                                walletBalance: bal.toString(),
+                            });
+                        }
+                    })
+                    .catch(console.error);
+                crocEnv
+                    .token(baseToken.address)
+                    .balance(userAddress)
+                    .then((bal: bigint) => {
+                        const displayBalance = toDisplayQty(
+                            bal,
+                            baseTokenDecimals,
+                        );
+                        if (displayBalance !== baseTokenDexBalance) {
+                            setBaseTokenDexBalance(displayBalance);
+                            setTokenBalance({
+                                tokenAddress: baseToken.address,
+                                dexBalance: bal.toString(),
+                            });
+                        }
+                    })
+                    .catch(console.error);
+                crocEnv
+                    .token(quoteToken.address)
+                    .wallet(userAddress)
+                    .then((bal: bigint) => {
+                        const displayBalance = toDisplayQty(
+                            bal,
+                            quoteTokenDecimals,
+                        );
+                        if (displayBalance !== quoteTokenBalance) {
+                            setQuoteTokenBalance(displayBalance);
+                            setTokenBalance({
+                                tokenAddress: quoteToken.address,
+                                walletBalance: bal.toString(),
+                            });
+                        }
+                    })
+                    .catch(console.error);
+                crocEnv
+                    .token(quoteToken.address)
+                    .balance(userAddress)
+                    .then((bal: bigint) => {
+                        const displayBalance = toDisplayQty(
+                            bal,
+                            quoteTokenDecimals,
+                        );
+                        if (displayBalance !== quoteTokenDexBalance) {
+                            setQuoteTokenDexBalance(displayBalance);
+                            setTokenBalance({
+                                tokenAddress: quoteToken.address,
+                                dexBalance: bal.toString(),
+                            });
+                        }
+                    })
+                    .catch(console.error);
+            }
+        })();
     }, [
         crocEnv,
+        chainId,
         isUserIdle,
         isUserConnected,
         userAddress,

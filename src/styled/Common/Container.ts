@@ -1,22 +1,22 @@
-import styled, { css } from 'styled-components/macro';
+import styled, { css } from 'styled-components';
 
+import { AnimationProps, Animations } from './Animations';
+import { Breakpoint, BreakpointProps } from './Breakpoints';
 import {
+    AlignItems,
+    BoxShadows,
+    Displays,
     FontSizes,
     FontWeights,
     Fonts,
-    backgrounds,
-    textColors,
-    overflowTypes,
     JustifyContent,
-    AlignItems,
     Position,
-    scrollSnapAlign,
     TextAlign,
-    Displays,
-    BoxShadows,
+    backgrounds,
+    overflowTypes,
+    scrollSnapAlign,
+    textColors,
 } from './Types';
-import { Breakpoint, BreakpointProps } from './Breakpoints';
-import { AnimationProps, Animations } from './Animations';
 
 export const hideScrollbarCss = css`
     &::-webkit-scrollbar {

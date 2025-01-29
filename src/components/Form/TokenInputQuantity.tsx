@@ -1,29 +1,30 @@
 import {
-    useContext,
-    useState,
-    useEffect,
     ChangeEvent,
-    memo,
-    useRef,
     Dispatch,
+    memo,
     SetStateAction,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
+import { Link, useLocation } from 'react-router-dom';
 import { getFormattedNumber, uriToHttp } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
+import { AppStateContext } from '../../contexts';
+import { BrandContext } from '../../contexts/BrandContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import { useModal } from '../Global/Modal/useModal';
 import Spinner from '../Global/Spinner/Spinner';
 import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import TokenIcon from '../Global/TokenIcon/TokenIcon';
-import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSelectModal';
-import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import { Link, useLocation } from 'react-router-dom';
-import { useModal } from '../Global/Modal/useModal';
-import styles from './TokenInputQuantity.module.css';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
-import { BrandContext, BrandContextIF } from '../../contexts/BrandContext';
-import { AppStateContext } from '../../contexts';
+import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSelectModal';
+import styles from './TokenInputQuantity.module.css';
+import { brand } from '../../ambient-utils/constants';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -72,7 +73,7 @@ function TokenInputQuantity(props: propsIF) {
         percentDiffUsdValue,
     } = props;
 
-    const { platformName } = useContext<BrandContextIF>(BrandContext);
+    const { platformName } = useContext(BrandContext);
 
     const location = useLocation();
 
@@ -80,6 +81,8 @@ function TokenInputQuantity(props: propsIF) {
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
+
+    const isFuta = brand === 'futa';
 
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
@@ -117,7 +120,13 @@ function TokenInputQuantity(props: propsIF) {
             .replace(/,/g, '.') // Replace commas with dots
             .replace(/\s+/g, ''); // Remove any spaces
 
-        if (inputStringNoCommas === '.') inputStringNoCommas = '0.';
+        if (inputStringNoCommas === '.') {
+            inputStringNoCommas = '0.';
+        } else if (inputStringNoCommas === 'e') {
+            inputStringNoCommas = '1e';
+        } else if (inputStringNoCommas.startsWith('e')) {
+            return;
+        }
 
         const inputStringNoUnfinishedExponent = isNaN(+inputStringNoCommas)
             ? inputStringNoCommas.replace(
@@ -166,7 +175,7 @@ function TokenInputQuantity(props: propsIF) {
                         tokenB: tokenB.address,
                     })}
                 >
-                    Initialize it to continue.
+                    Click here to initialize the pool
                 </Link>
             </span>
         </div>
@@ -233,7 +242,7 @@ function TokenInputQuantity(props: propsIF) {
         <button
             className={`${styles.tokenSelectButton} ${
                 noModals ? styles.justDisplay : ''
-            }`}
+            } ${showPulseAnimation && styles.pulseAnimation}`}
             id={fieldId ? `${fieldId}_token_selector` : undefined}
             onClick={noModals ? undefined : openTokenSelect}
             tabIndex={0}
@@ -290,15 +299,20 @@ function TokenInputQuantity(props: propsIF) {
             <div className={styles.futaLayoutRight}>
                 <button
                     className={styles.tokenButton}
-                    style={{ cursor: 'default' }}
+                    style={{
+                        cursor: 'default',
+                        justifyContent: isFuta ? 'center' : 'space-between',
+                    }}
                     onClick={() => setIsTickerModalOpen(true)}
                 >
-                    <TokenIcon
-                        token={token}
-                        src={uriToHttp(token.logoURI)}
-                        alt={token.symbol}
-                        size='xl'
-                    />
+                    {!isFuta && (
+                        <TokenIcon
+                            token={token}
+                            src={uriToHttp(token.logoURI)}
+                            alt={token.symbol}
+                            size='xl'
+                        />
+                    )}
                     {tokenSymbol}
                 </button>
                 <button
@@ -344,9 +358,7 @@ function TokenInputQuantity(props: propsIF) {
         >
             {label && <span className={styles.text}>{label}</span>}
             <div
-                className={`${styles.tokenQuantityContainer} ${
-                    showPulseAnimation && styles.pulseAnimation
-                }`}
+                className={styles.tokenQuantityContainer}
                 style={{ marginBottom: !includeWallet ? '8px' : '0' }}
             >
                 {inputDisplay}

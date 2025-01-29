@@ -1,20 +1,17 @@
-// START: Import React and Dongles
 import { memo, useContext, useEffect, useState } from 'react';
 
-// START: Import JSX Functional Components
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from './SelectedRange/SelectedRange';
 
-// START: Import Local Files
-import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import {
-    uriToHttp,
     getUnicodeCharacter,
+    uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
-import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
 import { FeeTierDisplay } from '../../../../styled/Components/TradeModules';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 
 interface propsIF {
     sendTransaction: () => Promise<void>;

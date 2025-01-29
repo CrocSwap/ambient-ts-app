@@ -1,4 +1,3 @@
-// import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import {
     Dispatch,
     SetStateAction,
@@ -9,25 +8,16 @@ import {
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
 import { trimString } from '../../../../ambient-utils/dataLayer';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
-import {
-    TokenBalanceContext,
-    TokenBalanceContextIF,
-} from '../../../../contexts/TokenBalanceContext';
-import {
-    UserDataContext,
-    UserDataContextIF,
-} from '../../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 import styles from './PortfolioBannerAccount.module.css';
 
+import { useNavigate } from 'react-router-dom';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
-import { useNavigate } from 'react-router-dom';
 
 interface propsIF {
     ensName: string;
@@ -70,14 +60,14 @@ export default function PortfolioBannerAccount(props: propsIF) {
         isUserConnected,
         disconnectUser,
         resolvedAddressFromContext,
-    } = useContext<UserDataContextIF>(UserDataContext);
+    } = useContext(UserDataContext);
 
-    const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
+    const { NFTData } = useContext(TokenBalanceContext);
 
     const {
         activeNetwork: { blockExplorer },
         snackbar: { open: openSnackbar },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
 
     const navigate = useNavigate();
 

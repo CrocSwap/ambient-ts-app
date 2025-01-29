@@ -1,44 +1,39 @@
 /* eslint-disable no-irregular-whitespace */
-import { useContext, useRef, memo, useMemo, useState, useEffect } from 'react';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import OrderHeader from './OrderTable/OrderHeader';
-import { useSortedLimits } from '../useSortedLimits';
+import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { LimitOrderIF } from '../../../../ambient-utils/types';
-import NoTableData from '../NoTableData/NoTableData';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import NoTableData from '../NoTableData/NoTableData';
+import { useSortedLimits } from '../useSortedLimits';
+import OrderHeader from './OrderTable/OrderHeader';
 
-import Spinner from '../../../Global/Spinner/Spinner';
-import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
-import { OrderRow as OrderRowStyled } from '../../../../styled/Components/TransactionTable';
-import { FlexContainer } from '../../../../styled/Common';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLimitOrders';
+import { AppStateContext } from '../../../../contexts';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import {
     GraphDataContext,
     LimitOrdersByPool,
 } from '../../../../contexts/GraphDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import TableRows from '../TableRows';
-import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLimitOrders';
-import {
-    TokenContextIF,
-    TokenContext,
-} from '../../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { FlexContainer } from '../../../../styled/Common';
+import { OrderRow as OrderRowStyled } from '../../../../styled/Components/TransactionTable';
 import { PageDataCountIF } from '../../../Chat/ChatIFs';
-import { AppStateContext } from '../../../../contexts';
+import Spinner from '../../../Global/Spinner/Spinner';
+import TableRows from '../TableRows';
+import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
+import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
 
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
     connectedAccountActive?: boolean;
     isAccountView: boolean;
+    unselectCandle?: () => void;
 }
 
 function Orders(props: propsIF) {
@@ -46,16 +41,17 @@ function Orders(props: propsIF) {
         activeAccountLimitOrderData,
         connectedAccountActive,
         isAccountView,
+        unselectCandle,
     } = props;
     const { showAllData: showAllDataSelection } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
 
-    const { crocEnv, provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
-        activeNetwork: { chainId, poolIndex, graphCacheUrl },
+        activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
 
     const {
@@ -108,7 +104,7 @@ function Orders(props: propsIF) {
 
     const {
         tokens: { tokenUniv: tokenList },
-    } = useContext<TokenContextIF>(TokenContext);
+    } = useContext(TokenContext);
 
     const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
 
@@ -360,7 +356,7 @@ function Orders(props: propsIF) {
                     n: dataPerPage,
                     timeBefore: OLDEST_TIME,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -528,6 +524,7 @@ function Orders(props: propsIF) {
 
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>
+            !tx.isRemoved &&
             unindexedNonFailedSessionLimitOrderUpdates.some(
                 (update) => update.txHash === tx.txHash,
             ) &&
@@ -765,6 +762,7 @@ function Orders(props: propsIF) {
             isAccountView={isAccountView}
             activeUserPositionsLength={activeUserLimitOrdersLength}
             activeUserPositionsByPoolLength={activeUserLimitOrdersByPool.length}
+            unselectCandle={unselectCandle}
         />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder} style={{ height: '100%' }}>

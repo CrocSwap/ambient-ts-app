@@ -7,8 +7,14 @@ import {
     useState,
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
+import {
+    getDefaultPairForChain,
+    ZERO_ADDRESS,
+} from '../../../../ambient-utils/constants';
 import { PoolIF, TokenIF } from '../../../../ambient-utils/types';
+import { AppStateContext } from '../../../../contexts';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import Toggle from '../../../Form/Toggle';
@@ -27,12 +33,6 @@ import {
 } from '../../ChatUtils';
 import useChatApi from '../../Service/ChatApi';
 import styles from './Room.module.css';
-import {
-    getDefaultPairForChain,
-    ZERO_ADDRESS,
-} from '../../../../ambient-utils/constants';
-import { TokenContext } from '../../../../contexts/TokenContext';
-import { AppStateContext } from '../../../../contexts';
 
 interface propsIF {
     selectedRoom: string;
@@ -256,8 +256,12 @@ export default function Room(props: propsIF) {
             const foundBase =
                 room.base === 'ETH'
                     ? [tokens.getTokenByAddress(ZERO_ADDRESS) || dfltTokenA]
-                    : tokens.getTokensByNameOrSymbol(room.base, true);
-            const foundQuote = tokens.getTokensByNameOrSymbol(room.quote, true);
+                    : tokens.getTokensByNameOrSymbol(room.base, chainId, true);
+            const foundQuote = tokens.getTokensByNameOrSymbol(
+                room.quote,
+                chainId,
+                true,
+            );
 
             if (foundBase.length > 0 && foundQuote.length > 0) {
                 const base = foundBase[0];

@@ -1,21 +1,20 @@
 import { Dispatch, memo, SetStateAction } from 'react';
-import PoolRow from '../PoolRow/PoolRow';
+import checkPoolForWETH from '../../../../App/functions/checkPoolForWETH';
+import { PoolIF } from '../../../../ambient-utils/types';
 import { PoolDataIF } from '../../../../contexts/ExploreContext';
+import useIsPWA from '../../../../utils/hooks/useIsPWA';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import TooltipComponent from '../../TooltipComponent/TooltipComponent';
+import AssignSort from '../AssignSort';
+import ExploreToggle from '../ExploreToggle/ExploreToggle';
+import PoolRow from '../PoolRow/PoolRow';
+import PoolRowSkeleton from '../PoolRow/PoolRowSkeleton';
 import {
     SortedPoolMethodsIF,
     sortType,
     useSortedPools,
 } from '../useSortedPools';
-import checkPoolForWETH from '../../../../App/functions/checkPoolForWETH';
-import { PoolIF } from '../../../../ambient-utils/types';
-// import Spinner from '../../Spinner/Spinner';
 import styles from './TopPools.module.css';
-import AssignSort from '../AssignSort';
-import TooltipComponent from '../../TooltipComponent/TooltipComponent';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import ExploreToggle from '../ExploreToggle/ExploreToggle';
-import useIsPWA from '../../../../utils/hooks/useIsPWA';
-import PoolRowSkeleton from '../PoolRow/PoolRowSkeleton';
 
 export type HeaderItem = {
     label: string;

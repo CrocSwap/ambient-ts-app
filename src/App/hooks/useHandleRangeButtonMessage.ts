@@ -1,8 +1,9 @@
-import { MutableRefObject, useContext, useMemo } from 'react';
-import { TokenIF } from '../../ambient-utils/types';
-import { ZERO_ADDRESS } from '../../ambient-utils/constants';
-import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
+import { MutableRefObject, useContext, useMemo } from 'react';
+import { ZERO_ADDRESS } from '../../ambient-utils/constants';
+import { TokenIF } from '../../ambient-utils/types';
+import { AppStateContext } from '../../contexts';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
 
 export function useHandleRangeButtonMessage(
     token: TokenIF,
@@ -21,13 +22,16 @@ export function useHandleRangeButtonMessage(
 ) {
     const { pendingTransactions } = useContext(ReceiptContext);
 
+    const { isUserOnline } = useContext(AppStateContext);
+
     const { tokenAllowed, rangeButtonErrorMessage } = useMemo(() => {
         let tokenAllowed = false;
         let rangeButtonErrorMessage = '';
 
         const isNativeToken = token.address === ZERO_ADDRESS;
-
-        if (!isPoolInitialized) {
+        if (!isUserOnline) {
+            rangeButtonErrorMessage = 'Currently Offline';
+        } else if (!isPoolInitialized) {
             rangeButtonErrorMessage = 'Pool Not Initialized';
         } else if (
             isInitPage &&
@@ -108,6 +112,7 @@ export function useHandleRangeButtonMessage(
             rangeButtonErrorMessage,
         };
     }, [
+        isUserOnline,
         isMintLiqEnabled,
         tokenAmount,
         tokenQtyCoveredByWalletBalance,

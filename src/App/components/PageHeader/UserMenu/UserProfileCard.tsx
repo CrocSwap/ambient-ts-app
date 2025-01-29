@@ -3,10 +3,10 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { getAvatarComponent } from '../../../../components/Chat/ChatRenderUtils';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import styles from './UserProfileCard.module.css';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface propsIF {
     ensName: string;
@@ -25,7 +25,7 @@ export default function UserProfileCard(props: propsIF) {
         accountAddressFull,
         isMobileDropdown,
     } = props;
-    const { activeNetwork } = useContext(AppStateContext);
+    const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { userAddress, resolvedAddressFromContext, userAvatarData } =
         useContext(UserDataContext);
     const link = resolvedAddressFromContext
@@ -37,7 +37,8 @@ export default function UserProfileCard(props: propsIF) {
             className={`${styles.nameDisplayContainer} ${isMobileDropdown && styles.mobileDropdown}`}
         >
             <Link to={link}>
-                {userAddress &&
+                {isUserOnline &&
+                    userAddress &&
                     userAvatarData &&
                     getAvatarComponent(userAddress, userAvatarData, 50)}
             </Link>

@@ -1,8 +1,8 @@
-import styles from './TimeFrame.module.css';
-import { useRef, memo, useContext } from 'react';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { memo, useContext, useRef } from 'react';
 import { candleTimeIF } from '../../../../../App/hooks/useChartSettings';
 import { BrandContext } from '../../../../../contexts/BrandContext';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import styles from './TimeFrame.module.css';
 
 interface propsIF {
     candleTime: candleTimeIF;

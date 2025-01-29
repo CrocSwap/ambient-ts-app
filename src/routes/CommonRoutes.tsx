@@ -1,12 +1,12 @@
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import Accessibility from '../pages/common/Accessibility/Accessibility';
-import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
-import PrivacyPolicy from '../pages/common/PrivacyPolicy/PrivacyPolicy';
 import FAQPoints from '../pages/common/FAQ/FAQPoints';
 import NotFound from '../pages/common/NotFound/NotFound';
+import PrivacyPolicy from '../pages/common/PrivacyPolicy/PrivacyPolicy';
+import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
 import TestPage from '../pages/common/TestPage/TestPage';
-import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 
 const CommonRoutes: React.FC = () => (
     <Routes>

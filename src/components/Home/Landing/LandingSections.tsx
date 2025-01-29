@@ -1,19 +1,19 @@
+import bg2 from '../../../assets/images/home/home2.png';
+import bg3 from '../../../assets/images/home/home3.png';
+import bg4 from '../../../assets/images/home/home4.png';
 import liquidityImage from '../../../assets/images/home/liquidity.png';
 import orderImage from '../../../assets/images/home/orders.png';
-import Investors from './Investors';
-import Footer from '../../Footer/Footer';
-import TradeNowButton from './TradeNowButton/TradeNowButton';
-import bg1 from '../../../assets/images/home/home2.png';
-import bg2 from '../../../assets/images/home/home3.png';
-import bg3 from '../../../assets/images/home/home4.png';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import {
-    SlideContainer,
-    RowContainer,
-    FasterSection,
-    BGImage,
-} from '../../../styled/Components/Home';
 import { Text } from '../../../styled/Common';
+import {
+    BGImage,
+    FasterSection,
+    RowContainer,
+    SlideContainer,
+} from '../../../styled/Components/Home';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import Footer from '../../Footer/Footer';
+import Investors from './Investors';
+import TradeNowButton from './TradeNowButton/TradeNowButton';
 
 export default function LandingSections() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
@@ -73,6 +73,7 @@ export default function LandingSections() {
                     alt='concentrated and ambient liquidity'
                     width='331px'
                     height='420px'
+                    loading='lazy'
                 />
                 <FasterSection
                     flexDirection='column'
@@ -149,6 +150,7 @@ export default function LandingSections() {
                     alt='range and limit orders'
                     width='240px'
                     height='420px'
+                    loading='lazy'
                 />
             </RowContainer>
         </SlideContainer>
@@ -192,9 +194,27 @@ export default function LandingSections() {
 
     return (
         <div style={{ position: 'relative' }}>
-            <BGImage src={bg1} alt='bg1' height={600} top={100} />
-            <BGImage src={bg2} alt='bg2' height={500} top={870} />
-            <BGImage src={bg3} alt='bg3' height={600} top={1750} />
+            <BGImage
+                src={bg2}
+                alt='bg1'
+                height={600}
+                top={100}
+                loading='lazy'
+            />
+            <BGImage
+                src={bg3}
+                alt='bg2'
+                height={500}
+                top={870}
+                loading='lazy'
+            />
+            <BGImage
+                src={bg4}
+                alt='bg3'
+                height={600}
+                top={1750}
+                loading='lazy'
+            />
             {secondRow}
             {thirdRow}
             {fourthRow}

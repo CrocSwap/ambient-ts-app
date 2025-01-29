@@ -1,5 +1,4 @@
-import { TokenIF } from '../../../../ambient-utils/types';
-import { toDisplayQty } from '@crocswap-libs/sdk';
+import { fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
 import {
     Dispatch,
     SetStateAction,
@@ -8,43 +7,41 @@ import {
     useMemo,
     useState,
 } from 'react';
+import { TokenIF } from '../../../../ambient-utils/types';
 
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../../utils/TransactionError';
+import { FaGasPump } from 'react-icons/fa';
 import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
-    IS_LOCAL_ENV,
-    NUM_WEI_IN_GWEI,
-    DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
     DEPOSIT_BUFFER_MULTIPLIER_L2,
-    ZERO_ADDRESS,
+    DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
     NUM_GWEI_IN_ETH,
+    NUM_WEI_IN_GWEI,
+    ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
-import { FaGasPump } from 'react-icons/fa';
+import {
+    GAS_DROPS_ESTIMATE_DEPOSIT_ERC20,
+    GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
+    NUM_GWEI_IN_WEI,
+} from '../../../../ambient-utils/constants/';
+import {
+    getFormattedNumber,
+    waitForTransaction,
+} from '../../../../ambient-utils/dataLayer';
+import { useApprove } from '../../../../App/functions/approve';
 import useDebounce from '../../../../App/hooks/useDebounce';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../../contexts';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
+import {
+    MaxButton,
+    SVGContainer,
+} from '../../../../styled/Components/Portfolio';
 import Button from '../../../Form/Button';
 import CurrencySelector from '../../../Form/CurrencySelector';
-import {
-    SVGContainer,
-    MaxButton,
-} from '../../../../styled/Components/Portfolio';
-import { useApprove } from '../../../../App/functions/approve';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import {
-    NUM_GWEI_IN_WEI,
-    GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
-    GAS_DROPS_ESTIMATE_DEPOSIT_ERC20,
-} from '../../../../ambient-utils/constants/';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -66,14 +63,14 @@ export default function Deposit(props: propsIF) {
         selectedTokenDecimals,
         setTokenModalOpen = () => null,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
     const {
-        gasPriceInGwei,
-        isActiveNetworkL2,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-        isActiveNetworkPlume,
-    } = useContext(ChainDataContext);
+        isUserOnline,
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+    const { gasPriceInGwei, isActiveNetworkL2, isActiveNetworkPlume } =
+        useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -92,9 +89,7 @@ export default function Deposit(props: propsIF) {
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
-    const [extraL1GasFeeDeposit] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeeDeposit] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
         string | undefined
@@ -201,7 +196,10 @@ export default function Deposit(props: propsIF) {
     const [isDepositPending, setIsDepositPending] = useState(false);
 
     useEffect(() => {
-        if (isDepositPending) {
+        if (!isUserOnline) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Currently Offline');
+        } else if (isDepositPending) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Deposit Pending`);
@@ -241,6 +239,7 @@ export default function Deposit(props: propsIF) {
             setButtonMessage('Deposit');
         }
     }, [
+        isUserOnline,
         depositQtyNonDisplay,
         isApprovalPending,
         isDepositPending,
@@ -272,44 +271,32 @@ export default function Deposit(props: propsIF) {
                 addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        chainId: chainId,
                         userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Deposit',
                         txDescription: `Deposit ${selectedToken.symbol}`,
                     });
 
-                let receipt;
-
-                try {
-                    if (tx) receipt = await tx.wait();
-                } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && 'repriced';
-                        removePendingTx(error.hash);
-
-                        const newTransactionHash = error.replacement.hash;
-                        addPendingTx(newTransactionHash);
-
-                        updateTransactionHash(
-                            error.hash,
-                            error.replacement.hash,
+                if (tx) {
+                    let receipt;
+                    try {
+                        receipt = await waitForTransaction(
+                            provider,
+                            tx.hash,
+                            removePendingTx,
+                            addPendingTx,
+                            updateTransactionHash,
                         );
-                        IS_LOCAL_ENV && { newTransactionHash };
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
-                        console.error({ error });
-                        receipt = error.receipt;
+                    } catch (e) {
+                        console.error({ e });
                     }
-                }
 
-                if (receipt) {
-                    addReceipt(JSON.stringify(receipt));
-                    removePendingTx(receipt.hash);
-                    resetDepositQty();
+                    if (receipt) {
+                        addReceipt(receipt);
+                        removePendingTx(receipt.hash);
+                        resetDepositQty();
+                    }
                 }
             } catch (error) {
                 if (
@@ -337,7 +324,14 @@ export default function Deposit(props: propsIF) {
             selectedToken.address,
             selectedToken.symbol,
             setRecheckTokenAllowance,
-            isActiveNetworkPlume ? BigInt(depositQtyNonDisplay) : undefined,
+            isActiveNetworkPlume
+                ? BigInt(depositQtyNonDisplay)
+                : tokenWalletBalanceDisplay
+                  ? fromDisplayQty(
+                        tokenWalletBalanceDisplay,
+                        selectedToken.decimals,
+                    )
+                  : undefined,
         );
     };
 
@@ -426,7 +420,6 @@ export default function Deposit(props: propsIF) {
                     </FlexContainer>
                 }
             </FlexContainer>
-            <SmolRefuelLink />
             <Button
                 idForDOM='deposit_tokens_button'
                 title={buttonMessage}

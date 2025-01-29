@@ -1,37 +1,36 @@
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
-import styles from '../../TransactionDetailsModal.module.css';
-import PriceInfo from '../PriceInfo/PriceInfo';
-import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    IS_LOCAL_ENV,
+} from '../../../../../ambient-utils/constants';
+import {
+    getFormattedNumber,
+    getLimitOrderData,
+    printDomToImage,
+} from '../../../../../ambient-utils/dataLayer';
 import {
     LimitOrderIF,
     LimitOrderServerIF,
 } from '../../../../../ambient-utils/types';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
-import TransactionDetailsGraph from '../../TransactionDetailsGraph/TransactionDetailsGraph';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    GCGO_OVERRIDE_URL,
-    IS_LOCAL_ENV,
-} from '../../../../../ambient-utils/constants';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import {
-    getLimitOrderData,
-    getFormattedNumber,
-    printDomToImage,
-} from '../../../../../ambient-utils/dataLayer';
-import { TokenContext } from '../../../../../contexts/TokenContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import modalBackground from '../../../../../assets/images/backgrounds/background.png';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-import Modal from '../../../../Global/Modal/Modal';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../../../contexts/TokenContext';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
-import DetailsHeader from '../../DetailsHeader/DetailsHeader';
-import ModalHeader from '../../../ModalHeader/ModalHeader';
-import MobileDetailTabs from '../../MobileDetailTabs/MobileDetailTabs';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
+import Modal from '../../../../Global/Modal/Modal';
+import ModalHeader from '../../../ModalHeader/ModalHeader';
+import DetailsHeader from '../../DetailsHeader/DetailsHeader';
+import MobileDetailTabs from '../../MobileDetailTabs/MobileDetailTabs';
+import TransactionDetailsGraph from '../../TransactionDetailsGraph/TransactionDetailsGraph';
+import styles from '../../TransactionDetailsModal.module.css';
+import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
+import PriceInfo from '../PriceInfo/PriceInfo';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -86,6 +85,8 @@ export default function OrderDetailsModal(props: propsIF) {
         originalPositionLiqQuote,
         expectedPositionLiqBase,
         expectedPositionLiqQuote,
+        middlePriceDisplay,
+        middlePriceDisplayDenomByMoneyness,
     } = useProcessOrder(limitOrder, crocEnv, userAddress);
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
@@ -118,9 +119,8 @@ export default function OrderDetailsModal(props: propsIF) {
     const isFillStarted = isLimitOrderPartiallyFilled || isOrderFilled;
 
     useEffect(() => {
-        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
-            ? GCGO_OVERRIDE_URL + '/limit_stats?'
-            : activeNetwork.graphCacheUrl + '/limit_stats?';
+        const positionStatsCacheEndpoint =
+            activeNetwork.GCGO_URL + '/limit_stats?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
         if (positionType && crocEnv && provider) {
@@ -177,8 +177,6 @@ export default function OrderDetailsModal(props: propsIF) {
                         value: claimableBaseNum,
                         removeExtraTrailingZeros: true,
                     });
-
-                    console.log({ claimableBaseDisplay, liqBaseDisplay });
 
                     isOrderFilled
                         ? setBaseCollateralDisplay(
@@ -312,6 +310,8 @@ export default function OrderDetailsModal(props: propsIF) {
         transactionType: 'limitOrder',
         isBaseTokenMoneynessGreaterOrEqual: isBaseTokenMoneynessGreaterOrEqual,
         isAccountView: isAccountView,
+        middlePriceDisplay: middlePriceDisplay,
+        middlePriceDisplayDenomByMoneyness: middlePriceDisplayDenomByMoneyness,
     };
 
     const shareComponent = (
@@ -324,7 +324,6 @@ export default function OrderDetailsModal(props: propsIF) {
                     <TransactionDetailsGraph {...GraphProps} />
                 </div>
             </div>
-            <p className={styles.ambi_copyright}>ambient.finance</p>
         </div>
     );
 

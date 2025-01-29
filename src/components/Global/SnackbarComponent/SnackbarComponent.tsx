@@ -1,4 +1,6 @@
-// START: Import React and Dongles
+import { Snackbar } from '@material-ui/core';
+import { Alert, AlertProps } from '@mui/material';
+import { motion } from 'framer-motion';
 import {
     forwardRef,
     memo,
@@ -7,14 +9,13 @@ import {
     useEffect,
     useRef,
 } from 'react';
-import { Snackbar } from '@material-ui/core';
-import { Alert, AlertProps } from '@mui/material';
-import { motion } from 'framer-motion';
+import { IoMdClose } from 'react-icons/io';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { IoMdClose } from 'react-icons/io';
-import styles from './SnackbarComponent.module.css';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import styles from './SnackbarComponent.module.css';
+
+const duration = 8000;
 
 const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
     function SnackbarAlert(props, ref) {
@@ -59,7 +60,7 @@ function SnackbarComponent() {
         if (isSnackbarOpen && isSmallScreen) {
             timeoutId = setTimeout(() => {
                 handleClose();
-            }, 8000);
+            }, duration);
         }
 
         return () => {
@@ -89,7 +90,7 @@ function SnackbarComponent() {
         <motion.div>
             <Snackbar
                 open={isSnackbarOpen}
-                autoHideDuration={8000}
+                autoHideDuration={duration}
                 onClose={handleClose}
                 anchorOrigin={anchorOrigin}
                 // z-index needs to be greater than globalPopup

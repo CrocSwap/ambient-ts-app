@@ -1,41 +1,41 @@
+import * as d3 from 'd3';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import {
-    FloatingButtonDiv,
-    FloatingOptions,
-    Divider,
-    FloatingDivContainer,
-    FloatingDiv,
-    OptionsTab,
-    OptionsTabSize,
-    OptionsTabStyle,
-    ColorPickerTab,
-    FloatingDropdownOptions,
-} from './FloatingToolbarCss';
+import { SketchPicker } from 'react-color';
+import { AiOutlineDelete } from 'react-icons/ai';
+import { BsGear } from 'react-icons/bs';
+import { CgColorBucket } from 'react-icons/cg';
+import { IoMdColorFilter } from 'react-icons/io';
+import { IoCloseOutline } from 'react-icons/io5';
+import { TbLayoutGridAdd } from 'react-icons/tb';
+import { useDrawSettings } from '../../../../../App/hooks/useDrawSettings';
+import useKeyPress from '../../../../../App/hooks/useKeyPress';
 import dragButton from '../../../../../assets/images/icons/draw/floating_button.svg';
+import dashOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/dash.svg';
+import dottedOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/dotted.svg';
+import lineOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/line.svg';
+import {
+    ChartContext,
+    ChartThemeIF,
+} from '../../../../../contexts/ChartContext';
 import {
     drawDataHistory,
     saveShapeAttiributesToLocalStorage,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
-import * as d3 from 'd3';
 import {
-    ChartContext,
-    ChartThemeIF,
-} from '../../../../../contexts/ChartContext';
-import { AiOutlineDelete } from 'react-icons/ai';
-import { TbLayoutGridAdd } from 'react-icons/tb';
-import { SketchPicker } from 'react-color';
-import { IoCloseOutline } from 'react-icons/io5';
-import useKeyPress from '../../../../../App/hooks/useKeyPress';
-import { IoMdColorFilter } from 'react-icons/io';
-import { CgColorBucket } from 'react-icons/cg';
-import { BsGear } from 'react-icons/bs';
+    ColorPickerTab,
+    Divider,
+    FloatingButtonDiv,
+    FloatingDiv,
+    FloatingDivContainer,
+    FloatingDropdownOptions,
+    FloatingOptions,
+    OptionsTab,
+    OptionsTabSize,
+    OptionsTabStyle,
+} from './FloatingToolbarCss';
 import FloatingToolbarSettings from './FloatingToolbarSettings';
-import lineOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/line.svg';
-import dashOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/dash.svg';
-import dottedOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/dotted.svg';
 import { LineWidthOptions } from './FloatingToolbarSettingsCss';
-import { useDrawSettings } from '../../../../../App/hooks/useDrawSettings';
 
 interface FloatingToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,12 +1,25 @@
-import React, { MouseEvent, useEffect, useState } from 'react';
 import * as d3 from 'd3';
+import React, { MouseEvent, useEffect, useState } from 'react';
+import { SketchPicker } from 'react-color';
+import dashOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/dash.svg';
+import dottedOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/dotted.svg';
+import lineOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/line.svg';
+import Divider from '../../../../../components/Global/Divider/Divider';
 import {
     drawDataHistory,
     renderChart,
     saveShapeAttiributesToLocalStorage,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
+import { fibDefaultLevels } from '../../ChartUtils/drawConstants';
 import {
+    OptionsTab,
+    OptionsTabSize,
+    OptionsTabStyle,
+} from './FloatingToolbarCss';
+import {
+    AlphaSlider,
+    CheckboxContainer,
     ColorPickerTab,
     DropDownContainer,
     DropDownHeader,
@@ -16,38 +29,25 @@ import {
     FibLineOptions,
     FibLineSettings,
     FloatingToolbarSettingsContainer,
+    Icon,
     InfoLabel,
+    LabelSettingsArrow,
+    LabelSettingsContainer,
     LevelTitle,
     LineContainer,
     LineSettings,
     LineSettingsLeft,
     LineSettingsRight,
+    LineWidthOptions,
+    LineWidthOptionsCont,
+    ListItem,
     OptionColor,
     OptionColorContainer,
     OptionStyleContainer,
-    StyledLabel,
-    ListItem,
-    CheckboxContainer,
-    StyledCheckbox,
-    Icon,
-    LineWidthOptions,
-    LabelSettingsContainer,
-    LabelSettingsArrow,
     SliderContainer,
-    AlphaSlider,
-    LineWidthOptionsCont,
+    StyledCheckbox,
+    StyledLabel,
 } from './FloatingToolbarSettingsCss';
-import { SketchPicker } from 'react-color';
-import {
-    OptionsTab,
-    OptionsTabSize,
-    OptionsTabStyle,
-} from './FloatingToolbarCss';
-import Divider from '../../../../../components/Global/Divider/Divider';
-import lineOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/line.svg';
-import dashOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/dash.svg';
-import dottedOptionSvg from '../../../../../assets/images/icons/draw/lineOptions/dotted.svg';
-import { fibDefaultLevels } from '../../ChartUtils/drawConstants';
 
 interface FloatingToolbarSettingsProps {
     selectedDrawnShape: selectedDrawnData | undefined;

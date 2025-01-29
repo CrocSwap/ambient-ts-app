@@ -1,4 +1,14 @@
-import { useContext, useEffect, useRef, useState, useMemo } from 'react';
+import * as d3 from 'd3';
+import * as d3fc from 'd3fc';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../ambient-utils/dataLayer';
+import { CandleDataIF } from '../../../../ambient-utils/types';
+import { ChartContext, ChartThemeIF } from '../../../../contexts/ChartContext';
+import { defaultCandleBandwith } from '../ChartUtils/chartConstants';
 import {
     CandleDataChart,
     chartItemStates,
@@ -6,16 +16,6 @@ import {
     scaleData,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
-import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
-import {
-    diffHashSigScaleData,
-    diffHashSig,
-} from '../../../../ambient-utils/dataLayer';
-import * as d3 from 'd3';
-import * as d3fc from 'd3fc';
-import { CandleDataIF } from '../../../../ambient-utils/types';
-import { ChartContext, ChartThemeIF } from '../../../../contexts/ChartContext';
-import { defaultCandleBandwith } from '../ChartUtils/chartConstants';
 
 interface candlePropsIF {
     chartItemStates: chartItemStates;
@@ -56,11 +56,6 @@ export default function CandleChart(props: candlePropsIF) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [candlestick, setCandlestick] = useState<any>();
-    const selectedCandleColor = '#E480FF';
-    const crocCandleLightColor = '#CDC1FF';
-    const crocCandleBorderLightColor = '#CDC1FF';
-    const crocCandleDarkColor = '#24243e';
-    const crocCandleBorderDarkColor = '#7371FC';
 
     const bandwidth = useMemo(() => {
         if (candlestick) {
@@ -94,16 +89,28 @@ export default function CandleChart(props: candlePropsIF) {
                 setPrevLastCandleTime(lastCandleData.time - period);
 
                 if (count > 0) {
-                    const diff = scaleData.xScale(domainLeft + count * period * 1000) - scaleData.xScale(domainLeft);
+                    const diff =
+                        scaleData.xScale(domainLeft + count * period * 1000) -
+                        scaleData.xScale(domainLeft);
 
                     scaleData?.xScale.domain([
-                        scaleData.xScale.invert(scaleData.xScale(domainLeft) + diff),
-                        scaleData.xScale.invert(scaleData.xScale(domainRight) + diff),
+                        scaleData.xScale.invert(
+                            scaleData.xScale(domainLeft) + diff,
+                        ),
+                        scaleData.xScale.invert(
+                            scaleData.xScale(domainRight) + diff,
+                        ),
                     ]);
 
                     scaleData?.drawingLinearxScale.domain([
-                        scaleData.drawingLinearxScale.invert(scaleData.drawingLinearxScale(drawDomainLeft) + diff),
-                        scaleData.drawingLinearxScale.invert(scaleData.drawingLinearxScale(drawDomainRight) + diff),
+                        scaleData.drawingLinearxScale.invert(
+                            scaleData.drawingLinearxScale(drawDomainLeft) +
+                                diff,
+                        ),
+                        scaleData.drawingLinearxScale.invert(
+                            scaleData.drawingLinearxScale(drawDomainRight) +
+                                diff,
+                        ),
                     ]);
                 }
             }
@@ -164,36 +171,23 @@ export default function CandleChart(props: candlePropsIF) {
 
                     const crocColor =
                         close > open
-                            ? chartThemeColors.upCandleBodyColor
-                                ? chartThemeColors.upCandleBodyColor.toString()
-                                : crocCandleLightColor
-                            : chartThemeColors.downCandleBodyColor
-                              ? chartThemeColors.downCandleBodyColor.toString()
-                              : crocCandleDarkColor;
-
+                            ? chartThemeColors.upCandleBodyColor.toString()
+                            : chartThemeColors.downCandleBodyColor.toString();
                     const crocBorderColor =
                         close > open
-                            ? chartThemeColors.upCandleBorderColor
-                                ? chartThemeColors.upCandleBorderColor.toString()
-                                : crocCandleBorderLightColor
-                            : chartThemeColors.downCandleBorderColor
-                              ? chartThemeColors.downCandleBorderColor.toString()
-                              : crocCandleBorderDarkColor;
+                            ? chartThemeColors.upCandleBorderColor.toString()
+                            : chartThemeColors.downCandleBorderColor.toString();
 
                     context.fillStyle =
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
-                            ? chartThemeColors.selectedDateFillColor
-                                ? chartThemeColors.selectedDateFillColor.toString()
-                                : selectedCandleColor
+                            ? chartThemeColors.selectedDateFillColor.toString()
                             : crocColor;
 
                     context.strokeStyle =
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
-                            ? chartThemeColors.selectedDateFillColor
-                                ? chartThemeColors.selectedDateFillColor.toString()
-                                : selectedCandleColor
+                            ? chartThemeColors.selectedDateFillColor.toString()
                             : crocBorderColor;
 
                     if (d.time * 1000 > visibleDateForCandle) {

@@ -1,20 +1,24 @@
 import { memo, useContext } from 'react';
 import { AiOutlineShareAlt } from 'react-icons/ai';
+import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import ShareModal from '../../Global/ShareModal/ShareModal';
 import TransactionSettingsModal, {
     TransactionModuleType,
 } from '../../Global/TransactionSettingsModal/TransactionSettingsModal';
-import ShareModal from '../../Global/ShareModal/ShareModal';
-import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
-import { useModal } from '../../Global/Modal/useModal';
-import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { LuSettings, LuSettings2 } from 'react-icons/lu';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
+import { AppStateContext } from '../../../contexts';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useModal } from '../../Global/Modal/useModal';
 import TradeLinks from './TradeLinks';
 import styles from './TradeModuleHeader.module.css';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { IoSettingsOutline } from 'react-icons/io5';
+import { brand } from '../../../ambient-utils/constants';
 interface propsIF {
     slippage: SlippageMethodsIF;
     dexBalSwap?: dexBalanceMethodsIF;
@@ -22,8 +26,6 @@ interface propsIF {
     settingsTitle: TransactionModuleType;
     isSwapPage?: boolean;
 }
-import { LuSettings, LuSettings2 } from 'react-icons/lu';
-import { AppStateContext } from '../../../contexts';
 
 function TradeModuleHeader(props: propsIF) {
     const { slippage, dexBalSwap, bypassConfirm, settingsTitle, isSwapPage } =
@@ -35,6 +37,8 @@ function TradeModuleHeader(props: propsIF) {
     const [isShareModalOpen, openShareModal, closeShareModal] = useModal();
 
     const smallScreen = useMediaQuery('(max-width: 768px)');
+
+    const isFuta = brand === 'futa';
 
     const {
         baseToken,
@@ -97,13 +101,17 @@ function TradeModuleHeader(props: propsIF) {
         <>
             <div style={{ paddingBottom: isSwapPage ? '16px' : '' }}>
                 <header className={styles.main_container}>
-                    <AiOutlineShareAlt
-                        onClick={openShareModal}
-                        id='share_button'
-                        role='button'
-                        tabIndex={0}
-                        aria-label='Share button'
-                    />
+                    {isFuta ? (
+                        <span />
+                    ) : (
+                        <AiOutlineShareAlt
+                            onClick={openShareModal}
+                            id='share_button'
+                            role='button'
+                            tabIndex={0}
+                            aria-label='Share button'
+                        />
+                    )}
 
                     {isSwapPage ? (
                         <h4
@@ -123,6 +131,7 @@ function TradeModuleHeader(props: propsIF) {
                             {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
                         </h4>
                     )}
+
                     <IconWithTooltip title='Settings' placement='left'>
                         <div
                             onClick={openSettingsModal}
@@ -130,8 +139,19 @@ function TradeModuleHeader(props: propsIF) {
                             role='button'
                             tabIndex={0}
                             aria-label='Settings button'
+                            className={
+                                isFuta ? styles.settings_button_futa : ''
+                            }
                         >
-                            {<SettingsSvg />}
+                            {isFuta ? (
+                                <IoSettingsOutline
+                                    size={18}
+                                    id='swap_settings_symbol'
+                                    aria-label='Chart settings button'
+                                />
+                            ) : (
+                                <SettingsSvg />
+                            )}
                         </div>
                     </IconWithTooltip>
                 </header>

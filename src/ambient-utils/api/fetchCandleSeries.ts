@@ -1,18 +1,18 @@
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { CACHE_UPDATE_FREQ_IN_MS, GCGO_OVERRIDE_URL } from '../constants';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../constants';
+import { SpotPriceFn } from '../dataLayer';
 import {
-    CandlesByPoolAndDurationIF,
     CandleDataIF,
     CandleDataServerIF,
+    CandlesByPoolAndDurationIF,
 } from '../types/candleData';
 import { TokenPriceFn } from './fetchTokenPrice';
-import { SpotPriceFn } from '../dataLayer';
 
 export async function fetchCandleSeriesHybrid(
     isFetchEnabled: boolean,
     chainId: string,
     poolIndex: number,
-    graphCacheUrl: string,
+    GCGO_URL: string,
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
@@ -21,13 +21,12 @@ export async function fetchCandleSeriesHybrid(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
-    signal?: AbortSignal,
 ): Promise<CandlesByPoolAndDurationIF | undefined> {
     const candles = await fetchCandleSeriesCroc(
         isFetchEnabled,
         chainId,
         poolIndex,
-        graphCacheUrl,
+        GCGO_URL,
         period,
         baseTokenAddress,
         quoteTokenAddress,
@@ -36,7 +35,6 @@ export async function fetchCandleSeriesHybrid(
         crocEnv,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
-        signal,
     );
 
     if (!candles) {
@@ -59,7 +57,7 @@ export async function fetchCandleSeriesCroc(
     isFetchEnabled: boolean,
     chainId: string,
     poolIndex: number,
-    graphCacheUrl: string,
+    GCGO_URL: string,
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
@@ -68,15 +66,12 @@ export async function fetchCandleSeriesCroc(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
-    signal?: AbortSignal,
 ): Promise<CandlesByPoolAndDurationIF | undefined> {
     if (!isFetchEnabled) {
         return undefined;
     }
 
-    const candleSeriesEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/pool_candles'
-        : graphCacheUrl + '/pool_candles';
+    const candleSeriesEndpoint = GCGO_URL + '/pool_candles';
 
     if (endTime == 0) {
         endTime = Math.floor(Date.now() / 1000);
@@ -95,7 +90,7 @@ export async function fetchCandleSeriesCroc(
         chainId: chainId,
     });
 
-    return fetch(candleSeriesEndpoint + '?' + reqOptions, { signal })
+    return fetch(candleSeriesEndpoint + '?' + reqOptions)
         .then((response) => response?.json())
         .then(async (json) => {
             if (!json?.data) {
@@ -103,11 +98,10 @@ export async function fetchCandleSeriesCroc(
             }
             const payload = json?.data as CandleDataServerIF[];
 
-            const candles = expandPoolStats(
+            const candles = expandPoolStatsCandle(
                 payload,
                 baseTokenAddress,
                 quoteTokenAddress,
-                poolIndex,
                 chainId,
                 crocEnv,
                 cachedFetchTokenPrice,
@@ -153,11 +147,10 @@ function capNumDurations(numDurations: number): number {
     return numDurations;
 }
 
-async function expandPoolStats(
+async function expandPoolStatsCandle(
     payload: CandleDataServerIF[],
     base: string,
     quote: string,
-    poolIdx: number,
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
@@ -166,13 +159,13 @@ async function expandPoolStats(
     const baseDecimals = await crocEnv.token(base).decimals;
     const quoteDecimals = await crocEnv.token(quote).decimals;
 
-    const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
-    const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
+    const basePricePromise = cachedFetchTokenPrice(base, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
 
     const baseUsdPrice = (await basePricePromise)?.usdPrice;
     const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
 
-    if ((await crocEnv.context).chain.chainId !== chainId) return [];
+    if ((await crocEnv.context).chain.chainId !== chainId) return []; // ! ben
 
     const spotPrice = await cachedQuerySpotPrice(
         crocEnv,
@@ -214,13 +207,18 @@ function decorateCandleData(
     const PRE_BURN_TIME = 1686176723; // Based on mainnet deployment
 
     return payload
-        .filter((p) => p.priceOpen > 0 && p.time > PRE_BURN_TIME)
+        .filter((p) => p.time > PRE_BURN_TIME)
         .map((p) => {
             const baseDecMult = 1 / Math.pow(10, baseDecimals);
             const quoteDecMult = 1 / Math.pow(10, quoteDecimals);
             const baseUsdMult = baseDecMult * basePrice;
             const quoteUsdMult = quoteDecMult * quotePrice;
             const priceDecMult = baseDecMult / quoteDecMult;
+
+            const openPrice = p.priceOpen;
+            const closePrice = p.priceClose;
+            const maxPrice = p.maxPrice;
+            const minPrice = p.minPrice;
 
             return {
                 time: p.time,
@@ -235,27 +233,26 @@ function decorateCandleData(
                         p.volumeQuote * quoteUsdMult) /
                     2.0,
                 averageLiquidityFee: (p.feeRateOpen + p.feeRateClose) / 2.0,
-                minPriceDecimalCorrected: p.minPrice * priceDecMult,
-                maxPriceDecimalCorrected: p.maxPrice * priceDecMult,
-                priceOpenDecimalCorrected: p.priceOpen * priceDecMult,
-                priceCloseDecimalCorrected: p.priceClose * priceDecMult,
-                invMinPriceDecimalCorrected: 1 / (p.minPrice * priceDecMult),
-                invMaxPriceDecimalCorrected: 1 / (p.maxPrice * priceDecMult),
-                invPriceOpenDecimalCorrected: 1 / (p.priceOpen * priceDecMult),
-                invPriceCloseDecimalCorrected:
-                    1 / (p.priceClose * priceDecMult),
-                minPriceExclMEVDecimalCorrected: p.minPrice * priceDecMult,
-                maxPriceExclMEVDecimalCorrected: p.maxPrice * priceDecMult,
-                priceOpenExclMEVDecimalCorrected: p.priceOpen * priceDecMult,
-                priceCloseExclMEVDecimalCorrected: p.priceClose * priceDecMult,
+                minPriceDecimalCorrected: minPrice * priceDecMult,
+                maxPriceDecimalCorrected: maxPrice * priceDecMult,
+                priceOpenDecimalCorrected: openPrice * priceDecMult,
+                priceCloseDecimalCorrected: closePrice * priceDecMult,
+                invMinPriceDecimalCorrected: 1 / (minPrice * priceDecMult),
+                invMaxPriceDecimalCorrected: 1 / (maxPrice * priceDecMult),
+                invPriceOpenDecimalCorrected: 1 / (openPrice * priceDecMult),
+                invPriceCloseDecimalCorrected: 1 / (closePrice * priceDecMult),
+                minPriceExclMEVDecimalCorrected: minPrice * priceDecMult,
+                maxPriceExclMEVDecimalCorrected: maxPrice * priceDecMult,
+                priceOpenExclMEVDecimalCorrected: openPrice * priceDecMult,
+                priceCloseExclMEVDecimalCorrected: closePrice * priceDecMult,
                 invMinPriceExclMEVDecimalCorrected:
-                    1 / (p.minPrice * priceDecMult),
+                    1 / (minPrice * priceDecMult),
                 invMaxPriceExclMEVDecimalCorrected:
-                    1 / (p.maxPrice * priceDecMult),
+                    1 / (maxPrice * priceDecMult),
                 invPriceOpenExclMEVDecimalCorrected:
-                    1 / (p.priceOpen * priceDecMult),
+                    1 / (openPrice * priceDecMult),
                 invPriceCloseExclMEVDecimalCorrected:
-                    1 / (p.priceClose * priceDecMult),
+                    1 / (closePrice * priceDecMult),
             };
         });
 }

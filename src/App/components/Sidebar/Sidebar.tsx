@@ -1,44 +1,32 @@
-// START: Import React and Dongles
 import {
-    useState,
-    useRef,
-    useContext,
     ChangeEvent,
     KeyboardEvent,
     memo,
+    useContext,
+    useRef,
+    useState,
 } from 'react';
 import { BiSearch } from 'react-icons/bi';
 
-// START: Import JSX Elements
-import SidebarAccordion from './SidebarAccordion';
-import TopPools from '../../../components/Global/Sidebar/TopPools';
 import FavoritePools from '../../../components/Global/Sidebar/FavoritePools';
-import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
 import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
+import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
 import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
+import TopPools from '../../../components/Global/Sidebar/TopPools';
+import SidebarAccordion from './SidebarAccordion';
 
-// START: Import Local Files
-import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
+import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 
-// import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
-import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
+import { BsChevronContract, BsChevronExpand } from 'react-icons/bs';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools';
-import {
-    useSidebarSearch,
-    sidebarSearchIF,
-} from '../../hooks/useSidebarSearch';
-import {
-    SidebarContext,
-    SidebarContextIF,
-} from '../../../contexts/SidebarContext';
-import { TokenContext } from '../../../contexts/TokenContext';
-import {
-    CachedDataContext,
-    CachedDataContextIF,
-} from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import { TokenContext } from '../../../contexts/TokenContext';
 import { FlexContainer } from '../../../styled/Common';
 import {
     ContentContainer,
@@ -53,20 +41,17 @@ import {
     TopPoolsIcon,
     TransactionsIcon,
 } from '../../../styled/Components/Sidebar';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
+    sidebarSearchIF,
+    useSidebarSearch,
+} from '../../hooks/useSidebarSearch';
 
 function Sidebar() {
     const {
         activeNetwork: { chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { sidebar, hideOnMobile } =
-        useContext<SidebarContextIF>(SidebarContext);
-    const { cachedQuerySpotPrice } =
-        useContext<CachedDataContextIF>(CachedDataContext);
+    } = useContext(AppStateContext);
+    const { sidebar, hideOnMobile } = useContext(SidebarContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);

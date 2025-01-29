@@ -1,3 +1,5 @@
+import * as d3 from 'd3';
+import * as d3fc from 'd3fc';
 import {
     Dispatch,
     SetStateAction,
@@ -7,25 +9,18 @@ import {
     useRef,
     useState,
 } from 'react';
-import * as d3 from 'd3';
-import * as d3fc from 'd3fc';
 import { fetchPoolLiquidity } from '../../../../ambient-utils/api';
-import {
-    CachedDataContext,
-    CachedDataContextIF,
-} from '../../../../contexts/CachedDataContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
 import {
     CandleDataIF,
     LiquidityRangeIF,
     TransactionIF,
 } from '../../../../ambient-utils/types';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { ChartThemeIF } from '../../../../contexts/ChartContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
     clipCanvas,
-    fillLiqInfinity,
     setCanvasResolution,
 } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 import {
@@ -34,11 +29,6 @@ import {
     getBidPriceValue,
 } from '../../../../pages/platformAmbient/Chart/Liquidity/LiquiditySeries/AreaSeries';
 import { createLiquidityLineSeries } from '../../../../pages/platformAmbient/Chart/Liquidity/LiquiditySeries/LineSeries';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
 
 interface propsIF {
     tx: TransactionIF;
@@ -61,15 +51,17 @@ type liquidityChartData = {
 };
 
 export default function TransactionDetailsLiquidityGraph(props: propsIF) {
-    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
+    const { activeNetwork } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedQuerySpotTick } =
-        useContext<CachedDataContextIF>(CachedDataContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+        useContext(CachedDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const {
         chainId,
         base,
+        baseDecimals,
         quote,
+        quoteDecimals,
         poolIdx,
         bidTickInvPriceDecimalCorrected,
         bidTickPriceDecimalCorrected,
@@ -160,10 +152,12 @@ export default function TransactionDetailsLiquidityGraph(props: propsIF) {
             await fetchPoolLiquidity(
                 chainId,
                 base,
+                baseDecimals,
                 quote,
+                quoteDecimals,
                 poolIdx,
                 crocEnv,
-                activeNetwork.graphCacheUrl,
+                activeNetwork.GCGO_URL,
                 cachedFetchTokenPrice,
                 cachedQuerySpotTick,
                 props.currentPoolPriceTick,
@@ -254,14 +248,7 @@ export default function TransactionDetailsLiquidityGraph(props: propsIF) {
     }, [poolPriceDisplay]);
 
     useEffect(() => {
-        if (yScale) {
-            const yMax = yScale?.domain()[1];
-            fillLiqInfinity(yMax, liquidityData.liquidityDataBid, !isDenomBase);
-        }
-    }, [yScale?.domain()]);
-
-    useEffect(() => {
-        if (yScale) {
+        if (yScale && chartThemeColors) {
             const unparsedLiquidityData = liquidityData.liquidityDataAsk.concat(
                 liquidityData.liquidityDataBid,
             );

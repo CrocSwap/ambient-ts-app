@@ -1,17 +1,15 @@
 import {
-    pinTickLower,
-    pinTickUpper,
-    tickToPrice,
+    fromDisplayQty,
     priceHalfAboveTick,
     priceHalfBelowTick,
-    fromDisplayQty,
+    tickToPrice,
     toDisplayQty,
 } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, useRef, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
     getFormattedNumber,
-    getTxReceipt,
     submitLimitOrder,
+    waitForTransaction,
 } from '../../../../ambient-utils/dataLayer';
 import { useTradeData } from '../../../../App/hooks/useTradeData';
 import Button from '../../../../components/Form/Button';
@@ -24,51 +22,53 @@ import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitT
 import TradeModuleHeader from '../../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../../components/Trade/TradeModules/TradeModuleSkeleton';
 
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../../contexts/PoolContext';
-import { TokenContext } from '../../../../contexts/TokenContext';
-import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import {
-    TransactionError,
-    isTransactionReplacedError,
-    isTransactionFailedError,
-    isTransactionDeniedError,
-} from '../../../../utils/TransactionError';
-import { limitTutorialSteps } from '../../../../utils/tutorial/Limit';
-import { useApprove } from '../../../../App/functions/approve';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import {
+    DISABLE_WORKAROUNDS,
     GAS_DROPS_ESTIMATE_LIMIT_FROM_DEX,
     GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET,
     GAS_DROPS_ESTIMATE_LIMIT_NATIVE,
-    LIMIT_BUFFER_MULTIPLIER_MAINNET,
-    LIMIT_BUFFER_MULTIPLIER_L2,
-    NUM_GWEI_IN_WEI,
     IS_LOCAL_ENV,
+    LIMIT_BUFFER_MULTIPLIER_L2,
+    LIMIT_BUFFER_MULTIPLIER_MAINNET,
     NUM_GWEI_IN_ETH,
+    NUM_GWEI_IN_WEI,
     ZERO_ADDRESS,
-    DISABLE_WORKAROUNDS,
 } from '../../../../ambient-utils/constants';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
+import {
+    pinTickToTickLower,
+    pinTickToTickUpper,
+} from '../../../../ambient-utils/dataLayer/functions/pinTick';
+import { useApprove } from '../../../../App/functions/approve';
 import { AppStateContext } from '../../../../contexts';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import {
+    TransactionError,
+    isTransactionDeniedError,
+    isTransactionFailedError,
+    isTransactionReplacedError,
+} from '../../../../utils/TransactionError';
+import { limitTutorialSteps } from '../../../../utils/tutorial/Limit';
 
 export default function Limit() {
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
 
     const {
         activeNetwork: { chainId, gridSize, poolIndex },
+        isUserOnline,
     } = useContext(AppStateContext);
-    const {
-        gasPriceInGwei,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-        isActiveNetworkPlume,
-    } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkL2, isActiveNetworkPlume } =
+        useContext(ChainDataContext);
     const {
         pool,
         isPoolInitialized,
@@ -117,6 +117,7 @@ export default function Limit() {
         primaryQuantity,
         setPrimaryQuantity,
         isTokenABase,
+        currentPoolPriceTick,
     } = useContext(TradeDataContext);
     const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
@@ -164,9 +165,15 @@ export default function Limit() {
         useState('');
     const [txError, setTxError] = useState<Error>();
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
-    const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
-    const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
-    const [middleDisplayPrice, setMiddleDisplayPrice] = useState<number>(0);
+    const [endDisplayPrice, setEndDisplayPrice] = useState<
+        number | undefined
+    >();
+    const [startDisplayPrice, setStartDisplayPrice] = useState<
+        number | undefined
+    >();
+    const [middleDisplayPrice, setMiddleDisplayPrice] = useState<
+        number | undefined
+    >();
     const [orderGasPriceInDollars, setOrderGasPriceInDollars] = useState<
         string | undefined
     >();
@@ -249,30 +256,27 @@ export default function Limit() {
     // value showing if no acknowledgement is necessary
     const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
 
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        'en-US',
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
-
     // TODO: logic to determine start, middle, end display prices should be refactored into an ambient-utils function
     useEffect(() => {
-        if (limitTick === undefined && poolPriceNonDisplay && crocEnv) {
+        if (!poolPriceNonDisplay) {
+            // pool is uninitialized
+            setStartDisplayPrice(undefined);
+            setMiddleDisplayPrice(undefined);
+            setEndDisplayPrice(undefined);
+        } else if (limitTick === undefined && crocEnv) {
             if (!pool) return;
 
-            // if the spot price is 0, the pool is uninitialized and we can't calculate a limit price
-            if (poolPriceNonDisplay === 0) return;
-
-            const initialLimitRateNonDisplay =
-                poolPriceNonDisplay * (isSellTokenBase ? 0.985 : 1.015);
+            const defaultLimitOffsetPercentage = 1;
 
             const pinnedTick: number = isSellTokenBase
-                ? pinTickLower(initialLimitRateNonDisplay, gridSize)
-                : pinTickUpper(initialLimitRateNonDisplay, gridSize);
-
-            IS_LOCAL_ENV && console.debug({ pinnedTick });
+                ? pinTickToTickLower(
+                      currentPoolPriceTick - defaultLimitOffsetPercentage * 100,
+                      gridSize,
+                  )
+                : pinTickToTickUpper(
+                      currentPoolPriceTick + defaultLimitOffsetPercentage * 100,
+                      gridSize,
+                  );
 
             setLimitTick(pinnedTick);
 
@@ -518,7 +522,7 @@ export default function Limit() {
     ]);
 
     useEffect(() => {
-        setNewLimitOrderTransactionHash('');
+        resetConfirmation();
     }, [baseToken.address + quoteToken.address]);
 
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
@@ -531,6 +535,7 @@ export default function Limit() {
             ),
         );
     }, [
+        isUserOnline,
         isOrderValid,
         tokenAInputQtyNoExponentString,
         isPoolInitialized,
@@ -547,16 +552,14 @@ export default function Limit() {
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(
-            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
         );
     }, [tokenADexBalance]);
 
     const [l1GasFeeLimitInGwei] = useState<number>(
-        isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
+        isActiveNetworkL2 ? 10000 : 0,
     );
-    const [extraL1GasFeeLimit] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeeLimit] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -735,6 +738,7 @@ export default function Limit() {
             addPendingTx(tx?.hash);
             setNewLimitOrderTransactionHash(tx.hash);
             addTransactionByType({
+                chainId: chainId,
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txAction:
@@ -773,7 +777,15 @@ export default function Limit() {
 
         let receipt;
         try {
-            if (tx) receipt = await getTxReceipt(tx);
+            if (tx)
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewLimitOrderTransactionHash,
+                );
         } catch (e) {
             const error = e as TransactionError;
             console.error({ error });
@@ -802,13 +814,16 @@ export default function Limit() {
         }
 
         if (receipt) {
-            addReceipt(JSON.stringify(receipt));
+            addReceipt(receipt);
             removePendingTx(receipt.hash);
         }
     };
 
     const handleLimitButtonMessage = (tokenAAmount: bigint) => {
-        if (!isPoolInitialized) {
+        if (!isUserOnline) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage('Currently Offline');
+        } else if (!isPoolInitialized) {
             setLimitAllowed(false);
             if (isPoolInitialized === undefined)
                 setLimitButtonErrorMessage('...');
@@ -957,14 +972,15 @@ export default function Limit() {
                     }}
                     tokenBInputQty={{
                         value:
-                            tokenBInputQtyNoExponentString !== '0.0'
+                            tokenBInputQtyNoExponentString !== '0.0' ||
+                            !isTokenAPrimary
                                 ? tokenBInputQty
                                 : '0',
                         set: setTokenBInputQty,
                     }}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                    limitTickDisplayPrice={middleDisplayPrice}
+                    limitTickDisplayPrice={middleDisplayPrice || 0}
                     handleLimitButtonMessage={handleLimitButtonMessage}
                     toggleDexSelection={toggleDexSelection}
                     amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
@@ -990,7 +1006,7 @@ export default function Limit() {
                         tokenAInputQty !== '' || tokenBInputQty !== ''
                     }
                     orderGasPriceInDollars={orderGasPriceInDollars}
-                    liquidityProviderFeeString={liquidityProviderFeeString}
+                    liquidityFee={liquidityFee}
                     isTokenABase={isSellTokenBase}
                     startDisplayPrice={startDisplayPrice}
                     middleDisplayPrice={middleDisplayPrice}
@@ -1004,7 +1020,6 @@ export default function Limit() {
                         initiateLimitOrderMethod={sendLimitOrder}
                         tokenAInputQty={tokenAInputQtyNoExponentString}
                         tokenBInputQty={tokenBInputQtyNoExponentString}
-                        insideTickDisplayPrice={endDisplayPrice}
                         newLimitOrderTransactionHash={
                             newLimitOrderTransactionHash
                         }
@@ -1083,8 +1098,18 @@ export default function Limit() {
                                 tokenA.symbol,
                                 undefined,
                                 isActiveNetworkPlume
-                                    ? tokenAQtyCoveredByWalletBalance
-                                    : undefined,
+                                    ? isTokenAPrimary
+                                        ? tokenAQtyCoveredByWalletBalance
+                                        : // add 1% buffer to avoid rounding errors
+                                          (tokenAQtyCoveredByWalletBalance *
+                                              101n) /
+                                          100n
+                                    : tokenABalance
+                                      ? fromDisplayQty(
+                                            tokenABalance,
+                                            tokenA.decimals,
+                                        )
+                                      : undefined,
                             );
                         }}
                         flat={true}

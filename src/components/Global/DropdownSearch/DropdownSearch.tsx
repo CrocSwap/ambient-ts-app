@@ -1,4 +1,5 @@
-import React, {
+import { AnimatePresence, motion } from 'framer-motion';
+import {
     ChangeEvent,
     KeyboardEvent,
     useContext,
@@ -6,40 +7,37 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import styles from './DropdownSearch.module.css';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import TopPools from '../Sidebar/TopPools';
-import FavoritePools from '../Sidebar/FavoritePools';
-import RecentPools from '../Sidebar/RecentPools';
-import { FlexContainer } from '../../../styled/Common';
-import {
-    SearchContainer,
-    SearchInput,
-} from '../../../styled/Components/Sidebar';
+import { AiOutlineFire } from 'react-icons/ai';
 import { BiSearch } from 'react-icons/bi';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { MdClose } from 'react-icons/md';
+import { brand } from '../../../ambient-utils/constants';
+import { TokenIF } from '../../../ambient-utils/types';
+import SidebarSearchResults from '../../../App/components/Sidebar/SidebarSearchResults/SidebarSearchResults';
+import useKeyPress from '../../../App/hooks/useKeyPress';
 import {
     sidebarSearchIF,
     useSidebarSearch,
 } from '../../../App/hooks/useSidebarSearch';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { MdClose } from 'react-icons/md';
-import SidebarSearchResults from '../../../App/components/Sidebar/SidebarSearchResults/SidebarSearchResults';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import { AnimatePresence, motion } from 'framer-motion';
-import { AiOutlineFire } from 'react-icons/ai';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { TokenIF } from '../../../ambient-utils/types';
-import { useMediaQuery } from '@material-ui/core';
-import { HeaderButtons, HeaderText } from '../../../styled/Components/Chart';
-import TokenIcon from '../TokenIcon/TokenIcon';
 import { SidebarContext } from '../../../contexts/SidebarContext';
-import useKeyPress from '../../../App/hooks/useKeyPress';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { FlexContainer } from '../../../styled/Common';
+import { HeaderButtons, HeaderText } from '../../../styled/Components/Chart';
 import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
+    SearchContainer,
+    SearchInput,
+} from '../../../styled/Components/Sidebar';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import FavoritePools from '../Sidebar/FavoritePools';
+import RecentPools from '../Sidebar/RecentPools';
+import TopPools from '../Sidebar/TopPools';
+import TokenIcon from '../TokenIcon/TokenIcon';
+import styles from './DropdownSearch.module.css';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface optionItem {
     id: number;
@@ -50,7 +48,7 @@ interface optionItem {
 const DropdownSearch = () => {
     const {
         activeNetwork: { chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
@@ -239,6 +237,8 @@ const DropdownSearch = () => {
         </div>
     );
 
+    const isFuta = brand === 'futa';
+
     return (
         <AnimatePresence>
             <FlexContainer
@@ -252,24 +252,26 @@ const DropdownSearch = () => {
                     onClick={toggleDropdown}
                     style={{ justifyContent: 'flex-start' }}
                 >
-                    <FlexContainer
-                        id='trade_chart_header_token_pair_logos'
-                        role='button'
-                        gap={8}
-                    >
-                        <TokenIcon
-                            token={topToken}
-                            src={topToken.logoURI}
-                            alt={topToken.symbol}
-                            size={smallScrenView ? 's' : 'l'}
-                        />
-                        <TokenIcon
-                            token={bottomToken}
-                            src={bottomToken.logoURI}
-                            alt={bottomToken.symbol}
-                            size={smallScrenView ? 's' : 'l'}
-                        />
-                    </FlexContainer>
+                    {!isFuta && (
+                        <FlexContainer
+                            id='trade_chart_header_token_pair_logos'
+                            role='button'
+                            gap={8}
+                        >
+                            <TokenIcon
+                                token={topToken}
+                                src={topToken.logoURI}
+                                alt={topToken.symbol}
+                                size={smallScrenView ? 's' : 'l'}
+                            />
+                            <TokenIcon
+                                token={bottomToken}
+                                src={bottomToken.logoURI}
+                                alt={bottomToken.symbol}
+                                size={smallScrenView ? 's' : 'l'}
+                            />
+                        </FlexContainer>
+                    )}
                     <HeaderText
                         id='trade_chart_header_token_pair_symbols'
                         fontSize='header1'

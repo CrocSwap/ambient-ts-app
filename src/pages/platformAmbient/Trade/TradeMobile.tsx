@@ -6,6 +6,14 @@ import {
     useMemo,
     useState,
 } from 'react';
+import { LuSettings } from 'react-icons/lu';
+import { Outlet } from 'react-router-dom';
+import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
+import { CandleDataIF } from '../../../ambient-utils/types';
+import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
+import TokenIcon from '../../../components/Global/TokenIcon/TokenIcon';
+import TableInfo from '../../../components/Trade/TableInfo/TableInfo';
+import TradeTabs2 from '../../../components/Trade/TradeTabs/TradeTabs2';
 import {
     AppStateContext,
     BrandContext,
@@ -15,21 +23,13 @@ import {
     TokenContext,
     TradeDataContext,
 } from '../../../contexts';
-import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
-import { Outlet } from 'react-router-dom';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
-import styles from './TradeMobile.module.css';
-import TokenIcon from '../../../components/Global/TokenIcon/TokenIcon';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 import { FlexContainer } from '../../../styled/Common';
-import TimeFrame from './TradeCharts/TradeChartsComponents/TimeFrame';
-import { LuSettings } from 'react-icons/lu';
-import TableInfo from '../../../components/Trade/TableInfo/TableInfo';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
 import TradeCharts from './TradeCharts/TradeCharts';
-import TradeTabs2 from '../../../components/Trade/TradeTabs/TradeTabs2';
-import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
-import { CandleDataIF } from '../../../ambient-utils/types';
-import { useBottomSheet } from '../../../contexts/BottomSheetContext';
+import TimeFrame from './TradeCharts/TradeChartsComponents/TimeFrame';
+import styles from './TradeMobile.module.css';
 
 interface propsIF {
     poolPrice: string;
@@ -376,7 +376,19 @@ export default function TradeMobile(props: propsIF) {
     return (
         <div
             className={styles.mobile_container}
-            style={{ height: layout.contentHeight }}
+            style={{
+                height:
+                    layout.contentHeight -
+                    ((
+                        isFuta
+                            ? futaActiveTab === 'Chart'
+                            : activeTab === 'Chart'
+                    )
+                        ? 10
+                        : 0),
+
+                maxWidth: !isFuta && activeTab === 'Order' ? '600px' : '',
+            }}
             // onTouchStart={handleTouchStart}
             // onTouchMove={handleTouchMove}
             // onTouchEnd={handleTouchEnd}

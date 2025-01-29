@@ -1,17 +1,18 @@
-import { memo, useContext } from 'react';
 import { CrocImpact } from '@crocswap-libs/sdk';
-import { PoolContext } from '../../../contexts/PoolContext';
+import { memo, useContext } from 'react';
+import { brand } from '../../../ambient-utils/constants';
 import {
     getFormattedNumber,
     getPriceImpactString,
 } from '../../../ambient-utils/dataLayer';
-import { ExtraInfo } from '../../Trade/TradeModules/ExtraInfo/ExtraInfo';
+import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { ExtraInfo } from '../../Trade/TradeModules/ExtraInfo/ExtraInfo';
 
 interface propsIF {
     priceImpact: CrocImpact | undefined;
     slippageTolerance: number;
-    liquidityProviderFeeString: string;
+    liquidityFee: number | undefined;
     swapGasPriceinDollars: string | undefined;
     isOnTradeRoute?: boolean;
     effectivePriceWithDenom: number | undefined;
@@ -24,11 +25,12 @@ function SwapExtraInfo(props: propsIF) {
         priceImpact,
         effectivePriceWithDenom,
         slippageTolerance,
-        liquidityProviderFeeString,
+        liquidityFee,
         swapGasPriceinDollars,
         showExtraInfoDropdown,
-        showWarning,
     } = props;
+
+    const isFuta = brand === 'futa';
 
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
@@ -37,6 +39,13 @@ function SwapExtraInfo(props: propsIF) {
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
+
+    const liquidityProviderFeeString = liquidityFee
+        ? (liquidityFee * 100).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          }) + ' %'
+        : '...';
 
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
@@ -70,6 +79,18 @@ function SwapExtraInfo(props: propsIF) {
     const priceImpactExceedsThreshold =
         priceImpactNum !== undefined && priceImpactNum > 2;
 
+    const conversionRateNonUsd = isDenomBase
+        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
+
+    const conversionRateUsd = isDenomBase
+        ? `1 ${baseTokenSymbol} ≈ ${usdPriceDisplay} USD`
+        : `1 ${quoteTokenSymbol} ≈ ${usdPriceDisplay} USD`;
+
+    const conversionRate = isTradeDollarizationEnabled
+        ? conversionRateUsd
+        : conversionRateNonUsd;
+
     const extraInfo = [
         {
             title: 'Avg. Rate',
@@ -102,7 +123,9 @@ function SwapExtraInfo(props: propsIF) {
             title: 'Price Impact',
             tooltipTitle:
                 'Difference Between Current (Spot) Price and Final Price',
-            data: `${getPriceImpactString(priceImpactNum)} %`,
+            data: priceImpactNum
+                ? `${getPriceImpactString(priceImpactNum)} %`
+                : '...',
             placement: 'bottom',
         },
         {
@@ -117,22 +140,20 @@ function SwapExtraInfo(props: propsIF) {
             } / ${
                 isDenomBase ? quoteTokenSymbol : baseTokenSymbol
             } liquidity providers.`,
-            data: `${liquidityProviderFeeString} %`,
+            data: liquidityProviderFeeString,
             placement: 'bottom',
         },
-    ];
-
-    const conversionRateNonUsd = isDenomBase
-        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
-        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
-
-    const conversionRateUsd = isDenomBase
-        ? `1 ${baseTokenSymbol} ≈ ${usdPriceDisplay} USD`
-        : `1 ${quoteTokenSymbol} ≈ ${usdPriceDisplay} USD`;
-
-    const conversionRate = isTradeDollarizationEnabled
-        ? conversionRateUsd
-        : conversionRateNonUsd;
+        ...(isFuta
+            ? [
+                  {
+                      title: 'Network Fee',
+                      tooltipTitle: `Estimated cost of gas for this swap is ${swapGasPriceinDollars}`,
+                      data: swapGasPriceinDollars,
+                      placement: 'bottom',
+                  },
+              ]
+            : []),
+    ].filter(Boolean); // Filters out any `null` or `undefined` items
 
     return (
         <ExtraInfo
@@ -140,7 +161,7 @@ function SwapExtraInfo(props: propsIF) {
             conversionRate={conversionRate}
             gasPrice={swapGasPriceinDollars}
             showDropdown={showExtraInfoDropdown}
-            showWarning={showWarning}
+            showWarning={priceImpactExceedsThreshold}
             priceImpactExceedsThreshold={priceImpactExceedsThreshold}
         />
     );

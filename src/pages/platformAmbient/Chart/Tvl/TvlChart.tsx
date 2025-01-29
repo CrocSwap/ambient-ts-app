@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../ambient-utils/dataLayer';
+import { CandleDataIF } from '../../../../ambient-utils/types';
+import { ChartThemeIF } from '../../../../contexts/ChartContext';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import '../Chart.css';
 import {
     renderCanvasArray,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../../ambient-utils/dataLayer';
-import { CandleDataIF } from '../../../../ambient-utils/types';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
 
 interface TvlData {
     tvlData: Array<CandleDataIF>;
@@ -272,10 +272,8 @@ function TvlChart(props: TvlData) {
                     resizeHeight,
                 );
 
-                const d3TvlGradientStart =
-                    chartThemeColors.downCandleBorderColor?.copy();
-                const d3TvlGradient =
-                    chartThemeColors.downCandleBorderColor?.copy();
+                const d3TvlGradientStart = chartThemeColors.accent1?.copy();
+                const d3TvlGradient = chartThemeColors.accent1?.copy();
 
                 if (d3TvlGradientStart) d3TvlGradientStart.opacity = 0;
                 if (d3TvlGradient) d3TvlGradient.opacity = 0.7;
@@ -340,8 +338,7 @@ function TvlChart(props: TvlData) {
                 return areaSeries;
             });
 
-            const d3TvlGradient =
-                chartThemeColors.downCandleBorderColor?.copy();
+            const d3TvlGradient = chartThemeColors.accent1?.copy();
 
             if (d3TvlGradient) d3TvlGradient.opacity = 0.7;
 

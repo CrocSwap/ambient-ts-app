@@ -1,14 +1,14 @@
-import styles from './RangeActionInfo.module.css';
-import Row from '../../Global/Row/Row';
-import DividerDark from '../../Global/DividerDark/DividerDark';
+import { useContext } from 'react';
 import {
     getFormattedNumber,
     uriToHttp,
 } from '../../../ambient-utils/dataLayer';
-import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import { useContext } from 'react';
-import { TokenContext } from '../../../contexts/TokenContext';
 import { TokenIF } from '../../../ambient-utils/types';
+import { TokenContext } from '../../../contexts/TokenContext';
+import DividerDark from '../../Global/DividerDark/DividerDark';
+import Row from '../../Global/Row/Row';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import styles from './RangeActionInfo.module.css';
 
 interface propsIF {
     baseTokenAddress: string;

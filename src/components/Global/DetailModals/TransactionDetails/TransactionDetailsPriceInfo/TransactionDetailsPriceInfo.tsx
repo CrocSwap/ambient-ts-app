@@ -1,19 +1,19 @@
-import styles from './TransactionDetailsPriceInfo.module.css';
-import Row from '../../../Row/Row';
-import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import { AiOutlineLine } from 'react-icons/ai';
+import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
+import Row from '../../../Row/Row';
+import styles from './TransactionDetailsPriceInfo.module.css';
 
-import { TokenIF, TransactionIF } from '../../../../../ambient-utils/types';
-import { useLocation } from 'react-router-dom';
-import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
-import TokenIcon from '../../../TokenIcon/TokenIcon';
-import { uriToHttp } from '../../../../../ambient-utils/dataLayer';
-import Apy from '../../../Tabs/Apy/Apy';
-import { TokenContext } from '../../../../../contexts/TokenContext';
 import { useContext } from 'react';
-import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { useLocation } from 'react-router-dom';
+import { uriToHttp } from '../../../../../ambient-utils/dataLayer';
+import { TokenIF, TransactionIF } from '../../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../../../contexts/TokenContext';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
+import Apy from '../../../Tabs/Apy/Apy';
+import TokenIcon from '../../../TokenIcon/TokenIcon';
 
 type ItemIF = {
     slug: string;

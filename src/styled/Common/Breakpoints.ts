@@ -1,5 +1,5 @@
+import { css } from 'styled-components';
 import { ContainerProps, ContainerStyles } from './Container';
-import { css } from 'styled-components/macro';
 
 export interface BreakpointProps {
     xs?: ContainerProps;

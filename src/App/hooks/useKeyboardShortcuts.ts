@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 type KeyCombo = {
     modifierKeys: Array<'Shift' | 'Alt' | 'Control' | 'Meta'>;

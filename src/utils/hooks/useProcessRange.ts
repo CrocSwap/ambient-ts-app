@@ -1,19 +1,19 @@
+import { CrocEnv } from '@crocswap-libs/sdk';
+import moment from 'moment';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     getChainExplorer,
+    getFormattedNumber,
+    getMoneynessRank,
     getUnicodeCharacter,
     trimString,
-    getMoneynessRank,
-    getFormattedNumber,
 } from '../../ambient-utils/dataLayer';
-import { PositionIF } from '../../ambient-utils/types';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import moment from 'moment';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { useFetchBatch } from '../../App/hooks/useFetchBatch';
-import { UserDataContext } from '../../contexts/UserDataContext';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { PositionIF } from '../../ambient-utils/types';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -89,61 +89,42 @@ export const useProcessRange = (
     // const ownerId = position.user ? getAddress(position.user) : position.user;
 
     const isOwnerActiveAccount =
-        position.user.toLowerCase() === account?.toLowerCase();
+        position.user?.toLowerCase() === account?.toLowerCase();
 
     const [basePrice, setBasePrice] = useState<number | undefined>();
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (crocEnv) {
-            const fetchTokenPrice = async () => {
-                const baseTokenPrice =
-                    (
-                        await cachedFetchTokenPrice(
-                            position.base,
-                            position.chainId,
-                            crocEnv,
-                        )
-                    )?.usdPrice || 0.0;
-                const quoteTokenPrice =
-                    (
-                        await cachedFetchTokenPrice(
-                            position.quote,
-                            position.chainId,
-                            crocEnv,
-                        )
-                    )?.usdPrice || 0.0;
+        const fetchTokenPrice = async () => {
+            const baseTokenPrice =
+                (await cachedFetchTokenPrice(position.base, position.chainId))
+                    ?.usdPrice || 0.0;
+            const quoteTokenPrice =
+                (await cachedFetchTokenPrice(position.quote, position.chainId))
+                    ?.usdPrice || 0.0;
 
-                if (baseTokenPrice) {
-                    setBasePrice(baseTokenPrice);
-                } else if (
-                    quoteTokenPrice &&
-                    position.curentPoolPriceDisplayNum
-                ) {
-                    // this may be backwards
-                    const estimatedBasePrice =
-                        quoteTokenPrice / position.curentPoolPriceDisplayNum;
-                    setBasePrice(estimatedBasePrice);
-                }
-                if (quoteTokenPrice) {
-                    setQuotePrice(quoteTokenPrice);
-                } else if (
-                    baseTokenPrice &&
-                    position.curentPoolPriceDisplayNum
-                ) {
-                    const estimatedQuotePrice =
-                        baseTokenPrice * position.curentPoolPriceDisplayNum;
-                    setQuotePrice(estimatedQuotePrice);
-                }
-            };
+            if (baseTokenPrice) {
+                setBasePrice(baseTokenPrice);
+            } else if (quoteTokenPrice && position.curentPoolPriceDisplayNum) {
+                // this may be backwards
+                const estimatedBasePrice =
+                    quoteTokenPrice / position.curentPoolPriceDisplayNum;
+                setBasePrice(estimatedBasePrice);
+            }
+            if (quoteTokenPrice) {
+                setQuotePrice(quoteTokenPrice);
+            } else if (baseTokenPrice && position.curentPoolPriceDisplayNum) {
+                const estimatedQuotePrice =
+                    baseTokenPrice * position.curentPoolPriceDisplayNum;
+                setQuotePrice(estimatedQuotePrice);
+            }
+        };
 
-            fetchTokenPrice();
-        }
+        fetchTokenPrice();
     }, [
         position.base,
         position.quote,
         position.chainId,
-        crocEnv !== undefined,
         position.curentPoolPriceDisplayNum,
     ]);
 

@@ -1,5 +1,5 @@
 import { Resizable } from 're-resizable';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 export const MainSection = styled.section<{
     isDropdown?: boolean;
@@ -48,15 +48,26 @@ export const ResizableContainer = styled(Resizable)<{
     showResizeable: boolean;
     isFuta?: boolean;
     isChartFullScreen?: boolean;
+    alignItems?: string;
+    minHeight?: string | number;
 }>`
     display: flex;
-    justify-content: center;
-    align-items: center;
     overflow: hidden;
 
     max-height: ${({ isFuta, isChartFullScreen }) =>
         isFuta || isChartFullScreen ? 'calc(100% - 5px)' : 'calc(100% - 54px)'};
-    min-height: 0px;
+    min-height: ${({ minHeight }) => {
+        let mhOutput: string;
+        if (typeof minHeight === 'number') {
+            mhOutput = minHeight.toString();
+        } else if (typeof minHeight === 'string') {
+            mhOutput = minHeight;
+        } else {
+            mhOutput = '0';
+        }
+        mhOutput += 'px';
+        return mhOutput;
+    }};
 
     ${({ showResizeable }) =>
         showResizeable &&

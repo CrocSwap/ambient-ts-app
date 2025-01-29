@@ -1,12 +1,12 @@
-import styled from 'styled-components/macro';
-import Button from '../../../components/Form/Button';
 import { Dispatch, SetStateAction, useEffect } from 'react';
+import styled from 'styled-components';
+import Button from '../../../components/Form/Button';
 import StepperComponent from '../../../components/Global/MultiStepTransaction/StepperComponent';
 import SelectedRange from '../../../components/Trade/Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import { FlexContainer, GridContainer, Text } from '../../../styled/Common';
 
-import { FeaturedBox } from '../../../components/Trade/TableInfo/FeaturedBox';
 import { TokenIF } from '../../../ambient-utils/types';
+import { FeaturedBox } from '../../../components/Trade/TableInfo/FeaturedBox';
 
 const Wrapper = styled.div`
     width: 100%;

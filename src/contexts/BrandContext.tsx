@@ -1,19 +1,22 @@
 import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
+import { chainHexIds } from '../ambient-utils/types';
 import { skins } from '../App/hooks/useSkin';
-import { brandIF, fontSets, heroItem } from '../assets/branding/types';
-import { chainIds } from '../ambient-utils/types';
 import {
-    blastBrandAssets,
-    scrollBrandAssets,
-    defaultBrandAssets,
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
+    baseSepoliaBrandAssets,
+    blastBrandAssets,
+    defaultBrandAssets,
     futaBrandAssets,
-    sampleBrandAssets,
+    plumeBrandAssets,
     plumeSepoliaBrandAssets,
+    scrollBrandAssets,
+    swellBrandAssets,
+    swellSepoliaBrandAssets,
 } from '../assets/branding';
+import { brandIF, fontSets } from '../assets/branding/types';
+import { AppStateContext } from './AppStateContext';
 import { UserDataContext } from './UserDataContext';
-import { AppStateContext, AppStateContextIF } from './AppStateContext';
 
 const PREMIUM_THEMES_IN_ENV = {
     theme1: 'VITE_THEME_1_ACCOUNTS',
@@ -31,22 +34,22 @@ export interface BrandContextIF {
     fontSet: fontSets;
     colorAndFont: string;
     platformName: string;
-    networks: chainIds[];
+    networks: chainHexIds[];
     headerImage: string;
     showPoints: boolean;
     showDexStats: boolean;
-    hero: heroItem[];
     premium: Record<premiumThemes, boolean>;
     includeCanto: boolean;
+    cobrandingLogo: string | undefined;
 }
 
-export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
+export const BrandContext = createContext({} as BrandContextIF);
 
 export const BrandContextProvider = (props: { children: ReactNode }) => {
     const { userAddress } = useContext(UserDataContext);
     const {
         activeNetwork: { chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
 
     // brand asset set to consume as specified in environmental variable
     // can also provide a fallback if a custom brand is missing values
@@ -71,12 +74,15 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     const brand: string = import.meta.env.VITE_BRAND_ASSET_SET ?? '';
     const brandAssets = useMemo<brandIF>(() => {
         // make the linter happy for sample file
-        false && sampleBrandAssets;
         switch (brand) {
             case 'blast':
                 return blastBrandAssets;
+            case 'plume':
+                return plumeBrandAssets;
             case 'scroll':
                 return scrollBrandAssets;
+            case 'swell':
+                return swellBrandAssets;
             case 'futa':
                 return futaBrandAssets;
             case 'ambientProduction':
@@ -85,6 +91,10 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return ambientTestnetBrandAssets;
             case 'plumeSepolia':
                 return plumeSepoliaBrandAssets;
+            case 'swellSepolia':
+                return swellSepoliaBrandAssets;
+            case 'baseSepolia':
+                return baseSepoliaBrandAssets;
             default:
                 return defaultBrandAssets;
         }
@@ -101,7 +111,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     const [skin, setSkin] = useState<skins>(getDefaultSkin());
 
     function getAvailableSkins(): skins[] {
-        const networkSettings = brandAssets.networks[chainId as chainIds];
+        const networkSettings = brandAssets.networks[chainId as chainHexIds];
         const available: skins[] = networkSettings?.color ?? ['purple_dark'];
         const premium: skins[] = networkSettings?.premiumColor ?? [];
         const hasPremium = !!(
@@ -115,13 +125,6 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         return defaultSkin[0];
     }
 
-    function getHero(): heroItem[] {
-        const networkPrefs = brandAssets.networks[chainId as chainIds];
-        return networkPrefs
-            ? networkPrefs.hero
-            : [{ content: 'ambient', processAs: 'separator' }];
-    }
-
     // data to be returned to the app
     const brandData: BrandContextIF = {
         skin: {
@@ -132,16 +135,17 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         fontSet: brandAssets.fontSet,
         colorAndFont: getDefaultSkin() + '+' + brandAssets.fontSet,
         platformName: brandAssets.platformName,
-        networks: Object.keys(brandAssets.networks) as chainIds[],
+        networks: Object.keys(brandAssets.networks) as chainHexIds[],
         headerImage: brandAssets.headerImage,
         showPoints: brandAssets.showPoints,
         showDexStats: brandAssets.showDexStats,
-        hero: getHero(),
         premium: {
             theme1: premiumAccess.get('theme1') as boolean,
             theme2: premiumAccess.get('theme2') as boolean,
         },
         includeCanto: brandAssets.includeCanto,
+        cobrandingLogo:
+            brandAssets.networks[chainId as chainHexIds]?.cobrandingLogo,
     };
 
     return (

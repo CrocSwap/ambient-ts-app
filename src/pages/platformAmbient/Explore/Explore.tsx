@@ -1,22 +1,18 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { ExploreContext } from '../../../contexts/ExploreContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
-import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import { PoolIF } from '../../../ambient-utils/types';
-import styles from './Explore.module.css';
 import { LuRefreshCcw, LuSearch } from 'react-icons/lu';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
+import { hiddenTokens } from '../../../ambient-utils/constants';
+import { PoolIF } from '../../../ambient-utils/types';
 import DexTokens from '../../../components/Global/Explore/DexTokens/DexTokens';
+import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
+import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../contexts';
-import {
-    excludedTokenAddressesLowercase,
-    hiddenTokens,
-} from '../../../ambient-utils/constants';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { ExploreContext } from '../../../contexts/ExploreContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import styles from './Explore.module.css';
 
 interface ExploreIF {
     view: 'pools' | 'tokens';
@@ -34,27 +30,15 @@ export default function Explore(props: ExploreIF) {
     const { crocEnv } = useContext(CrocEnvContext);
 
     const {
-        activeNetwork: { chainId },
+        activeNetwork: { chainId, displayName },
     } = useContext(AppStateContext);
     const { poolList } = useContext(PoolContext);
-    const {
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-        isActiveNetworkMainnet,
-    } = useContext(ChainDataContext);
 
     const getAllPoolData = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
-            pools.getAll(poolList, crocEnv, chainId);
+            pools.getAllPools(poolList, crocEnv, chainId);
         }
     };
-
-    const everyOneMinute = Math.floor(Date.now() / 60000);
-
-    // update top pools data
-    useEffect(() => {
-        getAllPoolData();
-    }, [everyOneMinute]);
 
     // trigger process to fetch and format token data when page loads with
     // ... gatekeeping to prevent re-fetch if data is already loaded
@@ -86,21 +70,9 @@ export default function Explore(props: ExploreIF) {
         });
     }
 
-    const titleTextPools: string = isActiveNetworkMainnet
-        ? 'Top Ambient Pools on Ethereum'
-        : isActiveNetworkBlast
-          ? 'Top Ambient Pools on Blast'
-          : isActiveNetworkScroll
-            ? 'Top Ambient Pools on Scroll'
-            : 'Top Pools on Ambient';
+    const titleTextPools = `Top Ambient Pools on ${displayName}`;
 
-    const titleTextTokens: string = isActiveNetworkMainnet
-        ? 'Active Tokens on Ethereum'
-        : isActiveNetworkBlast
-          ? 'Active Tokens on Blast'
-          : isActiveNetworkScroll
-            ? 'Active Tokens on Scroll'
-            : 'Top Pools on Ambient';
+    const titleTextTokens = `Active Tokens on ${displayName}`;
 
     const titleTextForDOM: string =
         view === 'pools' ? titleTextPools : titleTextTokens;
@@ -130,20 +102,9 @@ export default function Explore(props: ExploreIF) {
     const [searchQueryPool, setSearchQueryPool] = useState<string>('');
     const [searchQueryToken, setSearchQueryToken] = useState<string>('');
 
-    // Filter out excluded addresses
-    const filteredPoolsNoExcludedTokens = pools.all.filter(
-        (pool) =>
-            !excludedTokenAddressesLowercase.includes(
-                pool.base.address.toLowerCase(),
-            ) &&
-            !excludedTokenAddressesLowercase.includes(
-                pool.quote.address.toLowerCase(),
-            ),
-    );
-
     const filteredPools =
         searchQueryPool.length >= 2
-            ? filteredPoolsNoExcludedTokens.filter((pool: PoolIF) => {
+            ? pools.all.filter((pool: PoolIF) => {
                   const lowerCaseQuery = searchQueryPool.toLowerCase();
                   return (
                       pool.base.name.toLowerCase().includes(lowerCaseQuery) ||
@@ -152,7 +113,7 @@ export default function Explore(props: ExploreIF) {
                       pool.quote.symbol.toLowerCase().includes(lowerCaseQuery)
                   );
               })
-            : filteredPoolsNoExcludedTokens;
+            : pools.all;
 
     const filteredTokens =
         searchQueryToken.length >= 2
@@ -169,7 +130,7 @@ export default function Explore(props: ExploreIF) {
                       );
                   })
                   .filter((t) => {
-                      // check if token is in exclusion list
+                      // check if token is in hidden token list
                       return !hiddenTokens.some(
                           (excluded) =>
                               excluded.address.toLowerCase() ===

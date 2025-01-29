@@ -1,19 +1,26 @@
-import { TokenIF } from '../../../../../ambient-utils/types';
-import styles from './WalletCard.module.css';
+import { toDisplayPrice, toDisplayQty } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
-import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
-import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { TokenContext } from '../../../../../contexts/TokenContext';
 import { TokenPriceFn } from '../../../../../ambient-utils/api';
-import TokenIcon from '../../../TokenIcon/TokenIcon';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    ZERO_ADDRESS,
+} from '../../../../../ambient-utils/constants';
 import {
     getFormattedNumber,
     uriToHttp,
 } from '../../../../../ambient-utils/dataLayer';
-import { toDisplayQty } from '@crocswap-libs/sdk';
+import { TokenIF } from '../../../../../ambient-utils/types';
+import {
+    AppStateContext,
+    CachedDataContext,
+    ChainDataContext,
+    CrocEnvContext,
+} from '../../../../../contexts';
+import { TokenContext } from '../../../../../contexts/TokenContext';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import { AppStateContext } from '../../../../../contexts';
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
+import TokenIcon from '../../../TokenIcon/TokenIcon';
+import styles from './WalletCard.module.css';
 
 interface propsIF {
     token: TokenIF;
@@ -25,11 +32,12 @@ export default function WalletCard(props: propsIF) {
     const {
         tokens: { getTokenByAddress },
     } = useContext(TokenContext);
-    const { crocEnv } = useContext(CrocEnvContext);
-
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { nativeTokenUsdPrice } = useContext(ChainDataContext);
 
     const isMobile = useMediaQuery('(max-width: 800px)');
 
@@ -55,21 +63,44 @@ export default function WalletCard(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            if (!crocEnv) return;
             try {
                 if (tokenFromMap?.symbol) {
                     const price = await cachedFetchTokenPrice(
                         tokenFromMap.address,
                         chainId,
-                        crocEnv,
                     );
-                    if (price) setTokenPrice(price);
+                    if (price) {
+                        setTokenPrice(price);
+                    } else {
+                        if (!crocEnv || !nativeTokenUsdPrice) return;
+                        const ethPoolPriceNonDisplay =
+                            await cachedQuerySpotPrice(
+                                crocEnv,
+                                ZERO_ADDRESS,
+                                tokenFromMap.address,
+                                chainId,
+                                Math.floor(
+                                    Date.now() / CACHE_UPDATE_FREQ_IN_MS,
+                                ),
+                            );
+                        if (!ethPoolPriceNonDisplay || !nativeTokenUsdPrice)
+                            setTokenPrice(undefined);
+
+                        const ethPoolPriceDisplay = toDisplayPrice(
+                            ethPoolPriceNonDisplay,
+                            18,
+                            tokenFromMap.decimals,
+                        );
+                        setTokenPrice({
+                            usdPrice: ethPoolPriceDisplay * nativeTokenUsdPrice,
+                        });
+                    }
                 }
             } catch (err) {
                 console.error(err);
             }
         })();
-    }, [crocEnv, tokenMapKey]);
+    }, [tokenMapKey, nativeTokenUsdPrice, crocEnv]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
@@ -132,14 +163,18 @@ export default function WalletCard(props: propsIF) {
     )
         return <></>;
 
+    const balanceValue = tokenUsdPrice * (walletBalanceDisplayNum ?? 0);
+
     return (
         <div className={styles.wallet_row}>
             {tokenInfo}
             <p className={styles.value}>
-                {getFormattedNumber({
-                    value: tokenUsdPrice * (walletBalanceDisplayNum ?? 0),
-                    prefix: '$',
-                })}
+                {balanceValue
+                    ? getFormattedNumber({
+                          value: balanceValue,
+                          prefix: '$',
+                      })
+                    : '...'}
             </p>
             <p className={styles.amount}>{walletBalanceTruncated}</p>
         </div>

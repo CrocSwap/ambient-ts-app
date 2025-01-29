@@ -1,11 +1,11 @@
-import { useId, Dispatch, SetStateAction, useContext } from 'react';
-// import { useLocation } from 'react-router-dom';
-import Toggle from '../../Form/Toggle';
-import styles from './SendToDexBalControl.module.css';
+import { Dispatch, SetStateAction, useContext, useId } from 'react';
+// import{ useLocation } from 'react-router-dom';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
-import { ExplanationButton } from '../../Form/Icons/Icons.styles';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer } from '../../../styled/Common';
+import { ExplanationButton } from '../../Form/Icons/Icons.styles';
+import Toggle from '../../Form/Toggle';
+import styles from './SendToDexBalControl.module.css';
 
 interface propsIF {
     tempSaveToDex: boolean;

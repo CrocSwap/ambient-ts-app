@@ -1,41 +1,42 @@
-// import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
-import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
-import { useContext, useEffect, useState } from 'react';
-import { supportedNetworks } from '../../../../ambient-utils/constants';
+// import{ lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { motion } from 'framer-motion';
+import { useContext, useEffect, useState } from 'react';
+import { RiExternalLinkLine } from 'react-icons/ri';
 import { useSearchParams } from 'react-router-dom';
+import { supportedNetworks } from '../../../../ambient-utils/constants';
+import { lookupChainId } from '../../../../ambient-utils/dataLayer';
+// import baseLogo from '../../../../assets/images/networks/Base_Network_Logo.svg';
+import baseSepoliaLogo from '../../../../assets/images/networks/base_sepolia_no_margin.webp';
+import blastLogo from '../../../../assets/images/networks/blast_logo.png';
+import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_no_margin.webp';
+import cantoLogo from '../../../../assets/images/networks/canto.png';
+import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
+import sepoliaLogo from '../../../../assets/images/networks/ethereum_sepolia_no_margin.webp';
+import plumeLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
+import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_no_margin.webp';
+import scrollLogo from '../../../../assets/images/networks/scroll_logo_no_margin.webp';
+import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_no_margin.webp';
+import swellLogo from '../../../../assets/images/networks/swell_logo_no_margin.webp';
+import swellSepoliaLogo from '../../../../assets/images/networks/swell_sepolia_no_margin.webp';
+import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
+import { CrocEnvContext } from '../../../../contexts';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
+import { Text } from '../../../../styled/Common';
 import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import { Text } from '../../../../styled/Common';
-import { RiExternalLinkLine } from 'react-icons/ri';
-import cantoLogo from '../../../../assets/images/networks/canto.png';
-import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
-import blastLogo from '../../../../assets/images/networks/blast_logo.png';
-// import plumeMainnetLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
-import plumeSepoliaLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
-// import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_network_logo.webp';
-import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
-import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
-import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
-import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    BrandContext,
-    BrandContextIF,
-} from '../../../../contexts/BrandContext';
-import { lookupChainId } from '../../../../ambient-utils/dataLayer';
-import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import styles from './NetworkSelector.module.css';
 interface propsIF {
     customBR?: string;
 }
-import { motion } from 'framer-motion';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
 
 interface NetworkSelectorListItemIF {
     id: string;
@@ -54,8 +55,15 @@ export default function NetworkSelector(props: propsIF) {
         chooseNetwork,
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const { networks, platformName, includeCanto } =
-        useContext<BrandContextIF>(BrandContext);
+    const { networks, platformName, includeCanto } = useContext(BrandContext);
+    const { setCrocEnv } = useContext(CrocEnvContext);
+
+    const [isNetworkUpdateInProgress, setIsNetworkUpdateInProgress] =
+        useState(false);
+
+    const [selectedNetworkDisplayName, setSelectedNetworkDisplayName] =
+        useState('');
+
     const { closeBottomSheet } = useBottomSheet();
     const { switchNetwork } = useSwitchNetwork();
     const smallScreen: boolean = useMediaQuery('(max-width: 600px)');
@@ -76,7 +84,12 @@ export default function NetworkSelector(props: propsIF) {
 
     // click handler for network switching (does not handle Canto link)
     async function handleClick(chn: ChainSpec): Promise<void> {
+        if (chn.chainId === chainId) return;
+        setIsNetworkUpdateInProgress(true);
+        const selectedNetwork = supportedNetworks[chn.chainId];
+        setSelectedNetworkDisplayName(selectedNetwork.displayName);
         if (isConnected) {
+            setCrocEnv(undefined);
             await switchNetwork(parseInt(chn.chainId));
             if (chainParam || networkParam) {
                 // navigate to index page only if chain/network search param present
@@ -87,7 +100,7 @@ export default function NetworkSelector(props: propsIF) {
                 // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();
             }
-            chooseNetwork(supportedNetworks[chn.chainId]);
+            chooseNetwork(selectedNetwork);
         }
     }
 
@@ -125,6 +138,14 @@ export default function NetworkSelector(props: propsIF) {
         }
     }, [isConnected, initialLoadComplete]);
 
+    useEffect(() => {
+        // reset temporary update state when chain changes
+        if (isNetworkUpdateInProgress) {
+            setIsNetworkUpdateInProgress(false);
+            setSelectedNetworkDisplayName('');
+        }
+    }, [chainId]);
+
     const networksData: NetworkSelectorListItemIF[] = [
         {
             id: 'ethereum_network_selector',
@@ -147,6 +168,28 @@ export default function NetworkSelector(props: propsIF) {
             testnet: false,
             link: '',
             condition: chainMap.has('0x82750'),
+        },
+        {
+            id: 'swell_network_selector',
+            chainId: '0x783',
+            name: 'Swell',
+            logo: swellLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: false,
+            link: '',
+            condition: chainMap.has('0x783'),
+        },
+        {
+            id: 'plume_network_selector',
+            chainId: '0x18231',
+            name: 'Plume',
+            logo: plumeLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: false,
+            link: '',
+            condition: chainMap.has('0x18231'),
         },
         {
             id: 'blast_network_selector',
@@ -182,17 +225,6 @@ export default function NetworkSelector(props: propsIF) {
             condition: chainMap.has('0xaa36a7'),
         },
         {
-            id: 'plume_sepolia_network_selector',
-            chainId: '0x18230',
-            name: 'Plume',
-            logo: plumeSepoliaLogo,
-            custom: 2,
-            isExternal: false,
-            testnet: true,
-            link: '',
-            condition: chainMap.has('0x18230'),
-        },
-        {
             id: 'scroll_sepolia_network_selector',
             chainId: '0x8274f',
             name: 'Scroll',
@@ -204,6 +236,28 @@ export default function NetworkSelector(props: propsIF) {
             condition: chainMap.has('0x8274f'),
         },
         {
+            id: 'swell_sepolia_network_selector',
+            chainId: '0x784',
+            name: 'Swell',
+            logo: swellSepoliaLogo,
+            custom: 2,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x784'),
+        },
+        {
+            id: 'plume_sepolia_network_selector',
+            chainId: '0x18230',
+            name: 'Plume',
+            logo: plumeSepoliaLogo,
+            custom: 2,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x18230'),
+        },
+        {
             id: 'blast_sepolia_network_selector',
             chainId: '0xa0c71fd',
             name: 'Blast',
@@ -213,6 +267,17 @@ export default function NetworkSelector(props: propsIF) {
             testnet: true,
             link: '',
             condition: chainMap.has('0xa0c71fd'),
+        },
+        {
+            id: 'base_sepolia_network_selector',
+            chainId: '0x14a34',
+            name: 'Base',
+            logo: baseSepoliaLogo,
+            custom: 2,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x14a34'),
         },
     ];
 
@@ -291,18 +356,26 @@ export default function NetworkSelector(props: propsIF) {
                 borderRadius: props.customBR ? props.customBR : '4px',
             }}
         >
-            <div className={styles.dropdownMenuContainer}>
+            <div
+                className={styles.dropdownMenuContainer}
+                style={{ cursor: networks.length > 1 ? 'pointer' : 'default' }}
+            >
                 <DropdownMenu2
                     marginTop={'50px'}
                     marginRight={smallScreen ? '70px' : ''}
                     titleWidth={'80px'}
-                    title={networkSpec.displayName}
+                    title={
+                        isNetworkUpdateInProgress
+                            ? selectedNetworkDisplayName
+                            : networkSpec.displayName
+                    }
                     expandable={networks.length > 1}
                     logo={
                         networksData.find(
                             (network) => network.chainId === chainId,
                         )?.logo
                     }
+                    loading={isNetworkUpdateInProgress}
                 >
                     <ul
                         className={styles.menuContent}

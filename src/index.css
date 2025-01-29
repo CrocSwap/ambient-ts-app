@@ -1,11 +1,24 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap'); */
-@import url('https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;200;300;400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;200;300;400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;300;400;500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;300;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@100;300;400;500&display=swap');
 
 /* For simple theme change(special occasion), change portfolio and swap background. No need for a different color scheme*/
 :root {
+    /* Media Queries for Tablets (including iPads) */
+    --tablet-portrait: (min-width: 600px) and (max-width: 1366px) and
+        (orientation: portrait);
+    --tablet-landscape: (min-width: 600px) and (max-width: 1366px) and
+        (orientation: landscape);
+
+    /* Media Queries for Mobile Devices */
+    --mobile-portrait: (max-width: 599px) and (orientation: portrait);
+    --mobile-landscape: (max-width: 599px) and (orientation: landscape);
+
+    /* Media Queries for Desktop Devices */
+    --desktop: (min-width: 1367px);
+    --desktop-large: (min-width: 1920px); /* Optional for ultra-wide monitors */
+
     --font-logo: 'Lexend Exa', sans-serif;
     --font-family: 'Lexend Deca', sans-serif;
     --roboto: 'Roboto Mono', monospace;
@@ -53,6 +66,21 @@
     --positive: #15be6f;
     --negative: #f6385b;
 
+    --chart-positive: #26a69a;
+    --chart-negative: #ef5350;
+
+    --chart-positive-body: #26a69a;
+    --chart-positive-border: #26a69a;
+    --chart-negative-body: #ef5350;
+    --chart-negative-border: #ef5350;
+    --chart-selected-color: #e480ff;
+    --chart-range-lines-color: #6a6a6d;
+    --chart-limit-line-color: #6a6a6d;
+    --shareable-line-color: #8b98a5;
+    --triangle-color: #8b98a5;
+    --liq-ask-color: #26a69a;
+    --liq-bid-color: #ef5350;
+
     --other-green: #41d18e;
     --other-red: #e75670;
 
@@ -65,6 +93,7 @@
     --navbar-border: transparent;
     --dark-border-color: #010101;
     --dark-border: 0.2px solid var(--dark-border-color);
+    --futa-box-border: 2px solid #5c6f72;
 
     /* transitions */
     --transition: all var(--animation-speed) ease-in-out;
@@ -173,7 +202,8 @@
 [data-theme='futa_dark'] {
     /* subtract full height from navbar(56px) and footer(20px on desktop, 64 on mobile) */
     --content-height: calc(100vh - 76px);
-    --content-height-mobile: calc(100svh - 120px);
+    --content-height-mobile: calc(100dvh - 60px);
+
     /* font */
     --title-ts: 0px 0px 150px rgba(242, 153, 74, 0.5),
         0px 0px 100px rgba(242, 153, 74, 0.5),
@@ -202,12 +232,12 @@
     --text2: #939c9e;
     --text3: #4d5255;
 
-    --dark1: #0d0f13;
+    --dark1: #0d0f13ff;
     --dark2: #14161a;
     --dark3: #1b1e22;
     --dark4: #171f22;
-    --accent1: #62ebf1;
-    --accent2: #3c898e;
+    --accent1: #aacfd1;
+    --accent2: #5c6f72;
     --accent3: #29585d;
 
     --accent4: #71b5fc;
@@ -219,6 +249,17 @@
 
     --positive: #62f1b0;
     --negative: #f16962;
+    --chart-positive-body: #29585d;
+    --chart-positive-border: #29585d;
+    --chart-negative-body: #5c6f72;
+    --chart-negative-border: #5c6f72;
+    --chart-selected-color: #e480ff;
+    --liq-ask-color: #29585d;
+    --liq-bid-color: #5c6f72;
+    --chart-range-lines-color: #5c6f72;
+    --chart-limit-line-color: #5c6f72;
+    --shareable-line-color: #5c6f72;
+    --triangle-color: #5c6f72;
 
     --other-green: #6bae52;
     --other-red: #e75670;

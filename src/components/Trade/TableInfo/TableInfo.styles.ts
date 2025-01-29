@@ -1,4 +1,4 @@
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 // can be extracted to common
 
@@ -112,17 +112,17 @@ const StyledTabContainer = styled.div`
 `;
 
 export {
-    MainSection,
     BoxContainer,
+    BoxInfoText,
+    DetailedBoxContainer,
     FeaturedBoxInfoContainer,
-    InfoHeader,
     FeaturedBoxInnerContainer,
     FlexCenter,
+    InfoHeader,
+    LinkText,
+    MainSection,
+    StyledTabContainer,
+    TabPlaceholder,
     TokenName,
     TokenSymbol,
-    BoxInfoText,
-    LinkText,
-    TabPlaceholder,
-    DetailedBoxContainer,
-    StyledTabContainer,
 };

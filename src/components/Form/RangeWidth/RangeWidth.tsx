@@ -1,23 +1,21 @@
-// START: Import React and Dongles
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
-// START: Import Local Files
-import { handleRangeSlider } from './rangeWidthFunctions';
-import RangeSlider from '../RangeSlider';
-import { Chip } from '../Chip';
-import { ExplanationButton } from '../Icons/Icons.styles';
-import { FlexContainer, Text } from '../../../styled/Common';
 import {
-    isETHPair,
     isBtcPair,
+    isETHPair,
     isStablePair,
     truncateDecimals,
 } from '../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { FlexContainer, Text } from '../../../styled/Common';
+import { Chip } from '../Chip';
+import { ExplanationButton } from '../Icons/Icons.styles';
+import RangeSlider from '../RangeSlider';
+import { handleRangeSlider } from './rangeWidthFunctions';
 
 // interface for React functional component props
 interface propsIF {

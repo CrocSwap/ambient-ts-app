@@ -1,11 +1,11 @@
 import styles from './PriceInfo.module.css';
 
-import { LimitOrderIF, TokenIF } from '../../../../../ambient-utils/types';
-import OpenOrderStatus from '../../../OpenOrderStatus/OpenOrderStatus';
-import { useLocation } from 'react-router-dom';
-import TokenIcon from '../../../TokenIcon/TokenIcon';
 import { useContext } from 'react';
+import { useLocation } from 'react-router-dom';
+import { LimitOrderIF, TokenIF } from '../../../../../ambient-utils/types';
 import { TokenContext } from '../../../../../contexts/TokenContext';
+import OpenOrderStatus from '../../../OpenOrderStatus/OpenOrderStatus';
+import TokenIcon from '../../../TokenIcon/TokenIcon';
 
 type ItemIF = {
     slug: string;

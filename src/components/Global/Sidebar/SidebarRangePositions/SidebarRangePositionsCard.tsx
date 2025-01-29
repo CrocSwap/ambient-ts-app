@@ -1,15 +1,15 @@
-import { PositionIF } from '../../../../ambient-utils/types';
+import { useContext } from 'react';
 import {
     getFormattedNumber,
     getMoneynessRankByAddr,
     getSymbols,
     getUnicodeCharacter,
 } from '../../../../ambient-utils/dataLayer';
-import { RangeItemContainer } from '../../../../styled/Components/Sidebar';
+import { PositionIF } from '../../../../ambient-utils/types';
+import { PoolContext } from '../../../../contexts/PoolContext';
 import { FlexContainer } from '../../../../styled/Common';
 import { Status } from '../../../../styled/Components/Range';
-import { useContext } from 'react';
-import { PoolContext } from '../../../../contexts/PoolContext';
+import { RangeItemContainer } from '../../../../styled/Components/Sidebar';
 
 interface propsIF {
     position: PositionIF;

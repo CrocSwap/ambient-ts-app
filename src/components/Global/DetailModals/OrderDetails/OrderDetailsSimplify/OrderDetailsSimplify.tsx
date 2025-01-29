@@ -1,27 +1,18 @@
-import styles from './OrderDetailsSimplify.module.css';
-import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
-import { RiExternalLinkLine } from 'react-icons/ri';
-import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import moment from 'moment';
-import { FiCopy } from 'react-icons/fi';
 import { memo, useContext } from 'react';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../../contexts/AppStateContext';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../../contexts/CrocEnvContext';
+import { FiCopy } from 'react-icons/fi';
+import { RiExternalLinkLine } from 'react-icons/ri';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
-import { useMediaQuery } from '@material-ui/core';
-import {
-    UserDataContext,
-    UserDataContextIF,
-} from '../../../../../contexts/UserDataContext';
-import InfoRow from '../../../InfoRow';
 import { LimitOrderIF } from '../../../../../ambient-utils/types';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
+import InfoRow from '../../../InfoRow';
+import styles from './OrderDetailsSimplify.module.css';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -73,9 +64,9 @@ function OrderDetailsSimplify(props: propsIF) {
             chainSpec: { addrs },
         },
         snackbar: { open: openSnackbar },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { userAddress } = useContext<UserDataContextIF>(UserDataContext);
+    } = useContext(AppStateContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         ensName,
@@ -103,8 +94,7 @@ function OrderDetailsSimplify(props: propsIF) {
         elapsedTimeSinceCrossString,
     } = useProcessOrder(limitOrder, crocEnv, userAddress, isAccountView);
 
-    const showMobileVersion = useMediaQuery<boolean>('(max-width: 768px)');
-    const showFullAddresses = useMediaQuery<boolean>('(min-width: 768px)');
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     const [_, copy] = useCopyToClipboard();
 
@@ -141,7 +131,7 @@ function OrderDetailsSimplify(props: propsIF) {
             style={{ cursor: 'pointer' }}
         >
             <p style={!ensName ? { fontFamily: 'monospace' } : undefined}>
-                {showFullAddresses
+                {!showMobileVersion
                     ? ensName
                         ? ensName
                         : ownerId

@@ -1,12 +1,12 @@
-import styles from './AppOverlay.module.css';
-import { useState, useContext, memo } from 'react';
-import OverlayComponent from '../OverlayComponent/OverlayComponent';
+import { memo, useContext, useState } from 'react';
 import {
     MdOutlineArrowBackIosNew,
     MdOutlineArrowForwardIos,
 } from 'react-icons/md';
 import { VscClose } from 'react-icons/vsc';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import OverlayComponent from '../OverlayComponent/OverlayComponent';
+import styles from './AppOverlay.module.css';
 
 function AppOverlay() {
     const {

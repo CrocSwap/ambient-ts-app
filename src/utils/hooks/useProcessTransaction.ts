@@ -1,27 +1,27 @@
 import {
-    getChainExplorer,
-    getUnicodeCharacter,
-    trimString,
-    getMoneynessRank,
-    getElapsedTime,
-    getFormattedNumber,
-} from '../../ambient-utils/dataLayer';
-import { TransactionIF } from '../../ambient-utils/types';
-import moment from 'moment';
-import { getAddress } from 'ethers';
-import {
-    toDisplayPrice,
+    CrocEnv,
     priceHalfAboveTick,
     priceHalfBelowTick,
-    CrocEnv,
+    toDisplayPrice,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { getAddress } from 'ethers';
+import moment from 'moment';
 import { useContext, useEffect, useState } from 'react';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { useFetchBatch } from '../../App/hooks/useFetchBatch';
-import { UserDataContext } from '../../contexts/UserDataContext';
-import { CachedDataContext } from '../../contexts/CachedDataContext';
+import {
+    getChainExplorer,
+    getElapsedTime,
+    getFormattedNumber,
+    getMoneynessRank,
+    getUnicodeCharacter,
+    trimString,
+} from '../../ambient-utils/dataLayer';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { TransactionIF } from '../../ambient-utils/types';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
@@ -89,41 +89,33 @@ export const useProcessTransaction = (
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (crocEnv) {
-            const fetchTokenPrice = async () => {
-                const baseTokenPrice =
-                    (await cachedFetchTokenPrice(tx.base, tx.chainId, crocEnv))
-                        ?.usdPrice || 0.0;
-                const quoteTokenPrice =
-                    (await cachedFetchTokenPrice(tx.quote, tx.chainId, crocEnv))
-                        ?.usdPrice || 0.0;
+        const fetchTokenPrice = async () => {
+            const baseTokenPrice =
+                (await cachedFetchTokenPrice(tx.base, tx.chainId))?.usdPrice ||
+                0.0;
+            const quoteTokenPrice =
+                (await cachedFetchTokenPrice(tx.quote, tx.chainId))?.usdPrice ||
+                0.0;
 
-                if (baseTokenPrice) {
-                    setBasePrice(baseTokenPrice);
-                } else if (quoteTokenPrice && tx.curentPoolPriceDisplayNum) {
-                    // this may be backwards
-                    const estimatedBasePrice =
-                        quoteTokenPrice / tx.curentPoolPriceDisplayNum;
-                    setBasePrice(estimatedBasePrice);
-                }
-                if (quoteTokenPrice) {
-                    setQuotePrice(quoteTokenPrice);
-                } else if (baseTokenPrice && tx.curentPoolPriceDisplayNum) {
-                    const estimatedQuotePrice =
-                        baseTokenPrice * tx.curentPoolPriceDisplayNum;
-                    setQuotePrice(estimatedQuotePrice);
-                }
-            };
+            if (baseTokenPrice) {
+                setBasePrice(baseTokenPrice);
+            } else if (quoteTokenPrice && tx.curentPoolPriceDisplayNum) {
+                // this may be backwards
+                const estimatedBasePrice =
+                    quoteTokenPrice / tx.curentPoolPriceDisplayNum;
+                setBasePrice(estimatedBasePrice);
+            }
+            if (quoteTokenPrice) {
+                setQuotePrice(quoteTokenPrice);
+            } else if (baseTokenPrice && tx.curentPoolPriceDisplayNum) {
+                const estimatedQuotePrice =
+                    baseTokenPrice * tx.curentPoolPriceDisplayNum;
+                setQuotePrice(estimatedQuotePrice);
+            }
+        };
 
-            fetchTokenPrice();
-        }
-    }, [
-        tx.base,
-        tx.quote,
-        tx.chainId,
-        crocEnv !== undefined,
-        tx.curentPoolPriceDisplayNum,
-    ]);
+        fetchTokenPrice();
+    }, [tx.base, tx.quote, tx.chainId, tx.curentPoolPriceDisplayNum]);
 
     let displayPriceNumInUsd;
     let lowDisplayPriceInUsd;

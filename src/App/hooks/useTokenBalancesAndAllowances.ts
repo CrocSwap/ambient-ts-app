@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TokenIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
-import { UserDataContext } from '../../contexts/UserDataContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 interface BalancesIF {
     baseTokenBalance: string;

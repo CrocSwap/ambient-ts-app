@@ -1,5 +1,7 @@
-import { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { VscClose } from 'react-icons/vsc';
+import { ChartThemeIF } from '../../../contexts/ChartContext';
 import {
     ChartSettingsContainer,
     CloseButton,
@@ -7,22 +9,18 @@ import {
     ContextMenuHeader,
     ContextMenuHeaderText,
 } from './ChartSettingsCss';
-import { VscClose } from 'react-icons/vsc';
-import { ChartThemeIF } from '../../../contexts/ChartContext';
 
 import { BrandContext } from '../../../contexts/BrandContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { chartItemStates } from '../../platformAmbient/Chart/ChartUtils/chartUtils';
 import ChartSettingsContent from './ChartSettingsContent';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { brand } from '../../../ambient-utils/constants';
 
 interface ContextMenuIF {
     contextMenuPlacement?: { top: number; left: number; isReversed: boolean };
     setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
     chartItemStates: chartItemStates;
     chartThemeColors: ChartThemeIF;
-    setChartThemeColors: React.Dispatch<
-        React.SetStateAction<ChartThemeIF | undefined>
-    >;
     isCondensedModeEnabled: boolean;
     closeOutherChartSetting: boolean;
     setIsCondensedModeEnabled: React.Dispatch<React.SetStateAction<boolean>>;
@@ -44,10 +42,7 @@ export interface ColorObjIF {
 export default function ChartSettings(props: ContextMenuIF) {
     const {
         contextMenuPlacement,
-        setContextmenu,
         chartThemeColors,
-        // setChartThemeColors,
-        // render,
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
         setShouldDisableChartSettings,
@@ -58,14 +53,15 @@ export default function ChartSettings(props: ContextMenuIF) {
     const contextMenuRef = useRef<HTMLInputElement | null>(null);
 
     const { platformName } = useContext(BrandContext);
+    const isFuta = brand === 'futa';
 
     const [isSaving, setIsSaving] = useState(false);
     const [applyDefault, setApplyDefault] = useState(false);
     const [reverseColorObj, setReverseColorObj] = useState(false);
 
-    const tabletView = useMediaQuery(
-        '(min-width: 768px) and (max-width: 1200px)',
-    );
+    const [isSettingsClosing, setIsSettingsClosing] = useState(false);
+
+    const mobileView = useMediaQuery('(max-width: 500px)');
 
     useEffect(() => {
         d3.select(contextMenuRef.current).on(
@@ -91,6 +87,7 @@ export default function ChartSettings(props: ContextMenuIF) {
 
     useEffect(() => {
         if (closeOutherChartSetting) {
+            setIsSettingsClosing(true);
             setSelectedColorObj(undefined);
             setShouldDisableChartSettings(true);
             setCloseOutherChartSetting(false);
@@ -117,14 +114,14 @@ export default function ChartSettings(props: ContextMenuIF) {
                 setIsSelecboxActive(false);
             }}
         >
-            <ContextMenu>
+            <ContextMenu isFuta={isFuta}>
                 <ContextMenuHeader>
                     <ContextMenuHeaderText>
                         {['futa'].includes(platformName)
                             ? 'CHART SETTINGS'
                             : 'Chart Settings'}
                     </ContextMenuHeaderText>
-                    <CloseButton onClick={() => setContextmenu(false)}>
+                    <CloseButton onClick={() => setIsSettingsClosing(true)}>
                         <VscClose size={24} />
                     </CloseButton>
                 </ContextMenuHeader>
@@ -146,8 +143,8 @@ export default function ChartSettings(props: ContextMenuIF) {
                     applyDefault={applyDefault}
                     isSaving={isSaving}
                     setIsSaving={setIsSaving}
-                    isMobile={tabletView}
-                    // render={render}
+                    isMobile={mobileView}
+                    isSettingsClosing={isSettingsClosing}
                 />
             </ContextMenu>
         </ChartSettingsContainer>

@@ -1,5 +1,5 @@
-import styles from './OverlayComponent.module.css';
 import { ReactNode } from 'react';
+import styles from './OverlayComponent.module.css';
 
 interface OverlayComponentPropsIF {
     children: ReactNode;

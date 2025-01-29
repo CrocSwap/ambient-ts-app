@@ -1,17 +1,17 @@
 import { memo, useContext } from 'react';
-import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
-import { ExtraInfo } from '../../TradeModules/ExtraInfo/ExtraInfo';
+import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ExtraInfo } from '../../TradeModules/ExtraInfo/ExtraInfo';
 
 interface propsIF {
     orderGasPriceInDollars: string | undefined;
     isTokenABase: boolean;
-    startDisplayPrice: number;
-    middleDisplayPrice: number;
-    endDisplayPrice: number;
+    startDisplayPrice: number | undefined;
+    middleDisplayPrice: number | undefined;
+    endDisplayPrice: number | undefined;
     showExtraInfoDropdown: boolean;
-    liquidityProviderFeeString: string;
+    liquidityFee: number | undefined;
 }
 
 function LimitExtraInfo(props: propsIF) {
@@ -21,7 +21,7 @@ function LimitExtraInfo(props: propsIF) {
         middleDisplayPrice,
         endDisplayPrice,
         showExtraInfoDropdown,
-        liquidityProviderFeeString,
+        liquidityFee,
     } = props;
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
@@ -46,15 +46,30 @@ function LimitExtraInfo(props: propsIF) {
         ? getFormattedNumber({ value: usdPrice })
         : '…';
 
-    const startPriceString = getFormattedNumber({
-        value: startDisplayPrice,
-    });
-    const middlePriceString = getFormattedNumber({
-        value: middleDisplayPrice,
-    });
-    const endPriceString = getFormattedNumber({
-        value: endDisplayPrice,
-    });
+    const startPriceString = startDisplayPrice
+        ? getFormattedNumber({
+              value: startDisplayPrice,
+          })
+        : '...';
+
+    const middlePriceString = middleDisplayPrice
+        ? getFormattedNumber({
+              value: middleDisplayPrice,
+          })
+        : '...';
+
+    const endPriceString = endDisplayPrice
+        ? getFormattedNumber({
+              value: endDisplayPrice,
+          })
+        : '...';
+
+    const liquidityProviderFeeString = liquidityFee
+        ? (liquidityFee * 100).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          }) + ' %'
+        : '...';
 
     const extraInfo = [
         {
@@ -85,13 +100,13 @@ function LimitExtraInfo(props: propsIF) {
             title: 'Minimum Rebate Rate',
             tooltipTitle:
                 'The minimum provider fee for swaps in this pool. Provider fees are effectively rebated for limit orders.',
-            data: '0.05%',
+            data: liquidityFee ? '0.05 %' : '...',
         },
         {
             title: 'Current Rebate Rate',
             tooltipTitle:
                 'The current provider fee for swaps. Provider fees are effectively rebated for limit orders.',
-            data: `${liquidityProviderFeeString}%`,
+            data: liquidityProviderFeeString,
         },
     ];
 

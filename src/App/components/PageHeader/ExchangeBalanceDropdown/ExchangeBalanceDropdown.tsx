@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import ExchangeBalance from '../../../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import coins from '../../../../assets/images/coins.svg';
-import NavItem from '../NavItem/NavItem';
-import useKeyPress from '../../../hooks/useKeyPress';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import styles from './ExchangeBalanceDropdown.module.css';
 import Modal from '../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../components/Global/ModalHeader/ModalHeader';
+import ExchangeBalance from '../../../../components/Portfolio/ExchangeBalance/ExchangeBalance';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import useKeyPress from '../../../hooks/useKeyPress';
+import NavItem from '../NavItem/NavItem';
+import styles from './ExchangeBalanceDropdown.module.css';
 export const ExchangeBalanceDropdown = () => {
     const isDevMenuEnabled = false;
     // import.meta.env.VITE_IS_DEV_MENU_ENABLED !== undefined
@@ -64,7 +64,7 @@ export const ExchangeBalanceDropdown = () => {
             {showMobileVersion ? (
                 modalVersion
             ) : (
-                <div className={styles.container}>
+                <div className={styles.exchange_balance_dropdown}>
                     <ExchangeBalance
                         fullLayoutActive={fullLayoutActive}
                         setFullLayoutActive={setFullLayoutActive}

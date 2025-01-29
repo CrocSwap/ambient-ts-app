@@ -1,12 +1,11 @@
-// START: Import Local Files
-import styles from './TokenSelect.module.css';
-import { TokenIF } from '../../../ambient-utils/types';
-import TokenIcon from '../TokenIcon/TokenIcon';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { useContext } from 'react';
-import { UserDataContext } from '../../../contexts/UserDataContext';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
+import { TokenIF } from '../../../ambient-utils/types';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import TokenIcon from '../TokenIcon/TokenIcon';
+import styles from './TokenSelect.module.css';
 
 interface propsIF {
     token: TokenIF;

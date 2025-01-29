@@ -64,8 +64,12 @@ export interface TutorialStepExternalComponent {
 export interface TutorialIF {
     lsKey: string;
     steps: Step[];
-    disableDefault?: boolean;
+    showDefault?: boolean;
     externalComponents?: Map<string, TutorialStepExternalComponent>;
+    helpModal?: {
+        title?: string;
+        content: JSX.Element;
+    };
 }
 
 export interface TutorialStepIF {

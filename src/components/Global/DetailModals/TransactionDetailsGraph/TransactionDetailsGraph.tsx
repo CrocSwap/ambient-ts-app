@@ -2,39 +2,30 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
-import './TransactionDetailsGraph.css';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
-import Spinner from '../../Spinner/Spinner';
-import {
-    formatAmountChartData,
-    formatPoolPriceAxis,
-} from '../../../../utils/numbers';
-import {
-    CachedDataContext,
-    CachedDataContextIF,
-} from '../../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
-import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
+import { toDisplayPrice } from '@crocswap-libs/sdk';
 import moment from 'moment';
+import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { updateZeroPriceCandles } from '../../../../pages/platformAmbient/Chart/ChartUtils/candleDataUtils';
 import {
     lineValue,
     renderCanvasArray,
     setCanvasResolution,
 } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { useMediaQuery } from '@material-ui/core';
-import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
-import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
-import { toDisplayPrice } from '@crocswap-libs/sdk';
-import { ChartContext } from '../../../../contexts/ChartContext';
 import { FlexContainer } from '../../../../styled/Common';
 import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
+    formatAmountChartData,
+    formatPoolPriceAxis,
+} from '../../../../utils/numbers';
+import Spinner from '../../Spinner/Spinner';
+import './TransactionDetailsGraph.css';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -43,6 +34,8 @@ interface TransactionDetailsGraphIF {
     transactionType: string;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
+    middlePriceDisplay?: string | undefined;
+    middlePriceDisplayDenomByMoneyness?: string | undefined;
 }
 
 export default function TransactionDetailsGraph(
@@ -54,16 +47,18 @@ export default function TransactionDetailsGraph(
         transactionType,
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
+        middlePriceDisplay,
+        middlePriceDisplayDenomByMoneyness,
     } = props;
     const {
-        activeNetwork: { graphCacheUrl, chainId, poolIndex },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+        activeNetwork: { GCGO_URL, chainId, poolIndex },
+    } = useContext(AppStateContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
-        useContext<CachedDataContextIF>(CachedDataContext);
+        useContext(CachedDataContext);
 
-    const oneHourMiliseconds = 60 * 60 * 1000;
-    const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;
+    const oneHourMilliseconds = 60 * 60 * 1000;
+    const oneWeekMilliseconds = oneHourMilliseconds * 24 * 7;
     const isServerEnabled =
         import.meta.env.VITE_CACHE_SERVER_IS_ENABLED !== undefined
             ? import.meta.env.VITE_CACHE_SERVER_IS_ENABLED === 'true'
@@ -72,17 +67,8 @@ export default function TransactionDetailsGraph(
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 
-    const {
-        isDenomBase,
-        currentPoolPriceTick,
-        baseToken: baseOnTrade,
-        quoteToken: quoteOnTrade,
-    } = useContext(TradeDataContext);
+    const { isDenomBase } = useContext(TradeDataContext);
     const { chartThemeColors } = useContext(ChartContext);
-
-    const txPoolMatchesTrade =
-        baseTokenAddress.toLowerCase() === baseOnTrade.address.toLowerCase() &&
-        quoteTokenAddress.toLowerCase() === quoteOnTrade.address.toLowerCase();
 
     const [graphData, setGraphData] = useState<any>();
 
@@ -103,8 +89,6 @@ export default function TransactionDetailsGraph(
     const [period, setPeriod] = useState<number | undefined>();
     const [yAxis, setYaxis] = useState<any>();
     const [xAxis, setXaxis] = useState<any>();
-    const [poolPricePixel, setPoolPricePixel] = useState(0);
-    const [poolPrice, setPoolPrice] = useState(0);
     const takeSmallerPeriodForRemoveRange = (diff: number) => {
         if (diff <= 600) {
             return 300;
@@ -180,6 +164,9 @@ export default function TransactionDetailsGraph(
             if (graphData === undefined) {
                 setIsDataLoading(true);
             }
+
+            const nowTime = Date.now();
+
             const time = () => {
                 switch (transactionType) {
                     case 'swap':
@@ -193,20 +180,22 @@ export default function TransactionDetailsGraph(
                             ? timeFirstMintMemo
                             : tx.txTime;
                     default:
-                        return new Date().getTime();
+                        return nowTime;
                 }
             };
 
-            const minTime = time() * 1000 - oneWeekMiliseconds;
+            const minTimeBeforeOffset =
+                time() !== undefined ? time() * 1000 : nowTime;
 
-            const nowTime = Date.now();
+            const minTime = minTimeBeforeOffset - oneWeekMilliseconds;
+
             let diff = (nowTime - minTime) / 200;
 
             if (
                 timeFirstMintMemo &&
                 tx.txTime &&
                 timeFirstMintMemo !== tx.txTime &&
-                Math.abs(tx.txTime - nowTime) < oneWeekMiliseconds
+                Math.abs(tx.txTime - nowTime) < oneWeekMilliseconds
             ) {
                 diff = (Math.abs(tx.txTime - timeFirstMintMemo) * 1000) / 200;
             }
@@ -214,7 +203,7 @@ export default function TransactionDetailsGraph(
                 Math.floor(diff / 1000),
             );
 
-            if (nowTime - time() * 1000 < oneWeekMiliseconds) {
+            if (nowTime - minTimeBeforeOffset * 1000 < oneWeekMilliseconds) {
                 tempPeriod = 3600;
             }
 
@@ -233,7 +222,7 @@ export default function TransactionDetailsGraph(
                     maxNumCandlesNeeded,
                 );
 
-                const offsetInSeconds = oneHourMiliseconds / 1000;
+                const offsetInSeconds = oneHourMilliseconds / 1000;
 
                 const startBoundary =
                     Math.floor(localMaxTime / 1000) + offsetInSeconds;
@@ -260,21 +249,11 @@ export default function TransactionDetailsGraph(
                         quoteDecimals,
                     );
 
-                    const poolPriceDisplay = (
-                        !isAccountView
-                            ? isDenomBase
-                            : !isBaseTokenMoneynessGreaterOrEqual
-                    )
-                        ? 1 / poolPrice
-                        : poolPrice;
-
-                    setPoolPrice(poolPriceDisplay);
-
                     const graphData = await fetchCandleSeriesCroc(
                         fetchEnabled,
                         chainId,
                         poolIndex,
-                        graphCacheUrl,
+                        GCGO_URL,
                         tempPeriod,
                         baseTokenAddress,
                         quoteTokenAddress,
@@ -287,8 +266,12 @@ export default function TransactionDetailsGraph(
 
                     if (graphData) {
                         setIsDataEmpty(false);
+                        const updatedZeroCandles = updateZeroPriceCandles(
+                            graphData.candles,
+                            poolPrice,
+                        );
                         setGraphData(() => {
-                            return graphData.candles;
+                            return updatedZeroCandles;
                         });
                     } else {
                         setGraphData(() => {
@@ -305,14 +288,6 @@ export default function TransactionDetailsGraph(
 
     useEffect(() => {
         if (scaleData !== undefined && chartThemeColors) {
-            const d3LineColor = chartThemeColors.downCandleBorderColor?.copy();
-            const d3RangeTriangleColor =
-                chartThemeColors.downCandleBorderColor?.copy();
-            const d3BandColor = chartThemeColors.downCandleBorderColor?.copy();
-
-            if (d3RangeTriangleColor) d3RangeTriangleColor.opacity = 0.8;
-            if (d3BandColor) d3BandColor.opacity = 0.075;
-
             const lineSeries = d3fc
                 .seriesSvgLine()
                 .xScale(scaleData?.xScale)
@@ -330,10 +305,7 @@ export default function TransactionDetailsGraph(
                 .decorate((selection: any) => {
                     selection
                         .enter()
-                        .style(
-                            'stroke',
-                            d3LineColor ? d3LineColor.toString() : '#7371FC',
-                        );
+                        .style('stroke', chartThemeColors.shareableLineColor);
                 });
 
             setLineSeries(() => {
@@ -351,12 +323,7 @@ export default function TransactionDetailsGraph(
                 selection.enter().attr('class', 'priceLine');
                 selection
                     .enter()
-                    .attr(
-                        'stroke',
-                        d3RangeTriangleColor
-                            ? d3RangeTriangleColor.toString()
-                            : 'rgba(97, 71, 247, 0.8)',
-                    );
+                    .attr('stroke', chartThemeColors.triangleColor);
             });
 
             setPriceLine(() => {
@@ -463,15 +430,11 @@ export default function TransactionDetailsGraph(
                             )
                             .style(
                                 'stroke',
-                                d3RangeTriangleColor
-                                    ? d3RangeTriangleColor.toString()
-                                    : 'rgba(97, 71, 247, 0.8)',
+                                chartThemeColors.triangleColor.toString(),
                             )
                             .style(
                                 'fill',
-                                d3RangeTriangleColor
-                                    ? d3RangeTriangleColor.toString()
-                                    : 'rgba(97, 71, 247, 0.8)',
+                                chartThemeColors.triangleColor.toString(),
                             );
                     });
                 });
@@ -516,14 +479,30 @@ export default function TransactionDetailsGraph(
                 .crossValue((d: any) => d.x)
                 .mainValue((d: any) => d.y)
                 .size(400)
-                .decorate((sel: any) => {
-                    sel.enter().attr('fill', 'rgba(255, 255, 255, 0.2)');
-                    sel.enter().attr('stroke', 'rgba(255, 255, 255, 0.6)');
+                .decorate((sel: any, d: any) => {
+                    if (d.length > 0 && d[0].isBuy !== undefined) {
+                        const strokeColor = d[0].isBuy
+                            ? chartThemeColors.upCandleBorderColor.copy()
+                            : chartThemeColors.downCandleBorderColor.copy();
+
+                        const circleFillColor = d[0].isBuy
+                            ? chartThemeColors.upCandleBodyColor.copy()
+                            : chartThemeColors.downCandleBodyColor.copy();
+
+                        circleFillColor.opacity = 0.3;
+
+                        sel.enter().attr('fill', circleFillColor);
+                        sel.enter().attr('stroke', strokeColor);
+                    }
                 });
 
             setCrossPoint(() => {
                 return crossPoint;
             });
+
+            const fillColor = chartThemeColors.rangeLinesColor.copy();
+
+            fillColor.opacity = 0.075;
 
             const horizontalBand = d3fc
                 .annotationSvgBand()
@@ -532,21 +511,19 @@ export default function TransactionDetailsGraph(
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((selection: any) => {
-                    const time = timeFirstMintMemo
-                        ? timeFirstMintMemo * 1000
-                        : tx.txTime * 1000;
+                    const time =
+                        timeFirstMintMemo !== undefined
+                            ? timeFirstMintMemo === 0
+                                ? Date.now()
+                                : timeFirstMintMemo * 1000
+                            : tx.txTime * 1000;
                     selection
                         .select('path')
                         .style(
                             'transform',
                             'translateX(' + scaleData.xScale(time) + 'px )',
                         );
-                    selection
-                        .select('path')
-                        .attr(
-                            'fill',
-                            d3BandColor ? d3BandColor.toString() : '#7371FC1A',
-                        );
+                    selection.select('path').attr('fill', fillColor);
                 });
 
             setHorizontalBand(() => {
@@ -583,28 +560,30 @@ export default function TransactionDetailsGraph(
     }
 
     useEffect(() => {
-        if (d3PlotGraph) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const svgDiv = d3.select(d3PlotGraph.current) as any;
-
-            if (svgDiv) {
+        try {
+            if (d3PlotGraph) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const resizeObserver = new ResizeObserver((result: any) => {
-                    const width = result[0].contentRect.width;
+                const svgDiv = d3.select(d3PlotGraph.current) as any;
 
-                    if (svgWidth !== width) {
-                        setSvgWidth(width);
-                    } else {
-                        graphData &&
-                            transactionType !== 'liqchange' &&
-                            setIsDataLoading(false);
-                    }
-                });
+                if (svgDiv) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const resizeObserver = new ResizeObserver((result: any) => {
+                        const width = result[0].contentRect.width;
 
-                resizeObserver.observe(svgDiv.node());
+                        if (svgWidth !== width) {
+                            setSvgWidth(width);
+                        } else {
+                            graphData && setIsDataLoading(false);
+                        }
+                    });
 
-                return () => resizeObserver.unobserve(svgDiv.node());
+                    resizeObserver.observe(svgDiv.node());
+
+                    return () => resizeObserver.unobserve(svgDiv.node());
+                }
             }
+        } catch (error) {
+            console.warn();
         }
     }, [graphData, svgWidth]);
 
@@ -640,7 +619,7 @@ export default function TransactionDetailsGraph(
 
             const svg = svgDiv.select('svg').node() as HTMLCanvasElement;
 
-            if (svg) {
+            if (svg && svgWidth) {
                 const svgHeight = svg.getBoundingClientRect().height;
                 xScale.range([0, svgWidth]);
                 yScale.range([svgHeight, 0]);
@@ -713,8 +692,17 @@ export default function TransactionDetailsGraph(
                     const minimumDifferenceMinMax = 75;
 
                     if (result) {
-                        const minTime = result.min * 1000;
-                        const maxTime = result.max * 1000;
+                        if (result.min === 0) {
+                            result.min =
+                                (Date.now() - oneWeekMilliseconds) / 1000;
+                        }
+
+                        if (result.max === 0) {
+                            result.max = Date.now() / 1000;
+                        }
+
+                        const minTime = Math.min(result.min, result.max) * 1000;
+                        const maxTime = Math.max(result.min, result.max) * 1000;
                         const maxTimePixel = xScale(maxTime);
 
                         const maxDomainPixel = svgWidth;
@@ -916,31 +904,6 @@ export default function TransactionDetailsGraph(
             });
         }
     }, [scaleData]);
-
-    useEffect(() => {
-        if (
-            poolPricePixel &&
-            scaleData &&
-            graphData.length > 0 &&
-            transactionType === 'liqchange'
-        ) {
-            const lastDataPixel = scaleData.xScale(graphData[0].time * 1000);
-            const diff = lastDataPixel - poolPricePixel * 10 + 10;
-
-            if (lastDataPixel > poolPricePixel * 10) {
-                const newMaxDomain = scaleData?.xScale
-                    .invert(svgWidth + diff)
-                    .getTime();
-
-                const oldMaxDomain = scaleData?.xScale.domain()[1];
-                scaleData?.xScale.domain([
-                    scaleData?.xScale.domain()[0],
-                    Math.max(newMaxDomain, oldMaxDomain),
-                ]);
-            }
-            render();
-        }
-    }, [scaleData, poolPricePixel, graphData]);
 
     useEffect(() => {
         if (scaleData) {
@@ -1215,6 +1178,17 @@ export default function TransactionDetailsGraph(
         });
     };
 
+    const middlePriceDisplayNum = parseFloat(
+        middlePriceDisplay?.replace(',', '') || '0',
+    );
+    const middlePriceDisplayDenomByMoneynessNum = parseFloat(
+        middlePriceDisplayDenomByMoneyness?.replace(',', '') || '0',
+    );
+
+    const middlePriceNum = isAccountView
+        ? middlePriceDisplayDenomByMoneynessNum
+        : middlePriceDisplayNum;
+
     const drawChart = useCallback(
         (
             graphData: any,
@@ -1264,20 +1238,23 @@ export default function TransactionDetailsGraph(
                             if (tx.claimableLiq > 0) {
                                 addExtraCandle(
                                     time / 1000,
-                                    tx.askTickInvPriceDecimalCorrected,
-                                    tx.askTickPriceDecimalCorrected,
+                                    middlePriceNum,
+                                    middlePriceNum,
                                 );
+
+                                const isDenomBaseLocal = isAccountView
+                                    ? !isBaseTokenMoneynessGreaterOrEqual
+                                    : isDenomBase;
+
                                 crossPointJoin(svg, [
                                     [
                                         {
                                             x: time,
-                                            y: (
-                                                !isAccountView
-                                                    ? isDenomBase
-                                                    : !isBaseTokenMoneynessGreaterOrEqual
-                                            )
-                                                ? tx.askTickInvPriceDecimalCorrected
-                                                : tx.askTickPriceDecimalCorrected,
+                                            y: middlePriceNum,
+                                            isBuy:
+                                                (isDenomBaseLocal &&
+                                                    !tx.isBid) ||
+                                                (!isDenomBaseLocal && tx.isBid),
                                         },
                                     ],
                                 ]).call(crossPoint);
@@ -1290,7 +1267,7 @@ export default function TransactionDetailsGraph(
                                                 : !isBaseTokenMoneynessGreaterOrEqual
                                         )
                                             ? tx.askTickInvPriceDecimalCorrected
-                                            : tx.askTickPriceDecimalCorrected,
+                                            : tx.bidTickPriceDecimalCorrected,
 
                                         x: time,
                                     },
@@ -1310,9 +1287,12 @@ export default function TransactionDetailsGraph(
                             transactionType === 'liqchange' &&
                             tx !== undefined
                         ) {
-                            const time = timeFirstMintMemo
-                                ? timeFirstMintMemo * 1000
-                                : tx.txTime * 1000;
+                            const time =
+                                timeFirstMintMemo !== undefined
+                                    ? timeFirstMintMemo * 1000
+                                    : tx.txTime
+                                      ? tx.txTime * 1000
+                                      : Date.now() - oneWeekMilliseconds;
 
                             const timeEnd =
                                 tx.txTime &&
@@ -1321,12 +1301,18 @@ export default function TransactionDetailsGraph(
                                     ? tx.txTime * 1000
                                     : scaleData.xScale.domain()[1].getTime();
 
+                            const removedTime =
+                                tx.positionLiq !== undefined &&
+                                tx.positionLiq === 0
+                                    ? tx.latestUpdateTime * 1000
+                                    : timeEnd;
+
                             scaleData.xScaleCopy.domain(
                                 scaleData.xScale.domain(),
                             );
                             scaleData.xScaleCopy.range([
                                 0,
-                                scaleData.xScale(timeEnd) -
+                                scaleData.xScale(removedTime) -
                                     scaleData.xScale(time),
                             ]);
 
@@ -1348,29 +1334,32 @@ export default function TransactionDetailsGraph(
 
                             horizontalBandData[0] = [bidLine, askLine];
 
-                            const timeStart = timeFirstMintMemo
-                                ? timeFirstMintMemo * 1000
-                                : tx.txTime * 1000;
+                            const timeStart =
+                                timeFirstMintMemo !== undefined
+                                    ? timeFirstMintMemo === 0
+                                        ? Date.now()
+                                        : timeFirstMintMemo * 1000
+                                    : tx.txTime * 1000;
 
                             const rangeLinesDataBid = [
                                 { x: timeStart, y: bidLine },
-                                { x: timeEnd, y: bidLine },
+                                { x: removedTime, y: bidLine },
                             ];
 
                             const rangeLinesDataAsk = [
                                 { x: timeStart, y: askLine },
-                                { x: timeEnd, y: askLine },
+                                { x: removedTime, y: askLine },
                             ];
 
                             const triangleData = [
                                 { x: timeStart, y: bidLine },
                                 {
-                                    x: timeEnd,
+                                    x: removedTime,
                                     y: bidLine,
                                 },
                                 { x: timeStart, y: askLine },
                                 {
-                                    x: timeEnd,
+                                    x: removedTime,
                                     y: askLine,
                                 },
                             ];
@@ -1440,7 +1429,12 @@ export default function TransactionDetailsGraph(
                                 }
                             }
                             verticalLineData.push({
-                                name: isSmallRange ? 'Open' : 'Open Position',
+                                name:
+                                    timeFirstMintMemo === 0
+                                        ? 'Update'
+                                        : isSmallRange
+                                          ? 'Open'
+                                          : 'Open Position',
                                 value: timeStart,
                             });
 
@@ -1466,17 +1460,21 @@ export default function TransactionDetailsGraph(
                         }
 
                         if (transactionType === 'swap' && tx !== undefined) {
+                            const isDenomBaseLocal = isAccountView
+                                ? !isBaseTokenMoneynessGreaterOrEqual
+                                : isDenomBase;
+
                             crossPointJoin(svg, [
                                 [
                                     {
                                         x: tx.txTime * 1000,
-                                        y: (
-                                            !isAccountView
-                                                ? isDenomBase
-                                                : !isBaseTokenMoneynessGreaterOrEqual
-                                        )
+                                        y: isDenomBaseLocal
                                             ? tx.swapInvPriceDecimalCorrected
                                             : tx.swapPriceDecimalCorrected,
+
+                                        isBuy: isDenomBaseLocal
+                                            ? !tx.isBuy
+                                            : tx.isBuy,
                                     },
                                 ],
                             ]).call(crossPoint);
@@ -1511,7 +1509,7 @@ export default function TransactionDetailsGraph(
             justifyContent='center'
             alignItems='center'
         >
-            <Spinner size={100} bg='var(--dark1)' centered />;
+            <Spinner size={100} bg='var(--dark1)' centered />
         </FlexContainer>
     );
 
@@ -1554,32 +1552,6 @@ export default function TransactionDetailsGraph(
                                 'minmax(0em, max-content) auto 1fr auto',
                         }}
                     >
-                        {transactionType === 'liqchange' && (
-                            <TransactionDetailsLiquidityGraph
-                                tx={tx}
-                                isDenomBase={
-                                    !(!isAccountView
-                                        ? isDenomBase
-                                        : !isBaseTokenMoneynessGreaterOrEqual)
-                                }
-                                yScale={scaleData?.yScale}
-                                transactionType={transactionType}
-                                poolPriceDisplay={poolPrice}
-                                setPoolPricePixel={setPoolPricePixel}
-                                poolPricePixel={poolPricePixel}
-                                svgWidth={svgWidth}
-                                lastCandleData={
-                                    graphData ? graphData[0] : undefined
-                                }
-                                setIsDataLoading={setIsDataLoading}
-                                chartThemeColors={chartThemeColors}
-                                currentPoolPriceTick={
-                                    isAccountView && !txPoolMatchesTrade
-                                        ? undefined
-                                        : currentPoolPriceTick
-                                }
-                            />
-                        )}
                         <d3fc-svg
                             id='d3PlotGraph'
                             ref={d3PlotGraph}

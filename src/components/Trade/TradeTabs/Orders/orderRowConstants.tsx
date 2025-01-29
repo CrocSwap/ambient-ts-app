@@ -1,23 +1,23 @@
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { LimitOrderIF, TokenIF } from '../../../../ambient-utils/types';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
-import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
-import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { useContext } from 'react';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { LimitOrderIF, TokenIF } from '../../../../ambient-utils/types';
+import { maxWidth } from '../../../../ambient-utils/types/mediaQueries';
+import { PoolContext } from '../../../../contexts/PoolContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import { RowItem } from '../../../../styled/Components/TransactionTable';
 import {
     limitParamsIF,
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import { RowItem } from '../../../../styled/Components/TransactionTable';
-import { FlexContainer, Text } from '../../../../styled/Common';
-import { Link } from 'react-router-dom';
-import { PoolContext } from '../../../../contexts/PoolContext';
-import { maxWidth } from '../../../../ambient-utils/types/mediaQueries';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
+import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 
 interface propsIF {
     posHashTruncated: string;
@@ -422,19 +422,17 @@ export const orderRowConstants = (props: propsIF) => {
             type={sideType}
             data-label='price'
         >
-            {(
-                <p>
-                    <span>
-                        {isAccountView
-                            ? isTradeDollarizationEnabled
-                                ? displayPriceInUsd
-                                : truncatedDisplayPriceDenomByMoneyness
-                            : isTradeDollarizationEnabled
-                              ? displayPriceInUsd
-                              : truncatedDisplayPrice}
-                    </span>
-                </p>
-            ) || '…'}
+            <p>
+                <span>
+                    {isAccountView
+                        ? isTradeDollarizationEnabled
+                            ? displayPriceInUsd
+                            : truncatedDisplayPriceDenomByMoneyness
+                        : isTradeDollarizationEnabled
+                          ? displayPriceInUsd
+                          : truncatedDisplayPrice}
+                </span>
+            </p>
         </RowItem>
     );
 

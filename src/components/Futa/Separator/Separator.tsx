@@ -1,7 +1,7 @@
-import React from 'react';
 import { motion } from 'framer-motion';
+import React from 'react';
+import { TbTriangleFilled, TbTriangleInvertedFilled } from 'react-icons/tb';
 import styles from './Separator.module.css';
-import { TbTriangleInvertedFilled, TbTriangleFilled } from 'react-icons/tb';
 
 interface SeparatorProps {
     horizontal?: boolean;

@@ -1,22 +1,21 @@
 import { useContext } from 'react';
-import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
-import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
-import { FlexContainer, Text } from '../../../../styled/Common';
+import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 
 interface propsIF {
     initiateLimitOrderMethod: () => Promise<void>;
     tokenAInputQty: string;
     tokenBInputQty: string;
-    insideTickDisplayPrice: number;
     newLimitOrderTransactionHash: string;
     txError: Error | undefined;
     showConfirmation: boolean;
     resetConfirmation: () => void;
-    startDisplayPrice: number;
-    middleDisplayPrice: number;
-    endDisplayPrice: number;
+    startDisplayPrice: number | undefined;
+    middleDisplayPrice: number | undefined;
+    endDisplayPrice: number | undefined;
     onClose: () => void;
     limitAllowed: boolean;
     limitButtonErrorMessage: string;
@@ -60,15 +59,23 @@ export default function ConfirmLimitModal(props: propsIF) {
         value: displayPoolPriceWithDenom,
     });
 
-    const startPriceString = getFormattedNumber({
-        value: startDisplayPrice,
-    });
-    const middlePriceString = getFormattedNumber({
-        value: middleDisplayPrice,
-    });
-    const endPriceString = getFormattedNumber({
-        value: endDisplayPrice,
-    });
+    const startPriceString = startDisplayPrice
+        ? getFormattedNumber({
+              value: startDisplayPrice,
+          })
+        : '...';
+
+    const middlePriceString = middleDisplayPrice
+        ? getFormattedNumber({
+              value: middleDisplayPrice,
+          })
+        : '...';
+
+    const endPriceString = endDisplayPrice
+        ? getFormattedNumber({
+              value: endDisplayPrice,
+          })
+        : '...';
 
     const transactionDetails = (
         <>

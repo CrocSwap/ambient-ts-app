@@ -1,60 +1,45 @@
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { fetchUserRecentChanges } from '../../../ambient-utils/api';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../ambient-utils/constants';
 import {
-    // START: Import React and Dongles
-    useEffect,
-    useState,
-    useContext,
-    useMemo,
-} from 'react';
-// START: Import JSX Functional Components
-import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
-import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
-import TabComponent from '../../Global/TabComponent/TabComponent';
-// import Tokens from '../Tokens/Tokens';
-import styles from './PortfolioTabs.module.css';
-// START: Import Local Files
-import {
-    getPositionData,
-    getLimitOrderData,
     filterLimitArray,
+    getLimitOrderData,
+    getPositionData,
 } from '../../../ambient-utils/dataLayer';
 import {
     LimitOrderIF,
+    LimitOrderServerIF,
     PositionIF,
+    PositionServerIF,
     TokenIF,
     TransactionIF,
-    PositionServerIF,
-    LimitOrderServerIF,
 } from '../../../ambient-utils/types';
+import medal from '../../../assets/images/icons/medal.svg';
+import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
-import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
-import { fetchUserRecentChanges } from '../../../ambient-utils/api';
-import Orders from '../../Trade/TradeTabs/Orders/Orders';
-import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
-import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    GCGO_OVERRIDE_URL,
-} from '../../../ambient-utils/constants';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { TokenContext } from '../../../contexts/TokenContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
-import Points from '../../Global/Account/AccountTabs/Points/Points';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TokenContext } from '../../../contexts/TokenContext';
 import {
     BlastUserXpDataIF,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
-import medal from '../../../assets/images/icons/medal.svg';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { useLocation } from 'react-router-dom';
+import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
+import Points from '../../Global/Account/AccountTabs/Points/Points';
+import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
+import TabComponent from '../../Global/TabComponent/TabComponent';
+import Orders from '../../Trade/TradeTabs/Orders/Orders';
+import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
+import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
+import styles from './PortfolioTabs.module.css';
 
 // interface for React functional component props
 interface propsIF {
@@ -87,8 +72,8 @@ export default function PortfolioTabs(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
-        activeNetwork: { graphCacheUrl, chainId },
-    } = useContext<AppStateContextIF>(AppStateContext);
+        activeNetwork: { GCGO_URL, chainId },
+    } = useContext(AppStateContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
@@ -114,12 +99,8 @@ export default function PortfolioTabs(props: propsIF) {
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
 
-    const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_positions?'
-        : graphCacheUrl + '/user_positions?';
-    const userLimitOrdersCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
-        : graphCacheUrl + '/user_limit_orders?';
+    const userPositionsCacheEndpoint = GCGO_URL + '/user_positions?';
+    const userLimitOrdersCacheEndpoint = GCGO_URL + '/user_limit_orders?';
 
     const getLookupUserPositions = async (accountToSearch: string) => {
         fetch(
@@ -221,7 +202,7 @@ export default function PortfolioTabs(props: propsIF) {
                 chainId: chainId,
                 n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
-                graphCacheUrl: graphCacheUrl,
+                GCGO_URL: GCGO_URL,
                 provider,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,

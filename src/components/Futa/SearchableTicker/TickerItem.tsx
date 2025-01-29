@@ -1,35 +1,39 @@
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { Dispatch, MutableRefObject, SetStateAction, useContext } from 'react';
+import { GoChevronRight } from 'react-icons/go';
 import { Link } from 'react-router-dom';
-import styles from './SearchableTicker.module.css';
-import styles2 from './TickerItem.module.css';
 import {
     AuctionDataIF,
     getFormattedNumber,
     getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
-import { Dispatch, MutableRefObject, SetStateAction, useContext } from 'react';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     getRetrievedAuctionDetailsForAccount,
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
-import { toDisplayQty } from '@crocswap-libs/sdk';
+import styles from './TickerItem.module.css';
 
-interface PropsIF {
+interface propsIF {
     auction: AuctionDataIF;
     setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
     selectedTicker: string | undefined;
     isAccount: boolean | undefined;
+    isCreated: boolean;
+    isMobile: boolean;
     setShowComplete: Dispatch<SetStateAction<boolean>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useRefTicker: MutableRefObject<any>;
 }
-export default function TickerItem(props: PropsIF) {
+export default function TickerItem(props: propsIF) {
     const {
         auction,
         selectedTicker,
         setSelectedTicker,
         isAccount,
+        isCreated,
+        isMobile,
         setShowComplete,
         useRefTicker,
     } = props;
@@ -129,12 +133,16 @@ export default function TickerItem(props: PropsIF) {
         !userDataForAuction?.qtyUnclaimedByUserInAuctionedTokenWei &&
         !userDataForAuction?.qtyUnreturnedToUserInNativeTokenWei;
 
-    const status2 = isUserInTheMoney
-        ? 'var(--text1)'
+    const statusText = isUserInTheMoney
+        ? isAuctionOpen
+            ? 'IN'
+            : 'WON'
         : isUserOutOfTheMoney
-          ? 'var(--orange)'
+          ? isAuctionOpen
+              ? 'OUT'
+              : 'LOST'
           : userActionsCompleted
-            ? 'var(--accent2)'
+            ? 'CLAIMED'
             : undefined;
 
     const filledMarketCapUsdValue =
@@ -147,29 +155,48 @@ export default function TickerItem(props: PropsIF) {
             ? filledMarketCapUsdValue
                 ? getFormattedNumber({
                       value: filledMarketCapUsdValue,
-                      minFracDigits: 0,
-                      maxFracDigits: 0,
-                      isUSD: true,
+                      isTickerDisplay: true,
                   })
                 : '$0'
             : undefined;
 
+    function convertWeiToEth(
+        rawVal: string,
+        decimals: number,
+        trunc: number,
+    ): string {
+        let formattedWei: string = rawVal;
+        while (formattedWei.length < decimals + 1) {
+            formattedWei = 0 + formattedWei;
+        }
+        const positionToSplit: number = formattedWei.length - decimals;
+        const firstPart: string = formattedWei.slice(0, positionToSplit);
+        const lastPart: string = formattedWei.slice(positionToSplit);
+        const output: string = (firstPart + '.' + lastPart).slice(0, trunc);
+        return output;
+    }
+
     return (
         <Link
             ref={(el) => (useRefTicker.current[ticker] = el)}
-            className={`${styles.tickerItemContainer} ${
-                auction?.ticker === selectedTicker && !isAccount
-                    ? styles.active
-                    : ''
-            } 
-            ${
-                auction?.ticker === hoveredTicker &&
-                hoveredTicker !== selectedTicker &&
-                !isAccount
-                    ? styles.hoverActive
-                    : ''
-            }
-            `}
+            className={[
+                //  spacing and visual arrangement styles
+                styles.ticker_item,
+                //  add background highlighting when ticker is active
+                //  ... or when hovered
+                isAccount ||
+                    styles[
+                        auction?.ticker === selectedTicker
+                            ? 'active'
+                            : 'inactive'
+                    ],
+                styles[
+                    auction?.ticker === hoveredTicker &&
+                    hoveredTicker !== selectedTicker
+                        ? 'hoverActive'
+                        : ''
+                ],
+            ].join(' ')}
             to={'/auctions/v1/' + ticker}
             onClick={() => {
                 setSelectedTicker(ticker);
@@ -182,29 +209,27 @@ export default function TickerItem(props: PropsIF) {
                 setHoveredTicker(ticker);
             }}
         >
-            <p className={styles2.ticker_name}>{ticker}</p>
-            <p className={styles.marketCap}>{formattedMarketCap}</p>
-            <p
-                style={{
-                    color:
-                        // set color to orange if time remaining is less than 2 hours
-                        timeRemainingInSec <= 0
-                            ? 'var(--accent1)'
-                            : timeRemainingInSec > 7200
-                              ? 'var(--text1)'
-                              : 'var(--orange)',
-                }}
-            >
-                {timeRemaining}
-            </p>
-            <div className={styles.statusContainer}>
-                {status2 && (
-                    <span
-                        className={styles.tickerStatus}
-                        style={{ background: status2 ? status2 : '' }}
-                    />
+            <div className={styles.ticker_name}>
+                {isMobile || (
+                    <GoChevronRight size={20} className={styles.ticker_arrow} />
                 )}
+                <p>{ticker}</p>
             </div>
+            <p className={styles.market_cap}>{formattedMarketCap}</p>
+            <p className={styles.auction_status}>{statusText}</p>
+            <p className={styles.time_remaining}>{timeRemaining}</p>
+            {isCreated && (
+                <p className={styles.native_tkn_committed}>
+                    {auction.nativeTokenCommitted &&
+                        convertWeiToEth(auction.nativeTokenCommitted, 18, 6)}
+                </p>
+            )}
+            {isCreated && (
+                <p className={styles.native_tkn_reward}>
+                    {auction.nativeTokenReward &&
+                        convertWeiToEth(auction.nativeTokenReward, 18, 6)}
+                </p>
+            )}
         </Link>
     );
 }

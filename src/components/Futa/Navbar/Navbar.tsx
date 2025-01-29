@@ -1,43 +1,43 @@
 // Imports
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FiMoreHorizontal } from 'react-icons/fi';
-import { motion } from 'framer-motion';
-import NetworkSelector from '../../../App/components/PageHeader/NetworkSelector/NetworkSelector';
-import styles from './Navbar.module.css';
-import Logo from '../../../assets/futa/images/futaLogo.svg';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import {
-    chainNumToString,
-    openInNewTab,
-    trimString,
-} from '../../../ambient-utils/dataLayer';
+import { motion } from 'framer-motion';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { FiMoreHorizontal } from 'react-icons/fi';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     DISCORD_LINK,
     DOCS_LINK,
     TWITTER_LINK,
 } from '../../../ambient-utils/constants';
+import {
+    chainNumToString,
+    openInNewTab,
+    trimString,
+} from '../../../ambient-utils/dataLayer';
+import NetworkSelector from '../../../App/components/PageHeader/NetworkSelector/NetworkSelector';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
-import Toggle from '../../Form/Toggle';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 import {
     linkGenMethodsIF,
     swapParamsIF,
     useLinkGen,
 } from '../../../utils/hooks/useLinkGen';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import Toggle from '../../Form/Toggle';
 import NotificationCenter from '../../Global/NotificationCenter/NotificationCenter';
 import TutorialOverlayUrlBased from '../../Global/TutorialOverlay/TutorialOverlayUrlBased';
+import styles from './Navbar.module.css';
 
 // Animation Variants
 const dropdownVariants = {
@@ -63,25 +63,15 @@ const dropdownItemVariants = {
     visible: { opacity: 1, y: 0 },
 };
 
-const linksContainerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1, // Stagger the appearance of child elements
-            delayChildren: 0.2, // Delay before children start appearing
-        },
-    },
-};
-
-const linkItemVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: { opacity: 1, x: 0 },
-};
-
 export default function Navbar() {
     // States
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [replayTutorial, setReplayTutorial] = useState(false);
+    const tutorialBtnRef = useRef<HTMLDivElement>(null);
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    const currentLocationIsHome = location.pathname == '/';
 
     // Context
     const { isConnected } = useWeb3ModalAccount();
@@ -114,6 +104,9 @@ export default function Navbar() {
         setShowHomeVideoLocalStorage,
         showTutosLocalStorage,
         bindShowTutosLocalStorage,
+        skipLandingPage,
+        setSkipLandingPage,
+        setShowLandingPageTemp,
     } = useFutaHomeContext();
 
     // set page title
@@ -128,9 +121,9 @@ export default function Navbar() {
                 pathNoLeadingSlash?.length == 50);
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
         if (pathNoLeadingSlash === '') {
-            document.title = 'FUTA | Fully Universal Ticker Auction';
+            document.title = 'FU/TA | Fully Universal Ticker Auction';
         } else if (pathNoLeadingSlash === 'account') {
-            document.title = 'FUTA | My Account';
+            document.title = 'FU/TA | My Account';
         } else if (isPathValidAddress) {
             const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
             const pathNoPrefixDecoded = decodeURIComponent(pathNoPrefix);
@@ -169,7 +162,8 @@ export default function Navbar() {
     const accountAddress =
         isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
-    const clickLogout = useCallback(async () => {
+    const clickLogout = async () => {
+        setCrocEnv(undefined);
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -179,12 +173,12 @@ export default function Navbar() {
         resetTokenBalances();
         setShowAllData(true);
         disconnectUser();
-        setCrocEnv(undefined);
-    }, []);
+    };
 
     // Custom Hooks
     useOnClickOutside(dropdownRef, clickOutsideHandler);
     const desktopScreen = useMediaQuery('(min-width: 768px)');
+    const isTabletPortrait = useMediaQuery('tabletPortrait');
 
     // Data
     const dropdownData = [
@@ -228,38 +222,17 @@ export default function Navbar() {
         },
     ];
 
-    // Components
-    const linksDisplay = (
-        <motion.div
-            className={styles.desktopLinksContainer}
-            initial='hidden'
-            animate='visible'
-            variants={linksContainerVariants}
-        >
-            {navbarLinks.map((item, idx) => (
-                <motion.div
-                    id={item.id}
-                    key={idx}
-                    className={styles.desktopLink}
-                    variants={linkItemVariants}
-                    style={{
-                        color: location.pathname.includes(item.link)
-                            ? 'var(--text1)'
-                            : '',
-                    }}
-                >
-                    <Link to={item.link}>{item.label}</Link>
-                </motion.div>
-            ))}
-        </motion.div>
-    );
     const connectWagmiButton = (
         <button
             id='connect_wallet_button_page_header'
             onClick={openWalletModal}
             className={styles.connectButton}
         >
-            {desktopScreen ? 'CONNECT WALLET' : 'CONNECT'}
+            {isTabletPortrait
+                ? 'CONNECT'
+                : desktopScreen
+                  ? 'CONNECT WALLET'
+                  : 'CONNECT'}
         </button>
     );
 
@@ -268,14 +241,29 @@ export default function Navbar() {
             variants={dropdownItemVariants}
             className={styles.skipAnimationContainer}
         >
-            <p>Show Home Animation</p>
+            <p>Skip Home Animation</p>
             <Toggle
-                isOn={showHomeVideoLocalStorage}
+                isOn={!showHomeVideoLocalStorage}
                 handleToggle={() =>
                     setShowHomeVideoLocalStorage(!showHomeVideoLocalStorage)
                 }
                 Width={36}
-                id='show_home_video_futa_toggle'
+                id='skip_home_video_futa_toggle'
+                disabled={false}
+            />
+        </motion.div>
+    );
+    const skipLandingPageToggle = (
+        <motion.div
+            variants={dropdownItemVariants}
+            className={styles.skipAnimationContainer}
+        >
+            <p>Skip Home Page</p>
+            <Toggle
+                isOn={skipLandingPage}
+                handleToggle={() => setSkipLandingPage(!skipLandingPage)}
+                Width={36}
+                id='skip landing page_futa_toggle'
                 disabled={false}
             />
         </motion.div>
@@ -299,21 +287,62 @@ export default function Navbar() {
         </motion.div>
     );
 
+    const tabLinks = () => {
+        return (
+            <ul className={styles.navTabs} role='tablist'>
+                {navbarLinks.map((navLink) => (
+                    <li key={navLink.id} className={styles.navItem}>
+                        <div
+                            className={`${styles.navLink} ${
+                                location.pathname.includes(navLink.link)
+                                    ? styles.active
+                                    : styles.not_active
+                            }`}
+                            onMouseDown={() => navigate(navLink.link)}
+                            role='link'
+                            tabIndex={0} // Makes the div focusable for accessibility
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    navigate(navLink.link);
+                                }
+                            }}
+                        >
+                            <span className={styles.slantedText}>
+                                {navLink.label}
+                            </span>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        );
+    };
+
     return (
         <>
-            <div className={styles.container}>
+            <div
+                className={`${styles.container} ${currentLocationIsHome && styles.fixedPositioned}`}
+            >
                 <div className={styles.logoContainer}>
-                    <Link to='/'>
-                        <img src={Logo} alt='futa logo' />
+                    <Link to='/' onClick={() => setShowLandingPageTemp(true)}>
+                        <h3>FU/TA</h3>
                     </Link>
-                    {desktopScreen && linksDisplay}
+                    {desktopScreen && tabLinks()}
                 </div>
                 <div className={styles.rightContainer}>
                     {!desktopScreen && <NetworkSelector customBR={'50%'} />}
+                    <div
+                        className={styles.tutorialBtn}
+                        ref={tutorialBtnRef}
+                        onClick={() => setReplayTutorial(true)}
+                    >
+                        {' '}
+                        <AiOutlineQuestionCircle /> Help
+                    </div>
                     {!isUserConnected && connectWagmiButton}
                     <NotificationCenter />
                     <div className={styles.moreContainer} ref={dropdownRef}>
                         <FiMoreHorizontal
+                            size={25}
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         />
                         {/* <AnimatePresence> */}
@@ -351,6 +380,7 @@ export default function Navbar() {
                                         }`}
                                 </motion.p>
                                 {skipAnimationToggle}
+                                {skipLandingPageToggle}
                                 {showTutosToggle}
                                 <motion.p
                                     className={styles.version}
@@ -376,7 +406,11 @@ export default function Navbar() {
                     </div>
                 </div>
             </div>
-            <TutorialOverlayUrlBased />
+            <TutorialOverlayUrlBased
+                replayTutorial={replayTutorial}
+                setReplayTutorial={setReplayTutorial}
+                tutorialBtnRef={tutorialBtnRef}
+            />
         </>
     );
 }

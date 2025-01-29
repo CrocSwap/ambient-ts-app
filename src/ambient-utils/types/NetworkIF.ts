@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { Provider, Signer } from 'ethers';
 import { TopPool } from '../constants/networks/TopPool';
 import { TokenIF } from './token/TokenIF';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 export interface ChainSpecForWeb3Modal {
     chainId: number;
@@ -14,16 +14,21 @@ export interface ChainSpecForWeb3Modal {
 
 export interface NetworkIF {
     chainId: string;
-    graphCacheUrl: string;
+    GCGO_URL: string;
     chainSpecForWalletConnector: ChainSpecForWeb3Modal;
     evmRpcUrl: string;
+    fallbackRpcUrl: string;
     poolIndex: number;
     gridSize: number;
     defaultPair: TokenIF[];
     defaultPairFuta?: [TokenIF, TokenIF];
     topPools: TopPool[];
+    priorityPool?: TopPool;
     blockExplorer: string;
     displayName: string;
+    tokenPriceQueryAssetPlatform: string | undefined;
+    vaultsEnabled: boolean;
+    tempestApiNetworkName: string;
     chainSpec: ChainSpec;
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
 }

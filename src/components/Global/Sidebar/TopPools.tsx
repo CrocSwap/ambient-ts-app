@@ -1,16 +1,16 @@
-import { PoolQueryFn } from '../../../ambient-utils/dataLayer';
-import { useContext, useEffect, useState } from 'react';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import PoolsListItem from './PoolsListItem';
-import { useLinkGen } from '../../../utils/hooks/useLinkGen';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { PoolQueryFn } from '../../../ambient-utils/dataLayer';
+import { AppStateContext, ExploreContext } from '../../../contexts';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { FlexContainer } from '../../../styled/Common';
 import {
     ItemHeaderContainer,
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../styled/Components/Sidebar';
-import { AppStateContext } from '../../../contexts';
+import { useLinkGen } from '../../../utils/hooks/useLinkGen';
+import PoolsListItem from './PoolsListItem';
 
 interface propsIF {
     cachedQuerySpotPrice: PoolQueryFn;
@@ -19,7 +19,10 @@ interface propsIF {
 export default function TopPools(props: propsIF) {
     const { cachedQuerySpotPrice } = props;
 
-    const { topPools, crocEnv } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const {
+        pools: { topPools },
+    } = useContext(ExploreContext);
 
     const {
         activeNetwork: { chainId },
@@ -34,13 +37,19 @@ export default function TopPools(props: propsIF) {
 
     const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
 
+    const top5pools = useMemo(
+        () => topPools.slice(0, 5),
+
+        [topPools],
+    );
+
     useEffect(() => {
         if (!crocEnv) return;
 
         const fetchSpotPrices = async () => {
             if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
                 return;
-            const spotPricePromises = topPools.map((pool) =>
+            const spotPricePromises = top5pools.map((pool) =>
                 cachedQuerySpotPrice(
                     crocEnv,
                     pool.base.address,
@@ -61,7 +70,7 @@ export default function TopPools(props: propsIF) {
         };
 
         fetchSpotPrices();
-    }, [crocEnv, chainId, poolPriceCacheTime]);
+    }, [crocEnv, chainId, poolPriceCacheTime, top5pools]);
 
     return (
         <FlexContainer
@@ -78,7 +87,7 @@ export default function TopPools(props: propsIF) {
                 )}
             </ItemHeaderContainer>
             <ItemsContainer>
-                {topPools.map((pool, idx) => (
+                {top5pools.map((pool, idx) => (
                     <PoolsListItem
                         pool={pool}
                         key={idx}

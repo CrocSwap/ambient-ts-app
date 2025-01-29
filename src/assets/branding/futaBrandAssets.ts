@@ -1,5 +1,5 @@
-import { brandIF } from './types';
 import large from '../images/logos/large.svg';
+import { brandIF } from './types';
 
 export const futaBrandAssets: brandIF = {
     networks: {
@@ -8,7 +8,6 @@ export const futaBrandAssets: brandIF = {
             // first value in array is default color scheme
             color: ['futa_dark', 'purple_dark', 'purple_light'],
             premiumColor: [],
-            hero: [{ content: 'futa', processAs: 'text' }],
         },
     },
     platformName: 'futa',

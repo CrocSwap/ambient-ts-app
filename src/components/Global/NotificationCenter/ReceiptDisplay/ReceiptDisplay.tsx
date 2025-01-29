@@ -1,38 +1,38 @@
-import styles from './ReceiptDisplay.module.css';
+import { Provider } from 'ethers';
+import { useContext, useEffect, useState } from 'react';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { MdErrorOutline } from 'react-icons/md';
-import {
-    trimString,
-    getChainExplorer,
-} from '../../../../ambient-utils/dataLayer';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { VscClose } from 'react-icons/vsc';
-import { useContext, useEffect, useState } from 'react';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import Spinner from '../../Spinner/Spinner';
+import {
+    getChainExplorer,
+    trimString,
+} from '../../../../ambient-utils/dataLayer';
+import { AppStateContext } from '../../../../contexts';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import { AppStateContext } from '../../../../contexts';
+import Spinner from '../../Spinner/Spinner';
+import styles from './ReceiptDisplay.module.css';
 
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
     hash: string;
+    provider?: Provider;
     txBlockNumber?: number;
     txType: string | undefined;
+    chainId: string | undefined;
 }
 
 export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
-    const { status, hash, txBlockNumber, txType } = props;
-    const { provider } = useContext(CrocEnvContext);
-
+    const { status, hash, txBlockNumber, provider, txType, chainId } = props;
     const {
-        activeNetwork: { chainId },
+        activeNetwork: { chainId: currentChainId },
     } = useContext(AppStateContext);
 
     const { cachedFetchBlockTime } = useContext(CachedDataContext);
     const { removeReceipt } = useContext(ReceiptContext);
 
-    const blockExplorer = getChainExplorer(chainId);
+    const blockExplorer = getChainExplorer(chainId ?? currentChainId);
     const EtherscanTx = `${blockExplorer}tx/${hash}`;
 
     const handleNavigateEtherscan = () => {
@@ -71,14 +71,43 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const [blockTime, setBlockTime] = useState<number | undefined>();
 
     useEffect(() => {
-        (async () => {
+        let intervalId: NodeJS.Timeout;
+        let timeoutId: NodeJS.Timeout;
+
+        const maxDuration = 30000; // 30 seconds in milliseconds
+        const pollingInterval = 2000; // 2 seconds in milliseconds
+
+        const fetchBlockTime = async () => {
             const blockTime =
                 provider && txBlockNumber
                     ? await cachedFetchBlockTime(provider, txBlockNumber)
                     : undefined;
-            if (blockTime) setBlockTime(blockTime);
-        })();
-    }, [provider, txBlockNumber]);
+
+            if (blockTime !== undefined) {
+                setBlockTime(blockTime);
+                clearInterval(intervalId); // Stop polling
+                clearTimeout(timeoutId); // Clear the timeout
+            }
+        };
+
+        if (provider && txBlockNumber) {
+            fetchBlockTime();
+            // Start polling every 2 seconds
+            intervalId = setInterval(fetchBlockTime, pollingInterval);
+
+            // Set a timeout to stop polling after 30 seconds
+            timeoutId = setTimeout(() => {
+                clearInterval(intervalId);
+                console.log('Stopped polling: maximum duration reached.');
+            }, maxDuration);
+        }
+
+        // Cleanup to prevent memory leaks
+        return () => {
+            clearInterval(intervalId);
+            clearTimeout(timeoutId);
+        };
+    }, [provider, txBlockNumber, cachedFetchBlockTime]);
 
     const elapsedTimeInSecondsNum = blockTime
         ? Date.now() / 1000 - blockTime
@@ -99,58 +128,56 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                         : elapsedTimeInSecondsNum < 172800
                           ? '1 day ago'
                           : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago `
-            : 'Pending...';
-
-    const ariaLabel = `${status} transaction of ${txType}`;
+            : status === 'pending'
+              ? 'Pending...'
+              : '';
 
     return (
-        <div
-            className={styles.container}
-            tabIndex={0}
-            role='listitem'
-            aria-label={ariaLabel}
-        >
-            <div className={styles.status}>{handleStatusDisplay(status)}</div>
-            <div className={styles.content}>
-                <div className={styles.info}>
-                    <div className={styles.row}>
-                        {`${
-                            txType ? txType : 'Transaction'
-                        } (${txHashTruncated})`}
-                        <button
-                            style={{
-                                cursor: 'pointer',
-                                background: 'transparent',
-                                outline: 'none',
-                                border: 'none',
-                            }}
-                            tabIndex={0}
-                            aria-label='Remove from notification center'
-                        >
-                            <VscClose
-                                onClick={() => {
-                                    removeReceipt(hash);
-                                }}
-                                size={20}
-                            />
-                        </button>
-                    </div>
+        <div className={styles.nContainer}>
+            <a
+                href={EtherscanTx}
+                className={styles.leftSide}
+                target='_blank'
+                rel='noreferrer'
+                tabIndex={0}
+                aria-label='View on Block Explorer'
+            >
+                <div className={styles.status}>
+                    {handleStatusDisplay(status)}
                 </div>
-                <div className={styles.row}>
-                    <p>{`${handleTxTextDisplay(
-                        status,
-                    )}  ${elapsedTimeString}`}</p>
-                    <a
-                        href={EtherscanTx}
-                        className={styles.action}
-                        target='_blank'
-                        rel='noreferrer'
-                        tabIndex={0}
-                        aria-label='View on Block Explorer'
-                    >
-                        <RiExternalLinkLine size={20} color='var(--accent1)' />
-                    </a>
+                <div className={styles.column}>
+                    {`${txType ? txType : 'Transaction'} (${txHashTruncated})`}
+                    <p>{`${handleTxTextDisplay(status)}  ${elapsedTimeString}`}</p>
                 </div>
+            </a>
+            <div className={`${styles.column} ${styles.alignEnd}`}>
+                <button
+                    style={{
+                        cursor: 'pointer',
+                        background: 'transparent',
+                        outline: 'none',
+                        border: 'none',
+                    }}
+                    tabIndex={0}
+                    aria-label='Remove from notification center'
+                >
+                    <VscClose
+                        onClick={() => {
+                            removeReceipt(hash);
+                        }}
+                        size={20}
+                    />
+                </button>
+                <a
+                    href={EtherscanTx}
+                    className={styles.action}
+                    target='_blank'
+                    rel='noreferrer'
+                    tabIndex={0}
+                    aria-label='View on Block Explorer'
+                >
+                    <RiExternalLinkLine size={20} color='var(--accent1)' />
+                </a>
             </div>
         </div>
     );

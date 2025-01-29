@@ -1,25 +1,27 @@
 import { AnimateSharedLayout } from 'framer-motion';
 import {
+    useCallback,
+    useContext,
     useEffect,
+    useMemo,
     useRef,
     useState,
-    useMemo,
-    useContext,
-    useCallback,
 } from 'react';
-import NotificationTable from './NotificationTable/NotificationTable';
-import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
 import { getReceiptTxHashes } from '../../../ambient-utils/dataLayer';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
+import NotificationTable from './NotificationTable/NotificationTable';
 
 const NotificationCenter = () => {
     const [showNotificationTable, setShowNotificationTable] =
         useState<boolean>(false);
+
     const smallScreen = useMediaQuery('(max-width: 768px)');
 
-    const { pendingTransactions, sessionReceipts } = useContext(ReceiptContext);
+    const { pendingTransactions, sessionReceipts, showRedDot, setShowRedDot } =
+        useContext(ReceiptContext);
 
     const txCount = pendingTransactions.length + sessionReceipts.length;
 
@@ -53,6 +55,14 @@ const NotificationCenter = () => {
             setShowNotificationTable(false);
         }
     };
+    const prevTxCountRef = useRef(txCount);
+
+    useEffect(() => {
+        if (txCount > prevTxCountRef.current) {
+            setShowRedDot(true);
+        }
+        prevTxCountRef.current = txCount;
+    }, [txCount]);
 
     const escFunction = useCallback(
         (event: KeyboardEvent) => {
@@ -81,6 +91,8 @@ const NotificationCenter = () => {
                         pending={currentPendingTransactionsArray.length > 0}
                         showNotificationTable={showNotificationTable}
                         setShowNotificationTable={setShowNotificationTable}
+                        showRedDot={showRedDot}
+                        setShowRedDot={setShowRedDot}
                     />
                 </span>
 

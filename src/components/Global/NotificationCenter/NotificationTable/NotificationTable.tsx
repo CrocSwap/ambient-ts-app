@@ -1,13 +1,13 @@
 import { Dispatch, RefObject, SetStateAction, useContext } from 'react';
 import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
 
-import styles from './NotificationTable.module.css';
-import { FlexContainer } from '../../../../styled/Common';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { FlexContainer } from '../../../../styled/Common';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import Modal from '../../Modal/Modal';
 import ModalHeader from '../../ModalHeader/ModalHeader';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import styles from './NotificationTable.module.css';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;
@@ -30,19 +30,20 @@ const NotificationTable = (props: NotificationTableProps) => {
     const { resetReceiptData, transactionsByType, sessionReceipts } =
         useContext(ReceiptContext);
 
-    const parsedReceipts = sessionReceipts.map((receipt) =>
-        JSON.parse(receipt),
-    );
-
-    const parsedReceiptsDisplay = parsedReceipts.map((receipt, idx) => (
+    const sessionReceiptsDisplay = sessionReceipts.map((receipt, idx) => (
         <ReceiptDisplay
             key={idx}
             status={receipt?.status === 1 ? 'successful' : 'failed'}
             hash={receipt?.hash}
+            provider={receipt?.provider}
             txBlockNumber={receipt?.blockNumber}
             txType={
                 transactionsByType.find((e) => e.txHash === receipt?.hash)
                     ?.txDescription
+            }
+            chainId={
+                transactionsByType.find((e) => e.txHash === receipt?.hash)
+                    ?.chainId
             }
         />
     ));
@@ -55,6 +56,7 @@ const NotificationTable = (props: NotificationTableProps) => {
             txType={
                 transactionsByType.find((e) => e.txHash === tx)?.txDescription
             }
+            chainId={transactionsByType.find((e) => e.txHash === tx)?.chainId}
         />
     ));
 
@@ -70,7 +72,7 @@ const NotificationTable = (props: NotificationTableProps) => {
 
                 <div className={styles.content}>
                     {pendingTransactionsDisplay}
-                    {parsedReceiptsDisplay}
+                    {sessionReceiptsDisplay}
                 </div>
 
                 <FlexContainer justifyContent='center' margin='auto'>

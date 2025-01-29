@@ -1,8 +1,15 @@
 import { Step } from 'intro.js-react';
-import { memo, useContext, useEffect, useRef, useState } from 'react';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import {
+    Dispatch,
+    memo,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { UserDataContext } from '../../../contexts/UserDataContext';
+import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
 import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { futaAuctionsSteps } from '../../../utils/tutorial/Futa/AuctionsSteps';
 import { futaAccountSteps } from '../../../utils/tutorial/Futa/FutaAccountSteps';
@@ -11,18 +18,18 @@ import { TutorialIF, TutorialStepExternalComponent } from '../../Chat/ChatIFs';
 import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
 import styles from './TutorialOverlayUrlBased.module.css';
-import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
-// import { MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
+import TutorialHelpModal from '../TutorialComponent/TutorialHelpModal/TutorialHelpModal';
+// import{ MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
+    replayTutorial: boolean;
+    setReplayTutorial: Dispatch<SetStateAction<boolean>>;
+    tutorialBtnRef: React.RefObject<HTMLDivElement>;
     checkStepHash?: boolean;
 }
 function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
-    const { isUserConnected } = useContext(UserDataContext);
-
-    const { checkStepHash } = props;
-
-    const [showTutorial, setShowTutorial] = useState<boolean>(false);
+    const { checkStepHash, replayTutorial, setReplayTutorial, tutorialBtnRef } =
+        props;
 
     const { currentPage } = useLinkGen();
     const [selectedTutorial, setSelectedTutorial] = useState<
@@ -33,7 +40,8 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     const [isTutoBuild, setIsTutoBuild] = useState<boolean>(false);
     const [stepsFiltered, setStepsFiltered] = useState<Step[]>([]);
 
-    const [replayTutorial, setReplayTutorial] = useState<boolean>(false);
+    const [showTutorial, setShowTutorial] = useState<boolean>(false);
+    const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
 
     const {
         walletModal: { open: openWalletModal },
@@ -51,15 +59,42 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         </button>
     );
 
+    const pulseTutorialBtn = () => {
+        if (tutorialBtnRef.current) {
+            tutorialBtnRef.current.classList.add(styles.pulseAnim);
+            setTimeout(() => {
+                tutorialBtnRef.current?.classList.remove(styles.pulseAnim);
+            }, 5000);
+        }
+    };
+
     const getTutorialObjectForPage = (page: string) => {
         switch (page) {
             case 'auctions':
-                return { lsKey: 'tuto_auctions', steps: futaAuctionsSteps };
+                return {
+                    lsKey: 'tuto_auctions',
+                    steps: futaAuctionsSteps,
+                    helpModal: {
+                        title: 'WHAT IS THIS?',
+                        content: (
+                            <TutorialHelpModal
+                                positiveBtnAction={() => {
+                                    setShowHelpModal(false);
+                                }}
+                                negativeBtnAction={() => {
+                                    setShowTutorial(false);
+                                    pulseTutorialBtn();
+                                    handleHardFinish();
+                                }}
+                                page='auction'
+                            />
+                        ),
+                    },
+                };
             case 'account':
                 return {
                     lsKey: 'tuto_futa_account',
                     steps: futaAccountSteps,
-                    disableDefault: true,
                 };
             case 'auctionCreate':
                 return {
@@ -135,6 +170,14 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         setReplayTutorial(false);
     };
 
+    const handleHardFinish = () => {
+        setShowTutorial(false);
+        setReplayTutorial(false);
+        if (selectedTutorialRef.current?.lsKey) {
+            setLS(selectedTutorialRef.current?.lsKey, new Date().toISOString());
+        }
+    };
+
     const filterRenderedSteps = () => {
         const filteredSteps: Step[] = [];
 
@@ -177,50 +220,63 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     useEffect(() => {
         handleTutoBuild();
         setReplayTutorial(false);
+        if (selectedTutorial?.helpModal) {
+            setShowHelpModal(true);
+        } else {
+            setShowHelpModal(false);
+        }
     }, [selectedTutorial]);
 
-    const replayBtnListener = () => {
-        setReplayTutorial(true);
-    };
+    useEffect(() => {
+        if (replayTutorial) {
+            setShowHelpModal(
+                selectedTutorialRef.current?.helpModal ? true : false,
+            );
+        }
+    }, [replayTutorial]);
 
     const shouldTutoComponentShown =
         validateURL() &&
         stepsFiltered.length > 0 &&
         showTutorial &&
         isTutoBuild &&
-        selectedTutorialRef.current &&
-        !selectedTutorialRef.current.disableDefault &&
+        (selectedTutorialRef.current?.showDefault ||
+            selectedTutorialRef.current?.helpModal) &&
         showTutosLocalStorage;
+
+    if (!shouldTutoComponentShown && filterRenderedSteps().length > 0) {
+        if (tutorialBtnRef.current?.style) {
+            tutorialBtnRef.current.style.display = 'flex';
+        }
+    } else {
+        if (tutorialBtnRef.current?.style) {
+            tutorialBtnRef.current.style.display = 'none';
+        }
+    }
 
     return (
         <>
             {(shouldTutoComponentShown || replayTutorial) &&
                 selectedTutorialRef.current && (
                     <>
-                        <TutorialComponent
-                            key={selectedTutorialRef.current.lsKey}
-                            tutoKey={selectedTutorialRef.current.lsKey}
-                            steps={filterRenderedSteps()}
-                            showSteps={true}
-                            onComplete={handleTutoFinish}
-                            initialTimeout={600}
-                            externalComponents={
-                                selectedTutorialRef.current.externalComponents
-                            }
-                        />
+                        {showHelpModal ? (
+                            selectedTutorialRef.current.helpModal?.content
+                        ) : (
+                            <TutorialComponent
+                                key={selectedTutorialRef.current.lsKey}
+                                tutoKey={selectedTutorialRef.current.lsKey}
+                                steps={filterRenderedSteps()}
+                                showSteps={true}
+                                onComplete={handleTutoFinish}
+                                initialTimeout={600}
+                                externalComponents={
+                                    selectedTutorialRef.current
+                                        .externalComponents
+                                }
+                            />
+                        )}
                     </>
                 )}
-
-            {!shouldTutoComponentShown && filterRenderedSteps().length > 0 && (
-                <div
-                    className={`${styles.replay_tuto_btn} ${!isUserConnected ? styles.not_connected : ' '}`}
-                    onClick={replayBtnListener}
-                >
-                    {' '}
-                    <AiOutlineQuestionCircle />
-                </div>
-            )}
-            {/* {(<div className={`${styles.replay_tuto_btn} ${!isUserConnected ? styles.not_connected  : ' ' }`} onClick={replayBtnListener}> <AiOutlineQuestionCircle /></div>)} */}
         </>
     );
 }

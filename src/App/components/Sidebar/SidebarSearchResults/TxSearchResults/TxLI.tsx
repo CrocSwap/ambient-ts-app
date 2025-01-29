@@ -1,6 +1,6 @@
-import { Results } from '../../../../../styled/Components/Sidebar';
-import { TransactionIF } from '../../../../../ambient-utils/types';
 import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
+import { TransactionIF } from '../../../../../ambient-utils/types';
+import { Results } from '../../../../../styled/Components/Sidebar';
 import { EntityType, getTxType } from '../../../../functions/getTxType';
 
 interface propsIF {

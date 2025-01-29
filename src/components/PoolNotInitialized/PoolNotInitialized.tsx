@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { uriToHttp } from '../../ambient-utils/dataLayer';
-import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { TokenIF } from '../../ambient-utils/types';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import TokenIcon from '../Global/TokenIcon/TokenIcon';
 import styles from './PoolNotInitialized.module.css';
 

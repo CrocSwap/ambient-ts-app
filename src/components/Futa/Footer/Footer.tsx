@@ -1,15 +1,15 @@
-import { MdOutlineExplore, MdOutlineSwapVerticalCircle } from 'react-icons/md';
-import styles from './Footer.module.css';
-import { RiAccountCircleLine } from 'react-icons/ri';
-import { FiPlusCircle } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import DesktopFooter from './DesktopFooter';
 import { useContext } from 'react';
+import { FiPlusCircle } from 'react-icons/fi';
+import { MdOutlineExplore, MdOutlineSwapVerticalCircle } from 'react-icons/md';
+import { RiAccountCircleLine } from 'react-icons/ri';
+import { Link, useLocation } from 'react-router-dom';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { chainNumToString } from '../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import DesktopFooter from './DesktopFooter';
+import styles from './Footer.module.css';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -29,6 +29,7 @@ const itemVariants = {
 
 export default function Footer() {
     const { tokenA, tokenB } = useContext(TradeDataContext);
+    const location = useLocation();
 
     const paramsSlug = formSlugForPairParams({
         chain: chainNumToString(tokenA.chainId),
@@ -39,25 +40,59 @@ export default function Footer() {
         {
             label: 'Explore',
             link: '/auctions',
-            icon: <MdOutlineExplore size={24} color='var(--text1)' />,
+            icon: (
+                <MdOutlineExplore
+                    size={24}
+                    color={
+                        location.pathname.includes('auctions')
+                            ? 'var(--text1)'
+                            : 'var(--text2)'
+                    }
+                />
+            ),
         },
         {
             label: 'Create',
             link: '/create',
-            icon: <FiPlusCircle size={24} color='var(--text1)' />,
+            icon: (
+                <FiPlusCircle
+                    size={24}
+                    color={
+                        location.pathname.includes('create')
+                            ? 'var(--text1)'
+                            : 'var(--text2)'
+                    }
+                />
+            ),
         },
         {
             label: 'Swap',
             link: '/swap/' + paramsSlug,
             icon: (
-                <MdOutlineSwapVerticalCircle size={24} color='var(--text1)' />
+                <MdOutlineSwapVerticalCircle
+                    size={24}
+                    color={
+                        location.pathname.includes('swap')
+                            ? 'var(--text1)'
+                            : 'var(--text2)'
+                    }
+                />
             ),
         },
 
         {
             label: 'Account',
             link: '/account',
-            icon: <RiAccountCircleLine size={24} color='var(--text1)' />,
+            icon: (
+                <RiAccountCircleLine
+                    size={24}
+                    color={
+                        location.pathname.includes('account')
+                            ? 'var(--text1)'
+                            : 'var(--text2)'
+                    }
+                />
+            ),
         },
     ];
 
@@ -65,7 +100,7 @@ export default function Footer() {
 
     if (desktopScreen) return <DesktopFooter />;
 
-    return (
+    return location.pathname == '/' ? null : (
         <motion.footer
             className={styles.container}
             initial='hidden'
@@ -78,7 +113,19 @@ export default function Footer() {
                     className={styles.footerContainer}
                     variants={itemVariants}
                 >
-                    <Link to={item.link} className={styles.footerItem}>
+                    <Link
+                        to={item.link}
+                        className={styles.footerItem}
+                        style={{
+                            color: location.pathname.includes(
+                                item.label === 'Explore'
+                                    ? 'auctions'
+                                    : item.label.toLowerCase(),
+                            )
+                                ? 'var(--text1)'
+                                : 'var(--text2)',
+                        }}
+                    >
                         {item.icon}
                         {item.label}
                     </Link>

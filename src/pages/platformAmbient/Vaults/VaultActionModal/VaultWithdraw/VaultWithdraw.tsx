@@ -1,34 +1,35 @@
 import {
     getFormattedNumber,
     uriToHttp,
+    waitForTransaction,
 } from '../../../../../ambient-utils/dataLayer';
+import Button from '../../../../../components/Form/Button';
 import TokenIcon from '../../../../../components/Global/TokenIcon/TokenIcon';
 import RemoveRangeWidth from '../../../../../components/RangeActionModal/RemoveRangeWidth/RemoveRangeWidth';
 import { FlexContainer } from '../../../../../styled/Common';
 import styles from './VaultWithdraw.module.css';
-import Button from '../../../../../components/Form/Button';
 
-import { TokenIF, AllVaultsServerIF } from '../../../../../ambient-utils/types';
-import Modal from '../../../../../components/Global/Modal/Modal';
-import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import {
-    NUM_GWEI_IN_WEI,
     GAS_DROPS_ESTIMATE_VAULT_WITHDRAWAL,
-    IS_LOCAL_ENV,
+    NUM_GWEI_IN_WEI,
+    VAULT_TX_L1_DATA_FEE_ESTIMATE,
 } from '../../../../../ambient-utils/constants';
 import {
+    AllVaultsServerIF,
+    TokenIF,
+    VaultStrategy,
+} from '../../../../../ambient-utils/types';
+import Modal from '../../../../../components/Global/Modal/Modal';
+import ModalHeader from '../../../../../components/Global/ModalHeader/ModalHeader';
+import {
+    AppStateContext,
     ChainDataContext,
     CrocEnvContext,
     ReceiptContext,
     UserDataContext,
 } from '../../../../../contexts';
-import {
-    TransactionError,
-    isTransactionReplacedError,
-    isTransactionFailedError,
-} from '../../../../../utils/TransactionError';
 
 import { MdEdit } from 'react-icons/md';
 import useKeyPress from '../../../../../App/hooks/useKeyPress';
@@ -39,6 +40,7 @@ interface propsIF {
     balanceMainAsset: bigint | undefined;
     mainAssetBalanceDisplayQty: string;
     onClose: () => void;
+    strategy: VaultStrategy;
 }
 export default function VaultWithdraw(props: propsIF) {
     const {
@@ -47,13 +49,17 @@ export default function VaultWithdraw(props: propsIF) {
         mainAssetBalanceDisplayQty,
         vault,
         balanceMainAsset,
+        strategy,
     } = props;
     const [showSubmitted, setShowSubmitted] = useState(false);
     const [removalPercentage, setRemovalPercentage] = useState(100);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
+    const { ethMainnetUsdPrice, crocEnv, provider } =
+        useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
-
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const {
         addPendingTx,
         addReceipt,
@@ -80,14 +86,14 @@ export default function VaultWithdraw(props: propsIF) {
             BigInt(10000);
 
         const balanceVault = await crocEnv
-            .tempestVault(vault.address, vault.mainAsset)
+            .tempestVault(vault.address, vault.mainAsset, strategy)
             .balanceVault(userAddress);
 
         const withdrawalQtyVaultBalance =
             (balanceVault * BigInt(removalPercentage)) / BigInt(100);
 
         const tx = await crocEnv
-            .tempestVault(vault.address, vault.mainAsset)
+            .tempestVault(vault.address, vault.mainAsset, strategy)
             .redeemZap(
                 withdrawalQtyVaultBalance,
                 withdrawalQtyMainAssetBigintMinusSlippage,
@@ -97,6 +103,7 @@ export default function VaultWithdraw(props: propsIF) {
         if (tx?.hash) {
             addPendingTx(tx?.hash);
             addTransactionByType({
+                chainId: chainId,
                 userAddress: userAddress || '',
                 txHash: tx.hash,
                 txType: 'Withdraw',
@@ -105,34 +112,27 @@ export default function VaultWithdraw(props: propsIF) {
         } else {
             setShowSubmitted(false);
         }
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            setShowSubmitted(false);
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                removePendingTx(error.hash);
 
-                const newTransactionHash = error.replacement.hash;
-                addPendingTx(newTransactionHash);
-
-                updateTransactionHash(error.hash, error.replacement.hash);
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
-                console.error({ error });
-                receipt = error.receipt;
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                );
+            } catch (e) {
+                setShowSubmitted(false);
+                console.error({ e });
             }
-        }
 
-        if (receipt) {
-            addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.hash);
-            setShowSubmitted(false);
+            if (receipt) {
+                addReceipt(receipt);
+                removePendingTx(receipt.hash);
+                setShowSubmitted(false);
+            }
         }
     };
 
@@ -274,7 +274,7 @@ export default function VaultWithdraw(props: propsIF) {
 
             setWithdrawGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + VAULT_TX_L1_DATA_FEE_ESTIMATE,
                     isUSD: true,
                 }),
             );

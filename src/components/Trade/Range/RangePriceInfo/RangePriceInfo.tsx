@@ -1,13 +1,12 @@
-// START: Import Local Files
-import styles from './RangePriceInfo.module.css';
 import { memo, useContext, useEffect, useState } from 'react';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import styles from './RangePriceInfo.module.css';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 
 // interface for component props
 interface propsIF {
@@ -30,6 +29,7 @@ interface propsIF {
           }
         | undefined;
     isAmbient: boolean;
+    estRangeApr?: number;
 }
 
 // central react functional component
@@ -39,6 +39,7 @@ function RangePriceInfo(props: propsIF) {
         // aprPercentage,
         pinnedDisplayPrices,
         isAmbient,
+        estRangeApr,
     } = props;
     const {
         activeNetwork: { chainId },
@@ -49,7 +50,6 @@ function RangePriceInfo(props: propsIF) {
         setIsTradeDollarizationEnabled,
         poolPriceDisplay,
     } = useContext(PoolContext);
-    const { crocEnv } = useContext(CrocEnvContext);
 
     const { isDenomBase, baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -91,13 +91,12 @@ function RangePriceInfo(props: propsIF) {
     const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncated;
 
     const updateMainnetPricesAsync = async () => {
-        if (!crocEnv) return;
         const baseTokenPrice =
-            (await cachedFetchTokenPrice(baseToken.address, chainId, crocEnv))
+            (await cachedFetchTokenPrice(baseToken.address, chainId))
                 ?.usdPrice || 0;
 
         const quoteTokenPrice =
-            (await cachedFetchTokenPrice(quoteToken.address, chainId, crocEnv))
+            (await cachedFetchTokenPrice(quoteToken.address, chainId))
                 ?.usdPrice || 0;
 
         if (baseTokenPrice) {
@@ -117,13 +116,8 @@ function RangePriceInfo(props: propsIF) {
 
     useEffect(() => {
         setUserFlippedMaxMinDisplay(false);
-
         updateMainnetPricesAsync();
-    }, [
-        crocEnv !== undefined,
-        baseToken.address + quoteToken.address,
-        poolPriceDisplay,
-    ]);
+    }, [baseToken.address + quoteToken.address, poolPriceDisplay]);
 
     useEffect(() => {
         if (!pinnedMinPrice || !pinnedMaxPrice) return;
@@ -205,6 +199,52 @@ function RangePriceInfo(props: propsIF) {
         </div>
     );
 
+    const aprPrecision = !estRangeApr
+        ? undefined
+        : estRangeApr < 0.01
+          ? 3
+          : estRangeApr < 2
+            ? 2
+            : estRangeApr > 100
+              ? 0
+              : 1;
+
+    const estRangeAprString =
+        estRangeApr === undefined
+            ? undefined
+            : estRangeApr
+              ? getFormattedNumber({
+                    value: estRangeApr,
+                    isPercentage: true,
+                    minFracDigits: aprPrecision,
+                    maxFracDigits: aprPrecision,
+                }) + ' %'
+              : '…';
+
+    // JSX frag for APR estimate
+    const aprEstimate =
+        estRangeAprString !== undefined ? (
+            <div className={styles.price_display}>
+                <div className={styles.title_wrapper}>
+                    <h4 className={styles.price_title}>Estimated APR</h4>
+                    <TooltipComponent
+                        title={
+                            'Estimated APR is based on selected range width, historical volume, fee rate, and pool liquidity. This value is only a historical estimate, and does not account for divergence loss from large price swings. Very concentrated or unbalanced ranges are more likely to go out of range and not earn fees while out of range. Returns not guaranteed.'
+                        }
+                    />
+                </div>
+                <span
+                    id='max_price_readable'
+                    className={styles.max_price}
+                    style={{
+                        color: estRangeApr ? 'var(--accent3)' : 'var(--text2)',
+                    }}
+                >
+                    {estRangeAprString}
+                </span>
+            </div>
+        ) : undefined;
+
     // TODO: remove unnecessary top-level wrapper
 
     return (
@@ -218,6 +258,7 @@ function RangePriceInfo(props: propsIF) {
                 {/* {aprDisplay} */}
                 {minimumPrice}
                 {maximumPrice}
+                {aprEstimate ? aprEstimate : null}
             </div>
         </div>
     );

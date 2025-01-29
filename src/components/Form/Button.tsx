@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from './Button.module.css';
 import { brand } from '../../ambient-utils/constants';
+import styles from './Button.module.css';
 
 interface propsIF {
     idForDOM: string;
@@ -25,7 +25,6 @@ export default function Button(props: propsIF) {
         title,
         flat,
         customAriaLabel,
-        // width,
         style,
         thin,
     } = props;
@@ -52,7 +51,13 @@ export default function Button(props: propsIF) {
         <button
             id={idForDOM}
             style={{
-                ...(thin ? { height: '28px', width: '156px', padding: 0 } : {}),
+                ...(thin
+                    ? {
+                          height: '28px',
+                          width: '156px',
+                          padding: 0,
+                      }
+                    : {}),
                 ...style, // Merge with style prop
             }}
             onClick={action}

@@ -1,11 +1,11 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import { LiquidityRangeIF } from '../../../../../ambient-utils/types';
-import { getActiveLiqDepth } from './AreaSeries';
 import { ChartThemeIF } from '../../../../../contexts/ChartContext';
-const lineSellColor = 'rgba(115, 113, 252)';
-const lineBuyColor = 'rgba(205, 193, 255)';
+import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
+import { getActiveLiqDepth } from './AreaSeries';
+const lineSellColor = 'rgba(239, 83, 80)';
+const lineBuyColor = 'rgba(38,166,154)';
 
 export function createLineSeries(
     xScale: d3.ScaleLinear<number, number>,
@@ -29,25 +29,23 @@ export function createLineSeries(
 export function decorateForLiquidityLine(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     series: any,
-    threshold: number,
     chartThemeColors: ChartThemeIF,
+    liqType: 'bid' | 'ask',
 ) {
     const d3BidColor = chartThemeColors.liqBidColor;
     const d3AskColor = chartThemeColors.liqAskColor;
 
-    series.decorate(
-        (context: CanvasRenderingContext2D, d: LiquidityDataLocal[]) => {
-            if (d[0]?.liqPrices > threshold) {
-                context.strokeStyle = d3BidColor
-                    ? d3BidColor.toString()
-                    : lineSellColor;
-            } else {
-                context.strokeStyle = d3AskColor
-                    ? d3AskColor.toString()
-                    : lineBuyColor;
-            }
-        },
-    );
+    series.decorate((context: CanvasRenderingContext2D) => {
+        if (liqType === 'bid') {
+            context.strokeStyle = d3BidColor
+                ? d3BidColor.toString()
+                : lineSellColor;
+        } else {
+            context.strokeStyle = d3AskColor
+                ? d3AskColor.toString()
+                : lineBuyColor;
+        }
+    });
 }
 
 export function createLiquidityLineSeries(
@@ -86,14 +84,14 @@ export function createLiquidityLineSeries(
             context.lineWidth = 1.5;
             if (liqType === 'bid') {
                 context.strokeStyle =
-                    chartThemeColors && chartThemeColors.downCandleBorderColor
-                        ? chartThemeColors.downCandleBorderColor.toString()
+                    chartThemeColors && chartThemeColors.liqBidColor
+                        ? chartThemeColors.liqBidColor.toString()
                         : lineSellColor;
             }
             if (liqType === 'ask') {
                 context.strokeStyle =
-                    chartThemeColors && chartThemeColors.upCandleBorderColor
-                        ? chartThemeColors.upCandleBorderColor.toString()
+                    chartThemeColors && chartThemeColors.liqAskColor
+                        ? chartThemeColors.liqAskColor.toString()
                         : lineBuyColor;
             }
         });

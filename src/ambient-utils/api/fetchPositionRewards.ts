@@ -1,12 +1,11 @@
-// import { USE_MOCK_POSITION_REWARDS_DATA } from '../constants';
-// import { getFormattedNumber } from '../dataLayer';
-import { IS_LOCAL_ENV } from '../constants';
+// import{ USE_MOCK_POSITION_REWARDS_DATA } from '../constants';
+// import{ getFormattedNumber } from '../dataLayer';
 
 import {
-    PositionIF,
-    BlastPositionPointsServerIF,
     BlastPositionGoldServerIF,
+    BlastPositionPointsServerIF,
     BlastRewardsDataIF,
+    PositionIF,
 } from '../types';
 
 interface argsIF {
@@ -29,10 +28,6 @@ function mapPositionRewardsResponseToPositionRewards(
 
 export const fetchPositionRewardsData = async (args: argsIF) => {
     const { position } = args;
-    IS_LOCAL_ENV &&
-        console.log(
-            `Fetching Xp for positionId ${position.serverPositionId} for user ${position.user}...`,
-        );
 
     const positionPointsEndpointBase =
         position.positionType === 'ambient'

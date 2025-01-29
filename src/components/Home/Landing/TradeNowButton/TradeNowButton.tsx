@@ -1,17 +1,17 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { chainNumToString } from '../../../../ambient-utils/dataLayer';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import {
     StyledLink,
     TradeNowButtonText,
 } from '../../../../styled/Components/Home';
-import { chainNumToString } from '../../../../ambient-utils/dataLayer';
 import {
     linkGenMethodsIF,
     marketParamsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { useNavigate } from 'react-router-dom';
 
 interface propsIF {
     fieldId: string;

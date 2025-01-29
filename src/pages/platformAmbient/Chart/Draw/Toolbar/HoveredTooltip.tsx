@@ -1,4 +1,4 @@
-import { TooltipArrow, Tooltip, TooltipLabel } from './HoveredTooltipCss';
+import { Tooltip, TooltipArrow, TooltipLabel } from './HoveredTooltipCss';
 
 function HoveredTooltip(props: {
     hoveredTool: string;

@@ -1,9 +1,9 @@
 import {
     createContext,
-    SetStateAction,
     Dispatch,
-    useState,
     ReactNode,
+    SetStateAction,
+    useState,
 } from 'react';
 
 export interface RangeContextIF {
@@ -33,7 +33,7 @@ export interface RangeContextIF {
     setIsLinesSwitched: Dispatch<SetStateAction<boolean | undefined>>;
 }
 
-export const RangeContext = createContext<RangeContextIF>({} as RangeContextIF);
+export const RangeContext = createContext({} as RangeContextIF);
 
 export const RangeContextProvider = (props: { children: ReactNode }) => {
     // low and high bounds of range to display in DOM for advanced mode

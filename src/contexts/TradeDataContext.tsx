@@ -1,3 +1,4 @@
+import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import {
     createContext,
     Dispatch,
@@ -8,17 +9,17 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { TokenIF } from '../ambient-utils/types';
-import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { getDefaultPairForChain, mainnetETH } from '../ambient-utils/constants';
+import { getDefaultPairForChain } from '../ambient-utils/constants';
+import { MAINNET_TOKENS } from '../ambient-utils/constants/networks/ethereumMainnet';
 import {
     isBtcPair,
     isETHPair,
     isStablePair,
     translateTokenSymbol,
 } from '../ambient-utils/dataLayer';
-import { TokenContext } from './TokenContext';
+import { TokenIF } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
+import { TokenContext } from './TokenContext';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -62,9 +63,7 @@ export interface TradeDataContextIF {
     addToBlackList: (tokenPair: string, timeParam: number) => void;
 }
 
-export const TradeDataContext = createContext<TradeDataContextIF>(
-    {} as TradeDataContextIF,
-);
+export const TradeDataContext = createContext({} as TradeDataContextIF);
 // Have to set these values to something on load, so we use default pair
 // for default chain. Don't worry if user is coming in to another chain,
 // since these will get updated by useUrlParams() in any context where a
@@ -88,11 +87,19 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     const tokensMatchingA =
         savedTokenASymbol === 'ETH'
             ? [dfltTokenA]
-            : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', true);
+            : tokens.getTokensByNameOrSymbol(
+                  savedTokenASymbol || '',
+                  chainId,
+                  true,
+              );
     const tokensMatchingB =
         savedTokenBSymbol === 'ETH'
             ? [dfltTokenA]
-            : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', true);
+            : tokens.getTokensByNameOrSymbol(
+                  savedTokenBSymbol || '',
+                  chainId,
+                  true,
+              );
 
     const firstTokenMatchingA = tokensMatchingA[0] || undefined;
     const firstTokenMatchingB = tokensMatchingB[0] || undefined;
@@ -182,7 +189,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
 
-    const [soloToken, setSoloToken] = useState<TokenIF>(mainnetETH);
+    const [soloToken, setSoloToken] = useState<TokenIF>(MAINNET_TOKENS.ETH);
 
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         useState<boolean>(false);
@@ -220,7 +227,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
 
     const currentPoolPriceTick = useMemo(
         () =>
-            poolPriceNonDisplay === undefined
+            poolPriceNonDisplay === undefined || poolPriceNonDisplay === 0
                 ? 0
                 : Math.log(poolPriceNonDisplay) / Math.log(1.0001),
         [poolPriceNonDisplay],

@@ -1,32 +1,33 @@
-import { CrocImpact } from '@crocswap-libs/sdk';
+import { CrocImpact, fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
 import {
     Dispatch,
+    memo,
     SetStateAction,
     useContext,
     useEffect,
-    useState,
-    memo,
     useRef,
+    useState,
 } from 'react';
+import { precisionOfInput } from '../../../ambient-utils/dataLayer';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import useDebounce from '../../../App/hooks/useDebounce';
+import { AppStateContext } from '../../../contexts';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../styled/Common';
-import {
-    precisionOfInput,
-    truncateDecimals,
-} from '../../../ambient-utils/dataLayer';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { formatTokenInput } from '../../../utils/numbers';
+import {
+    formatTokenInput,
+    normalizeExponential,
+    stringToBigInt,
+} from '../../../utils/numbers';
 import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { AppStateContext } from '../../../contexts';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -83,6 +84,7 @@ function SwapTokenInput(props: propsIF) {
     } = useContext(AppStateContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
+    const { isUserOnline } = useContext(AppStateContext);
     const {
         tokenABalance,
         tokenBBalance,
@@ -133,8 +135,23 @@ function SwapTokenInput(props: propsIF) {
     };
 
     useEffect(() => {
-        handleBlockUpdate();
-    }, [lastBlockNumber, contextMatchesParams, isTokenAPrimary]);
+        (async () => {
+            if (
+                isUserOnline &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId
+            ) {
+                handleBlockUpdate();
+            }
+        })();
+    }, [
+        isUserOnline,
+        lastBlockNumber,
+        contextMatchesParams,
+        isTokenAPrimary,
+        crocEnv,
+        chainId,
+    ]);
 
     useEffect(() => {
         if (shouldSwapDirectionReverse) {
@@ -144,12 +161,12 @@ function SwapTokenInput(props: propsIF) {
     }, [shouldSwapDirectionReverse]);
 
     useEffect(() => {
-        if (debouncedLastInput !== undefined) {
+        if (isUserOnline && debouncedLastInput !== undefined) {
             isTokenAPrimary
                 ? handleTokenAChangeEvent(debouncedLastInput)
                 : handleTokenBChangeEvent(debouncedLastInput);
         }
-    }, [debouncedLastInput]);
+    }, [debouncedLastInput, isUserOnline]);
 
     const lastQuery = useRef({ isAutoUpdate: false, inputValue: '' });
 
@@ -157,7 +174,12 @@ function SwapTokenInput(props: propsIF) {
         input: string,
         sellToken: boolean,
     ): Promise<number | undefined> {
-        if (isNaN(parseFloat(input)) || parseFloat(input) <= 0 || !crocEnv) {
+        if (
+            !isUserOnline ||
+            isNaN(parseFloat(input)) ||
+            parseFloat(input) <= 0 ||
+            !crocEnv
+        ) {
             setIsLiquidityInsufficient(false);
 
             return undefined;
@@ -180,60 +202,72 @@ function SwapTokenInput(props: propsIF) {
             });
         }
         if (sellToken) {
-            let precisionForTruncation = 6;
+            const estimatedBuyBigInt = impact?.buyQty
+                ? stringToBigInt(impact.buyQty, tokenB.decimals)
+                : 0n;
 
-            const rawTokenBQty = impact?.buyQty ? parseFloat(impact.buyQty) : 0;
+            const precisionForTruncation =
+                tokenB.decimals < 6
+                    ? tokenB.decimals
+                    : estimatedBuyBigInt <
+                        fromDisplayQty('0.01', tokenB.decimals)
+                      ? tokenB.decimals
+                      : estimatedBuyBigInt >
+                          fromDisplayQty('100', tokenB.decimals)
+                        ? 2
+                        : estimatedBuyBigInt >
+                            fromDisplayQty('2', tokenB.decimals)
+                          ? 3
+                          : 6;
 
-            // find the largest precision that doesn't exceed the token's decimal places
-            while (
-                precisionOfInput(
-                    rawTokenBQty.toPrecision(precisionForTruncation),
-                ) > tokenB.decimals &&
-                precisionForTruncation > 1
-            ) {
-                precisionForTruncation--;
-            }
-            const truncatedTokenBQty = rawTokenBQty
-                ? rawTokenBQty < 2
-                    ? rawTokenBQty
-                          .toPrecision(precisionForTruncation)
-                          .replace(/\.?0+$/, '')
-                    : truncateDecimals(rawTokenBQty, rawTokenBQty < 100 ? 3 : 2)
-                : '';
+            const normalizedEstimatedBuyString = normalizeExponential(
+                toDisplayQty(estimatedBuyBigInt, tokenB.decimals),
+                precisionForTruncation,
+            );
 
             // prevent writing result of impact query to the UI if a new query has been made
-            if (lastQuery.current.inputValue === input) {
-                setBuyQtyString(truncatedTokenBQty);
+            if (
+                stringToBigInt(
+                    lastQuery.current.inputValue,
+                    tokenA.decimals,
+                ) === stringToBigInt(input, tokenA.decimals)
+            ) {
+                setBuyQtyString(normalizedEstimatedBuyString);
                 setIsBuyLoading(false);
             }
         } else {
-            let precisionForTruncation = 6;
+            const estimatedSellBigInt = impact?.buyQty
+                ? stringToBigInt(impact.sellQty, tokenA.decimals)
+                : 0n;
 
-            const rawTokenAQty = impact?.sellQty
-                ? parseFloat(impact.sellQty)
-                : 0;
+            const precisionForTruncation =
+                tokenA.decimals < 6
+                    ? tokenA.decimals
+                    : estimatedSellBigInt <
+                        fromDisplayQty('0.01', tokenA.decimals)
+                      ? tokenA.decimals
+                      : estimatedSellBigInt >
+                          fromDisplayQty('100', tokenA.decimals)
+                        ? 2
+                        : estimatedSellBigInt >
+                            fromDisplayQty('2', tokenA.decimals)
+                          ? 3
+                          : 6;
 
-            // find the largest precision that doesn't exceed the token's decimal places
-            while (
-                precisionOfInput(
-                    rawTokenAQty.toPrecision(precisionForTruncation),
-                ) > tokenA.decimals &&
-                precisionForTruncation > 1
-            ) {
-                precisionForTruncation--;
-            }
-
-            const truncatedTokenAQty = rawTokenAQty
-                ? rawTokenAQty < 2
-                    ? rawTokenAQty
-                          .toPrecision(precisionForTruncation)
-                          .replace(/\.?0+$/, '')
-                    : truncateDecimals(rawTokenAQty, rawTokenAQty < 100 ? 3 : 2)
-                : '';
+            const normalizedEstimatedSellString = normalizeExponential(
+                toDisplayQty(estimatedSellBigInt, tokenA.decimals),
+                precisionForTruncation,
+            );
 
             // prevent writing result of impact query to the UI if a new query has been made
-            if (lastQuery.current.inputValue === input) {
-                setSellQtyString(truncatedTokenAQty);
+            const lastQueryBigInt = stringToBigInt(
+                lastQuery.current.inputValue,
+                tokenB.decimals,
+            );
+            const currentQueryBigInt = stringToBigInt(input, tokenB.decimals);
+
+            if (lastQueryBigInt === currentQueryBigInt) {
+                setSellQtyString(normalizedEstimatedSellString);
                 setIsSellLoading(false);
             }
         }
@@ -304,6 +338,13 @@ function SwapTokenInput(props: propsIF) {
                 isAutoUpdate: true,
                 inputValue: primaryQuantity,
             };
+            if (precisionOfInput(primaryQuantity) > tokenA.decimals) {
+                setBuyQtyString('');
+                setSellQtyString('');
+                setPrimaryQuantity('');
+                setIsBuyLoading(false);
+                return;
+            }
             await refreshImpact(primaryQuantity, true);
         }
     };
@@ -330,6 +371,13 @@ function SwapTokenInput(props: propsIF) {
                 isAutoUpdate: true,
                 inputValue: primaryQuantity,
             };
+            if (precisionOfInput(primaryQuantity) > tokenB.decimals) {
+                setBuyQtyString('');
+                setSellQtyString('');
+                setPrimaryQuantity('');
+                setIsSellLoading(false);
+                return;
+            }
             await refreshImpact(primaryQuantity, false);
         }
     };
@@ -348,8 +396,12 @@ function SwapTokenInput(props: propsIF) {
 
     // refresh token data when swap module initializes
     useEffect(() => {
-        refreshTokenData();
-    }, []);
+        (async () => {
+            if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
+                await refreshTokenData();
+            }
+        })();
+    }, [crocEnv, chainId, isUserOnline]);
 
     useEffect(() => {
         if (isTokenAPrimary) {
@@ -442,7 +494,7 @@ function SwapTokenInput(props: propsIF) {
                 handleToggleDexSelection={() => toggleDexSelection('B')}
                 showWallet={isUserConnected}
                 hideWalletMaxButton
-                handleRefresh={refreshTokenData}
+                handleRefresh={primaryQuantity ? refreshTokenData : undefined}
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setBuyQtyString(formatTokenInput(val, tokenB, isMax));
                 }}

@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../ambient-utils/constants';
+import { getLocalStorageItem } from '../ambient-utils/dataLayer';
+import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
+import { linkGenMethodsIF, useLinkGen } from '../utils/hooks/useLinkGen';
 import { CandleContext } from './CandleContext';
 import { ChartContext } from './ChartContext';
-import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 import { DataLoadingContext } from './DataLoadingContext';
-import { linkGenMethodsIF, useLinkGen } from '../utils/hooks/useLinkGen';
 import { TradeDataContext } from './TradeDataContext';
-import { getLocalStorageItem } from '../ambient-utils/dataLayer';
-import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../ambient-utils/constants';
 
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
@@ -41,9 +41,7 @@ export interface TradeTableContextIF {
     setHideEmptyPositionsOnAccount: (val: boolean) => void;
 }
 
-export const TradeTableContext = createContext<TradeTableContextIF>(
-    {} as TradeTableContextIF,
-);
+export const TradeTableContext = createContext({} as TradeTableContextIF);
 
 export const TradeTableContextProvider = (props: {
     children: React.ReactNode;

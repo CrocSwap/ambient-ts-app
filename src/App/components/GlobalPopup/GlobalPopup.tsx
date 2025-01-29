@@ -1,7 +1,7 @@
-import styles from './GlobalPopup.module.css';
-import { VscClose } from 'react-icons/vsc';
 import { memo, useContext } from 'react';
+import { VscClose } from 'react-icons/vsc';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import styles from './GlobalPopup.module.css';
 
 function GlobalPopup() {
     const {

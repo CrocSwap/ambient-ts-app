@@ -1,25 +1,25 @@
-import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
-import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import {
     Dispatch,
+    MutableRefObject,
     SetStateAction,
     memo,
     useContext,
     useEffect,
     useRef,
-    MutableRefObject,
 } from 'react';
 import {
     LimitModalAction,
     LimitOrderIF,
 } from '../../../../../ambient-utils/types';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { orderRowConstants } from '../orderRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { OrderRow as OrderRowStyled } from '../../../../../styled/Components/TransactionTable';
-import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { OrderRow as OrderRowStyled } from '../../../../../styled/Components/TransactionTable';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
+import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
+import { orderRowConstants } from '../orderRowConstants';
 interface propsIF {
     limitOrder: LimitOrderIF;
     isAccountView: boolean;

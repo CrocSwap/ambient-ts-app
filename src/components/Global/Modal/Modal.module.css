@@ -31,6 +31,9 @@
     transition: var(--transition);
 }
 
+.noBoxShadow{
+    box-shadow: none !important;
+}
 /* Modal body */
 .modal_body {
     border: solid 1px;
@@ -46,9 +49,9 @@
     border-radius: var(--border-radius);
     overflow: hidden;
     position: relative;
-    /* max-height: 80vh; */
+    
     color: var(--text1);
-    /* min-height: 80vh; */
+   
 }
 
 .no_background_modal {

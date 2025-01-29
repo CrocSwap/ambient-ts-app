@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface DollarPrice {
     value: number;

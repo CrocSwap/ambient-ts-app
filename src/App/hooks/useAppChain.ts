@@ -1,14 +1,27 @@
+import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
 import {
-    getDefaultChainId,
-    validateChainId,
+    baseSepolia,
+    blastMainnet,
+    blastSepolia,
+    ethereumMainnet,
+    ethereumSepolia,
+    plumeMainnet,
+    plumeSepolia,
+    scrollMainnet,
+    scrollSepolia,
+    supportedNetworks,
+    swellMainnet,
+    swellSepolia,
+} from '../../ambient-utils/constants';
+import {
     chainNumToString,
     checkEoaHexAddress,
+    getDefaultChainId,
+    validateChainId,
 } from '../../ambient-utils/dataLayer';
-import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { NetworkIF } from '../../ambient-utils/types';
-import { supportedNetworks } from '../../ambient-utils/constants';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 export const useAppChain = (): {
     activeNetwork: NetworkIF;
@@ -151,18 +164,48 @@ export const useAppChain = (): {
                                 isPathUserXpOrLeaderboard ||
                                 isPathOnExplore
                             ) {
-                                if (
-                                    activeNetwork.chainId !=
-                                    incomingChainFromWallet
-                                ) {
-                                    window.location.reload();
-                                }
+                                // escape the `else` block at the end
+                                null;
                             } else {
                                 linkGenCurrent.navigate();
                             }
                         }
+                        // wallet authenticated, different chain in active app
                         if (activeNetwork.chainId != incomingChainFromWallet) {
-                            window.location.reload();
+                            let nextNetwork: NetworkIF | undefined;
+                            if (incomingChainFromWallet === '0x1') {
+                                nextNetwork = ethereumMainnet;
+                            } else if (incomingChainFromWallet === '0x13e31') {
+                                nextNetwork = blastMainnet;
+                            } else if (incomingChainFromWallet === '0x18231') {
+                                nextNetwork = plumeMainnet;
+                            } else if (incomingChainFromWallet === '0x783') {
+                                nextNetwork = swellMainnet;
+                            } else if (incomingChainFromWallet === '0xaa36a7') {
+                                nextNetwork = ethereumSepolia;
+                            } else if (
+                                incomingChainFromWallet === '0xa0c71fd'
+                            ) {
+                                nextNetwork = blastSepolia;
+                            } else if (incomingChainFromWallet === '0x82750') {
+                                nextNetwork = scrollMainnet;
+                            } else if (incomingChainFromWallet === '0x8274f') {
+                                nextNetwork = scrollSepolia;
+                            } else if (incomingChainFromWallet === '0x18230') {
+                                nextNetwork = plumeSepolia;
+                            } else if (incomingChainFromWallet === '0x784') {
+                                nextNetwork = swellSepolia;
+                            } else if (incomingChainFromWallet === '0x14a34') {
+                                nextNetwork = baseSepolia;
+                            }
+                            if (nextNetwork) {
+                                setActiveNetwork(nextNetwork);
+                            } else {
+                                console.warn(
+                                    'Chain ID from authenticated wallet not recognized. App will stay on the current chain. Current chain is: ',
+                                    activeNetwork,
+                                );
+                            }
                         } else {
                             setIgnoreFirst(false);
                         }

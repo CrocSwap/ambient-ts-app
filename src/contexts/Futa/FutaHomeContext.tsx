@@ -1,9 +1,9 @@
 import React, {
     createContext,
-    useState,
+    ReactNode,
     useContext,
     useEffect,
-    ReactNode,
+    useState,
 } from 'react';
 import { SHOW_TUTOS_DEFAULT } from '../../ambient-utils/constants';
 
@@ -16,6 +16,10 @@ interface FutaHomeContextProps {
     setHasVideoPlayedOnce: React.Dispatch<React.SetStateAction<boolean>>;
     showHomeVideoLocalStorage: boolean;
     setShowHomeVideoLocalStorage: React.Dispatch<React.SetStateAction<boolean>>;
+    skipLandingPage: boolean;
+    setSkipLandingPage: React.Dispatch<React.SetStateAction<boolean>>;
+    showLandingPageTemp: boolean;
+    setShowLandingPageTemp: React.Dispatch<React.SetStateAction<boolean>>;
     showTutosLocalStorage: boolean;
     bindShowTutosLocalStorage: (value: boolean) => void;
 }
@@ -31,6 +35,7 @@ export const FutaHomeContextProvider = ({
 }) => {
     const [isActionButtonVisible, setIsActionButtonVisible] = useState(false);
     const [showTerminal, setShowTerminal] = useState(true);
+    const [showLandingPageTemp, setShowLandingPageTemp] = useState(false);
     const [hasVideoPlayedOnce, setHasVideoPlayedOnce] = useState(false);
     const [showHomeVideoLocalStorage, setShowHomeVideoLocalStorage] = useState(
         () => {
@@ -44,6 +49,10 @@ export const FutaHomeContextProvider = ({
             ? SHOW_TUTOS_DEFAULT === 'true'
             : lsValue === 'true';
     });
+    const [skipLandingPage, setSkipLandingPage] = useState(() => {
+        const saved = localStorage.getItem('skipLandingPage');
+        return saved === null ? false : saved === 'true';
+    });
 
     useEffect(() => {
         localStorage.setItem(
@@ -51,6 +60,10 @@ export const FutaHomeContextProvider = ({
             showHomeVideoLocalStorage.toString(),
         );
     }, [showHomeVideoLocalStorage]);
+
+    useEffect(() => {
+        localStorage.setItem('skipLandingPage', skipLandingPage.toString());
+    }, [skipLandingPage]);
 
     const bindShowTutosLocalStorage = (value: boolean) => {
         localStorage.setItem('showTutosLocalStorage', value.toString());
@@ -70,6 +83,10 @@ export const FutaHomeContextProvider = ({
                 setShowHomeVideoLocalStorage,
                 showTutosLocalStorage,
                 bindShowTutosLocalStorage,
+                skipLandingPage,
+                setSkipLandingPage,
+                showLandingPageTemp,
+                setShowLandingPageTemp,
             }}
         >
             {children}

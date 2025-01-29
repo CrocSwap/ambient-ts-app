@@ -1,26 +1,26 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
+import moment from 'moment';
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { TokenIF, TransactionIF } from '../../../../ambient-utils/types';
+import { maxWidth } from '../../../../ambient-utils/types/mediaQueries';
+import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import { RowItem } from '../../../../styled/Components/TransactionTable';
 import {
     DefaultTooltip,
     TextOnlyTooltip,
 } from '../../../Global/StyledTooltip/StyledTooltip';
-import { TokenIF, TransactionIF } from '../../../../ambient-utils/types';
-import moment from 'moment';
-import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
-import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import React, { useContext } from 'react';
-import { TokenContext } from '../../../../contexts/TokenContext';
-import { FlexContainer, Text } from '../../../../styled/Common';
-import { RowItem } from '../../../../styled/Components/TransactionTable';
-import { Link } from 'react-router-dom';
-import { PoolContext } from '../../../../contexts/PoolContext';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
-import { maxWidth } from '../../../../ambient-utils/types/mediaQueries';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface propsIF {
     txHashTruncated: string;

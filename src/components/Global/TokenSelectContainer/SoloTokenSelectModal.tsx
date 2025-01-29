@@ -1,39 +1,29 @@
+import { ethers } from 'ethers';
 import {
-    useEffect,
-    useMemo,
-    useState,
     Dispatch,
     SetStateAction,
     useContext,
-    ChangeEvent,
+    useEffect,
+    useMemo,
+    useState,
 } from 'react';
-import { TokenIF } from '../../../ambient-utils/types';
-import TokenSelect from '../TokenSelect/TokenSelect';
-import styles from './SoloTokenSelectModal.module.css';
-import SoloTokenImport from './SoloTokenImport';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../contexts/CrocEnvContext';
-import { ethers } from 'ethers';
-import { TokenContext, TokenContextIF } from '../../../contexts/TokenContext';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import {
-    CachedDataContext,
-    CachedDataContextIF,
-} from '../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
-import Modal from '../Modal/Modal';
 import {
-    removeWrappedNative,
     isWrappedNativeToken,
+    removeWrappedNative,
 } from '../../../ambient-utils/dataLayer';
-import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
-import {
-    TradeDataContext,
-    TradeDataContextIF,
-} from '../../../contexts/TradeDataContext';
+import { TokenIF } from '../../../ambient-utils/types';
 import { AppStateContext } from '../../../contexts';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import Modal from '../Modal/Modal';
+import TokenSelect from '../TokenSelect/TokenSelect';
+import SoloTokenImport from './SoloTokenImport';
+import styles from './SoloTokenSelectModal.module.css';
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
@@ -57,9 +47,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         platform = 'ambient',
     } = props;
 
-    const { cachedTokenDetails } =
-        useContext<CachedDataContextIF>(CachedDataContext);
-    const { provider } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    const { cachedTokenDetails } = useContext(CachedDataContext);
+    const { provider } = useContext(CrocEnvContext);
 
     const {
         activeNetwork: { chainId },
@@ -74,10 +63,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         searchType,
         addRecentToken,
         getRecentTokens,
-    } = useContext<TokenContextIF>(TokenContext);
+    } = useContext(TokenContext);
 
-    const { tokenA, tokenB, setSoloToken } =
-        useContext<TradeDataContextIF>(TradeDataContext);
+    const { tokenA, tokenB, setSoloToken } = useContext(TradeDataContext);
 
     // hook to generate a navigation action for when modal is closed
     // no arg ➡ hook will infer destination from current URL path
@@ -273,7 +261,22 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const [hidePlaceholderText, setHidePlaceholderText] =
         useState<boolean>(INPUT_HAS_AUTOFOCUS);
 
-    // const ex = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate atque ipsum dolore mollitia, sunt voluptate blanditiis reprehenderit deleniti, minus amet veniam nulla, natus doloribus a itaque impedit ipsam iste consectetur. Enim laboriosam consequuntur, quisquam quam ea maiores accusantium officia, dolore amet quod ipsa inventore blanditiis accusamus recusandae facere necessitatibus minus?'
+    useEffect(() => {
+        const handlePasteShortcut = async (e: KeyboardEvent) => {
+            // Check for Cmd-V (Mac) or Ctrl-V (Windows/Linux)
+            if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
+                e.preventDefault();
+                const clipboardText = await navigator.clipboard.readText();
+                setInput(clipboardText); // Update the state with clipboard content
+            }
+        };
+
+        window.addEventListener('keydown', handlePasteShortcut);
+
+        return () => {
+            window.removeEventListener('keydown', handlePasteShortcut);
+        };
+    }, []);
 
     return (
         <Modal
@@ -294,17 +297,14 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                 : 'var(--text3)',
                         }}
                         value={rawInput}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             setInput(e.target.value)
                         }
                         spellCheck='false'
                         autoComplete='off'
                         autoFocus={INPUT_HAS_AUTOFOCUS}
-                        // needed to remove placeholder text when focused
                         onFocus={() => setHidePlaceholderText(true)}
-                        // needed to add placeholder text when not focused
                         onBlur={() => setHidePlaceholderText(false)}
-                        // variable placeholder text (disappears when field is focused)
                         placeholder={
                             hidePlaceholderText
                                 ? ''

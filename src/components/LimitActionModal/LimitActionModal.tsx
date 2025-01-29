@@ -1,35 +1,32 @@
-import { useState, useEffect, useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import { LimitOrderIF } from '../../ambient-utils/types';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
-import { LimitOrderIF } from '../../ambient-utils/types';
 
 import {
-    TransactionError,
-    isTransactionReplacedError,
-    isTransactionFailedError,
-} from '../../utils/TransactionError';
-import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
-import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
-import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
-import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { getFormattedNumber } from '../../ambient-utils/dataLayer';
-import ModalHeader from '../Global/ModalHeader/ModalHeader';
-import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
-import Modal from '../Global/Modal/Modal';
-import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
-import Button from '../Form/Button';
-import styles from './LimitActionModal.module.css';
-import { UserDataContext } from '../../contexts/UserDataContext';
-import {
+    GAS_DROPS_ESTIMATE_LIMIT_CLAIM,
     GAS_DROPS_ESTIMATE_LIMIT_REMOVAL,
     NUM_GWEI_IN_WEI,
-    GAS_DROPS_ESTIMATE_LIMIT_CLAIM,
 } from '../../ambient-utils/constants/';
-import { ReceiptContext } from '../../contexts/ReceiptContext';
+import {
+    getFormattedNumber,
+    waitForTransaction,
+} from '../../ambient-utils/dataLayer';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
-import SmolRefuelLink from '../Global/SmolRefuelLink/SmolRefuelLink';
 import { AppStateContext } from '../../contexts';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import Button from '../Form/Button';
+import Modal from '../Global/Modal/Modal';
+import ModalHeader from '../Global/ModalHeader/ModalHeader';
+import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
+import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
+import styles from './LimitActionModal.module.css';
+import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
+import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -41,10 +38,11 @@ interface propsIF {
 export default function LimitActionModal(props: propsIF) {
     const { limitOrder, type, onClose, isAccountView } = props;
     const { userAddress } = useContext(UserDataContext);
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
 
     const {
-        activeNetwork: { poolIndex },
+        activeNetwork: { poolIndex, chainId },
     } = useContext(AppStateContext);
 
     const {
@@ -184,6 +182,7 @@ export default function LimitActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     if (tx?.hash) {
                         addTransactionByType({
+                            chainId: chainId,
                             userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Remove',
@@ -218,6 +217,7 @@ export default function LimitActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     if (tx?.hash) {
                         addTransactionByType({
+                            chainId: chainId,
                             userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Remove',
@@ -248,49 +248,36 @@ export default function LimitActionModal(props: propsIF) {
                 console.error({ error });
                 setTxError(error);
             }
-
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && 'repriced';
-                    removePendingTx(error.hash);
-                    const newTransactionHash = error.replacement.hash;
-                    addPendingTx(newTransactionHash);
-                    addPositionUpdate({
-                        txHash: newTransactionHash,
-                        positionID: posHash,
-                        isLimit: true,
-                        unixTimeAdded: Math.floor(Date.now() / 1000),
-                    });
-                    updateTransactionHash(error.hash, error.replacement.hash);
-                    setNewTxHash(newTransactionHash);
-                    IS_LOCAL_ENV && { newTransactionHash };
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    console.error({ error });
-                    receipt = error.receipt;
+            if (tx) {
+                let receipt;
+                try {
+                    receipt = await waitForTransaction(
+                        provider,
+                        tx.hash,
+                        removePendingTx,
+                        addPendingTx,
+                        updateTransactionHash,
+                        setNewTxHash,
+                        posHash,
+                        addPositionUpdate,
+                    );
+                } catch (e) {
+                    console.error({ e });
                 }
-            }
 
-            if (receipt) {
-                addReceipt(JSON.stringify(receipt));
-                removePendingTx(receipt.hash);
-                if (receipt.status === 1) {
-                    // track removals separately to identify limit mints that were subsequently removed
-                    addPositionUpdate({
-                        positionID: posHash,
-                        isLimit: true,
-                        isFullRemoval: true,
-                        txHash: receipt.hash,
-                        unixTimeReceipt: Math.floor(Date.now() / 1000),
-                    });
+                if (receipt) {
+                    addReceipt(receipt);
+                    removePendingTx(receipt.hash);
+                    if (receipt.status === 1) {
+                        // track removals separately to identify limit mints that were subsequently removed
+                        addPositionUpdate({
+                            positionID: posHash,
+                            isLimit: true,
+                            isFullRemoval: true,
+                            txHash: receipt.hash,
+                            unixTimeReceipt: Math.floor(Date.now() / 1000),
+                        });
+                    }
                 }
             }
         }
@@ -319,6 +306,7 @@ export default function LimitActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     if (tx?.hash) {
                         addTransactionByType({
+                            chainId: chainId,
                             userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Claim',
@@ -353,6 +341,7 @@ export default function LimitActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     if (tx?.hash) {
                         addTransactionByType({
+                            chainId: chainId,
                             userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Claim',
@@ -384,47 +373,36 @@ export default function LimitActionModal(props: propsIF) {
                 setTxError(error);
             }
 
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    removePendingTx(error.hash);
-                    const newTransactionHash = error.replacement.hash;
-                    addPendingTx(newTransactionHash);
-                    addPositionUpdate({
-                        txHash: newTransactionHash,
-                        positionID: posHash,
-                        isLimit: true,
-                        unixTimeAdded: Math.floor(Date.now() / 1000),
-                    });
-                    updateTransactionHash(error.hash, error.replacement.hash);
-                    setNewTxHash(newTransactionHash);
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    console.error({ error });
-                    receipt = error.receipt;
+            if (tx) {
+                let receipt;
+                try {
+                    receipt = await waitForTransaction(
+                        provider,
+                        tx.hash,
+                        removePendingTx,
+                        addPendingTx,
+                        updateTransactionHash,
+                        setNewTxHash,
+                        posHash,
+                        addPositionUpdate,
+                    );
+                } catch (e) {
+                    console.error({ e });
                 }
-            }
 
-            if (receipt) {
-                addReceipt(JSON.stringify(receipt));
-                removePendingTx(receipt.hash);
-                if (receipt.status === 1) {
-                    // track claims separately to identify limit mints that were subsequently removed
-                    addPositionUpdate({
-                        positionID: posHash,
-                        isLimit: true,
-                        isFullRemoval: true,
-                        txHash: receipt.hash,
-                        unixTimeReceipt: Math.floor(Date.now() / 1000),
-                    });
+                if (receipt) {
+                    addReceipt(receipt);
+                    removePendingTx(receipt.hash);
+                    if (receipt.status === 1) {
+                        // track claims separately to identify limit mints that were subsequently removed
+                        addPositionUpdate({
+                            positionID: posHash,
+                            isLimit: true,
+                            isFullRemoval: true,
+                            txHash: receipt.hash,
+                            unixTimeReceipt: Math.floor(Date.now() / 1000),
+                        });
+                    }
                 }
             }
         }
@@ -513,7 +491,6 @@ export default function LimitActionModal(props: propsIF) {
                 />
                 <div className={styles.info_container}>
                     <LimitActionInfo {...limitInfoProps} />
-                    {!showSettings && <SmolRefuelLink />}
                     {showConfirmation ? (
                         <SubmitTransaction
                             type={type === 'Remove' ? 'Remove' : 'Claim'}

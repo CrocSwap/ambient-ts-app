@@ -1,8 +1,8 @@
+import { useEffect, useRef, useState } from 'react';
 import styles from './Pagination.module.css';
-import { useRef, useEffect, useState } from 'react';
-// import { BiDotsHorizontal } from 'react-icons/bi';
-import { IoMdArrowDropleft, IoMdArrowDropright } from 'react-icons/io';
+// import{ BiDotsHorizontal } from 'react-icons/bi';
 import { motion } from 'framer-motion';
+import { IoMdArrowDropleft, IoMdArrowDropright } from 'react-icons/io';
 interface PaginationPropsIF {
     itemsPerPage: number;
     totalItems: number;

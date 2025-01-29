@@ -1,11 +1,16 @@
-import { MutableRefObject, useEffect, useState, useContext, memo } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
+import moment from 'moment';
+import { memo, MutableRefObject, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../../../ambient-utils/dataLayer';
+import { CandleDataIF } from '../../../../../ambient-utils/types';
+import { BrandContext } from '../../../../../contexts/BrandContext';
+import { CandleContext } from '../../../../../contexts/CandleContext';
+import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
 import {
     crosshair,
     isIOS,
@@ -15,12 +20,7 @@ import {
     setCanvasResolution,
     timeGapsValue,
 } from '../../ChartUtils/chartUtils';
-import { CandleContext } from '../../../../../contexts/CandleContext';
 import { correctStyleForData, xAxisTick } from './calculateXaxisTicks';
-import moment from 'moment';
-import { CandleDataIF } from '../../../../../ambient-utils/types';
-import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
-import { BrandContext } from '../../../../../contexts/BrandContext';
 interface xAxisIF {
     scaleData: scaleData | undefined;
     period: number;

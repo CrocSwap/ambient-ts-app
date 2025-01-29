@@ -1,18 +1,19 @@
-import styles from './TooltipComponent.module.css';
+import { memo, useRef, useState } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import {
     DefaultTooltip,
     TextOnlyTooltip,
 } from '../StyledTooltip/StyledTooltip';
-import { memo, useRef, useState } from 'react';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import styles from './TooltipComponent.module.css';
 
 interface TooltipComponentProps {
     title: string | JSX.Element;
     noBg?: boolean;
     usePopups?: boolean;
     icon?: JSX.Element;
+    svgColor?: string;
     placement?:
         | 'right'
         | 'bottom-end'
@@ -57,7 +58,11 @@ function TooltipComponent(props: TooltipComponentProps) {
                     {props.icon ? (
                         props.icon
                     ) : (
-                        <AiOutlineQuestionCircle size={18} />
+                        <AiOutlineQuestionCircle
+                            size={18}
+                            color={props.svgColor ?? 'var(--text2)'}
+                            className='futaStyleSvg'
+                        />
                     )}
                 </div>
             </TextOnlyTooltip>
@@ -81,6 +86,7 @@ function TooltipComponent(props: TooltipComponentProps) {
                         <AiOutlineQuestionCircle
                             size={15}
                             onClick={() => setOpen(!open)}
+                            color={props.svgColor ?? 'var(--text2)'}
                         />
                     )}
                 </div>

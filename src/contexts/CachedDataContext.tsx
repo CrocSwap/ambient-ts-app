@@ -1,41 +1,41 @@
 import React, { createContext } from 'react';
 import {
-    FetchAddrFn,
-    memoizeFetchEnsAddress,
-    memoizeFetchTopPairedToken,
-    FetchTopPairedTokenFn,
-    FetchContractDetailsFn,
-    memoizeFetchContractDetails,
-    memoizeFetchAmbientListWalletBalances,
-    memoizeFetchDexBalances,
-    TokenPriceFn,
-    memoizeTokenPrice,
-    FetchBlockTimeFn,
-    memoizeFetchBlockTime,
     AmbientListBalancesQueryFn,
     DexBalancesQueryFn,
+    FetchAddrFn,
+    FetchBlockTimeFn,
+    FetchContractDetailsFn,
+    FetchTopPairedTokenFn,
+    TokenPriceFn,
+    memoizeFetchAmbientListWalletBalances,
+    memoizeFetchBlockTime,
+    memoizeFetchContractDetails,
+    memoizeFetchDexBalances,
+    memoizeFetchEnsAddress,
+    memoizeFetchTopPairedToken,
+    memoizeTokenPrice,
 } from '../ambient-utils/api';
 
+import { NFTQueryFn, memoizeFetchNFT } from '../ambient-utils/api/fetchNft';
 import {
+    AllPoolStatsFn,
+    AuctionStatusQueryFn,
+    Change24Fn,
+    GlobalAuctionListQueryFn,
+    LiquidityFeeFn,
     PoolStatsFn,
-    memoizePoolStats,
     SpotPriceFn,
+    UserAuctionListQueryFn,
+    memoizeAllPoolStats,
+    memoizeGet24hChange,
+    memoizeGetAuctionStatus,
+    memoizeGetGlobalAuctionsList,
+    memoizeGetLiquidityFee,
+    memoizeGetUserAuctionsList,
+    memoizePoolStats,
     memoizeQuerySpotPrice,
     memoizeQuerySpotTick,
-    memoizeGet24hChange,
-    Change24Fn,
-    memoizeGetLiquidityFee,
-    LiquidityFeeFn,
-    memoizeGetGlobalAuctionsList,
-    GlobalAuctionListQueryFn,
-    UserAuctionListQueryFn,
-    memoizeGetUserAuctionsList,
-    memoizeGetAuctionStatus,
-    AuctionStatusQueryFn,
-    AllPoolStatsFn,
-    memoizeAllPoolStats,
 } from '../ambient-utils/dataLayer';
-import { NFTQueryFn, memoizeFetchNFT } from '../ambient-utils/api/fetchNft';
 
 export interface CachedDataContextIF {
     cachedFetchAmbientListWalletBalances: AmbientListBalancesQueryFn;
@@ -57,9 +57,7 @@ export interface CachedDataContextIF {
     cachedFetchNFT: NFTQueryFn;
 }
 
-export const CachedDataContext = createContext<CachedDataContextIF>(
-    {} as CachedDataContextIF,
-);
+export const CachedDataContext = createContext({} as CachedDataContextIF);
 
 // TODO: refactor to cache in context and use other contexts as dependencies
 export const CachedDataContextProvider = (props: {

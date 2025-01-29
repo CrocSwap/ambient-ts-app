@@ -1,4 +1,4 @@
-import { chainIds } from '../../ambient-utils/types';
+import { chainHexIds } from '../../ambient-utils/types';
 import { skins } from '../../App/hooks/useSkin';
 
 export interface heroItem {
@@ -10,11 +10,11 @@ export type fontSets = 'ambient' | 'futa';
 
 export type networkPrefs = Partial<
     Record<
-        chainIds,
+        chainHexIds,
         {
             color: skins[];
             premiumColor: skins[];
-            hero: heroItem[];
+            cobrandingLogo?: string;
         }
     >
 >;
@@ -27,4 +27,5 @@ export interface brandIF {
     showDexStats: boolean;
     headerImage: string;
     includeCanto: boolean;
+    cobrandingLogo?: string;
 }

@@ -1,23 +1,22 @@
 // eslint-disable-next-line quotes
+import * as d3 from 'd3';
 import {
     DetailedHTMLProps,
     HTMLAttributes,
     MouseEvent,
     MutableRefObject,
 } from 'react';
-import * as d3 from 'd3';
-import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import {
     CandleDataIF,
     LiquidityRangeIF,
 } from '../../../../ambient-utils/types';
+import { skins } from '../../../../App/hooks/useSkin';
+import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import {
     LS_KEY_CHART_ANNOTATIONS,
     initialDisplayCandleCount,
     initialDisplayCandleCountForMobile,
 } from './chartConstants';
-import { getBidPriceValue } from '../Liquidity/LiquiditySeries/AreaSeries';
-import { skins } from '../../../../App/hooks/useSkin';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -88,7 +87,6 @@ export type selectedDrawnData = {
 };
 
 export interface CandleDataChart extends CandleDataIF {
-    isFakeData: boolean;
     isShowData: boolean;
 }
 export type liquidityChartData = {
@@ -249,78 +247,8 @@ export function standardDeviation(arr: any, usePopulation = false) {
     );
 }
 
-export function fillLiqAdvanced(
-    standardDeviation: number,
-    scaleData: scaleData,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    liquidityData: any,
-) {
-    const border = scaleData?.yScale.domain()[1];
-
-    const filledTickNumber = Math.min(border / standardDeviation, 150);
-
-    standardDeviation =
-        filledTickNumber === 150
-            ? (border - liquidityData?.liqBidData[0]?.liqPrices) / 150
-            : standardDeviation;
-
-    if (scaleData !== undefined) {
-        if (
-            border + standardDeviation >=
-            liquidityData?.liqBidData[0]?.liqPrices
-        ) {
-            for (let index = 0; index < filledTickNumber; index++) {
-                liquidityData?.liqBidData.unshift({
-                    activeLiq: 30,
-                    liqPrices:
-                        liquidityData?.liqBidData[0]?.liqPrices +
-                        standardDeviation,
-                    deltaAverageUSD: 0,
-                    cumAverageUSD: 0,
-                });
-
-                liquidityData?.depthLiqBidData.unshift({
-                    activeLiq: liquidityData?.depthLiqBidData[1]?.activeLiq,
-                    liqPrices:
-                        liquidityData?.depthLiqBidData[0]?.liqPrices +
-                        standardDeviation,
-                    deltaAverageUSD: 0,
-                    cumAverageUSD: 0,
-                });
-            }
-        }
-    }
-}
-
 export interface LiquidityRangeIFChart extends LiquidityRangeIF {
     isFakeData?: boolean;
-}
-
-export function fillLiqInfinity(
-    yScaleMaxDomain: number,
-    liquidityBidData: LiquidityRangeIFChart[],
-    isDenomBase: boolean,
-) {
-    if (liquidityBidData.length > 1) {
-        const newFakeValue = yScaleMaxDomain * 2;
-
-        const lastBidData = liquidityBidData[liquidityBidData.length - 1];
-        if (yScaleMaxDomain >= getBidPriceValue(lastBidData, isDenomBase)) {
-            if (isDenomBase) {
-                liquidityBidData.push({
-                    ...lastBidData,
-                    isFakeData: true,
-                    upperBoundInvPriceDecimalCorrected: newFakeValue,
-                });
-            } else {
-                liquidityBidData.push({
-                    ...lastBidData,
-                    isFakeData: true,
-                    lowerBoundPriceDecimalCorrected: newFakeValue,
-                });
-            }
-        }
-    }
 }
 
 export function formatTimeDifference(startDate: Date, endDate: Date): string {
@@ -638,11 +566,20 @@ export const getCssVariable = (activeSkin: skins, variableName: string) => {
         '[data-theme="' + activeSkin + '"]',
     ) as Element;
 
+    if (!themeElement) {
+        console.error(
+            `theme element not found while accessing CSS variable: ${variableName}`,
+        );
+        return d3.rgb(128, 128, 128); // Neutral gray as fallback
+    }
+
     const value = getComputedStyle(themeElement)
         .getPropertyValue(variableName)
         .trim();
 
-    return d3.color(value);
+    const res = d3.color(value);
+
+    return res as d3.RGBColor | d3.HSLColor;
 };
 
 export const getLast15Minutes = (period: number) => {

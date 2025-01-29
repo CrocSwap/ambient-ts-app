@@ -1,21 +1,15 @@
 import { useContext } from 'react';
-import styles from './Footer.module.css';
-import {
-    ChainDataContext,
-    ChainDataContextIF,
-} from '../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import styles from './Footer.module.css';
 
 export default function DesktopFooter() {
     const {
         activeNetwork: { displayName },
-    } = useContext<AppStateContextIF>(AppStateContext);
+    } = useContext(AppStateContext);
     const { nativeTokenUsdPrice, lastBlockNumber, rpcNodeStatus } =
-        useContext<ChainDataContextIF>(ChainDataContext);
+        useContext(ChainDataContext);
 
     if (location.pathname === '/') return null;
 

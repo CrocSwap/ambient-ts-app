@@ -1,7 +1,7 @@
-import styles from './CurveDepth.module.css';
 import { memo } from 'react';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { overlayIF } from '../../../../../App/hooks/useChartSettings';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import styles from './CurveDepth.module.css';
 
 interface propsIF {
     overlayMethods: overlayIF;

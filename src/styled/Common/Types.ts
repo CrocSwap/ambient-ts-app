@@ -84,4 +84,5 @@ export type BoxShadows =
     | 'dark'
     | 'dark1'
     | 'trade'
-    | 'glow-light';
+    | 'glow-light'
+    | 'none';

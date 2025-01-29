@@ -1,19 +1,19 @@
-import { useState, KeyboardEvent, useContext } from 'react';
+import { KeyboardEvent, useContext, useState } from 'react';
 import { FiAlertTriangle } from 'react-icons/fi';
+import { isStablePair } from '../../../ambient-utils/dataLayer';
+import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { SettingsContainer } from '../../../styled/Components/TradeModules';
-import { isStablePair } from '../../../ambient-utils/dataLayer';
 import Button from '../../Form/Button';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
-import Modal from '../Modal/Modal';
-import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import SendToDexBalControl from '../SendToDexBalControl/SendToDexBalControl';
-import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import DollarizationModalControl from '../DollarizationModalControl/DollarizationModalControl';
-import { PoolContext } from '../../../contexts/PoolContext';
+import Modal from '../Modal/Modal';
+import SendToDexBalControl from '../SendToDexBalControl/SendToDexBalControl';
+import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 
 export type TransactionModuleType =
     | 'Swap'

@@ -1,32 +1,32 @@
 import {
-    useEffect,
     Dispatch,
-    SetStateAction,
-    useRef,
-    useContext,
     memo,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useRef,
 } from 'react';
 
-import Transactions from './Transactions/Transactions';
-import Orders from './Orders/Orders';
 import moment from 'moment';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import infoSvg from '../../../assets/images/info.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
-import Ranges from './Ranges/Ranges';
-import TabComponent from '../../Global/TabComponent/TabComponent';
-import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { ChartContext } from '../../../contexts/ChartContext';
-import { CandleDataIF } from '../../../ambient-utils/types';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../styled/Common';
 import { ClearButton } from '../../../styled/Components/TransactionTable';
-import TableInfo from '../TableInfo/TableInfo';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
+import TabComponent from '../../Global/TabComponent/TabComponent';
+import TableInfo from '../TableInfo/TableInfo';
+import Orders from './Orders/Orders';
+import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
+import Ranges from './Ranges/Ranges';
+import Transactions from './Transactions/Transactions';
 interface propsIF {
     filter: CandleDataIF | undefined;
     setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;
@@ -84,6 +84,7 @@ function TradeTabs2(props: propsIF) {
     const rangesProps = {
         notOnTradeRoute: false,
         isAccountView: false,
+        unselectCandle,
     };
 
     // Props for <Transactions/> React Element
@@ -92,18 +93,21 @@ function TradeTabs2(props: propsIF) {
         changeState,
         setSelectedDate,
         isAccountView: false,
+        unselectCandle,
     };
 
     // Props for <Orders/> React Element
     const ordersProps = {
         changeState,
         isAccountView: false,
+        unselectCandle,
     };
 
     const positionsOnlyToggleProps = {
         setTransactionFilter,
         changeState,
         setSelectedDate,
+        unselectCandle,
     };
 
     // data for headings of each of the three tabs

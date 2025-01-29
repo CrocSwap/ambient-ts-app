@@ -53,4 +53,4 @@ const TooltipLabel = styled.label`
     padding: 0px;
 `;
 
-export { TooltipContainer, Tooltip, TooltipArrow, TooltipLabel };
+export { Tooltip, TooltipArrow, TooltipContainer, TooltipLabel };

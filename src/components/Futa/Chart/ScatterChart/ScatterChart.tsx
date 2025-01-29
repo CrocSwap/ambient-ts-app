@@ -1,3 +1,5 @@
+import * as d3 from 'd3';
+import * as d3fc from 'd3fc';
 import {
     MouseEvent,
     useContext,
@@ -6,21 +8,19 @@ import {
     useRef,
     useState,
 } from 'react';
-import Xaxis from './Xaxis';
-import * as d3 from 'd3';
-import * as d3fc from 'd3fc';
+import { useNavigate } from 'react-router-dom';
+import { diffHashSig } from '../../../../ambient-utils/dataLayer';
+import { AuctionsContext } from '../../../../contexts/AuctionsContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
 import {
     getXandYLocationForChart,
     renderCanvasArray,
     setCanvasResolution,
 } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
-import { diffHashSig } from '../../../../ambient-utils/dataLayer';
-import Yaxis from './Yaxis';
 import ScatterTooltip from './ScatterTooltip';
 import useScatterChartData from './useScatterChartData';
-import { useNavigate } from 'react-router-dom';
-import { AuctionsContext } from '../../../../contexts/AuctionsContext';
-import { ChartContext } from '../../../../contexts/ChartContext';
+import Xaxis from './Xaxis';
+import Yaxis from './Yaxis';
 
 export const axisColor = '#939C9E'; // text2
 export const textColor = '#939C9E'; // text2
@@ -142,12 +142,12 @@ export default function ScatterChart() {
                     Math.ceil(maxPrice / maxYValuePow) * maxYValuePow;
 
                 const minYValue = maxPriceDecimalLenght > 5 ? -15000 : -500;
-                const maxDomBuffer = showDayCount > 7 ? 1440 : 120;
+                const maxDomBuffer = calculateXTickStep(showDayCount) / 2;
                 const oneDayMinutes = 1440;
 
                 let maxXValue = showDayCount * oneDayMinutes + maxDomBuffer;
 
-                let minXValue = showDayCount > 7 ? -1441 : -150;
+                let minXValue = -calculateXTickStep(showDayCount) / 2;
 
                 if (afterOneWeek && !showComplete) {
                     maxXValue = oneDayMinutes + 30;
@@ -204,6 +204,30 @@ export default function ScatterChart() {
         }
     }, [xScale, yScale, chartSize, selectedDot]);
 
+    const calculateXTickStep = (showDayCount: number): number => {
+        const oneWeekDay = 7;
+
+        const getDayCountForMonth = (months: number) => oneWeekDay * months * 4;
+
+        const thresholds = [
+            { threshold: getDayCountForMonth(10), step: 1441 * 21 },
+            { threshold: getDayCountForMonth(8), step: 1441 * 14 },
+            { threshold: getDayCountForMonth(5), step: 1441 * 7 },
+            { threshold: getDayCountForMonth(3), step: 1441 * (7 / 2) },
+            { threshold: getDayCountForMonth(1), step: 1441 * (7 / 4) },
+            { threshold: oneWeekDay, step: 1441 },
+        ];
+
+        const defaultStep = 1441 / 4;
+
+        for (const { threshold, step } of thresholds) {
+            if (showDayCount > threshold) {
+                return step;
+            }
+        }
+        return defaultStep;
+    };
+
     useEffect(() => {
         if (xScale && yScale && pointSeries && chartSize) {
             const canvas = d3
@@ -221,14 +245,13 @@ export default function ScatterChart() {
                     const yTicks = yScale.ticks(tickCount);
 
                     const dataPoint: scatterData[] = [];
+
+                    const xTickStep = calculateXTickStep(showDayCount);
+
                     const xTicks =
                         afterOneWeek && !showComplete
                             ? d3.range(0, 1441, 60)
-                            : d3.range(
-                                  0,
-                                  xScale.domain()[0],
-                                  showDayCount > 7 ? 1441 : 1441 / 4,
-                              );
+                            : d3.range(0, xScale.domain()[0], xTickStep);
                     xTicks.forEach((x) => {
                         yTicks.forEach((y) => {
                             dataPoint.push({
@@ -406,6 +429,7 @@ export default function ScatterChart() {
                 showDayCount={showDayCount}
                 chartSize={chartSize}
                 showComplete={showComplete}
+                calculateXTickStep={calculateXTickStep}
             />
             <ScatterTooltip hoveredDot={hoveredDot} selectedDot={selectedDot} />
         </div>

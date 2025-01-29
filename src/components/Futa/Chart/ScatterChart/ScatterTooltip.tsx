@@ -4,9 +4,9 @@ import {
     getTimeDifferenceAbbrev,
     getTimeRemainingAbbrev,
 } from '../../../../ambient-utils/dataLayer';
+import { AuctionsContext } from '../../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { scatterData, textColor } from './ScatterChart';
-import { AuctionsContext } from '../../../../contexts/AuctionsContext';
 
 interface propsIF {
     hoveredDot: scatterData | undefined;

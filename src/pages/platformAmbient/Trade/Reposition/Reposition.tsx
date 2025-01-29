@@ -1,58 +1,49 @@
-// START: Import React and Dongles
-import { useContext, useEffect, useMemo, useState, memo } from 'react';
-import { useLocation, useParams, Navigate } from 'react-router-dom';
 import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 
-// START: Import JSX Components
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
+import Button from '../../../../components/Form/Button';
+import ConfirmRepositionModal from '../../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import RepositionHeader from '../../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
-import ConfirmRepositionModal from '../../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
-import Button from '../../../../components/Form/Button';
-// START: Import Other Local Files
 import styles from './Reposition.module.css';
-import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../../utils/TransactionError';
+import { FiExternalLink } from 'react-icons/fi';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import {
-    GCGO_OVERRIDE_URL,
-    IS_LOCAL_ENV,
     GAS_DROPS_ESTIMATE_REPOSITION,
+    IS_LOCAL_ENV,
     NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants';
-import { FiExternalLink } from 'react-icons/fi';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import { RangeContext } from '../../../../contexts/RangeContext';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import {
-    getPositionData,
     getFormattedNumber,
     getPinnedPriceValuesFromTicks,
-    trimString,
+    getPositionData,
     isStablePair,
+    trimString,
+    waitForTransaction,
 } from '../../../../ambient-utils/dataLayer';
+import RangeWidth from '../../../../components/Form/RangeWidth/RangeWidth';
+import { useModal } from '../../../../components/Global/Modal/useModal';
+import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import { useModal } from '../../../../components/Global/Modal/useModal';
-import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
-import RangeWidth from '../../../../components/Form/RangeWidth/RangeWidth';
 
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { TokenContext } from '../../../../contexts/TokenContext';
+import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
-import SmolRefuelLink from '../../../../components/Global/SmolRefuelLink/SmolRefuelLink';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 function Reposition() {
     // current URL parameter string
@@ -69,16 +60,12 @@ function Reposition() {
         useContext(CrocEnvContext);
 
     const {
-        activeNetwork: { blockExplorer },
+        activeNetwork: { blockExplorer, chainId },
     } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
-    const {
-        gasPriceInGwei,
-        lastBlockNumber,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-    } = useContext(ChainDataContext);
+    const { gasPriceInGwei, lastBlockNumber, isActiveNetworkL2 } =
+        useContext(ChainDataContext);
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
@@ -121,6 +108,8 @@ function Reposition() {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const { position } = (locationState || {}) as { position?: PositionIF };
+
+    const posHash = getPositionHash(position);
 
     const slippageTolerancePercentage = position
         ? isStablePair(position.base, position.quote)
@@ -278,7 +267,7 @@ function Reposition() {
         setNewValueNum(undefined);
         setNewBaseQtyDisplay('...');
         setNewQuoteQtyDisplay('...');
-    }, [position, rangeWidthPercentage]);
+    }, [position?.positionId, rangeWidthPercentage]);
 
     useEffect(() => {
         if (!position) {
@@ -347,6 +336,7 @@ function Reposition() {
             addPendingTx(tx?.hash);
             if (tx?.hash) {
                 addTransactionByType({
+                    chainId: chainId,
                     userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction: 'Reposition',
@@ -368,7 +358,6 @@ function Reposition() {
                         isBid: position.positionLiqQuote === 0,
                     },
                 });
-                const posHash = getPositionHash(position);
                 addPositionUpdate({
                     txHash: tx.hash,
                     positionID: posHash,
@@ -383,38 +372,26 @@ function Reposition() {
             setTxError(error);
         }
 
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                removePendingTx(error.hash);
-                const newTransactionHash = error.replacement.hash;
-                addPendingTx(newTransactionHash);
-
-                updateTransactionHash(error.hash, error.replacement.hash);
-                setNewRepositionTransactionHash(newTransactionHash);
-                const posHash = getPositionHash(position);
-                addPositionUpdate({
-                    txHash: newTransactionHash,
-                    positionID: posHash,
-                    isLimit: false,
-                    unixTimeAdded: Math.floor(Date.now() / 1000),
-                });
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
-                receipt = error.receipt;
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewRepositionTransactionHash,
+                    posHash,
+                    addPositionUpdate,
+                );
+            } catch (e) {
+                console.error({ e });
             }
-        }
-        if (receipt) {
-            addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.hash);
+            if (receipt) {
+                addReceipt(receipt);
+                removePendingTx(receipt.hash);
+            }
         }
     };
 
@@ -473,9 +450,8 @@ function Reposition() {
         setCurrentQuoteQtyDisplayTruncated,
     ] = useState<string>(position?.positionLiqQuoteTruncated || '...');
 
-    const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/position_stats?'
-        : activeNetwork.graphCacheUrl + '/position_stats?';
+    const positionStatsCacheEndpoint =
+        activeNetwork.GCGO_URL + '/position_stats?';
     const poolIndex = position ? lookupChain(position.chainId).poolIndex : 0;
 
     const fetchCurrentCollateral = () => {
@@ -582,16 +558,14 @@ function Reposition() {
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (!crocEnv || !position) return;
+        if (!position) return;
         const basePricePromise = cachedFetchTokenPrice(
             position.base,
             position.chainId,
-            crocEnv,
         );
         const quotePricePromise = cachedFetchTokenPrice(
             position.quote,
             position.chainId,
-            crocEnv,
         );
         Promise.all([basePricePromise, quotePricePromise]).then(
             ([basePrice, quotePrice]) => {
@@ -599,7 +573,7 @@ function Reposition() {
                 setQuotePrice(quotePrice?.usdPrice);
             },
         );
-    }, [position, crocEnv !== undefined]);
+    }, [position]);
 
     const calcNewValue = async () => {
         if (
@@ -763,9 +737,7 @@ function Reposition() {
     // const [l1GasFeePoolInGwei] = useState<number>(
     //     isScroll ? 0.0009 * 1e9 : 0,
     // );
-    const [extraL1GasFeePool] = useState(
-        isActiveNetworkScroll ? 0.03 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeePool] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -873,9 +845,6 @@ function Reposition() {
                         valueLossExceedsThreshold={valueLossExceedsThreshold}
                         isCurrentPositionEmpty={isCurrentPositionEmpty}
                     />
-                    <span style={{ marginRight: '25px', marginBottom: '5px' }}>
-                        <SmolRefuelLink />
-                    </span>
                     <div className={styles.button_container}>
                         {bypassConfirmRepo.isEnabled && showConfirmation ? (
                             <SubmitTransaction

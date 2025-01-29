@@ -1,15 +1,12 @@
-// START: Import React and Dongles
-import { useEffect, useState, useContext, memo, useMemo } from 'react';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
 
-// START: Import JSX Components
+import Button from '../../../components/Form/Button';
 import ExchangeBalance from '../../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import PortfolioBanner from '../../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../../components/Portfolio/PortfolioTabs/PortfolioTabs';
-import Button from '../../../components/Form/Button';
 import ProfileSettings from '../../../components/Portfolio/ProfileSettings/ProfileSettings';
 
-// START: Import Other Local Files
-import { TokenIF } from '../../../ambient-utils/types';
+import { Navigate, useParams } from 'react-router-dom';
 import {
     expandTokenBalances,
     fetchBlastUserXpData,
@@ -17,28 +14,28 @@ import {
     fetchUserXpData,
     IDexTokenBalances,
 } from '../../../ambient-utils/api';
-import { Navigate, useParams } from 'react-router-dom';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { trimString } from '../../../ambient-utils/dataLayer';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { TokenIF } from '../../../ambient-utils/types';
 import { useSimulatedIsUserConnected } from '../../../App/hooks/useSimulatedIsUserConnected';
-import { FlexContainer, Text } from '../../../styled/Common';
+import Modal from '../../../components/Global/Modal/Modal';
+import ModalHeader from '../../../components/Global/ModalHeader/ModalHeader';
+import NFTBannerAccount from '../../../components/Portfolio/PortfolioBanner/PortfolioBannerAccount/NFTBannerAccount';
+import { TokenBalanceContext } from '../../../contexts';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
     BlastUserXpDataIF,
     UserDataContext,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
+import { FlexContainer, Text } from '../../../styled/Common';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Level from '../Level/Level';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import styles from './Portfolio.module.css';
-import Modal from '../../../components/Global/Modal/Modal';
-import NFTBannerAccount from '../../../components/Portfolio/PortfolioBanner/PortfolioBannerAccount/NFTBannerAccount';
-import { TokenBalanceContext } from '../../../contexts';
-import ModalHeader from '../../../components/Global/ModalHeader/ModalHeader';
 
 interface propsIF {
     isLevelsPage?: boolean;
@@ -52,7 +49,7 @@ function Portfolio(props: propsIF) {
 
     const {
         walletModal: { open: openModalWallet },
-        activeNetwork: { chainId, graphCacheUrl },
+        activeNetwork: { chainId, GCGO_URL },
     } = useContext(AppStateContext);
     const {
         userAddress,
@@ -299,7 +296,7 @@ function Portfolio(props: propsIF) {
                         address: resolvedAddress,
                         chain: chainId,
                         crocEnv: crocEnv,
-                        graphCacheUrl: graphCacheUrl,
+                        GCGO_URL: GCGO_URL,
                         _refreshTime: everyFiveMinutes,
                     });
 
@@ -371,7 +368,7 @@ function Portfolio(props: propsIF) {
         chainId,
         everyFiveMinutes,
         connectedAccountActive,
-        graphCacheUrl,
+        GCGO_URL,
     ]);
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);

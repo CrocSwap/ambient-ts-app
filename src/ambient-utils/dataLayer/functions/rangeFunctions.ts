@@ -1,9 +1,9 @@
 import {
     fromDisplayPrice,
-    toDisplayPrice,
-    tickToPrice,
-    MIN_TICK,
     MAX_TICK,
+    MIN_TICK,
+    tickToPrice,
+    toDisplayPrice,
 } from '@crocswap-libs/sdk';
 import { getFormattedNumber, truncateDecimals } from '..';
 

@@ -1,23 +1,23 @@
-import { useContext } from 'react';
-import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { Chip } from '../../../../Form/Chip';
-import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
-import { FiExternalLink } from 'react-icons/fi';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { useContext } from 'react';
+import { FiExternalLink } from 'react-icons/fi';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
     trimString,
 } from '../../../../../ambient-utils/dataLayer';
+import { getPositionHash } from '../../../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { AppStateContext } from '../../../../../contexts';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { FlexContainer } from '../../../../../styled/Common';
 import {
     OrderRow,
     RowItem,
 } from '../../../../../styled/Components/TransactionTable';
-import { FlexContainer } from '../../../../../styled/Common';
-import { UserDataContext } from '../../../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
-import { getPositionHash } from '../../../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { AppStateContext } from '../../../../../contexts';
+import { Chip } from '../../../../Form/Chip';
+import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 
 interface PropsIF {
     transaction: {
@@ -132,13 +132,7 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                     </div>
                 )}
                 {tableView === 'large' && <div>{id}</div>}
-                {tableView === 'large' && <div>{wallet}</div>}
-                {tableView !== 'large' && (
-                    <div>
-                        {id}
-                        {wallet}
-                    </div>
-                )}
+                <div>{wallet}</div>
                 {tableView !== 'small' && (
                     <FlexContainer justifyContent='flex-end'>
                         {isDenomBase

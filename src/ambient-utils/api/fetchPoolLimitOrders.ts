@@ -1,11 +1,10 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GCGO_OVERRIDE_URL } from '../constants';
+import { Provider } from 'ethers';
+import { getLimitOrderData, SpotPriceFn } from '../dataLayer/functions';
 import { LimitOrderServerIF, TokenIF } from '../types';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
-import { getLimitOrderData, SpotPriceFn } from '../dataLayer/functions';
-import { Provider } from 'ethers';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -19,7 +18,7 @@ interface argsIF {
     time?: number;
     timeBefore?: number;
     crocEnv: CrocEnv;
-    graphCacheUrl: string;
+    GCGO_URL: string;
     provider: Provider;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -37,7 +36,7 @@ export const fetchPoolLimitOrders = (args: argsIF) => {
         n,
         timeBefore,
         crocEnv,
-        graphCacheUrl,
+        GCGO_URL,
         provider,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
@@ -45,9 +44,7 @@ export const fetchPoolLimitOrders = (args: argsIF) => {
         cachedEnsResolve,
     } = args;
 
-    const poolLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/pool_limit_orders?'
-        : graphCacheUrl + '/pool_limit_orders?';
+    const poolLimitOrderStatesCacheEndpoint = GCGO_URL + '/pool_limit_orders?';
 
     const poolLimitOrders = fetch(
         timeBefore

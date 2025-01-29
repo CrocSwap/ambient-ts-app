@@ -1,7 +1,4 @@
-import {
-    memo,
-    // useContext
-} from 'react';
+import { memo } from 'react';
 
 import SwapComponent from '../Trade/Swap/Swap';
 import styles from './Swap.module.css';

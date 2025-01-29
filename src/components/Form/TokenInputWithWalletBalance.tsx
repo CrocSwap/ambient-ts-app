@@ -1,16 +1,17 @@
+import { fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
+import { memo } from 'react';
+import { FiRefreshCw } from 'react-icons/fi';
 import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
+import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 import {
-    memo,
-    // useContext
-} from 'react';
+    RefreshButton,
+    RefreshButtonFuta,
+} from '../../styled/Components/TradeModules';
 import { formatTokenInput, stringToBigInt } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
-import { RefreshButton } from '../../styled/Components/TradeModules';
-import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
-import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
-import { fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
+import { brand } from '../../ambient-utils/constants';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -67,6 +68,8 @@ function TokenInputWithWalletBalance(props: propsIF) {
         usdValue,
         percentDiffUsdValue,
     } = props;
+
+    const isFuta = brand === 'futa';
 
     const usdValueForDom =
         usdValue && parseFloat(tokenInput) > 0
@@ -224,14 +227,22 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 usdValue={usdValueForDom}
                 percentDiffUsdValue={percentDiffUsdValue}
             />
-            {handleRefresh && (
-                <RefreshButton
-                    onClick={handleRefresh}
-                    aria-label='Refresh data'
-                >
-                    <FiRefreshCw size={18} />
-                </RefreshButton>
-            )}
+            {handleRefresh &&
+                (isFuta ? (
+                    <RefreshButtonFuta
+                        onClick={handleRefresh}
+                        aria-label='Refresh data'
+                    >
+                        REFRESH
+                    </RefreshButtonFuta>
+                ) : (
+                    <RefreshButton
+                        onClick={handleRefresh}
+                        aria-label='Refresh data'
+                    >
+                        <FiRefreshCw size={18} />
+                    </RefreshButton>
+                ))}
         </>
     );
 }

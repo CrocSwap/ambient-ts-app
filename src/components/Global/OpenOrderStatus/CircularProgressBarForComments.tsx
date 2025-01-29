@@ -1,5 +1,5 @@
-import styles from './OpenOrderStatus.module.css';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
+import styles from './OpenOrderStatus.module.css';
 interface CircularProgressBarProps {
     fillPercentage: number;
     radius?: number;

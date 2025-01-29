@@ -1,6 +1,6 @@
+import { motion } from 'framer-motion';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styles from './AuctionLoader.module.css';
-import { motion } from 'framer-motion';
 
 const messages = [
     { text: '> CONNECTING TO SERVER...' },

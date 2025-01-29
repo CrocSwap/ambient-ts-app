@@ -1,23 +1,25 @@
 import { memo, useContext } from 'react';
-import { ExtraInfo } from '../../TradeModules/ExtraInfo/ExtraInfo';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ExtraInfo } from '../../TradeModules/ExtraInfo/ExtraInfo';
 interface propsIF {
     poolPriceDisplay: string;
     slippageTolerance: number;
-    liquidityProviderFeeString: string;
+    liquidityFee: number | undefined;
     rangeGasPriceinDollars: string | undefined;
     isTokenABase: boolean;
     showExtraInfoDropdown: boolean;
+    estRangeApr: number;
 }
 
 function RangeExtraInfo(props: propsIF) {
     const {
         rangeGasPriceinDollars,
         slippageTolerance,
-        liquidityProviderFeeString,
+        liquidityFee,
         showExtraInfoDropdown,
+        estRangeApr,
     } = props;
 
     const { isDenomBase, baseToken, quoteToken } = useContext(TradeDataContext);
@@ -27,6 +29,24 @@ function RangeExtraInfo(props: propsIF) {
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
+
+    const aprPrecision =
+        estRangeApr < 0.01
+            ? 3
+            : estRangeApr < 2
+              ? 2
+              : estRangeApr > 100
+                ? 0
+                : 1;
+
+    const estRangeAprString = estRangeApr
+        ? getFormattedNumber({
+              value: estRangeApr,
+              isPercentage: true,
+              minFracDigits: aprPrecision,
+              maxFracDigits: aprPrecision,
+          }) + ' %'
+        : '…';
 
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
@@ -43,11 +63,18 @@ function RangeExtraInfo(props: propsIF) {
         ? getFormattedNumber({ value: usdPrice })
         : '…';
 
+    const liquidityProviderFeeString = liquidityFee
+        ? (liquidityFee * 100).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          }) + ' %'
+        : '...';
+
     const extraInfo = [
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'This can be changed in settings.',
-            data: `${slippageTolerance}%`,
+            data: `${slippageTolerance} %`,
         },
         {
             title: 'Current Provider Fee',
@@ -56,7 +83,16 @@ function RangeExtraInfo(props: propsIF) {
             } / ${
                 isDenomBase ? quoteTokenSymbol : baseTokenSymbol
             } liquidity providers.`,
-            data: `${liquidityProviderFeeString}%`,
+            data: liquidityProviderFeeString,
+        },
+        {
+            title: 'Estimated APR',
+            tooltipTitle: `Estimated APR is based on selected range width, historical volume, fee rate, and pool
+                liquidity. This value is only a historical estimate, and does not account
+                for divergence loss from large price swings. 
+                Very concentrated or unbalanced ranges are more likely to go out of range and not earn fees while out of range.
+                Returns not guaranteed.`,
+            data: estRangeAprString,
         },
     ];
 

@@ -7,13 +7,13 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import { LimitOrderIF, TokenIF, LimitOrderServerIF } from '../../types';
-import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
-import { SpotPriceFn } from './querySpotPrice';
 import { Provider } from 'ethers';
+import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
+import { LimitOrderIF, LimitOrderServerIF, TokenIF } from '../../types';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
 import { getPositionHash } from './getPositionHash';
+import { SpotPriceFn } from './querySpotPrice';
 
 export const getLimitOrderData = async (
     order: LimitOrderServerIF,
@@ -45,16 +45,8 @@ export const getLimitOrderData = async (
 
     newOrder.ensResolution = (await cachedEnsResolve(order.user)) ?? '';
 
-    const basePricePromise = cachedFetchTokenPrice(
-        baseTokenAddress,
-        chainId,
-        crocEnv,
-    );
-    const quotePricePromise = cachedFetchTokenPrice(
-        quoteTokenAddress,
-        chainId,
-        crocEnv,
-    );
+    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
 
     const posHash = getPositionHash(undefined, {
         isPositionTypeAmbient: false,

@@ -1,7 +1,7 @@
-import styles from './OpenOrderStatus.module.css';
 import { AiOutlineCheck } from 'react-icons/ai';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import CircularProgressBar from './CircularProgressBar';
+import styles from './OpenOrderStatus.module.css';
 interface OpenOrderStatusProps {
     isFilled: boolean;
     isLimitOrderPartiallyFilled: boolean;

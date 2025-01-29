@@ -1,36 +1,31 @@
-/** ***** Import React and Dongles *******/
 import { useContext, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
-/** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
-// import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
 
-/** * **** Import Local Files *******/
-import './App.css';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
-import GateWalletModal from './components/WalletModal/GateWalletModal';
+import { AppStateContext } from '../contexts/AppStateContext';
+import { BrandContext } from '../contexts/BrandContext';
+import { SidebarContext } from '../contexts/SidebarContext';
+import './App.css';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
+import GateWalletModal from './components/WalletModal/GateWalletModal';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useKeyPress from './hooks/useKeyPress';
-import { AppStateContext } from '../contexts/AppStateContext';
-import { SidebarContext } from '../contexts/SidebarContext';
-import { BrandContext } from '../contexts/BrandContext';
 
-import useMediaQuery from '../utils/hooks/useMediaQuery';
-import { FlexContainer } from '../styled/Common';
-import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 import FooterNav from '../components/Global/FooterNav/FooterNav';
+import { FlexContainer } from '../styled/Common';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 
-import { RouteRenderer } from '../routes';
-import Navbar from '../components/Futa/Navbar/Navbar';
 import Footer from '../components/Futa/Footer/Footer';
+import Navbar from '../components/Futa/Navbar/Navbar';
 import { useModal } from '../components/Global/Modal/useModal';
-import CSSModal from '../pages/common/CSSDebug/CSSModal';
-import { useBottomSheet } from '../contexts/BottomSheetContext';
 import { ChartContext } from '../contexts';
+import { useBottomSheet } from '../contexts/BottomSheetContext';
+import CSSModal from '../pages/common/CSSDebug/CSSModal';
+import { RouteRenderer } from '../routes';
 
 /** ***** React Function *******/
 export default function App() {
@@ -47,10 +42,8 @@ export default function App() {
         },
         walletModal: { isOpen: isWalletModalOpen },
         appHeaderDropdown,
-        showPointSystemPopup,
-        dismissPointSystemPopup,
     } = useContext(AppStateContext);
-    const { platformName, skin, showPoints } = useContext(BrandContext);
+    const { platformName, skin } = useContext(BrandContext);
     const {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
@@ -116,6 +109,7 @@ export default function App() {
                 currentLocation !== '/privacy' &&
                 currentLocation !== '/faq' &&
                 !currentLocation.includes('/chat') &&
+                platformName !== 'futa' &&
                 isChatEnabled &&
                 !isFullScreen && <ChatPanel isFullScreen={false} />}
         </div>
@@ -161,23 +155,17 @@ export default function App() {
                 data-theme={skin.active}
                 style={{
                     height:
-                        location.pathname == '/'
+                        location.pathname == '/' && platformName !== 'futa'
                             ? 'calc(100vh - 56px)'
                             : '100dvh',
                 }}
             >
-                {showPoints && showPointSystemPopup && (
-                    <PointSystemPopup
-                        dismissPointSystemPopup={dismissPointSystemPopup}
-                    />
-                )}
                 <AppOverlay />
-                {platformName === 'futa' ? (
-                    <Navbar />
-                ) : (
-                    location.pathname !== '/' && <PageHeader />
-                )}
+                {platformName === 'futa'
+                    ? location.pathname !== '/' && <Navbar />
+                    : location.pathname !== '/' && <PageHeader />}
                 <RouteRenderer platformName={platformName} />
+                {isWalletModalOpen && <GateWalletModal />}
             </FlexContainer>
 
             <GlobalPopup data-theme={skin.active} />
@@ -186,7 +174,6 @@ export default function App() {
             {ambientFooter}
             {!isBottomSheetOpen && footerDisplay}
 
-            {isWalletModalOpen && <GateWalletModal />}
             {isCSSModalOpen && <CSSModal close={() => closeCSSModal()} />}
         </>
     );

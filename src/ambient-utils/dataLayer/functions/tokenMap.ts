@@ -1,10 +1,8 @@
+import { ZERO_ADDRESS } from '../../constants';
+import { MAINNET_TOKENS } from '../../constants/networks/ethereumMainnet';
+import { SEPOLIA_TOKENS } from '../../constants/networks/ethereumSepolia';
+import { SCROLL_SEPOLIA_TOKENS } from '../../constants/networks/scrollSepolia';
 import { TokenIF } from '../../types';
-import {
-    ZERO_ADDRESS,
-    mainnetUSDC,
-    sepoliaUSDC,
-    scrollSepoliaUSDC,
-} from '../../constants';
 
 /* Translates testnet token addresses to their canonical production network
  * representations. Note that chain ID is not required, since token addresses
@@ -29,8 +27,8 @@ function addToMap(testnet: TokenIF, mainnet: TokenIF) {
     TOKEN_MAP.set(testnet.address.toLowerCase(), mainnet.address.toLowerCase());
 }
 
-addToMap(sepoliaUSDC, mainnetUSDC);
-addToMap(scrollSepoliaUSDC, mainnetUSDC);
+addToMap(SEPOLIA_TOKENS.ETH, MAINNET_TOKENS.USDC);
+addToMap(SCROLL_SEPOLIA_TOKENS.USDC, MAINNET_TOKENS.USDC);
 
 NATIVE_TOKEN_MAP.set('0x82750', '0x5300000000000000000000000000000000000004'); // showing Bridged Wrapped Ether (Scroll) on scroll
 NATIVE_TOKEN_MAP.set('0x8274f', '0x5300000000000000000000000000000000000004'); // showing Bridged Wrapped Ether (Scroll) on scroll sepolia

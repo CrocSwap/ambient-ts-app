@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import { FlexContainer, Text } from '../../../../styled/Common';
-// import { ViewMoreButton } from '../../../../styled/Components/TransactionTable';
+// import{ ViewMoreButton } from '../../../../styled/Components/TransactionTable';
+import React from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './PointsHistoryDisplay.module.css';
-import React from 'react';
 
 interface PropsIF {
     pointsData: {

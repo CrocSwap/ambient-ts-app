@@ -1,17 +1,17 @@
 import {
-    CrocImpact,
     bigIntToFloat,
+    CrocImpact,
     fromDisplayQty,
     toDisplayQty,
 } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, memo, useRef, useMemo } from 'react';
+import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     getFormattedNumber,
     getPriceImpactString,
     isStablePair,
-    getTxReceipt,
     performSwap,
+    waitForTransaction,
 } from '../../../../ambient-utils/dataLayer';
 import Button from '../../../../components/Form/Button';
 import { useModal } from '../../../../components/Global/Modal/useModal';
@@ -33,34 +33,29 @@ import { FlexContainer } from '../../../../styled/Common';
 import { WarningContainer } from '../../../../styled/Components/TradeModules';
 
 import {
-    TransactionError,
-    isTransactionReplacedError,
-    isTransactionFailedError,
-} from '../../../../utils/TransactionError';
-import { swapTutorialSteps } from '../../../../utils/tutorial/Swap';
-import { useApprove } from '../../../../App/functions/approve';
-import { useUrlParams } from '../../../../utils/hooks/useUrlParams';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import {
     GAS_DROPS_ESTIMATE_SWAP_FROM_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET,
     GAS_DROPS_ESTIMATE_SWAP_NATIVE,
     GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX,
-    NUM_GWEI_IN_WEI,
-    SWAP_BUFFER_MULTIPLIER_MAINNET,
-    SWAP_BUFFER_MULTIPLIER_L2,
-    IS_LOCAL_ENV,
-    NUM_GWEI_IN_ETH,
-    NUM_WEI_IN_GWEI,
-    ZERO_ADDRESS,
     L1_GAS_CALC_ENABLED,
+    NUM_GWEI_IN_ETH,
+    NUM_GWEI_IN_WEI,
+    NUM_WEI_IN_GWEI,
+    SWAP_BUFFER_MULTIPLIER_L2,
+    SWAP_BUFFER_MULTIPLIER_MAINNET,
+    ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { useApprove } from '../../../../App/functions/approve';
 import { calcL1Gas } from '../../../../App/functions/calcL1Gas';
+import useDebounce from '../../../../App/hooks/useDebounce';
 import { AppStateContext } from '../../../../contexts';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { useUrlParams } from '../../../../utils/hooks/useUrlParams';
+import { swapTutorialSteps } from '../../../../utils/tutorial/Swap';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -72,14 +67,11 @@ function Swap(props: propsIF) {
         useContext(CrocEnvContext);
     const {
         activeNetwork: { chainId, poolIndex },
+        isUserOnline,
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
-    const {
-        gasPriceInGwei,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-        isActiveNetworkPlume,
-    } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkL2, isActiveNetworkPlume } =
+        useContext(ChainDataContext);
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
@@ -130,29 +122,26 @@ function Swap(props: propsIF) {
         !isTokenAPrimary ? primaryQuantity : '',
     );
 
-    const sellQtyNoExponentString = useMemo(() => {
-        try {
-            return sellQtyString.includes('e')
-                ? toDisplayQty(
-                      fromDisplayQty(sellQtyString || '0', tokenA.decimals),
-                      tokenA.decimals,
-                  )
-                : sellQtyString;
-        } catch (error) {
-            console.log({ error });
-            return sellQtyString;
-        }
-    }, [sellQtyString, tokenA.decimals]);
+    const sellQtyBigInt = useMemo(
+        () => fromDisplayQty(sellQtyString || '0', tokenA.decimals),
+        [sellQtyString, tokenA.decimals],
+    );
 
+    const sellQtyNoExponentString = useMemo(() => {
+        return sellQtyString.includes('e')
+            ? toDisplayQty(sellQtyBigInt, tokenA.decimals)
+            : sellQtyString;
+    }, [sellQtyBigInt, sellQtyString, tokenA.decimals]);
+
+    const buyQtyBigInt = useMemo(
+        () => fromDisplayQty(buyQtyString || '0', tokenB.decimals),
+        [buyQtyString, tokenB.decimals],
+    );
     const buyQtyNoExponentString = useMemo(() => {
-        const buyQtyBigInt = fromDisplayQty(
-            buyQtyString || '0',
-            tokenB.decimals,
-        );
         return buyQtyString.includes('e')
             ? toDisplayQty(buyQtyBigInt, tokenB.decimals)
             : buyQtyString;
-    }, [buyQtyString, tokenB.decimals]);
+    }, [buyQtyBigInt, buyQtyString, tokenB.decimals]);
 
     const [isSellLoading, setIsSellLoading] = useState(false);
     const [isBuyLoading, setIsBuyLoading] = useState(false);
@@ -169,9 +158,7 @@ function Swap(props: propsIF) {
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
         useState<boolean>(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] =
-        useState<boolean>(
-            isActiveNetworkBlast ? false : dexBalSwap.outputToDexBal.isEnabled,
-        );
+        useState<boolean>(dexBalSwap.outputToDexBal.isEnabled);
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txError, setTxError] = useState<Error>();
@@ -287,14 +274,6 @@ function Swap(props: propsIF) {
         !needConfirmTokenA &&
         !needConfirmTokenB;
 
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        'en-US',
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
-
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     const [
@@ -329,6 +308,11 @@ function Swap(props: propsIF) {
     }, [isTokenAPrimary]);
 
     useEffect(() => {
+        if (!isUserOnline) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Currently Offline');
+            return;
+        }
         if (tokenABalance === '') return;
         if (
             (sellQtyNoExponentString === '' && buyQtyNoExponentString === '') ||
@@ -421,6 +405,7 @@ function Swap(props: propsIF) {
             }
         }
     }, [
+        isUserOnline,
         crocEnv,
         isPoolInitialized,
         isPoolInitialized === undefined, // Needed to distinguish false from undefined
@@ -453,14 +438,14 @@ function Swap(props: propsIF) {
     }, [tokenA.address + tokenB.address, isTokenAPrimary]);
 
     useEffect(() => {
-        setNewSwapTransactionHash('');
+        resetConfirmation();
     }, [baseToken.address + quoteToken.address]);
 
     const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
-        isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
+        isActiveNetworkL2 ? 10000 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
-        isActiveNetworkBlast ? 0.01 : 0.01,
+        isActiveNetworkL2 ? 0.01 : 0,
     );
 
     // calculate price of gas for swap
@@ -582,7 +567,7 @@ function Swap(props: propsIF) {
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(
-            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
         );
     }, [tokenADexBalance]);
 
@@ -625,6 +610,7 @@ function Swap(props: propsIF) {
 
             if (tx.hash) {
                 addTransactionByType({
+                    chainId: chainId,
                     userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction:
@@ -652,32 +638,20 @@ function Swap(props: propsIF) {
         if (tx) {
             let receipt;
             try {
-                receipt = await getTxReceipt(tx);
+                receipt = await waitForTransaction(
+                    provider,
+                    tx.hash,
+                    removePendingTx,
+                    addPendingTx,
+                    updateTransactionHash,
+                    setNewSwapTransactionHash,
+                );
             } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    removePendingTx(error.hash);
-
-                    const newTransactionHash = error.replacement.hash;
-                    activeTxHash.current = newTransactionHash;
-                    addPendingTx(newTransactionHash);
-                    updateTransactionHash(error.hash, error.replacement.hash);
-                    setNewSwapTransactionHash(newTransactionHash);
-
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    receipt = error.receipt;
-                    activeTxHash.current = '';
-                }
+                console.log({ e });
             }
 
             if (receipt) {
-                addReceipt(JSON.stringify(receipt));
+                addReceipt(receipt);
                 removePendingTx(receipt.hash);
             }
         }
@@ -784,18 +758,30 @@ function Swap(props: propsIF) {
         : poolData.basePrice;
 
     const percentDiffUsdValue =
-        usdValueTokenA && usdValueTokenB
+        usdValueTokenA &&
+        usdValueTokenB &&
+        buyQtyBigInt > 0n &&
+        sellQtyBigInt > 0n
             ? ((usdValueTokenB * parseFloat(buyQtyNoExponentString) -
                   usdValueTokenA * parseFloat(sellQtyNoExponentString)) /
                   (usdValueTokenA * parseFloat(sellQtyNoExponentString))) *
               100
             : 0;
 
-    const showUsdDiffWarning =
+    const usdDiffGreaterThanThreshold =
         (percentDiffUsdValue || 0) < -10 &&
         isTokenAWalletBalanceSufficient &&
         !isLiquidityInsufficient &&
         !(isButtonDisabled && swapButtonErrorMessage === 'Enter an Amount');
+
+    const usdDiffGreaterThanThresholdDebounced = useDebounce(
+        usdDiffGreaterThanThreshold,
+        500,
+    );
+
+    const showUsdDiffWarning = usdDiffGreaterThanThreshold
+        ? usdDiffGreaterThanThresholdDebounced
+        : false;
 
     const showWarning = showPriceImpactWarning || showUsdDiffWarning;
 
@@ -867,7 +853,7 @@ function Swap(props: propsIF) {
                     priceImpact={priceImpact}
                     effectivePriceWithDenom={effectivePriceWithDenom}
                     slippageTolerance={slippageTolerancePercentage}
-                    liquidityProviderFeeString={liquidityProviderFeeString}
+                    liquidityFee={liquidityFee}
                     swapGasPriceinDollars={swapGasPriceinDollars}
                     showExtraInfoDropdown={
                         primaryQuantity !== '' &&
@@ -961,8 +947,18 @@ function Swap(props: propsIF) {
                                 tokenA.symbol,
                                 undefined,
                                 isActiveNetworkPlume
-                                    ? tokenAQtyCoveredByWalletBalance
-                                    : undefined,
+                                    ? isTokenAPrimary
+                                        ? tokenAQtyCoveredByWalletBalance
+                                        : // add 1% buffer to avoid rounding errors
+                                          (tokenAQtyCoveredByWalletBalance *
+                                              101n) /
+                                          100n
+                                    : tokenABalance
+                                      ? fromDisplayQty(
+                                            tokenABalance,
+                                            tokenA.decimals,
+                                        )
+                                      : undefined,
                             );
                         }}
                         flat

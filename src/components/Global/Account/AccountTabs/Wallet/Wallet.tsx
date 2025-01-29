@@ -1,17 +1,17 @@
-import styles from './Wallet.module.css';
-import WalletCard from './WalletCard';
-import WalletHeader from './WalletHeader';
-import { TokenIF } from '../../../../../ambient-utils/types';
-import { TokenPriceFn } from '../../../../../ambient-utils/api';
-import Spinner from '../../../Spinner/Spinner';
 import { useContext } from 'react';
-import { TokenContext } from '../../../../../contexts/TokenContext';
+import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import {
     ZERO_ADDRESS,
     tokenListURIs,
 } from '../../../../../ambient-utils/constants';
 import { isUsdcToken } from '../../../../../ambient-utils/dataLayer';
+import { TokenIF } from '../../../../../ambient-utils/types';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
+import { TokenContext } from '../../../../../contexts/TokenContext';
+import Spinner from '../../../Spinner/Spinner';
+import styles from './Wallet.module.css';
+import WalletCard from './WalletCard';
+import WalletHeader from './WalletHeader';
 
 interface propsIF {
     chainId: string;

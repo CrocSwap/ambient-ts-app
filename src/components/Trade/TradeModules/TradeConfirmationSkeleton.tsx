@@ -1,27 +1,24 @@
-// START: Import React and Dongles
 import { useContext, useState } from 'react';
 
-// START: Import JSX Components
 import Button from '../../Form/Button';
 
-// START: Import Other Local Files
-import { TokenIF } from '../../../ambient-utils/types';
-import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import {
     getFormattedNumber,
     uriToHttp,
 } from '../../../ambient-utils/dataLayer';
-import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import TokensArrow from '../../Global/TokensArrow/TokensArrow';
-import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import SubmitTransaction from './SubmitTransaction/SubmitTransaction';
-import Modal from '../../Global/Modal/Modal';
+import { TokenIF } from '../../../ambient-utils/types';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
     ConfirmationDetailsContainer,
     ConfirmationQuantityContainer,
     ModalContainer,
 } from '../../../styled/Components/TradeModules';
+import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
+import Modal from '../../Global/Modal/Modal';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import TokensArrow from '../../Global/TokensArrow/TokensArrow';
+import SubmitTransaction from './SubmitTransaction/SubmitTransaction';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Range' | 'Reposition';

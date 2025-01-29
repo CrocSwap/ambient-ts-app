@@ -1,9 +1,10 @@
+import { TransactionReceipt } from 'ethers';
 import {
     ReactNode,
     createContext,
+    useContext,
     useEffect,
     useMemo,
-    useContext,
     useState,
 } from 'react';
 import {
@@ -12,11 +13,10 @@ import {
 } from '../App/hooks/useRecentPools';
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
-import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
+import { diffHashSig, getChainExplorer } from '../ambient-utils/dataLayer';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { AppStateContext } from './AppStateContext';
 import { ReceiptContext } from './ReceiptContext';
-import { TransactionReceipt } from 'ethers';
-import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 export interface SidebarContextIF {
     recentPools: recentPoolsMethodsIF;
@@ -27,25 +27,22 @@ export interface SidebarContextIF {
     isPoolDropdownOpen: boolean;
 }
 
-export const SidebarContext = createContext<SidebarContextIF>(
-    {} as SidebarContextIF,
-);
+export const SidebarContext = createContext({} as SidebarContextIF);
 
 export const SidebarContextProvider = (props: { children: ReactNode }) => {
     // logic to open a snackbar notification
     const {
         activeNetwork: { chainId },
-        snackbar: { open: openSnackbar },
+        snackbar: { open: openSnackbar, close: closeSnackbar },
     } = useContext(AppStateContext);
 
     // all receipts stored in the current user session (array of stringified JSONs)
-    const { allReceipts } = useContext(ReceiptContext);
+    const { allReceipts, transactionsByType, setShowRedDot } =
+        useContext(ReceiptContext);
 
     // parsed JSON on the most recent receipt in the stack
     const lastReceipt: TransactionReceipt | null =
-        allReceipts.length > 0 && isJsonString(allReceipts[0])
-            ? JSON.parse(allReceipts[0])
-            : null;
+        allReceipts.length > 0 ? allReceipts[0] : null;
 
     // boolean representing whether most recent receipt parsed successfully
     const isLastReceiptSuccess: boolean = lastReceipt?.status === 1;
@@ -94,15 +91,39 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
 
     // logic to show a snackbar notification when a new receipt is received
     // I'm not really sure why we put this logic in this file? should move later
+    const lastReceiptChainId = transactionsByType.find(
+        (e) => e.txHash === lastReceipt?.hash,
+    )?.chainId;
+    const blockExplorer = lastReceiptChainId
+        ? getChainExplorer(lastReceiptChainId)
+        : getChainExplorer(chainId);
+
+    const snackBarContentDisplay = (
+        <div className='flexColumn'>
+            {lastReceipt
+                ? isLastReceiptSuccess
+                    ? `Transaction ${lastReceipt.hash} successfully completed`
+                    : `Transaction ${lastReceipt.hash} failed`
+                : ''}
+            <a
+                href={`${blockExplorer}tx/${lastReceipt?.hash}`}
+                target='_blank'
+                rel='noreferrer'
+                className='customLink'
+                onClick={() => {
+                    setShowRedDot(false);
+                    closeSnackbar();
+                }}
+            >
+                View on Explorer
+            </a>
+        </div>
+    );
     useEffect(() => {
         if (lastReceiptHash) {
             IS_LOCAL_ENV && console.debug('new receipt to display');
             openSnackbar(
-                lastReceipt
-                    ? isLastReceiptSuccess
-                        ? `Transaction ${lastReceipt.hash} successfully completed`
-                        : `Transaction ${lastReceipt.hash} failed`
-                    : '',
+                snackBarContentDisplay,
                 isLastReceiptSuccess ? 'info' : 'warning',
             );
         }

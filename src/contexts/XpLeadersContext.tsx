@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
-import { UserXpIF } from '../ambient-utils/types';
 import { fetchXpLeadersData } from '../ambient-utils/api';
+import { UserXpIF } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
 
 interface XpLeadersContextIF {
@@ -19,9 +19,7 @@ export interface XpLeaderboardDataIF {
     data: Array<UserXpIF> | undefined;
 }
 
-export const XpLeadersContext = createContext<XpLeadersContextIF>(
-    {} as XpLeadersContextIF,
-);
+export const XpLeadersContext = createContext({} as XpLeadersContextIF);
 
 export const XpLeadersContextProvider = (props: {
     children: React.ReactNode;

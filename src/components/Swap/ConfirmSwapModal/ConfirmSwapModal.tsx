@@ -1,14 +1,12 @@
-// START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState } from 'react';
 
-// START: Import Other Local Files
-import { TokenPairIF } from '../../../ambient-utils/types';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
-import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
-import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import { TokenPairIF } from '../../../ambient-utils/types';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { PoolContext } from '../../../contexts/PoolContext';
 import { FlexContainer, Text } from '../../../styled/Common';
+import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
 
 interface propsIF {
     initiateSwapMethod: () => Promise<void>;

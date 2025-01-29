@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { JsonRpcProvider, Contract } from 'ethers';
+import { Contract, JsonRpcProvider } from 'ethers';
 
 export const MULTICALL_ABI = [
     {
@@ -53,15 +53,19 @@ export const MULTICALL_ABI = [
 ];
 
 const MULTICALL_ADDRESSES: Map<number, string> = new Map([
-    [1, '0xca11bde05977b3631167028862be2a173976ca11'],
-    [5, '0xca11bde05977b3631167028862be2a173976ca11'],
-    [7700, '0xca11bde05977b3631167028862be2a173976ca11'],
-    [7701, '0xca11bde05977b3631167028862be2a173976ca11'],
-    [81457, '0xca11bde05977b3631167028862be2a173976ca11'],
-    [534351, '0xca11bde05977b3631167028862be2a173976ca11'],
-    [534352, '0xca11bde05977b3631167028862be2a173976ca11'],
-    [11155111, '0xca11bde05977b3631167028862be2a173976ca11'],
-    [168587773, '0xca11bde05977b3631167028862be2a173976ca11'],
+    [1, '0xca11bde05977b3631167028862be2a173976ca11'], // ethereum mainnet
+    [11155111, '0xca11bde05977b3631167028862be2a173976ca11'], // ethereum testnet (sepolia)
+    [7700, '0xca11bde05977b3631167028862be2a173976ca11'], // canto mainnet
+    [7701, '0xca11bde05977b3631167028862be2a173976ca11'], // canto testnet
+    [81457, '0xca11bde05977b3631167028862be2a173976ca11'], // blast mainnet
+    [168587773, '0xca11bde05977b3631167028862be2a173976ca11'], // blast testnet
+    [534352, '0xca11bde05977b3631167028862be2a173976ca11'], // scroll mainnet
+    [534351, '0xca11bde05977b3631167028862be2a173976ca11'], // scroll testnet
+    [1923, '0xca11bde05977b3631167028862be2a173976ca11'], // swell mainnet
+    [1924, '0xca11bde05977b3631167028862be2a173976ca11'], // swell testnet
+    [98865, '0xca11bde05977b3631167028862be2a173976ca11'], // plume mainnet
+    [98864, '0xca11bde05977b3631167028862be2a173976ca11'], // plume testnet
+    [84532, '0xca11bde05977b3631167028862be2a173976ca11'], // base testnet
 ]);
 
 export type JsonRpcPayload = {

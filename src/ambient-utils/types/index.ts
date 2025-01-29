@@ -12,7 +12,7 @@ export * from './pool';
 // PositionIF, PositionServerIF
 export * from './position';
 
-export * from './chainIds';
+export * from './chainHexIds';
 
 // TokenIF, TokenListIF
 export * from './token';

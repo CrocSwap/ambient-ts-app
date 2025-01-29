@@ -1,4 +1,4 @@
-import { MouseEventHandler, useEffect, KeyboardEventHandler } from 'react';
+import { KeyboardEventHandler, MouseEventHandler, useEffect } from 'react';
 import { ToggleComponent } from './Form.styles';
 interface TogglePropsIF {
     isOn: boolean;

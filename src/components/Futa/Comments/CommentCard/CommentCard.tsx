@@ -1,8 +1,8 @@
-import { memo } from 'react';
-import styles from './CommentCard.module.css';
-import { Message } from '../../../Chat/Model/MessageModel';
+import { CSSProperties, memo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     formatMessageTime,
+    formatURL,
     getDateLabelInfo,
     getRedirectTargetFromMessage,
     getShownName,
@@ -10,10 +10,9 @@ import {
     isLinkInCrocodileLabsLinksForInput,
     isValidUrl,
     minToMS,
-    formatURL,
 } from '../../../Chat/ChatUtils';
-import { useNavigate } from 'react-router-dom';
-import { CSSProperties } from '@material-ui/core/styles/withStyles';
+import { Message } from '../../../Chat/Model/MessageModel';
+import styles from './CommentCard.module.css';
 
 interface CommentCardProps {
     message: Message;

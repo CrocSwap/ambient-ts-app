@@ -1,23 +1,32 @@
+import {
+    useDisconnect,
+    useWeb3ModalAccount,
+    useWeb3ModalProvider,
+} from '@web3modal/ethers/react';
 import React, {
     Dispatch,
     SetStateAction,
     createContext,
+    useContext,
     useEffect,
     useState,
 } from 'react';
-import { useWeb3ModalAccount, useDisconnect } from '@web3modal/ethers/react';
-import { checkBlacklist } from '../ambient-utils/constants';
-import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
 import { fetchEnsAddress } from '../ambient-utils/api';
+import { checkBlacklist } from '../ambient-utils/constants';
+import {
+    BlastUserXpIF,
+    UserVaultsServerIF,
+    UserXpIF,
+} from '../ambient-utils/types';
 import { UserAvatarDataIF } from '../components/Chat/ChatIFs';
 import { getAvatarRest } from '../components/Chat/ChatUtilsHelper';
+import { AppStateContext } from './AppStateContext';
 
 export interface UserDataContextIF {
     isUserConnected: boolean | undefined;
     userAddress: `0x${string}` | undefined;
     walletChain: number | undefined;
     disconnectUser: () => void;
-
     ensName: string | null | undefined;
     resolvedAddressFromContext: string;
     setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
@@ -38,6 +47,10 @@ export interface UserDataContextIF {
         walletID: string,
         avatarData: UserAvatarDataIF,
     ) => void;
+    userVaultData: UserVaultsServerIF[] | undefined;
+    setUserVaultData: React.Dispatch<
+        React.SetStateAction<UserVaultsServerIF[] | undefined>
+    >;
 }
 
 export interface UserXpDataIF {
@@ -54,9 +67,7 @@ export interface BlastUserXpDataIF {
     data: BlastUserXpIF | undefined;
 }
 
-export const UserDataContext = createContext<UserDataContextIF>(
-    {} as UserDataContextIF,
-);
+export const UserDataContext = createContext({} as UserDataContextIF);
 
 export const UserDataContextProvider = (props: {
     children: React.ReactNode;
@@ -71,7 +82,27 @@ export const UserDataContextProvider = (props: {
         isConnected: isUserConnected,
         chainId: walletChain,
     } = useWeb3ModalAccount();
-    const { disconnect: disconnectUser } = useDisconnect();
+
+    const { isUserOnline } = useContext(AppStateContext);
+
+    const { disconnect } = useDisconnect();
+    const { walletProvider } = useWeb3ModalProvider();
+    async function disconnectUser(): Promise<void> {
+        if (walletProvider) {
+            try {
+                // TODO: Remove this after web3modal upgrade
+                await walletProvider.request({
+                    method: 'wallet_revokePermissions',
+                    // eslint-disable-next-line camelcase
+                    params: [{ eth_accounts: {} }],
+                });
+            } catch (error) {
+                console.error('disconnect error', { error });
+            }
+        }
+        await disconnect();
+    }
+
     const isBlacklisted = userAddress ? checkBlacklist(userAddress) : false;
     if (isBlacklisted) disconnectUser();
 
@@ -99,27 +130,33 @@ export const UserDataContextProvider = (props: {
         UserAvatarDataIF | undefined
     >();
 
+    const [userVaultData, setUserVaultData] = useState<
+        UserVaultsServerIF[] | undefined
+    >();
+
     // check for ENS name account changes
     useEffect(() => {
-        (async () => {
-            if (userAddress) {
-                try {
-                    const ensResult = await fetchEnsAddress(userAddress);
-                    if (ensResult) setEnsName(ensResult);
-                    else setEnsName('');
-                } catch (error) {
-                    setEnsName('');
-                    console.error({ error });
+        if (isUserOnline) {
+            (async () => {
+                if (userAddress) {
+                    try {
+                        const ensResult = await fetchEnsAddress(userAddress);
+                        if (ensResult) setEnsName(ensResult);
+                        else setEnsName('');
+                    } catch (error) {
+                        setEnsName('');
+                        console.error({ error });
+                    }
                 }
-            }
 
-            // fetch user avatar
-            if (userAddress) {
-                const resp = await getAvatarRest(userAddress);
-                setUserAvatarData(resp);
-            }
-        })();
-    }, [userAddress]);
+                // fetch user avatar
+                if (userAddress) {
+                    const resp = await getAvatarRest(userAddress);
+                    setUserAvatarData(resp);
+                }
+            })();
+        }
+    }, [userAddress, isUserOnline]);
 
     const updateUserAvatarData = (
         walletID: string,
@@ -152,6 +189,8 @@ export const UserDataContextProvider = (props: {
         setNftTestWalletAddress,
         userAvatarData,
         updateUserAvatarData,
+        userVaultData,
+        setUserVaultData,
     };
 
     return (

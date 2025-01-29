@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { FlexContainer, Text } from '../../../styled/Common';
-import { textColors } from '../../../styled/Common/Types';
 import { StyledContainerProps } from '../../../styled/Common/Container';
+import { textColors } from '../../../styled/Common/Types';
 
 export default function FormFooter(props: {
     type: 'explicit' | 'component' | 'map';

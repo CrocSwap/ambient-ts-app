@@ -1,12 +1,12 @@
-import styles from './ConfirmRepositionModal.module.css';
-import { PositionIF } from '../../../../ambient-utils/types';
-import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
-import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
-import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import { uriToHttp } from '../../../../ambient-utils/dataLayer';
-import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 import { useContext, useState } from 'react';
+import { uriToHttp } from '../../../../ambient-utils/dataLayer';
+import { PositionIF } from '../../../../ambient-utils/types';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
+import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
+import styles from './ConfirmRepositionModal.module.css';
 
 interface propsIF {
     position: PositionIF;

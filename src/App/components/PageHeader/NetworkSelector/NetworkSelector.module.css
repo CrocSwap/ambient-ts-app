@@ -10,6 +10,7 @@
     height: 35px;
     width: 35px;
 }
+
 .menuContent {
     width: 100%;
     padding: 12px;
@@ -61,7 +62,7 @@
     border-radius: var(--border-radius);
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 769px) {
     .dropdownMenuContainer {
         border-radius: var(--border-radius);
         width: auto;

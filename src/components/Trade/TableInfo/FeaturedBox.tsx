@@ -1,7 +1,16 @@
 import React, { useContext } from 'react';
-import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
+import {
+    getChainExplorer,
+    trimString,
+    uriToHttp,
+} from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import {
     BoxContainer,
     BoxInfoText,
@@ -12,15 +21,6 @@ import {
     TokenName,
     TokenSymbol,
 } from './TableInfo.styles';
-import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import {
-    trimString,
-    uriToHttp,
-    getChainExplorer,
-} from '../../../ambient-utils/dataLayer';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
 
 interface FeaturedBoxPropsIF {
     token: TokenIF;
@@ -119,7 +119,9 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                 {!isInit && (
                     <FeaturedBoxInfoContainer>
                         <InfoHeader>Value</InfoHeader>
-                        <BoxInfoText>${value}</BoxInfoText>
+                        <BoxInfoText>
+                            {`${value ? `$${value}` : '...'}`}
+                        </BoxInfoText>
                     </FeaturedBoxInfoContainer>
                 )}
             </FeaturedBoxInnerContainer>

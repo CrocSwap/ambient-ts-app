@@ -1,13 +1,16 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { BiArrowBack } from 'react-icons/bi';
 import { RiCloseFill } from 'react-icons/ri';
-import styles from './Modal.module.css';
-import GlobalModalPortal from '../../GlobalModalPortal';
-import { GLOBAL_MODAL_COMPONENT_ID } from '../../../ambient-utils/constants';
+import {
+    brand,
+    GLOBAL_MODAL_COMPONENT_ID,
+} from '../../../ambient-utils/constants';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 import { Container } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { useBottomSheet } from '../../../contexts/BottomSheetContext';
+import GlobalModalPortal from '../../GlobalModalPortal';
+import styles from './Modal.module.css';
 
 interface ModalPropsIF {
     onClose: () => void;
@@ -24,6 +27,7 @@ interface ModalPropsIF {
 }
 
 export default function Modal(props: ModalPropsIF) {
+    const isFuta = brand === 'futa';
     const {
         handleBack,
         title = '',
@@ -143,7 +147,12 @@ export default function Modal(props: ModalPropsIF) {
                     }}
                 >
                     <div className={styles.sheet_handle}>
-                        <div className={styles.drag_handle} />
+                        <div
+                            className={styles.drag_handle}
+                            style={{
+                                background: isFuta ? '#62ebf1' : '#7371fc',
+                            }}
+                        />
                     </div>
                     {headerJSX}
                     <section className={styles.modal_content}>
@@ -160,7 +169,7 @@ export default function Modal(props: ModalPropsIF) {
         <GlobalModalPortal>
             <aside
                 id={GLOBAL_MODAL_COMPONENT_ID}
-                className={styles.outside_modal}
+                className={`${styles.outside_modal} ${isFuta && styles.noBoxShadow}`}
                 onMouseDown={handleClose}
                 role='dialog'
                 aria-modal='true'
@@ -177,7 +186,7 @@ export default function Modal(props: ModalPropsIF) {
                     tabIndex={0}
                     aria-label={`${title} modal`}
                 >
-                    <Container boxShadow='gradient'>
+                    <Container boxShadow={isFuta ? 'none' : 'gradient'}>
                         {headerJSX}
                         <section className={styles.modal_content}>
                             {children}

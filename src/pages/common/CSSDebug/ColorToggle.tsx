@@ -1,9 +1,9 @@
 import { useContext, useRef, useState } from 'react';
 import { ColorResult, SketchPicker } from 'react-color';
-import styles from './ColorToggle.module.css';
-import { allColorsIF, cssColorIF } from './CSSDebug';
 import { RxReset } from 'react-icons/rx';
 import { UserPreferenceContext } from '../../../contexts';
+import styles from './ColorToggle.module.css';
+import { allColorsIF, cssColorIF } from './CSSDebug';
 
 interface propsIF {
     cssProperty: cssColorIF;

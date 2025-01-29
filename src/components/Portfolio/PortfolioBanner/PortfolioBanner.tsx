@@ -1,26 +1,23 @@
-// START: Import React and Dongles
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
-// START: Import JSX Components
 import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAccount';
 
-// START: Import Other Local Files
 import { trimString } from '../../../ambient-utils/dataLayer';
 
-import AddressPrint from './AddressPrint';
-import styles from './PortfolioBanner.module.css';
-import { UserXpDataIF } from '../../../contexts/UserDataContext';
 import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
-import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { PoolContext } from '../../../contexts/PoolContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import {
     NftFetchSettingsIF,
     NftListByChain,
 } from '../../../contexts/TokenBalanceContext';
+import { UserXpDataIF } from '../../../contexts/UserDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
+import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
+import AddressPrint from './AddressPrint';
+import styles from './PortfolioBanner.module.css';
 
 interface propsIF {
     ensName: string;

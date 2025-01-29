@@ -1,4 +1,5 @@
 import { memo, MutableRefObject, useContext, useEffect, useState } from 'react';
+import { getMoneynessRank } from '../../../ambient-utils/dataLayer';
 import {
     LimitModalAction,
     LimitOrderIF,
@@ -7,16 +8,15 @@ import {
     TransactionIF,
 } from '../../../ambient-utils/types';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { useModal } from '../../Global/Modal/useModal';
-import RangesRow from './Ranges/RangesTable/RangesRow';
-import RangeDetailsModal from '../../Global/DetailModals/RangeDetails/RangeDetailsModal/RangeDetailsModal';
-import RangeActionModal from '../../RangeActionModal/RangeActionModal';
-import LimitActionModal from '../../LimitActionModal/LimitActionModal';
-import TransactionRow from './Transactions/TransactionsTable/TransactionRow';
-import TransactionDetailsModal from '../../Global/DetailModals/TransactionDetails/TransactionDetailsModal';
-import { getMoneynessRank } from '../../../ambient-utils/dataLayer';
-import OrderRow from './Orders/OrderTable/OrderRow';
 import OrderDetailsModal from '../../Global/DetailModals/OrderDetails/OrderDetailsModal/OrderDetailsModal';
+import RangeDetailsModal from '../../Global/DetailModals/RangeDetails/RangeDetailsModal/RangeDetailsModal';
+import TransactionDetailsModal from '../../Global/DetailModals/TransactionDetails/TransactionDetailsModal';
+import { useModal } from '../../Global/Modal/useModal';
+import LimitActionModal from '../../LimitActionModal/LimitActionModal';
+import RangeActionModal from '../../RangeActionModal/RangeActionModal';
+import OrderRow from './Orders/OrderTable/OrderRow';
+import RangesRow from './Ranges/RangesTable/RangesRow';
+import TransactionRow from './Transactions/TransactionsTable/TransactionRow';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';

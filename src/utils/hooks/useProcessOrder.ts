@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo, useContext } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     getChainExplorer,
-    getUnicodeCharacter,
-    trimString,
-    getMoneynessRank,
     getElapsedTime,
     getFormattedNumber,
+    getMoneynessRank,
+    getUnicodeCharacter,
+    trimString,
     uriToHttp,
 } from '../../ambient-utils/dataLayer';
 import { LimitOrderIF } from '../../ambient-utils/types';
@@ -18,13 +18,13 @@ import {
 } from '@crocswap-libs/sdk';
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import moment from 'moment';
 import { getAddress } from 'ethers';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { useFetchBatch } from '../../App/hooks/useFetchBatch';
-import { UserDataContext } from '../../contexts/UserDataContext';
+import moment from 'moment';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -57,55 +57,47 @@ export const useProcessOrder = (
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (crocEnv) {
-            const fetchTokenPrice = async () => {
-                const baseTokenPrice =
-                    (
-                        await cachedFetchTokenPrice(
-                            limitOrder.base,
-                            limitOrder.chainId,
-                            crocEnv,
-                        )
-                    )?.usdPrice || 0.0;
-                const quoteTokenPrice =
-                    (
-                        await cachedFetchTokenPrice(
-                            limitOrder.quote,
-                            limitOrder.chainId,
-                            crocEnv,
-                        )
-                    )?.usdPrice || 0.0;
+        const fetchTokenPrice = async () => {
+            const baseTokenPrice =
+                (
+                    await cachedFetchTokenPrice(
+                        limitOrder.base,
+                        limitOrder.chainId,
+                    )
+                )?.usdPrice || 0.0;
+            const quoteTokenPrice =
+                (
+                    await cachedFetchTokenPrice(
+                        limitOrder.quote,
+                        limitOrder.chainId,
+                    )
+                )?.usdPrice || 0.0;
 
-                if (baseTokenPrice) {
-                    setBasePrice(baseTokenPrice);
-                } else if (
-                    quoteTokenPrice &&
-                    limitOrder.curentPoolPriceDisplayNum
-                ) {
-                    // this may be backwards
-                    const estimatedBasePrice =
-                        quoteTokenPrice / limitOrder.curentPoolPriceDisplayNum;
-                    setBasePrice(estimatedBasePrice);
-                }
-                if (quoteTokenPrice) {
-                    setQuotePrice(quoteTokenPrice);
-                } else if (
-                    baseTokenPrice &&
-                    limitOrder.curentPoolPriceDisplayNum
-                ) {
-                    const estimatedQuotePrice =
-                        baseTokenPrice * limitOrder.curentPoolPriceDisplayNum;
-                    setQuotePrice(estimatedQuotePrice);
-                }
-            };
+            if (baseTokenPrice) {
+                setBasePrice(baseTokenPrice);
+            } else if (
+                quoteTokenPrice &&
+                limitOrder.curentPoolPriceDisplayNum
+            ) {
+                // this may be backwards
+                const estimatedBasePrice =
+                    quoteTokenPrice / limitOrder.curentPoolPriceDisplayNum;
+                setBasePrice(estimatedBasePrice);
+            }
+            if (quoteTokenPrice) {
+                setQuotePrice(quoteTokenPrice);
+            } else if (baseTokenPrice && limitOrder.curentPoolPriceDisplayNum) {
+                const estimatedQuotePrice =
+                    baseTokenPrice * limitOrder.curentPoolPriceDisplayNum;
+                setQuotePrice(estimatedQuotePrice);
+            }
+        };
 
-            fetchTokenPrice();
-        }
+        fetchTokenPrice();
     }, [
         limitOrder.base,
         limitOrder.quote,
         limitOrder.chainId,
-        crocEnv !== undefined,
         limitOrder.curentPoolPriceDisplayNum,
     ]);
 

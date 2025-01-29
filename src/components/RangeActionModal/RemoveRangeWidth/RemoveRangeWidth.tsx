@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
-import styles from './RemoveRangeWidth.module.css';
 import RangeSlider from '../../Form/RangeSlider';
+import styles from './RemoveRangeWidth.module.css';
 
 interface propsIF {
     removalPercentage: number;

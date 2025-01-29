@@ -1,14 +1,14 @@
 import { Suspense, memo, useEffect, useState } from 'react';
-import styles from './TokenIcon.module.css';
-import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
-import { TokenIF } from '../../../ambient-utils/types';
-import processLogoSrc from './processLogoSrc';
-import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import { useLocation } from 'react-router-dom';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import fixCase, {
     letterCasings,
 } from '../../../ambient-utils/functions/fixCase';
+import { TokenIF } from '../../../ambient-utils/types';
+import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
+import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
+import processLogoSrc from './processLogoSrc';
+import styles from './TokenIcon.module.css';
 
 type TokenIconSize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 

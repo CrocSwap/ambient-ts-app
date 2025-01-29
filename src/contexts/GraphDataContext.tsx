@@ -1,29 +1,28 @@
 import {
     createContext,
+    ReactNode,
     useContext,
     useEffect,
     useMemo,
     useState,
-    ReactNode,
 } from 'react';
-import { fetchUserRecentChanges, fetchRecords } from '../ambient-utils/api';
+import { fetchRecords, fetchUserRecentChanges } from '../ambient-utils/api';
+import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
 import {
-    TokenIF,
-    PositionIF,
     LimitOrderIF,
-    TransactionIF,
     LiquidityDataIF,
+    PositionIF,
     RecordType,
+    TransactionIF,
 } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
-import { TokenContext } from './TokenContext';
-import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
 import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
-import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
+import { TokenContext } from './TokenContext';
 import { TradeDataContext } from './TradeDataContext';
+import { UserDataContext } from './UserDataContext';
 
 export interface Changes {
     dataReceived: boolean;
@@ -67,14 +66,13 @@ export interface GraphDataContextIF {
     userLimitOrdersByPool: LimitOrdersByPool;
     limitOrdersByPool: LimitOrdersByPool;
     liquidityData: LiquidityDataIF | undefined;
-    liquidityFee: number;
+    liquidityFee: number | undefined;
 
-    setLiquidityPending: (params: PoolRequestParams) => void;
     setLiquidity: (
         liqData: LiquidityDataIF,
         request: PoolRequestParams | undefined,
     ) => void;
-    setLiquidityFee: React.Dispatch<React.SetStateAction<number>>;
+    setLiquidityFee: React.Dispatch<React.SetStateAction<number | undefined>>;
     setTransactionsByPool: React.Dispatch<React.SetStateAction<Changes>>;
     setTransactionsByUser: React.Dispatch<React.SetStateAction<Changes>>;
     setUserTransactionsByPool: React.Dispatch<React.SetStateAction<Changes>>;
@@ -96,15 +94,14 @@ function normalizeAddr(addr: string): string {
     return caseAddr.startsWith('0x') ? caseAddr : '0x' + caseAddr;
 }
 
-export const GraphDataContext = createContext<GraphDataContextIF>(
-    {} as GraphDataContextIF,
-);
+export const GraphDataContext = createContext({} as GraphDataContextIF);
 
 export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { graphCacheUrl, chainId },
+        activeNetwork: { GCGO_URL, chainId },
         server: { isEnabled: isServerEnabled },
         isUserIdle,
+        isUserOnline,
     } = useContext(AppStateContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
     const { pendingTransactions, allReceipts, sessionPositionUpdates } =
@@ -169,7 +166,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         LiquidityDataIF | undefined
     >(undefined);
 
-    const [liquidityFee, setLiquidityFee] = useState<number>(0);
+    const [liquidityFee, setLiquidityFee] = useState<number | undefined>();
 
     const userAddress = userDefaultAddress;
 
@@ -244,20 +241,20 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         }
     };
 
-    const setLiquidityPending = () => {
-        setLiquidityData(undefined);
-    };
-
     const [sessionTransactionHashes, setSessionTransactionHashes] = useState<
         string[]
     >([]);
 
     useEffect(() => {
-        resetUserGraphData();
-    }, [isUserConnected, userAddress]);
+        if (isUserOnline) {
+            resetUserGraphData();
+        }
+    }, [userAddress]);
 
     useEffect(() => {
-        resetPoolGraphData();
+        if (isUserOnline) {
+            resetPoolGraphData();
+        }
     }, [baseToken.address + quoteToken.address]);
 
     useEffect(() => {
@@ -336,8 +333,8 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     );
 
     const failedSessionTransactionHashes = allReceipts
-        .filter((r) => JSON.parse(r).status === 0)
-        .map((r) => JSON.parse(r).hash);
+        .filter((r) => r.status === 0)
+        .map((r) => r.hash);
 
     const unixTimeOffset = 10; // 10s offset needed to account for system clock differences
 
@@ -373,7 +370,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                 (positionUpdate) =>
                     positionUpdate.isLimit === false &&
                     !failedSessionTransactionHashes.includes(
-                        positionUpdate.txHash,
+                        positionUpdate.txHash ?? '',
                     ) &&
                     !removedPositionUpdateTxHashes.includes(
                         positionUpdate.txHash,
@@ -401,7 +398,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                 (positionUpdate) =>
                     positionUpdate.isLimit === true &&
                     !failedSessionTransactionHashes.includes(
-                        positionUpdate.txHash,
+                        positionUpdate.txHash ?? '',
                     ) &&
                     !removedPositionUpdateTxHashes.includes(
                         positionUpdate.txHash,
@@ -437,13 +434,15 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
             // This useEffect controls a series of other dispatches that fetch data on update of the user object
             // user Postions, limit orders, and recent changes are all governed here
             if (
+                !isUserOnline ||
                 !isServerEnabled ||
                 !isUserConnected ||
                 !userAddress ||
                 !crocEnv ||
                 !provider ||
                 !tokens.tokenUniv.length ||
-                !chainId
+                !chainId ||
+                (await crocEnv.context).chain.chainId !== chainId
             ) {
                 return;
             }
@@ -454,7 +453,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                         recordType: recordTargets[i],
                         user: userAddress,
                         chainId: chainId,
-                        gcUrl: graphCacheUrl,
+                        gcUrl: GCGO_URL,
                         provider,
                         tokenUniv: tokens.tokenUniv,
                         crocEnv,
@@ -495,7 +494,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                     user: userAddress,
                     chainId: chainId,
                     crocEnv: crocEnv,
-                    graphCacheUrl: graphCacheUrl,
+                    GCGO_URL: GCGO_URL,
                     provider,
                     n: 100, // fetch last 100 changes,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
@@ -509,58 +508,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                                 dataReceived: true,
                                 changes: updatedTransactions,
                             });
-                            const result: TokenIF[] = [];
-                            const tokenMap = new Map();
-                            for (const item of updatedTransactions as TransactionIF[]) {
-                                if (!tokenMap.has(item.base)) {
-                                    const isFoundInAmbientList =
-                                        tokens.defaultTokens.some(
-                                            (ambientToken) => {
-                                                if (
-                                                    ambientToken.address.toLowerCase() ===
-                                                    item.base.toLowerCase()
-                                                )
-                                                    return true;
-                                                return false;
-                                            },
-                                        );
-                                    if (!isFoundInAmbientList) {
-                                        tokenMap.set(item.base, true); // set any value to Map
-                                        result.push({
-                                            name: item.baseName,
-                                            address: item.base,
-                                            symbol: item.baseSymbol,
-                                            decimals: item.baseDecimals,
-                                            chainId: parseInt(item.chainId),
-                                            logoURI: item.baseTokenLogoURI,
-                                        });
-                                    }
-                                }
-                                if (!tokenMap.has(item.quote)) {
-                                    const isFoundInAmbientList =
-                                        tokens.defaultTokens.some(
-                                            (ambientToken) => {
-                                                if (
-                                                    ambientToken.address.toLowerCase() ===
-                                                    item.quote.toLowerCase()
-                                                )
-                                                    return true;
-                                                return false;
-                                            },
-                                        );
-                                    if (!isFoundInAmbientList) {
-                                        tokenMap.set(item.quote, true); // set any value to Map
-                                        result.push({
-                                            name: item.quoteName,
-                                            address: item.quote,
-                                            symbol: item.quoteSymbol,
-                                            decimals: item.quoteDecimals,
-                                            chainId: parseInt(item.chainId),
-                                            logoURI: item.quoteTokenLogoURI,
-                                        });
-                                    }
-                                }
-                            }
                         }
 
                         setDataLoadingStatus({
@@ -575,6 +522,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         };
         fetchData();
     }, [
+        isUserOnline,
         isServerEnabled,
         tokens.tokenUniv.length,
         isUserConnected,
@@ -583,8 +531,8 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         isUserIdle
             ? Math.floor(Date.now() / (onAccountRoute ? 60000 : 120000))
             : Math.floor(Date.now() / (onAccountRoute ? 15000 : 60000)), // cache every 15 seconds while viewing portfolio, otherwise 1 minute
-        !!crocEnv,
-        !!provider,
+        crocEnv,
+        provider,
         userDataByPoolLength,
         allReceipts.length,
     ]);
@@ -612,7 +560,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         setLimitOrdersByPool,
         liquidityData,
         setLiquidity,
-        setLiquidityPending,
         liquidityFee,
         setLiquidityFee,
     };

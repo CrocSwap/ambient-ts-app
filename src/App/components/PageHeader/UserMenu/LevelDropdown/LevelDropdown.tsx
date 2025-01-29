@@ -1,7 +1,7 @@
-import styles from './LevelDropdown.module.css';
-import UserProfileCard from '../UserProfileCard';
-import { UserXpDataIF } from '../../../../../contexts/UserDataContext';
 import UserLevelDisplay from '../../../../../components/Global/LevelsCard/UserLevelDisplay';
+import { UserXpDataIF } from '../../../../../contexts/UserDataContext';
+import UserProfileCard from '../UserProfileCard';
+import styles from './LevelDropdown.module.css';
 interface propsIF {
     ensName: string;
     accountAddress: string;

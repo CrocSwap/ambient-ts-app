@@ -1,7 +1,7 @@
-import * as localLogos from '../../../assets/images/tokens/exports';
+import { excludedTokenAddressesLowercase } from '../../../ambient-utils/constants';
 import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
-import { excludedTokenAddressesLowercase } from '../../../ambient-utils/constants';
+import * as localLogos from '../../../assets/images/tokens/exports';
 
 // all args are optional; calling fn without data is handled
 interface argsIF {
@@ -28,9 +28,13 @@ export default function processLogoSrc(args: argsIF): string {
         return '';
     }
 
-    if (localLogoLookupSymbol === 'USD+') localLogoLookupSymbol = 'USDPLUS';
-    if (localLogoLookupSymbol === 'PUNKETH-20')
+    if (localLogoLookupSymbol === 'USD+') {
+        localLogoLookupSymbol = 'USDPLUS';
+    } else if (localLogoLookupSymbol === 'USDC.E') {
+        localLogoLookupSymbol = 'USDC';
+    } else if (localLogoLookupSymbol === 'PUNKETH-20') {
         localLogoLookupSymbol = 'PUNKETH20';
+    }
     // return a filepath (if local) or a URI string (if remote)
     return (
         localLogos[localLogoLookupSymbol as keyof typeof localLogos] ??

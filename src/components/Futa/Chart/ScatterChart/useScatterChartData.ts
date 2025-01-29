@@ -1,13 +1,13 @@
-import { MARKET_CAP_MULTIPLIER_BIG_INT } from './../../../../pages/platformFuta/mockAuctionData';
-import { useContext, useMemo } from 'react';
-import { AuctionsContext } from '../../../../contexts/AuctionsContext';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { scatterDotDefaultSize } from './ScatterChart';
+import { useContext, useMemo } from 'react';
 import {
     AuctionDataIF,
     getFormattedNumber,
 } from '../../../../ambient-utils/dataLayer';
+import { AuctionsContext } from '../../../../contexts/AuctionsContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { MARKET_CAP_MULTIPLIER_BIG_INT } from './../../../../pages/platformFuta/mockAuctionData';
+import { scatterDotDefaultSize } from './ScatterChart';
 
 const useScatterChartData = () => {
     const { globalAuctionList, filteredAuctionList, accountData } =

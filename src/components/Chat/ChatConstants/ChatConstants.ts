@@ -8,6 +8,7 @@ export const CROCODILE_LABS_LINKS = [
     'https://scrollscan.com/',
     'https://blastscan.io/',
     'https://etherscan.io/',
+    'https://discord.gg/ambient-finance/',
 ];
 
 export const CHAT_WHITELISTED_REGEX: RegExp[] = [

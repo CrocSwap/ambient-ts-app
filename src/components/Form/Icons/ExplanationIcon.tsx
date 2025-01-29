@@ -1,6 +1,5 @@
-import React from 'react';
-import { ExplanationButton } from './Icons.styles'; // Make sure to import it correctly
 import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { ExplanationButton } from './Icons.styles'; // Make sure to import it correctly
 
 const ExplanationIcon = () => {
     return (

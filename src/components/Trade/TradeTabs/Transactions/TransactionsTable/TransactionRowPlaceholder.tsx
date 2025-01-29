@@ -1,21 +1,21 @@
-import { useContext } from 'react';
-import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { Chip } from '../../../../Form/Chip';
-import { FiExternalLink } from 'react-icons/fi';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { useContext } from 'react';
+import { FiExternalLink } from 'react-icons/fi';
 import {
     getFormattedNumber,
-    trimString,
-    getUnicodeCharacter,
     getPinnedPriceValuesFromTicks,
+    getUnicodeCharacter,
+    trimString,
 } from '../../../../../ambient-utils/dataLayer';
+import { AppStateContext } from '../../../../../contexts';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { FlexContainer } from '../../../../../styled/Common';
 import {
     RowItem,
     TransactionRow,
 } from '../../../../../styled/Components/TransactionTable';
-import { FlexContainer } from '../../../../../styled/Common';
-import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
-import { AppStateContext } from '../../../../../contexts';
+import { Chip } from '../../../../Form/Chip';
 
 interface PropsIF {
     transaction: {
@@ -125,13 +125,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                     </div>
                 )}
                 {tableView === 'large' && <div>{id}</div>}
-                {tableView === 'large' && <div>{wallet}</div>}
-                {tableView !== 'large' && (
-                    <div>
-                        {id}
-                        {wallet}
-                    </div>
-                )}
+                <div>{wallet}</div>
                 {tableView !== 'small' ? (
                     transaction.type === 'Range' ? (
                         <FlexContainer

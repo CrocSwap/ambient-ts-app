@@ -1,11 +1,11 @@
+import { AnimatePresence, motion, useAnimation } from 'framer-motion';
 import React, {
-    useEffect,
-    useRef,
     Dispatch,
     SetStateAction,
     useContext,
+    useEffect,
+    useRef,
 } from 'react';
-import { AnimatePresence, useAnimation, motion } from 'framer-motion';
 import styles from './ActivityIndicator.module.css';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';
@@ -17,6 +17,9 @@ interface AcitivtyIndicatorProps {
 
     showNotificationTable: boolean;
     setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
+
+    showRedDot: boolean;
+    setShowRedDot: Dispatch<SetStateAction<boolean>>;
 }
 const animStates = {
     hidden: { scale: 0, opacity: 0 },
@@ -28,6 +31,8 @@ const animStates = {
 const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
     const { appHeaderDropdown } = useContext(AppStateContext);
     const { platformName } = useContext(BrandContext);
+
+    const { showRedDot, setShowRedDot } = props;
 
     const controls = useAnimation();
     const isFirstRun = useRef(true);
@@ -51,18 +56,20 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
         if (!showNotificationTable) {
             appHeaderDropdown.setIsActive(true);
         } else appHeaderDropdown.setIsActive(false);
+
+        setShowRedDot(false);
     };
 
     const isFuta = ['futa'].includes(platformName);
 
     const pendingCircle = (
         <button
-            className={`${styles.circleContainer}${isFuta ? styles.circleContainerFuta : ''}`}
+            className={
+                isFuta ? styles.circleContainerFuta : styles.circleContainer
+            }
             onClick={toggleNotificationCenter}
         >
-            <span
-                className={`${styles.ring}${isFuta ? styles.ringFuta : ''}`}
-            />
+            <span className={isFuta ? styles.ringFuta : styles.ring} />
         </button>
     );
 
@@ -97,6 +104,7 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
                             {value}
                         </span>
                     </motion.div>
+                    {showRedDot && <span className={styles.redDot} />}
                 </motion.button>
             )}
         </AnimatePresence>

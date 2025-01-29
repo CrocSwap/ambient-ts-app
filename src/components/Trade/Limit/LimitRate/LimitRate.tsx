@@ -7,19 +7,19 @@ import {
     useEffect,
     useState,
 } from 'react';
-import { HiPlus, HiMinus } from 'react-icons/hi';
-import {
-    CrocEnvContext,
-    CrocEnvContextIF,
-} from '../../../../contexts/CrocEnvContext';
-import { PoolContext, PoolContextIF } from '../../../../contexts/PoolContext';
-import {
-    TradeTableContext,
-    TradeTableContextIF,
-} from '../../../../contexts/TradeTableContext';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { HiMinus, HiPlus } from 'react-icons/hi';
 import { removeLeadingZeros } from '../../../../ambient-utils/dataLayer';
+import {
+    pinTickToTickLower,
+    pinTickToTickUpper,
+} from '../../../../ambient-utils/dataLayer/functions/pinTick';
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
-import { updatesIF } from '../../../../utils/hooks/useUrlParams';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { FlexContainer } from '../../../../styled/Common';
 import {
     LimitRateButton,
@@ -27,24 +27,12 @@ import {
     TokenQuantityInput,
 } from '../../../../styled/Components/TradeModules';
 import {
-    TradeDataContext,
-    TradeDataContextIF,
-} from '../../../../contexts/TradeDataContext';
-import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import {
-    pinTickToTickLower,
-    pinTickToTickUpper,
-} from '../../../../ambient-utils/dataLayer/functions/pinTick';
-import { ExplanationButton } from '../../../Form/Icons/Icons.styles';
-import { AiOutlineInfoCircle } from 'react-icons/ai';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
+import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 import { Chip } from '../../../Form/Chip';
+import { ExplanationButton } from '../../../Form/Icons/Icons.styles';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -70,12 +58,11 @@ export default function LimitRate(props: propsIF) {
     const {
         activeNetwork: { gridSize, chainId },
         globalPopup: { open: openGlobalPopup },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+    } = useContext(AppStateContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const { pool, usdPriceInverse, isTradeDollarizationEnabled, poolData } =
-        useContext<PoolContextIF>(PoolContext);
-    const { showOrderPulseAnimation } =
-        useContext<TradeTableContextIF>(TradeTableContext);
+        useContext(PoolContext);
+    const { showOrderPulseAnimation } = useContext(TradeTableContext);
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const {
@@ -88,7 +75,7 @@ export default function LimitRate(props: propsIF) {
         tokenB,
         isTokenABase: isBid,
         currentPoolPriceTick,
-    } = useContext<TradeDataContextIF>(TradeDataContext);
+    } = useContext(TradeDataContext);
 
     const { basePrice, quotePrice, poolPriceDisplay } = poolData;
 
@@ -182,6 +169,39 @@ export default function LimitRate(props: propsIF) {
                     updateURL({ update: [['limitTick', newTopOfBookLimit]] });
                     setPriceInputFieldBlurred(true);
                 }
+                setOnePercentTickValue(
+                    isSellTokenBase
+                        ? pinTickToTickLower(
+                              currentPoolPriceTick - 1 * 100,
+                              gridSize,
+                          )
+                        : pinTickToTickUpper(
+                              currentPoolPriceTick + 1 * 100,
+                              gridSize,
+                          ),
+                );
+                setFivePercentTickValue(
+                    isSellTokenBase
+                        ? pinTickToTickLower(
+                              currentPoolPriceTick - 5 * 100,
+                              gridSize,
+                          )
+                        : pinTickToTickUpper(
+                              currentPoolPriceTick + 5 * 100,
+                              gridSize,
+                          ),
+                );
+                setTenPercentTickValue(
+                    isSellTokenBase
+                        ? pinTickToTickLower(
+                              currentPoolPriceTick - 10 * 100,
+                              gridSize,
+                          )
+                        : pinTickToTickUpper(
+                              currentPoolPriceTick + 10 * 100,
+                              gridSize,
+                          ),
+                );
             }
         })();
     }, [currentPoolPriceTick, isSellTokenBase, gridSize, selectedPreset]);
@@ -193,20 +213,6 @@ export default function LimitRate(props: propsIF) {
         const pinnedTick: number = isSellTokenBase
             ? pinTickToTickLower(lowTick, gridSize)
             : pinTickToTickUpper(highTick, gridSize);
-
-        switch (percent) {
-            case 1:
-                setOnePercentTickValue(pinnedTick);
-                break;
-            case 5:
-                setFivePercentTickValue(pinnedTick);
-                break;
-            case 10:
-                setTenPercentTickValue(pinnedTick);
-                break;
-            default:
-                break;
-        }
 
         setLimitTick(pinnedTick);
         updateURL({ update: [['limitTick', pinnedTick]] });

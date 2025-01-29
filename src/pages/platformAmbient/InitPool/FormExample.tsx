@@ -1,9 +1,5 @@
-import React, { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { IoIosCheckmarkCircle } from 'react-icons/io';
-import { Container, FlexContainer, Text } from '../../../styled/Common';
-import styles from '../../../components/Home/Landing/BackgroundImages.module.css';
-import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
-import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
@@ -11,10 +7,14 @@ import {
 import Button from '../../../components/Form/Button';
 import { Chip } from '../../../components/Form/Chip';
 import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
-import TokenInputQuantity from '../../../components/Form/TokenInputQuantity';
 import Toggle from '../../../components/Form/Toggle';
-import FormFooter from './FormFooterExample';
+import TokenInputQuantity from '../../../components/Form/TokenInputQuantity';
+import styles from '../../../components/Home/Landing/BackgroundImages.module.css';
+import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { Container, FlexContainer, Text } from '../../../styled/Common';
+import FormFooter from './FormFooterExample';
 
 export default function ExampleForm() {
     const { dexBalRange } = useContext(UserPreferenceContext);

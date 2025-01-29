@@ -6,28 +6,25 @@ import React, {
     useRef,
     useState,
 } from 'react';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { useParams } from 'react-router-dom';
-import styles from './Comments.module.css';
-import useCommentsWS from './useCommentsWS';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import DomDebugger from '../../Chat/DomDebugger/DomDebugger';
+import useChatApi from '../../Chat/Service/ChatApi';
 import CommentCard from './CommentCard/CommentCard';
 import CommentInput from './CommentInput/CommentInput';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import useChatApi from '../../Chat/Service/ChatApi';
-import DomDebugger from '../../Chat/DomDebugger/DomDebugger';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import styles from './Comments.module.css';
+import useCommentsWS from './useCommentsWS';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useOnBoundryChange from '../../../utils/hooks/useOnBoundryChange';
 import {
     checkVisibilityWithBottom,
     dropFromCssClasses,
 } from '../../Chat/ChatUtils';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import useOnBoundryChange from '../../../utils/hooks/useOnBoundryChange';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../contexts/AppStateContext';
+import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
 
 type ShimmerListProps = {
     count: number;
@@ -50,7 +47,7 @@ interface propsIF {
 }
 
 function Comments(props: propsIF) {
-    const { activeNetwork } = useContext<AppStateContextIF>(AppStateContext);
+    const { activeNetwork } = useContext(AppStateContext);
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const { ticker } = useParams();
 
@@ -121,7 +118,9 @@ function Comments(props: propsIF) {
                     tradeWrapper.getBoundingClientRect().height;
                 domDebug('screen height', window.screen.height);
                 domDebug('trader section height', tradeSectionHeight);
-                setPanelMaxHeight(window.innerHeight - tradeSectionHeight - 90);
+                setPanelMaxHeight(
+                    window.innerHeight - tradeSectionHeight - 108,
+                );
             }
         }
     };
@@ -220,7 +219,7 @@ function Comments(props: propsIF) {
     };
 
     const scrollToMessage = (messageId: string, instant: boolean) => {
-        const scrollTopPadding = -100;
+        const scrollTopPadding = -60;
         const msgEl = document.querySelector(
             '.commentBubble[data-message-id="' + messageId + '"]',
         );

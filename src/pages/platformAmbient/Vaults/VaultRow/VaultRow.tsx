@@ -1,32 +1,31 @@
-import styles from './VaultRow.module.css';
-import tempestLogoColor from './tempestLogoColor.svg';
-// import tempestLogo from './tempestLogo.svg';
-import { FlexContainer } from '../../../../styled/Common';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { RiExternalLinkLine } from 'react-icons/ri';
 import {
     getFormattedNumber,
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
-import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { VaultIF, VaultStrategy } from '../../../../ambient-utils/types';
+import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { VaultIF } from '../../../../ambient-utils/types';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
+import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
+import TooltipComponent from '../../../../components/Global/TooltipComponent/TooltipComponent';
 import {
     AppStateContext,
-    UserDataContext,
-    TokenContext,
     CrocEnvContext,
     ReceiptContext,
+    TokenContext,
+    UserDataContext,
 } from '../../../../contexts';
+import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
+import { FlexContainer } from '../../../../styled/Common';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { formatDollarAmount } from '../../../../utils/numbers';
 import VaultDeposit from '../VaultActionModal/VaultDeposit/VaultDeposit';
 import VaultWithdraw from '../VaultActionModal/VaultWithdraw/VaultWithdraw';
-import { RiExternalLinkLine } from 'react-icons/ri';
-import { toDisplayQty } from '@crocswap-libs/sdk';
-import TooltipComponent from '../../../../components/Global/TooltipComponent/TooltipComponent';
-import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
-import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
-import { useBottomSheet } from '../../../../contexts/BottomSheetContext';
+import styles from './VaultRow.module.css';
+import tempestLogoColor from './tempestLogoColor.svg';
 
 interface propsIF {
     idForDOM: string;
@@ -49,7 +48,7 @@ export default function VaultRow(props: propsIF) {
     // const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
 
     const {
-        activeNetwork: { chainId },
+        activeNetwork: { chainId, tempestApiNetworkName },
     } = useContext(AppStateContext);
 
     const mainAsset = tokens.getTokenByAddress(vault.mainAsset);
@@ -60,8 +59,11 @@ export default function VaultRow(props: propsIF) {
     const secondaryAsset = tokens.getTokenByAddress(secondaryAssetAddress);
 
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
+    const showPhoneVersion = useMediaQuery('(max-width: 500px)');
 
     const [crocEnvBal, setCrocEnvBal] = useState<bigint>();
+
+    const strategy = vault.strategy as VaultStrategy;
 
     async function getCrocEnvBalance(): Promise<void> {
         if (
@@ -73,6 +75,7 @@ export default function VaultRow(props: propsIF) {
             const tempestVault = crocEnv.tempestVault(
                 vault.address,
                 vault.mainAsset,
+                strategy,
             );
             setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
         }
@@ -153,11 +156,10 @@ export default function VaultRow(props: propsIF) {
             justifyContent='flex-end'
             gap={5}
             style={{ flexShrink: 0 }}
-            className={styles.depositContainer}
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                 {balDisplay}
-                {!!crocEnvBal && !!userAddress && (
+                {!!(vault.balance ?? crocEnvBal) && !!userAddress && (
                     <>
                         <TokenIcon
                             token={mainAsset}
@@ -165,6 +167,7 @@ export default function VaultRow(props: propsIF) {
                             alt={mainAsset.symbol}
                             size={'m'}
                         />
+
                         <TooltipComponent
                             placement='top'
                             title='Vault positions can hold both tokens in a pair. Displayed position values represent estimated redeemable token positions for the primary token on withdrawal.'
@@ -175,15 +178,18 @@ export default function VaultRow(props: propsIF) {
         </FlexContainer>
     );
 
-    const formattedAPR = getFormattedNumber({
-        value: parseFloat(vault.apr) * 100,
-        prefix: '',
-        suffix: '%',
-        minFracDigits: 2,
-        maxFracDigits: 2,
-        isPercentage: true,
-    });
+    const isAprUnknown = !(parseFloat(vault.apr) > 0);
 
+    const formattedAPR = isAprUnknown
+        ? '...'
+        : getFormattedNumber({
+              value: parseFloat(vault.apr) * 100,
+              prefix: '',
+              suffix: '%',
+              minFracDigits: 2,
+              maxFracDigits: 2,
+              isPercentage: true,
+          });
     function handleOpenWithdrawModal() {
         setType('Withdraw');
         openModal();
@@ -205,6 +211,7 @@ export default function VaultRow(props: propsIF) {
                 secondaryAsset={secondaryAsset}
                 vault={vault}
                 onClose={handleModalClose}
+                strategy={strategy}
             />
         ) : (
             <VaultWithdraw
@@ -217,20 +224,13 @@ export default function VaultRow(props: propsIF) {
                 }
                 mainAssetBalanceDisplayQty={balDisplay}
                 onClose={handleModalClose}
+                strategy={strategy}
             />
         );
     function navigateExternal(): void {
         const goToExternal = (url: string) => window.open(url, '_blank');
-        if (Number(vault.chainId) === 534352) {
-            const destination: string =
-                'https://app.tempestfinance.xyz/vaults/scroll/' + vault.address;
-            goToExternal(destination);
-        } else if (Number(vault.chainId) === 1) {
-            const destination: string =
-                'https://app.tempestfinance.xyz/vaults/ethereum/' +
-                vault.address;
-            goToExternal(destination);
-        }
+        const destination = `https://app.tempestfinance.xyz/vaults/${tempestApiNetworkName}/${vault.address}`;
+        goToExternal(destination);
     }
 
     return (
@@ -251,16 +251,29 @@ export default function VaultRow(props: propsIF) {
                         <p className={styles.tvlDisplay}>
                             {formatDollarAmount(parseFloat(vault.tvlUsd))}
                         </p>
-                        {depositsDisplay}
                         <p
-                            className={styles.apyDisplay}
-                            style={{ color: 'var(--other-green' }}
+                            className={`${styles.depositContainer} ${!isUserConnected && styles.hideDepositOnMobile}`}
+                        >
+                            {depositsDisplay}
+                        </p>
+
+                        <p
+                            className={`${styles.aprDisplay} ${!isUserConnected && styles.showAprOnMobile}`}
+                            style={{
+                                color: isAprUnknown
+                                    ? 'var(--text1'
+                                    : 'var(--other-green',
+                                paddingRight: isAprUnknown ? '0.5rem' : '',
+                            }}
                         >
                             {formattedAPR}
-                            <TooltipComponent
-                                placement='top-end'
-                                title='APR estimates provided by vault provider.'
-                            />
+                            {!isAprUnknown &&
+                                (isUserConnected || !showPhoneVersion) && (
+                                    <TooltipComponent
+                                        placement='top-end'
+                                        title='APR estimates provided by vault provider.'
+                                    />
+                                )}
                         </p>
                         <div className={styles.actionButtonContainer}>
                             <button
@@ -270,15 +283,15 @@ export default function VaultRow(props: propsIF) {
                                 Deposit
                             </button>
 
-                            {isUserConnected && (
-                                // !!(vault.balance || crocEnvBal) &&
-                                <button
-                                    className={styles.actionButton}
-                                    onClick={handleOpenWithdrawModal}
-                                >
-                                    Withdraw
-                                </button>
-                            )}
+                            {isUserConnected &&
+                                !!(vault.balance || crocEnvBal) && (
+                                    <button
+                                        className={styles.actionButton}
+                                        onClick={handleOpenWithdrawModal}
+                                    >
+                                        Withdraw
+                                    </button>
+                                )}
                         </div>
                     </div>
                 </div>

@@ -7,10 +7,10 @@ import { favePoolsMethodsIF, useFavePools } from '../App/hooks/useFavePools';
 import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
-import { TradeTokenContext } from './TradeTokenContext';
-import { TradeDataContext } from './TradeDataContext';
 import { getMoneynessRankByAddr } from '../ambient-utils/dataLayer';
 import { AppStateContext } from './AppStateContext';
+import { TradeDataContext } from './TradeDataContext';
+import { TradeTokenContext } from './TradeTokenContext';
 
 export interface UserPreferenceContextIF {
     favePools: favePoolsMethodsIF;
@@ -30,7 +30,7 @@ export interface UserPreferenceContextIF {
     };
 }
 
-export const UserPreferenceContext = createContext<UserPreferenceContextIF>(
+export const UserPreferenceContext = createContext(
     {} as UserPreferenceContextIF,
 );
 

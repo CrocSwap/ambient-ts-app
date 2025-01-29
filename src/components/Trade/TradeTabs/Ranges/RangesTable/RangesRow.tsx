@@ -1,26 +1,26 @@
 import {
+    Dispatch,
+    memo,
+    MutableRefObject,
+    SetStateAction,
+    useContext,
     useEffect,
     useRef,
-    useContext,
-    memo,
-    Dispatch,
-    SetStateAction,
-    MutableRefObject,
 } from 'react';
 import {
     PositionIF,
     RangeModalAction,
 } from '../../../../../ambient-utils/types';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { RangeContext } from '../../../../../contexts/RangeContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { RangeRow as RangeRowStyled } from '../../../../../styled/Components/TransactionTable';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import rangeRowConstants from '../rangeRowConstants';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { RangeContext } from '../../../../../contexts/RangeContext';
-import { RangeRow as RangeRowStyled } from '../../../../../styled/Components/TransactionTable';
-import { UserDataContext } from '../../../../../contexts/UserDataContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     position: PositionIF;

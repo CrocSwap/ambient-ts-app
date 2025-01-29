@@ -3,9 +3,9 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleDataIF } from '../../../../ambient-utils/types';
-import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
+import { ChartThemeIF } from '../../../../contexts/ChartContext';
+import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
 
 interface propsIF {
     scaleData: scaleData | undefined;
@@ -55,9 +55,9 @@ export default function VolumeBarCanvas(props: propsIF) {
             barSeries.decorate(
                 (context: CanvasRenderingContext2D, d: CandleDataIF) => {
                     const d3DarkStrokeColor =
-                        chartThemeColors.downCandleBorderColor?.copy();
+                        chartThemeColors.downCandleBorderColor.copy();
                     const d3LightStrokeColor =
-                        chartThemeColors.upCandleBorderColor?.copy();
+                        chartThemeColors.upCandleBorderColor.copy();
 
                     if (d3DarkStrokeColor) d3DarkStrokeColor.opacity = 0.5;
                     if (d3LightStrokeColor)
@@ -80,28 +80,20 @@ export default function VolumeBarCanvas(props: propsIF) {
                             ? 'transparent'
                             : selectedDate !== undefined &&
                                 selectedDate === d.time * 1000
-                              ? '#E480FF'
+                              ? chartThemeColors.selectedDateFillColor.toString()
                               : close > open
-                                ? d3LightStrokeColor
-                                    ? d3LightStrokeColor.toString()
-                                    : 'rgba(115,113,252, 0.5)'
-                                : d3DarkStrokeColor
-                                  ? d3DarkStrokeColor.toString()
-                                  : 'rgba(205,193,255, 0.5)';
+                                ? d3LightStrokeColor.toString()
+                                : d3DarkStrokeColor.toString();
 
                     context.strokeStyle =
                         d.volumeUSD === null || d.volumeUSD === 0
                             ? 'transparent'
                             : selectedDate !== undefined &&
                                 selectedDate === d.time * 1000
-                              ? '#E480FF'
+                              ? chartThemeColors.selectedDateFillColor.toString()
                               : close > open
-                                ? d3LightStrokeColor
-                                    ? d3LightStrokeColor.toString()
-                                    : 'rgba(115,113,252, 0.5)'
-                                : d3DarkStrokeColor
-                                  ? d3DarkStrokeColor.toString()
-                                  : 'rgba(205,193,255, 0.5)';
+                                ? d3LightStrokeColor.toString()
+                                : d3DarkStrokeColor.toString();
 
                     if (d.time * 1000 > visibleDateForCandle) {
                         context.fillStyle = 'transparent';

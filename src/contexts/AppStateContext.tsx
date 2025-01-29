@@ -1,30 +1,24 @@
+import { useWeb3Modal } from '@web3modal/ethers/react';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { useIdleTimer } from 'react-idle-timer';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    CHAT_ENABLED,
+    VIEW_ONLY,
+} from '../ambient-utils/constants';
+import { NetworkIF } from '../ambient-utils/types';
 import {
     globalPopupMethodsIF,
     useGlobalPopup,
 } from '../App/components/GlobalPopup/useGlobalPopup';
+import { useAppChain } from '../App/hooks/useAppChain';
+import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import { useModal } from '../components/Global/Modal/useModal';
 import {
     snackbarMethodsIF,
     useSnackbar,
 } from '../components/Global/SnackbarComponent/useSnackbar';
-import {
-    CHAT_ENABLED,
-    CACHE_UPDATE_FREQ_IN_MS,
-    DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
-    DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
-    VIEW_ONLY,
-} from '../ambient-utils/constants';
-import {
-    getCtaDismissalsFromLocalStorage,
-    saveCtaDismissalToLocalStorage,
-} from '../App/functions/localStorage';
-import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
-import { useWeb3Modal } from '@web3modal/ethers/react';
-import { useAppChain } from '../App/hooks/useAppChain';
-import { NetworkIF } from '../ambient-utils/types';
 
 export interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -41,19 +35,16 @@ export interface AppStateContextIF {
         isEnabled: boolean;
         setIsEnabled: (val: boolean) => void;
     };
-    server: { isEnabled: boolean; isUserOnline: boolean };
+    server: { isEnabled: boolean };
+    isUserOnline: boolean;
     subscriptions: { isEnabled: boolean };
     walletModal: {
         isOpen: boolean;
         open: () => void;
         close: () => void;
     };
-    showPointSystemPopup: boolean;
-    dismissPointSystemPopup: () => void;
-    showTopPtsBanner: boolean;
-    dismissTopBannerPopup: () => void;
     isUserIdle: boolean;
-    isUserIdle20min: boolean;
+    isUserIdle60min: boolean;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
     layout: {
@@ -62,9 +53,7 @@ export interface AppStateContextIF {
     };
 }
 
-export const AppStateContext = createContext<AppStateContextIF>(
-    {} as AppStateContextIF,
-);
+export const AppStateContext = createContext({} as AppStateContextIF);
 
 export const AppStateContextProvider = (props: {
     children: React.ReactNode;
@@ -76,7 +65,7 @@ export const AppStateContextProvider = (props: {
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
     const [isUserIdle, setIsUserIdle] = useState(false);
-    const [isUserIdle20min, setIsUserIdle20min] = useState(false);
+    const [isUserIdle60min, setIsUserIdle60min] = useState(false);
 
     // layout---------------
 
@@ -145,42 +134,6 @@ export const AppStateContextProvider = (props: {
     const [isGateWalletModalOpen, openGateWalletModal, closeGateWalletModal] =
         useModal();
 
-    const pointsModalDismissalDuration =
-        DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES || 1440;
-
-    const pointsBannerDismissalDuration =
-        DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES || 1440;
-
-    const ctaPopupDismissalTime =
-        getCtaDismissalsFromLocalStorage().find(
-            (x) => x.ctaId === 'points_modal_cta',
-        )?.unixTimeOfDismissal || 0;
-
-    const [showPointSystemPopup, setShowPointSystemPopup] = useState(
-        ctaPopupDismissalTime <
-            Math.floor(Date.now() / 1000 - 60 * pointsModalDismissalDuration),
-    );
-
-    const dismissPointSystemPopup = () => {
-        setShowPointSystemPopup(false);
-        saveCtaDismissalToLocalStorage({ ctaId: 'points_modal_cta' });
-    };
-
-    const ctaBannerDismissalTime =
-        getCtaDismissalsFromLocalStorage().find(
-            (x) => x.ctaId === 'top_points_banner_cta',
-        )?.unixTimeOfDismissal || 0;
-
-    const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
-        ctaBannerDismissalTime <
-            Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
-    );
-
-    const dismissTopBannerPopup = () => {
-        setShowTopPtsBanner(false);
-        saveCtaDismissalToLocalStorage({ ctaId: 'top_points_banner_cta' });
-    };
-
     const [_, hasAgreedTerms] = useTermsAgreed();
     const { open: openW3Modal } = useWeb3Modal();
 
@@ -188,13 +141,13 @@ export const AppStateContextProvider = (props: {
         setIsUserIdle(true);
     };
 
-    const onIdle20 = () => {
-        setIsUserIdle20min(true);
+    const onIdle60min = () => {
+        setIsUserIdle60min(true);
     };
 
     const onActive = () => {
         setIsUserIdle(false);
-        setIsUserIdle20min(false);
+        setIsUserIdle60min(false);
     };
 
     // Custom visibility change handler to trigger onActive when the tab becomes visible
@@ -250,9 +203,9 @@ export const AppStateContextProvider = (props: {
     });
 
     useIdleTimer({
-        onIdle: onIdle20,
+        onIdle: onIdle60min,
         onActive,
-        timeout: 1000 * 60 * 20, // set user to idle after 20 minutes
+        timeout: 1000 * 60 * 60, // set user to idle after 60 minutes
         promptTimeout: 0,
         events: [
             'mousemove',
@@ -284,7 +237,7 @@ export const AppStateContextProvider = (props: {
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
-        if (CHAT_ENABLED) {
+        if (CHAT_ENABLED && isUserOnline) {
             const interval = setInterval(() => {
                 getStatus().then((isChatUp) => {
                     setIsChatEnabled(isChatUp);
@@ -292,7 +245,7 @@ export const AppStateContextProvider = (props: {
             }, CACHE_UPDATE_FREQ_IN_MS);
             return () => clearInterval(interval);
         }
-    }, [isChatEnabled, CHAT_ENABLED]);
+    }, [isUserOnline, isChatEnabled, CHAT_ENABLED]);
 
     const { activeNetwork, chooseNetwork } = useAppChain();
 
@@ -322,9 +275,10 @@ export const AppStateContextProvider = (props: {
                 isEnabled: isChatEnabled,
                 setIsEnabled: setIsChatEnabled,
             },
-            server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+            server: { isEnabled: isServerEnabled },
+            isUserOnline,
             isUserIdle,
-            isUserIdle20min,
+            isUserIdle60min,
             subscriptions: { isEnabled: areSubscriptionsEnabled },
             walletModal: {
                 isOpen: isGateWalletModalOpen,
@@ -334,10 +288,6 @@ export const AppStateContextProvider = (props: {
                 },
                 close: closeGateWalletModal,
             },
-            showPointSystemPopup,
-            dismissPointSystemPopup,
-            showTopPtsBanner,
-            dismissTopBannerPopup,
             activeNetwork,
             chooseNetwork,
         }),
@@ -359,10 +309,6 @@ export const AppStateContextProvider = (props: {
             closeGateWalletModal,
             isAppHeaderDropdown,
             setIsAppHeaderDropdown,
-            showPointSystemPopup,
-            dismissPointSystemPopup,
-            showTopPtsBanner,
-            dismissTopBannerPopup,
             dimensions.contentHeight,
             dimensions.viewportHeight,
             activeNetwork,

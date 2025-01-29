@@ -1,4 +1,5 @@
-import { useCallback, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
+import { openInNewTab, trimString } from '../../../../ambient-utils/dataLayer';
 import {
     AppStateContext,
     ChainDataContext,
@@ -10,34 +11,33 @@ import {
     TradeTokenContext,
     UserDataContext,
 } from '../../../../contexts';
-import styles from './MobileDropdown.module.css';
-import { openInNewTab, trimString } from '../../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import UserProfileCard from '../UserMenu/UserProfileCard';
 import WalletDropdown from '../UserMenu/WalletDropdown/WalletDropdown';
+import styles from './MobileDropdown.module.css';
 // import LevelDropdown from '../Account/LevelDropdown/LevelDropdown';
-import UserLevelDisplay from '../../../../components/Global/LevelsCard/UserLevelDisplay';
-import { Link } from 'react-router-dom';
-import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
 import { CgProfile } from 'react-icons/cg';
+import { Link } from 'react-router-dom';
+import UserLevelDisplay from '../../../../components/Global/LevelsCard/UserLevelDisplay';
+import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
 
+import { AiFillTwitterCircle } from 'react-icons/ai';
+import { BsCurrencyExchange, BsMedium } from 'react-icons/bs';
+import { FaDiscord, FaQuestion } from 'react-icons/fa';
+import { IoIosSettings } from 'react-icons/io';
+import { IoDocumentTextSharp } from 'react-icons/io5';
+import { MdAccountCircle } from 'react-icons/md';
+import { RiSpyFill } from 'react-icons/ri';
+import { SiGitbook } from 'react-icons/si';
 import {
     DISCORD_LINK,
     DOCS_LINK,
     MEDIUM_LINK,
     TWITTER_LINK,
 } from '../../../../ambient-utils/constants';
-import { SiGitbook } from 'react-icons/si';
-import { AiFillTwitterCircle } from 'react-icons/ai';
-import { FaDiscord, FaQuestion } from 'react-icons/fa';
-import { BsCurrencyExchange, BsMedium } from 'react-icons/bs';
-import { RiSpyFill } from 'react-icons/ri';
-import { IoDocumentTextSharp } from 'react-icons/io5';
+import ExchangeBalance from '../../../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
 import NavbarDropdownItem from '../NavbarDropdownMenu/NavbarDropdownItem';
-import ExchangeBalance from '../../../../components/Portfolio/ExchangeBalance/ExchangeBalance';
-import { IoIosSettings } from 'react-icons/io';
-import { MdAccountCircle } from 'react-icons/md';
 interface navDataIF {
     icon: JSX.Element;
     resource: string;
@@ -81,7 +81,7 @@ export default function MobileDropdown() {
         openSnackbar(`${accountAddressFull} copied`, 'info');
     }
 
-    const clickLogout = useCallback(async () => {
+    const clickLogout = async () => {
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -92,7 +92,7 @@ export default function MobileDropdown() {
         setShowAllData(true);
         disconnectUser();
         setCrocEnv(undefined);
-    }, []);
+    };
 
     const actionsContainer = (
         <div className={styles.actionsContainer}>

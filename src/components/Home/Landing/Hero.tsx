@@ -1,27 +1,32 @@
+import { useContext, useMemo } from 'react';
+import { heroItem } from '../../../assets/branding/types';
+import { BrandContext } from '../../../contexts/BrandContext';
 import { FlexContainer, Text } from '../../../styled/Common';
-import TradeNowButton from './TradeNowButton/TradeNowButton';
-import styles from './BackgroundImages.module.css';
 import { HeroContainer } from '../../../styled/Components/Home';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { useContext, useMemo } from 'react';
-import { BrandContext } from '../../../contexts/BrandContext';
-import { heroItem } from '../../../assets/branding/types';
+import styles from './BackgroundImages.module.css';
+import TradeNowButton from './TradeNowButton/TradeNowButton';
 
 export default function Hero() {
     const smallScreen: boolean = useMediaQuery('(max-width: 1200px)');
-    const { hero, platformName } = useContext(BrandContext);
+    const { platformName, cobrandingLogo } = useContext(BrandContext);
+
+    const hero: heroItem[] = cobrandingLogo
+        ? [
+              { content: 'ambient', processAs: 'text' },
+              { content: 'x', processAs: 'separator' },
+              { content: cobrandingLogo, processAs: 'image' },
+          ]
+        : [{ content: 'ambient', processAs: 'text' }];
 
     // recognized slugs for background image CSS classes
-    type cssSlugs = 'purple_waves' | 'stars';
+    type cssSlugs = 'purple_waves';
     // slug to specify the desired background image
     const cssSlug = useMemo<cssSlugs>(() => {
         // declare an output variable
         let slug: cssSlugs;
         // router to map a background image from deployment config
         switch (platformName) {
-            case 'futa':
-                slug = 'stars';
-                break;
             case 'ambient':
             default:
                 slug = 'purple_waves';
@@ -66,15 +71,16 @@ export default function Hero() {
             case 'separator':
                 jsxOutput = (
                     <Text
-                        fontWeight='200'
-                        // fontSize='800px'
+                        fontWeight='400'
+                        fontSize='header2'
                         color='text1'
                         align='center'
                         style={{
                             marginTop: '20px',
                             marginLeft: '15px',
                             marginRight: '15px',
-                            fontSize: '30px',
+                            fontSize: '70px',
+                            padding: '0 20px',
                         }}
                     >
                         {h.content}

@@ -8,40 +8,37 @@ import {
     useState,
 } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
-import useDebounce from '../../../../App/hooks/useDebounce';
 import {
-    IS_LOCAL_ENV,
     ZERO_ADDRESS,
     checkBlacklist,
 } from '../../../../ambient-utils/constants';
+import {
+    getFormattedNumber,
+    waitForTransaction,
+} from '../../../../ambient-utils/dataLayer';
+import { TokenIF } from '../../../../ambient-utils/types';
+import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import {
     GasPump,
-    SVGContainer,
     MaxButton,
+    SVGContainer,
 } from '../../../../styled/Components/Portfolio';
-import {
-    TransactionError,
-    isTransactionFailedError,
-    isTransactionReplacedError,
-} from '../../../../utils/TransactionError';
-import { TokenIF } from '../../../../ambient-utils/types';
 
-import Toggle from '../../../Form/Toggle';
-import CurrencySelector from '../../../Form/CurrencySelector';
-import TransferAddressInput from '../Transfer/TransferAddressInput';
-import Button from '../../../Form/Button';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
 import {
-    NUM_GWEI_IN_WEI,
-    GAS_DROPS_ESTIMATE_WITHDRAWAL_NATIVE,
     GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20,
+    GAS_DROPS_ESTIMATE_WITHDRAWAL_NATIVE,
+    NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants/';
+import { AppStateContext } from '../../../../contexts';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import Button from '../../../Form/Button';
+import CurrencySelector from '../../../Form/CurrencySelector';
+import Toggle from '../../../Form/Toggle';
+import TransferAddressInput from '../Transfer/TransferAddressInput';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -67,8 +64,11 @@ export default function Withdraw(props: propsIF) {
     } = props;
     const { crocEnv, ethMainnetUsdPrice, provider } =
         useContext(CrocEnvContext);
-    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
-        useContext(ChainDataContext);
+    const {
+        isUserOnline,
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -162,7 +162,10 @@ export default function Withdraw(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     useEffect(() => {
-        if (isWithdrawPending) {
+        if (!isUserOnline) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Currently Offline');
+        } else if (isWithdrawPending) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Withdrawal Pending`);
@@ -191,6 +194,7 @@ export default function Withdraw(props: propsIF) {
             setButtonMessage('Withdraw');
         }
     }, [
+        isUserOnline,
         withdrawQtyNonDisplay,
         isWithdrawPending,
         isDexBalanceSufficient,
@@ -222,43 +226,32 @@ export default function Withdraw(props: propsIF) {
                 addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        chainId: chainId,
                         userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Withdraw',
                         txDescription: `Withdrawal of ${selectedToken.symbol}`,
                     });
 
-                let receipt;
-                try {
-                    if (tx) receipt = await tx.wait();
-                } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && console.debug('repriced');
-                        removePendingTx(error.hash);
-
-                        const newTransactionHash = error.replacement.hash;
-                        addPendingTx(newTransactionHash);
-
-                        updateTransactionHash(
-                            error.hash,
-                            error.replacement.hash,
+                if (tx) {
+                    let receipt;
+                    try {
+                        receipt = await waitForTransaction(
+                            provider,
+                            tx.hash,
+                            removePendingTx,
+                            addPendingTx,
+                            updateTransactionHash,
                         );
-                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
-                        console.error({ error });
-                        receipt = error.receipt;
+                    } catch (e) {
+                        console.error({ e });
                     }
-                }
 
-                if (receipt) {
-                    addReceipt(JSON.stringify(receipt));
-                    removePendingTx(receipt.hash);
-                    resetWithdrawQty();
+                    if (receipt) {
+                        addReceipt(receipt);
+                        removePendingTx(receipt.hash);
+                        resetWithdrawQty();
+                    }
                 }
             } catch (error) {
                 if (
@@ -346,9 +339,7 @@ export default function Withdraw(props: propsIF) {
                 setInputValue(tokenExchangeDepositsDisplay);
         }
     };
-    const [extraL1GasFeeWithdraw] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
-    );
+    const [extraL1GasFeeWithdraw] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
         string | undefined
@@ -412,7 +403,6 @@ export default function Withdraw(props: propsIF) {
                     </GasPump>
                 }
             </FlexContainer>
-            <SmolRefuelLink />
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button

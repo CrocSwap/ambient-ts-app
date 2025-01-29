@@ -1,23 +1,23 @@
-import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { LimitOrderIF } from '../../../../ambient-utils/types';
+import { AppStateContext } from '../../../../contexts';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import {
-    limitParamsIF,
-    linkGenMethodsIF,
-    useLinkGen,
-} from '../../../../utils/hooks/useLinkGen';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import {
     HeaderGrid,
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../../styled/Components/Sidebar';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { AppStateContext } from '../../../../contexts';
+import {
+    limitParamsIF,
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
+import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 
 interface propsIF {
     limitOrderByUser?: LimitOrderIF[];

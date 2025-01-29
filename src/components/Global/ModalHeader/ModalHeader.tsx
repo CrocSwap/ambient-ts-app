@@ -1,6 +1,7 @@
-import styles from './ModalHeader.module.css';
-import { VscClose } from 'react-icons/vsc';
 import { BiArrowBack } from 'react-icons/bi';
+import { VscClose } from 'react-icons/vsc';
+import styles from './ModalHeader.module.css';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 
 interface SimpleModalHeaderPropsIF {
     title: string;
@@ -9,6 +10,7 @@ interface SimpleModalHeaderPropsIF {
     showBackButton?: boolean;
 }
 export default function ModalHeader(props: SimpleModalHeaderPropsIF) {
+    const { closeBottomSheet } = useBottomSheet();
     const {
         title,
         onClose = () => null,
@@ -32,7 +34,10 @@ export default function ModalHeader(props: SimpleModalHeaderPropsIF) {
             <h2>{title}</h2>
             <VscClose
                 size={22}
-                onClick={onClose}
+                onClick={() => {
+                    onClose();
+                    closeBottomSheet();
+                }}
                 role='button'
                 aria-label='Close modal button'
                 id='close_simple_modal_button'

@@ -1,36 +1,32 @@
 import { CrocPoolView } from '@crocswap-libs/sdk';
-import React, {
+import {
     createContext,
+    Dispatch,
+    ReactNode,
+    SetStateAction,
     useContext,
     useEffect,
     useMemo,
     useState,
-    ReactNode,
-    Dispatch,
-    SetStateAction,
 } from 'react';
-import { CrocEnvContext, CrocEnvContextIF } from './CrocEnvContext';
-import { usePoolList } from '../App/hooks/usePoolList';
-import { PoolIF, PoolStatIF, TokenIF } from '../ambient-utils/types';
-import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
-import { TradeDataContext } from './TradeDataContext';
+import { ZERO_ADDRESS } from '../ambient-utils/constants';
 import {
     getFormattedNumber,
     isBtcPair,
+    isDefaultDenomTokenExcludedFromUsdConversion,
     isETHPair,
     isStablePair,
-    isWbtcToken,
-    isWrappedNativeToken,
+    isWbtcOrStakedBTCToken,
 } from '../ambient-utils/dataLayer';
-import { ZERO_ADDRESS } from '../ambient-utils/constants';
-import { AppStateContext, AppStateContextIF } from './AppStateContext';
+import { PoolIF, PoolStatIF } from '../ambient-utils/types';
+import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
+import { usePoolList } from '../App/hooks/usePoolList';
+import { AppStateContext } from './AppStateContext';
+import { CrocEnvContext } from './CrocEnvContext';
+import { TradeDataContext } from './TradeDataContext';
 
 export interface PoolContextIF {
     poolList: PoolIF[];
-    findPool: (
-        tkn1: TokenIF | string,
-        tkn2?: TokenIF | string,
-    ) => PoolIF | undefined;
     pool: CrocPoolView | undefined;
     isPoolInitialized: boolean | undefined;
     poolPriceDisplay: number | undefined;
@@ -41,67 +37,25 @@ export interface PoolContextIF {
     usdPrice: number | undefined;
     usdPriceInverse: number | undefined;
     isTradeDollarizationEnabled: boolean;
+    isDefaultTradeDollarization: boolean;
     setIsTradeDollarizationEnabled: Dispatch<SetStateAction<boolean>>;
     fdvOfDenomTokenDisplay: string | undefined;
     baseTokenFdvDisplay: string | undefined;
     quoteTokenFdvDisplay: string | undefined;
 }
 
-export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
+export const PoolContext = createContext({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { graphCacheUrl, chainId, poolIndex },
-    } = useContext<AppStateContextIF>(AppStateContext);
-    const { crocEnv } = useContext<CrocEnvContextIF>(CrocEnvContext);
+        activeNetwork: { GCGO_URL, chainId, poolIndex },
+    } = useContext(AppStateContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
 
-    const poolList: PoolIF[] = usePoolList(graphCacheUrl, crocEnv);
-
-    // fn to determine if a given token pair exists in `poolList`
-    function findPool(
-        tkn1: TokenIF | string,
-        tkn2?: TokenIF | string,
-    ): PoolIF | undefined {
-        // handle multiple input types
-        function fixAddress(t: TokenIF | string): string {
-            const addr: string = typeof t === 'string' ? t : t.address;
-            return addr.toLowerCase();
-        }
-        const tkn1Addr: string = fixAddress(tkn1);
-        // output variable
-        let pool: PoolIF | undefined;
-        // if called on two tokens, find first pool with both addresses
-        // if called on one token, find first pool including that token
-        if (tkn2) {
-            // fix capitalization on input addresses
-            const tkn2Addr: string = fixAddress(tkn2);
-            // search `poolList` for a pool with the both tokens from params
-            pool = poolList.find((p: PoolIF) => {
-                const baseAddr: string = p.base.address.toLowerCase();
-                const quoteAddr: string = p.quote.address.toLowerCase();
-                const isMatch: boolean =
-                    (baseAddr === tkn1Addr && quoteAddr === tkn2Addr) ||
-                    (baseAddr === tkn2Addr && quoteAddr === tkn1Addr);
-                return isMatch;
-            });
-        } else {
-            // search `poolList` for a pool with the token from params
-            pool = poolList.find((p: PoolIF) => {
-                const baseAddr: string = p.base.address.toLowerCase();
-                const quoteAddr: string = p.quote.address.toLowerCase();
-                const isMatch: boolean =
-                    (baseAddr === tkn1Addr &&
-                        !isWrappedNativeToken(quoteAddr)) ||
-                    (quoteAddr === tkn1Addr && !isWrappedNativeToken(baseAddr));
-                return isMatch;
-            });
-        }
-        // return output variable
-        return pool;
-    }
+    const poolList: PoolIF[] = usePoolList(GCGO_URL, crocEnv);
 
     const pool = useMemo(
         () => crocEnv?.pool(baseToken.address, quoteToken.address),
@@ -168,6 +122,9 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
               : undefined
         : undefined;
 
+    const [isDefaultTradeDollarization, setDefaultTradeDollarization] =
+        useState(usdPrice !== undefined);
+
     const [isTradeDollarizationEnabled, setIsTradeDollarizationEnabled] =
         useState(usdPrice !== undefined);
 
@@ -179,9 +136,15 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
         const isPairEthPair = isETHPair(baseToken.address, quoteToken.address);
         const isPoolBtcPair = isBtcPair(baseToken.address, quoteToken.address);
 
+        const excludeFromUsdConversion =
+            isDefaultDenomTokenExcludedFromUsdConversion(
+                baseToken.address,
+                quoteToken.address,
+            );
+
         const isPairEthWbtc =
             baseToken.address === ZERO_ADDRESS &&
-            isWbtcToken(quoteToken.address);
+            isWbtcOrStakedBTCToken(quoteToken.address);
 
         if (
             usdPrice !== undefined &&
@@ -189,18 +152,20 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
                 isPairStablePair ||
                 isPairEthPair ||
                 isPoolBtcPair ||
-                isPairEthWbtc
+                isPairEthWbtc ||
+                excludeFromUsdConversion
             )
         ) {
+            setDefaultTradeDollarization(true);
             setIsTradeDollarizationEnabled(true);
         } else {
+            setDefaultTradeDollarization(false);
             setIsTradeDollarizationEnabled(false);
         }
     }, [baseToken.address, quoteToken.address, usdPrice !== undefined]);
 
     const poolContext: PoolContextIF = {
         poolList,
-        findPool,
         pool,
         isPoolInitialized,
         poolPriceDisplay,
@@ -214,6 +179,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
         usdPrice,
         usdPriceInverse,
         isTradeDollarizationEnabled,
+        isDefaultTradeDollarization,
         setIsTradeDollarizationEnabled,
     };
 

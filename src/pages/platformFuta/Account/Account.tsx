@@ -1,27 +1,28 @@
 import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
 import styles from './Account.module.css';
 
-import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import Divider from '../../../components/Futa/Divider/FutaDivider';
-import {
-    sortedAuctionsIF,
-    useSortedAuctions,
-} from '../Auctions/useSortedAuctions';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { Navigate, Link, useParams } from 'react-router-dom';
-import Separator from '../../../components/Futa/Separator/Separator';
-import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import {
     AuctionDataIF,
     AuctionTxResponseIF,
     claimAndReturnAll,
 } from '../../../ambient-utils/dataLayer';
+import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
+import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import {
+    sortedAuctionsIF,
+    useSortedAuctions,
+} from '../Auctions/useSortedAuctions';
+
+import ClaimComponent from './ClaimComponent/ClaimComponent';
+
+export type auctionDataSets = 'bids' | 'created';
 
 export default function Account() {
     const { accountData } = useContext(AuctionsContext);
@@ -46,16 +47,24 @@ export default function Account() {
         undefined,
     );
 
+    const [tickerSet, setTickerSet] = useState<auctionDataSets>('bids');
+    function toggleData(set?: auctionDataSets): void {
+        if (set) {
+            setTickerSet(set);
+        } else if (tickerSet === 'bids') {
+            setTickerSet('created');
+        } else if (tickerSet === 'created') {
+            setTickerSet('bids');
+        }
+    }
+
     if (addressFromParams && !isAddressEns && !isAddressHex) {
         return <Navigate to='/404' replace />;
     }
 
     const sumUnclaimedAndUnreturned = useMemo(() => {
         if (!accountData.auctions) return BigInt(0);
-        // return { totalUnclaimed: BigInt(0), totalUnreturned: BigInt(0) };
         let sum = BigInt(0);
-        // let totalUnclaimed = BigInt(0);
-        // let totalUnreturned = BigInt(0);
 
         accountData.auctions.forEach((auction: AuctionDataIF) => {
             if (auction.qtyUnclaimedByUserInAuctionedTokenWei) {
@@ -64,16 +73,6 @@ export default function Account() {
             if (auction.qtyUnreturnedToUserInNativeTokenWei) {
                 sum += BigInt(auction.qtyUnreturnedToUserInNativeTokenWei);
             }
-            // if (auction.qtyUnclaimedByUserInAuctionedTokenWei) {
-            //     totalUnclaimed += BigInt(
-            //         auction.qtyUnclaimedByUserInAuctionedTokenWei,
-            //     );
-            // }
-            // if (auction.qtyUnreturnedToUserInNativeTokenWei) {
-            //     totalUnreturned += BigInt(
-            //         auction.qtyUnreturnedToUserInNativeTokenWei,
-            //     );
-            // }
         });
 
         return sum;
@@ -169,122 +168,91 @@ export default function Account() {
             ? 'Transaction Pending...'
             : 'Claim All';
 
-    const claimAllContainer = (
-        <div className={styles.claimAllContainer}>
-            <h3>CLAIM ALL</h3>
-            <p className={styles.claimAllText}>
-                CLAIM ALL TOKENS FROM WINNING AUCTIONS AND UNUSED BIDS
-            </p>
-            <div className={styles.extraFeeContainer}>
-                <div className={styles.justifyRow}>
-                    <TooltipLabel
-                        itemTitle='NETWORK FEE'
-                        tooltipTitle='NETWORK FEE PAID IN ORDER TO TRANSACT'
-                    />
-                    <p style={{ color: 'var(--text2)', fontSize: '14px' }}>
-                        ~0.01
-                    </p>
-                </div>
-            </div>
-            <button
-                id='futa_account_claim_all_button'
-                className={
-                    isButtonDisabled
-                        ? `${styles.claimButton} ${styles.disabledButton}`
-                        : `${styles.claimButton}`
-                }
-                onClick={sendClaimAndReturnAllTransaction}
-            >
-                {buttonText.toUpperCase()}
-            </button>
-        </div>
-    );
-
-    const connectWalletContent = (
-        <div className={styles.connectWalletContent}>
-            <Typewriter text='Connect your wallet to view your auctions' />
-            <button onClick={openWalletModal}>Connect wallet</button>
-        </div>
-    );
-
-    const noAuctionsContent = (
-        <div className={styles.connectWalletContent}>
-            <Typewriter text='No auctions found' />
-            <p>Consider viewing all auctions</p>
-            <Link to='/auctions'>All auctions</Link>
-        </div>
-    );
     const sorted: sortedAuctionsIF = useSortedAuctions(
         accountData.auctions || [],
     );
-    const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
+    // !important:  the table will display "No tickers available" if `sorted` is
+    // !important:  ... removed from the dependency array of this hook which I
+    // !important:  ... sometimes do to simulate state, please re-insert if it is
+    // !important:  ... ever inadvertently left out
+    // logic to filter bids created by authenticated wallet when relevant
+    const filtered = useMemo<sortedAuctionsIF>(() => {
+        // copy sorted data to an output variable
+        const output = { ...sorted };
+        // apply filter if user sets state to created auctions only
+        if (tickerSet === 'created') {
+            output.data = sorted.data.filter(
+                (tck: AuctionDataIF) =>
+                    tck.createdBy &&
+                    tck.createdBy.toLowerCase() === userAddress?.toLowerCase(),
+            );
+        }
+        // return data after processing (processing is actually optional)
+        return output;
+    }, [tickerSet, sorted]);
+
+    // boolean to add or remove DOM elements on mobile devices
+    const isMobile: boolean = useMediaQuery('(max-width: 1024px)');
+
+    // differential return when no wallet is connected
     if (!isUserConnected && !addressFromParams) {
-        return connectWalletContent;
+        return (
+            <div className={styles.connectWalletContent}>
+                <Typewriter text='Connect your wallet to view your auctions' />
+                <button onClick={openWalletModal}>Connect wallet</button>
+            </div>
+        );
     }
 
+    // differential return when no auction data is available
     if (!sorted?.data?.length) {
-        return noAuctionsContent;
+        return (
+            <div className={styles.connectWalletContent}>
+                <Typewriter text='No auctions found' />
+                <p>Consider viewing all auctions</p>
+                <Link to='/auctions'>All auctions</Link>
+            </div>
+        );
     }
 
-    const desktopVersionWithClaimAll = (
-        <div className={styles.desktopContainer}>
-            <div className={styles.content}>
-                <SearchableTicker
-                    auctions={sorted}
-                    title='account'
-                    isAccount={true}
+    return (
+        <main
+            className={connectedAccountActive ? styles.main : styles.main_full}
+        >
+            <div className={styles.tickers_and_chart}>
+                {isMobile && (
+                    <>
+                        <BreadCrumb />
+                    </>
+                )}
+                <div
+                    className={styles.searchable_ticker}
+                    style={{
+                        border: !connectedAccountActive ? 'none' : '',
+                    }}
+                >
+                    <SearchableTicker
+                        auctions={filtered}
+                        dataState={{
+                            active: tickerSet,
+                            toggle: toggleData,
+                        }}
+                        isAccount
+                    />
+                </div>
+            </div>
+
+            {connectedAccountActive && (
+                <ClaimComponent
+                    connectedAccountActive={connectedAccountActive}
+                    isButtonDisabled={isButtonDisabled}
+                    sendClaimAndReturnAllTransaction={
+                        sendClaimAndReturnAllTransaction
+                    }
+                    buttonText={buttonText}
                 />
-            </div>
-            <div className={styles.separatorContainer}>
-                <Separator dots={70} />
-            </div>
-
-            <div className={styles.rightLayout}>
-                <Divider count={2} />
-                {claimAllContainer}
-            </div>
-        </div>
+            )}
+        </main>
     );
-
-    const desktopVersionWithoutClaimAll = (
-        <div className={styles.container}>
-            <div className={styles.content}>
-                <SearchableTicker
-                    auctions={sorted}
-                    title='account'
-                    isAccount={true}
-                />
-            </div>
-        </div>
-    );
-
-    const mobileVersionWithClaimAll = (
-        <div className={styles.container}>
-            <div className={styles.content}>
-                <BreadCrumb />
-                <h2>Account</h2>
-                <SearchableTicker auctions={sorted} isAccount={true} />
-            </div>
-            {claimAllContainer}
-        </div>
-    );
-
-    const mobileVersionWithoutClaimAll = (
-        <div className={styles.container}>
-            <div className={styles.content}>
-                <BreadCrumb />
-                <h2>Account</h2>
-                <SearchableTicker auctions={sorted} isAccount={true} />
-            </div>
-        </div>
-    );
-
-    return desktopScreen
-        ? connectedAccountActive
-            ? desktopVersionWithClaimAll
-            : desktopVersionWithoutClaimAll
-        : connectedAccountActive
-          ? mobileVersionWithClaimAll
-          : mobileVersionWithoutClaimAll;
 }

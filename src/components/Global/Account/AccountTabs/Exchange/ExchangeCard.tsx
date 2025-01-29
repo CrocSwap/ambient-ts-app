@@ -1,19 +1,26 @@
-import styles from './ExchangeCard.module.css';
-import { TokenIF } from '../../../../../ambient-utils/types';
+import { toDisplayPrice, toDisplayQty } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
-import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
-import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
-import { TokenContext } from '../../../../../contexts/TokenContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenPriceFn } from '../../../../../ambient-utils/api';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    ZERO_ADDRESS,
+} from '../../../../../ambient-utils/constants';
 import {
     getFormattedNumber,
     uriToHttp,
 } from '../../../../../ambient-utils/dataLayer';
-import TokenIcon from '../../../TokenIcon/TokenIcon';
-import { toDisplayQty } from '@crocswap-libs/sdk';
+import { TokenIF } from '../../../../../ambient-utils/types';
+import {
+    AppStateContext,
+    CachedDataContext,
+    ChainDataContext,
+    CrocEnvContext,
+} from '../../../../../contexts';
+import { TokenContext } from '../../../../../contexts/TokenContext';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import { AppStateContext } from '../../../../../contexts';
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
+import TokenIcon from '../../../TokenIcon/TokenIcon';
+import styles from './ExchangeCard.module.css';
 
 interface propsIF {
     token: TokenIF;
@@ -26,13 +33,16 @@ export default function ExchangeCard(props: propsIF) {
         tokens: { getTokenByAddress },
     } = useContext(TokenContext);
 
-    const { crocEnv } = useContext(CrocEnvContext);
-
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
+    const { nativeTokenUsdPrice } = useContext(ChainDataContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const isMobile = useMediaQuery('(max-width: 800px)');
+
+    const tokenMapKey = token?.address?.toLowerCase() + '_' + chainId;
 
     const tokenFromMap = token?.address
         ? getTokenByAddress(token.address)
@@ -54,21 +64,44 @@ export default function ExchangeCard(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            if (!crocEnv) return;
             try {
                 if (tokenFromMap?.symbol) {
                     const price = await cachedFetchTokenPrice(
                         tokenFromMap.address,
                         chainId,
-                        crocEnv,
                     );
-                    if (price) setTokenPrice(price);
+                    if (price) {
+                        setTokenPrice(price);
+                    } else {
+                        if (!crocEnv || !nativeTokenUsdPrice) return;
+                        const ethPoolPriceNonDisplay =
+                            await cachedQuerySpotPrice(
+                                crocEnv,
+                                ZERO_ADDRESS,
+                                tokenFromMap.address,
+                                chainId,
+                                Math.floor(
+                                    Date.now() / CACHE_UPDATE_FREQ_IN_MS,
+                                ),
+                            );
+                        if (!ethPoolPriceNonDisplay || !nativeTokenUsdPrice)
+                            setTokenPrice(undefined);
+
+                        const ethPoolPriceDisplay = toDisplayPrice(
+                            ethPoolPriceNonDisplay,
+                            18,
+                            tokenFromMap.decimals,
+                        );
+                        setTokenPrice({
+                            usdPrice: ethPoolPriceDisplay * nativeTokenUsdPrice,
+                        });
+                    }
                 }
             } catch (err) {
                 console.error(err);
             }
         })();
-    }, [crocEnv, token?.address, chainId]);
+    }, [tokenMapKey, nativeTokenUsdPrice, crocEnv]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
@@ -131,14 +164,18 @@ export default function ExchangeCard(props: propsIF) {
     )
         return <></>;
 
+    const balanceValue = tokenUsdPrice * (dexBalanceDisplayNum ?? 0);
+
     return (
         <div className={styles.exchange_row}>
             {tokenInfo}
             <p className={styles.value}>
-                {getFormattedNumber({
-                    value: tokenUsdPrice * (dexBalanceDisplayNum ?? 0),
-                    prefix: '$',
-                })}
+                {balanceValue
+                    ? getFormattedNumber({
+                          value: balanceValue,
+                          prefix: '$',
+                      })
+                    : '...'}
             </p>
             <p className={styles.amount}>{dexBalanceTruncated}</p>
         </div>

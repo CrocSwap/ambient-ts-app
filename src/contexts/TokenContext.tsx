@@ -1,13 +1,13 @@
 import { createContext, useContext } from 'react';
+import { TokenIF } from '../ambient-utils/types';
 import {
     getRecentTokensParamsIF,
     useRecentTokens,
 } from '../App/hooks/useRecentTokens';
 import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 import { useTokenSearch } from '../App/hooks/useTokenSearch';
-import { TokenIF } from '../ambient-utils/types';
-import { TokenBalanceContext } from './TokenBalanceContext';
 import { AppStateContext } from './AppStateContext';
+import { TokenBalanceContext } from './TokenBalanceContext';
 
 export interface TokenContextIF {
     tokens: tokenMethodsIF;
@@ -21,14 +21,14 @@ export interface TokenContextIF {
     addTokenInfo: (token: TokenIF) => TokenIF;
 }
 
-export const TokenContext = createContext<TokenContextIF>({} as TokenContextIF);
+export const TokenContext = createContext({} as TokenContextIF);
 
 export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { tokenBalances } = useContext(TokenBalanceContext);
-    const tokens: tokenMethodsIF = useTokens(chainId, tokenBalances);
+    const tokens: tokenMethodsIF = useTokens();
     const { addRecentToken, getRecentTokens } = useRecentTokens(chainId);
 
     const [outputTokens, validatedInput, setInput, searchType, rawInput] =

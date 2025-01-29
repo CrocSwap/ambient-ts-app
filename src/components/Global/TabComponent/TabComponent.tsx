@@ -1,25 +1,22 @@
-// START: Import React and Dongles
-import {
-    useState,
-    useEffect,
-    Dispatch,
-    SetStateAction,
-    cloneElement,
-    ReactNode,
-    ReactElement,
-    useContext,
-} from 'react';
-// eslint-disable-next-line
 import { AnimateSharedLayout, motion } from 'framer-motion';
+import {
+    cloneElement,
+    Dispatch,
+    ReactElement,
+    ReactNode,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 
-// START: Import Local Files
-import styles from './TabComponent.module.css';
-import '../../../App/App.css';
-import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { ChartContext } from '../../../contexts/ChartContext';
 import { useNavigate } from 'react-router-dom';
+import '../../../App/App.css';
+import { ChartContext } from '../../../contexts/ChartContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
+import styles from './TabComponent.module.css';
 
 type tabData = {
     label: string;
@@ -114,6 +111,7 @@ export default function TabComponent(props: TabPropsIF) {
                 'limits',
                 'liquidity',
                 'exchange balances',
+                'dex balances',
                 'wallet balances',
                 'points',
             ].includes(item.label.toLowerCase())
@@ -128,7 +126,8 @@ export default function TabComponent(props: TabPropsIF) {
                         ? navigate(`${pathNoType}liquidity`)
                         : item.label.toLowerCase() === 'points'
                           ? navigate(`${pathNoType}points`)
-                          : item.label.toLowerCase() === 'exchange balances'
+                          : item.label.toLowerCase() === 'exchange balances' ||
+                              item.label.toLowerCase() === 'dex balances'
                             ? navigate(`${pathNoType}exchange-balances`)
                             : item.label.toLowerCase() === 'wallet balances'
                               ? navigate(`${pathNoType}wallet-balances`)
@@ -151,12 +150,13 @@ export default function TabComponent(props: TabPropsIF) {
                     'liquidity',
                     'wallet balances',
                     'exchange balances',
+                    'dex balances',
                 ].includes(currentTabData.label.toLowerCase())
             ) {
                 setActiveTradeTab(currentTabData.label.toLowerCase());
             }
         }
-    }, [data, outsideControl]);
+    }, [data, selectedTab.label]);
 
     function handleOutside2() {
         if (!outsideControl) {

@@ -3,12 +3,12 @@ import { AiOutlineDelete, AiOutlineRotateLeft } from 'react-icons/ai';
 import { BsEmojiSmile, BsFillReplyFill } from 'react-icons/bs';
 import { SlOptions } from 'react-icons/sl';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { Message } from '../../Model/MessageModel';
-import styles from './Options.module.css';
 import {
     ALLOW_REACTIONS,
     ALLOW_REPLIES,
 } from '../../ChatConstants/ChatConstants';
+import { Message } from '../../Model/MessageModel';
+import styles from './Options.module.css';
 interface propsIF {
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     isReplyButtonPressed: boolean;

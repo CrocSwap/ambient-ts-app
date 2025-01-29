@@ -1,10 +1,10 @@
 import React from 'react';
-import styled, { css } from 'styled-components/macro';
-import { FlexContainer, Text } from '../../../styled/Common';
+import styled, { css } from 'styled-components';
 import styles from '../../../components/Home/Landing/BackgroundImages.module.css';
+import { FlexContainer, Text } from '../../../styled/Common';
 
-import { MdArrowBackIosNew } from 'react-icons/md';
 import { FiSettings } from 'react-icons/fi';
+import { MdArrowBackIosNew } from 'react-icons/md';
 import { DISABLE_INIT_SETTINGS } from '../../../ambient-utils/constants';
 
 interface InitSkeletonProps {

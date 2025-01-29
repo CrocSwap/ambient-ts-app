@@ -1,16 +1,14 @@
-// START: Import React and Dongles
-import { useState, ReactNode, useEffect, useContext } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-// START: Import Local Files
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ReactNode, useContext, useEffect, useState } from 'react';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
-import { sidebarMethodsIF } from '../../hooks/useSidebar';
+import { maxWidth } from '../../../ambient-utils/types/mediaQueries';
+import Button from '../../../components/Form/Button';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { AccordionHeader, ArrowIcon } from '../../../styled/Components/Sidebar';
-import Button from '../../../components/Form/Button';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { maxWidth } from '../../../ambient-utils/types/mediaQueries';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { sidebarMethodsIF } from '../../hooks/useSidebar';
 
 // interface for React functional component props
 interface propsIF {

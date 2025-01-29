@@ -1,16 +1,12 @@
+import { CrocEnv } from '@crocswap-libs/sdk';
 import {
     mockAccountData1,
     mockAccountData2,
     mockAuctionDetailsServerResponseGenerator,
     mockGlobalAuctionData,
 } from '../../../pages/platformFuta/mockAuctionData';
-// import { GCGO_OVERRIDE_URL } from '../../constants';
-import { CrocEnv } from '@crocswap-libs/sdk';
-import {
-    //  memoizeCrocEnvFn,
-    memoizeCacheQueryFn,
-} from './memoizePromiseFn';
 import { CURRENT_AUCTION_VERSION } from '../../constants';
+import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 export interface PriceImpactIF {
     ticker: string;
@@ -44,6 +40,9 @@ export interface AuctionDataIF {
     createdAt: number;
     auctionLength: number;
     filledClearingPriceInNativeTokenWei: string;
+    // @Ben:    I'm making this optional for ease rn but I think it
+    // @Ben:    ... should prolly be a non-optional property
+    createdBy?: `0x${string}`;
 
     // user specific data received for account queries
     userAddress?: string;
@@ -54,6 +53,8 @@ export interface AuctionDataIF {
     qtyClaimedByUserInAuctionedTokenWei?: string | undefined;
     qtyUnreturnedToUserInNativeTokenWei?: string | undefined;
     qtyReturnedToUserInNativeTokenWei?: string | undefined;
+    nativeTokenCommitted?: string | undefined;
+    nativeTokenReward?: string | undefined;
 }
 
 // interface for auction status data used to generate auction details view
@@ -77,12 +78,10 @@ export interface AuctionStatusResponseIF {
 
 const getGlobalAuctionsList = async (
     chainId: string,
-    // graphCacheUrl: string,
+    // GCGO_URL: string,
     _cacheTimeTag: number | string,
 ): Promise<AuctionDataIF[]> => {
-    // const auctionsListEndpoint = GCGO_OVERRIDE_URL
-    //     ? GCGO_OVERRIDE_URL + '/auctions?'
-    //     : graphCacheUrl + '/auctions?';
+    // const auctionsListEndpoint =  GCGO_URL + '/auctions?';
     false && console.log({ chainId });
     return mockGlobalAuctionData.auctionList;
     // return fetch(
@@ -108,12 +107,10 @@ const getGlobalAuctionsList = async (
 const getUserAuctionsList = async (
     chainId: string,
     userAddress: string,
-    // graphCacheUrl: string,
+    // GCGO_URL: string,
     _cacheTimeTag: number | string,
 ): Promise<AuctionDataIF[]> => {
-    // const auctionsListEndpoint = GCGO_OVERRIDE_URL
-    //     ? GCGO_OVERRIDE_URL + '/auctions?'
-    //     : graphCacheUrl + '/auctions?';
+    // const auctionsListEndpoint =GCGO_URL + '/auctions?';
     false && console.log({ userAddress, chainId });
     if (
         userAddress.toLowerCase() ===
@@ -479,9 +476,7 @@ export const fetchFreshAuctionStatusData = async (
     version: number,
     chainId: string,
 ): Promise<AuctionStatusResponseIF> => {
-    // const auctionsStatusEndpoint = GCGO_OVERRIDE_URL
-    //     ? GCGO_OVERRIDE_URL + '/auctionStatus?'
-    //     : graphCacheUrl + '/auctionStatus?';
+    // const auctionsStatusEndpoint = GCGO_URL + '/auctionStatus?';
     return mockAuctionDetailsServerResponseGenerator(ticker, version, chainId);
     // return fetch(
     //     auctionsStatusEndpoint +
@@ -507,14 +502,14 @@ export const fetchFreshAuctionStatusData = async (
 
 export type GlobalAuctionListQueryFn = (
     chainId: string,
-    // graphCacheUrl: string,
+    // GCGO_URL: string,
     _cacheTimeTag: number | string,
 ) => Promise<AuctionDataIF[] | undefined>;
 
 export type UserAuctionListQueryFn = (
     chainId: string,
     userAddress: string,
-    // graphCacheUrl: string,
+    // GCGO_URL: string,
     _cacheTimeTag: number | string,
 ) => Promise<AuctionDataIF[] | undefined>;
 
@@ -522,7 +517,7 @@ export type AuctionStatusQueryFn = (
     ticker: string,
     version: number,
     chainId: string,
-    // graphCacheUrl: string,
+    // GCGO_URL: string,
     _cacheTimeTag: number | string,
 ) => Promise<AuctionStatusResponseIF | undefined>;
 

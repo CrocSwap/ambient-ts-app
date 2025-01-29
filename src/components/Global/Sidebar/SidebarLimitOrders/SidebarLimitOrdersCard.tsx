@@ -1,14 +1,14 @@
-import { LimitOrderIF } from '../../../../ambient-utils/types';
 import { useContext } from 'react';
-import { TokenContext } from '../../../../contexts/TokenContext';
 import {
     getFormattedNumber,
     getLimitPriceForSidebar,
     getMoneynessRankByAddr,
 } from '../../../../ambient-utils/dataLayer';
+import { LimitOrderIF } from '../../../../ambient-utils/types';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
 import { FlexContainer } from '../../../../styled/Common';
 import { ItemContainer } from '../../../../styled/Components/Sidebar';
-import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
     order: LimitOrderIF;
