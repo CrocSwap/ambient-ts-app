@@ -398,9 +398,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     const firstValueX = scaleData?.drawingLinearxScale(
                         tempLineData[0].x,
                     );
-                    const firstValueY = scaleData?.drawingLinearxScale(
-                        tempLineData[0].y,
-                    );
+                    const firstValueY = scaleData?.yScale(tempLineData[0].y);
 
                     const checkThreshold = Math.hypot(
                         offsetX - firstValueX,
