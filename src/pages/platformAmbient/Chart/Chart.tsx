@@ -686,8 +686,8 @@ export default function Chart(props: propsIF) {
             setLocalCandleDomains,
             period,
             isCondensedModeEnabled,
-            timeGaps,
             candleDomains,
+            timeGaps,
         );
     }, [period, isCondensedModeEnabled, timeGaps]);
 
