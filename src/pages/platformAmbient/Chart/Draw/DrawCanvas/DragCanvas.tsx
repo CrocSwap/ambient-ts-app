@@ -200,7 +200,7 @@ export default function DragCanvas(props: DragCanvasProps) {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dragLine = (movementX: number, movemementY: number) => {
+    const dragLine = (movementX: number, movementY: number) => {
         if (hoveredDrawnShape) {
             let isSnapped = true;
             const index = drawnShapeHistory.findIndex(
@@ -210,61 +210,71 @@ export default function DragCanvas(props: DragCanvasProps) {
             const isPointInDenom =
                 hoveredDrawnShape?.data?.data[0].denomInBase === denomInBase;
 
-            const firstPoint = isPointInDenom
+            const initialData0 = isPointInDenom
                 ? hoveredDrawnShape.data.data[0].y
                 : 1 / hoveredDrawnShape.data.data[0].y;
 
-            const secondPoint = isPointInDenom
+            const initialData1 = isPointInDenom
                 ? hoveredDrawnShape.data.data[1].y
                 : 1 / hoveredDrawnShape.data.data[1].y;
 
-            const reversedFirstPoint = scaleData.yScale.invert(
-                scaleData.yScale(firstPoint) + movemementY,
+            const directionMove = movementY < 0 ? 'up' : 'down';
+
+            const ground = Math.min(initialData0, initialData1);
+
+            let calculatedData0 = scaleData.yScale.invert(
+                scaleData.yScale(initialData0) + movementY,
             );
-            const reversedSecondPoint = scaleData.yScale.invert(
-                scaleData.yScale(secondPoint) + movemementY,
+            let calculatedData1 = scaleData.yScale.invert(
+                scaleData.yScale(initialData1) + movementY,
             );
 
-            if (firstPoint > 0 && secondPoint > 0) {
-                const calPoint0 =
-                    scaleData.drawingLinearxScale(
-                        hoveredDrawnShape?.data?.data[0].x,
-                    ) + movementX;
+            if (directionMove === 'down') {
+                if (ground === initialData0 && calculatedData0 <= 0) {
+                    const diff = initialData0 - 0;
 
-                const calPoint1 =
-                    scaleData.drawingLinearxScale(
-                        hoveredDrawnShape.data.data[1].x,
-                    ) + movementX;
+                    calculatedData0 = 0;
+                    calculatedData1 = initialData1 - diff;
+                } else if (ground === initialData1 && calculatedData1 <= 0) {
+                    const diff = initialData1 - 0;
 
-                const snap0 = getXandYvalueOfDrawnShape(calPoint0, 1, false);
-                const snap1 = getXandYvalueOfDrawnShape(calPoint1, 1, false);
-
-                isSnapped =
-                    snap0.valueX !== hoveredDrawnShape?.data?.data[0].x &&
-                    snap1.valueX !== hoveredDrawnShape?.data?.data[1].x;
-
-                const lastData = [
-                    {
-                        x: snap0.valueX,
-                        y: isPointInDenom
-                            ? reversedFirstPoint
-                            : 1 / reversedFirstPoint,
-                        denomInBase:
-                            hoveredDrawnShape.data?.data[0].denomInBase,
-                    },
-                    {
-                        x: snap1.valueX,
-                        y: isPointInDenom
-                            ? reversedSecondPoint
-                            : 1 / reversedSecondPoint,
-                        denomInBase:
-                            hoveredDrawnShape.data?.data[1].denomInBase,
-                    },
-                ];
-
-                drawnShapeHistory[index].data = lastData;
-                hoveredDrawnShape.data.data = lastData;
+                    calculatedData0 = initialData0 - diff;
+                    calculatedData1 = 0;
+                }
             }
+
+            const calPoint0 =
+                scaleData.drawingLinearxScale(
+                    hoveredDrawnShape?.data?.data[0].x,
+                ) + movementX;
+
+            const calPoint1 =
+                scaleData.drawingLinearxScale(
+                    hoveredDrawnShape.data.data[1].x,
+                ) + movementX;
+
+            const snap0 = getXandYvalueOfDrawnShape(calPoint0, 1, false);
+            const snap1 = getXandYvalueOfDrawnShape(calPoint1, 1, false);
+
+            isSnapped =
+                snap0.valueX !== hoveredDrawnShape?.data?.data[0].x &&
+                snap1.valueX !== hoveredDrawnShape?.data?.data[1].x;
+
+            const lastData = [
+                {
+                    x: snap0.valueX,
+                    y: isPointInDenom ? calculatedData0 : 1 / calculatedData0,
+                    denomInBase: hoveredDrawnShape.data?.data[0].denomInBase,
+                },
+                {
+                    x: snap1.valueX,
+                    y: isPointInDenom ? calculatedData1 : 1 / calculatedData1,
+                    denomInBase: hoveredDrawnShape.data?.data[1].denomInBase,
+                },
+            ];
+
+            drawnShapeHistory[index].data = lastData;
+            hoveredDrawnShape.data.data = lastData;
 
             render();
             return isSnapped;
@@ -449,10 +459,10 @@ export default function DragCanvas(props: DragCanvasProps) {
         let offsetX = 0;
         let movementX = 0;
         let stackedMovementX = 0;
-        let movemementY = 0;
+        let movementY = 0;
 
         let tempmovementX = 0;
-        let tempMovemementY = 0;
+        let tempMovementY = 0;
         let rectDragDirection = '';
         let isDragging = false;
         let previousData: lineData[] | undefined = undefined;
@@ -477,7 +487,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                     typeof TouchEvent !== 'undefined' &&
                     event.sourceEvent instanceof TouchEvent
                 ) {
-                    tempMovemementY =
+                    tempMovementY =
                         event.sourceEvent.touches[0].clientY - canvasRect?.top;
                     tempmovementX =
                         event.sourceEvent.touches[0].clientX - canvasRect?.left;
@@ -547,7 +557,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                                 event.sourceEvent.touches[0].clientX -
                                 canvasRect?.left;
                             movementX = offsetX - tempmovementX;
-                            movemementY = offsetY - tempMovemementY;
+                            movementY = offsetY - tempMovementY;
                         } else {
                             offsetY =
                                 event.sourceEvent.clientY - canvasRect?.top;
@@ -556,7 +566,7 @@ export default function DragCanvas(props: DragCanvasProps) {
 
                             movementX =
                                 stackedMovementX + event.sourceEvent.movementX;
-                            movemementY = event.sourceEvent.movementY;
+                            movementY = event.sourceEvent.movementY;
                         }
 
                         const { valueX } = getXandYvalueOfDrawnShape(
@@ -586,7 +596,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                                 setIsUpdatingShape(true);
                                 const isSnapped = dragLine(
                                     movementX,
-                                    movemementY,
+                                    movementY,
                                 );
                                 if (!isSnapped && shouldSnap) {
                                     stackedMovementX = movementX;
@@ -608,7 +618,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                                 setIsUpdatingShape(true);
                                 const isSnapped = dragLine(
                                     movementX,
-                                    movemementY,
+                                    movementY,
                                 );
                                 if (!isSnapped && shouldSnap) {
                                     stackedMovementX = movementX;
@@ -635,7 +645,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             tempmovementX =
                                 event.sourceEvent.touches[0].clientX -
                                 canvasRect?.left;
-                            tempMovemementY =
+                            tempMovementY =
                                 event.sourceEvent.touches[0].clientY -
                                 canvasRect?.top;
                         }
@@ -651,7 +661,7 @@ export default function DragCanvas(props: DragCanvasProps) {
             })
             .on('end', (event) => {
                 tempmovementX = 0;
-                tempMovemementY = 0;
+                tempMovementY = 0;
                 setIsUpdatingShape(false);
 
                 const tempLastData = drawnShapeHistory.find(

@@ -2239,11 +2239,11 @@ export default function Chart(props: propsIF) {
             .node() as HTMLCanvasElement;
         const rectCanvas = canvas.getBoundingClientRect();
         let offsetY = 0;
-        let movemementY = 0;
+        let movementY = 0;
         let newLimitValue: number | undefined;
         let tempNewLimitValue: number | undefined;
 
-        let tempMovemementY = 0;
+        let tempMovementY = 0;
         let cancelDrag = false;
         let oldLimitValue: number | undefined = undefined;
         // clicking esc while dragging the line sets the line to the last value
@@ -2277,7 +2277,7 @@ export default function Chart(props: propsIF) {
                     typeof TouchEvent !== 'undefined' &&
                     event.sourceEvent instanceof TouchEvent
                 ) {
-                    tempMovemementY =
+                    tempMovementY =
                         event.sourceEvent.touches[0].clientY - rectCanvas?.top;
                 }
             })
@@ -2293,11 +2293,11 @@ export default function Chart(props: propsIF) {
                             event.sourceEvent.touches[0].clientY -
                             rectCanvas?.top;
 
-                        movemementY = offsetY - tempMovemementY;
+                        movementY = offsetY - tempMovementY;
                     } else {
                         offsetY = event.sourceEvent.clientY - rectCanvas?.top;
 
-                        movemementY = event.sourceEvent.movementY;
+                        movementY = event.sourceEvent.movementY;
                     }
                     if (!cancelDrag) {
                         // to hide the crosshair when dragging the line set the crosshairActive to 'none'.
@@ -2307,7 +2307,7 @@ export default function Chart(props: propsIF) {
                         if (tempNewLimitValue !== undefined) {
                             tempNewLimitValue = scaleData?.yScale.invert(
                                 scaleData?.yScale(tempNewLimitValue) +
-                                    movemementY,
+                                    movementY,
                             );
 
                             // Perform calculations based on the new limit value
@@ -2329,14 +2329,14 @@ export default function Chart(props: propsIF) {
                         typeof TouchEvent !== 'undefined' &&
                         event.sourceEvent instanceof TouchEvent
                     ) {
-                        tempMovemementY =
+                        tempMovementY =
                             event.sourceEvent.touches[0].clientY -
                             rectCanvas?.top;
                     }
                 });
             })
             .on('end', () => {
-                tempMovemementY = 0;
+                tempMovementY = 0;
                 setIsLineDrag(false);
                 // If the drag is not canceled
                 if (!cancelDrag) {
