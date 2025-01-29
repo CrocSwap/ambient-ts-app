@@ -5990,7 +5990,7 @@ export default function Chart(props: propsIF) {
                         drawnShapeHistory={drawnShapeHistory}
                         render={render}
                         mousemove={mousemove}
-                        setCrossHairDataFunc={setCrossHairDataFunc}
+                        setCrosshairActive={setCrosshairActive}
                         setSelectedDrawnShape={setSelectedDrawnShape}
                         setIsUpdatingShape={setIsUpdatingShape}
                         denomInBase={denomInBase}

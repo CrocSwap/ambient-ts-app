@@ -20,7 +20,7 @@ interface DragCanvasProps {
     canUserDragDrawnShape: boolean;
     setIsUpdatingShape: React.Dispatch<React.SetStateAction<boolean>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setCrossHairDataFunc: any;
+    setCrosshairActive: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     render: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,7 +67,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         mousemove,
         scaleData,
         canUserDragDrawnShape,
-        setCrossHairDataFunc,
+        setCrosshairActive,
         setSelectedDrawnShape,
         denomInBase,
         addDrawActionStack,
@@ -546,6 +546,8 @@ export default function DragCanvas(props: DragCanvasProps) {
             .on('drag', function (event) {
                 if (!cancelDrag) {
                     (async () => {
+                        setCrosshairActive('none');
+
                         if (
                             typeof TouchEvent !== 'undefined' &&
                             event.sourceEvent instanceof TouchEvent
@@ -581,8 +583,6 @@ export default function DragCanvas(props: DragCanvasProps) {
                                   scaleData.drawingLinearxScale.invert(offsetX)
                                 : valueX <
                                   scaleData.drawingLinearxScale.invert(offsetX);
-
-                        setCrossHairDataFunc(valueX, offsetX, offsetY);
 
                         if (
                             hoveredDrawnShape &&
