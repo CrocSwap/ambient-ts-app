@@ -22,6 +22,8 @@
     align-items: center;
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
+    text-transform: uppercase;
+    font-size: var(--body-size);
 }
 
 .footerItem:hover {

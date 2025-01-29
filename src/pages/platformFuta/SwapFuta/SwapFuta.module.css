@@ -110,7 +110,10 @@ color: var(--dark1);
     }
 
 }
-@media (max-width: 600px) {
+@media (max-width: 599px) {
+    .chart_mobile_container{
+        padding: 0 8px
+    }
     .mainSection {
         display: flex;
         flex-direction: column;
