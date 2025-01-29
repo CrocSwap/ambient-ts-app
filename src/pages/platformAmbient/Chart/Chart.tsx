@@ -4847,12 +4847,18 @@ export default function Chart(props: propsIF) {
         mouseX: number,
         mouseY: number,
         denomInBase: boolean,
+        extendLeft: boolean,
+        extendRight: boolean,
     ) {
         if (scaleData) {
             const fibLineData = calculateFibRetracement(data, extraData);
 
-            const startX = fibLineData[0][0].x;
-            const endX = fibLineData[0][1].x;
+            const startX = extendLeft
+                ? scaleData.drawingLinearxScale.domain()[0]
+                : fibLineData[0][0].x;
+            const endX = extendRight
+                ? scaleData.drawingLinearxScale.domain()[1]
+                : fibLineData[0][1].x;
             const tempStartXLocation = scaleData.drawingLinearxScale(startX);
             const tempEndXLocation = scaleData.drawingLinearxScale(endX);
 
@@ -4927,6 +4933,8 @@ export default function Chart(props: propsIF) {
                             mouseX,
                             mouseY,
                             denomInBase,
+                            element.extendLeft,
+                            element.extendRight,
                         )
                     ) {
                         resElement = element;
