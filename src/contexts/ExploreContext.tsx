@@ -414,13 +414,21 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         [allPools],
     );
 
+    const filteredTopPools = useMemo(
+        () =>
+            filteredPoolsNoExcludedOrHiddenTokens.filter(
+                (pool) => pool.volume > 1000,
+            ),
+        [filteredPoolsNoExcludedOrHiddenTokens],
+    );
+
     const topPools = useMemo(
         () =>
             isFetchError ||
-            (allPools.length && !filteredPoolsNoExcludedOrHiddenTokens.length)
+            (!allPoolStats?.length && !filteredTopPools.length) ||
+            (allPools.length && !filteredTopPools.length)
                 ? hardcodedTopPools
-                : filteredPoolsNoExcludedOrHiddenTokens
-                      .filter((pool) => pool.volume > 100)
+                : filteredTopPools
                       .sort(
                           (poolA: PoolDataIF, poolB: PoolDataIF) =>
                               poolB['volume'] - poolA['volume'],
@@ -430,8 +438,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         [
             isFetchError,
             hardcodedTopPools,
-            filteredPoolsNoExcludedOrHiddenTokens,
+            filteredTopPools,
             allPools.length,
+            allPoolStats?.length,
         ],
     );
 

@@ -82,7 +82,14 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
             setVisibleTopPoolData([]);
             return;
         }
-        if (JSON.stringify(poolData) !== JSON.stringify(visibleTopPoolData)) {
+        if (
+            poolData
+                .map((pool) => pool.base.address + pool.quote.address)
+                .join('|') !==
+            visibleTopPoolData
+                .map((pool) => pool.base.address + pool.quote.address)
+                .join('|')
+        ) {
             // Trigger fade-out effect
             setIsFading(true);
             // After fade-out duration (1s), update pool data and fade back in
