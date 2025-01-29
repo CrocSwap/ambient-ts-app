@@ -7,8 +7,13 @@ import {
     createContext,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from 'react';
+import {
+    excludedTokenAddressesLowercase,
+    hiddenTokens,
+} from '../ambient-utils/constants';
 import {
     expandPoolStats,
     getFormattedNumber,
@@ -29,6 +34,7 @@ import { TokenContext } from './TokenContext';
 export interface ExploreContextIF {
     pools: {
         all: Array<PoolDataIF>;
+        topPools: PoolIF[];
         getAllPools: (
             poolList: PoolIF[],
             crocEnv: CrocEnv,
@@ -66,7 +72,11 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
-    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const {
+        topPools: hardcodedTopPools,
+        crocEnv,
+        provider,
+    } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { allPoolStats, isActiveNetworkPlume, isActiveNetworkSwell } =
         useContext(ChainDataContext);
@@ -375,6 +385,97 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             });
     }
 
+    const sortAndFilter = (
+        poolData: PoolDataIF[],
+        filter: 'volume' | 'tvl',
+        threshold: number,
+    ): PoolDataIF[] =>
+        poolData
+            .filter((pool) => {
+                if (filter === 'tvl') return pool.tvl > threshold;
+                return pool.volume >= threshold;
+            })
+            .sort(
+                (poolA: PoolDataIF, poolB: PoolDataIF) =>
+                    poolB[filter] - poolA[filter],
+            );
+
+    // Filter out excluded addresses and hidden tokens
+    const filteredPoolsNoExcludedOrHiddenTokens = useMemo(
+        () =>
+            allPools.filter(
+                (pool) =>
+                    !excludedTokenAddressesLowercase.includes(
+                        pool.base.address.toLowerCase(),
+                    ) &&
+                    !excludedTokenAddressesLowercase.includes(
+                        pool.quote.address.toLowerCase(),
+                    ) &&
+                    !hiddenTokens.some(
+                        (excluded) =>
+                            (excluded.address.toLowerCase() ===
+                                pool.base.address.toLowerCase() ||
+                                excluded.address.toLowerCase() ===
+                                    pool.quote.address.toLowerCase()) &&
+                            excluded.chainId === parseInt(pool.chainId),
+                    ),
+            ),
+        [allPools],
+    );
+
+    const topPools = useMemo(
+        () =>
+            !filteredPoolsNoExcludedOrHiddenTokens.length
+                ? hardcodedTopPools
+                : sortAndFilter(
+                        filteredPoolsNoExcludedOrHiddenTokens,
+                        'volume',
+                        1000,
+                    ).length >= 3
+                  ? sortAndFilter(
+                        filteredPoolsNoExcludedOrHiddenTokens,
+                        'volume',
+                        1000,
+                    ).slice(
+                        0,
+                        Math.max(
+                            hardcodedTopPools.length,
+                            sortAndFilter(
+                                filteredPoolsNoExcludedOrHiddenTokens,
+                                'volume',
+                                1000,
+                            ).length,
+                        ),
+                    )
+                  : sortAndFilter(
+                          filteredPoolsNoExcludedOrHiddenTokens,
+                          'volume',
+                          100,
+                      ).length >= 2
+                    ? sortAndFilter(
+                          filteredPoolsNoExcludedOrHiddenTokens,
+                          'volume',
+                          100,
+                      ).slice(
+                          0,
+                          Math.max(
+                              hardcodedTopPools.length,
+                              sortAndFilter(
+                                  filteredPoolsNoExcludedOrHiddenTokens,
+                                  'volume',
+                                  100,
+                              ).length,
+                          ),
+                      )
+                    : sortAndFilter(
+                          filteredPoolsNoExcludedOrHiddenTokens,
+                          'volume',
+                          0,
+                      ).slice(0, 3),
+
+        [hardcodedTopPools, filteredPoolsNoExcludedOrHiddenTokens],
+    );
+
     const dexTokens: useTokenStatsIF = useTokenStats(
         activeNetwork.chainId,
         crocEnv,
@@ -387,8 +488,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     const exploreContext: ExploreContextIF = {
         pools: {
-            all: allPools,
+            all: filteredPoolsNoExcludedOrHiddenTokens,
             getAllPools: getAllPools,
+            topPools: topPools,
             reset: () => {
                 setIntermediaryPoolData([]);
             },

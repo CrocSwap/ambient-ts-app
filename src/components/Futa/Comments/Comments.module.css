@@ -9,7 +9,7 @@
 
 .comments_outer.small {
     position: relative;
-    width: 90%;
+    padding: .5rem 1rem 1rem 1rem;
     margin: 0 auto;
 }
 

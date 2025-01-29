@@ -1,21 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-    defaultTokens,
-    hiddenTokens,
-    tokenListURIs,
-} from '../../ambient-utils/constants';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { hiddenTokens, tokenListURIs } from '../../ambient-utils/constants';
+import ambientTokenList from '../../ambient-utils/constants/ambient-token-list.json';
+import testnetTokenList from '../../ambient-utils/constants/testnet-token-list.json';
 import {
     chainNumToString,
     serializeBigInt,
     uriToHttp,
 } from '../../ambient-utils/dataLayer';
 import { TokenIF, TokenListIF } from '../../ambient-utils/types';
-import ambientTokenList from '../../ambient-utils/constants/ambient-token-list.json';
-import testnetTokenList from '../../ambient-utils/constants/testnet-token-list.json';
+import { AppStateContext, TokenBalanceContext } from '../../contexts';
 
 export interface tokenMethodsIF {
-    allDefaultTokens: TokenIF[];
-    defaultTokens: TokenIF[];
     verify: (addr: string) => boolean;
     acknowledge: (tkn: TokenIF) => void;
     tokenUniv: TokenIF[];
@@ -72,12 +67,14 @@ function getAckTokensFromLS(): TokenIF[] {
 const INIT_LIST: TokenListIF[] = getTokenListsFromLS();
 const INIT_ACK: TokenIF[] = getAckTokensFromLS();
 
-export const useTokens = (
-    chainId: string,
-    tokenBalances: TokenIF[] | undefined,
-): tokenMethodsIF => {
+export const useTokens = (): tokenMethodsIF => {
     // Token universe
     const [tokenLists, setTokenLists] = useState<TokenListIF[]>(INIT_LIST);
+
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
 
     // User acknowledge tokens
     const [ackTokens, setAckTokens] = useState<TokenIF[]>(INIT_ACK);
@@ -132,7 +129,7 @@ export const useTokens = (
 
     const defaultTokenMap = useMemo<Map<string, TokenIF>>(() => {
         const retMap = new Map<string, TokenIF>();
-        defaultTokens
+        ambientTokenList.tokens
             .filter((t) => chainNumToString(t.chainId) === chainId)
             .forEach((t) => {
                 const deepToken: TokenIF = deepCopyToken(
@@ -142,7 +139,7 @@ export const useTokens = (
                 retMap.set(deepToken.address.toLowerCase(), deepToken);
             });
         return retMap;
-    }, [defaultTokens, chainId]);
+    }, [ambientTokenList.tokens, chainId]);
 
     const tokenUniv: TokenIF[] = useMemo(() => {
         if (tokenMap.size) {
@@ -160,7 +157,7 @@ export const useTokens = (
             }
             return newArray;
         } else {
-            const newArray = [...defaultTokens];
+            const newArray = [...ambientTokenList.tokens];
             for (const token of tokenBalances ?? []) {
                 if (
                     !newArray.some(
@@ -203,17 +200,6 @@ export const useTokens = (
             symbol: tkn.symbol,
         };
     }
-
-    const defaultTokensInUniv: TokenIF[] = useMemo(
-        () =>
-            tokenUniv.filter((tkn) => {
-                return (
-                    chainNumToString(tkn.chainId) === chainId &&
-                    tkn.listedBy?.includes(tokenListURIs.ambient)
-                );
-            }),
-        [chainId, tokenUniv.length],
-    );
 
     // Load token lists from local storage for fast load, but asynchronously
     // fetch tokens from external URLs and update with latest values
@@ -293,7 +279,7 @@ export const useTokens = (
     // fn to verify a token is on a known list or user-acknowledged
     const verifyToken = useCallback(
         (addr: string): boolean => {
-            for (const token of defaultTokens) {
+            for (const token of ambientTokenList.tokens) {
                 if (
                     token.address.toLowerCase() === addr.toLowerCase() &&
                     token.chainId === parseInt(chainId)
@@ -425,8 +411,6 @@ export const useTokens = (
 
     return useMemo(
         () => ({
-            allDefaultTokens: defaultTokens,
-            defaultTokens: defaultTokensInUniv,
             verify: verifyToken,
             acknowledge: ackToken,
             tokenUniv: tokenUniv,
