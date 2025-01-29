@@ -95,3 +95,8 @@
 .auctions_search_wrapper{
     height: 100%;
 }
+@media (max-width: 599px) {
+.mobileContainer{
+padding: 8px;
+}
+}

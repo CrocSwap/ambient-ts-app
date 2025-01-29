@@ -316,8 +316,6 @@ export default function Navbar() {
             </ul>
         );
     };
-    const isMobile =
-        useMediaQuery('mobilePortrait') || useMediaQuery('mobileLandscape');
 
     return (
         <>
