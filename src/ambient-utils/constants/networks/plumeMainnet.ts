@@ -1,9 +1,9 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import ambientTokenList from '../ambient-token-list.json';
 import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -27,13 +27,6 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://phoenix-explorer.plumenetwork.xyz/',
 };
 
-const findTokenByAddress = (address: string): TokenIF =>
-    ambientTokenList.tokens.find(
-        (token) =>
-            token.address.toLowerCase() === address.toLowerCase() &&
-            token.chainId === Number(chainIdHex),
-    ) as TokenIF;
-
 const defaultTokenEntries = [
     ['ETH', '0x0000000000000000000000000000000000000000'],
     ['pETH', '0xD630fb6A07c9c723cf709d2DaA9B63325d0E0B73'],
@@ -50,7 +43,7 @@ type PlumeTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
 export const PLUME_TOKENS: PlumeTokens = Object.fromEntries(
     defaultTokenEntries.map(([key, address]) => [
         key,
-        findTokenByAddress(address),
+        findTokenByAddress(address, chainIdHex),
     ]),
 ) as PlumeTokens;
 

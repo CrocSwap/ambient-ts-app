@@ -1,9 +1,9 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import ambientTokenList from '../ambient-token-list.json';
 import { GCGO_SWELL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -29,13 +29,6 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://explorer.swellnetwork.io/',
 };
 
-const findTokenByAddress = (address: string): TokenIF =>
-    ambientTokenList.tokens.find(
-        (token) =>
-            token.address.toLowerCase() === address.toLowerCase() &&
-            token.chainId === Number(chainIdHex),
-    ) as TokenIF;
-
 const defaultTokenEntries = [
     ['ETH', '0x0000000000000000000000000000000000000000'],
     ['USDE', '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34'],
@@ -59,7 +52,7 @@ type SwellTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
 export const SWELL_TOKENS: SwellTokens = Object.fromEntries(
     defaultTokenEntries.map(([key, address]) => [
         key,
-        findTokenByAddress(address),
+        findTokenByAddress(address, chainIdHex),
     ]),
 ) as SwellTokens;
 
