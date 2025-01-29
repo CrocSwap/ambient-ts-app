@@ -1,10 +1,10 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
 import { GCGO_TESTNET_URL } from '../gcgo';
-import testnetTokenList from '../testnet-token-list.json';
 import { TopPool } from './TopPool';
 
 const PUBLIC_RPC_URL = 'https://ethereum-sepolia-rpc.publicnode.com';
@@ -35,13 +35,6 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://sepolia.etherscan.io/',
 };
 
-const findTokenByAddress = (address: string): TokenIF =>
-    testnetTokenList.tokens.find(
-        (token) =>
-            token.address.toLowerCase() === address.toLowerCase() &&
-            token.chainId === Number(chainIdHex),
-    ) as TokenIF;
-
 const defaultTokenEntries = [
     ['ETH', '0x0000000000000000000000000000000000000000'],
     ['USDC', '0x60bBA138A74C5e7326885De5090700626950d509'],
@@ -57,7 +50,7 @@ type SepoliaTokens = {
 export const SEPOLIA_TOKENS: SepoliaTokens = Object.fromEntries(
     defaultTokenEntries.map(([key, address]) => [
         key,
-        findTokenByAddress(address),
+        findTokenByAddress(address, chainIdHex),
     ]),
 ) as SepoliaTokens;
 

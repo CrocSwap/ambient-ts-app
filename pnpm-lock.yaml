@@ -12,8 +12,8 @@ importers:
   .:
     dependencies:
       '@crocswap-libs/sdk':
-        specifier: ^2.0.1
-        version: 2.0.1
+        specifier: ^2.0.3
+        version: 2.0.3
       '@d3fc/d3fc-extent':
         specifier: ^4.0.2
         version: 4.0.2(d3-array@3.2.4)
@@ -45,7 +45,7 @@ importers:
         specifier: ^4.11.1
         version: 4.12.0(react@18.3.1)
       ethers:
-        specifier: ^6.13.4
+        specifier: ^6.13.5
         version: 6.13.5
       framer-motion:
         specifier: 4.1.17
@@ -264,8 +264,8 @@ packages:
   '@coinbase/wallet-sdk@4.0.3':
     resolution: {integrity: sha512-y/OGEjlvosikjfB+wk+4CVb9OxD1ob9cidEBLI5h8Hxaf/Qoob2XoVT1uvhtAzBx34KpGYSd+alKvh/GCRre4Q==}
 
-  '@crocswap-libs/sdk@2.0.1':
-    resolution: {integrity: sha512-F8eB5N1ZQrTtvDyXmDH1eYYGVwzdnTTJmOeryClor99Jf1y937yviquzyvT+KODl1aGtyI17guD48t/SKbGlLA==}
+  '@crocswap-libs/sdk@2.0.3':
+    resolution: {integrity: sha512-tn8XuLzJP0XVHbAvtEvqX1TY4HpE/3NQuXCndUhMIR1KzN6qqkMxCr7zV4wAGl5lj2tTH0KqcXHBxhnamDfTDA==}
 
   '@d3fc/d3fc-annotation@3.0.16':
     resolution: {integrity: sha512-4tA7RHLUbj/i3KqWRqCVDOHi435qBRXbAFrAajVYM2juNzFdX5RCoF3opyXKOFncs339caxgeySGStTVfulO9w==}
@@ -3359,7 +3359,7 @@ snapshots:
       preact: 10.25.4
       sha.js: 2.4.11
 
-  '@crocswap-libs/sdk@2.0.1':
+  '@crocswap-libs/sdk@2.0.3':
     dependencies:
       ethers: 6.13.5
     transitivePeerDependencies:
