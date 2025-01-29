@@ -45,15 +45,12 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const [visiblePoolData, setVisiblePoolData] = useState<PoolIF[]>([]);
 
     const topPoolsWithPriority = useMemo(() => {
+        if (!topPools.length) return [];
         if (!priorityPool) return topPools;
         const updatedPools = [...topPools];
         updatedPools.splice(2, 0, priorityPool);
         return updatedPools;
     }, [topPools, priorityPool]);
-
-    const topPoolsNames = useMemo(() => {
-        return topPoolsWithPriority.map((pool) => pool.name);
-    }, [topPoolsWithPriority]);
 
     const poolData = useMemo(
         () =>
@@ -71,16 +68,30 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         [topPoolsWithPriority, showMobileVersion, show3TopPools, show4TopPools],
     );
 
+    const topPoolMap = useMemo(() => {
+        if (!topPoolsWithPriority.length)
+            return { topPoolsString: '', topPoolsWithPriority: [] };
+        return {
+            chainId: topPoolsWithPriority[0].chainId,
+            topPoolsString: topPoolsWithPriority
+                .map((pool) => pool.base.address + pool.quote.address)
+                .join('|'),
+        };
+    }, [topPoolsWithPriority]);
+
     useEffect(() => {
+        if (chainId !== topPoolMap.chainId) {
+            setVisiblePoolData([]);
+            return;
+        }
         // Trigger fade-out effect
         setIsFading(true);
-
         // After fade-out duration (1s), update pool data and fade back in
         setTimeout(() => {
             setVisiblePoolData(poolData);
             setIsFading(false);
         }, 1000); // Match the fade-out duration
-    }, [topPoolsNames]);
+    }, [topPoolMap.topPoolsString, chainId]);
 
     const poolPriceCacheTime = Math.floor(Date.now() / 10000); // 10 second cache
     const poolPriceUpdateInterval = Math.floor(Date.now() / 2000); // 2 second interval
