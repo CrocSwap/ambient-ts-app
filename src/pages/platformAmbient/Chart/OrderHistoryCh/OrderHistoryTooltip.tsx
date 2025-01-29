@@ -168,8 +168,14 @@ export default function OrderHistoryTooltip(props: {
         <OrderHistoryHeader>
             <StyledHeader
                 color={
-                    (denomInBase && !hoveredOrderHistory.order.order.isBuy) ||
-                    (!denomInBase && hoveredOrderHistory.order.order.isBuy)
+                    (denomInBase &&
+                        (hoveredOrderHistory.type === 'claimableLimit'
+                            ? !hoveredOrderHistory.order.order.isBid
+                            : !hoveredOrderHistory.order.order.isBuy)) ||
+                    (!denomInBase &&
+                        (hoveredOrderHistory.type === 'claimableLimit'
+                            ? hoveredOrderHistory.order.order.isBid
+                            : hoveredOrderHistory.order.order.isBuy))
                         ? ['futa'].includes(platformName)
                             ? 'var(--negative)'
                             : 'var(--accent5)'
@@ -177,8 +183,14 @@ export default function OrderHistoryTooltip(props: {
                 }
                 size={'15px'}
             >
-                {((denomInBase && !hoveredOrderHistory.order.order.isBuy) ||
-                (!denomInBase && hoveredOrderHistory.order.order.isBuy)
+                {((denomInBase &&
+                    (hoveredOrderHistory.type === 'claimableLimit'
+                        ? !hoveredOrderHistory.order.order.isBid
+                        : !hoveredOrderHistory.order.order.isBuy)) ||
+                (!denomInBase &&
+                    (hoveredOrderHistory.type === 'claimableLimit'
+                        ? hoveredOrderHistory.order.order.isBid
+                        : hoveredOrderHistory.order.order.isBuy))
                     ? 'Buy'
                     : 'Sell') + ': '}
             </StyledHeader>
