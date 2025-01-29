@@ -124,9 +124,9 @@ import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
 import RangeLinesChart from './RangeLine/RangeLinesChart';
 import TvlChart from './Tvl/TvlChart';
 import VolumeBarCanvas from './Volume/VolumeBarCanvas';
-import { updateZeroPriceCandles } from './ChartUtils/candleDataUtils';
 import { GraphDataContext } from '../../../contexts';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { updateZeroPriceCandles } from './ChartUtils/candleDataUtils';
 
 interface propsIF {
     isTokenABase: boolean;
