@@ -66,7 +66,6 @@ const SwipeableTabs: React.FC<SwipeableTabsProps> = ({
                     </button>
                 ))}
             </div>
-
             {/* Tab content with swipe */}
             <motion.div
                 key={activeTab}
@@ -81,8 +80,9 @@ const SwipeableTabs: React.FC<SwipeableTabsProps> = ({
                 dragConstraints={{ left: 0, right: 0 }}
                 onDragEnd={handleDragEnd}
             >
-                {tabs[activeTab].content}
+                {tabs[activeTab]?.content}
             </motion.div>
+            ;
         </div>
     );
 };
