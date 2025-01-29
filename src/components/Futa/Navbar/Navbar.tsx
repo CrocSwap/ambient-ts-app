@@ -316,6 +316,8 @@ export default function Navbar() {
             </ul>
         );
     };
+    const isMobile =
+        useMediaQuery('mobilePortrait') || useMediaQuery('mobileLandscape');
 
     return (
         <>
@@ -335,8 +337,8 @@ export default function Navbar() {
                         ref={tutorialBtnRef}
                         onClick={() => setReplayTutorial(true)}
                     >
-                        {' '}
-                        <AiOutlineQuestionCircle /> Help
+                        <AiOutlineQuestionCircle />
+                        <p>Help</p>
                     </div>
                     {!isUserConnected && connectWagmiButton}
                     <NotificationCenter />

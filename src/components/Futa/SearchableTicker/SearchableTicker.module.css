@@ -167,9 +167,9 @@
     }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 599px) {
     .ticker_table > header > * {
-        font-size: 10px;
+        font-size: 12px;
     }
 }
 
