@@ -167,7 +167,7 @@ function TradeCharts(props: propsIF) {
         orderHistoryState?.isSwapOrderHistoryEnabled ?? true,
     );
     const [showLiquidity, setShowLiquidity] = useState(
-        false, // orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
+        orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
     );
     const [showHistorical, setShowHistorical] = useState(
         orderHistoryState?.isHistoricalOrderHistoryEnabled ?? false,
@@ -217,10 +217,10 @@ function TradeCharts(props: propsIF) {
         } else {
             setShowSwap(orderHistoryState?.isSwapOrderHistoryEnabled ?? true);
             setShowHistorical(
-                orderHistoryState?.isHistoricalOrderHistoryEnabled ?? true,
+                orderHistoryState?.isHistoricalOrderHistoryEnabled ?? false,
             );
             setShowLiquidity(
-                orderHistoryState?.isLiquidityOrderHistoryEnabled ?? true,
+                orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
             );
         }
     }, [isUserConnected]);
