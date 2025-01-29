@@ -1,6 +1,10 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AppStateContext, ChainDataContext } from '../../../contexts';
+import {
+    AppStateContext,
+    ChainDataContext,
+    ExploreContext,
+} from '../../../contexts';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
@@ -20,27 +24,42 @@ interface TopPoolsPropsIF {
 // eslint-disable-next-line
 export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
-    const { topPools, crocEnv, provider } = useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const {
+        pools: { topPools },
+    } = useContext(ExploreContext);
 
     const { blockPollingUrl } = useContext(ChainDataContext);
 
     const {
-        activeNetwork: { chainId },
+        activeNetwork: { chainId, priorityPool },
     } = useContext(AppStateContext);
+
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const show4TopPools = useMediaQuery('(max-width: 1500px)');
     const show3TopPools = useMediaQuery('(min-height: 700px)');
 
+    const topPoolsWithPriority = useMemo(() => {
+        if (!priorityPool) return topPools;
+        const updatedPools = [...topPools];
+        updatedPools.splice(2, 0, priorityPool);
+        return updatedPools;
+    }, [topPools, priorityPool]);
+
     const poolData = useMemo(
         () =>
-            showMobileVersion
-                ? show3TopPools
-                    ? topPools.slice(0, 3)
-                    : topPools.slice(0, 2)
-                : show4TopPools
-                  ? topPools.slice(0, 4)
-                  : topPools,
-        [showMobileVersion, show3TopPools, show4TopPools, topPools],
+            topPoolsWithPriority.slice(
+                0,
+                showMobileVersion
+                    ? show3TopPools
+                        ? 3
+                        : 2
+                    : show4TopPools
+                      ? 4
+                      : 5,
+            ),
+
+        [topPoolsWithPriority, showMobileVersion, show3TopPools, show4TopPools],
     );
 
     const poolPriceCacheTime = Math.floor(Date.now() / 10000); // 10 second cache

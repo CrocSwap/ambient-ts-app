@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { ZERO_ADDRESS, tokenListURIs } from '../../ambient-utils/constants';
+import { tokenListURIs, ZERO_ADDRESS } from '../../ambient-utils/constants';
 import {
     isBlastRewardToken,
     isUsdcToken,
+    isUSDQtoken,
     removeWrappedNative,
 } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
@@ -153,7 +154,8 @@ export const useTokenSearch = (
                         : chainId === '0xaa36a7'
                           ? patchLists(
                                 tokens.getTokensFromList(tokenListURIs.ambient),
-                                tokens.getTokensFromList(tokenListURIs.futa),
+                                tokens.getTokensFromList(tokenListURIs.testnet),
+                                // , tokens.getTokensFromList(tokenListURIs.futa),
                             )
                           : patchLists(
                                 tokens.getTokensFromList(tokenListURIs.ambient),
@@ -237,6 +239,8 @@ export const useTokenSearch = (
                         priority = 90;
                     } else if (isBlastRewardToken(tknAddress)) {
                         priority = 85;
+                    } else if (isUSDQtoken(tknAddress)) {
+                        priority = 83;
                     } else if (
                         walletTknAddresses.includes(tkn.address.toLowerCase())
                     ) {

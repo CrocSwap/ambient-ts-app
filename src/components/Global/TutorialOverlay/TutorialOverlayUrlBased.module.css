@@ -47,3 +47,21 @@
     cursor: pointer;
     border: none;
 }
+
+
+@keyframes pulseAnim {
+    0% {
+        border: 1px solid transparent;
+    }
+    50% {
+        border: 1px solid var(--accent1);
+    }
+    100% {
+        border: 1px solid transparent;
+    }
+}
+
+
+.pulseAnim{
+    animation: pulseAnim .7s 3 ease-in-out;
+}

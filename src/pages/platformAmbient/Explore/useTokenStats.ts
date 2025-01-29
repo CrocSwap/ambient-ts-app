@@ -9,6 +9,7 @@ import {
     CACHE_UPDATE_FREQ_IN_MS,
     getDefaultPairForChain,
 } from '../../../ambient-utils/constants';
+import { tokens as AMBIENT_TOKEN_LIST } from '../../../ambient-utils/constants/ambient-token-list.json';
 import {
     DexTokenAggServerIF,
     getChainStats,
@@ -92,7 +93,7 @@ export const useTokenStats = (
                     backupEndpoint,
                     cachedFetchTokenPrice,
                     20,
-                    tokenMethods.allDefaultTokens,
+                    AMBIENT_TOKEN_LIST,
                 );
 
                 if (tokenStats) {

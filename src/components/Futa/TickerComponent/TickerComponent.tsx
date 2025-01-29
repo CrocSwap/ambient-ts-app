@@ -42,7 +42,6 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import Comments from '../Comments/Comments';
-import FutaDivider2 from '../Divider/FutaDivider2';
 import { tickerDisplayElements } from './tickerDisplayElements';
 interface PropsIF {
     isAuctionPage?: boolean;
@@ -823,30 +822,25 @@ export default function TickerComponent(props: PropsIF) {
     }, []);
 
     const unCompletedDisplay = (
-        <>
-            <div className={styles.content} ref={containerRef}>
-                {!isAuctionPage && <BreadCrumb />}
-                {tickerDisplay}
-                <div className={styles.flexColumn}>
-                    {showComments && <Comments />}
-                </div>
-
-                {!showComments && (
-                    <>
-                        <FutaDivider2 />
-                        {openedBidDisplay}
-                        <FutaDivider2 />
-                        {yourBidDisplay}
-                        <FutaDivider2 />
-                        <div className={styles.flexColumn}>
-                            {maxFdvDisplay}
-                            {bidSizeDisplay}
-                            {extraInfoDisplay}
-                        </div>
-                    </>
-                )}
+        <div className={styles.content} ref={containerRef}>
+            {!isAuctionPage && <BreadCrumb />}
+            {tickerDisplay}
+            <div className={styles.flexColumn}>
+                {showComments && <Comments />}
             </div>
-        </>
+
+            {!showComments && (
+                <>
+                    {openedBidDisplay}
+                    {yourBidDisplay}
+                    <div className={styles.flexColumn}>
+                        {maxFdvDisplay}
+                        {bidSizeDisplay}
+                        {extraInfoDisplay}
+                    </div>
+                </>
+            )}
+        </div>
     );
 
     return (

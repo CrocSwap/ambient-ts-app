@@ -7,13 +7,14 @@
     gap: 8px;
     font-size: 18px;
     letter-spacing: 1px;
+    min-height: 27px;
+    /* height: 400px; */
 }
 
 /* transparent ticker arrow in base state with transition */
 .ticker_arrow {
     transition: all var(--animation-speed) ease-in-out;
     color: #f0f0f800;
-    ;
 }
 
 /* add color to ticker arrow when parent elem is hovered */

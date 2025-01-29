@@ -15,7 +15,7 @@ import {
 } from '../../../pages/platformFuta/mockAuctionData';
 import styles from './TickerItem.module.css';
 
-interface PropsIF {
+interface propsIF {
     auction: AuctionDataIF;
     setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
     selectedTicker: string | undefined;
@@ -26,7 +26,7 @@ interface PropsIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useRefTicker: MutableRefObject<any>;
 }
-export default function TickerItem(props: PropsIF) {
+export default function TickerItem(props: propsIF) {
     const {
         auction,
         selectedTicker,

@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components/macro';
+import styled, { css } from 'styled-components';
 
 import { AnimationProps, Animations } from './Animations';
 import { Breakpoint, BreakpointProps } from './Breakpoints';

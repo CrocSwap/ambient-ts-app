@@ -43,7 +43,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
         },
         {
-            "name": "swETH",
+            "name": "Swell Ethereum",
             "address": "0xf951e335afb289353dc249e82926178eac7ded78",
             "chainId": 1,
             "decimals": 18,
@@ -57,6 +57,14 @@
             "decimals": 18,
             "logoURI": "https://etherscan.io/token/images/rsweth_32.png?=v3",
             "symbol": "rswETH"
+        },
+        {
+            "name": "Kelp DAO Restaked ETH",
+            "address": "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7",
+            "chainId": 1,
+            "decimals": 18,
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/e1522c29a42749fd5ec81.svg",
+            "symbol": "rsETH"
         },
         {
             "name": "Swell Governance Token",
@@ -73,14 +81,6 @@
             "decimals": 18,
             "chainId": 1,
             "logoURI": "https://etherscan.io/token/images/stakestone_32.png"
-        },
-        {
-            "name": "Kelp DAO Restaked ETH",
-            "address": "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7",
-            "chainId": 1,
-            "decimals": 18,
-            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/e1522c29a42749fd5ec81.svg",
-            "symbol": "rsETH"
         },
         {
             "name": "Maker",
@@ -331,6 +331,14 @@
             "logoURI": "https://assets.coingecko.com/coins/images/50571/thumb/scroll.jpg?1728376125"
         },
         {
+            "address": "0x6f2a1a886dbf8e36c4fa9f25a517861a930fbf3a",
+            "name": "Quill USD Stablecoin",
+            "symbol": "USDQ",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
+        },
+        {
             "name": "Pirex Ether OFT",
             "address": "0x9e0d7d79735e1c63333128149c7b616a0dc0bbdb",
             "symbol": "pxETH",
@@ -361,6 +369,14 @@
             "decimals": 18,
             "logoURI": "https://etherscan.io/token/images/rsweth_32.png?=v3",
             "symbol": "rswETH"
+        },
+        {
+            "name": "StakeStone Ether",
+            "address": "0x80137510979822322193FC997d400D5A6C747bf7",
+            "chainId": 534352,
+            "decimals": 18,
+            "logoURI": "https://etherscan.io/token/images/stakestone_32.png",
+            "symbol": "STONE"
         },
         {
             "name": "Kelp DAO Restaked ETH",
@@ -619,7 +635,7 @@
             "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/971f401121cc90314670c.svg"
         },
         {
-            "name": "USDe",
+            "name": "Ethena USDe",
             "address": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
             "symbol": "USDe",
             "decimals": 18,
@@ -686,6 +702,14 @@
             "name": "Nest Treasuries Vault",
             "address": "0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9",
             "symbol": "nTBILL",
+            "decimals": 6,
+            "chainId": 98865,
+            "logoURI": ""
+        },
+        {
+            "name": "Bridged stgUSDT",
+            "address": "0xA849026cDA282eeeBC3C39Afcbe87a69424F16B4",
+            "symbol": "USDT",
             "decimals": 6,
             "chainId": 98865,
             "logoURI": ""

@@ -1,45 +1,78 @@
 import { useEffect, useState } from 'react';
 import { maxWidth, minWidth } from '../../ambient-utils/types/mediaQueries';
 
+export type Breakpoint =
+    | 'tabletPortrait'
+    | 'tabletLandscape'
+    | 'mobilePortrait'
+    | 'mobileLandscape'
+    | 'desktop'
+    | 'desktopLarge';
+
 type centralQueries = maxWidth | minWidth;
 
-function useMediaQuery(query: centralQueries | string): boolean {
-    const getMatches = (query: string): boolean => {
-        // Prevents SSR issues
+// Map breakpoints to CSS variable names
+const cssVariableMap: Record<Breakpoint, string> = {
+    tabletPortrait: 'tablet-portrait',
+    tabletLandscape: 'tablet-landscape',
+    mobilePortrait: 'mobile-portrait',
+    mobileLandscape: 'mobile-landscape',
+    desktop: 'desktop',
+    desktopLarge: 'desktop-large',
+};
+
+function getMediaQueryFromCSSVar(breakpoint: Breakpoint): string {
+    if (typeof window === 'undefined') return '';
+    const styles = getComputedStyle(document.documentElement);
+    const query = styles
+        .getPropertyValue(`--${cssVariableMap[breakpoint]}`)
+        .trim();
+    return query;
+}
+
+function useMediaQuery(query: Breakpoint | centralQueries | string): boolean {
+    const getMatches = (queryString: string): boolean => {
         if (typeof window !== 'undefined') {
-            return window.matchMedia(query).matches;
+            return window.matchMedia(queryString).matches;
         }
         return false;
     };
 
-    const [matches, setMatches] = useState<boolean>(getMatches(query));
+    // Convert breakpoint to query string if needed
+    const getQueryString = () => {
+        if (typeof query === 'string' && query in cssVariableMap) {
+            return getMediaQueryFromCSSVar(query as Breakpoint);
+        }
+        return query;
+    };
 
-    function handleChange() {
-        setMatches(getMatches(query));
-    }
+    const [queryString, setQueryString] = useState(getQueryString());
+    const [matches, setMatches] = useState<boolean>(() =>
+        getMatches(queryString),
+    );
+
+    // Update query string if CSS variables change
+    useEffect(() => {
+        if (typeof query === 'string' && query in cssVariableMap) {
+            const newQueryString = getQueryString();
+            setQueryString(newQueryString);
+        }
+    }, [query]);
 
     useEffect(() => {
-        const matchMedia = window.matchMedia(query);
+        const matchMedia = window.matchMedia(queryString);
 
-        // Triggered at the first client-side load and if query changes
+        const handleChange = () => {
+            setMatches(getMatches(queryString));
+        };
+
         handleChange();
-
-        // Listen matchMedia
-        if (matchMedia.addEventListener) {
-            matchMedia.addEventListener('change', handleChange);
-        } else {
-            matchMedia.addEventListener('change', handleChange);
-        }
+        matchMedia.addEventListener('change', handleChange);
 
         return () => {
-            if (matchMedia.addEventListener) {
-                matchMedia.addEventListener('change', handleChange);
-            } else {
-                matchMedia.removeEventListener('change', handleChange);
-            }
+            matchMedia.removeEventListener('change', handleChange);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [query]);
+    }, [queryString]);
 
     return matches;
 }

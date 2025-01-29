@@ -1,116 +1,45 @@
-.container {
-    width: 100%;
-    height: calc(100svh - 104px);
-    background: var(--dark1);
+/* top-level element returned by `Account.tsx` file */
+.main, .main_full {
     display: flex;
-    padding: 8px 16px;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    height: calc(100% - 19px);
+    padding: 0px 8px;
+    font-family: 'Fira Mono';
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-    font-family: 'Fira Mono';
-    justify-content: space-between;
+    padding-bottom: 8px;
+/* 
+    display: grid;
+    grid-template-columns: auto 390px; */
 }
 
-.content {
+.searchable_ticker {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     gap: 8px;
+
+    align-items: flex-start;
+    justify-content: flex-start;
+    --width-for-scrollbar: 8px;
+    border: var(--futa-box-border);
 }
 
-.content h2 {
+/* left side of `Account.tsx` (contains ticker table and chart) */
+.tickers_and_chart {
+    flex-grow: 1;
+    height: 100%;
+}
+
+/* in-page 'ACCOUNT' title (only on mobile devices) */
+.tickers_and_chart h2 {
     color: var(--text1, #ceffff);
     font-size: 24px;
     text-transform: uppercase;
 }
 
-.claimAllContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    /* padding-top: 2.7rem; */
-}
-
-.claimAllContainer h3 {
-    color: var(--text1, #ceffff);
-    font-size: 20px;
-}
-.claimAllText {
-    padding: 0 16px;
-}
-
-.claimAllContainer p {
-    color: var(--text2);
-    font-size: 12px;
-    text-align: center;
-}
-
-.extraFeeContainer {
-    width: 100%;
-    border: 1px solid var(--dark3, #1e1e24);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px;
-}
-
-.alignCenter {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-}
-
-.claimButton {
-    display: flex;
-    padding: 2px 8px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    align-self: stretch;
-    outline: none;
-    background: var(--accent1, #0ccdff);
-    color: var(--dark1);
-    border: none;
-    cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
-}
-.claimButton:hover {
-    background: var(--accent2);
-    color: var(--dark1);
-}
-
-.disabledButton {
-    background: var(--dark4);
-    color: var(--text2);
-    pointer-events: none;
-}
-
-/* desktop */
-.desktopContainer {
-    background: var(--dark1);
-    display: grid;
-    grid-template-columns: auto 390px;
-    padding: 0 16px;
-    height: calc(100vh - 56px);
-    gap: 16px;
-}
-.separatorContainer {
-    height: calc(100vh - 80px);
-}
-
-.rightLayout {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
 
 .connectWalletContent {
     width: 100%;
@@ -151,37 +80,45 @@
     background: var(--accent2);
     color: var(--dark1);
 }
+@media screen and (min-width: 1367px) {
+    .main{
 
-.justifyRow {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-.label{
-    font-size: var(--body-size);
-    color: #5C6F72;
-    text-transform: uppercase;
-    padding: 0 8px;
-}
-
-@media (max-width: 780px) {
-    .claimAllContainer h3 {
-        text-align: center;
+        display: grid;
+        grid-template-columns: auto 390px
     }
-    .claimButton {
-        margin: 5px 0;
+    .main_full{
+        grid-template-columns: auto;
     }
 
-    /* .container {
-        height: calc(100svh - 280px);
-    } */
-}
 
 
-@media (min-width: 768px) and (max-width: 1024px) {
-    .container {
-        width: 100%;
-        height: calc(100svh - 154px);
 }
+/* tablets and cellphones */
+@media screen and (max-width: 1024px) {
+    .main, .main_full {
+        flex-direction: column;
+        height: calc(100% - 90px);
+        display: grid;
+        grid-template-rows: 1fr 344px;
+        
+    }
+    .searchable_ticker{
+        border: none;
+    }
+
 }
+
+@media screen and (max-width: 768px) {
+
+    .main, .main_full{
+        height: calc(100% - 120px);
+    }
+    .tickers_and_chart{
+
+        max-width: 100svw;
+        padding: 0 8px;
+    }
+
+  
+}
+

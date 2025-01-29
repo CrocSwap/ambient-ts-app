@@ -2,14 +2,12 @@ import react from '@vitejs/plugin-react';
 import { execSync } from 'child_process';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
-import macrosPlugin from 'vite-plugin-babel-macros';
 import checker from 'vite-plugin-checker';
 
 export default defineConfig({
     base: '/',
     plugins: [
         react(),
-        macrosPlugin(),
         checker({
             eslint: {
                 // for example, lint .ts and .tsx
