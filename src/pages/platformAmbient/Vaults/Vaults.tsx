@@ -170,7 +170,7 @@ function Vaults() {
     const tempItems = [1, 2, 3, 4, 5];
 
     const skeletonDisplay = tempItems.map((item, idx) => (
-        <TokenRowSkeleton key={idx} />
+        <TokenRowSkeleton key={idx} isVaultPage />
     ));
 
     const vaultsOnCurrentChain =
