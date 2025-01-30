@@ -3051,6 +3051,7 @@ export default function Chart(props: propsIF) {
                                     );
 
                                     lineSeries(item?.data);
+                                    if (ctx) ctx.setLineDash([0, 0]);
                                 }
 
                                 if (
@@ -3172,6 +3173,10 @@ export default function Chart(props: propsIF) {
                                                                     );
                                                                 }
                                                             } else {
+                                                                if (ctx)
+                                                                    ctx.setLineDash(
+                                                                        [0, 0],
+                                                                    );
                                                                 circleSeries([
                                                                     element,
                                                                 ]);
@@ -3511,6 +3516,8 @@ export default function Chart(props: propsIF) {
                                                     ]);
                                                 }
                                             } else {
+                                                if (ctx)
+                                                    ctx.setLineDash([0, 0]);
                                                 circleSeries([element]);
                                             }
                                         });
@@ -3593,6 +3600,7 @@ export default function Chart(props: propsIF) {
                                                 ]);
                                             }
                                         } else {
+                                            if (ctx) ctx.setLineDash([0, 0]);
                                             circleSeries([
                                                 {
                                                     denomInBase:
