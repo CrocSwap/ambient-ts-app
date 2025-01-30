@@ -1,6 +1,7 @@
 import { ERC20_ABI } from '@crocswap-libs/sdk';
 import { Contract, ethers } from 'ethers';
 import { ZERO_ADDRESS } from '../constants';
+import { findTokenByAddress } from '../dataLayer/functions/findTokenByAddress';
 import { memoizeProviderFn } from '../dataLayer/functions/memoizePromiseFn';
 import { TokenIF, otherTokenSources } from '../types/token/TokenIF';
 
@@ -21,17 +22,8 @@ export const fetchContractDetails = async (
     _chainId: string,
     provenance: otherTokenSources,
 ): Promise<TokenIF> => {
-    // TODO:    update this logic to work on chains where the native token is not ETH
     if (address === ZERO_ADDRESS) {
-        return {
-            address: address,
-            chainId: parseInt(_chainId),
-            decimals: 18,
-            symbol: 'ETH',
-            name: 'Native Ether',
-            fromList: 'ambient',
-            logoURI: 'https://ethereum-optimism.github.io/data/ETH/logo.svg',
-        };
+        return findTokenByAddress(address, _chainId);
     }
 
     const contract = new Contract(address, ERC20_ABI, provider);

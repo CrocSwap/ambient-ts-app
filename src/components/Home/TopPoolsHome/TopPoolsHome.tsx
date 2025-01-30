@@ -32,16 +32,23 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const { blockPollingUrl } = useContext(ChainDataContext);
 
     const {
-        activeNetwork: { chainId },
+        activeNetwork: { chainId, priorityPool },
     } = useContext(AppStateContext);
 
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const show4TopPools = useMediaQuery('(max-width: 1500px)');
     const show3TopPools = useMediaQuery('(min-height: 700px)');
 
+    const topPoolsWithPriority = useMemo(() => {
+        if (!priorityPool) return topPools;
+        const updatedPools = [...topPools];
+        updatedPools.splice(2, 0, priorityPool);
+        return updatedPools;
+    }, [topPools, priorityPool]);
+
     const poolData = useMemo(
         () =>
-            topPools.slice(
+            topPoolsWithPriority.slice(
                 0,
                 showMobileVersion
                     ? show3TopPools
@@ -52,7 +59,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
                       : 5,
             ),
 
-        [topPools, showMobileVersion, show3TopPools, show4TopPools],
+        [topPoolsWithPriority, showMobileVersion, show3TopPools, show4TopPools],
     );
 
     const poolPriceCacheTime = Math.floor(Date.now() / 10000); // 10 second cache

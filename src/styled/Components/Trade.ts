@@ -1,5 +1,5 @@
 import { Resizable } from 're-resizable';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 export const MainSection = styled.section<{
     isDropdown?: boolean;

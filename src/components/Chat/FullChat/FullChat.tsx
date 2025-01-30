@@ -24,11 +24,12 @@ import {
 } from 'react-icons/tb';
 import { Link, useParams } from 'react-router-dom';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
-import { defaultTokens } from '../../../ambient-utils/constants';
+import ambientTokenList from '../../../ambient-utils/constants/ambient-token-list.json';
 import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import ChatConfirmationPanel from '../ChatConfirmationPanel/ChatConfirmationPanel';
 import { ChatGoToChatParamsIF } from '../ChatIFs';
 import ChatNotificationBubble from '../ChatNotification/ChatNotificationBubble';
@@ -36,7 +37,6 @@ import ChatToaster from '../ChatToaster/ChatToaster';
 import Room from '../MessagePanel/Room/Room';
 import { Message } from '../Model/MessageModel';
 import styles from './FullChat.module.css';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -206,10 +206,10 @@ function FullChat(props: FullChatPropsIF) {
                 if (
                     currencies &&
                     currencies[0] !== currencies[1] &&
-                    defaultTokens.some(
+                    ambientTokenList.tokens.some(
                         ({ symbol }) =>
                             symbol === currencies[0].toUpperCase() &&
-                            defaultTokens.some(
+                            ambientTokenList.tokens.some(
                                 ({ symbol }) =>
                                     symbol === currencies[1].toUpperCase(),
                             ),

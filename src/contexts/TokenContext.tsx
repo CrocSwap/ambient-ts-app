@@ -28,7 +28,7 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { tokenBalances } = useContext(TokenBalanceContext);
-    const tokens: tokenMethodsIF = useTokens(chainId, tokenBalances);
+    const tokens: tokenMethodsIF = useTokens();
     const { addRecentToken, getRecentTokens } = useRecentTokens(chainId);
 
     const [outputTokens, validatedInput, setInput, searchType, rawInput] =

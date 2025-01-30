@@ -1,6 +1,5 @@
 import { brand } from './networks';
 export * from './blacklist';
-export * from './defaultTokens';
 export * from './gasEstimates';
 export * from './gcgo';
 export * from './networks';
