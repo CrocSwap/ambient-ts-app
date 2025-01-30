@@ -15,6 +15,7 @@ import {
 } from '../../../styled/Components/Home';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import PoolCard from '../../Global/PoolCard/PoolCard';
+import TopPoolsSkeleton from './TopPoolsSkeleton';
 
 interface TopPoolsPropsIF {
     noTitle?: boolean;
@@ -131,11 +132,12 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
             </HomeTitle>
             <HomeContent minHeight='120px'>
                 {poolData.map((pool, idx) => (
-                    <PoolCard
-                        key={idx}
-                        pool={pool}
-                        spotPrice={spotPrices[idx]}
-                    /> // Pass the corresponding spot price
+                    // <PoolCard
+                    //     key={idx}
+                    //     pool={pool}
+                    //     spotPrice={spotPrices[idx]}
+                    // /> // Pass the corresponding spot price
+                    <TopPoolsSkeleton />
                 ))}
             </HomeContent>
             <HomeContent

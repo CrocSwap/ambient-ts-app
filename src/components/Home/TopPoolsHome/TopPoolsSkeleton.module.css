@@ -85,5 +85,5 @@
         var(--dark1) 100%
     );
     background-size: 200% 100%;
-    animation: shimmer 1.3s infinite ease-in-out;
+    animation: shimmer 1.5s infinite ease-in-out;
 }
