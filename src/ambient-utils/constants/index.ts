@@ -170,5 +170,11 @@ export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
 
 export const CURRENT_AUCTION_VERSION = 1;
 
+// using to disable tutos which showing by default
+// controlled with a toggle on settings in ui
 export const SHOW_TUTOS_DEFAULT =
     import.meta.env.VITE_SHOW_TUTOS_DEFAULT || 'true';
+
+// using for disabling all tutorials and to hide help button on ui
+export const DISABLE_ALL_TUTOS =
+    import.meta.env.VITE_DISABLE_ALL_TUTOS || false;
