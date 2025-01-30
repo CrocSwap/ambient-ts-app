@@ -424,9 +424,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     const topPools = useMemo(
         () =>
-            isFetchError ||
-            (!allPoolStats?.length && !filteredTopPools.length) ||
-            (allPools.length && !filteredTopPools.length)
+            isFetchError || (allPools.length && !filteredTopPools.length)
                 ? hardcodedTopPools
                 : filteredTopPools
                       .sort(
@@ -435,13 +433,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                       )
                       .slice(0, 5),
 
-        [
-            isFetchError,
-            hardcodedTopPools,
-            filteredTopPools,
-            allPools.length,
-            allPoolStats?.length,
-        ],
+        [isFetchError, hardcodedTopPools, filteredTopPools, allPools.length],
     );
 
     const dexTokens: useTokenStatsIF = useTokenStats(

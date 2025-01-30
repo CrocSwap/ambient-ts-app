@@ -15,6 +15,7 @@ import {
 } from '../../../styled/Components/Home';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import PoolCard from '../../Global/PoolCard/PoolCard';
+import TopPoolSkeleton from './TopPoolSkeleton/TopPoolSkeleton';
 
 interface TopPoolsPropsIF {
     noTitle?: boolean;
@@ -50,18 +51,14 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         return updatedPools;
     }, [topPools, priorityPool]);
 
-    const poolData = useMemo(
+    const lengthOfTopPoolsDisplay = useMemo(
         () =>
-            topPoolsWithPriority.slice(
-                0,
-                showMobileVersion
-                    ? show3TopPools
-                        ? 3
-                        : 2
-                    : show4TopPools
-                      ? 4
-                      : 5,
-            ),
+            showMobileVersion ? (show3TopPools ? 3 : 2) : show4TopPools ? 4 : 5,
+        [showMobileVersion, show3TopPools, show4TopPools],
+    );
+
+    const poolData = useMemo(
+        () => topPoolsWithPriority.slice(0, lengthOfTopPoolsDisplay),
 
         [topPoolsWithPriority, showMobileVersion, show3TopPools, show4TopPools],
     );
@@ -162,20 +159,31 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         fetchSpotPrices();
     }, [crocEnv]);
 
+    const tempItems = Array.from(
+        { length: lengthOfTopPoolsDisplay },
+        (_, i) => i + 1,
+    );
+    const skeletonDisplay = tempItems.map((item, idx) => (
+        <TopPoolSkeleton key={idx} />
+    ));
+
     return (
         <TopPoolContainer flexDirection='column' gap={16}>
             <HomeTitle tabIndex={0} aria-label='Top Pools'>
                 Top Pools
             </HomeTitle>
-            <HomeContent minHeight='120px' isFading={isFading}>
-                {visibleTopPoolData.map((pool, idx) => (
-                    <PoolCard
-                        key={idx}
-                        pool={pool}
-                        spotPrice={spotPrices[idx]}
-                    /> // Pass the corresponding spot price
-                ))}
+            <HomeContent minHeight='120px'>
+                {isFading || !visibleTopPoolData.length
+                    ? skeletonDisplay
+                    : visibleTopPoolData.map((pool, idx) => (
+                          <PoolCard
+                              key={idx}
+                              pool={pool}
+                              spotPrice={spotPrices[idx]}
+                          />
+                      ))}
             </HomeContent>
+
             <HomeContent
                 justifyContent='center'
                 alignItems='center'

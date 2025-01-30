@@ -17,9 +17,10 @@ import { futaCreateSteps } from '../../../utils/tutorial/Futa/FutaCreateSteps';
 import { TutorialIF, TutorialStepExternalComponent } from '../../Chat/ChatIFs';
 import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
-import styles from './TutorialOverlayUrlBased.module.css';
 import TutorialHelpModal from '../TutorialComponent/TutorialHelpModal/TutorialHelpModal';
-// import{ MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
+import styles from './TutorialOverlayUrlBased.module.css';
+// import { ambientMarketSteps } from '../../../utils/tutorial/MarketSteps';
+import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
 
 interface TutorialOverlayPropsIF {
     replayTutorial: boolean;
@@ -110,6 +111,8 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
                         ],
                     ]),
                 };
+            // case 'market':
+            //     return { lsKey: 'tuto_market', steps: ambientMarketSteps };
             default:
                 return undefined;
         }
@@ -242,7 +245,8 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         isTutoBuild &&
         (selectedTutorialRef.current?.showDefault ||
             selectedTutorialRef.current?.helpModal) &&
-        showTutosLocalStorage;
+        showTutosLocalStorage &&
+        !DISABLE_ALL_TUTOS;
 
     if (!shouldTutoComponentShown && filterRenderedSteps().length > 0) {
         if (tutorialBtnRef.current?.style) {
