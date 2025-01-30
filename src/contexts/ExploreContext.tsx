@@ -35,6 +35,8 @@ export interface ExploreContextIF {
     pools: {
         all: Array<PoolDataIF>;
         topPools: PoolIF[];
+        visibleTopPoolData: PoolIF[];
+        setVisibleTopPoolData: Dispatch<SetStateAction<PoolIF[]>>;
         getAllPools: (
             poolList: PoolIF[],
             crocEnv: CrocEnv,
@@ -86,6 +88,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const [intermediaryPoolData, setIntermediaryPoolData] = useState<
         Array<PoolDataIF>
     >([]);
+    const [visibleTopPoolData, setVisibleTopPoolData] = useState<PoolIF[]>([]);
+    const [isFetchError, setIsFetchError] = useState(false);
     const [isExploreDollarizationEnabled, setIsExploreDollarizationEnabled] =
         useState(
             localStorage.getItem('isExploreDollarizationEnabled') === 'true',
@@ -100,7 +104,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         } else {
             setAllPools([]);
         }
-    }, [intermediaryPoolData]);
+    }, [intermediaryPoolData, activeNetwork.chainId]);
 
     useEffect(() => {
         const savedDollarizationPreference =
@@ -373,6 +377,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         );
         Promise.all(allPoolData)
             .then((results: Array<PoolDataIF>) => {
+                setIsFetchError(false);
                 const filteredPoolData = results.filter(
                     (pool) => pool.spotPrice > 0,
                 );
@@ -381,24 +386,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 }
             })
             .catch((err) => {
+                setIsFetchError(true);
                 console.warn(err);
             });
     }
-
-    const sortAndFilter = (
-        poolData: PoolDataIF[],
-        filter: 'volume' | 'tvl',
-        threshold: number,
-    ): PoolDataIF[] =>
-        poolData
-            .filter((pool) => {
-                if (filter === 'tvl') return pool.tvl > threshold;
-                return pool.volume >= threshold;
-            })
-            .sort(
-                (poolA: PoolDataIF, poolB: PoolDataIF) =>
-                    poolB[filter] - poolA[filter],
-            );
 
     // Filter out excluded addresses and hidden tokens
     const filteredPoolsNoExcludedOrHiddenTokens = useMemo(
@@ -423,57 +414,26 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         [allPools],
     );
 
+    const filteredTopPools = useMemo(
+        () =>
+            filteredPoolsNoExcludedOrHiddenTokens.filter(
+                (pool) => pool.volume > 1000,
+            ),
+        [filteredPoolsNoExcludedOrHiddenTokens],
+    );
+
     const topPools = useMemo(
         () =>
-            !filteredPoolsNoExcludedOrHiddenTokens.length
+            isFetchError || (allPools.length && !filteredTopPools.length)
                 ? hardcodedTopPools
-                : sortAndFilter(
-                        filteredPoolsNoExcludedOrHiddenTokens,
-                        'volume',
-                        1000,
-                    ).length >= 3
-                  ? sortAndFilter(
-                        filteredPoolsNoExcludedOrHiddenTokens,
-                        'volume',
-                        1000,
-                    ).slice(
-                        0,
-                        Math.max(
-                            hardcodedTopPools.length,
-                            sortAndFilter(
-                                filteredPoolsNoExcludedOrHiddenTokens,
-                                'volume',
-                                1000,
-                            ).length,
-                        ),
-                    )
-                  : sortAndFilter(
-                          filteredPoolsNoExcludedOrHiddenTokens,
-                          'volume',
-                          100,
-                      ).length >= 2
-                    ? sortAndFilter(
-                          filteredPoolsNoExcludedOrHiddenTokens,
-                          'volume',
-                          100,
-                      ).slice(
-                          0,
-                          Math.max(
-                              hardcodedTopPools.length,
-                              sortAndFilter(
-                                  filteredPoolsNoExcludedOrHiddenTokens,
-                                  'volume',
-                                  100,
-                              ).length,
-                          ),
+                : filteredTopPools
+                      .sort(
+                          (poolA: PoolDataIF, poolB: PoolDataIF) =>
+                              poolB['volume'] - poolA['volume'],
                       )
-                    : sortAndFilter(
-                          filteredPoolsNoExcludedOrHiddenTokens,
-                          'volume',
-                          0,
-                      ).slice(0, 3),
+                      .slice(0, 5),
 
-        [hardcodedTopPools, filteredPoolsNoExcludedOrHiddenTokens],
+        [isFetchError, hardcodedTopPools, filteredTopPools, allPools.length],
     );
 
     const dexTokens: useTokenStatsIF = useTokenStats(
@@ -491,6 +451,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             all: filteredPoolsNoExcludedOrHiddenTokens,
             getAllPools: getAllPools,
             topPools: topPools,
+            visibleTopPoolData,
+            setVisibleTopPoolData,
             reset: () => {
                 setIntermediaryPoolData([]);
             },
