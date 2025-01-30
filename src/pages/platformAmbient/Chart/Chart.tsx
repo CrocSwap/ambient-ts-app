@@ -461,7 +461,7 @@ export default function Chart(props: propsIF) {
         let notTransactionDataTime: undefined | number = undefined;
         let transationDataTime: undefined | number = undefined;
         if (scaleData) {
-            data.slice(isShowLatestCandle ? 2 : 1).forEach((item) => {
+            data.slice(1).forEach((item) => {
                 if (notTransactionDataTime === undefined && !item.isShowData) {
                     notTransactionDataTime = item.time * 1000;
                 }

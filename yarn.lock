@@ -252,12 +252,12 @@
     preact "^10.16.0"
     sha.js "^2.4.11"
 
-"@crocswap-libs/sdk@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-2.0.1.tgz#437e61fa5c71107fce2e06ac13bd46a1e271cbc1"
-  integrity sha512-F8eB5N1ZQrTtvDyXmDH1eYYGVwzdnTTJmOeryClor99Jf1y937yviquzyvT+KODl1aGtyI17guD48t/SKbGlLA==
+"@crocswap-libs/sdk@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-2.0.3.tgz#9c645613730c77e1ae213fac0d1225079681e03a"
+  integrity sha512-tn8XuLzJP0XVHbAvtEvqX1TY4HpE/3NQuXCndUhMIR1KzN6qqkMxCr7zV4wAGl5lj2tTH0KqcXHBxhnamDfTDA==
   dependencies:
-    ethers "^6.13.4"
+    ethers "^6.13.5"
 
 "@d3fc/d3fc-annotation@^3.0.16":
   version "3.0.16"
@@ -3987,10 +3987,10 @@ esutils@^2.0.2:
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
 
-ethers@^6.13.4:
-  version "6.13.4"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.13.4.tgz#bd3e1c3dc1e7dc8ce10f9ffb4ee40967a651b53c"
-  integrity sha512-21YtnZVg4/zKkCQPjrDj38B1r4nQvTZLopUGMLQ1ePU2zV/joCfDC3t3iKQjWRzjjjbzR+mdAIoikeBRNkdllA==
+ethers@^6.13.5:
+  version "6.13.5"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.13.5.tgz#8c1d6ac988ac08abc3c1d8fabbd4b8b602851ac4"
+  integrity sha512-+knKNieu5EKRThQJWwqaJ10a6HE9sSehGeqWN65//wE7j47ZpFhKAnHB/JJFibwwg61I/koxaPsXbXpD/skNOQ==
   dependencies:
     "@adraffy/ens-normalize" "1.10.1"
     "@noble/curves" "1.2.0"
