@@ -30,7 +30,14 @@ function TutorialHelpModal(props: propsIF) {
             >
                 <div className={styles.tuto_help_modal_header}>
                     {props.title || 'WHAT IS THIS?'}
+                    <div
+                        className={styles.tuto_help_modal_dismiss}
+                        onClick={props.negativeBtnAction}
+                    >
+                        X
+                    </div>
                 </div>
+
                 <div className={styles.tuto_help_modal_content}>
                     {getModalContent()}
                 </div>
