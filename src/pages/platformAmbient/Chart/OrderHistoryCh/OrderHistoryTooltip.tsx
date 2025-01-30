@@ -8,7 +8,7 @@ import {
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
 import { TransactionIF } from '../../../../ambient-utils/types';
-import { AppStateContext } from '../../../../contexts';
+import { AppStateContext, TradeDataContext } from '../../../../contexts';
 import { BrandContext } from '../../../../contexts/BrandContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import HoveredTooltip from '../Draw/Toolbar/HoveredTooltip';
@@ -24,6 +24,7 @@ import {
     IdContainer,
 } from './OrderHistoryTooltipCss';
 import { ArrowContainer } from '../../../../styled/Components/Chart';
+import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 
 export default function OrderHistoryTooltip(props: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,6 +64,8 @@ export default function OrderHistoryTooltip(props: {
     } = useContext(AppStateContext);
 
     const { platformName } = useContext(BrandContext);
+
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const { setCurrentTxActiveInTransactions } = useContext(TradeTableContext);
 
@@ -221,14 +224,15 @@ export default function OrderHistoryTooltip(props: {
                     ? hoveredOrderHistory.order.order.baseTokenLogoURI
                     : hoveredOrderHistory.order.order.quoteTokenLogoURI
             ) ? (
-                <img
+                <TokenIcon
+                    token={denomInBase ? baseToken : quoteToken}
                     src={uriToHttp(
                         denomInBase
                             ? hoveredOrderHistory.order.order.baseTokenLogoURI
                             : hoveredOrderHistory.order.order.quoteTokenLogoURI,
                     )}
                     alt='base token'
-                    style={{ width: '18px' }}
+                    size='m'
                 />
             ) : undefined}
         </OrderHistoryHeader>
@@ -274,14 +278,15 @@ export default function OrderHistoryTooltip(props: {
                     ? hoveredOrderHistory.order.baseTokenLogoURI
                     : hoveredOrderHistory.order.quoteTokenLogoURI
             ) ? (
-                <img
+                <TokenIcon
+                    token={denomInBase ? baseToken : quoteToken}
                     src={uriToHttp(
                         denomInBase
                             ? hoveredOrderHistory.order.baseTokenLogoURI
                             : hoveredOrderHistory.order.quoteTokenLogoURI,
                     )}
                     alt='base token'
-                    style={{ width: '18px' }}
+                    size='m'
                 />
             ) : undefined}
         </OrderHistoryHeader>
@@ -294,18 +299,20 @@ export default function OrderHistoryTooltip(props: {
             </StyledHeader>
 
             {hoveredOrderHistory.order.baseTokenLogoURI ? (
-                <img
+                <TokenIcon
+                    token={baseToken}
                     src={uriToHttp(hoveredOrderHistory.order.baseTokenLogoURI)}
                     alt='base token'
-                    style={{ width: '18px' }}
+                    size='m'
                 />
             ) : undefined}
 
             {hoveredOrderHistory.order.quoteTokenLogoURI ? (
-                <img
+                <TokenIcon
+                    token={quoteToken}
                     src={uriToHttp(hoveredOrderHistory.order.quoteTokenLogoURI)}
                     alt='base token'
-                    style={{ width: '18px' }}
+                    size='m'
                 />
             ) : undefined}
         </OrderHistoryHeader>
@@ -326,12 +333,12 @@ export default function OrderHistoryTooltip(props: {
     const historicalTypeText = (
         <StyledHeader color={'var(--text1)'} size={'15px'}>
             {(denomInBase
-                ? hoveredOrderHistory.order.highRangeShortDisplayInBase
-                : hoveredOrderHistory.order.highRangeShortDisplayInQuote) +
+                ? hoveredOrderHistory.order.lowRangeShortDisplayInBase
+                : hoveredOrderHistory.order.lowRangeShortDisplayInQuote) +
                 ' - ' +
                 (denomInBase
-                    ? hoveredOrderHistory.order.lowRangeShortDisplayInBase
-                    : hoveredOrderHistory.order.lowRangeShortDisplayInQuote)}
+                    ? hoveredOrderHistory.order.highRangeShortDisplayInBase
+                    : hoveredOrderHistory.order.highRangeShortDisplayInQuote)}
         </StyledHeader>
     );
 
