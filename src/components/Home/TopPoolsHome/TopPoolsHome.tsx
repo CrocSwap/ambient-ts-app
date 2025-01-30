@@ -174,7 +174,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
                 Top Pools
             </HomeTitle>
             <HomeContent minHeight='120px'>
-                {isFading
+                {isFading || !visibleTopPoolData.length
                     ? skeletonDisplay
                     : visibleTopPoolData.map((pool, idx) => (
                           <PoolCard
