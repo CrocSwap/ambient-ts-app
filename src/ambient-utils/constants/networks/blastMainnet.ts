@@ -1,9 +1,9 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import ambientTokenList from '../ambient-token-list.json';
 import { GCGO_BLAST_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -31,13 +31,6 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://blastscan.io/',
 };
 
-const findTokenByAddress = (address: string): TokenIF =>
-    ambientTokenList.tokens.find(
-        (token) =>
-            token.address.toLowerCase() === address.toLowerCase() &&
-            token.chainId === Number(chainIdHex),
-    ) as TokenIF;
-
 const defaultTokenEntries = [
     ['ETH', '0x0000000000000000000000000000000000000000'],
     ['USDB', '0x4300000000000000000000000000000000000003'],
@@ -53,13 +46,12 @@ type BlastTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
 export const BLAST_TOKENS: BlastTokens = Object.fromEntries(
     defaultTokenEntries.map(([key, address]) => [
         key,
-        findTokenByAddress(address),
+        findTokenByAddress(address, chainIdHex),
     ]),
 ) as BlastTokens;
 
 const curentTopPoolsList: [keyof BlastTokens, keyof BlastTokens][] = [
     ['ETH', 'USDB'],
-    ['ezETH', 'USDB'],
     ['BLAST', 'ETH'],
 ];
 

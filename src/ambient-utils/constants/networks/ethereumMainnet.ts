@@ -1,9 +1,9 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import ambientTokenList from '../ambient-token-list.json';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -30,13 +30,6 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://etherscan.io/',
 };
 
-const findTokenByAddress = (address: string): TokenIF =>
-    ambientTokenList.tokens.find(
-        (token) =>
-            token.address.toLowerCase() === address.toLowerCase() &&
-            token.chainId === Number(chainIdHex),
-    ) as TokenIF;
-
 const defaultTokenEntries = [
     ['ETH', '0x0000000000000000000000000000000000000000'],
     ['USDC', '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'],
@@ -57,7 +50,7 @@ type MainnetTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
 export const MAINNET_TOKENS: MainnetTokens = Object.fromEntries(
     defaultTokenEntries.map(([key, address]) => [
         key,
-        findTokenByAddress(address),
+        findTokenByAddress(address, chainIdHex),
     ]),
 ) as MainnetTokens;
 
@@ -65,6 +58,7 @@ const curentTopPoolsList: [keyof MainnetTokens, keyof MainnetTokens][] = [
     ['ETH', 'USDC'],
     ['USDT', 'USDC'],
     ['ETH', 'USDT'],
+    ['ETH', 'WBTC'],
 ];
 
 const topPools = curentTopPoolsList.map(
