@@ -108,7 +108,6 @@
     background: var(--dark2, #14161a);
 
     border-radius: var(--border-radius);
-    display: flex
 ;
     gap: 4px;
 
