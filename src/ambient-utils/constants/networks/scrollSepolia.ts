@@ -1,10 +1,10 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
 import { GCGO_TESTNET_URL } from '../gcgo';
-import testnetTokenList from '../testnet-token-list.json';
 import { TopPool } from './TopPool';
 
 const PUBLIC_RPC_URL = 'https://sepolia-rpc.scroll.io';
@@ -35,13 +35,6 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://sepolia.scrollscan.dev/',
 };
 
-const findTokenByAddress = (address: string): TokenIF =>
-    testnetTokenList.tokens.find(
-        (token) =>
-            token.address.toLowerCase() === address.toLowerCase() &&
-            token.chainId === Number(chainIdHex),
-    ) as TokenIF;
-
 const defaultTokenEntries = [
     ['ETH', '0x0000000000000000000000000000000000000000'],
     ['USDC', '0x4D65fB724CEd0CFC6ABFD03231C9CDC2C36A587B'],
@@ -55,7 +48,7 @@ type ScrollSepoliaTokens = {
 export const SCROLL_SEPOLIA_TOKENS: ScrollSepoliaTokens = Object.fromEntries(
     defaultTokenEntries.map(([key, address]) => [
         key,
-        findTokenByAddress(address),
+        findTokenByAddress(address, chainIdHex),
     ]),
 ) as ScrollSepoliaTokens;
 
