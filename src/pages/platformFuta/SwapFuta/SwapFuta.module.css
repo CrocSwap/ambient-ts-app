@@ -111,7 +111,7 @@ color: var(--dark1);
 
 }
 @media (max-width: 599px) {
-    .chart_mobile_container{
+    /* .chart_mobile_container{
         padding: 0 8px
     }
     .mainSection {
@@ -122,8 +122,35 @@ color: var(--dark1);
 
     .chartSection {
         height: 130px;
+    } */
+ 
+    .mobile_container, .chart_mobile_container{
+    
+        overflow: hidden !important;
+        height: calc(100svh - 56px) !important
+        
     }
+    .breadcrumbMobileTabs {
+        flex-shrink: 0; /* Prevent shrinking */
+        width: 100%;
+        background-color: var(--dark1); /* Or whatever your background color is */
+        z-index: 1; /* Ensure it stays on top */
+    }
+
+
+    .activeTabDataContainer {
+        flex: 1; /* Take remaining space */
+        overflow-y: auto; /* Enable vertical scrolling */
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+        position: relative;
+        height: auto; /* Let flex control the height */
+       
+
+        height: 80% !important;
+    }
+
 }
+
 
 @keyframes shimmer {
     0% {

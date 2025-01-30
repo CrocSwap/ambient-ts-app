@@ -74,7 +74,7 @@
 
 .isFutaDisabled {
     pointer-events: none;
-    background: var(--dark4);
+    background: var(--dark3);
     border: none;
-    color: var(--text2);
+    color: var(--text3);
 }

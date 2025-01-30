@@ -95,12 +95,18 @@ function SwapFuta() {
                     ? styles.chart_mobile_container
                     : styles.mobile_container
             }
-            style={{ height: '100%' }}
         >
-            <BreadCrumb />
-            {mobileTabs}
+            <div className={styles.breadcrumbMobileTabs}>
+                <BreadCrumb />
+                {mobileTabs}
+            </div>
 
-            <div style={{ height: '100%' }}>{activeTabData}</div>
+            <div
+                className={styles.activeTabDataContainer}
+                style={{ height: '100%' }}
+            >
+                {activeTabData}
+            </div>
         </section>
     );
 

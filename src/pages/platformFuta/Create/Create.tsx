@@ -25,7 +25,7 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import styles from './Create.module.css';
 import CreateInput from './CreateInput';
-
+import { motion } from 'framer-motion';
 export default function Create() {
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
     const navigate = useNavigate();
@@ -218,7 +218,13 @@ export default function Create() {
 
     return (
         <section className={styles.mainContainer}>
-            <div className={styles.create_token}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6 }}
+                className={styles.create_token}
+            >
                 {createHeader}
 
                 <CreateInput
@@ -226,7 +232,7 @@ export default function Create() {
                     handleChange={handleChange}
                 />
                 {footerDisplay}
-            </div>
+            </motion.div>
 
             {getActionTrigger('create_auction_input_trigger', () => {
                 setTickerInput('MY TOKEN');

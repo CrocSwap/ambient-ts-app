@@ -175,39 +175,34 @@ export default function TickerItem(props: propsIF) {
         const output: string = (firstPart + '.' + lastPart).slice(0, trunc);
         return output;
     }
+    const className = [
+        //  spacing and visual arrangement styles
+        styles.ticker_item,
+        //  add background highlighting when ticker is active
+        //  ... or when hovered
+        isAccount ||
+            styles[auction?.ticker === selectedTicker ? 'active' : 'inactive'],
+        styles[
+            auction?.ticker === hoveredTicker &&
+            hoveredTicker !== selectedTicker
+                ? 'hoverActive'
+                : ''
+        ],
+    ].join(' ');
+
+    const handleClick = () => {
+        setSelectedTicker(ticker);
+        setHoveredTicker(undefined);
+        const shouldSetShowComplete = timeRemainingInSec < 0 ? true : false;
+        setShowComplete(shouldSetShowComplete);
+    };
 
     return (
         <Link
             ref={(el) => (useRefTicker.current[ticker] = el)}
-            className={[
-                //  spacing and visual arrangement styles
-                styles.ticker_item,
-                //  add background highlighting when ticker is active
-                //  ... or when hovered
-                isAccount ||
-                    styles[
-                        auction?.ticker === selectedTicker
-                            ? 'active'
-                            : 'inactive'
-                    ],
-                styles[
-                    auction?.ticker === hoveredTicker &&
-                    hoveredTicker !== selectedTicker
-                        ? 'hoverActive'
-                        : ''
-                ],
-            ].join(' ')}
+            className={className}
             to={'/auctions/v1/' + ticker}
-            onClick={() => {
-                setSelectedTicker(ticker);
-                setHoveredTicker(undefined);
-                const shouldSetShowComplete =
-                    timeRemainingInSec < 0 ? true : false;
-                setShowComplete(shouldSetShowComplete);
-            }}
-            onMouseMove={() => {
-                setHoveredTicker(ticker);
-            }}
+            onClick={handleClick}
         >
             <div className={styles.ticker_name}>
                 {isMobile || (

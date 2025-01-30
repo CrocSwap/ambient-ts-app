@@ -37,6 +37,8 @@ export default function Footer() {
         tokenA: tokenA.address,
         tokenB: tokenB.address,
     });
+    const activeColor = '#AACFD1';
+    const inactiveColor = '#5C6F72';
     const footerItems = [
         {
             label: 'Auctions',
@@ -46,8 +48,8 @@ export default function Footer() {
                     size={24}
                     color={
                         location.pathname.includes('auctions')
-                            ? 'var(--text1)'
-                            : 'var(--text2)'
+                            ? activeColor
+                            : inactiveColor
                     }
                 />
             ),
@@ -60,8 +62,8 @@ export default function Footer() {
                     size={24}
                     color={
                         location.pathname.includes('swap')
-                            ? 'var(--text1)'
-                            : 'var(--text2)'
+                            ? activeColor
+                            : inactiveColor
                     }
                 />
             ),
@@ -75,8 +77,8 @@ export default function Footer() {
                     size={24}
                     color={
                         location.pathname.includes('account')
-                            ? 'var(--text1)'
-                            : 'var(--text2)'
+                            ? activeColor
+                            : inactiveColor
                     }
                 />
             ),
@@ -89,8 +91,8 @@ export default function Footer() {
                     size={24}
                     color={
                         location.pathname.includes('create')
-                            ? 'var(--text1)'
-                            : 'var(--text2)'
+                            ? activeColor
+                            : inactiveColor
                     }
                 />
             ),
@@ -123,8 +125,8 @@ export default function Footer() {
                                     ? 'auctions'
                                     : item.label.toLowerCase(),
                             )
-                                ? 'var(--text1)'
-                                : 'var(--text2)',
+                                ? activeColor
+                                : inactiveColor,
                         }}
                     >
                         {item.icon}

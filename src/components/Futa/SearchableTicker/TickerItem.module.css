@@ -90,4 +90,25 @@
     .ticker_item > p {
         font-size: 16px;
     }
+
+     /* Add these new styles */
+     .ticker_name {
+        flex: 2 1 auto; /* Increase flex-grow to take more space */
+        min-width: 120px; /* Ensure minimum width for readability */
+    }
+
+    .auction_status {
+        flex: 0.5 1 auto; /* Reduce flex-grow to take less space */
+        min-width: 60px; /* Smaller minimum width */
+    }
+
+    .time_remaining {
+        flex: 0.5 1 auto; /* Reduce flex-grow to take less space */
+        min-width: 60px; /* Smaller minimum width */
+    }
+
+    .market_cap {
+        flex: 1 1 auto; /* Keep market cap at normal ratio */
+        min-width: 80px;
+    }
 }
