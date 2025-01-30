@@ -51,18 +51,14 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         return updatedPools;
     }, [topPools, priorityPool]);
 
-    const poolData = useMemo(
+    const lengthOfTopPoolsDisplay = useMemo(
         () =>
-            topPoolsWithPriority.slice(
-                0,
-                showMobileVersion
-                    ? show3TopPools
-                        ? 3
-                        : 2
-                    : show4TopPools
-                      ? 4
-                      : 5,
-            ),
+            showMobileVersion ? (show3TopPools ? 3 : 2) : show4TopPools ? 4 : 5,
+        [showMobileVersion, show3TopPools, show4TopPools],
+    );
+
+    const poolData = useMemo(
+        () => topPoolsWithPriority.slice(0, lengthOfTopPoolsDisplay),
 
         [topPoolsWithPriority, showMobileVersion, show3TopPools, show4TopPools],
     );
@@ -163,7 +159,10 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         fetchSpotPrices();
     }, [crocEnv]);
 
-    const tempItems = [1, 2, 3, 4, 5];
+    const tempItems = Array.from(
+        { length: lengthOfTopPoolsDisplay },
+        (_, i) => i + 1,
+    );
     const skeletonDisplay = tempItems.map((item, idx) => (
         <TopPoolSkeleton key={idx} />
     ));
