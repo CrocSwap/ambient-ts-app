@@ -17,8 +17,8 @@ import { futaCreateSteps } from '../../../utils/tutorial/Futa/FutaCreateSteps';
 import { TutorialIF, TutorialStepExternalComponent } from '../../Chat/ChatIFs';
 import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
-import styles from './TutorialOverlayUrlBased.module.css';
 import TutorialHelpModal from '../TutorialComponent/TutorialHelpModal/TutorialHelpModal';
+import styles from './TutorialOverlayUrlBased.module.css';
 // import { ambientMarketSteps } from '../../../utils/tutorial/MarketSteps';
 import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
 
@@ -70,7 +70,6 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     };
 
     const getTutorialObjectForPage = (page: string) => {
-        console.log('>>> page : ', page);
         switch (page) {
             case 'auctions':
                 return {
