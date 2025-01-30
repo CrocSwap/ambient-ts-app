@@ -471,14 +471,18 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                 const isShapeSelected =
                                     (selectedOrderHistory &&
                                         isSelectedOrderHistory &&
-                                        selectedOrderHistory.type ===
-                                            'historical' &&
+                                        (selectedOrderHistory.type ===
+                                            'historical' ||
+                                            selectedOrderHistory.type ===
+                                                'historicalLiq') &&
                                         selectedOrderHistory.id ===
                                             element.id) ||
                                     (hoveredOrderHistory &&
                                         isHoveredOrderHistory &&
-                                        hoveredOrderHistory.type ===
-                                            'historical' &&
+                                        (hoveredOrderHistory.type ===
+                                            'historical' ||
+                                            hoveredOrderHistory.type ===
+                                                'historicalLiq') &&
                                         hoveredOrderHistory.id === element.id);
 
                                 if (isShapeSelected) {

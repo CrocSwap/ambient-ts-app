@@ -6832,9 +6832,10 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (
-                    (selectedOrderHistory.type === 'historical' ||
-                        selectedOrderHistory.type === 'historicalLiq') &&
-                    showHistorical
+                    (selectedOrderHistory.type === 'historical' &&
+                        showHistorical) ||
+                    (selectedOrderHistory.type === 'historicalLiq' &&
+                        showLiquidity)
                 ) {
                     const minPrice = denomInBase
                         ? selectedOrderHistory.order
@@ -6855,9 +6856,13 @@ export default function Chart(props: propsIF) {
                     setSelectedOrderTooltipPlacement(() => {
                         const top = scaleData.yScale(pricePlacement);
 
-                        const left = scaleData?.xScale(
-                            selectedOrderHistory.order.latestUpdateTime * 1000,
-                        );
+                        const latestTime =
+                            selectedOrderHistory.type === 'historicalLiq'
+                                ? new Date().getTime() + 5 * 86400 * 1000
+                                : selectedOrderHistory.order.latestUpdateTime *
+                                  1000;
+
+                        const left = scaleData?.xScale(latestTime);
 
                         return {
                             top: top < 0 ? 10 : top,
@@ -7237,10 +7242,10 @@ export default function Chart(props: propsIF) {
                         selectedOrderHistory.type === 'limitOrder' ||
                         selectedOrderHistory.type === 'claimableLimit')) ||
                     (showLiquidity &&
-                        selectedOrderHistory.type === 'limitSwapLine') ||
+                        (selectedOrderHistory.type === 'limitSwapLine' ||
+                            selectedOrderHistory.type === 'historicalLiq')) ||
                     (showHistorical &&
-                        (selectedOrderHistory.type === 'historical' ||
-                            selectedOrderHistory.type === 'historicalLiq'))) &&
+                        selectedOrderHistory.type === 'historical')) &&
                 selectedOrderTooltipPlacement && (
                     <OrderHistoryTooltip
                         hoveredOrderHistory={selectedOrderHistory}

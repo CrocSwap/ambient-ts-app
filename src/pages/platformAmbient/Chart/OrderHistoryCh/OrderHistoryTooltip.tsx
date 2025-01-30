@@ -333,12 +333,34 @@ export default function OrderHistoryTooltip(props: {
     const historicalTypeText = (
         <StyledHeader color={'var(--text1)'} size={'15px'}>
             {(denomInBase
-                ? hoveredOrderHistory.order.lowRangeShortDisplayInBase
-                : hoveredOrderHistory.order.lowRangeShortDisplayInQuote) +
+                ? hoveredOrderHistory.order.bidTickInvPriceDecimalCorrected >
+                  0.1
+                    ? hoveredOrderHistory.order.lowRangeShortDisplayInBase
+                    : formatSubscript(
+                          hoveredOrderHistory.order
+                              .bidTickInvPriceDecimalCorrected,
+                      )
+                : hoveredOrderHistory.order.bidTickPriceDecimalCorrected > 0.1
+                  ? hoveredOrderHistory.order.lowRangeShortDisplayInQuote
+                  : formatSubscript(
+                        hoveredOrderHistory.order.bidTickPriceDecimalCorrected,
+                    )) +
                 ' - ' +
                 (denomInBase
-                    ? hoveredOrderHistory.order.highRangeShortDisplayInBase
-                    : hoveredOrderHistory.order.highRangeShortDisplayInQuote)}
+                    ? hoveredOrderHistory.order
+                          .askTickInvPriceDecimalCorrected > 0.1
+                        ? hoveredOrderHistory.order.highRangeShortDisplayInBase
+                        : formatSubscript(
+                              hoveredOrderHistory.order
+                                  .askTickInvPriceDecimalCorrected,
+                          )
+                    : hoveredOrderHistory.order.askTickPriceDecimalCorrected >
+                        0.1
+                      ? hoveredOrderHistory.order.highRangeShortDisplayInQuote
+                      : formatSubscript(
+                            hoveredOrderHistory.order
+                                .askTickPriceDecimalCorrected,
+                        ))}
         </StyledHeader>
     );
 
