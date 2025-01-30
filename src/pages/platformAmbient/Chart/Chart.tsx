@@ -5674,7 +5674,10 @@ export default function Chart(props: propsIF) {
                         ) {
                             resElement = {
                                 id: position.positionId,
-                                type: 'historical',
+                                type:
+                                    position.positionLiq === 0
+                                        ? 'historical'
+                                        : 'historicalLiq',
                                 order: position,
                                 totalValueUSD: position.totalValueUSD,
                                 tokenFlowDecimalCorrected: 0,
@@ -6463,6 +6466,7 @@ export default function Chart(props: propsIF) {
 
             const rectCanvas = canvas.getBoundingClientRect();
             const canvasRightEnd = rectCanvas.right;
+            const canvasLeftEnd = rectCanvas.left;
 
             if (isHoveredOrderHistory && hoveredOrderHistory) {
                 if (
@@ -6602,7 +6606,8 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (
-                    hoveredOrderHistory.type === 'historical' &&
+                    (hoveredOrderHistory.type === 'historical' ||
+                        hoveredOrderHistory.type === 'historicalLiq') &&
                     (showHistorical || showLiquidity)
                 ) {
                     const minPrice = denomInBase
@@ -6624,9 +6629,13 @@ export default function Chart(props: propsIF) {
                     setHoveredOrderTooltipPlacement(() => {
                         let top = scaleData.yScale(pricePlacement);
 
-                        const left = scaleData?.xScale(
-                            hoveredOrderHistory.order.latestUpdateTime * 1000,
-                        );
+                        const latestTime =
+                            hoveredOrderHistory.type === 'historicalLiq'
+                                ? new Date().getTime() + 5 * 86400 * 1000
+                                : hoveredOrderHistory.order.latestUpdateTime *
+                                  1000;
+
+                        const left = scaleData?.xScale(latestTime);
 
                         if (
                             isSelectedOrderHistory &&
@@ -6655,12 +6664,16 @@ export default function Chart(props: propsIF) {
                             }
                         }
 
+                        const leftPlacement =
+                            left > canvasRightEnd
+                                ? canvasRightEnd - 150
+                                : left < canvasLeftEnd
+                                  ? canvasLeftEnd + 50
+                                  : left;
+
                         return {
                             top: top < 0 ? 10 : top,
-                            left:
-                                left > canvasRightEnd
-                                    ? canvasRightEnd - 150
-                                    : left,
+                            left: leftPlacement,
                             isOnLeftSide: false,
                         };
                     });
@@ -6819,7 +6832,8 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (
-                    selectedOrderHistory.type === 'historical' &&
+                    (selectedOrderHistory.type === 'historical' ||
+                        selectedOrderHistory.type === 'historicalLiq') &&
                     showHistorical
                 ) {
                     const minPrice = denomInBase
@@ -7225,7 +7239,8 @@ export default function Chart(props: propsIF) {
                     (showLiquidity &&
                         selectedOrderHistory.type === 'limitSwapLine') ||
                     (showHistorical &&
-                        selectedOrderHistory.type === 'historical')) &&
+                        (selectedOrderHistory.type === 'historical' ||
+                            selectedOrderHistory.type === 'historicalLiq'))) &&
                 selectedOrderTooltipPlacement && (
                     <OrderHistoryTooltip
                         hoveredOrderHistory={selectedOrderHistory}

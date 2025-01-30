@@ -399,7 +399,8 @@ export default function OrderHistoryTooltip(props: {
                         swapHeader}
                     {hoveredOrderHistory.type === 'limitSwapLine' &&
                         limitOrderHeader}
-                    {hoveredOrderHistory.type === 'historical' &&
+                    {(hoveredOrderHistory.type === 'historical' ||
+                        hoveredOrderHistory.type === 'historicalLiq') &&
                         headerHistorical}
 
                     <OrderHistoryBody
@@ -411,7 +412,8 @@ export default function OrderHistoryTooltip(props: {
                             hoveredOrderHistory.type === 'limitOrder' ||
                             hoveredOrderHistory.type === 'claimableLimit') &&
                             LimitTypeText}
-                        {hoveredOrderHistory.type === 'historical' &&
+                        {(hoveredOrderHistory.type === 'historical' ||
+                            hoveredOrderHistory.type === 'historicalLiq') &&
                             historicalTypeText}
 
                         {!(
