@@ -21,7 +21,6 @@ import styles from './TutorialOverlayUrlBased.module.css';
 import TutorialHelpModal from '../TutorialComponent/TutorialHelpModal/TutorialHelpModal';
 // import { ambientMarketSteps } from '../../../utils/tutorial/MarketSteps';
 import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
-// import{ MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
     replayTutorial: boolean;

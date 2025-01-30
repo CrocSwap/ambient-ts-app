@@ -1,6 +1,7 @@
 
 .ambi{
-    
+    /* this is wrapper selector for ambient brand  */
+    /* style changes for childiren elements implemented from this parent classname */
 }
 
 .tutorial_blur {

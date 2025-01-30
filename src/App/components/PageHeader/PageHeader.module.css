@@ -104,13 +104,9 @@
     padding: 4px 16px 4px 12px;
     align-items: center;
     text-align: center;
-
     background: var(--dark2, #14161a);
-
     border-radius: var(--border-radius);
-;
     gap: 4px;
-
 }
 
 @media (max-width: 800px) {
