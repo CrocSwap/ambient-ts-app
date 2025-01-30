@@ -100,7 +100,7 @@
 
 .tutorialBtn {
     cursor: pointer;
-    display: flex;
+    display: none;
     padding: 4px 16px 4px 12px;
     align-items: center;
     text-align: center;
