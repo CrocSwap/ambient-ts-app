@@ -1,5 +1,5 @@
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AuctionDataIF, diffHashSig } from '../../../ambient-utils/dataLayer';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { FutaSearchableTickerContext } from '../../../contexts/Futa/FutaSearchableTickerContext';
@@ -14,10 +14,10 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { auctionDataSets } from '../../../pages/platformFuta/Account/Account';
 import styles from './SearchableTicker.module.css';
 
+import { GoChevronRight } from 'react-icons/go';
 import useDeviceDetection from '../../../utils/hooks/useDeviceDetection';
 import ResizeableTableHeader from '../ResizeableTable/ResizeableTableHeader/ResizeableTableHeader';
 import Typewriter from '../TypeWriter/TypeWriter';
-import { GoChevronRight } from 'react-icons/go';
 import TickerItem from './TickerItem';
 
 interface propsIF {
@@ -75,7 +75,7 @@ export default function SearchableTicker(props: propsIF) {
     const [isMouseEnter, setIsMouseEnter] = useState(false);
 
     const deviceType = useDeviceDetection();
-    console.log(deviceType);
+    false && console.log(deviceType);
 
     const isMobile = useMediaQuery('(max-width: 768px)');
 
