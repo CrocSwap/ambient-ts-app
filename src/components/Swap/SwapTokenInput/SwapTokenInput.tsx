@@ -301,7 +301,10 @@ function SwapTokenInput(props: propsIF) {
         setSellQtyString(value);
         setPrimaryQuantity(value);
         setLastInput(value);
-        lastQuery.current = { isAutoUpdate: false, inputValue: value };
+        lastQuery.current = {
+            isAutoUpdate: false,
+            inputValue: value.startsWith('.') ? '0' + value : value,
+        };
 
         setIsTokenAPrimary(true);
     };
@@ -311,7 +314,10 @@ function SwapTokenInput(props: propsIF) {
         setBuyQtyString(value);
         setPrimaryQuantity(value);
         setLastInput(value);
-        lastQuery.current = { isAutoUpdate: false, inputValue: value };
+        lastQuery.current = {
+            isAutoUpdate: false,
+            inputValue: value.startsWith('.') ? '0' + value : value,
+        };
 
         setIsTokenAPrimary(false);
     };
