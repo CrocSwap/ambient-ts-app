@@ -1,4 +1,3 @@
-import { Step } from 'intro.js-react';
 import {
     Dispatch,
     memo,
@@ -14,11 +13,15 @@ import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { futaAuctionsSteps } from '../../../utils/tutorial/Futa/AuctionsSteps';
 import { futaAccountSteps } from '../../../utils/tutorial/Futa/FutaAccountSteps';
 import { futaCreateSteps } from '../../../utils/tutorial/Futa/FutaCreateSteps';
-import { TutorialIF, TutorialStepExternalComponent } from '../../Chat/ChatIFs';
+import {
+    TutorialIF,
+    TutorialStepExternalComponent,
+    TutorialStepIF,
+} from '../../Chat/ChatIFs';
 import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
-import styles from './TutorialOverlayUrlBased.module.css';
 import TutorialHelpModal from '../TutorialComponent/TutorialHelpModal/TutorialHelpModal';
+import styles from './TutorialOverlayUrlBased.module.css';
 // import { ambientMarketSteps } from '../../../utils/tutorial/MarketSteps';
 import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
 
@@ -39,7 +42,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     const selectedTutorialRef = useRef<TutorialIF | undefined>();
     selectedTutorialRef.current = selectedTutorial;
     const [isTutoBuild, setIsTutoBuild] = useState<boolean>(false);
-    const [stepsFiltered, setStepsFiltered] = useState<Step[]>([]);
+    const [stepsFiltered, setStepsFiltered] = useState<TutorialStepIF[]>([]);
 
     const [showTutorial, setShowTutorial] = useState<boolean>(false);
     const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
@@ -70,7 +73,6 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     };
 
     const getTutorialObjectForPage = (page: string) => {
-        console.log('>>> page : ', page);
         switch (page) {
             case 'auctions':
                 return {
@@ -135,7 +137,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         }
     };
 
-    const handleShowState = async (filteredSteps: Step[]) => {
+    const handleShowState = async (filteredSteps: TutorialStepIF[]) => {
         if (
             selectedTutorialRef.current &&
             selectedTutorialRef.current.lsKey ==
@@ -183,7 +185,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     };
 
     const filterRenderedSteps = () => {
-        const filteredSteps: Step[] = [];
+        const filteredSteps: TutorialStepIF[] = [];
 
         if (selectedTutorialRef.current && selectedTutorialRef.current.steps) {
             const steps = selectedTutorialRef.current.steps;
