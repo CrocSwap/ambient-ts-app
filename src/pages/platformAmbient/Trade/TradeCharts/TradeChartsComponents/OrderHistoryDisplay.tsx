@@ -15,8 +15,8 @@ interface OrderHistoryDisplayPropsIF {
 function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
     const {
         setShowSwap,
-        // setShowLiquidity,
-        // setShowHistorical,
+        setShowLiquidity,
+        setShowHistorical,
         showSwap,
         showLiquidity,
         showHistorical,
@@ -46,35 +46,35 @@ function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
         });
     };
 
-    // const handleLiquidityToggle = () => {
-    //     setShowLiquidity(!showLiquidity);
-    //     updateOrderHistoryToggles({
-    //         isSwapOrderHistoryEnabled: showSwap,
-    //         isLiquidityOrderHistoryEnabled: !showLiquidity,
-    //         isHistoricalOrderHistoryEnabled: showHistorical,
-    //     });
-    // };
-    // const handleHistoricalToggle = () => {
-    //     setShowHistorical(!showHistorical);
-    //     updateOrderHistoryToggles({
-    //         isSwapOrderHistoryEnabled: showSwap,
-    //         isLiquidityOrderHistoryEnabled: showLiquidity,
-    //         isHistoricalOrderHistoryEnabled: !showHistorical,
-    //     });
-    // };
+    const handleLiquidityToggle = () => {
+        setShowLiquidity(!showLiquidity);
+        updateOrderHistoryToggles({
+            isSwapOrderHistoryEnabled: showSwap,
+            isLiquidityOrderHistoryEnabled: !showLiquidity,
+            isHistoricalOrderHistoryEnabled: showHistorical,
+        });
+    };
+    const handleHistoricalToggle = () => {
+        setShowHistorical(!showHistorical);
+        updateOrderHistoryToggles({
+            isSwapOrderHistoryEnabled: showSwap,
+            isLiquidityOrderHistoryEnabled: showLiquidity,
+            isHistoricalOrderHistoryEnabled: !showHistorical,
+        });
+    };
 
     const orderHistoryDisplay = [
         { name: 'Buys/Sells', selected: showSwap, action: handleSwapToggle },
-        // {
-        //     name: 'Liquidity',
-        //     selected: showLiquidity,
-        //     action: handleLiquidityToggle,
-        // },
-        // {
-        //     name: 'Historical',
-        //     selected: showHistorical,
-        //     action: handleHistoricalToggle,
-        // },
+        {
+            name: 'Liquidity',
+            selected: showLiquidity,
+            action: handleLiquidityToggle,
+        },
+        {
+            name: 'Historical',
+            selected: showHistorical,
+            action: handleHistoricalToggle,
+        },
     ];
 
     function handleCurveDepthClickMobile(action: () => void) {

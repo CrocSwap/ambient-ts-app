@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ReactNode, useContext, useMemo, useState } from 'react';
+import { ReactNode, useContext, useMemo } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -9,10 +9,8 @@ import {
     AcknowledgeText,
     LPButton,
 } from '../../../styled/Components/TradeModules';
-import { TutorialButton } from '../../../styled/Components/Tutorial';
 import Button from '../../Form/Button';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
-import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
 
 import {
     brand,
@@ -36,7 +34,6 @@ interface PropsIF {
     approveButton: ReactNode | undefined;
     warnings?: ReactNode | undefined;
     // eslint-disable-next-line
-    tutorialSteps: any;
     isSwapPage?: boolean;
     inputOptions?: ReactNode;
 }
@@ -54,12 +51,10 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         bypassConfirm,
         approveButton,
         warnings,
-        tutorialSteps,
     } = props;
 
     const {
         activeNetwork: { blockExplorer },
-        tutorial: { isActive: isTutorialActive },
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
 
@@ -70,8 +65,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     const { tokenA, tokenB, limitTick, areDefaultTokensUpdatedForChain } =
         useContext(TradeDataContext);
     const isFuta = brand === 'futa';
-
-    const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = useMemo(() => {
@@ -168,18 +161,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     return (
         <>
-            {isTutorialActive && (
-                <FlexContainer
-                    fullWidth
-                    justifyContent='flex-end'
-                    alignItems='flex-end'
-                    padding='0 8px'
-                >
-                    <TutorialButton onClick={() => setIsTutorialEnabled(true)}>
-                        Tutorial Mode
-                    </TutorialButton>
-                </FlexContainer>
-            )}{' '}
             <ContentContainer isOnTradeRoute={!isSwapPage}>
                 {header}
                 {!isSwapPage && !smallScreen && !isFuta && (
@@ -286,11 +267,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 </FlexContainer>
             </ContentContainer>
             {modal}
-            <TutorialOverlay
-                isTutorialEnabled={isTutorialEnabled}
-                setIsTutorialEnabled={setIsTutorialEnabled}
-                steps={tutorialSteps}
-            />
         </>
     );
 };
