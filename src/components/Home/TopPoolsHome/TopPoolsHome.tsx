@@ -63,29 +63,17 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         [topPoolsWithPriority, showMobileVersion, show3TopPools, show4TopPools],
     );
 
-    const topPoolMap = useMemo(() => {
-        if (!topPoolsWithPriority.length)
-            return { topPoolsString: '', topPoolsWithPriority: [] };
-        return {
-            chainId: topPoolsWithPriority[0].chainId,
-            topPoolsString: topPoolsWithPriority
-                .map((pool) => pool.base.address + pool.quote.address)
-                .join('|'),
-        };
-    }, [topPoolsWithPriority]);
-
     useEffect(() => {
-        if (chainId !== topPoolMap.chainId) {
+        if (
+            !topPoolsWithPriority.length ||
+            chainId !== topPoolsWithPriority[0].chainId
+        ) {
             setVisibleTopPoolData([]);
             return;
         }
         if (
-            poolData
-                .map((pool) => pool.base.address + pool.quote.address)
-                .join('|') !==
-            visibleTopPoolData
-                .map((pool) => pool.base.address + pool.quote.address)
-                .join('|')
+            poolData.map((pool) => pool.name?.toLowerCase()).join('|') !==
+            visibleTopPoolData.map((pool) => pool.name?.toLowerCase()).join('|')
         ) {
             // Trigger fade-out effect
             setIsFading(true);
@@ -95,7 +83,10 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
                 setIsFading(false);
             }, 1000); // Match the fade-out duration
         }
-    }, [topPoolMap.topPoolsString, chainId]);
+    }, [
+        topPoolsWithPriority.map((pool) => pool.name?.toLowerCase()).join('|'),
+        chainId,
+    ]);
 
     const poolPriceCacheTime = Math.floor(Date.now() / 10000); // 10 second cache
     const poolPriceUpdateInterval = Math.floor(Date.now() / 2000); // 2 second interval
@@ -119,7 +110,11 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const providerUrl = provider?._getConnection().url;
 
     const fetchSpotPrices = async () => {
-        if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
+        if (
+            !poolData.length ||
+            !crocEnv ||
+            (await crocEnv.context).chain.chainId !== chainId
+        )
             return;
         const spotPricePromises = poolData.map((pool) =>
             cachedQuerySpotPrice(
