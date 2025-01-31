@@ -58,6 +58,7 @@ const curentTopPoolsList: [keyof MainnetTokens, keyof MainnetTokens][] = [
     ['ETH', 'USDC'],
     ['USDT', 'USDC'],
     ['ETH', 'USDT'],
+    ['ETH', 'WBTC'],
 ];
 
 const topPools = curentTopPoolsList.map(
