@@ -3,7 +3,7 @@ import styles from './TutorialHelpModalContents.module.css';
 export const AuctionHelpModal = () => {
     const steps = [
         'You create a ticker',
-        'For 24h, everyone gets to buy in *at the same price',
+        'For 24h, everyone gets to buy in *at the same price*',
         'After 24h, the ticker launches',
         '"Launch" means a pool is created on Ambient where people can trade the ticker freely',
     ];

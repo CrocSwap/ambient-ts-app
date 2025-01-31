@@ -50,7 +50,7 @@ export const PLUME_TOKENS: PlumeTokens = Object.fromEntries(
 const curentTopPoolsList: [keyof PlumeTokens, keyof PlumeTokens][] = [
     ['ETH', 'USDC'],
     ['pETH', 'pUSD'],
-    ['pETH', 'USDT'],
+    ['pETH', 'ETH'],
 ];
 
 const topPools = curentTopPoolsList.map(
