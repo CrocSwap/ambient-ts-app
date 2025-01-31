@@ -84,7 +84,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         useContext(ChainDataContext);
     const { poolList } = useContext(PoolContext);
 
-    const [allPools, setAllPools] = useState<Array<PoolDataIF>>([]);
     const [intermediaryPoolData, setIntermediaryPoolData] = useState<
         Array<PoolDataIF>
     >([]);
@@ -94,17 +93,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         useState(
             localStorage.getItem('isExploreDollarizationEnabled') === 'true',
         );
-
-    // used to prevent displaying data for a previous network after switching networks
-    useEffect(() => {
-        if (intermediaryPoolData.length) {
-            if (intermediaryPoolData[0].chainId === activeNetwork.chainId) {
-                setAllPools(intermediaryPoolData);
-            }
-        } else {
-            setAllPools([]);
-        }
-    }, [intermediaryPoolData, activeNetwork.chainId]);
 
     useEffect(() => {
         const savedDollarizationPreference =
@@ -124,34 +112,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             getAllPoolData(poolList, crocEnv, activeNetwork.chainId);
         }
     };
-
-    // get expanded pool metadata
-    useEffect(() => {
-        (async () => {
-            if (
-                isUserOnline &&
-                crocEnv !== undefined &&
-                poolList.length > 0 &&
-                (await crocEnv.context).chain.chainId === activeNetwork.chainId
-            ) {
-                if (
-                    intermediaryPoolData.length &&
-                    intermediaryPoolData[0]?.chainId !== activeNetwork.chainId
-                ) {
-                    setIntermediaryPoolData([]);
-                } else {
-                    getAllPools();
-                }
-            }
-        })();
-    }, [
-        isUserOnline,
-        poolList,
-        allPoolStats,
-        intermediaryPoolData[0]?.chainId,
-        crocEnv,
-        activeNetwork.chainId,
-    ]);
 
     // fn to get data on a single pool
     async function getPoolData(
@@ -394,8 +354,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     // Filter out excluded addresses and hidden tokens
     const filteredPoolsNoExcludedOrHiddenTokens = useMemo(
         () =>
-            allPools.filter(
+            intermediaryPoolData.filter(
                 (pool) =>
+                    pool.chainId === activeNetwork.chainId &&
                     !excludedTokenAddressesLowercase.includes(
                         pool.base.address.toLowerCase(),
                     ) &&
@@ -411,8 +372,28 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                             excluded.chainId === parseInt(pool.chainId),
                     ),
             ),
-        [allPools],
+        [intermediaryPoolData, activeNetwork.chainId],
     );
+
+    // get expanded pool metadata
+    useEffect(() => {
+        (async () => {
+            if (
+                isUserOnline &&
+                crocEnv !== undefined &&
+                poolList.length > 0 &&
+                (await crocEnv.context).chain.chainId === activeNetwork.chainId
+            ) {
+                getAllPools();
+            }
+        })();
+    }, [
+        isUserOnline,
+        poolList.length,
+        crocEnv,
+        activeNetwork.chainId,
+        filteredPoolsNoExcludedOrHiddenTokens.length === 0,
+    ]);
 
     const filteredTopPools = useMemo(
         () =>
@@ -424,7 +405,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     const topPools = useMemo(
         () =>
-            isFetchError || (allPools.length && !filteredTopPools.length)
+            isFetchError ||
+            (filteredPoolsNoExcludedOrHiddenTokens.length &&
+                !filteredTopPools.length)
                 ? hardcodedTopPools
                 : filteredTopPools
                       .sort(
@@ -433,7 +416,12 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                       )
                       .slice(0, 5),
 
-        [isFetchError, hardcodedTopPools, filteredTopPools, allPools.length],
+        [
+            isFetchError,
+            hardcodedTopPools,
+            filteredTopPools,
+            filteredPoolsNoExcludedOrHiddenTokens.length,
+        ],
     );
 
     const dexTokens: useTokenStatsIF = useTokenStats(
