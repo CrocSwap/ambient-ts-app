@@ -355,6 +355,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         useState<Array<PoolDataIF>>([]);
 
     useEffect(() => {
+        setPoolDataFilteredByActiveChain([]);
+    }, [activeNetwork.chainId]);
+
+    useEffect(() => {
         const poolDataFilteredByActiveChain = intermediaryPoolData.filter(
             (pool) => pool.chainId === activeNetwork.chainId,
         );
@@ -362,8 +366,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             intermediaryPoolData.length === poolDataFilteredByActiveChain.length
         ) {
             setPoolDataFilteredByActiveChain(intermediaryPoolData);
-        } else {
-            setPoolDataFilteredByActiveChain([]);
         }
     }, [intermediaryPoolData, activeNetwork.chainId]);
 
@@ -407,6 +409,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         poolList.map((pool) => pool.base.address + pool.quote.address).join(''),
         crocEnv,
         activeNetwork.chainId,
+        intermediaryPoolData.length !== poolDataFilteredByActiveChain.length,
     ]);
 
     const topPools = useMemo(() => {
