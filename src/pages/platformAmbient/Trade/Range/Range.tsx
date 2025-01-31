@@ -35,7 +35,6 @@ import { RangeContext } from '../../../../contexts/RangeContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import { rangeTutorialSteps } from '../../../../utils/tutorial/Range';
 
 import {
     estimateBalancedRangeAprFromPoolApr,
@@ -1334,7 +1333,6 @@ function Range() {
                     />
                 ) : undefined
             }
-            tutorialSteps={rangeTutorialSteps}
         />
     );
 }

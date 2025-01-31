@@ -18,19 +18,14 @@ import { CandleDataIF } from '../../../../ambient-utils/types';
 import DollarizationModalControl from '../../../../components/Global/DollarizationModalControl/DollarizationModalControl';
 import Modal from '../../../../components/Global/Modal/Modal';
 import Spinner from '../../../../components/Global/Spinner/Spinner';
-import TutorialOverlay from '../../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { CandleContext, PoolContext } from '../../../../contexts';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
-import { FlexContainer } from '../../../../styled/Common';
 import { MainContainer } from '../../../../styled/Components/Chart';
-import { TutorialButton } from '../../../../styled/Components/Tutorial';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { updatesIF } from '../../../../utils/hooks/useUrlParams';
-import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
 import { ColorObjIF } from '../../../Chart/ChartSettings/ChartSettings';
 import ChartSettingsContent from '../../../Chart/ChartSettings/ChartSettingsContent';
 import TradeCandleStickChart from './TradeCandleStickChart';
@@ -94,9 +89,6 @@ function TradeCharts(props: propsIF) {
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
 
-    const {
-        tutorial: { isActive: isTutorialActive },
-    } = useContext(AppStateContext);
     const {
         chartSettings,
         isFullScreen: isChartFullScreen,
@@ -508,8 +500,6 @@ function TradeCharts(props: propsIF) {
 
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
 
-    const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
-
     return (
         <>
             <MainContainer
@@ -526,20 +516,6 @@ function TradeCharts(props: propsIF) {
                 }}
                 ref={chartCanvasRef}
             >
-                {isTutorialActive && (
-                    <FlexContainer
-                        fullWidth
-                        justifyContent='flex-end'
-                        alignItems='flex-end'
-                        padding='0 8px'
-                    >
-                        <TutorialButton
-                            onClick={() => setIsTutorialEnabled(true)}
-                        >
-                            Tutorial Mode
-                        </TutorialButton>
-                    </FlexContainer>
-                )}
                 {isChartFullScreen && <TradeChartsHeader />}
                 {timeFrameContent}
                 <div
@@ -565,11 +541,6 @@ function TradeCharts(props: propsIF) {
                         openMobileSettingsModal={openMobileSettingsModal}
                     />
                 </div>
-                <TutorialOverlay
-                    isTutorialEnabled={isTutorialEnabled}
-                    setIsTutorialEnabled={setIsTutorialEnabled}
-                    steps={tradeChartTutorialSteps}
-                />
             </MainContainer>
         </>
     );
