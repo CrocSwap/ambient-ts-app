@@ -115,7 +115,9 @@ function Comments(props: propsIF) {
             if (tradeWrapper) {
                 const tradeSectionHeight =
                     tradeWrapper.getBoundingClientRect().height;
-                setPanelMaxHeight(window.innerHeight - tradeSectionHeight - 90);
+                setPanelMaxHeight(
+                    window.innerHeight - tradeSectionHeight - 108,
+                );
             }
         }
     };
@@ -210,7 +212,7 @@ function Comments(props: propsIF) {
     };
 
     const scrollToMessage = (messageId: string, instant: boolean) => {
-        const scrollTopPadding = -100;
+        const scrollTopPadding = -60;
         const msgEl = document.querySelector(
             '.commentBubble[data-message-id="' + messageId + '"]',
         );

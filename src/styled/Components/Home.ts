@@ -1,4 +1,4 @@
-import styled from 'styled-components/macro';
+import styled, { css } from 'styled-components';
 
 import { Link } from 'react-router-dom';
 import { FlexContainer, GridContainer, Text } from '../Common';
@@ -21,7 +21,7 @@ export const HomeTitle = styled.div`
     }
 `;
 
-export const HomeContent = styled(FlexContainer)`
+export const HomeContent = styled(FlexContainer)<{ isFading?: boolean }>`
     max-width: 1500px;
     margin: 0 auto;
     list-style-type: none;
@@ -30,6 +30,18 @@ export const HomeContent = styled(FlexContainer)`
     justify-content: center;
     align-items: center;
     gap: 1rem;
+
+    /* Add fade animation */
+    ${({ isFading }) =>
+        isFading
+            ? css`
+                  opacity: 0;
+                  transition: opacity 1s ease-in-out;
+              `
+            : css`
+                  opacity: 1;
+                  transition: opacity 1s ease-in-out;
+              `}
 `;
 
 export const HeroContainer = styled(FlexContainer)`

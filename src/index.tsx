@@ -28,6 +28,8 @@ import scrollLogo from './assets/images/networks/scroll_logo.webp';
 import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia.webp';
 import swellLogo from './assets/images/networks/swell_logo.webp';
 import swellSepoliaLogo from './assets/images/networks/swell_sepolia.webp';
+import ErrorBoundary from './components/Error/ErrorBoundary';
+import GlobalErrorFallback from './components/Error/GlobalErrorFallback';
 import { GlobalContexts } from './contexts/GlobalContexts';
 
 const metadata = {
@@ -55,6 +57,16 @@ const ethersConfig = defaultConfig({
     rpcUrl: ' ',
     enableCoinbase: true,
 });
+
+let isBinance = false;
+
+try {
+    if (window.ethereum) {
+        isBinance = window.ethereum.isBinance as boolean;
+    }
+} catch (e) {
+    console.error(e);
+}
 
 const modal = createWeb3Modal({
     ethersConfig,
@@ -87,7 +99,9 @@ const modal = createWeb3Modal({
     featuredWalletIds: [
         'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
         'e7c4d26541a7fd84dbdfa9922d3ad21e936e13a7a0e44385d44f006139e44d3b', // WalletConnect
-        '8a0ee50d1f22f6651afcae7eb4253e52a3310b90af5daef78a8c4929a9bb99d4', // Binance
+        isBinance
+            ? '18388be9ac2d02726dbac9777c96efaac06d744b2f6d580fccdd4127a6d01fd1' // Rabby
+            : '8a0ee50d1f22f6651afcae7eb4253e52a3310b90af5daef78a8c4929a9bb99d4', // Binance
         '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
     ],
 });
@@ -209,7 +223,9 @@ root.render(
                 <StyleSheetManager
                     shouldForwardProp={(propName) => isValidProp(propName)}
                 >
-                    <App />
+                    <ErrorBoundary fallback={GlobalErrorFallback}>
+                        <App />
+                    </ErrorBoundary>
                 </StyleSheetManager>
 
                 <div id={GLOBAL_MODAL_PORTAL_ID} />

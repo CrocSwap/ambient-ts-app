@@ -7,8 +7,13 @@ import {
     createContext,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from 'react';
+import {
+    excludedTokenAddressesLowercase,
+    hiddenTokens,
+} from '../ambient-utils/constants';
 import {
     expandPoolStats,
     getFormattedNumber,
@@ -29,6 +34,9 @@ import { TokenContext } from './TokenContext';
 export interface ExploreContextIF {
     pools: {
         all: Array<PoolDataIF>;
+        topPools: PoolIF[];
+        visibleTopPoolData: PoolIF[];
+        setVisibleTopPoolData: Dispatch<SetStateAction<PoolIF[]>>;
         getAllPools: (
             poolList: PoolIF[],
             crocEnv: CrocEnv,
@@ -66,31 +74,25 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
-    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const {
+        topPools: hardcodedTopPools,
+        crocEnv,
+        provider,
+    } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { allPoolStats, isActiveNetworkPlume, isActiveNetworkSwell } =
         useContext(ChainDataContext);
     const { poolList } = useContext(PoolContext);
 
-    const [allPools, setAllPools] = useState<Array<PoolDataIF>>([]);
     const [intermediaryPoolData, setIntermediaryPoolData] = useState<
         Array<PoolDataIF>
     >([]);
+    const [visibleTopPoolData, setVisibleTopPoolData] = useState<PoolIF[]>([]);
+    const [isFetchError, setIsFetchError] = useState(false);
     const [isExploreDollarizationEnabled, setIsExploreDollarizationEnabled] =
         useState(
             localStorage.getItem('isExploreDollarizationEnabled') === 'true',
         );
-
-    // used to prevent displaying data for a previous network after switching networks
-    useEffect(() => {
-        if (intermediaryPoolData.length) {
-            if (intermediaryPoolData[0].chainId === activeNetwork.chainId) {
-                setAllPools(intermediaryPoolData);
-            }
-        } else {
-            setAllPools([]);
-        }
-    }, [intermediaryPoolData]);
 
     useEffect(() => {
         const savedDollarizationPreference =
@@ -110,34 +112,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             getAllPoolData(poolList, crocEnv, activeNetwork.chainId);
         }
     };
-
-    // get expanded pool metadata
-    useEffect(() => {
-        (async () => {
-            if (
-                isUserOnline &&
-                crocEnv !== undefined &&
-                poolList.length > 0 &&
-                (await crocEnv.context).chain.chainId === activeNetwork.chainId
-            ) {
-                if (
-                    intermediaryPoolData.length &&
-                    intermediaryPoolData[0]?.chainId !== activeNetwork.chainId
-                ) {
-                    setIntermediaryPoolData([]);
-                } else {
-                    getAllPools();
-                }
-            }
-        })();
-    }, [
-        isUserOnline,
-        poolList,
-        allPoolStats,
-        intermediaryPoolData[0]?.chainId,
-        crocEnv,
-        activeNetwork.chainId,
-    ]);
 
     // fn to get data on a single pool
     async function getPoolData(
@@ -363,6 +337,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         );
         Promise.all(allPoolData)
             .then((results: Array<PoolDataIF>) => {
+                setIsFetchError(false);
                 const filteredPoolData = results.filter(
                     (pool) => pool.spotPrice > 0,
                 );
@@ -371,9 +346,94 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 }
             })
             .catch((err) => {
+                setIsFetchError(true);
                 console.warn(err);
             });
     }
+
+    const [poolDataFilteredByActiveChain, setPoolDataFilteredByActiveChain] =
+        useState<Array<PoolDataIF>>([]);
+
+    useEffect(() => {
+        setPoolDataFilteredByActiveChain([]);
+    }, [activeNetwork.chainId]);
+
+    useEffect(() => {
+        const poolDataFilteredByActiveChain = intermediaryPoolData.filter(
+            (pool) => pool.chainId === activeNetwork.chainId,
+        );
+        if (
+            intermediaryPoolData.length === poolDataFilteredByActiveChain.length
+        ) {
+            setPoolDataFilteredByActiveChain(intermediaryPoolData);
+        }
+    }, [intermediaryPoolData, activeNetwork.chainId]);
+
+    // Filter out excluded addresses and hidden tokens
+    const filteredPoolsNoExcludedOrHiddenTokens = useMemo(
+        () =>
+            poolDataFilteredByActiveChain.filter(
+                (pool) =>
+                    !excludedTokenAddressesLowercase.includes(
+                        pool.base.address.toLowerCase(),
+                    ) &&
+                    !excludedTokenAddressesLowercase.includes(
+                        pool.quote.address.toLowerCase(),
+                    ) &&
+                    !hiddenTokens.some(
+                        (excluded) =>
+                            (excluded.address.toLowerCase() ===
+                                pool.base.address.toLowerCase() ||
+                                excluded.address.toLowerCase() ===
+                                    pool.quote.address.toLowerCase()) &&
+                            excluded.chainId === parseInt(pool.chainId),
+                    ),
+            ),
+        [poolDataFilteredByActiveChain],
+    );
+
+    // get expanded pool metadata
+    useEffect(() => {
+        (async () => {
+            if (
+                isUserOnline &&
+                crocEnv !== undefined &&
+                poolList.length > 0 &&
+                (await crocEnv.context).chain.chainId === activeNetwork.chainId
+            ) {
+                getAllPools();
+            }
+        })();
+    }, [
+        isUserOnline,
+        poolList.map((pool) => pool.base.address + pool.quote.address).join(''),
+        crocEnv,
+        activeNetwork.chainId,
+        intermediaryPoolData.length !== poolDataFilteredByActiveChain.length,
+    ]);
+
+    const topPools = useMemo(() => {
+        const topPoolsFilteredByVolume =
+            filteredPoolsNoExcludedOrHiddenTokens.filter(
+                (pool) => pool.volume > 1000,
+            );
+        return isFetchError ||
+            (filteredPoolsNoExcludedOrHiddenTokens.length &&
+                !topPoolsFilteredByVolume.length)
+            ? hardcodedTopPools
+            : topPoolsFilteredByVolume
+                  .sort(
+                      (poolA: PoolDataIF, poolB: PoolDataIF) =>
+                          poolB['volume'] - poolA['volume'],
+                  )
+                  .slice(0, 5);
+    }, [
+        isFetchError,
+        hardcodedTopPools,
+        filteredPoolsNoExcludedOrHiddenTokens
+            .map((pool) => pool.base.address + pool.quote.address)
+            .join(''),
+    ]);
 
     const dexTokens: useTokenStatsIF = useTokenStats(
         activeNetwork.chainId,
@@ -387,8 +447,11 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     const exploreContext: ExploreContextIF = {
         pools: {
-            all: allPools,
+            all: filteredPoolsNoExcludedOrHiddenTokens,
             getAllPools: getAllPools,
+            topPools: topPools,
+            visibleTopPoolData,
+            setVisibleTopPoolData,
             reset: () => {
                 setIntermediaryPoolData([]);
             },

@@ -1,5 +1,4 @@
-import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import { memo } from 'react';
+import { CSSProperties, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     formatMessageTime,

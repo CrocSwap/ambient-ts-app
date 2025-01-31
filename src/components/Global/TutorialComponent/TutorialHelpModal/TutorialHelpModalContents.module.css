@@ -1,0 +1,11 @@
+
+.tuto_content_wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.tuto_content_text_steps{
+    display: flex;
+    flex-direction: column;
+}   

@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { css } from 'styled-components/macro';
+import styled, { css } from 'styled-components';
 import styles from '../../../components/Home/Landing/BackgroundImages.module.css';
 import { FlexContainer, Text } from '../../../styled/Common';
 

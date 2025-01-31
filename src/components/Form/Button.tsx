@@ -25,7 +25,6 @@ export default function Button(props: propsIF) {
         title,
         flat,
         customAriaLabel,
-        // width,
         style,
         thin,
     } = props;

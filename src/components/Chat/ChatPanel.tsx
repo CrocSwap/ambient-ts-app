@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import { EmojiClickData } from 'emoji-picker-react';
 import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
@@ -36,6 +35,7 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
+import useMediaQuery from '../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     isFullScreen: boolean;

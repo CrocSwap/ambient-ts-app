@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMediaQuery } from '@material-ui/core';
 import { EmojiClickData } from 'emoji-picker-react';
 import {
     Dispatch,
@@ -25,11 +24,12 @@ import {
 } from 'react-icons/tb';
 import { Link, useParams } from 'react-router-dom';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
-import { defaultTokens } from '../../../ambient-utils/constants';
+import ambientTokenList from '../../../ambient-utils/constants/ambient-token-list.json';
 import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import ChatConfirmationPanel from '../ChatConfirmationPanel/ChatConfirmationPanel';
 import { ChatGoToChatParamsIF } from '../ChatIFs';
 import ChatNotificationBubble from '../ChatNotification/ChatNotificationBubble';
@@ -206,10 +206,10 @@ function FullChat(props: FullChatPropsIF) {
                 if (
                     currencies &&
                     currencies[0] !== currencies[1] &&
-                    defaultTokens.some(
+                    ambientTokenList.tokens.some(
                         ({ symbol }) =>
                             symbol === currencies[0].toUpperCase() &&
-                            defaultTokens.some(
+                            ambientTokenList.tokens.some(
                                 ({ symbol }) =>
                                     symbol === currencies[1].toUpperCase(),
                             ),
