@@ -394,34 +394,28 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         activeNetwork.chainId,
     ]);
 
-    const filteredTopPools = useMemo(
-        () =>
+    const topPools = useMemo(() => {
+        const topPoolsFilteredByVolume =
             filteredPoolsNoExcludedOrHiddenTokens.filter(
                 (pool) => pool.volume > 1000,
-            ),
-        [filteredPoolsNoExcludedOrHiddenTokens],
-    );
-
-    const topPools = useMemo(
-        () =>
-            isFetchError ||
+            );
+        return isFetchError ||
             (filteredPoolsNoExcludedOrHiddenTokens.length &&
-                !filteredTopPools.length)
-                ? hardcodedTopPools
-                : filteredTopPools
-                      .sort(
-                          (poolA: PoolDataIF, poolB: PoolDataIF) =>
-                              poolB['volume'] - poolA['volume'],
-                      )
-                      .slice(0, 5),
-
-        [
-            isFetchError,
-            hardcodedTopPools,
-            filteredTopPools,
-            filteredPoolsNoExcludedOrHiddenTokens.length,
-        ],
-    );
+                !topPoolsFilteredByVolume.length)
+            ? hardcodedTopPools
+            : topPoolsFilteredByVolume
+                  .sort(
+                      (poolA: PoolDataIF, poolB: PoolDataIF) =>
+                          poolB['volume'] - poolA['volume'],
+                  )
+                  .slice(0, 5);
+    }, [
+        isFetchError,
+        hardcodedTopPools,
+        filteredPoolsNoExcludedOrHiddenTokens
+            .map((pool) => pool.base.address + pool.quote.address)
+            .join(''),
+    ]);
 
     const dexTokens: useTokenStatsIF = useTokenStats(
         activeNetwork.chainId,
