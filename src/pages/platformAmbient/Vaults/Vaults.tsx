@@ -56,47 +56,44 @@ function Vaults() {
         const allVaultsEndpoint = `${VAULTS_API_URL}/vaults`;
         const chainVaultsEndpoint = `${VAULTS_API_URL}/vaults?chainId=${parseInt(chainId)}`;
 
-        const fetchData = async () => {
-            try {
-                const allVaultsResponse = await fetch(allVaultsEndpoint);
-                const chainVaultsResponse = await fetch(chainVaultsEndpoint);
-                const { data: allVaultsData } = await allVaultsResponse.json();
-                const { data: chainVaultsData } =
-                    await chainVaultsResponse.json();
-                const uniqueVaults = new Map<string, AllVaultsServerIF>();
+        try {
+            // Fetch both responses concurrently
+            const [allVaultsResponse, chainVaultsResponse] = await Promise.all([
+                fetch(allVaultsEndpoint),
+                fetch(chainVaultsEndpoint),
+            ]);
 
-                // Combine vaults and filter for uniqueness based on the 'ID' property
-                allVaultsData?.vaults
-                    .concat(chainVaultsData?.vaults)
-                    .forEach((vault: AllVaultsServerIF) => {
-                        if (vault.id && !uniqueVaults.has(vault.id)) {
-                            uniqueVaults.set(vault.id, vault);
-                        }
-                    });
+            // Parse JSON responses concurrently
+            const [allVaultsData, chainVaultsData] = await Promise.all([
+                allVaultsResponse.json(),
+                chainVaultsResponse.json(),
+            ]);
 
-                // Convert the map back to an array and sort it
-                const sorted: AllVaultsServerIF[] = Array.from(
-                    uniqueVaults.values(),
-                ).sort(
-                    (a: AllVaultsServerIF, b: AllVaultsServerIF) =>
-                        parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
-                );
-                setAllVaultsData(sorted ?? undefined);
-            } catch (error) {
-                console.log({ error });
-                setAllVaultsData(undefined);
-                setServerErrorReceived(true);
-                return;
-            }
-        };
+            const uniqueVaults = new Map<string, AllVaultsServerIF>();
 
-        const timeout = new Promise<void>((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, 2000);
-        });
+            // Combine vaults and filter for uniqueness based on the 'id' property
+            allVaultsData?.data?.vaults
+                .concat(chainVaultsData?.data?.vaults)
+                .forEach((vault: AllVaultsServerIF) => {
+                    if (vault.id && !uniqueVaults.has(vault.id)) {
+                        uniqueVaults.set(vault.id, vault);
+                    }
+                });
 
-        await Promise.race([fetchData(), timeout]);
+            // Convert the map back to an array and sort it
+            const sorted: AllVaultsServerIF[] = Array.from(
+                uniqueVaults.values(),
+            ).sort(
+                (a: AllVaultsServerIF, b: AllVaultsServerIF) =>
+                    parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
+            );
+
+            setAllVaultsData(sorted ?? undefined);
+        } catch (error) {
+            console.error('Error fetching vault data:', error);
+            setAllVaultsData(undefined);
+            setServerErrorReceived(true);
+        }
     }
 
     const [serverErrorReceived, setServerErrorReceived] =
