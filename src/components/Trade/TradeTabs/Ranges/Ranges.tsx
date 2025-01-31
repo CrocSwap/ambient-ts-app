@@ -4,7 +4,6 @@ import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-utils/constants';
 import { getPositionData } from '../../../../ambient-utils/dataLayer/functions/getPositionData';
-import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
 import {
     AppStateContext,
@@ -15,7 +14,6 @@ import {
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -87,12 +85,10 @@ function Ranges(props: propsIF) {
         positionsByUser,
         userPositionsByPool,
         positionsByPool,
-        unindexedNonFailedSessionPositionUpdates,
         setUserPositionsByPool,
+        pendingRecentlyUpdatedPositions,
     } = useContext(GraphDataContext);
     const dataLoadingStatus = useContext(DataLoadingContext);
-
-    const { transactionsByType } = useContext(ReceiptContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -513,22 +509,22 @@ function Ranges(props: propsIF) {
         </RangeRowStyled>
     );
 
-    const relevantTransactionsByType = transactionsByType.filter(
-        (tx) =>
-            !tx.isRemoved &&
-            unindexedNonFailedSessionPositionUpdates.some(
-                (update) => update.txHash === tx.txHash,
-            ) &&
-            tx.userAddress.toLowerCase() ===
-                (userAddress || '').toLowerCase() &&
-            tx.txDetails?.baseAddress.toLowerCase() ===
-                baseToken.address.toLowerCase() &&
-            tx.txDetails?.quoteAddress.toLowerCase() ===
-                quoteToken.address.toLowerCase() &&
-            tx.txDetails?.poolIdx === poolIndex,
-    );
+    // const relevantTransactionsByType = transactionsByType.filter(
+    //     (tx) =>
+    //         !tx.isRemoved &&
+    //         unindexedNonFailedSessionPositionUpdates.some(
+    //             (update) => update.txHash === tx.txHash,
+    //         ) &&
+    //         tx.userAddress.toLowerCase() ===
+    //             (userAddress || '').toLowerCase() &&
+    //         tx.txDetails?.baseAddress.toLowerCase() ===
+    //             baseToken.address.toLowerCase() &&
+    //         tx.txDetails?.quoteAddress.toLowerCase() ===
+    //             quoteToken.address.toLowerCase() &&
+    //         tx.txDetails?.poolIdx === poolIndex,
+    // );
 
-    const { mergedData, recentlyUpdatedPositions } = useMergeWithPendingTxs({
+    const { mergedData } = useMergeWithPendingTxs({
         type: 'Range',
         data: sortedPositions,
     });
@@ -537,8 +533,8 @@ function Ranges(props: propsIF) {
         () =>
             !isLoading &&
             !mergedData.length &&
-            relevantTransactionsByType.length === 0,
-        [isLoading, mergedData.length, relevantTransactionsByType.length],
+            pendingRecentlyUpdatedPositions.length === 0,
+        [isLoading, mergedData.length, pendingRecentlyUpdatedPositions.length],
     );
 
     const sortedPositionsToDisplayAccount = useMemo(() => {
@@ -553,25 +549,25 @@ function Ranges(props: propsIF) {
         );
     }, [mergedData]);
 
-    const pendingPositionsToDisplayPlaceholder = useMemo(() => {
-        return relevantTransactionsByType.filter((pos) => {
-            const pendingPosHash = getPositionHash(undefined, {
-                isPositionTypeAmbient: pos.txDetails?.isAmbient || false,
-                user: pos.userAddress,
-                baseAddress: pos.txDetails?.baseAddress || '',
-                quoteAddress: pos.txDetails?.quoteAddress || '',
-                poolIdx: pos.txDetails?.poolIdx || 0,
-                bidTick: pos.txDetails?.lowTick || 0,
-                askTick: pos.txDetails?.highTick || 0,
-            });
-            const matchingPosition = recentlyUpdatedPositions.find(
-                (unindexedPosition) => {
-                    return pendingPosHash === unindexedPosition.positionHash;
-                },
-            );
-            return !matchingPosition;
-        });
-    }, [relevantTransactionsByType, recentlyUpdatedPositions]);
+    // const pendingPositionsToDisplayPlaceholder = useMemo(() => {
+    //     return relevantTransactionsByType.filter((pos) => {
+    //         const pendingPosHash = getPositionHash(undefined, {
+    //             isPositionTypeAmbient: pos.txDetails?.isAmbient || false,
+    //             user: pos.userAddress,
+    //             baseAddress: pos.txDetails?.baseAddress || '',
+    //             quoteAddress: pos.txDetails?.quoteAddress || '',
+    //             poolIdx: pos.txDetails?.poolIdx || 0,
+    //             bidTick: pos.txDetails?.lowTick || 0,
+    //             askTick: pos.txDetails?.highTick || 0,
+    //         });
+    //         const matchingPosition = recentlyUpdatedPositions.find(
+    //             (unindexedPosition) => {
+    //                 return pendingPosHash === unindexedPosition.positionHash;
+    //             },
+    //         );
+    //         return !matchingPosition;
+    //     });
+    // }, [relevantTransactionsByType, recentlyUpdatedPositions]);
 
     const handleKeyDownViewRanges = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
@@ -631,21 +627,19 @@ function Ranges(props: propsIF) {
                 }
             >
                 {!isAccountView &&
-                    pendingPositionsToDisplayPlaceholder.length > 0 &&
-                    pendingPositionsToDisplayPlaceholder
-                        .reverse()
-                        .map((tx, idx) => (
-                            <RangesRowPlaceholder
-                                key={idx}
-                                transaction={{
-                                    hash: tx.txHash,
-                                    side: tx.txAction,
-                                    type: tx.txType,
-                                    details: tx.txDetails,
-                                }}
-                                tableView={tableView}
-                            />
-                        ))}
+                    pendingRecentlyUpdatedPositions.length > 0 &&
+                    pendingRecentlyUpdatedPositions.reverse().map((tx, idx) => (
+                        <RangesRowPlaceholder
+                            key={idx}
+                            transaction={{
+                                hash: tx.txByType?.txHash || '',
+                                side: tx.txByType?.txAction || '',
+                                type: tx.txByType?.txType || '',
+                                details: tx.txByType?.txDetails,
+                            }}
+                            tableView={tableView}
+                        />
+                    ))}
                 {showInfiniteScroll ? (
                     <>
                         <InfiniteScroll

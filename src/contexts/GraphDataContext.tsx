@@ -496,16 +496,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
             ),
             pending,
         ]);
-
-        // console.log('>>> add pending relevant pos', pending);
-        // if (recentlyUpdatedPositionsRef.current) {
-        //     setRecentlyUpdatedPositions([
-        //         ...recentlyUpdatedPositionsRef.current.filter(
-        //             (e) => pending.positionHash !== e.positionHash,
-        //         ),
-        //         pending,
-        //     ]);
-        // }
     };
 
     const removePendingRelevantPosition = (
@@ -558,7 +548,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         );
 
         relevantLimitOrders.forEach((tx) => {
-            console.log('>>> add pending', getPositionHashForTxByType(tx));
             addPendingRelevantPosition({
                 positionHash: getPositionHashForTxByType(tx),
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -602,6 +591,17 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
             // tx.txType === 'Range'
         );
 
+        relevantPositions.forEach((tx) => {
+            addPendingRelevantPosition({
+                positionHash: getPositionHashForTxByType(tx),
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                type: 'Range',
+                action: tx.txAction || '',
+                status: 'pending',
+                txByType: tx,
+            });
+        });
+
         Promise.all(relevantPositions.map((tx) => genFakePosition(tx))).then(
             (rows) => {
                 addIntoRelevantPositions(rows);
@@ -621,15 +621,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
             userPositionsByPool.positions.length,
         [transactionsByUser, userLimitOrdersByPool, userPositionsByPool],
     );
-
-    // const pendingRecentlyUpdatedPositions = useMemo(() => {
-
-    //     console.log('>>> recentlyUpdatedPositions', recentlyUpdatedPositions);
-
-    //     return [
-    //         ...recentlyUpdatedPositions.filter((e) => e.status === 'pending'),
-    //     ];
-    // }, [recentlyUpdatedPositions]);
 
     useEffect(() => {
         console.log('>>> pendings', pendingRecentlyUpdatedPositions);
