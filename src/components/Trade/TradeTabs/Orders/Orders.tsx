@@ -23,7 +23,6 @@ import {
 } from '../../../../contexts';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
@@ -72,15 +71,12 @@ function Orders(props: propsIF) {
         limitOrdersByUser,
         userLimitOrdersByPool,
         limitOrdersByPool,
-        unindexedNonFailedSessionLimitOrderUpdates,
         setUserLimitOrdersByPool,
         pendingRecentlyUpdatedPositions,
     } = useContext(GraphDataContext);
 
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
-
-    const { transactionsByType } = useContext(ReceiptContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -244,21 +240,6 @@ function Orders(props: propsIF) {
         ],
     );
 
-    const relevantTransactionsByType = transactionsByType.filter(
-        (tx) =>
-            !tx.isRemoved &&
-            unindexedNonFailedSessionLimitOrderUpdates.some(
-                (update) => update.txHash === tx.txHash,
-            ) &&
-            tx.userAddress.toLowerCase() ===
-                (userAddress || '').toLowerCase() &&
-            tx.txDetails?.baseAddress.toLowerCase() ===
-                baseToken.address.toLowerCase() &&
-            tx.txDetails?.quoteAddress.toLowerCase() ===
-                quoteToken.address.toLowerCase() &&
-            tx.txDetails?.poolIdx === poolIndex,
-    );
-
     const [
         sortBy,
         setSortBy,
@@ -277,42 +258,13 @@ function Orders(props: propsIF) {
         () =>
             !isLoading &&
             !mergedData.length &&
-            relevantTransactionsByType.length === 0,
-        [isLoading, mergedData.length, relevantTransactionsByType.length],
+            pendingRecentlyUpdatedPositions.length === 0,
+        [isLoading, mergedData.length, pendingRecentlyUpdatedPositions.length],
     );
 
     const sortedLimitsToDisplayAccount = useMemo(() => {
         return mergedData;
-        // return (mergedData as LimitOrderIF[]).filter(
-        //     (e) => !blackList?.has(e.positionHash),
-        // );
     }, [mergedData]);
-
-    // const pendingPositionsToDisplayPlaceholder = useMemo(() => {
-
-    //     pendingRecentlyUpdatedPositions.forEach(e => {
-
-    //     });
-
-    //     return relevantTransactionsByType.filter((pos) => {
-    //         const pendingPosHash = getPositionHash(undefined, {
-    //             isPositionTypeAmbient: false,
-    //             user: pos.userAddress,
-    //             baseAddress: pos.txDetails?.baseAddress || '',
-    //             quoteAddress: pos.txDetails?.quoteAddress || '',
-    //             poolIdx: pos.txDetails?.poolIdx || 0,
-    //             bidTick: pos.txDetails?.lowTick || 0,
-    //             askTick: pos.txDetails?.highTick || 0,
-    //         });
-
-    //         const matchingPosition = recentlyUpdatedPositions.find(
-    //             (recentlyUpdatedOrder) => {
-    //                 return pendingPosHash === recentlyUpdatedOrder.positionHash;
-    //             },
-    //         );
-    //         return !matchingPosition;
-    //     });
-    // }, [pendingRecentlyUpdatedPositions, recentlyUpdatedPositions]);
 
     // -----------------------------------------------------------------------------------------------------------------------------
 

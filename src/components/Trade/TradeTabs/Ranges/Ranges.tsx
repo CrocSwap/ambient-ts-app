@@ -509,21 +509,6 @@ function Ranges(props: propsIF) {
         </RangeRowStyled>
     );
 
-    // const relevantTransactionsByType = transactionsByType.filter(
-    //     (tx) =>
-    //         !tx.isRemoved &&
-    //         unindexedNonFailedSessionPositionUpdates.some(
-    //             (update) => update.txHash === tx.txHash,
-    //         ) &&
-    //         tx.userAddress.toLowerCase() ===
-    //             (userAddress || '').toLowerCase() &&
-    //         tx.txDetails?.baseAddress.toLowerCase() ===
-    //             baseToken.address.toLowerCase() &&
-    //         tx.txDetails?.quoteAddress.toLowerCase() ===
-    //             quoteToken.address.toLowerCase() &&
-    //         tx.txDetails?.poolIdx === poolIndex,
-    // );
-
     const { mergedData } = useMergeWithPendingTxs({
         type: 'Range',
         data: sortedPositions,
@@ -538,36 +523,12 @@ function Ranges(props: propsIF) {
     );
 
     const sortedPositionsToDisplayAccount = useMemo(() => {
-        return (
-            (mergedData as PositionIF[])
-                // .filter((e) => !blackList?.has(e.positionId))
-                .filter(
-                    (pos) =>
-                        (isAccountView && !hideEmptyPositionsOnAccount) ||
-                        pos.positionLiq !== 0,
-                )
+        return (mergedData as PositionIF[]).filter(
+            (pos) =>
+                (isAccountView && !hideEmptyPositionsOnAccount) ||
+                pos.positionLiq !== 0,
         );
     }, [mergedData]);
-
-    // const pendingPositionsToDisplayPlaceholder = useMemo(() => {
-    //     return relevantTransactionsByType.filter((pos) => {
-    //         const pendingPosHash = getPositionHash(undefined, {
-    //             isPositionTypeAmbient: pos.txDetails?.isAmbient || false,
-    //             user: pos.userAddress,
-    //             baseAddress: pos.txDetails?.baseAddress || '',
-    //             quoteAddress: pos.txDetails?.quoteAddress || '',
-    //             poolIdx: pos.txDetails?.poolIdx || 0,
-    //             bidTick: pos.txDetails?.lowTick || 0,
-    //             askTick: pos.txDetails?.highTick || 0,
-    //         });
-    //         const matchingPosition = recentlyUpdatedPositions.find(
-    //             (unindexedPosition) => {
-    //                 return pendingPosHash === unindexedPosition.positionHash;
-    //             },
-    //         );
-    //         return !matchingPosition;
-    //     });
-    // }, [relevantTransactionsByType, recentlyUpdatedPositions]);
 
     const handleKeyDownViewRanges = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,

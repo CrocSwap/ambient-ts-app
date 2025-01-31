@@ -486,7 +486,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
 
         setTimeout(() => {
             removePendingRelevantPosition(uniqueRelevantLimitOrders);
-        }, 200);
+        }, 300);
     };
 
     const addPendingRelevantPosition = (pending: RecentlyUpdatedPositionIF) => {
