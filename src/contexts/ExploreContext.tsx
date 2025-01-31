@@ -389,10 +389,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         })();
     }, [
         isUserOnline,
-        poolList.length,
+        poolList.map((pool) => pool.base.address + pool.quote.address).join(''),
         crocEnv,
         activeNetwork.chainId,
-        filteredPoolsNoExcludedOrHiddenTokens.length === 0,
     ]);
 
     const filteredTopPools = useMemo(
