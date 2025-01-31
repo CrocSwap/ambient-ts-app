@@ -60,8 +60,8 @@ const curentTopPoolsList: [keyof SwellTokens, keyof SwellTokens][] = [
     ['ETH', 'USDe'],
     ['ENA', 'USDe'],
     ['ETH', 'SWELL'],
-    ['ezETH', 'ETH'],
-    ['rswETH', 'weETH'],
+    ['pzETH', 'ezETH'],
+    ['rsETH', 'weETH'],
 ];
 
 const topPools = curentTopPoolsList.map(
