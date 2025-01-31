@@ -351,12 +351,27 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             });
     }
 
+    const [poolDataFilteredByActiveChain, setPoolDataFilteredByActiveChain] =
+        useState<Array<PoolDataIF>>([]);
+
+    useEffect(() => {
+        const poolDataFilteredByActiveChain = intermediaryPoolData.filter(
+            (pool) => pool.chainId === activeNetwork.chainId,
+        );
+        if (
+            intermediaryPoolData.length === poolDataFilteredByActiveChain.length
+        ) {
+            setPoolDataFilteredByActiveChain(intermediaryPoolData);
+        } else {
+            setPoolDataFilteredByActiveChain([]);
+        }
+    }, [intermediaryPoolData, activeNetwork.chainId]);
+
     // Filter out excluded addresses and hidden tokens
     const filteredPoolsNoExcludedOrHiddenTokens = useMemo(
         () =>
-            intermediaryPoolData.filter(
+            poolDataFilteredByActiveChain.filter(
                 (pool) =>
-                    pool.chainId === activeNetwork.chainId &&
                     !excludedTokenAddressesLowercase.includes(
                         pool.base.address.toLowerCase(),
                     ) &&
@@ -372,7 +387,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                             excluded.chainId === parseInt(pool.chainId),
                     ),
             ),
-        [intermediaryPoolData, activeNetwork.chainId],
+        [poolDataFilteredByActiveChain],
     );
 
     // get expanded pool metadata
