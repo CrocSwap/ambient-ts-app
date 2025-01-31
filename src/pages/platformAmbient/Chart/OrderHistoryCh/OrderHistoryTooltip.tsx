@@ -36,7 +36,7 @@ export default function OrderHistoryTooltip(props: {
         left: number;
         isOnLeftSide: boolean;
     };
-    handleCardClick: React.Dispatch<string>;
+    handleCardClick: (id: string, type: string) => void;
     setSelectedOrderHistory: React.Dispatch<
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         React.SetStateAction<any>
@@ -381,7 +381,10 @@ export default function OrderHistoryTooltip(props: {
             >
                 <OrderHistoryContainer
                     onClick={() => {
-                        handleCardClick(hoveredOrderHistory.id);
+                        handleCardClick(
+                            hoveredOrderHistory.id,
+                            hoveredOrderHistory.type,
+                        );
 
                         setIsSelectedOrderHistory((prev: boolean) => {
                             let shouldDeselect = !prev;

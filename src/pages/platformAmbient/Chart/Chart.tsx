@@ -442,6 +442,8 @@ export default function Chart(props: propsIF) {
         setShowAllData,
         setOutsideControl,
         setSelectedOutsideTab,
+        setCurrentPositionActive,
+        setCurrentLimitOrderActive,
     } = useContext(TradeTableContext);
 
     const clickOutsideChartHandler = (event: Event) => {
@@ -5613,12 +5615,21 @@ export default function Chart(props: propsIF) {
         }
     }, [userTransactionData, denomInBase]);
 
-    const handleCardClick = (id: string): void => {
+    const handleCardClick = (id: string, type: string): void => {
         setSelectedDate(undefined);
         setOutsideControl(true);
-        setSelectedOutsideTab(0);
         setShowAllData(false);
-        setCurrentTxActiveInTransactions(id);
+
+        if (type === 'historicalLiq') {
+            setCurrentPositionActive(id);
+            setSelectedOutsideTab(2);
+        } else if (type === 'limitSwapLine') {
+            setCurrentLimitOrderActive(id);
+            setSelectedOutsideTab(1);
+        } else if (['claimableLimit', 'swap'].includes(type)) {
+            setCurrentTxActiveInTransactions(id);
+            setSelectedOutsideTab(0);
+        }
     };
 
     useEffect(() => {
@@ -5761,7 +5772,7 @@ export default function Chart(props: propsIF) {
                             )
                         ) {
                             resElement = {
-                                id: limitOrder.positionHash,
+                                id: limitOrder.limitOrderId,
                                 type: 'limitSwapLine',
                                 order: limitOrder,
                                 totalValueUSD: limitOrder.totalValueUSD,
@@ -5786,7 +5797,7 @@ export default function Chart(props: propsIF) {
                             checkLineLocation(line, mouseX, mouseY, denomInBase)
                         ) {
                             resElement = {
-                                id: limitOrder.positionHash,
+                                id: limitOrder.limitOrderId,
                                 type: 'limitSwapLine',
                                 order: limitOrder,
                                 totalValueUSD: limitOrder.totalValueUSD,
@@ -5886,7 +5897,8 @@ export default function Chart(props: propsIF) {
                         ? resElement.id !== selectedOrderHistory?.id
                         : true;
 
-                    shouldSelect && handleCardClick(resElement.id);
+                    shouldSelect &&
+                        handleCardClick(resElement.id, resElement.type);
 
                     setSelectedOrderHistory(() => {
                         return shouldSelect ? resElement : undefined;

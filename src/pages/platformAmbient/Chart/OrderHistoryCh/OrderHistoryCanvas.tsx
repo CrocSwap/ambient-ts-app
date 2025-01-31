@@ -191,7 +191,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         ];
 
                         limitLineDataArray.push({
-                            id: limitOrder.positionHash,
+                            id: limitOrder.limitOrderId,
                             triangleData: triangleLimitData,
                             lineData: lineData,
                         });
