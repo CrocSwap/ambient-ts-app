@@ -496,8 +496,7 @@ export function checkShowLatestCandle(
         const xDomain = xScale.domain();
         const nowDate = Date.now();
         const snapDiff = nowDate % (period * 1000);
-        const snappedTime = nowDate + (period * 1000 - snapDiff);
-
+        const snappedTime = nowDate - snapDiff;
         const isShowLatestCandle =
             xDomain[0] < snappedTime && snappedTime < xDomain[1];
 
