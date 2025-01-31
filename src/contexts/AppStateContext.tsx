@@ -28,7 +28,6 @@ export interface AppStateContextIF {
     };
     globalPopup: globalPopupMethodsIF;
     snackbar: snackbarMethodsIF;
-    tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
     chat: {
         isOpen: boolean;
         setIsOpen: (val: boolean) => void;
@@ -60,7 +59,6 @@ export const AppStateContextProvider = (props: {
 }) => {
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
     const [isAppHeaderDropdown, setIsAppHeaderDropdown] = useState(false);
-    const [isTutorialMode, setIsTutorialMode] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
@@ -265,10 +263,6 @@ export const AppStateContextProvider = (props: {
             },
             globalPopup,
             snackbar,
-            tutorial: {
-                isActive: isTutorialMode,
-                setIsActive: setIsTutorialMode,
-            },
             chat: {
                 isOpen: isChatOpen,
                 setIsOpen: setIsChatOpen,
@@ -303,7 +297,6 @@ export const AppStateContextProvider = (props: {
             isUserIdle,
             areSubscriptionsEnabled,
             isAppOverlayActive,
-            isTutorialMode,
             isGateWalletModalOpen,
             openGateWalletModal,
             closeGateWalletModal,
