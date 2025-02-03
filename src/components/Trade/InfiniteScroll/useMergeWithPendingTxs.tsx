@@ -19,7 +19,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
 
     const mergedData = useMemo(() => {
         const recentlyUpdatedHashes = new Set();
-        let recentlyUpdatedToShow: LimitOrderIF[] | PositionIF[] = [];
+        const recentlyUpdatedToShow: LimitOrderIF[] | PositionIF[] = [];
 
         if (recentlyUpdatedPositions) {
             recentlyUpdatedPositions
