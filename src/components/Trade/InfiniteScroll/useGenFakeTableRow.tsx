@@ -51,15 +51,11 @@ const useGenFakeTableRow = () => {
         switch (chainId) {
             case '0x1': // eth-mainnet
             case '0xaa36a7': // sepolia
-                return 13000;
-            case '0x82750': // scroll mainnet
-                return 10000;
+                return 15000;
             default:
-                return 2000;
+                return 5000;
         }
     };
-
-    console.log('>>> chainId ', chainId, 'delay time', getDelayTime());
 
     const {
         tokens: { tokenUniv: tokenList },
