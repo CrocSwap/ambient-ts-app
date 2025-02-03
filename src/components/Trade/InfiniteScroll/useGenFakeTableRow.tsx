@@ -49,8 +49,12 @@ const useGenFakeTableRow = () => {
 
     const getDelayTime = () => {
         switch (chainId) {
+            // base-sepolia
             case '0x14a34':
                 return 2000;
+            // sepolia
+            case '0xaa36a7':
+                return 13000;
             default:
                 return 300;
         }
