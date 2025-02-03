@@ -168,15 +168,18 @@ const subscriptUnicode = [
 export const formatSubscript = (value: number, precision = 3) => {
     if (value === 0) return '0';
 
-    // Calculate the exponent: -log10(value)
+    // Calculate the exponent (e.g., for 0.0001, exp should be 4).
     const exp = -Math.log10(value);
-    const tolerance = 1e-10;
-    // If exp is very nearly an integer, round it; otherwise, use Math.ceil.
+
+    // Set a tolerance to decide when exp is "close enough" to an integer.
+    // You may need to adjust this epsilon based on your precision needs.
+    const tolerance = 1e-8;
     const normalizedExp =
         Math.abs(exp - Math.round(exp)) < tolerance
             ? Math.round(exp)
             : Math.ceil(exp);
-    // The number of leading zeros is one less than the exponent.
+
+    // The number of leading zeros (e.g., 0.0001 has 3 zeros: "0.0001")
     const zeros = normalizedExp - 1;
 
     // Multiply the value to shift out the zeros and round according to precision.
@@ -186,7 +189,7 @@ export const formatSubscript = (value: number, precision = 3) => {
         return '0';
     }
 
-    // Assume subscriptUnicode is an array that maps the count to a Unicode subscript.
+    // Assume subscriptUnicode is an array mapping counts to subscript digits.
     return `0.${subscriptUnicode[zeros]}${valueNonZero}`;
 };
 
