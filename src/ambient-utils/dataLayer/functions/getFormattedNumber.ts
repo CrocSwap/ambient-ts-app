@@ -167,12 +167,18 @@ const subscriptUnicode = [
 ];
 
 export const formatSubscript = (value: number, precision = 3) => {
-    // math to find number of 0s after the decimal
-    const zeros = Math.ceil(Math.log10(1 / value)) - 1;
+    // Calculate the number of leading zeros after the decimal point.
+    // For example, 0.0001 has 3 zeros.
+    const zeros = Math.floor(Math.log10(1 / value)) - 1;
+
+    // Multiply the value to shift out the leading zeros and round to the given precision.
     const valueNonZero = Math.round(value * 10 ** (zeros + precision));
+
     if (zeros > 20) {
         return '0';
     }
+
+    // Assuming subscriptUnicode is an array mapping numbers to subscript digits.
     return `0.${subscriptUnicode[zeros]}${valueNonZero}`;
 };
 
