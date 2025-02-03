@@ -237,7 +237,7 @@ export default function UserMenu(props: propsIF) {
             overflow='visible'
             alignItems='center'
         >
-            {isUserConnected && desktopScreen && walletDisplay}
+            {isUserConnected && walletDisplay}
             {isUserConnected && desktopScreen && levelDisplay}
             {isUserConnected && desktopScreen && <ExchangeBalanceDropdown />}
             <NotificationCenter />
