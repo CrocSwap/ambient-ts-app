@@ -137,6 +137,27 @@ export default function TabComponent(props: TabPropsIF) {
         if (tradeTableState === 'Collapsed') toggleTradeTable();
     }
 
+    useEffect(() => {
+        const currentTabData = data.find(
+            (item) => item.label === selectedTab.label,
+        );
+        if (currentTabData) {
+            setSelectedTab(currentTabData);
+            if (
+                [
+                    'transactions',
+                    'limits',
+                    'liquidity',
+                    'wallet balances',
+                    'exchange balances',
+                    'dex balances',
+                ].includes(currentTabData.label.toLowerCase())
+            ) {
+                setActiveTradeTab(currentTabData.label.toLowerCase());
+            }
+        }
+    }, [data, selectedTab.label]);
+
     function handleOutside2() {
         if (!outsideControl) {
             return;
