@@ -491,23 +491,27 @@ function Orders(props: propsIF) {
             >
                 {!isAccountView &&
                     pendingRecentlyUpdatedPositions.length > 0 &&
-                    pendingRecentlyUpdatedPositions.reverse().map((tx, idx) => (
-                        <OrderRowPlaceholder
-                            key={idx}
-                            transaction={{
-                                hash: tx.txByType?.txHash || '',
-                                baseSymbol:
-                                    tx.txByType?.txDetails?.baseSymbol ?? '...',
-                                quoteSymbol:
-                                    tx.txByType?.txDetails?.quoteSymbol ??
-                                    '...',
-                                side: tx.txByType?.txAction || '',
-                                type: tx.txByType?.txType || '',
-                                details: tx.txByType?.txDetails,
-                            }}
-                            tableView={tableView}
-                        />
-                    ))}
+                    pendingRecentlyUpdatedPositions
+                        .filter((e) => e.type === 'Limit')
+                        .reverse()
+                        .map((tx, idx) => (
+                            <OrderRowPlaceholder
+                                key={idx}
+                                transaction={{
+                                    hash: tx.txByType?.txHash || '',
+                                    baseSymbol:
+                                        tx.txByType?.txDetails?.baseSymbol ??
+                                        '...',
+                                    quoteSymbol:
+                                        tx.txByType?.txDetails?.quoteSymbol ??
+                                        '...',
+                                    side: tx.txByType?.txAction || '',
+                                    type: tx.txByType?.txType || '',
+                                    details: tx.txByType?.txDetails,
+                                }}
+                                tableView={tableView}
+                            />
+                        ))}
                 {showInfiniteScroll ? (
                     <InfiniteScroll
                         type='Order'
@@ -515,6 +519,7 @@ function Orders(props: propsIF) {
                         tableView={tableView}
                         isAccountView={isAccountView}
                         sortBy={sortBy}
+                        reverseSort={reverseSort}
                         showAllData={showAllData}
                         dataPerPage={50}
                         fetchCount={50}

@@ -113,9 +113,9 @@ const useGenFakeTableRow = () => {
 
         const positionHash = getPositionHash(undefined, {
             isPositionTypeAmbient: false,
-            user: pendingTx.userAddress,
-            baseAddress: pendingTx.txDetails.baseAddress,
-            quoteAddress: pendingTx.txDetails.quoteAddress,
+            user: pendingTx.userAddress.toLowerCase(),
+            baseAddress: pendingTx.txDetails.baseAddress.toLowerCase(),
+            quoteAddress: pendingTx.txDetails.quoteAddress.toLowerCase(),
             poolIdx: pendingTx.txDetails.poolIdx,
             bidTick: pendingTx.txDetails.lowTick || 0,
             askTick: pendingTx.txDetails.highTick || 0,
@@ -308,15 +308,17 @@ const useGenFakeTableRow = () => {
             );
         }
 
-        const posHash = getPositionHash(undefined, {
+        const posHashObject = {
             isPositionTypeAmbient: pendingTx.txDetails.isAmbient || false,
-            user: pendingTx.userAddress,
-            baseAddress: pendingTx.txDetails.baseAddress,
-            quoteAddress: pendingTx.txDetails.quoteAddress,
+            user: pendingTx.userAddress.toLowerCase(),
+            baseAddress: pendingTx.txDetails.baseAddress.toLowerCase(),
+            quoteAddress: pendingTx.txDetails.quoteAddress.toLowerCase(),
             poolIdx: pendingTx.txDetails.poolIdx,
             bidTick: pendingTx.txDetails.lowTick || 0,
             askTick: pendingTx.txDetails.highTick || 0,
-        });
+        };
+
+        const posHash = getPositionHash(undefined, posHashObject);
 
         const mockServerPosition: PositionServerIF = {
             positionId: posHash,

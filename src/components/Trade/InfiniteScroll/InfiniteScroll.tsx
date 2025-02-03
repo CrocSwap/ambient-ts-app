@@ -32,6 +32,7 @@ interface propsIF {
     sortPositions?: (data: PositionIF[]) => PositionIF[];
     sortTransactions?: (data: TransactionIF[]) => TransactionIF[];
     sortBy: TxSortType | LimitSortType | RangeSortType;
+    reverseSort: boolean;
     showAllData: boolean;
     componentLock?: boolean;
     extraRequestCreditLimit?: number;
@@ -65,6 +66,7 @@ function InfiniteScroll(props: propsIF) {
         txFetchType,
         txFetchAddress,
         componentLock,
+        reverseSort,
     } = props;
 
     const PAGE_COUNT_DIVIDE_THRESHOLD = 20;
@@ -736,26 +738,31 @@ function InfiniteScroll(props: propsIF) {
         data: fetchedTransactions,
     });
 
+    useEffect(() => {
+        if (props.type === 'Range' && sortPositions) {
+            setFetchedTransactions(
+                sortPositions(fetchedTransactionsRef.current as PositionIF[]),
+            );
+        } else if (props.type === 'Order' && sortOrders) {
+            setFetchedTransactions(
+                sortOrders(fetchedTransactionsRef.current as LimitOrderIF[]),
+            );
+        } else if (props.type === 'Transaction' && sortTransactions) {
+            setFetchedTransactions(
+                sortTransactions(
+                    fetchedTransactionsRef.current as TransactionIF[],
+                ),
+            );
+        }
+    }, [sortBy, reverseSort]);
+
     const dataToDisplay = useMemo(() => {
         const startIndex = getIndexForPages(true);
         const endIndex = getIndexForPages(
             false,
             recentlyUpdatedPositions.length,
         );
-
-        if (props.type === 'Order') {
-            return mergedData;
-            // return (mergedData as LimitOrderIF[]).filter(
-            //     (e) => !blackList?.has(e.positionHash),
-            // );
-        } else if (props.type === 'Range') {
-            return mergedData;
-            // return (mergedData as PositionIF[]).filter(
-            //     (e) => !blackList?.has(e.positionId),
-            // );
-        } else {
-            return mergedData.slice(startIndex, endIndex);
-        }
+        return mergedData.slice(startIndex, endIndex);
     }, [pagesVisible, mergedData, recentlyUpdatedPositions]);
 
     useEffect(() => {

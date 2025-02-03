@@ -589,18 +589,21 @@ function Ranges(props: propsIF) {
             >
                 {!isAccountView &&
                     pendingRecentlyUpdatedPositions.length > 0 &&
-                    pendingRecentlyUpdatedPositions.reverse().map((tx, idx) => (
-                        <RangesRowPlaceholder
-                            key={idx}
-                            transaction={{
-                                hash: tx.txByType?.txHash || '',
-                                side: tx.txByType?.txAction || '',
-                                type: tx.txByType?.txType || '',
-                                details: tx.txByType?.txDetails,
-                            }}
-                            tableView={tableView}
-                        />
-                    ))}
+                    pendingRecentlyUpdatedPositions
+                        .filter((e) => e.type === 'Range')
+                        .reverse()
+                        .map((tx, idx) => (
+                            <RangesRowPlaceholder
+                                key={idx}
+                                transaction={{
+                                    hash: tx.txByType?.txHash || '',
+                                    side: tx.txByType?.txAction || '',
+                                    type: tx.txByType?.txType || '',
+                                    details: tx.txByType?.txDetails,
+                                }}
+                                tableView={tableView}
+                            />
+                        ))}
                 {showInfiniteScroll ? (
                     <>
                         <InfiniteScroll
@@ -614,6 +617,7 @@ function Ranges(props: propsIF) {
                             fetchCount={200}
                             targetCount={30}
                             sortBy={sortBy}
+                            reverseSort={reverseSort}
                             showAllData={showAllData}
                             sortPositions={sortData}
                         />

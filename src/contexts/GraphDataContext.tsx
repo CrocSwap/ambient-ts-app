@@ -107,6 +107,7 @@ export interface GraphDataContextIF {
     resetUserGraphData: () => void;
     recentlyUpdatedPositions: RecentlyUpdatedPositionIF[];
     pendingRecentlyUpdatedPositions: RecentlyUpdatedPositionIF[];
+    removeFromRecentlyUpdatedPositions: (positionHash: string) => void;
 }
 
 function normalizeAddr(addr: string): string {
@@ -489,6 +490,15 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         }, 300);
     };
 
+    const removeFromRecentlyUpdatedPositions = (positonHash: string) => {
+        console.log('>>>> remove from recently updated positions', positonHash);
+        setRecentlyUpdatedPositions(
+            recentlyUpdatedPositionsRef.current.filter(
+                (e) => e.positionHash !== positonHash,
+            ),
+        );
+    };
+
     const addPendingRelevantPosition = (pending: RecentlyUpdatedPositionIF) => {
         setPendingRecentlyUpdatedPositions([
             ...pendingRecentlyUpdatedPositions.filter(
@@ -515,15 +525,17 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     };
 
     const getPositionHashForTxByType = (tbt: TransactionByType) => {
-        return getPositionHash(undefined, {
-            isPositionTypeAmbient: false,
-            user: tbt.userAddress,
-            baseAddress: tbt.txDetails?.baseAddress || '',
-            quoteAddress: tbt.txDetails?.quoteAddress || '',
+        const posHashObject = {
+            isPositionTypeAmbient: tbt.txDetails?.isAmbient || false,
+            user: tbt.userAddress.toLowerCase(),
+            baseAddress: tbt.txDetails?.baseAddress.toLowerCase() || '',
+            quoteAddress: tbt.txDetails?.quoteAddress.toLowerCase() || '',
             poolIdx: tbt.txDetails?.poolIdx || 0,
             bidTick: tbt.txDetails?.lowTick || 0,
             askTick: tbt.txDetails?.highTick || 0,
-        });
+        };
+
+        return getPositionHash(undefined, posHashObject);
     };
 
     const tempBool = false;
@@ -584,11 +596,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                 tx.txDetails?.quoteAddress.toLowerCase() ===
                     quoteToken.address.toLowerCase() &&
                 tx.txDetails?.poolIdx === poolIndex &&
-                (tx.txAction === 'Add' ||
-                    tx.txAction === 'Reposition' ||
-                    tx.txAction === 'Remove' ||
-                    tx.txAction === 'Harvest'),
-            // tx.txType === 'Range'
+                tx.txType === 'Range',
         );
 
         relevantPositions.forEach((tx) => {
@@ -621,10 +629,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
             userPositionsByPool.positions.length,
         [transactionsByUser, userLimitOrdersByPool, userPositionsByPool],
     );
-
-    useEffect(() => {
-        console.log('>>> pendings', pendingRecentlyUpdatedPositions);
-    }, [pendingRecentlyUpdatedPositions]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -765,6 +769,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         setLiquidityFee,
         recentlyUpdatedPositions,
         pendingRecentlyUpdatedPositions,
+        removeFromRecentlyUpdatedPositions,
     };
 
     return (

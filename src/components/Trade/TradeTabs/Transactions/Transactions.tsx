@@ -628,6 +628,7 @@ function Transactions(props: propsIF) {
                     tableView={tableView}
                     isAccountView={isAccountView}
                     sortBy={sortBy}
+                    reverseSort={reverseSort}
                     showAllData={showAllData}
                     dataPerPage={50}
                     fetchCount={50}
