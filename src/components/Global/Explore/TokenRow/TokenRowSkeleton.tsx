@@ -1,6 +1,10 @@
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './TokenRow.module.css';
-export default function TokenRowSkeleton() {
+interface PropsIF {
+    isVaultPage?: boolean;
+}
+export default function TokenRowSkeleton(props: PropsIF) {
+    const { isVaultPage } = props;
     const desktopView = useMediaQuery('(min-width: 768px)');
 
     const displayItems = [
@@ -32,7 +36,9 @@ export default function TokenRowSkeleton() {
     ];
 
     return (
-        <div className={styles.gridContainer}>
+        <div
+            className={`${styles.gridContainer} ${isVaultPage ? styles.vaultContainer : ''}`}
+        >
             {displayItems
                 .filter((item) => item !== null) // Filter out null values
                 .map((item, idx) => (

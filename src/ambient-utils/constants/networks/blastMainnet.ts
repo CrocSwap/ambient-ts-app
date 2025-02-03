@@ -52,8 +52,8 @@ export const BLAST_TOKENS: BlastTokens = Object.fromEntries(
 
 const curentTopPoolsList: [keyof BlastTokens, keyof BlastTokens][] = [
     ['ETH', 'USDB'],
-    ['ezETH', 'USDB'],
     ['BLAST', 'ETH'],
+    ['ezETH', 'USDB'],
 ];
 
 const topPools = curentTopPoolsList.map(

@@ -31,7 +31,7 @@ const chainSpecForWalletConnector = {
 
 const defaultTokenEntries = [
     ['ETH', '0x0000000000000000000000000000000000000000'],
-    ['USDE', '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34'],
+    ['USDe', '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34'],
     ['ENA', '0x58538e6A46E07434d7E7375Bc268D3cb839C0133'],
     ['SWELL', '0x2826D136F5630adA89C1678b64A61620Aab77Aea'],
     ['weETH', '0xA6cB988942610f6731e664379D15fFcfBf282b44'],
@@ -57,11 +57,11 @@ export const SWELL_TOKENS: SwellTokens = Object.fromEntries(
 ) as SwellTokens;
 
 const curentTopPoolsList: [keyof SwellTokens, keyof SwellTokens][] = [
-    ['ETH', 'USDE'],
+    ['ETH', 'USDe'],
+    ['ENA', 'USDe'],
     ['ETH', 'SWELL'],
-    ['ENA', 'USDE'],
-    ['weETH', 'rswETH'],
-    ['weETH', 'rsETH'],
+    ['pzETH', 'ezETH'],
+    ['rsETH', 'weETH'],
 ];
 
 const topPools = curentTopPoolsList.map(
@@ -88,8 +88,8 @@ export const swellMainnet: NetworkIF = {
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [SWELL_TOKENS.ETH, SWELL_TOKENS.USDE],
-    defaultPairFuta: [SWELL_TOKENS.ETH, SWELL_TOKENS.USDE],
+    defaultPair: [SWELL_TOKENS.ETH, SWELL_TOKENS.USDe],
+    defaultPairFuta: [SWELL_TOKENS.ETH, SWELL_TOKENS.USDe],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
