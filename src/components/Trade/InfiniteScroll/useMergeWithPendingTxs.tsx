@@ -54,35 +54,35 @@ const useMergeWithPendingTxs = (props: propsIF) => {
 
         let clearedData: LimitOrderIF[] | PositionIF[] = [];
         if (type === 'Order') {
-            (recentlyUpdatedToShow as LimitOrderIF[]).forEach((contextData) => {
-                (data as LimitOrderIF[]).forEach((apiData) => {
-                    if (contextData.positionHash === apiData.positionHash) {
-                        console.log('>>> contextData', contextData.positionLiq);
-                        console.log('>>> apiData', apiData.positionLiq);
-                    }
-                });
+            // (recentlyUpdatedToShow as LimitOrderIF[]).forEach((contextData) => {
+            //     (data as LimitOrderIF[]).forEach((apiData) => {
+            //         if (contextData.positionHash === apiData.positionHash) {
+            //             console.log('>>> contextData', contextData.positionLiq);
+            //             console.log('>>> apiData', apiData.positionLiq);
+            //         }
+            //     });
 
-                const matchingLimitOrder = (data as LimitOrderIF[]).find(
-                    (apiData) =>
-                        contextData.positionHash === apiData.positionHash &&
-                        contextData.positionLiq === apiData.positionLiq,
-                );
+            //     const matchingLimitOrder = (data as LimitOrderIF[]).find(
+            //         (apiData) =>
+            //             contextData.positionHash === apiData.positionHash &&
+            //             contextData.positionLiq === apiData.positionLiq,
+            //     );
 
-                if (matchingLimitOrder) {
-                    removeFromRecentlyUpdatedPositions(
-                        matchingLimitOrder.positionHash,
-                    );
-                    recentlyUpdatedToShow = (
-                        recentlyUpdatedToShow as LimitOrderIF[]
-                    ).filter(
-                        (e) =>
-                            e.positionHash !== matchingLimitOrder.positionHash,
-                    );
-                    recentlyUpdatedHashes.delete(
-                        matchingLimitOrder.positionHash,
-                    );
-                }
-            });
+            //     if (matchingLimitOrder) {
+            //         removeFromRecentlyUpdatedPositions(
+            //             matchingLimitOrder.positionHash,
+            //         );
+            //         recentlyUpdatedToShow = (
+            //             recentlyUpdatedToShow as LimitOrderIF[]
+            //         ).filter(
+            //             (e) =>
+            //                 e.positionHash !== matchingLimitOrder.positionHash,
+            //         );
+            //         recentlyUpdatedHashes.delete(
+            //             matchingLimitOrder.positionHash,
+            //         );
+            //     }
+            // });
 
             clearedData = (data as LimitOrderIF[]).filter(
                 (e) => !recentlyUpdatedHashes.has(e.positionHash),
@@ -94,32 +94,32 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 ...clearedData,
             ] as LimitOrderIF[];
         } else if (type === 'Range') {
-            (recentlyUpdatedToShow as PositionIF[]).forEach((contextData) => {
-                (data as PositionIF[]).forEach((apiData) => {
-                    if (contextData.positionId === apiData.positionId) {
-                        console.log('>>> contextData', contextData.positionLiq);
-                        console.log('>>> apiData', apiData.positionLiq);
-                    }
-                });
+            // (recentlyUpdatedToShow as PositionIF[]).forEach((contextData) => {
+            //     (data as PositionIF[]).forEach((apiData) => {
+            //         if (contextData.positionId === apiData.positionId) {
+            //             console.log('>>> contextData', contextData.positionLiq);
+            //             console.log('>>> apiData', apiData.positionLiq);
+            //         }
+            //     });
 
-                const matchingPosition = (data as PositionIF[]).find(
-                    (apiData) =>
-                        contextData.positionId === apiData.positionId &&
-                        contextData.positionLiq === apiData.positionLiq,
-                );
+            //     const matchingPosition = (data as PositionIF[]).find(
+            //         (apiData) =>
+            //             contextData.positionId === apiData.positionId &&
+            //             contextData.positionLiq === apiData.positionLiq,
+            //     );
 
-                if (matchingPosition) {
-                    removeFromRecentlyUpdatedPositions(
-                        matchingPosition.positionId,
-                    );
-                    recentlyUpdatedToShow = (
-                        recentlyUpdatedToShow as PositionIF[]
-                    ).filter(
-                        (e) => e.positionId !== matchingPosition.positionId,
-                    );
-                    recentlyUpdatedHashes.delete(matchingPosition.positionId);
-                }
-            });
+            //     if (matchingPosition) {
+            //         removeFromRecentlyUpdatedPositions(
+            //             matchingPosition.positionId,
+            //         );
+            //         recentlyUpdatedToShow = (
+            //             recentlyUpdatedToShow as PositionIF[]
+            //         ).filter(
+            //             (e) => e.positionId !== matchingPosition.positionId,
+            //         );
+            //         recentlyUpdatedHashes.delete(matchingPosition.positionId);
+            //     }
+            // });
 
             clearedData = (data as PositionIF[]).filter(
                 (e) => !recentlyUpdatedHashes.has(e.positionId),
