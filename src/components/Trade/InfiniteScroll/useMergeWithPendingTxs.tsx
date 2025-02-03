@@ -14,8 +14,7 @@ interface propsIF {
 const useMergeWithPendingTxs = (props: propsIF) => {
     const { data, type } = props;
 
-    const { recentlyUpdatedPositions, removeFromRecentlyUpdatedPositions } =
-        useContext(GraphDataContext);
+    const { recentlyUpdatedPositions } = useContext(GraphDataContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const mergedData = useMemo(() => {
