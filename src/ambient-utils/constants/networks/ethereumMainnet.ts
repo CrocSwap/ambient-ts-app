@@ -56,9 +56,9 @@ export const MAINNET_TOKENS: MainnetTokens = Object.fromEntries(
 
 const curentTopPoolsList: [keyof MainnetTokens, keyof MainnetTokens][] = [
     ['ETH', 'USDC'],
-    ['USDT', 'USDC'],
     ['ETH', 'USDT'],
     ['ETH', 'WBTC'],
+    ['USDT', 'USDC'],
 ];
 
 const topPools = curentTopPoolsList.map(
