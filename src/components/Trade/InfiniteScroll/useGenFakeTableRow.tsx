@@ -55,10 +55,15 @@ const useGenFakeTableRow = () => {
             // sepolia
             case '0xaa36a7':
                 return 13000;
+            // scroll mainnet
+            case '0x82750':
+                return 10000;
             default:
-                return 300;
+                return 500;
         }
     };
+
+    console.log('>>> chainId ', chainId, 'delay time', getDelayTime());
 
     const {
         tokens: { tokenUniv: tokenList },
