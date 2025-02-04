@@ -48,17 +48,20 @@ const useGenFakeTableRow = () => {
     } = useContext(AppStateContext);
 
     const getDelayTime = () => {
+        const factor = 0.01;
         switch (chainId) {
             case '0x1': // eth-mainnet
             case '0xaa36a7': // eth-sepolia
-                return 5000;
+                return 5000 * factor;
             case '0x18231': // plume-mainnet
             case '0x18230': // plume-sepolia
-                return 1000;
+                return 1000 * factor;
             default:
-                return 2000;
+                return 2000 * factor;
         }
     };
+
+    console.log('>>> delay time', getDelayTime());
 
     const {
         tokens: { tokenUniv: tokenList },

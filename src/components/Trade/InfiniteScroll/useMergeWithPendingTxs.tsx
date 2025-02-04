@@ -31,14 +31,24 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 )
                 .forEach((e) => {
                     if (type === 'Order' && e.type === 'Limit') {
+                        const matchedLimitOrder: LimitOrderIF | undefined = (
+                            data as LimitOrderIF[]
+                        ).find((item) => item.positionHash === e.positionHash);
+
                         if (
                             e.action !== 'Remove' &&
                             e.position &&
-                            e.position.positionLiq > 0
+                            e.position.positionLiq > 0 &&
+                            (matchedLimitOrder === undefined ||
+                                matchedLimitOrder?.positionLiq <
+                                    e.position.positionLiq)
                         ) {
                             (recentlyUpdatedToShow as LimitOrderIF[]).push(
                                 e.position as LimitOrderIF,
                             );
+                            recentlyUpdatedHashes.add(e.positionHash);
+                        } else if (e.action === 'Remove') {
+                            recentlyUpdatedHashes.add(e.positionHash);
                         }
                     } else if (props.type === 'Range' && e.type === 'Range') {
                         if (e.position && e.position.positionLiq > 0) {
@@ -46,8 +56,8 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                                 e.position as PositionIF,
                             );
                         }
+                        recentlyUpdatedHashes.add(e.positionHash);
                     }
-                    recentlyUpdatedHashes.add(e.positionHash);
                 });
         }
 
