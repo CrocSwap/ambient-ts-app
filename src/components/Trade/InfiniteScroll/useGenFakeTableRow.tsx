@@ -83,17 +83,51 @@ const useGenFakeTableRow = () => {
             lastBlockNumber,
         );
 
-        const position = await pos.queryKnockoutLivePos(
-            pendingTx.txAction === 'Buy',
-            pendingTx.txDetails.lowTick || 0,
-            pendingTx.txDetails.highTick || 0,
-        );
         if (!pendingTx.txDetails) {
             return {} as RecentlyUpdatedPositionIF;
         }
 
-        const liqBigInt = position.liq;
-        const liqNum = bigIntToFloat(liqBigInt);
+        let position, liqBigInt, liqNum;
+
+        position = await pos.queryKnockoutLivePos(
+            pendingTx.txAction === 'Buy',
+            pendingTx.txDetails.lowTick || 0,
+            pendingTx.txDetails.highTick || 0,
+        );
+
+        liqBigInt = position.liq;
+        liqNum = bigIntToFloat(liqBigInt);
+
+        // console.log({
+        //     pendingTx,
+        //     currentLiquidity: pendingTx.txDetails.currentLiquidity,
+        //     liqNum,
+        //     liqBigInt,
+        // });
+
+        for (
+            let attempt = 1;
+            attempt < 6 &&
+            liqBigInt === pendingTx.txDetails.currentLiquidity &&
+            pendingTx.txAction !== 'Claim';
+            attempt++
+        ) {
+            await wait(getDelayTime());
+            position = await pos.queryKnockoutLivePos(
+                pendingTx.txAction === 'Buy',
+                pendingTx.txDetails.lowTick || 0,
+                pendingTx.txDetails.highTick || 0,
+            );
+            liqBigInt = position.liq;
+            liqNum = bigIntToFloat(liqBigInt);
+            // console.log({
+            //     attempt,
+            //     pendingTx,
+            //     currentLiquidity: pendingTx.txDetails.currentLiquidity,
+            //     liqNum,
+            //     liqBigInt,
+            // });
+        }
 
         const positionLiqBase = bigIntToFloat(
             baseTokenForConcLiq(

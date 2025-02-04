@@ -655,7 +655,20 @@ export default function Limit() {
         });
 
         let tx;
+
         try {
+            const pos = crocEnv.positions(
+                baseToken.address,
+                quoteToken.address,
+                userAddress ?? '',
+            );
+            const liqBigInt = (
+                await pos.queryKnockoutLivePos(
+                    isSellTokenBase,
+                    isSellTokenBase ? limitTick : limitTick - gridSize,
+                    isSellTokenBase ? limitTick + gridSize : limitTick,
+                )
+            ).liq;
             try {
                 tx = await submitLimitOrder({
                     crocEnv,
@@ -766,6 +779,7 @@ export default function Limit() {
                     secondaryTokenQty: isSellTokenBase
                         ? tokenBInputQtyNoExponentString
                         : tokenAInputQtyNoExponentString,
+                    currentLiquidity: liqBigInt,
                 },
             });
 
