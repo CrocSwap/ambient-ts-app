@@ -288,16 +288,6 @@ function Ranges(props: propsIF) {
               ? 'medium'
               : 'large';
 
-    const filteredSortedPositions = useMemo(() => {
-        // filter out empty positions on account view when hideEmptyPositionsOnAccount is true
-        return hideEmptyPositionsOnAccount && isAccountView
-            ? sortedPositions.filter((position) => position.positionLiq !== 0)
-            : sortedPositions;
-    }, [hideEmptyPositionsOnAccount, isAccountView, sortedPositions]);
-
-    const _DATA = filteredSortedPositions;
-    // , isScreenShort, isScreenTall
-
     const listRef = useRef<HTMLUListElement>(null);
 
     const userHasEmptyPositions = useMemo(

@@ -51,9 +51,9 @@ const useGenFakeTableRow = () => {
         switch (chainId) {
             case '0x1': // eth-mainnet
             case '0xaa36a7': // sepolia
-                return 15000;
-            default:
                 return 5000;
+            default:
+                return 2000;
         }
     };
 
@@ -274,19 +274,55 @@ const useGenFakeTableRow = () => {
             lastBlockNumber,
         );
 
-        const position = pendingTx.txDetails.isAmbient
+        const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
+
+        let position, positionLiqBase, positionLiqQuote, liqBigInt, liqNum;
+
+        position = pendingTx.txDetails.isAmbient
             ? await pos.queryAmbientPos()
             : await pos.queryRangePos(
                   pendingTx.txDetails.lowTick || 0,
                   pendingTx.txDetails.highTick || 0,
               );
 
-        const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
+        liqBigInt = position.liq;
+        liqNum = bigIntToFloat(liqBigInt);
 
-        let positionLiqBase, positionLiqQuote;
+        // console.log({
+        //     pendingTx,
+        //     intialTokenQty: pendingTx.txDetails.initialTokenQty,
+        //     currentLiquidity: pendingTx.txDetails.currentLiquidity,
+        //     liqNum,
+        //     liqBigInt,
+        // });
 
-        const liqBigInt = position.liq;
-        const liqNum = bigIntToFloat(liqBigInt);
+        for (
+            let attempt = 1;
+            attempt < 6 &&
+            ((pendingTx.txDetails.initialTokenQty && liqNum === 0) ||
+                (pendingTx.txDetails.currentLiquidity &&
+                    liqBigInt === pendingTx.txDetails.currentLiquidity));
+            attempt++
+        ) {
+            await wait(getDelayTime());
+            position = pendingTx.txDetails.isAmbient
+                ? await pos.queryAmbientPos()
+                : await pos.queryRangePos(
+                      pendingTx.txDetails.lowTick || 0,
+                      pendingTx.txDetails.highTick || 0,
+                  );
+            liqBigInt = position.liq;
+            liqNum = bigIntToFloat(liqBigInt);
+            // console.log({
+            //     attempt,
+            //     pendingTx,
+            //     intialTokenQty: pendingTx.txDetails.initialTokenQty,
+            //     currentLiquidity: pendingTx.txDetails.currentLiquidity,
+            //     liqNum,
+            //     liqBigInt,
+            // });
+        }
+
         if (pendingTx.txDetails.isAmbient) {
             positionLiqBase = liqNum * Math.sqrt(poolPriceNonDisplay);
             positionLiqQuote = liqNum / Math.sqrt(poolPriceNonDisplay);

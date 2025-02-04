@@ -58,6 +58,7 @@ export interface TransactionByType {
         originalHighTick?: number;
         initialTokenQty?: string;
         secondaryTokenQty?: string;
+        currentLiquidity?: bigint | undefined;
     };
     isRemoved?: boolean;
 }

@@ -278,19 +278,21 @@ function Range() {
     const isAdd = useMemo(
         () =>
             userPositions.length > 0 &&
-            userPositions.some((position: PositionIF) => {
-                if (isAmbient && position.positionType === 'ambient') {
-                    return true;
-                } else if (
-                    !isAmbient &&
-                    defaultLowTick === position.bidTick &&
-                    defaultHighTick === position.askTick
-                ) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }),
+            userPositions
+                .filter((position) => position.positionLiq !== 0)
+                .some((position: PositionIF) => {
+                    if (isAmbient && position.positionType === 'ambient') {
+                        return true;
+                    } else if (
+                        !isAmbient &&
+                        defaultLowTick === position.bidTick &&
+                        defaultHighTick === position.askTick
+                    ) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }),
         [userPositions, isAmbient, defaultLowTick, defaultHighTick],
     );
 

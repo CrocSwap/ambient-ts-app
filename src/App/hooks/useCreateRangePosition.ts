@@ -100,6 +100,16 @@ export function useCreateRangePosition() {
         });
 
         try {
+            const pos = crocEnv.positions(
+                baseToken.address,
+                quoteToken.address,
+                userAddress ?? '',
+            );
+
+            const currentLiqBigInt = isAmbient
+                ? (await pos.queryAmbientPos()).liq
+                : (await pos.queryRangePos(defaultLowTick, defaultHighTick))
+                      .liq;
             try {
                 tx = await createRangePositionTx({
                     crocEnv,
@@ -189,6 +199,7 @@ export function useCreateRangePosition() {
                         gridSize: gridSize,
                         initialTokenQty: tokenAInputQty,
                         secondaryTokenQty: tokenBInputQty,
+                        currentLiquidity: currentLiqBigInt,
                     },
                 });
 
