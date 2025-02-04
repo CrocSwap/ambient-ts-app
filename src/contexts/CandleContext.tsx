@@ -234,6 +234,20 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         quoteTokenAddressRef.current === quoteTokenAddress.toLowerCase(),
     ]);
 
+    const fetchFirst200Candles = () => {
+        const nowTime = Math.floor(Date.now() / 1000);
+        fetchCandlesByNumDurations(200, nowTime);
+    };
+
+    /**
+     * only works if candles pilling up on the right
+     */
+    useEffect(() => {
+        if (candleDomains.isResetRequest) {
+            fetchFirst200Candles();
+        }
+    }, [candleDomains.isResetRequest]);
+
     useEffect(() => {
         if (
             isChartEnabled &&
@@ -248,8 +262,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 candleTimeLocal &&
                 !isCandleDataNull
             ) {
-                const nowTime = Math.floor(Date.now() / 1000);
-                fetchCandlesByNumDurations(200, nowTime);
+                fetchFirst200Candles();
             }
         }
     }, [
@@ -478,6 +491,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
                     setCandleData(newSeries);
                 }
+            })
+            .then(() => {
+                setCandleDomains((prev: CandleDomainIF) => {
+                    return {
+                        ...prev,
+                        isResetRequest: false,
+                    };
+                });
             })
             .catch((e) => {
                 console.error(e);
