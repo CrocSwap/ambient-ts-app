@@ -5,7 +5,7 @@
     background: var(--dark2);
     padding: 8px;
     z-index: 1;
-    cursor: pointer;
+    cursor: normal;
     position: relative;
     transition: var(--transition);
     display: flex;
@@ -13,7 +13,8 @@
     justify-content: space-between;
 }
 
-.topContainer, .bottomContainer {
+.topContainer,
+.bottomContainer {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -31,37 +32,36 @@
     border-radius: 50%;
     background: var(--dark1);
 }
-.topRightContainer{
+.topRightContainer {
     width: 108px;
     height: 22px;
     background: var(--dark1);
 }
 
-.bottomLeftContainer{
+.bottomLeftContainer {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
-.bottomLeftContainer span{
+.bottomLeftContainer span {
     width: 127px;
     height: 30px;
-    background: var(--dark1)
+    background: var(--dark1);
 }
 
-.bottomContainer{
+.bottomContainer {
     display: flex;
     flex-direction: row;
-   align-items: center;
-   justify-content: space-between;
+    align-items: center;
+    justify-content: space-between;
 }
-.bottomRightContainer{
-   display: flex;
-   flex-direction: column;
-   gap: 8px;
-  
+.bottomRightContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.bottomRightContainer span{
+.bottomRightContainer span {
     width: 87px;
     height: 28px;
     background: var(--dark1);
@@ -76,7 +76,8 @@
     }
 }
 
-.container span, .topRightContainer{
+.container span,
+.topRightContainer {
     background: linear-gradient(
         to right,
         var(--dark1) 0%,

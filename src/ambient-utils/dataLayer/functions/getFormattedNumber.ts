@@ -165,14 +165,30 @@ const subscriptUnicode = [
     '0\u{2081}\u{2089}',
     '0\u{2082}\u{2080}',
 ];
+export const formatSubscript = (value: number, precision = 3) => {
+    if (value === 0) return '0';
 
-const formatSubscript = (value: number, precision = 3) => {
-    // math to find number of 0s after the decimal
-    const zeros = Math.ceil(Math.log10(1 / value)) - 1;
+    // Compute the exponent (for a value like 1e-5, exp should be 5)
+    const exp = -Math.log10(value);
+
+    // Increase the tolerance so that small floating-point deviations are snapped to an integer.
+    const tolerance = 1e-6;
+    const normalizedExp =
+        Math.abs(exp - Math.round(exp)) < tolerance
+            ? Math.round(exp)
+            : Math.ceil(exp);
+
+    // The number of leading zeros is one less than the exponent.
+    const zeros = normalizedExp - 1;
+
+    // Multiply the value to shift out the zeros and round it according to precision.
     const valueNonZero = Math.round(value * 10 ** (zeros + precision));
+
     if (zeros > 20) {
         return '0';
     }
+
+    // Assuming subscriptUnicode is defined to map the count of zeros to a subscript.
     return `0.${subscriptUnicode[zeros]}${valueNonZero}`;
 };
 
