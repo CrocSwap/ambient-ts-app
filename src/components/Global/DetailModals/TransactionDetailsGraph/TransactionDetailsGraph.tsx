@@ -203,7 +203,7 @@ export default function TransactionDetailsGraph(
                 Math.floor(diff / 1000),
             );
 
-            if (nowTime - minTimeBeforeOffset * 1000 < oneWeekMilliseconds) {
+            if (nowTime - minTimeBeforeOffset < oneWeekMilliseconds) {
                 tempPeriod = 3600;
             }
 
