@@ -45,8 +45,6 @@ export default function UserMenu(props: propsIF) {
     const { connectedUserXp } = useContext(ChainDataContext);
     const desktopScreen = useMediaQuery('(min-width: 768px)');
 
-    const removeWalletAddress = useMediaQuery('(max-width: 1250px)');
-
     const [_, copy] = useCopyToClipboard();
 
     function handleCopyAddress() {
@@ -135,11 +133,9 @@ export default function UserMenu(props: propsIF) {
                 aria-label={ariaLabel}
             >
                 <MdAccountBalanceWallet color='var(--text1)' />
-                {removeWalletAddress ? null : (
-                    <p className={styles.walletName}>
-                        {connectedEnsOrAddressTruncated || '...'}
-                    </p>
-                )}
+                <p className={styles.walletName}>
+                    {connectedEnsOrAddressTruncated || '...'}
+                </p>
             </button>
             {showWalletDropdown ? (
                 !desktopScreen ? (
