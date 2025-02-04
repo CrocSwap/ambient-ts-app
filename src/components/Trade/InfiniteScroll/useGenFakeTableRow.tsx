@@ -50,8 +50,11 @@ const useGenFakeTableRow = () => {
     const getDelayTime = () => {
         switch (chainId) {
             case '0x1': // eth-mainnet
-            case '0xaa36a7': // sepolia
+            case '0xaa36a7': // eth-sepolia
                 return 5000;
+            case '0x18231': // plume-mainnet
+            case '0x18230': // plume-sepolia
+                return 1000;
             default:
                 return 2000;
         }
