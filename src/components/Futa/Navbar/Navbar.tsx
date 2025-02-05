@@ -294,7 +294,9 @@ export default function Navbar() {
                     <li key={navLink.id} className={styles.navItem}>
                         <div
                             className={`${styles.navLink} ${
-                                location.pathname.includes(navLink.link)
+                                decodeURIComponent(location.pathname).includes(
+                                    navLink.link,
+                                )
                                     ? styles.active
                                     : styles.not_active
                             }`}

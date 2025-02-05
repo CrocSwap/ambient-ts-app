@@ -57,7 +57,6 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../../../utils/TransactionError';
-import { limitTutorialSteps } from '../../../../utils/tutorial/Limit';
 
 export default function Limit() {
     const { crocEnv, ethMainnetUsdPrice, provider } =
@@ -1116,7 +1115,6 @@ export default function Limit() {
                     />
                 ) : undefined
             }
-            tutorialSteps={limitTutorialSteps}
         />
     );
 }

@@ -136,7 +136,7 @@
 
 .tutorialBtn {
     cursor: pointer;
-    display: flex;
+    display: none;
     height: 25px;
     padding: 0px 16px 0px 12px;
     align-items: center;

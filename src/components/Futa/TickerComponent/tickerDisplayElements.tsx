@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext, useRef } from 'react';
+import { Dispatch, SetStateAction, useContext, useEffect, useRef } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import { supportedNetworks } from '../../../ambient-utils/constants';
@@ -89,6 +89,10 @@ export const tickerDisplayElements = (props: PropsIF) => {
     } = useContext(AppStateContext);
     const { showComments, setShowComments, watchlists } =
         useContext(AuctionsContext);
+
+    useEffect(() => {
+        if (showComments) setShowComments(false);
+    }, [tickerFromParams]);
 
     const currentMarketCapUsdFormatted =
         filledMarketCapUsdValue !== undefined

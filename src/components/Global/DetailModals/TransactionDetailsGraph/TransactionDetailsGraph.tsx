@@ -19,13 +19,13 @@ import {
     setCanvasResolution,
 } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 import { FlexContainer } from '../../../../styled/Common';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import {
     formatAmountChartData,
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
 import Spinner from '../../Spinner/Spinner';
 import './TransactionDetailsGraph.css';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -203,7 +203,7 @@ export default function TransactionDetailsGraph(
                 Math.floor(diff / 1000),
             );
 
-            if (nowTime - minTimeBeforeOffset * 1000 < oneWeekMilliseconds) {
+            if (nowTime - minTimeBeforeOffset < oneWeekMilliseconds) {
                 tempPeriod = 3600;
             }
 

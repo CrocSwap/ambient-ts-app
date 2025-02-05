@@ -234,6 +234,20 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         quoteTokenAddressRef.current === quoteTokenAddress.toLowerCase(),
     ]);
 
+    const fetchFirst200Candles = () => {
+        const nowTime = Math.floor(Date.now() / 1000);
+        fetchCandlesByNumDurations(200, nowTime);
+    };
+
+    /**
+     * only works if candles pilling up on the right
+     */
+    useEffect(() => {
+        if (candleDomains.isResetRequest) {
+            fetchFirst200Candles();
+        }
+    }, [candleDomains.isResetRequest]);
+
     useEffect(() => {
         if (
             isChartEnabled &&
@@ -248,8 +262,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 candleTimeLocal &&
                 !isCandleDataNull
             ) {
-                const nowTime = Math.floor(Date.now() / 1000);
-                fetchCandlesByNumDurations(200, nowTime);
+                fetchFirst200Candles();
             }
         }
     }, [
@@ -442,8 +455,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         incrCandles.candles.length === 0 ||
                         incrCandles.candles.length < numDurations - 1
                     ) {
+                        const tempCandleData =
+                            incrCandles.candles.length === 0
+                                ? candleData.candles
+                                : incrCandles.candles;
                         const minDate = Math.min(
-                            ...incrCandles.candles.map((i) => i.time),
+                            ...tempCandleData.map((i) => i.time),
                         );
                         minDate && setTimeOfEndCandle(minDate * 1000);
                     }
@@ -474,6 +491,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
                     setCandleData(newSeries);
                 }
+            })
+            .then(() => {
+                setCandleDomains((prev: CandleDomainIF) => {
+                    return {
+                        ...prev,
+                        isResetRequest: false,
+                    };
+                });
             })
             .catch((e) => {
                 console.error(e);

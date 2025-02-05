@@ -117,7 +117,6 @@ export const orderRowConstants = (props: propsIF) => {
     const IDWithTooltip = (
         <RowItem hover data-label='id' role='button' tabIndex={0}>
             <TextOnlyTooltip
-                interactive
                 title={
                     <FlexContainer
                         justifyContent='center'
@@ -128,7 +127,7 @@ export const orderRowConstants = (props: propsIF) => {
                         rounded
                         font='roboto'
                         role='button'
-                        style={{ width: '440px', cursor: 'default' }}
+                        style={{ width: '510px', cursor: 'default' }}
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
                             event.stopPropagation()
                         }
@@ -180,7 +179,6 @@ export const orderRowConstants = (props: propsIF) => {
             style={ensName ? { textTransform: 'lowercase' } : undefined}
         >
             <TextOnlyTooltip
-                interactive
                 title={
                     <FlexContainer
                         justifyContent='center'
@@ -191,7 +189,7 @@ export const orderRowConstants = (props: propsIF) => {
                         rounded
                         font='roboto'
                         role='button'
-                        style={{ width: '316px' }}
+                        style={{ width: '350px' }}
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
                             event.stopPropagation()
                         }
@@ -366,7 +364,6 @@ export const orderRowConstants = (props: propsIF) => {
             <>
                 {limitOrder.latestUpdateTime ? (
                     <TextOnlyTooltip
-                        interactive
                         title={
                             <FlexContainer
                                 fullWidth
