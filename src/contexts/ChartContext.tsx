@@ -449,11 +449,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
                 '--shareable-line-color',
             ),
 
-            orderSellColor: getCssVariable(
-                skin.active,
-                '--chart-negative-body',
-            ),
-            orderBuyColor: getCssVariable(skin.active, '--chart-positive-body'),
+            orderSellColor: getCssVariable(skin.active, '--order-sell-color'),
+            orderBuyColor: getCssVariable(skin.active, '--order-buy-color'),
 
             triangleColor: getCssVariable(skin.active, '--triangle-color'),
             drawngShapeDefaultColor: getCssVariable(skin.active, '--accent1'),
