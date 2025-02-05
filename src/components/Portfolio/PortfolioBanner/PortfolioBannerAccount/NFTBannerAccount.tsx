@@ -12,6 +12,7 @@ import {
     NftListByChain,
 } from '../../../../contexts/TokenBalanceContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { getAvatarForType } from '../../../Chat/ChatRenderUtils';
 import ChatToaster from '../../../Chat/ChatToaster/ChatToaster';
@@ -43,7 +44,6 @@ import {
     SelectedNftCotainer,
     SelectedNFTImg,
 } from './NFTBannerAccountCss';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 interface NFTBannerAccountProps {
     showNFTPage: boolean;
     setShowNFTPage: React.Dispatch<boolean>;

@@ -101,7 +101,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         <FlexContainer justifyContent='flex-end' alignItems='center' gap={8}>
             {isFuta && (
                 <DefaultTooltip
-                    interactive
                     title={!showFutaCandles ? 'Candle Chart' : 'Line Chart'}
                     enterDelay={500}
                 >
@@ -117,7 +116,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             )}
 
             <DefaultTooltip
-                interactive
                 title={
                     isCondensedModeEnabled
                         ? 'Show all candles'
@@ -146,7 +144,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 </HeaderButtons>
             </DefaultTooltip>
             <DefaultTooltip
-                interactive
                 title={
                     isTradeDollarizationEnabled
                         ? `Switch to prices in ${
@@ -178,7 +175,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             </DefaultTooltip>
             {!isFuta && (
                 <DefaultTooltip
-                    interactive
                     title={
                         isChartFullScreen
                             ? 'Close full screen chart'
@@ -202,7 +198,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             )}
             {!isFuta && (
                 <DefaultTooltip
-                    interactive
                     title={'Copy image of chart to clipboard'}
                     enterDelay={500}
                 >
@@ -220,7 +215,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 </DefaultTooltip>
             )}
             <DefaultTooltip
-                interactive
                 title={'Open chart settings'}
                 enterDelay={500}
                 id='chart_settings_tooltip'

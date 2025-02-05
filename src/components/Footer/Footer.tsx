@@ -15,8 +15,8 @@ import {
     TWITTER_LINK,
 } from '../../ambient-utils/constants';
 import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
-import FooterCard from './FooterCard';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
+import FooterCard from './FooterCard';
 
 export interface footerItemIF {
     title: JSX.Element;
