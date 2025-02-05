@@ -121,7 +121,6 @@ export default function ExchangeCard(props: propsIF) {
 
     const iconAndSymbolWithTooltip = (
         <DefaultTooltip
-            interactive
             title={`${tokenFromMap?.symbol}: ${tokenFromMap?.address}`}
             disableHoverListener={tokenFromMap?.address === ZERO_ADDRESS}
             placement={'right'}

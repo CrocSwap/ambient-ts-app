@@ -13,6 +13,7 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { BrandContext } from '../../../../../contexts/BrandContext';
 import { ChartContext } from '../../../../../contexts/ChartContext';
 import { ArrowContainer } from '../../../../../styled/Components/Chart';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
 import { actionKeyIF, actionStackIF } from '../../ChartUtils/useUndoRedo';
 import HoveredTooltip from './HoveredTooltip';
@@ -31,7 +32,6 @@ import {
     UndoButtonSvg,
     UndoRedoButtonActive,
 } from './ToolbarCss';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 /* interface ToolbarProps {
   

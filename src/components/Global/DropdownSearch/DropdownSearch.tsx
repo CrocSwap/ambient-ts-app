@@ -31,13 +31,13 @@ import {
     SearchContainer,
     SearchInput,
 } from '../../../styled/Components/Sidebar';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import FavoritePools from '../Sidebar/FavoritePools';
 import RecentPools from '../Sidebar/RecentPools';
 import TopPools from '../Sidebar/TopPools';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import styles from './DropdownSearch.module.css';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface optionItem {
     id: number;

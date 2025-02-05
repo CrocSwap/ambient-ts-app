@@ -377,7 +377,7 @@ function Ranges(props: propsIF) {
         {
             name: 'Position ID',
             className: 'ID',
-            show: tableView === 'large',
+            show: !isAccountView && tableView === 'large',
             slug: 'id',
             sortable: false,
         },

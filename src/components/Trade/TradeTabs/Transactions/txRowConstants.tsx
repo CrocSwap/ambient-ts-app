@@ -137,7 +137,6 @@ export const txRowConstants = (props: propsIF) => {
     const IDWithTooltip = (
         <RowItem hover data-label='id' role='button' tabIndex={0}>
             <TextOnlyTooltip
-                interactive
                 title={
                     <FlexContainer
                         justifyContent='center'
@@ -148,7 +147,7 @@ export const txRowConstants = (props: propsIF) => {
                         rounded
                         font='roboto'
                         role='button'
-                        style={{ width: '440px', cursor: 'pointer' }}
+                        style={{ width: '470px', cursor: 'pointer' }}
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
                             event.stopPropagation()
                         }
@@ -213,7 +212,6 @@ export const txRowConstants = (props: propsIF) => {
             style={ensName ? { textTransform: 'lowercase' } : undefined}
         >
             <TextOnlyTooltip
-                interactive
                 title={
                     <FlexContainer
                         justifyContent='center'
@@ -224,7 +222,7 @@ export const txRowConstants = (props: propsIF) => {
                         rounded
                         font='roboto'
                         role='button'
-                        style={{ width: '316px' }}
+                        style={{ width: '350px' }}
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
                             event.stopPropagation()
                         }
@@ -282,7 +280,6 @@ export const txRowConstants = (props: propsIF) => {
 
     const baseTokenLogoComponent = (
         <DefaultTooltip
-            interactive
             title={
                 <p>
                     {tx.baseSymbol}
@@ -306,7 +303,6 @@ export const txRowConstants = (props: propsIF) => {
 
     const quoteTokenLogoComponent = (
         <DefaultTooltip
-            interactive
             title={
                 <div>
                     {tx.quoteSymbol}: {tx.quote}
@@ -437,7 +433,6 @@ export const txRowConstants = (props: propsIF) => {
     const TxTimeWithTooltip = (
         <RowItem gap={4}>
             <TextOnlyTooltip
-                interactive
                 title={
                     <FlexContainer
                         fullWidth
