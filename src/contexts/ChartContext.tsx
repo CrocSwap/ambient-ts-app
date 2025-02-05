@@ -148,6 +148,10 @@ export interface ChartThemeIF {
     // drawing color
     drawngShapeDefaultColor: d3.RGBColor | d3.HSLColor;
 
+    // order color
+    orderSellColor: d3.RGBColor | d3.HSLColor;
+    orderBuyColor: d3.RGBColor | d3.HSLColor;
+
     selectedDateStrokeColor: d3.RGBColor | d3.HSLColor;
     text2: d3.RGBColor | d3.HSLColor;
     text1: d3.RGBColor | d3.HSLColor;
@@ -444,6 +448,13 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
                 skin.active,
                 '--shareable-line-color',
             ),
+
+            orderSellColor: getCssVariable(
+                skin.active,
+                '--chart-negative-body',
+            ),
+            orderBuyColor: getCssVariable(skin.active, '--chart-positive-body'),
+
             triangleColor: getCssVariable(skin.active, '--triangle-color'),
             drawngShapeDefaultColor: getCssVariable(skin.active, '--accent1'),
             textColor: getCssVariable(skin.active, '--text2'),
@@ -515,6 +526,12 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
                     drawngShapeDefaultColor: getColorFromLocalStorageOrDefault(
                         'drawngShapeDefaultColor',
                     ),
+
+                    orderSellColor:
+                        getColorFromLocalStorageOrDefault('orderSell'),
+                    orderBuyColor:
+                        getColorFromLocalStorageOrDefault('orderBuy'),
+
                     textColor: getColorFromLocalStorageOrDefault('textColor'),
                     text1: getColorFromLocalStorageOrDefault('text1'),
                     text2: getColorFromLocalStorageOrDefault('text2'),

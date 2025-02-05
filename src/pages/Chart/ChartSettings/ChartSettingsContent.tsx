@@ -298,6 +298,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 liqBidColor: chartThemeColors.liqBidColor.toString(),
                 selectedDateStrokeColor:
                     chartThemeColors.selectedDateStrokeColor.toString(),
+                orderSell: chartThemeColors.orderSellColor.toString(),
+                orderBuy: chartThemeColors.orderBuyColor.toString(),
             },
             isTradeDollarizationEnabled: isTradeDollarizationEnabled,
             showVolume: showVolume,
@@ -385,6 +387,14 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             downColor: 'liqBidColor',
             upColor: 'liqAskColor',
             exclude: ['futa'],
+        },
+        {
+            selection: 'Order History',
+            actionHandler: 'order',
+            action: handleCandleColorPicker,
+            downColor: 'orderSellColor',
+            upColor: 'orderBuyColor',
+            exclude: [''],
         },
     ];
 
@@ -569,6 +579,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 <ColorPickerContainer>
                     {colorPickerContent.map(
                         (item, index) =>
+                            (item.actionHandler !== 'order' ||
+                                isUserConnected) &&
                             !item.exclude.includes(platformName) && (
                                 <ColorList key={index}>
                                     <ContextMenuContextText>
