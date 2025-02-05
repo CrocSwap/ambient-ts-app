@@ -111,7 +111,6 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
 
     const walletPriceWithTooltip = (
         <DefaultTooltip
-            interactive
             title={
                 isDexSelected ? (
                     <p
@@ -195,7 +194,6 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
 
     const maxButtonWithTooltip = (
         <DefaultTooltip
-            interactive
             title={
                 <p
                     style={{

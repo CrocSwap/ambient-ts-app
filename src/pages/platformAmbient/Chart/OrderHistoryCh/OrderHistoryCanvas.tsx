@@ -432,10 +432,10 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 isHighlighted: boolean,
             ) => {
                 const colorPalette = calculateCircleColor(
-                    chartThemeColors.downCandleBodyColor.copy(),
-                    chartThemeColors.downCandleBorderColor.copy(),
-                    chartThemeColors.upCandleBodyColor.copy(),
-                    chartThemeColors.upCandleBorderColor.copy(),
+                    chartThemeColors.orderSellColor.copy(),
+                    chartThemeColors.orderSellColor.copy(),
+                    chartThemeColors.orderBuyColor.copy(),
+                    chartThemeColors.orderBuyColor.copy(),
                     isHighlighted,
                 );
 
@@ -458,9 +458,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
 
-                    const sellColor =
-                        chartThemeColors.downCandleBodyColor.copy();
-                    const buyColor = chartThemeColors.upCandleBodyColor.copy();
+                    const sellColor = chartThemeColors.orderSellColor.copy();
+                    const buyColor = chartThemeColors.orderBuyColor.copy();
 
                     if (bandAreaHistorical && bandAreaHistorical.length > 0) {
                         bandAreaHistorical.forEach((element: any) => {

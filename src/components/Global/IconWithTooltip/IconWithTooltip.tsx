@@ -29,7 +29,6 @@ function IconWithTooltip(props: IconWithTooltipPropsIF) {
     return (
         <>
             <DefaultTooltip
-                interactive
                 arrow
                 title={title}
                 enterDelay={enterDelay ? parseFloat(enterDelay) : 400}

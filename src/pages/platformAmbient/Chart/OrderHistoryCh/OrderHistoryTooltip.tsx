@@ -9,7 +9,6 @@ import {
 } from '../../../../ambient-utils/dataLayer';
 import { TransactionIF } from '../../../../ambient-utils/types';
 import { AppStateContext, TradeDataContext } from '../../../../contexts';
-import { BrandContext } from '../../../../contexts/BrandContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import HoveredTooltip from '../Draw/Toolbar/HoveredTooltip';
 import {
@@ -62,8 +61,6 @@ export default function OrderHistoryTooltip(props: {
     const {
         activeNetwork: { blockExplorer },
     } = useContext(AppStateContext);
-
-    const { platformName } = useContext(BrandContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -179,9 +176,7 @@ export default function OrderHistoryTooltip(props: {
                         (hoveredOrderHistory.type === 'claimableLimit'
                             ? hoveredOrderHistory.order.order.isBid
                             : hoveredOrderHistory.order.order.isBuy))
-                        ? ['futa'].includes(platformName)
-                            ? 'var(--negative)'
-                            : 'var(--accent5)'
+                        ? 'var(--accent5)'
                         : 'var(--accent1)'
                 }
                 size={'15px'}
@@ -244,9 +239,7 @@ export default function OrderHistoryTooltip(props: {
                 color={
                     (denomInBase && !hoveredOrderHistory.order.isBid) ||
                     (!denomInBase && hoveredOrderHistory.order.isBid)
-                        ? ['futa'].includes(platformName)
-                            ? 'var(--negative)'
-                            : 'var(--accent5)'
+                        ? 'var(--accent5)'
                         : 'var(--accent1)'
                 }
                 size={'15px'}
