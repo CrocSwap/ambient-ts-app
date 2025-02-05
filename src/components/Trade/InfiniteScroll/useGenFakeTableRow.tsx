@@ -48,7 +48,7 @@ const useGenFakeTableRow = () => {
     } = useContext(AppStateContext);
 
     const getDelayTime = () => {
-        const factor = 0.01;
+        const factor = 0.0001;
         switch (chainId) {
             case '0x1': // eth-mainnet
             case '0xaa36a7': // eth-sepolia
@@ -60,8 +60,6 @@ const useGenFakeTableRow = () => {
                 return 2000 * factor;
         }
     };
-
-    console.log('>>> delay time', getDelayTime());
 
     const {
         tokens: { tokenUniv: tokenList },
@@ -282,6 +280,12 @@ const useGenFakeTableRow = () => {
             chainId: limitOrderData.chainId,
         };
 
+        let isSuccess = false;
+
+        if (liqBigInt != pendingTx.txDetails.currentLiquidity) {
+            isSuccess = true;
+        }
+
         return {
             positionHash: positionHash,
             timestamp: Date.now(),
@@ -289,6 +293,7 @@ const useGenFakeTableRow = () => {
             type: pendingTx.txType,
             action: pendingTx.txAction || '',
             status: 'onchain',
+            isSuccess: isSuccess,
         };
     };
 
@@ -521,6 +526,21 @@ const useGenFakeTableRow = () => {
             onChainConstructedPosition: true,
         } as PositionIF;
 
+        let isSuccess = false;
+
+        if (
+            pendingTx.txDetails &&
+            pendingTx.txDetails.currentLiquidity != liqBigInt
+        ) {
+            isSuccess = true;
+        } else if (
+            liqBigInt > 0 &&
+            (pendingTx.txDetails.currentLiquidity == 0n ||
+                pendingTx.txDetails.currentLiquidity == undefined)
+        ) {
+            isSuccess = true;
+        }
+
         return {
             positionHash: posHash,
             timestamp: Date.now(),
@@ -528,6 +548,7 @@ const useGenFakeTableRow = () => {
             type: pendingTx.txType,
             action: pendingTx.txAction || '',
             status: 'onchain',
+            isSuccess: isSuccess,
         };
     };
 

@@ -68,6 +68,8 @@ export type RecentlyUpdatedPositionIF = {
     action: string;
     status: RecentlyUpdatedPositionStatus;
     txByType?: TransactionByType;
+    currentLiquidity?: bigint | undefined;
+    isSuccess?: boolean;
 };
 
 export interface GraphDataContextIF {
