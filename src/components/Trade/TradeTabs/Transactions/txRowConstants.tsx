@@ -147,7 +147,7 @@ export const txRowConstants = (props: propsIF) => {
                         rounded
                         font='roboto'
                         role='button'
-                        style={{ width: '440px', cursor: 'pointer' }}
+                        style={{ width: '470px', cursor: 'pointer' }}
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
                             event.stopPropagation()
                         }

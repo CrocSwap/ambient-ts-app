@@ -133,7 +133,7 @@ export default function rangeRowConstants(props: propsIF) {
                         rounded
                         font='roboto'
                         role='button'
-                        style={{ width: '440px', cursor: 'default' }}
+                        style={{ width: '480px', cursor: 'default' }}
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
                             event.stopPropagation()
                         }

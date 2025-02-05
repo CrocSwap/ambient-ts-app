@@ -127,7 +127,7 @@ export const orderRowConstants = (props: propsIF) => {
                         rounded
                         font='roboto'
                         role='button'
-                        style={{ width: '440px', cursor: 'default' }}
+                        style={{ width: '510px', cursor: 'default' }}
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
                             event.stopPropagation()
                         }
