@@ -27,21 +27,18 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                     (e) =>
                         e.position &&
                         `${e.position.base}-${e.position.quote}`.toLocaleLowerCase() ===
-                            `${baseToken.address}-${quoteToken.address}`.toLocaleLowerCase(),
+                            `${baseToken.address}-${quoteToken.address}`.toLocaleLowerCase() &&
+                        e.isSuccess,
                 )
                 .forEach((e) => {
-                    if (type === 'Order' && e.type === 'Limit' && e.isSuccess) {
+                    if (type === 'Order' && e.type === 'Limit') {
                         if (e.action !== 'Remove') {
                             (recentlyUpdatedToShow as LimitOrderIF[]).push(
                                 e.position as LimitOrderIF,
                             );
                         }
                         recentlyUpdatedHashes.add(e.positionHash);
-                    } else if (
-                        props.type === 'Range' &&
-                        e.type === 'Range' &&
-                        e.isSuccess
-                    ) {
+                    } else if (props.type === 'Range' && e.type === 'Range') {
                         if (e.position && e.position.positionLiq > 0) {
                             (recentlyUpdatedToShow as PositionIF[]).push(
                                 e.position as PositionIF,
