@@ -48,7 +48,9 @@ const useGenFakeTableRow = () => {
     } = useContext(AppStateContext);
 
     const getDelayTime = () => {
-        const factor = 0.0001;
+        // can be used to test if indexed data overrides pendings correctly
+        const factor = 1;
+
         switch (chainId) {
             case '0x1': // eth-mainnet
             case '0xaa36a7': // eth-sepolia
