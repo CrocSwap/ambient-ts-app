@@ -5622,7 +5622,10 @@ export default function Chart(props: propsIF) {
                 const scale = d3
                     .scaleLinear()
                     .range([750, 3000])
-                    .domain([domainLeft, domainRight]);
+                    .domain([
+                        userTransactionData.length > 2 ? domainLeft : 0,
+                        domainRight,
+                    ]);
 
                 setCircleScale(() => {
                     return scale;
