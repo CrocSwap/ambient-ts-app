@@ -134,7 +134,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                     )}
 
                     <DefaultTooltip
-                        interactive
                         title={`My ${props.currentTab}`}
                         placement={'bottom'}
                         arrow

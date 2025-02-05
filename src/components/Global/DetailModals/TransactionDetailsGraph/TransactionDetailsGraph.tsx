@@ -19,13 +19,13 @@ import {
     setCanvasResolution,
 } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 import { FlexContainer } from '../../../../styled/Common';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import {
     formatAmountChartData,
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
 import Spinner from '../../Spinner/Spinner';
 import './TransactionDetailsGraph.css';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {

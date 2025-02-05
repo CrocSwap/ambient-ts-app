@@ -1,12 +1,14 @@
 import * as d3 from 'd3';
 import { MouseEvent, useContext, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
+import Divider from '../../../components/Global/Divider/Divider';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { ChartContext, ChartThemeIF } from '../../../contexts/ChartContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../../platformAmbient/Chart/ChartUtils/chartConstants';
 import {
     chartItemStates,
@@ -44,8 +46,6 @@ import {
     StyledCheckbox,
     StyledSelectbox,
 } from './ChartSettingsCss';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import Divider from '../../../components/Global/Divider/Divider';
 
 interface ContextMenuContentIF {
     chartThemeColors: ChartThemeIF;
