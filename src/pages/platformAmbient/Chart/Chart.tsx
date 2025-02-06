@@ -3544,7 +3544,7 @@ export default function Chart(props: propsIF) {
     const circleSeries = createCircle(
         scaleData?.drawingLinearxScale,
         scaleData?.yScale,
-        60,
+        50,
         0.5,
         denomInBase,
     );
@@ -3552,7 +3552,7 @@ export default function Chart(props: propsIF) {
     const selectedCircleSeries = createCircle(
         scaleData?.drawingLinearxScale,
         scaleData?.yScale,
-        80,
+        70,
         0.5,
         denomInBase,
         true,

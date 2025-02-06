@@ -85,6 +85,12 @@ export function createCircle(
                     : colorPalette.sellFill;
 
                 context.lineWidth = lineWidth;
+            } else {
+                context.strokeStyle = 'white';
+
+                context.fillStyle = 'white';
+
+                context.lineWidth = lineWidth;
             }
         });
 }
