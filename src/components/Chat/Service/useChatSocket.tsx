@@ -31,6 +31,7 @@ import {
     getUserListWithRestEndpoint,
     updateLikesDislikesCountEndpoint,
     updateUnverifiedMessagesEndpoint,
+    getUsersByIdListEndpoint,
 } from '../ChatConstants/ChatEndpoints';
 
 import useWebSocket, { ReadyState } from 'react-use-websocket';
@@ -96,6 +97,8 @@ const useChatSocket = (
     const { updateUserAvatarData } = useContext(UserDataContext);
 
     const url = CHAT_BACKEND_URL + '/chat/api/subscribe/';
+
+    const [shouldUserFetched, setShouldUserFetched] = useState(false);
 
     // handle query params
     const qp: ChatWsQueryParams = {
@@ -321,6 +324,52 @@ const useChatSocket = (
         return data;
     }
 
+    function collectSendersAndReactions(messages: Message[]) {
+        const resultSet = new Set<string>();
+
+        messages.forEach((message: Message) => {
+            resultSet.add(message.sender);
+
+            Object.values(message.reactions).forEach((userIds: string[]) => {
+                userIds.forEach((userId) => {
+                    if (userId !== message.sender) {
+                        resultSet.add(userId);
+                    }
+                });
+            });
+        });
+
+        return resultSet;
+    }
+
+    async function getUsersByIdList() {
+        // Collect the IDs as a Set, then convert it to a comma-separated string
+        const resultSet = collectSendersAndReactions(messages); // Assuming it's returning a Set
+
+        console.log('>>> resultSet:', resultSet);
+
+        if (resultSet.entries.length == 0) return;
+
+        // Convert Set to a comma-separated string
+        const resultString = Array.from(resultSet).join(',');
+
+        console.log('resultString:', resultString);
+
+        // Make the fetch request to get users by ID list
+        const response = await fetch(
+            `${CHAT_BACKEND_URL}${getUsersByIdListEndpoint}${resultString}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            },
+        );
+
+        const data = await response.json();
+        return data;
+    }
+
     async function updateUnverifiedMessages(verifyDate: Date, endDate?: Date) {
         const nonVerifiedMessages = getUnverifiedMsgList(address);
         const vrfTkn = getLS(LS_USER_VERIFY_TOKEN, address);
@@ -409,13 +458,18 @@ const useChatSocket = (
         if (roomRef.current == room) return;
         sendToSocket('join-room', { roomInfo: room, oldRoom: roomRef.current });
         roomRef.current = room;
+        setShouldUserFetched(true);
     }, [room]);
 
     useEffect(() => {
-        if (isChatOpen) {
-            updateUserCache();
+        if (isChatOpen && shouldUserFetched) {
+            if (room === 'Global') {
+                updateUserCache();
+            } else {
+                getUsersByIdList();
+            }
         }
-    }, [messages, isChatOpen]);
+    }, [messages, isChatOpen, room]);
 
     async function deleteMsgFromList(msgId: string) {
         const payload = {
