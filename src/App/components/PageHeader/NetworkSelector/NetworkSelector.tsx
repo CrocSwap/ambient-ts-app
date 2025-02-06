@@ -361,8 +361,8 @@ export default function NetworkSelector(props: propsIF) {
                 className={styles.dropdownMenuContainer}
                 style={{
                     cursor: networks.length > 1 ? 'pointer' : 'default',
-                    borderRadius: isFuta ? 0 : '50%',
-                    width: isFuta ? '25px' : '35px',
+                    borderRadius: isFuta ? 0 : smallScreen ? '50%' : '0',
+                    width: isFuta ? '25px' : smallScreen ? '35px' : 'auto',
                     height: isFuta ? '25px' : '35px',
                 }}
             >
