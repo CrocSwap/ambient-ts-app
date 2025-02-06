@@ -328,6 +328,8 @@ export default function DragCanvas(props: DragCanvasProps) {
             }
         }
         drawnShapeHistory[index].data = previosData;
+
+        render();
     }
 
     function updateDrawRect(
@@ -377,6 +379,7 @@ export default function DragCanvas(props: DragCanvasProps) {
             previosData[1].y = should1yMove ? newYWithDenom : previosData[1].y;
 
             drawnShapeHistory[index].data = previosData;
+
             if (hoveredDrawnShape) {
                 hoveredDrawnShape.selectedCircle = {
                     x: newX,
@@ -384,6 +387,8 @@ export default function DragCanvas(props: DragCanvasProps) {
                     denomInBase: denomInBase,
                 };
             }
+
+            render();
         }
     }
 
