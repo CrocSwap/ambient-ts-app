@@ -10,3 +10,12 @@
     height: calc(100svh - 110px);
     padding: 0px 16px;
 }
+
+
+@media (max-width: 599px) {
+
+.container{
+
+    padding: 0 8px;
+}
+}

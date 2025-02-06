@@ -95,12 +95,17 @@ line-height: normal;
     color: var(--text2);
     pointer-events: none;
 }
+@media screen and (max-width: 599px) {
 
-@media (max-width: 780px) {
+    .rightLayout{
+       margin-top: 6rem;
+       
+    }
     .claimButton {
         margin: 5px 0;
     }
 }
+
 
 /* tablets and cellphones */
 @media screen and (max-width: 1024px) {
@@ -114,7 +119,7 @@ line-height: normal;
        
       
         height: 144px;
-        margin-top: auto;
+      
     }
     .data_detail{
         height: 100%;
@@ -124,4 +129,10 @@ line-height: normal;
         width: 100%;
         text-align: center;
     }
+}
+@media only screen and (min-width: 600px) and (min-width: 1024px){
+.rightLayout{
+    margin-top: auto;
+}
+
 }
