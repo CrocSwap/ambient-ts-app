@@ -6231,6 +6231,9 @@ export default function Chart(props: propsIF) {
     const relocateTooltip = (tooltip: any, data: number) => {
         if (tooltip && scaleData) {
             const width = tooltip.style('width').split('p')[0] / 2;
+            const height = tooltip.style('height').split('p')[0];
+
+            const labelTopPlacement = height > 30 ? 15 : 0;
 
             const xAxisNode = d3.select(d3XaxisRef.current).node();
             const xAxisTop = xAxisNode?.getBoundingClientRect().top;
@@ -6238,7 +6241,9 @@ export default function Chart(props: propsIF) {
                 .style(
                     'top',
                     (xAxisTop && mainCanvasBoundingClientRect
-                        ? xAxisTop - mainCanvasBoundingClientRect.top
+                        ? xAxisTop -
+                          mainCanvasBoundingClientRect.top -
+                          labelTopPlacement
                         : 0) -
                         xAxisHeightPixel +
                         'px',
