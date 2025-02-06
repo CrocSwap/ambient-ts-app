@@ -73,8 +73,6 @@ export default defineConfig({
                         return 'styled-components';
                     } else if (id.toLowerCase().includes('ens-normalize')) {
                         return 'ens';
-                    } else if (id.toLowerCase().includes('intro.js')) {
-                        return 'intro';
                     } else if (
                         id.toLowerCase().includes('numbro') ||
                         id.toLowerCase().includes('moment')
@@ -93,7 +91,6 @@ export default defineConfig({
                     } else if (id.toLowerCase().includes('web3modal')) {
                         return 'web3modal';
                     } else if (
-                        id.toLowerCase().includes('material-ui') ||
                         id.toLowerCase().includes('popper') ||
                         id.toLowerCase().includes('mui') ||
                         id.toLowerCase().includes('react-color') ||

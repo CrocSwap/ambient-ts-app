@@ -220,7 +220,7 @@ export async function expandPoolStats(
         ? baseUsdPrice
         : isETHorStakedEthToken(base)
           ? (await getEthPrice()) || 0.0
-          : quoteUsdPrice
+          : quoteUsdPrice && displayPoolPrice
             ? quoteUsdPrice / displayPoolPrice
             : 0.0;
 

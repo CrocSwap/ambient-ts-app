@@ -26,17 +26,13 @@ export default function UserProfileCard(props: propsIF) {
         isMobileDropdown,
     } = props;
     const { activeNetwork, isUserOnline } = useContext(AppStateContext);
-    const { userAddress, resolvedAddressFromContext, userAvatarData } =
-        useContext(UserDataContext);
-    const link = resolvedAddressFromContext
-        ? `/${resolvedAddressFromContext}`
-        : `/${userAddress}`;
+    const { userAddress, userAvatarData } = useContext(UserDataContext);
 
     return (
         <div
             className={`${styles.nameDisplayContainer} ${isMobileDropdown && styles.mobileDropdown}`}
         >
-            <Link to={link}>
+            <Link to={'/account'}>
                 {isUserOnline &&
                     userAddress &&
                     userAvatarData &&
@@ -44,7 +40,10 @@ export default function UserProfileCard(props: propsIF) {
             </Link>
             <FlexContainer alignItems='center' flexDirection='column'>
                 <div className={styles.nameDisplay}>
-                    <h2>{ensName !== '' ? ensName : accountAddress}</h2>
+                    <Link to={'/account'}>
+                        <h2>{ensName !== '' ? ensName : accountAddress}</h2>
+                    </Link>
+
                     <IconWithTooltip
                         title={`${'View wallet address on block explorer'}`}
                         placement='right'

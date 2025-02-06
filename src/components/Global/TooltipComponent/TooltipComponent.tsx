@@ -48,7 +48,6 @@ function TooltipComponent(props: TooltipComponentProps) {
         return (
             <TextOnlyTooltip
                 title={props.title}
-                interactive
                 placement={props.placement ? props.placement : 'right'}
                 arrow
                 enterDelay={400}
@@ -72,7 +71,6 @@ function TooltipComponent(props: TooltipComponentProps) {
             {open && props.usePopups && isMobile && mobilePopup}
             <DefaultTooltip
                 title={props.title}
-                interactive
                 placement={props.placement ? props.placement : 'right'}
                 arrow
                 enterDelay={400}

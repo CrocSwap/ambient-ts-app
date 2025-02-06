@@ -47,10 +47,12 @@
 
 .walletName {
     min-width: 80px;
+   
+   
 }
 
-@media (max-width: 600px) {
+/* @media (max-width: 600px) {
     .walletName {
         display: none;
     }
-}
+} */
