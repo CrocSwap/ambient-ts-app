@@ -2027,18 +2027,16 @@ export default function Chart(props: propsIF) {
 
         if (today !== undefined && scaleData !== undefined) {
             if (
-                !showLatest &&
                 today &&
                 (scaleData?.xScale.domain()[1] < today.getTime() ||
                     scaleData?.xScale.domain()[0] > today.getTime())
             ) {
-                setShowLatest(true);
+                setShowLatest(() => true);
             } else if (
-                showLatest &&
                 !(scaleData?.xScale.domain()[1] < today.getTime()) &&
                 !(scaleData?.xScale.domain()[0] > today.getTime())
             ) {
-                setShowLatest(false);
+                setShowLatest(() => false);
             }
         }
     };
@@ -7319,6 +7317,7 @@ export default function Chart(props: propsIF) {
                     }
                     setCloseOutherChartSetting={setCloseOutherChartSetting}
                     closeOutherChartSetting={closeOutherChartSetting}
+                    showLatest={showLatest}
                 />
             )}
         </div>

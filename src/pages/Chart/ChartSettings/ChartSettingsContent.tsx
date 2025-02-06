@@ -68,6 +68,7 @@ interface ContextMenuContentIF {
     setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
     isMobile: boolean;
     isSettingsClosing: boolean;
+    showLatest: boolean | undefined;
 }
 
 export default function ChartSettingsContent(props: ContextMenuContentIF) {
@@ -87,6 +88,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         setIsSaving,
         isMobile,
         isSettingsClosing,
+        showLatest,
     } = props;
 
     const {
@@ -98,7 +100,6 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         setShowVolume,
         showSwap,
         setShowSwap,
-        showLatest,
         setLatest,
         rescale,
         setRescale,

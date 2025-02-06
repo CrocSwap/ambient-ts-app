@@ -462,6 +462,7 @@ function TradeCharts(props: propsIF) {
                 setIsSaving={setIsSaving}
                 isMobile={true}
                 isSettingsClosing={isSettingsClosing}
+                showLatest={showLatest}
             />
         </section>
     );
