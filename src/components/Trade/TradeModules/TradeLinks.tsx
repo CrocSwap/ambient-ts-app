@@ -94,7 +94,8 @@ export default function TradeLinks(props: propsIF) {
                     key={JSON.stringify(route)}
                     id={`link_to_${route.name.toLowerCase()}_module`}
                     to={route.path}
-                    className={`${styles.trade_link} ${location.pathname.includes(route.baseURL) ? styles.trade_link_active : ''}`}
+                    className={`${styles.trade_link} 
+  ${location.pathname.includes(route.baseURL) ? (isFuta ? styles.trade_link_futa_active : styles.trade_link_active) : isFuta ? styles.trade_link_futa : ''}`}
                 >
                     {route.name}
                 </Link>

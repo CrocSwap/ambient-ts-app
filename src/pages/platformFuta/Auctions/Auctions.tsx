@@ -17,6 +17,7 @@ import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
 import { FlexContainer } from '../../../styled/Common';
 
 import styles from './Auctions.module.css';
+import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
 
 interface Props {
     hideTicker?: boolean;
@@ -166,7 +167,8 @@ export default function Auctions({ hideTicker, placeholderTicker }: Props) {
     // mobile
     return (
         <div className={styles.mobileContainer}>
-            <h3>AUCTIONS</h3>
+            <BreadCrumb />
+
             <div
                 id='auctions_search_wrapper'
                 className={styles.auctions_search_wrapper}

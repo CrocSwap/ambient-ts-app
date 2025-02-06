@@ -1,7 +1,7 @@
 .container {
-    background: var(--dark1, #06060c);
+    background:  #0D0F13;
     width: 100%;
-    height: 64px;
+    height: 56px;
     align-items: center;
     position: fixed;
     bottom: 0;
@@ -9,7 +9,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     color: var(--text2);
-    font-family: var(--font-family) !important;
+    font-family: 'Fira Mono' !important;
 }
 
 .footerContainer {
@@ -22,6 +22,10 @@
     align-items: center;
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
+    text-transform: uppercase;
+    font-size: var(--body-size);
+    font-family: 'Fira Mono' !important;
+
 }
 
 .footerItem:hover {
