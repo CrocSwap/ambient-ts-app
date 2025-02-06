@@ -404,7 +404,6 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                 event.stopPropagation();
                 setIsContractNameOptionTabActive(false);
             }}
-            ref={NftComponentItemRef}
         >
             <div>
                 <NFTBannerHeader>
@@ -529,7 +528,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                         </IconContainer>
                     </SelectedNftCotainer>
                     {nftContractName.length > 0 && (
-                        <NFTBannerFilter>
+                        <NFTBannerFilter ref={NftComponentItemRef}>
                             <DropDownContainer>
                                 <DropDownHeader
                                     onClick={(
