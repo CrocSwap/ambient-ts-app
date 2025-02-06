@@ -1,9 +1,12 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, useContext } from 'react';
 import styles from './CreateInput.module.css';
+import { AuctionsContext } from '../../../contexts';
 
 interface CreateInputProps {
     tickerInput: string;
     handleChange: (value: string) => void;
+    isValidated: boolean;
+    isValidationInProgress: boolean;
 }
 const TICKER_INPUT_ID = 'ticker_input';
 const TICKER_MAX_LENGTH = 10;
@@ -11,7 +14,10 @@ const TICKER_MAX_LENGTH = 10;
 const CreateInput: React.FC<CreateInputProps> = ({
     tickerInput = '',
     handleChange,
+    isValidated,
+    isValidationInProgress,
 }) => {
+    const { globalAuctionList } = useContext(AuctionsContext);
     const [displayValue, setDisplayValue] = useState<string>('');
     const [overflowValue, setOverflowValue] = useState<string>('');
 
@@ -36,6 +42,41 @@ const CreateInput: React.FC<CreateInputProps> = ({
         ) as HTMLInputElement;
         if (input) input.focus();
     }, []);
+
+    function generateValidSuggestion(ticker: string): string {
+        // Remove special characters and spaces
+        let suggestion = ticker.replace(/[^A-Z0-9]/g, '');
+
+        // Ensure it starts with a letter if it doesn't
+        if (/^[0-9]/.test(suggestion)) {
+            suggestion = 'T' + suggestion;
+        }
+
+        // Truncate to leave room for potential number suffix (max 8 chars instead of 10)
+        if (suggestion.length > 8) {
+            suggestion = suggestion.slice(0, 8);
+        }
+
+        // If empty or too short, pad with default chars
+        if (suggestion.length < 3) {
+            suggestion = suggestion.padEnd(3, 'X');
+        }
+
+        // Check if suggestion exists and add number suffix if needed
+        let finalSuggestion = suggestion;
+        let counter = 1;
+
+        while (
+            globalAuctionList.data?.some(
+                (item) => item.ticker === finalSuggestion,
+            )
+        ) {
+            finalSuggestion = `${suggestion}${counter}`;
+            counter++;
+        }
+
+        return finalSuggestion;
+    }
 
     return (
         <div className={styles.create_token_middle}>
@@ -83,6 +124,21 @@ const CreateInput: React.FC<CreateInputProps> = ({
                     </p>
                 </div>
             </div>
+            {!isValidated && tickerInput && !isValidationInProgress && (
+                <div className={styles.suggestionContainer}>
+                    <span className={styles.suggestionText}>
+                        Consider using:{' '}
+                    </span>
+                    <button
+                        onClick={() =>
+                            handleChange(generateValidSuggestion(tickerInput))
+                        }
+                        className={styles.suggestionButton}
+                    >
+                        {generateValidSuggestion(tickerInput)}
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

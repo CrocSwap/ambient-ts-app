@@ -1,6 +1,6 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     CURRENT_AUCTION_VERSION,
     GAS_DROPS_ESTIMATE_AUCTION_CREATE,
@@ -36,6 +36,7 @@ export default function Create() {
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
+    const [searchParams] = useSearchParams();
 
     const { tickerInput, setTickerInput } = useContext(AuctionsContext);
 
@@ -99,6 +100,18 @@ export default function Create() {
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
+    useEffect(() => {
+        const tickerParam = searchParams.get('ticker');
+        if (tickerParam) {
+            // Use the same validation logic as handleChange
+            const sanitized = tickerParam.trim();
+            if (checkTickerPattern(sanitized)) {
+                setIsValidationInProgress(true);
+                setTickerInput(sanitized.toUpperCase());
+            }
+        }
+    }, [searchParams]);
 
     const extraInfoData = [
         {
@@ -230,7 +243,10 @@ export default function Create() {
                 <CreateInput
                     tickerInput={tickerInput}
                     handleChange={handleChange}
+                    isValidated={isValidated}
+                    isValidationInProgress={isValidationInProgress}
                 />
+
                 {footerDisplay}
             </motion.div>
 
