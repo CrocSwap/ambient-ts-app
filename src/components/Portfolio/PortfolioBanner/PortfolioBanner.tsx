@@ -138,7 +138,6 @@ export default function PortfolioBanner(props: propsIF) {
                 />
                 {desktopScreen && (
                     <DefaultTooltip
-                        interactive
                         title={'Toggle USD Price Estimates'}
                         enterDelay={500}
                     >

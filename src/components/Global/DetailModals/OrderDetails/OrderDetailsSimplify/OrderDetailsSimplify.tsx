@@ -9,10 +9,10 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import InfoRow from '../../../InfoRow';
 import styles from './OrderDetailsSimplify.module.css';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     limitOrder: LimitOrderIF;

@@ -175,9 +175,9 @@ export default function Modal(props: ModalPropsIF) {
                 aria-modal='true'
             >
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.4 }}
+                    // initial={{ opacity: 0, scale: 0.5 }}
+                    // animate={{ opacity: 1, scale: 1 }}
+                    // transition={{ duration: 0.4 }}
                     className={`
                         ${styles.modal_body}
                         ${noBackground ? styles.no_background_modal : null}

@@ -296,9 +296,19 @@ function TradeCandleStickChart(props: propsIF) {
 
                         if (
                             (timeOfEndCandle && candles.length < 30) ||
-                            gapLeft > 1000
+                            gapLeft > 500
                         ) {
+                            setCandleDomains((prev: CandleDomainIF) => {
+                                return {
+                                    ...prev,
+                                    isResetRequest: true,
+                                };
+                            });
+
                             await resetXScale(scaleData.xScale);
+                            periodRef.current = period;
+
+                            return;
                         }
                     }
                     periodRef.current = period;
@@ -309,6 +319,15 @@ function TradeCandleStickChart(props: propsIF) {
             }
         })();
     }, [isFetchingEnoughData]);
+
+    /**
+     * open chart if reset request completed
+     */
+    useEffect(() => {
+        if (!candleDomains.isResetRequest) {
+            setIsCheckGap(true);
+        }
+    }, [candleDomains.isResetRequest]);
 
     const sumActiveLiq = unparsedLiquidityData
         ? unparsedLiquidityData.ranges.reduce((sum, range) => {

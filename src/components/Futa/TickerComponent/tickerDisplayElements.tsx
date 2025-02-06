@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext, useRef } from 'react';
+import { Dispatch, SetStateAction, useContext, useEffect, useRef } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import { supportedNetworks } from '../../../ambient-utils/constants';
@@ -24,9 +24,9 @@ import {
 } from '../../../pages/platformFuta/mockAuctionData';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { CurrencySelector } from '../../Form/CurrencySelector';
+import FutaDivider2 from '../Divider/FutaDivider2';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import TooltipLabel from '../TooltipLabel/TooltipLabel';
-import FutaDivider2 from '../Divider/FutaDivider2';
 
 // Props interface
 export interface PropsIF {
@@ -88,6 +88,10 @@ export const tickerDisplayElements = (props: PropsIF) => {
     } = useContext(AppStateContext);
     const { showComments, setShowComments, watchlists } =
         useContext(AuctionsContext);
+
+    useEffect(() => {
+        if (showComments) setShowComments(false);
+    }, [tickerFromParams]);
 
     const currentMarketCapUsdFormatted =
         filledMarketCapUsdValue !== undefined

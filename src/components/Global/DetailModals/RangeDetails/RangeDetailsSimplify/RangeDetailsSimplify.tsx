@@ -12,10 +12,10 @@ import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import InfoRow from '../../../InfoRow';
 import styles from './RangeDetailsSimplify.module.css';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     position: PositionIF;

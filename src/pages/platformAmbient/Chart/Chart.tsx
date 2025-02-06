@@ -1279,6 +1279,22 @@ export default function Chart(props: propsIF) {
             localCandleDomains.domainBoundry &&
             localCandleDomains.lastCandleDate
         ) {
+            if (visibleCandleData.length > 0) {
+                const minDomain = scaleData.xScale.domain()[0];
+                const visibleCandleDataFirstCandleTime =
+                    visibleCandleData[visibleCandleData.length - 1]?.time *
+                    1000;
+
+                if (
+                    Math.floor(
+                        (visibleCandleDataFirstCandleTime - minDomain) /
+                            (period * 1000),
+                    ) > 2
+                ) {
+                    localCandleDomains.lastCandleDate =
+                        visibleCandleDataFirstCandleTime;
+                }
+            }
             setCandleDomains(localCandleDomains);
         }
     }, [debouncedGetNewCandleDataRight]);
@@ -5648,7 +5664,10 @@ export default function Chart(props: propsIF) {
                 const scale = d3
                     .scaleLinear()
                     .range([750, 3000])
-                    .domain([domainLeft, domainRight]);
+                    .domain([
+                        userTransactionData.length > 2 ? domainLeft : 0,
+                        domainRight,
+                    ]);
 
                 setCircleScale(() => {
                     return scale;

@@ -305,21 +305,18 @@ export class Zoom {
 
     public getNewCandleDataLeft(newBoundary: number, firstCandleTime: number) {
         // Implementation for getting new candle data
-        if (newBoundary && firstCandleTime && newBoundary < firstCandleTime) {
-            const newCandleCount = this.isDiscontinuityScaleEnabled ? 500 : 100;
-            const newLastCandle =
-                newBoundary - newCandleCount * this.period * 1000;
+        const newCandleCount = this.isDiscontinuityScaleEnabled ? 500 : 100;
+        const newLastCandle = newBoundary - newCandleCount * this.period * 1000;
 
-            const candleDomain = {
-                lastCandleDate: firstCandleTime,
-                domainBoundry: newLastCandle,
-                isAbortedRequest: false,
-                isResetRequest: false,
-                isCondensedFetching: this.candleDomains.isCondensedFetching,
-            };
+        const candleDomain = {
+            lastCandleDate: firstCandleTime,
+            domainBoundry: newLastCandle,
+            isAbortedRequest: false,
+            isResetRequest: false,
+            isCondensedFetching: this.candleDomains.isCondensedFetching,
+        };
 
-            this.setCandleDomains(candleDomain);
-        }
+        this.setCandleDomains(candleDomain);
     }
 
     public changeCandleSize(
