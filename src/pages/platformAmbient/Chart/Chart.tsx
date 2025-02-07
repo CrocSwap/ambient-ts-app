@@ -19,6 +19,7 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { useDrawSettings } from '../../../App/hooks/useDrawSettings';
@@ -43,6 +44,7 @@ import {
     LimitOrderIF,
     TransactionIF,
 } from '../../../ambient-utils/types';
+import { GraphDataContext } from '../../../contexts';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { CandleContext } from '../../../contexts/CandleContext';
@@ -65,6 +67,7 @@ import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 import YAxisCanvas from './Axes/yAxis/YaxisCanvas';
 import CandleChart from './Candle/CandleChart';
 import './Chart.css';
+import { updateZeroPriceCandles } from './ChartUtils/candleDataUtils';
 import {
     LS_KEY_CHART_ANNOTATIONS,
     defaultCandleBandwith,
@@ -125,9 +128,6 @@ import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
 import RangeLinesChart from './RangeLine/RangeLinesChart';
 import TvlChart from './Tvl/TvlChart';
 import VolumeBarCanvas from './Volume/VolumeBarCanvas';
-import { GraphDataContext } from '../../../contexts';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { updateZeroPriceCandles } from './ChartUtils/candleDataUtils';
 
 interface propsIF {
     isTokenABase: boolean;
