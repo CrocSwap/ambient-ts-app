@@ -124,8 +124,10 @@ export function createArrowPointsOfDPRangeLine(
         horizontalArrowDirection === 'down' ? endY : startY;
 
     const horizontalArrowXAxisData =
-        scaleData.xScale(startX) +
-        (scaleData.xScale(endX) - scaleData.xScale(startX)) / 2;
+        scaleData.drawingLinearxScale(startX) +
+        (scaleData.drawingLinearxScale(endX) -
+            scaleData.drawingLinearxScale(startX)) /
+            2;
 
     const verticalArrowYAxisData = startY + (endY - startY) / 2;
 
@@ -158,7 +160,7 @@ export function createArrowPointsOfDPRangeLine(
     const horizontalArrow = [
         [
             {
-                x: scaleData.xScale.invert(
+                x: scaleData.drawingLinearxScale.invert(
                     horizontalArrowXAxisData - arrowSize,
                 ),
                 y:
@@ -168,19 +170,23 @@ export function createArrowPointsOfDPRangeLine(
                 denomInBase: data[0].denomInBase,
             },
             {
-                x: scaleData.xScale.invert(horizontalArrowXAxisData),
+                x: scaleData.drawingLinearxScale.invert(
+                    horizontalArrowXAxisData,
+                ),
                 y: horizontalArrowYAxisData,
                 denomInBase: data[1].denomInBase,
             },
         ],
         [
             {
-                x: scaleData.xScale.invert(horizontalArrowXAxisData),
+                x: scaleData.drawingLinearxScale.invert(
+                    horizontalArrowXAxisData,
+                ),
                 y: horizontalArrowYAxisData,
                 denomInBase: data[0].denomInBase,
             },
             {
-                x: scaleData.xScale.invert(
+                x: scaleData.drawingLinearxScale.invert(
                     horizontalArrowXAxisData + arrowSize,
                 ),
                 y:
@@ -195,8 +201,8 @@ export function createArrowPointsOfDPRangeLine(
     const verticalArrow = [
         [
             {
-                x: scaleData.xScale.invert(
-                    scaleData.xScale(verticalArrowXAxisData) +
+                x: scaleData.drawingLinearxScale.invert(
+                    scaleData.drawingLinearxScale(verticalArrowXAxisData) +
                         (verticalArrowDirection === 'right'
                             ? -arrowSize
                             : arrowSize),
@@ -220,8 +226,8 @@ export function createArrowPointsOfDPRangeLine(
                 denomInBase: data[0].denomInBase,
             },
             {
-                x: scaleData.xScale.invert(
-                    scaleData.xScale(verticalArrowXAxisData) +
+                x: scaleData.drawingLinearxScale.invert(
+                    scaleData.drawingLinearxScale(verticalArrowXAxisData) +
                         (verticalArrowDirection === 'right'
                             ? -arrowSize
                             : arrowSize),

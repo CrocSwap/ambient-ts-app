@@ -50,6 +50,7 @@ interface xAxisIF {
     isUpdatingShape: boolean;
     timeGaps: timeGapsValue[];
     isDiscontinuityScaleEnabled: boolean;
+    bandwidth: number;
 }
 
 function XAxisCanvas(props: xAxisIF) {
@@ -76,6 +77,7 @@ function XAxisCanvas(props: xAxisIF) {
         isUpdatingShape,
         timeGaps,
         isDiscontinuityScaleEnabled,
+        bandwidth,
     } = props;
 
     const { timeOfEndCandle } = useContext(CandleContext);
@@ -344,9 +346,11 @@ function XAxisCanvas(props: xAxisIF) {
 
                     const shapeData = selectedDrawnShape.data;
 
+                    const linearScale = scaleData.drawingLinearxScale;
+
                     const rectWidth =
-                        xScale(shapeData.data[1].x) -
-                        xScale(shapeData.data[0].x);
+                        linearScale(shapeData.data[1].x) -
+                        linearScale(shapeData.data[0].x);
 
                     const style = getComputedStyle(canvas);
 
@@ -362,14 +366,14 @@ function XAxisCanvas(props: xAxisIF) {
                         : 'rgba(115, 113, 252, 0.1)';
 
                     context.fillRect(
-                        xScale(shapeData.data[0].x),
+                        linearScale(shapeData.data[0].x),
                         height * 0.175,
                         rectWidth,
                         height * 0.65,
                     );
 
                     shapeData.data.forEach((data) => {
-                        const shapePoint = xScale(data.x);
+                        const shapePoint = linearScale(data.x);
                         const point = formatDateTicks(data.x, 'cr');
 
                         if (point) {
@@ -517,6 +521,7 @@ function XAxisCanvas(props: xAxisIF) {
                                     scaleData,
                                     firstCandleDate,
                                     previousTouch,
+                                    bandwidth,
                                 );
                             }
                             changeScale(true);
