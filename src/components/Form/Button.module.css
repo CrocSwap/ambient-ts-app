@@ -10,7 +10,6 @@
     cursor: pointer;
     text-align: center;
     background: transparent;
-    text-transform: capitalize;
     border-radius: var(--border-radius);
     transition: var(--transition);
     border: 1px solid var(--accent1);
