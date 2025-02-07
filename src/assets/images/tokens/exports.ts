@@ -19,6 +19,7 @@ import LDO from './LDO.svg';
 import LINK from './LINK.svg';
 import MIA from './MIA.png';
 import MKR from './MKR.png';
+import NELIXIR from './NELIXIR.svg';
 import NEV from './NEV.webp';
 import NRWA from './NRWA.svg';
 import NTBILL from './NTBILL.svg';
@@ -90,6 +91,7 @@ export {
     LINK,
     MIA,
     MKR,
+    NELIXIR,
     NEV,
     NRWA,
     NTBILL,
