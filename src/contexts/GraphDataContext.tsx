@@ -70,6 +70,7 @@ export type RecentlyUpdatedPositionIF = {
     txByType?: TransactionByType;
     currentLiquidity?: bigint | undefined;
     isSuccess?: boolean;
+    prevPositionHash?: string;
 };
 
 export interface GraphDataContextIF {
@@ -110,6 +111,7 @@ export interface GraphDataContextIF {
     recentlyUpdatedPositions: RecentlyUpdatedPositionIF[];
     pendingRecentlyUpdatedPositions: RecentlyUpdatedPositionIF[];
     removeFromRecentlyUpdatedPositions: (positionHash: string) => void;
+    prevPositionHashes: Set<string>;
 }
 
 function normalizeAddr(addr: string): string {
@@ -207,6 +209,11 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const pendingRecentlyUpdatedPositionsRef = useRef<
         RecentlyUpdatedPositionIF[]
     >([]);
+
+    const [prevPositionHashes, setPrevPositionHashes] = useState<Set<string>>(
+        new Set(),
+    );
+
     pendingRecentlyUpdatedPositionsRef.current =
         pendingRecentlyUpdatedPositions;
 
@@ -615,6 +622,23 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         Promise.all(relevantPositions.map((tx) => genFakePosition(tx))).then(
             (rows) => {
                 addIntoRelevantPositions(rows);
+
+                rows.filter((row) => row.isSuccess).map((e) => {
+                    if (e.prevPositionHash) {
+                        const prevPosHash = e.prevPositionHash;
+                        setPrevPositionHashes((prev) => {
+                            prev.add(prevPosHash);
+                            return prev;
+                        });
+                    }
+                    if (e.type === 'Add') {
+                        const hash = e.positionHash;
+                        setPrevPositionHashes((prev) => {
+                            prev.delete(hash);
+                            return prev;
+                        });
+                    }
+                });
             },
         );
     }, [
@@ -772,6 +796,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         recentlyUpdatedPositions,
         pendingRecentlyUpdatedPositions,
         removeFromRecentlyUpdatedPositions,
+        prevPositionHashes,
     };
 
     return (

@@ -551,6 +551,7 @@ const useGenFakeTableRow = () => {
             action: pendingTx.txAction || '',
             status: 'onchain',
             isSuccess: isSuccess,
+            prevPositionHash: pendingTx.txDetails?.prevPositionHash,
         };
     };
 
