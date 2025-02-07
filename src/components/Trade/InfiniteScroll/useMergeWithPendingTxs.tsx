@@ -33,7 +33,22 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 )
                 .forEach((e) => {
                     if (type === 'Order' && e.type === 'Limit') {
-                        if (e.action !== 'Remove') {
+                        if (
+                            e.action !== 'Remove' &&
+                            e.position &&
+                            e.position.positionLiq > 0
+                        ) {
+                            const matchingOrder = (data as LimitOrderIF[]).find(
+                                (order) =>
+                                    order.positionHash === e.positionHash,
+                            );
+                            if (
+                                matchingOrder?.liqRefreshTime &&
+                                matchingOrder.liqRefreshTime >
+                                    e.timestamp / 1000
+                            ) {
+                                return;
+                            }
                             (recentlyUpdatedToShow as LimitOrderIF[]).push(
                                 e.position as LimitOrderIF,
                             );
@@ -80,7 +95,13 @@ const useMergeWithPendingTxs = (props: propsIF) => {
         }
 
         return [];
-    }, [type, data, recentlyUpdatedPositions, baseToken, quoteToken]);
+    }, [
+        type,
+        JSON.stringify(data),
+        JSON.stringify(recentlyUpdatedPositions),
+        JSON.stringify(baseToken),
+        JSON.stringify(quoteToken),
+    ]);
 
     return {
         mergedData,

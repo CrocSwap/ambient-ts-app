@@ -109,9 +109,9 @@ function Orders(props: propsIF) {
         [
             showAllData,
             isAccountView,
-            activeAccountLimitOrderData,
-            activeUserLimitOrdersByPool,
-            limitOrdersByPool.limitOrders, // infinite scroll
+            JSON.stringify(activeAccountLimitOrderData),
+            JSON.stringify(activeUserLimitOrdersByPool),
+            JSON.stringify(limitOrdersByPool.limitOrders), // infinite scroll
         ],
     );
 
