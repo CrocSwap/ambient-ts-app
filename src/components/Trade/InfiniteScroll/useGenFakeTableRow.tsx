@@ -104,13 +104,6 @@ const useGenFakeTableRow = () => {
         liqBigInt = position.liq;
         liqNum = bigIntToFloat(liqBigInt);
 
-        // console.log({
-        //     pendingTx,
-        //     currentLiquidity: pendingTx.txDetails.currentLiquidity,
-        //     liqNum,
-        //     liqBigInt,
-        // });
-
         for (
             let attempt = 1;
             attempt < 6 &&
@@ -126,13 +119,6 @@ const useGenFakeTableRow = () => {
             );
             liqBigInt = position.liq;
             liqNum = bigIntToFloat(liqBigInt);
-            // console.log({
-            //     attempt,
-            //     pendingTx,
-            //     currentLiquidity: pendingTx.txDetails.currentLiquidity,
-            //     liqNum,
-            //     liqBigInt,
-            // });
         }
 
         const positionLiqBase = bigIntToFloat(
@@ -335,14 +321,6 @@ const useGenFakeTableRow = () => {
         liqBigInt = position.liq;
         liqNum = bigIntToFloat(liqBigInt);
 
-        // console.log({
-        //     pendingTx,
-        //     intialTokenQty: pendingTx.txDetails.initialTokenQty,
-        //     currentLiquidity: pendingTx.txDetails.currentLiquidity,
-        //     liqNum,
-        //     liqBigInt,
-        // });
-
         for (
             let attempt = 1;
             attempt < 6 &&
@@ -360,14 +338,6 @@ const useGenFakeTableRow = () => {
                   );
             liqBigInt = position.liq;
             liqNum = bigIntToFloat(liqBigInt);
-            // console.log({
-            //     attempt,
-            //     pendingTx,
-            //     intialTokenQty: pendingTx.txDetails.initialTokenQty,
-            //     currentLiquidity: pendingTx.txDetails.currentLiquidity,
-            //     liqNum,
-            //     liqBigInt,
-            // });
         }
 
         if (pendingTx.txDetails.isAmbient) {

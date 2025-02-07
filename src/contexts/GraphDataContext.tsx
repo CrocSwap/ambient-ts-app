@@ -500,7 +500,6 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     };
 
     const removeFromRecentlyUpdatedPositions = (positonHash: string) => {
-        console.log('>>>> remove from recently updated positions', positonHash);
         setRecentlyUpdatedPositions(
             recentlyUpdatedPositionsRef.current.filter(
                 (e) => e.positionHash !== positonHash,

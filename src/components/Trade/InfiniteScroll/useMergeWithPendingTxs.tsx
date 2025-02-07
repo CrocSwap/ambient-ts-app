@@ -18,8 +18,6 @@ const useMergeWithPendingTxs = (props: propsIF) => {
         useContext(GraphDataContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
-    // console.log('>>> prevPositionHashes', prevPositionHashes);
-
     const mergedData = useMemo(() => {
         const recentlyUpdatedHashes = new Set(prevPositionHashes);
         const recentlyUpdatedToShow: LimitOrderIF[] | PositionIF[] = [];
@@ -52,12 +50,6 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                             );
                         }
                         recentlyUpdatedHashes.add(e.positionHash);
-
-                        // if (e.prevPositionHash) {
-                        //     recentlyUpdatedHashes.add(
-                        //         e.prevPositionHash,
-                        //     );
-                        // }
                     }
                 });
         }
