@@ -149,9 +149,9 @@ export const WBTC_TOKENS = [
 ].map((x) => x.address.toLowerCase());
 
 export const STAKED_ETH_TOKENS = [
-    MAINNET_TOKENS.SWETH,
-    MAINNET_TOKENS.RSETH,
-    MAINNET_TOKENS.RSWETH,
+    MAINNET_TOKENS.swETH,
+    MAINNET_TOKENS.rsETH,
+    MAINNET_TOKENS.rswETH,
     MAINNET_TOKENS.STONE,
     SCROLL_TOKENS.wstETH,
     SCROLL_TOKENS.wrsETH,
@@ -183,8 +183,8 @@ export const USD_EXCLUDED_TOKENS = [
 
 export const STAKED_BTC_TOKENS = [
     SCROLL_TOKENS.SolvBTC,
-    MAINNET_TOKENS.TBTC,
-    SWELL_TOKENS.UBTC,
+    MAINNET_TOKENS.tBTC,
+    SWELL_TOKENS.uBTC,
     SWELL_TOKENS.swBTC,
     SWELL_TOKENS.stBTC,
 ].map((x) => x.address.toLowerCase());
