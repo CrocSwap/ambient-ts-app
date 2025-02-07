@@ -27,7 +27,6 @@ import styles from './ChatPanel.module.css';
 import { getEmojiPack } from './ChatRenderUtils';
 import ChatToaster from './ChatToaster/ChatToaster';
 import DomDebugger from './DomDebugger/DomDebugger';
-import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import FullChat from './FullChat/FullChat';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
@@ -850,8 +849,6 @@ function ChatPanel(props: propsIF) {
             {getEmojiPack(reactionCodes, addReactionEmojiPickListener, 30)}
         </div>
     );
-
-    domDebug('isUserConnected', isUserConnected);
 
     const header = (
         <div

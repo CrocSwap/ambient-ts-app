@@ -2,6 +2,8 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { tokenListURIs, ZERO_ADDRESS } from '../../ambient-utils/constants';
 import {
     isBlastRewardToken,
+    isPriorityStakedETH,
+    isPriorityStakedUSD,
     isUsdcToken,
     isUSDQtoken,
     removeWrappedNative,
@@ -235,8 +237,12 @@ export const useTokenSearch = (
                     // canonical token addresses to assign probability
                     if (tknAddress === ZERO_ADDRESS) {
                         priority = 100;
+                    } else if (isPriorityStakedETH(tknAddress)) {
+                        priority = 95;
                     } else if (isUsdcToken(tknAddress)) {
                         priority = 90;
+                    } else if (isPriorityStakedUSD(tknAddress)) {
+                        priority = 89;
                     } else if (isBlastRewardToken(tknAddress)) {
                         priority = 85;
                     } else if (isUSDQtoken(tknAddress)) {

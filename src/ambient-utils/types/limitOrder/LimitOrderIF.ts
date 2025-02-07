@@ -57,4 +57,5 @@ export interface LimitOrderIF {
     chainId: string;
     concLiq: number;
     rewardLiq: number;
+    liqRefreshTime?: number;
 }

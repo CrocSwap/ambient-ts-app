@@ -18,12 +18,11 @@ import {
     ScrollToTopButtonMobile,
 } from '../../../styled/Components/TransactionTable';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
-import TableRows from './TableRows';
+import TableRows from '../TradeTabs/TableRows';
+import { LimitSortType } from '../TradeTabs/useSortedLimits';
+import { RangeSortType } from '../TradeTabs/useSortedPositions';
+import { TxSortType } from '../TradeTabs/useSortedTxs';
 import styles from './TableRowsInfiniteScroll.module.css';
-import { LimitSortType } from './useSortedLimits';
-import { RangeSortType } from './useSortedPositions';
-import { TxSortType } from './useSortedTxs';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -396,11 +395,8 @@ function TableRowsInfiniteScroll({
     };
 
     useEffect(() => {
-        domDebug('sortBy', sortBy);
         scrollToTop();
     }, [sortBy, showAllData]);
-
-    domDebug('moreDataAvailable', moreDataAvailableRef.current);
 
     const doIphoneFix = () => {
         if (isIOS()) {
@@ -678,9 +674,6 @@ function TableRowsInfiniteScroll({
     };
 
     useEffect(() => {
-        domDebug('moreDataLoading', moreDataLoading);
-        domDebug('page', pagesVisible[0]);
-
         const observer = new IntersectionObserver(
             (entries) => {
                 const entry = entries[0];
@@ -747,11 +740,6 @@ function TableRowsInfiniteScroll({
     useEffect(() => {
         doScroll();
     }, [pagesVisible[0]]);
-
-    useEffect(() => {
-        domDebug('lastSeen', lastSeenTxIDRef.current);
-        domDebug('firstSeen', firstSeenTxIDRef.current);
-    }, [lastSeenTxID, firstSeenTxID]);
 
     return (
         <>

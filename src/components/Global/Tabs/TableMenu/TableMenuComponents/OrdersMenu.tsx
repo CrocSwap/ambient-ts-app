@@ -61,7 +61,7 @@ export default function OrdersMenu(props: propsIF) {
     const { handlePulseAnimation, setActiveMobileComponent } =
         useContext(TradeTableContext);
 
-    const { tokenA, isTokenAPrimary, setIsTokenAPrimary } =
+    const { tokenA, isTokenAPrimary, setIsTokenAPrimary, setLimitTick } =
         useContext(TradeDataContext);
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
@@ -133,6 +133,7 @@ export default function OrdersMenu(props: propsIF) {
                     tokenB: newTokenB,
                     limitTick: isBid ? bidTick : askTick,
                 };
+                setLimitTick(isBid ? bidTick : askTick);
                 // navigate user to limit page with URL params defined above
                 linkGenLimit.navigate(limitLinkParams);
                 setActiveMobileComponent('trade');

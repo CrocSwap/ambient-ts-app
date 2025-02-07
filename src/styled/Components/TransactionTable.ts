@@ -242,7 +242,7 @@ export const RangeRow = styled(Row)<{
 `;
 
 export const RowItem = styled(FlexContainer)<{
-    type?: 'add' | 'claim' | 'harvest' | 'remove' | 'buy' | 'sell';
+    type?: 'add' | 'claim' | 'fill' | 'harvest' | 'remove' | 'buy' | 'sell';
     hover?: boolean;
 }>`
     ${({ hover, type }) => `

@@ -356,6 +356,9 @@ function Reposition() {
                         originalLowTick: position.bidTick,
                         originalHighTick: position.askTick,
                         isBid: position.positionLiqQuote === 0,
+                        initialTokenQty: position.positionLiqBaseTruncated,
+                        secondaryTokenQty: position.positionLiqQuoteTruncated,
+                        prevPositionHash: posHash,
                     },
                 });
                 addPositionUpdate({
