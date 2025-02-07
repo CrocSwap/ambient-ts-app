@@ -252,9 +252,12 @@ export default function TickerComponent(props: PropsIF) {
 
     const { ticker: tickerFromParams } = useParams();
 
-    const tickerExists = globalAuctionList.data?.some(
-        (item) => item.ticker === tickerFromParams,
-    );
+    const tickerExists =
+        !tickerFromParams ||
+        !globalAuctionList ||
+        globalAuctionList.data?.some(
+            (item) => item.ticker === tickerFromParams,
+        );
 
     useEffect(() => {
         if (!tickerFromParams) return;
