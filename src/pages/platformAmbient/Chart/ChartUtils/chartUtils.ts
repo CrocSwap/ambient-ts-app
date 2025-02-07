@@ -272,10 +272,10 @@ export function calculateFibRetracement(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fibLevels: Array<any>,
 ) {
-    const retracementIsUp = lineData[0].y > lineData[1].y;
-
     const pointLevel = lineData[1].y;
     const secondLevel = lineData[0].y;
+
+    const retracementIsUp = secondLevel > pointLevel;
 
     const diff = Math.abs(pointLevel - secondLevel);
 
@@ -292,12 +292,13 @@ export function calculateFibRetracement(
 
     fibLevels.forEach((level) => {
         if (level.active) {
+            const calculatedPrice =
+                pointLevel + diff * level.level * (retracementIsUp ? 1 : -1);
+
             fibLineData.push([
                 {
                     x: lineData[0].x,
-                    y:
-                        pointLevel +
-                        diff * level.level * (retracementIsUp ? 1 : -1),
+                    y: calculatedPrice,
                     denomInBase: lineData[0].denomInBase,
                     lineColor: level.lineColor,
                     areaColor: level.areaColor,
@@ -305,9 +306,7 @@ export function calculateFibRetracement(
                 },
                 {
                     x: lineData[1].x,
-                    y:
-                        pointLevel +
-                        diff * level.level * (retracementIsUp ? 1 : -1),
+                    y: calculatedPrice,
                     denomInBase: lineData[0].denomInBase,
                     lineColor: level.lineColor,
                     areaColor: level.areaColor,

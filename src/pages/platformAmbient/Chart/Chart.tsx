@@ -27,6 +27,7 @@ import {
     diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
+    formatSubscript,
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
@@ -4233,12 +4234,21 @@ export default function Chart(props: propsIF) {
                                     });
 
                                     fibLineData.forEach((lineData) => {
+                                        const level =
+                                            lineData[0].denomInBase ===
+                                            denomInBase
+                                                ? lineData[0].y
+                                                : 1 / lineData[0].y;
+
+                                        const priceLevel =
+                                            level < 1
+                                                ? formatSubscript(level)
+                                                : level.toFixed(2).toString();
+
                                         const lineLabel =
                                             lineData[0].level +
                                             ' (' +
-                                            lineData[0].y
-                                                .toFixed(2)
-                                                .toString() +
+                                            priceLevel +
                                             ')';
 
                                         const lineMeasures =

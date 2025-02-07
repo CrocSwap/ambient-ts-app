@@ -286,50 +286,54 @@ export default function DragCanvas(props: DragCanvasProps) {
         offsetY: number,
         denomInBase: boolean,
     ) {
-        const index = drawnShapeHistory.findIndex(
-            (item) => item.time === hoveredDrawnShape?.data.time,
-        );
-
-        const { valueX, valueY } = getXandYvalueOfDrawnShape(offsetX, offsetY);
-
-        const previosData = drawnShapeHistory[index].data;
-
-        if (drawnShapeHistory[index].type === 'Ray') {
-            previosData.forEach((data) => {
-                data.x = valueX;
-                data.y = data.denomInBase === denomInBase ? valueY : 1 / valueY;
-            });
-        } else {
-            const lastDataIndex = previosData.findIndex(
-                (item) =>
-                    hoveredDrawnShape?.selectedCircle &&
-                    item.x === hoveredDrawnShape?.selectedCircle.x &&
-                    item.y ===
-                        (item.denomInBase === denomInBase
-                            ? hoveredDrawnShape?.selectedCircle.y
-                            : 1 / hoveredDrawnShape?.selectedCircle.y),
+        if (hoveredDrawnShape && hoveredDrawnShape.selectedCircle) {
+            const index = drawnShapeHistory.findIndex(
+                (item) => item.time === hoveredDrawnShape?.data.time,
             );
 
-            if (lastDataIndex !== -1) {
-                if (hoveredDrawnShape && hoveredDrawnShape.selectedCircle) {
+            const { valueX, valueY } = getXandYvalueOfDrawnShape(
+                offsetX,
+                offsetY,
+            );
+
+            const previosData = drawnShapeHistory[index].data;
+
+            if (drawnShapeHistory[index].type === 'Ray') {
+                previosData.forEach((data) => {
+                    data.x = valueX;
+                    data.y =
+                        data.denomInBase === denomInBase ? valueY : 1 / valueY;
+                });
+            } else {
+                const lastDataIndex = previosData.findIndex(
+                    (item) =>
+                        hoveredDrawnShape?.selectedCircle &&
+                        item.x === hoveredDrawnShape?.selectedCircle.x &&
+                        item.y ===
+                            (item.denomInBase === denomInBase
+                                ? hoveredDrawnShape?.selectedCircle.y
+                                : 1 / hoveredDrawnShape?.selectedCircle.y),
+                );
+
+                if (lastDataIndex !== -1) {
                     hoveredDrawnShape.selectedCircle.x = valueX;
-                    hoveredDrawnShape.selectedCircle.y = valueY;
-                }
 
-                const newYData =
-                    previosData[lastDataIndex].denomInBase === denomInBase
-                        ? valueY
-                        : 1 / valueY;
+                    const newYData =
+                        previosData[lastDataIndex].denomInBase === denomInBase
+                            ? valueY
+                            : 1 / valueY;
 
-                if (newYData > 0) {
                     previosData[lastDataIndex].x = valueX;
-                    previosData[lastDataIndex].y = newYData;
+
+                    hoveredDrawnShape.selectedCircle.y =
+                        newYData > 0 ? newYData : 0;
+                    previosData[lastDataIndex].y = newYData > 0 ? newYData : 0;
                 }
             }
-        }
-        drawnShapeHistory[index].data = previosData;
+            drawnShapeHistory[index].data = previosData;
 
-        render();
+            render();
+        }
     }
 
     function updateDrawRect(
@@ -370,20 +374,22 @@ export default function DragCanvas(props: DragCanvasProps) {
             const newYWithDenom =
                 previosData[0].denomInBase === denomInBase ? newY : 1 / newY;
 
+            const originValue = newYWithDenom > 0 ? newYWithDenom : 0;
+
             previosData[0].x = should0xMove ? newX : previosData[0].x;
 
-            previosData[0].y = should0yMove ? newYWithDenom : previosData[0].y;
+            previosData[0].y = should0yMove ? originValue : previosData[0].y;
 
             previosData[1].x = should1xMove ? newX : previosData[1].x;
 
-            previosData[1].y = should1yMove ? newYWithDenom : previosData[1].y;
+            previosData[1].y = should1yMove ? originValue : previosData[1].y;
 
             drawnShapeHistory[index].data = previosData;
 
             if (hoveredDrawnShape) {
                 hoveredDrawnShape.selectedCircle = {
                     x: newX,
-                    y: newYWithDenom,
+                    y: originValue,
                     denomInBase: denomInBase,
                 };
             }
