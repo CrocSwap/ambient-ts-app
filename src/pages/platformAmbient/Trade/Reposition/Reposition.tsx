@@ -358,6 +358,7 @@ function Reposition() {
                         isBid: position.positionLiqQuote === 0,
                         initialTokenQty: position.positionLiqBaseTruncated,
                         secondaryTokenQty: position.positionLiqQuoteTruncated,
+                        prevPositionHash: posHash,
                     },
                 });
                 addPositionUpdate({

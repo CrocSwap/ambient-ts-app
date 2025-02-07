@@ -14,11 +14,14 @@ interface propsIF {
 const useMergeWithPendingTxs = (props: propsIF) => {
     const { data, type } = props;
 
-    const { recentlyUpdatedPositions } = useContext(GraphDataContext);
+    const { recentlyUpdatedPositions, prevPositionHashes } =
+        useContext(GraphDataContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
+    // console.log('>>> prevPositionHashes', prevPositionHashes);
+
     const mergedData = useMemo(() => {
-        const recentlyUpdatedHashes = new Set();
+        const recentlyUpdatedHashes = new Set(prevPositionHashes);
         const recentlyUpdatedToShow: LimitOrderIF[] | PositionIF[] = [];
 
         if (recentlyUpdatedPositions) {
@@ -39,12 +42,22 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                         }
                         recentlyUpdatedHashes.add(e.positionHash);
                     } else if (props.type === 'Range' && e.type === 'Range') {
-                        if (e.position && e.position.positionLiq > 0) {
+                        if (
+                            e.position &&
+                            e.position.positionLiq > 0 &&
+                            !prevPositionHashes.has(e.positionHash)
+                        ) {
                             (recentlyUpdatedToShow as PositionIF[]).push(
                                 e.position as PositionIF,
                             );
                         }
                         recentlyUpdatedHashes.add(e.positionHash);
+
+                        // if (e.prevPositionHash) {
+                        //     recentlyUpdatedHashes.add(
+                        //         e.prevPositionHash,
+                        //     );
+                        // }
                     }
                 });
         }

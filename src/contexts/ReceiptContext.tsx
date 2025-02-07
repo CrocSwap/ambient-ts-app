@@ -59,6 +59,7 @@ export interface TransactionByType {
         initialTokenQty?: string;
         secondaryTokenQty?: string;
         currentLiquidity?: bigint | undefined;
+        prevPositionHash?: string;
     };
     isRemoved?: boolean;
 }
