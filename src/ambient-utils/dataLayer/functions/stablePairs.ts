@@ -33,12 +33,20 @@ export function isUsdcToken(addr: string): boolean {
     return USDC_TOKENS.includes(addr.toLowerCase());
 }
 
+export function isPriorityStakedUSD(addr: string): boolean {
+    return PLUME_TOKENS.pUSD.address.toLowerCase() === addr.toLowerCase();
+}
+
 export function isBlastRewardToken(addr: string): boolean {
     return BLAST_REWARD_TOKENS.includes(addr.toLowerCase());
 }
 
 export function isUSDQtoken(addr: string): boolean {
     return SCROLL_TOKENS.USDQ.address.toLowerCase() === addr.toLowerCase();
+}
+
+export function isPriorityStakedETH(addr: string): boolean {
+    return PLUME_TOKENS.pETH.address.toLowerCase() === addr.toLowerCase();
 }
 
 export function isETHorStakedEthToken(addr: string): boolean {
