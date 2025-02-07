@@ -42,7 +42,7 @@ export const mockGlobalAuctionData: AuctionListResponseIF = {
             filledClearingPriceInNativeTokenWei: '250000000000000000',
         },
         {
-            ticker: 'HELLO😊1',
+            ticker: 'HELLO😊😊1',
             chainId: '0x2105',
             createdAt: nowMinus1dayLess1min,
             createdBy: '0x8a8b00B332c5eD50466e31FCCdd4dc2170b4F78f',
@@ -108,7 +108,7 @@ export const mockGlobalAuctionData: AuctionListResponseIF = {
         },
 
         {
-            ticker: 'JUNIOR1',
+            ticker: 'JUNIOR1234',
             chainId: '0x2105',
             createdAt: nowMinus4andAHalfdays,
             auctionLength: 604800,
@@ -319,7 +319,7 @@ export const mockAccountData1: AuctionListResponseIF = {
         },
 
         {
-            ticker: 'JUNIOR1',
+            ticker: 'JUNIOR1234',
             chainId: '0x2105',
             createdAt: nowMinus5days,
             auctionLength: 604800,
@@ -413,7 +413,7 @@ export const mockAccountData2: AuctionListResponseIF = {
         },
 
         {
-            ticker: 'JUNIOR1',
+            ticker: 'JUNIOR1234',
             chainId: '0x2105',
             createdAt: nowMinus5days,
             auctionLength: 604800,

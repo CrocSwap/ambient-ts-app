@@ -69,10 +69,10 @@ export function createCircle(
                 //     : chartThemeColors.downCandleBodyColor.copy();
 
                 const colorPalette = calculateCircleColor(
-                    chartThemeColors.downCandleBodyColor.copy(),
-                    chartThemeColors.downCandleBorderColor.copy(),
-                    chartThemeColors.upCandleBodyColor.copy(),
-                    chartThemeColors.upCandleBorderColor.copy(),
+                    chartThemeColors.orderSellColor.copy(),
+                    chartThemeColors.orderSellColor.copy(),
+                    chartThemeColors.orderBuyColor.copy(),
+                    chartThemeColors.orderBuyColor.copy(),
                     false,
                 );
 

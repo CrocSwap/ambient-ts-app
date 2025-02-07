@@ -1269,7 +1269,6 @@ export default function InitPool() {
 
     const newUrlTooltip = (
         <TextOnlyTooltip
-            interactive
             title={
                 <Text
                     fontSize='body'

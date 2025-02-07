@@ -194,7 +194,6 @@ export default function Explore(props: ExploreIF) {
             {inputContainer}
             {view === 'pools' && (
                 <DefaultTooltip
-                    interactive
                     title={
                         isExploreDollarizationEnabled
                             ? 'Switch to prices in native currency'
@@ -228,7 +227,6 @@ export default function Explore(props: ExploreIF) {
                 </DefaultTooltip>
             )}
             <DefaultTooltip
-                interactive
                 title={
                     view === 'pools'
                         ? 'Refresh Top Pools'

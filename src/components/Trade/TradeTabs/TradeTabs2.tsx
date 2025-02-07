@@ -229,7 +229,6 @@ function TradeTabs2(props: propsIF) {
             fontSize='body'
         >
             <DefaultTooltip
-                interactive
                 title={
                     candleTime.time === 86400
                         ? 'Transactions for 24 hours since Midnight UTC'
