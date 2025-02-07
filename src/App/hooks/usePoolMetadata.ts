@@ -392,7 +392,11 @@ export function usePoolMetadata() {
                             poolChangesJsonData &&
                             poolChangesJsonData.length > 0
                         ) {
-                            setNewTxByPoolData(poolChangesJsonData);
+                            const newTxByPoolDataWithoutFills =
+                                poolChangesJsonData.filter(
+                                    (tx) => tx.changeType !== 'cross',
+                                );
+                            setNewTxByPoolData(newTxByPoolDataWithoutFills);
                         } else {
                             setNewTxByPoolData(undefined);
                             setTransactionsByPool({
@@ -455,16 +459,21 @@ export function usePoolMetadata() {
                                 quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: poolIndex.toString(),
                                 chainId: chainId,
-                                n: '100',
+                                n: '200',
                             }),
                     )
                         .then((response) => response.json())
                         .then((json) => {
-                            const userPoolTransactions = json.data;
+                            const userPoolTransactions =
+                                json.data as TransactionIF[];
                             const skipENSFetch = true;
                             if (userPoolTransactions) {
+                                const userPoolTransactionsWithoutFills =
+                                    userPoolTransactions.filter(
+                                        (tx) => tx.changeType !== 'cross',
+                                    );
                                 Promise.all(
-                                    userPoolTransactions.map(
+                                    userPoolTransactionsWithoutFills.map(
                                         (position: TransactionServerIF) => {
                                             return getTransactionData(
                                                 position,

@@ -373,6 +373,7 @@ function RangeActionModal(props: propsIF) {
                     lowTick: position.bidTick,
                     highTick: position.askTick,
                     gridSize: lookupChain(position.chainId).gridSize,
+                    currentLiquidity: currentLiquidity,
                 },
             });
             addPositionUpdate({
@@ -448,6 +449,7 @@ function RangeActionModal(props: propsIF) {
                             lowTick: position.bidTick,
                             highTick: position.askTick,
                             gridSize: lookupChain(position.chainId).gridSize,
+                            currentLiquidity: currentLiquidity,
                         },
                     });
                     addPositionUpdate({

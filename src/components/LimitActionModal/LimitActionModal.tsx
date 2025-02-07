@@ -199,6 +199,7 @@ export default function LimitActionModal(props: propsIF) {
                                 lowTick: limitOrder.bidTick,
                                 highTick: limitOrder.askTick,
                                 isBid: limitOrder.isBid,
+                                currentLiquidity: currentLiquidity,
                             },
                         });
                         addPositionUpdate({
@@ -234,6 +235,7 @@ export default function LimitActionModal(props: propsIF) {
                                 lowTick: limitOrder.bidTick,
                                 highTick: limitOrder.askTick,
                                 isBid: limitOrder.isBid,
+                                currentLiquidity: currentLiquidity,
                             },
                         });
                         addPositionUpdate({
@@ -323,6 +325,7 @@ export default function LimitActionModal(props: propsIF) {
                                 lowTick: limitOrder.bidTick,
                                 highTick: limitOrder.askTick,
                                 isBid: limitOrder.isBid,
+                                currentLiquidity: currentLiquidity,
                             },
                         });
                         addPositionUpdate({
@@ -358,6 +361,7 @@ export default function LimitActionModal(props: propsIF) {
                                 lowTick: limitOrder.bidTick,
                                 highTick: limitOrder.askTick,
                                 isBid: limitOrder.isBid,
+                                currentLiquidity: currentLiquidity,
                             },
                         });
                         addPositionUpdate({
