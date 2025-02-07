@@ -801,23 +801,15 @@ function TradeCandleStickChart(props: propsIF) {
                 ])
                 .pad([0.05, 0.05]);
 
-            const xExtent = d3fc
-                .extentLinear()
-                .accessors([(d: any) => d.time * 1000])
-                .padUnit('domain')
-                .pad([
-                    period * 1000,
-                    (period / 2) * (mobileView ? 30 : 80) * 1000,
-                ]);
-
             let xScale: any = undefined;
 
             const xScaleTime = d3.scaleTime();
             const yScale = d3.scaleLinear();
             xScale = d3fc.scaleDiscontinuous(d3.scaleLinear());
-            xScale.domain(xExtent(boundaryCandles));
+            const drawingLinearxScale = d3.scaleLinear();
 
             resetXScale(xScale);
+            resetXScale(drawingLinearxScale);
 
             yScale.domain(priceRange(boundaryCandles));
 
@@ -836,8 +828,8 @@ function TradeCandleStickChart(props: propsIF) {
                         xScaleTime: xScaleTime,
                         yScale: yScale,
                         volumeScale: volumeScale,
-                        xExtent: xExtent,
                         priceRange: priceRange,
+                        drawingLinearxScale: drawingLinearxScale,
                     };
                 });
             } else {
@@ -926,6 +918,10 @@ function TradeCandleStickChart(props: propsIF) {
                         !isShowLatestCandle
                     ) {
                         scaleData.xScale.domain([domainLeft, domainRight]);
+                        scaleData.drawingLinearxScale.domain([
+                            domainLeft,
+                            domainRight,
+                        ]);
 
                         let nCandles = Math.floor(
                             (fethcingCandles - domainLeft) / (period * 1000),
@@ -1011,6 +1007,7 @@ function TradeCandleStickChart(props: propsIF) {
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
             resetXScale(scaleData.xScale);
+            resetXScale(scaleData.drawingLinearxScale);
 
             setCandleScale((prev: CandleScaleIF) => {
                 return {

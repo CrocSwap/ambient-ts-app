@@ -85,6 +85,12 @@ export function createCircle(
                     : colorPalette.sellFill;
 
                 context.lineWidth = lineWidth;
+            } else {
+                context.strokeStyle = 'white';
+
+                context.fillStyle = 'white';
+
+                context.lineWidth = lineWidth;
             }
         });
 }
@@ -104,9 +110,11 @@ export function checkCircleLocation(
     if (data && scaleData) {
         for (let i = 0; i < data.length; i++) {
             if (
-                scaleData.xScale(data[i].x) < mouseX + circleDiameter &&
+                scaleData.drawingLinearxScale(data[i].x) <
+                    mouseX + circleDiameter &&
                 scaleData.yScale(data[i].y) < mouseY + circleDiameter &&
-                scaleData.xScale(data[i].x) > mouseX - circleDiameter &&
+                scaleData.drawingLinearxScale(data[i].x) >
+                    mouseX - circleDiameter &&
                 scaleData.yScale(data[i].y) > mouseY - circleDiameter
             ) {
                 result = data[i];
