@@ -36,12 +36,12 @@ const defaultTokenEntries = [
     ['USDT', '0xdAC17F958D2ee523a2206206994597C13D831ec7'],
     ['WBTC', '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'],
     ['DAI', '0x6B175474E89094C44Da98b954EedeAC495271d0F'],
-    ['SWETH', '0xf951e335afb289353dc249e82926178eac7ded78'],
-    ['RSETH', '0xa1290d69c65a6fe4df752f95823fae25cb99e5a7'],
-    ['RSWETH', '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0'],
+    ['swETH', '0xf951e335afb289353dc249e82926178eac7ded78'],
+    ['rsETH', '0xa1290d69c65a6fe4df752f95823fae25cb99e5a7'],
+    ['rswETH', '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0'],
     ['STONE', '0x7122985656e38bdc0302db86685bb972b145bd3c'],
     ['SWELL', '0x0a6E7Ba5042B38349e437ec6Db6214AEC7B35676'],
-    ['TBTC', '0x18084fbA666a33d37592fA2633fD49a74DD93a88'],
+    ['tBTC', '0x18084fbA666a33d37592fA2633fD49a74DD93a88'],
 ] as const;
 
 type MainnetTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
@@ -55,10 +55,10 @@ export const MAINNET_TOKENS: MainnetTokens = Object.fromEntries(
 ) as MainnetTokens;
 
 const curentTopPoolsList: [keyof MainnetTokens, keyof MainnetTokens][] = [
+    ['rswETH', 'ETH'],
     ['ETH', 'USDC'],
     ['ETH', 'USDT'],
-    ['ETH', 'WBTC'],
-    ['USDT', 'USDC'],
+    ['ETH', 'DAI'],
 ];
 
 const topPools = curentTopPoolsList.map(
