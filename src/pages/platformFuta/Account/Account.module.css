@@ -111,12 +111,14 @@
 @media screen and (max-width: 768px) {
 
     .main, .main_full{
-        height: calc(100% - 120px);
+        height: 100%;
+        overflow: scroll;
     }
     .tickers_and_chart{
 
-        max-width: 100svw;
-        padding: 0 8px;
+        width: calc(100vw - 16px) !important;
+
+       
     }
 
   

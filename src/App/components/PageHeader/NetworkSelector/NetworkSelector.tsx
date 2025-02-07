@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { useContext, useEffect, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { useSearchParams } from 'react-router-dom';
-import { supportedNetworks } from '../../../../ambient-utils/constants';
+import { brand, supportedNetworks } from '../../../../ambient-utils/constants';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 // import baseLogo from '../../../../assets/images/networks/Base_Network_Logo.svg';
 import baseSepoliaLogo from '../../../../assets/images/networks/base_sepolia_no_margin.webp';
@@ -57,6 +57,7 @@ export default function NetworkSelector(props: propsIF) {
     } = useContext(AppStateContext);
     const { networks, platformName, includeCanto } = useContext(BrandContext);
     const { setCrocEnv } = useContext(CrocEnvContext);
+    const isFuta = brand === 'futa';
 
     const [isNetworkUpdateInProgress, setIsNetworkUpdateInProgress] =
         useState(false);
@@ -358,7 +359,12 @@ export default function NetworkSelector(props: propsIF) {
         >
             <div
                 className={styles.dropdownMenuContainer}
-                style={{ cursor: networks.length > 1 ? 'pointer' : 'default' }}
+                style={{
+                    cursor: networks.length > 1 ? 'pointer' : 'default',
+                    borderRadius: isFuta ? 0 : smallScreen ? '50%' : '0',
+                    width: isFuta ? '25px' : smallScreen ? '35px' : 'auto',
+                    height: isFuta ? '25px' : '35px',
+                }}
             >
                 <DropdownMenu2
                     marginTop={'50px'}

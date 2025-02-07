@@ -78,3 +78,20 @@
     color: var(--negative);
     font-weight: bold;
 }
+
+.suggestionContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--body-size);
+    color: var(--text2)
+}
+
+.suggestionContainer button{
+    background-color: transparent;
+    outline: transparent;
+    border: transparent;
+    color: var(--accent1);
+    cursor: pointer;
+}
