@@ -45,11 +45,7 @@
     font-size: 12px;
 }
 
-/* Individual column headers in the ticker table */
-.ticker_table > header > * {
-    width: 120px;
-    flex: 1 10 auto;
-}
+
 
 /* Spacer to keep TICKER column header aligned with table data */
 .ticker_col_header_spacer {
@@ -159,17 +155,54 @@
     height: 10px;
     border-radius: 50%;
 }
+/* Individual column headers in the ticker table */
+.ticker_table > header > * {
+    width: 120px;
+ 
+}
+@media (min-width: 600px) {
+/* Individual column headers in the ticker table */
+.ticker_table > header > * {
+   
+    flex: 1 10 auto;
+}
+}
 
-/* Responsive styles */
-@media (max-width: 500px) {
+
+@media (max-width: 599px) {
     .ticker_table {
         margin-left: 0px; /* Helps fit everything in the viewport */
     }
-}
-
-@media (max-width: 400px) {
+    /* Header styles to match ticker items */
     .ticker_table > header > * {
-        font-size: 10px;
+        font-size: 12px;
+    }
+
+    .cell_left {
+        flex: 2 1 auto; /* Match ticker_name */
+        min-width: 120px;
+    }
+
+    .cell_right {
+        flex: 1 1 auto; /* Match market_cap */
+        min-width: 80px;
+    }
+
+    .cell_center {
+        flex: 0.5 1 auto; /* Match auction_status */
+        min-width: 60px;
+    }
+
+    /* Override for the last cell_right (TIME) */
+    .cell_right:last-of-type {
+        flex: 0.5 1 auto; /* Match time_remaining */
+        min-width: 60px;
+    }
+
+    /* Base header container adjustments */
+    .ticker_table > header {
+        gap: 8px; /* Match ticker_item gap */
+        padding-right: 8px; /* Account for scrollbar space */
     }
 }
 

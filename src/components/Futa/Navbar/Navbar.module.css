@@ -266,3 +266,20 @@
     background-color: var(--accent1);
     color: var(--dark1);
 }
+@media (max-width: 599px) {
+    .container{
+        height: 56px;
+        padding-bottom: 8px;
+    }
+.tutorialBtn p{
+    display: none;
+}
+.tutorialBtn{
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+}
