@@ -33,7 +33,11 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 )
                 .forEach((e) => {
                     if (type === 'Order' && e.type === 'Limit') {
-                        if (e.action !== 'Remove') {
+                        if (
+                            e.action !== 'Remove' &&
+                            e.position &&
+                            e.position.positionLiq > 0
+                        ) {
                             const matchingOrder = (data as LimitOrderIF[]).find(
                                 (order) =>
                                     order.positionHash === e.positionHash,
