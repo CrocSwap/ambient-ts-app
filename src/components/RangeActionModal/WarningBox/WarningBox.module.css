@@ -3,7 +3,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 12px;
+    padding: 8px;
     border: solid 1px var(--other-red);
     border-radius: var(--border-radius);
     background: radial-gradient(
@@ -29,7 +29,6 @@
     color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    padding-top: 6px;
 }
 
 .text_only {
