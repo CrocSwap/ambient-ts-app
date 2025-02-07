@@ -271,6 +271,7 @@ export function calculateFibRetracement(
     lineData: lineData[],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fibLevels: Array<any>,
+    denomInBase: boolean,
 ) {
     const pointLevel = lineData[1].y;
     const secondLevel = lineData[0].y;
@@ -278,6 +279,7 @@ export function calculateFibRetracement(
     const retracementIsUp = secondLevel > pointLevel;
 
     const diff = Math.abs(pointLevel - secondLevel);
+    const diffInDenom = Math.abs(1 / pointLevel - 1 / secondLevel);
 
     const fibLineData: Array<
         {
@@ -292,13 +294,24 @@ export function calculateFibRetracement(
 
     fibLevels.forEach((level) => {
         if (level.active) {
+            const retracementIsUpInv = 1 / secondLevel > 1 / pointLevel;
+
             const calculatedPrice =
                 pointLevel + diff * level.level * (retracementIsUp ? 1 : -1);
+
+            const calculatedPriceInv =
+                1 / pointLevel +
+                diffInDenom * level.level * (retracementIsUpInv ? 1 : -1);
+
+            const calculatedPriceWithDenom =
+                lineData[0].denomInBase === denomInBase
+                    ? calculatedPrice
+                    : 1 / calculatedPriceInv;
 
             fibLineData.push([
                 {
                     x: lineData[0].x,
-                    y: calculatedPrice,
+                    y: calculatedPriceWithDenom,
                     denomInBase: lineData[0].denomInBase,
                     lineColor: level.lineColor,
                     areaColor: level.areaColor,
@@ -306,7 +319,7 @@ export function calculateFibRetracement(
                 },
                 {
                     x: lineData[1].x,
-                    y: calculatedPrice,
+                    y: calculatedPriceWithDenom,
                     denomInBase: lineData[0].denomInBase,
                     lineColor: level.lineColor,
                     areaColor: level.areaColor,
@@ -327,13 +340,16 @@ export function calculateFibRetracementBandAreas(
     lineData: lineData[],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fibLevels: Array<any>,
+    denomInBase: boolean,
 ) {
-    const retracementIsUp = lineData[0].y > lineData[1].y;
-
     const pointLevel = lineData[1].y;
     const secondLevel = lineData[0].y;
 
+    const retracementIsUp = secondLevel > pointLevel;
+    const retracementIsUpInv = 1 / secondLevel > 1 / pointLevel;
+
     const diff = Math.abs(pointLevel - secondLevel);
+    const diffInDenom = Math.abs(1 / pointLevel - 1 / secondLevel);
 
     const fibLineData: Array<{
         fromValue: number;
@@ -348,13 +364,31 @@ export function calculateFibRetracementBandAreas(
     if (activeFibLevels.length > 0) {
         activeFibLevels.reduce((prev, curr) => {
             if (curr.active) {
+                const calculatedFromPrice =
+                    pointLevel + diff * prev.level * (retracementIsUp ? 1 : -1);
+                const calculatedToPrice =
+                    pointLevel + diff * curr.level * (retracementIsUp ? 1 : -1);
+
+                const calculatedFromPriceInv =
+                    1 / pointLevel +
+                    diffInDenom * prev.level * (retracementIsUpInv ? 1 : -1);
+                const calculatedToPriceInv =
+                    1 / pointLevel +
+                    diffInDenom * curr.level * (retracementIsUpInv ? 1 : -1);
+
+                const calculatedFromPriceWithDenom =
+                    lineData[0].denomInBase === denomInBase
+                        ? calculatedFromPrice
+                        : 1 / calculatedFromPriceInv;
+
+                const calculatedToPriceWithDenom =
+                    lineData[0].denomInBase === denomInBase
+                        ? calculatedToPrice
+                        : 1 / calculatedToPriceInv;
+
                 fibLineData.push({
-                    fromValue:
-                        pointLevel +
-                        diff * prev.level * (retracementIsUp ? 1 : -1),
-                    toValue:
-                        pointLevel +
-                        diff * curr.level * (retracementIsUp ? 1 : -1),
+                    fromValue: calculatedFromPriceWithDenom,
+                    toValue: calculatedToPriceWithDenom,
                     denomInBase: lineData[0].denomInBase,
                     lineColor: curr.lineColor,
                     areaColor: curr.areaColor,

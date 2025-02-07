@@ -1043,11 +1043,13 @@ function DrawCanvas(props: DrawCanvasProps) {
                     const fibLineData = calculateFibRetracement(
                         data,
                         localDrawSettings.extraData,
+                        denomInBase,
                     );
 
                     const bandAreaData = calculateFibRetracementBandAreas(
                         data,
                         localDrawSettings.extraData,
+                        denomInBase,
                     );
 
                     bandAreaData.forEach((bandData) => {

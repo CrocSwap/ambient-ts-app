@@ -4212,12 +4212,14 @@ export default function Chart(props: propsIF) {
                                     const fibLineData = calculateFibRetracement(
                                         data,
                                         item.extraData,
+                                        denomInBase,
                                     );
 
                                     const bandAreaData =
                                         calculateFibRetracementBandAreas(
                                             data,
                                             item.extraData,
+                                            denomInBase,
                                         );
 
                                     bandAreaData.forEach((bandData) => {
@@ -5437,7 +5439,11 @@ export default function Chart(props: propsIF) {
         extendRight: boolean,
     ) {
         if (scaleData) {
-            const fibLineData = calculateFibRetracement(data, extraData);
+            const fibLineData = calculateFibRetracement(
+                data,
+                extraData,
+                denomInBase,
+            );
 
             const startX = extendLeft
                 ? scaleData.drawingLinearxScale.domain()[0]

@@ -317,6 +317,8 @@ export default function DragCanvas(props: DragCanvasProps) {
 
                 if (lastDataIndex !== -1) {
                     hoveredDrawnShape.selectedCircle.x = valueX;
+                    hoveredDrawnShape.selectedCircle.y =
+                        valueY > 0 ? valueY : 0;
 
                     const newYData =
                         previosData[lastDataIndex].denomInBase === denomInBase
@@ -324,9 +326,6 @@ export default function DragCanvas(props: DragCanvasProps) {
                             : 1 / valueY;
 
                     previosData[lastDataIndex].x = valueX;
-
-                    hoveredDrawnShape.selectedCircle.y =
-                        newYData > 0 ? newYData : 0;
                     previosData[lastDataIndex].y = newYData > 0 ? newYData : 0;
                 }
             }
