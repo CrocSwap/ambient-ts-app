@@ -272,6 +272,8 @@ const useGenFakeTableRow = () => {
 
         if (liqBigInt != pendingTx.txDetails.currentLiquidity) {
             isSuccess = true;
+        } else if (pendingTx.txAction === 'Claim' && liqBigInt === 0n) {
+            isSuccess = true;
         }
 
         return {
