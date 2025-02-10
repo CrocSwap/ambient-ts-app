@@ -188,7 +188,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const topPools = useMemo(() => {
         const topPoolsFilteredByVolume =
             filteredPoolsNoExcludedOrHiddenTokens.filter(
-                (pool) => pool.volumeTotalUsd && pool.volumeTotalUsd > 1000,
+                (pool) => pool.volumeChange24h && pool.volumeChange24h > 1000,
             );
         return isFetchError ||
             (filteredPoolsNoExcludedOrHiddenTokens.length &&
@@ -197,8 +197,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             : topPoolsFilteredByVolume
                   .sort(
                       (poolA: PoolIF, poolB: PoolIF) =>
-                          (poolB['volumeTotalUsd'] || 0) -
-                          (poolA['volumeTotalUsd'] || 0),
+                          (poolB['volumeChange24h'] || 0) -
+                          (poolA['volumeChange24h'] || 0),
                   )
                   .slice(0, 5);
     }, [
