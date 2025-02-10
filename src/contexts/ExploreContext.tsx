@@ -36,7 +36,7 @@ export interface ExploreContextIF {
         topPools: PoolIF[];
         visibleTopPoolData: PoolIF[];
         setVisibleTopPoolData: Dispatch<SetStateAction<PoolIF[]>>;
-        processPoolListForActiveChain: () => void;
+        processPoolListForActiveChain: () => Promise<void>;
         reset: () => void;
     };
     topTokensOnchain: useTokenStatsIF;
@@ -379,6 +379,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             setVisibleTopPoolData,
             reset: () => {
                 setIntermediaryPoolData([]);
+                setPoolDataFilteredByActiveChain([]);
             },
         },
         topTokensOnchain: dexTokens,

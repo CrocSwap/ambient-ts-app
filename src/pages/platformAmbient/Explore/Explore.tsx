@@ -34,12 +34,6 @@ export default function Explore(props: ExploreIF) {
     } = useContext(AppStateContext);
     const { poolList } = useContext(PoolContext);
 
-    const refreshPoolData = async (): Promise<void> => {
-        if (crocEnv && poolList.length) {
-            pools.processPoolListForActiveChain();
-        }
-    };
-
     // trigger process to fetch and format token data when page loads with
     // ... gatekeeping to prevent re-fetch if data is already loaded
     useEffect(() => {
@@ -48,15 +42,15 @@ export default function Explore(props: ExploreIF) {
         }
     }, [crocEnv !== undefined]);
 
-    const refreshPools = async (): Promise<void> => {
+    const refreshPools = async () => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
             pools.reset();
-            // pause for a moment to allow spinner to appear
-            await new Promise((resolve) => setTimeout(resolve, 100));
+            // pause for a moment to allow loading indicator to appear
+            await new Promise((resolve) => setTimeout(resolve, 300));
             // use metadata to get expanded pool data
-            refreshPoolData();
+            await pools.processPoolListForActiveChain();
         }
     };
 
