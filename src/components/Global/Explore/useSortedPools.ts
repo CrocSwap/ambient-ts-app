@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
-import { sortDirections } from '../../../ambient-utils/types';
-import { PoolDataIF } from '../../../contexts/ExploreContext';
+import { PoolIF, sortDirections } from '../../../ambient-utils/types';
 
 export type sortType =
     | 'price'
@@ -10,10 +9,14 @@ export type sortType =
     | '24h price δ'
     | 'change'
     | null;
-type sortableKeysType = 'priceChange' | 'tvl' | 'volume' | 'apr';
+type sortableKeysType =
+    | 'priceChange24h'
+    | 'tvlTotalUsd'
+    | 'volumeChange24h'
+    | 'apr';
 
 export interface SortedPoolMethodsIF {
-    pools: PoolDataIF[];
+    pools: PoolIF[];
     current: sortType;
     direction: sortDirections;
     updateSort: (type: sortType) => void;
@@ -21,7 +24,7 @@ export interface SortedPoolMethodsIF {
 
 // hook to sort pools in the Explore module
 export const useSortedPools = (
-    allPools: Array<PoolDataIF>,
+    allPools: Array<PoolIF>,
 ): SortedPoolMethodsIF => {
     // default sort values (`null` will sort by TVL)
     const DEFAULT_SORT: sortType = '24h vol.';
@@ -32,48 +35,48 @@ export const useSortedPools = (
         useState<sortDirections>(DEFAULT_DIRECTION);
 
     // logic to apply the correct sort as specified by the user
-    const sortedPools = useMemo<PoolDataIF[]>(() => {
+    const sortedPools = useMemo<PoolIF[]>(() => {
         // declare an output variable
-        let output: PoolDataIF[];
+        let output: PoolIF[];
         // fn to sort data
-        const sort = (key: sortableKeysType): PoolDataIF[] =>
+        const sort = (key: sortableKeysType): PoolIF[] =>
             allPools.sort(
-                (poolA: PoolDataIF, poolB: PoolDataIF) =>
-                    poolB[key] - poolA[key],
+                (poolA: PoolIF, poolB: PoolIF) =>
+                    (poolB[key] || 0) - (poolA[key] || 0),
             );
         // logic router for sort mechanism, default goes last
         switch (sortBy) {
             case '24h vol.':
-                output = sort('volume');
+                output = sort('volumeChange24h');
                 break;
             case 'apr':
                 output = sort('apr');
                 break;
             case '24h price δ':
-                output = sort('priceChange');
+                output = sort('priceChange24h');
                 break;
             case 'change':
-                output = sort('priceChange');
+                output = sort('priceChange24h');
                 break;
             case 'tvl':
             case null:
             default:
-                output = sort('tvl');
+                output = sort('tvlTotalUsd');
                 break;
         }
         // reverse data if user has indicated descending sort sequence
-        const sequencedData: PoolDataIF[] =
+        const sequencedData: PoolIF[] =
             direction === 'descending' ? output.reverse() : output;
         // logic to demote arbitrary values depending on current sort
-        const preferredData: PoolDataIF[] = [];
-        const demotedData: PoolDataIF[] = [];
-        sequencedData.forEach((p: PoolDataIF) => {
+        const preferredData: PoolIF[] = [];
+        const demotedData: PoolIF[] = [];
+        sequencedData.forEach((p: PoolIF) => {
             // boolean for control flow
             let needsDemotion: boolean;
             // assign bool based on given value for a given key
             switch (sortBy) {
                 case '24h price δ':
-                    needsDemotion = p.priceChangeStr === '';
+                    needsDemotion = !p.priceChange24h;
                     break;
                 default:
                     needsDemotion = false;

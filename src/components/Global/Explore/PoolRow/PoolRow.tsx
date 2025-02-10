@@ -3,8 +3,7 @@ import {
     getUnicodeCharacter,
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
-import { TokenIF } from '../../../../ambient-utils/types';
-import { PoolDataIF } from '../../../../contexts/ExploreContext';
+import { PoolIF, TokenIF } from '../../../../ambient-utils/types';
 import TokenIcon from '../../TokenIcon/TokenIcon';
 
 import { useMemo } from 'react';
@@ -13,7 +12,7 @@ import { FlexContainer } from '../../../../styled/Common';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './PoolRow.module.css';
 interface propsIF {
-    pool: PoolDataIF;
+    pool: PoolIF;
     goToMarket: (tknA: string, tknB: string) => void;
     isExploreDollarizationEnabled: boolean;
 }
@@ -25,9 +24,13 @@ export default function PoolRow(props: propsIF) {
     // const [isHovered, setIsHovered] = useState(false);
 
     const [firstToken, secondToken]: [TokenIF, TokenIF] =
-        !pool.isBaseTokenMoneynessGreaterOrEqual
-            ? [pool.base, pool.quote]
-            : [pool.quote, pool.base];
+        pool.isBaseTokenMoneynessGreaterOrEqual
+            ? [pool.quote, pool.base]
+            : [pool.base, pool.quote];
+
+    if (pool.quote.symbol === 'WBTC' || pool.base.symbol === 'WBTC') {
+        console.log({ firstToken, secondToken, pool });
+    }
 
     const baseTokenCharacter = pool.base.symbol
         ? getUnicodeCharacter(pool.base.symbol)
@@ -89,33 +92,59 @@ export default function PoolRow(props: propsIF) {
                       })
                     : '...'
                 : pool.displayPrice
-                  ? characterToDisplay + pool.displayPrice
+                  ? characterToDisplay + pool.displayPriceString
                   : '...'}
         </p>
     );
 
-    const poolVolumeDisplay = <p>{pool.volumeStr || '...'}</p>;
+    // format volume, use empty string as backup value
+    const volumeDisplayString: string = pool.volumeChange24h
+        ? getFormattedNumber({
+              value: pool.volumeChange24h,
+              prefix: '$',
+          })
+        : '';
+
+    const poolVolumeDisplay = <p>{volumeDisplayString || '...'}</p>;
 
     const aprDisplay = <p>{aprString}</p>;
 
-    const tvlDisplay = <p>{!pool.tvl || pool.tvl < 0 ? '...' : pool.tvlStr}</p>;
+    // format TVL, use empty string as backup value
+    const tvlDisplayString: string = pool.tvlTotalUsd
+        ? getFormattedNumber({
+              value: pool.tvlTotalUsd,
+              isTvl: true,
+              prefix: '$',
+          })
+        : '';
+
+    const tvlDisplay = (
+        <p>
+            {!pool.tvlTotalUsd || pool.tvlTotalUsd < 0
+                ? '...'
+                : tvlDisplayString}
+        </p>
+    );
+
+    console.log(pool.priceChangePercent);
 
     const priceChangeDisplay = (
         <p
             style={{
                 color:
-                    pool.priceChangeStr.includes('No') || !pool.priceChangeStr
+                    !pool.priceChangePercent ||
+                    pool.priceChangePercent.includes('No')
                         ? 'var(--text1)'
-                        : pool.priceChangeStr.startsWith('-')
+                        : pool.priceChangePercent.startsWith('-')
                           ? 'var(--negative)'
                           : 'var(--positive)',
             }}
         >
-            {!pool.priceChangeStr || pool.priceChangeStr.includes('NaN')
+            {!pool.priceChangePercent || pool.priceChangePercent.includes('NaN')
                 ? '...'
-                : !desktopView && pool.priceChangeStr.includes('No')
+                : !desktopView && pool.priceChangePercent.includes('No')
                   ? 'None'
-                  : pool.priceChangeStr}
+                  : pool.priceChangePercent}
         </p>
     );
 

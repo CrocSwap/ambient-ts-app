@@ -1,5 +1,9 @@
 import { CrocEnv, bigIntToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
-import { getMoneynessRank, isETHorStakedEthToken } from '..';
+import {
+    getFormattedNumber,
+    getMoneynessRank,
+    isETHorStakedEthToken,
+} from '..';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import {
     ZERO_ADDRESS,
@@ -295,14 +299,16 @@ function decoratePoolStats(
     stats.baseTvlUsd = stats.baseTvlDecimal * basePrice;
     stats.quoteTvlUsd = stats.quoteTvlDecimal * quotePrice;
     stats.baseVolumeUsd = stats.baseVolumeDecimal * basePrice;
+    const baseVolumeUsd24hAgo = baseVolumeDecimal24hAgo * basePrice;
     stats.quoteVolumeUsd = stats.quoteVolumeDecimal * quotePrice;
+    const quoteVolumeUsd24hAgo = quoteVolumeDecimal24hAgo * quotePrice;
     stats.baseFeeUsd = stats.baseFeeDecimal * basePrice;
     stats.quoteFeeUsd = stats.quoteFeeDecimal * quotePrice;
 
     stats.tvlTotalUsd = stats.baseTvlUsd + stats.quoteTvlUsd;
     stats.volumeTotalUsd = (stats.baseVolumeUsd + stats.quoteVolumeUsd) / 2.0;
     const volumeTotalUsd24hAgo =
-        (baseVolumeDecimal24hAgo + quoteVolumeDecimal24hAgo) / 2.0;
+        (baseVolumeUsd24hAgo + quoteVolumeUsd24hAgo) / 2.0;
     stats.volumeChange24h = stats.volumeTotalUsd - volumeTotalUsd24hAgo;
     stats.feesTotalUsd = stats.baseFeeUsd + stats.quoteFeeUsd;
     const feesTotalUsd24hAgo =
@@ -311,6 +317,7 @@ function decoratePoolStats(
 
     const baseMoneyness: number = getMoneynessRank(pool.base.symbol);
     const quoteMoneyness: number = getMoneynessRank(pool.quote.symbol);
+
     const shouldInvert = baseMoneyness < quoteMoneyness;
     stats.isBaseTokenMoneynessGreaterOrEqual = baseMoneyness >= quoteMoneyness;
 
@@ -323,6 +330,60 @@ function decoratePoolStats(
                 ? pool.priceSwap24hAgo / pool.lastPriceSwap - 1.0
                 : pool.lastPriceSwap / pool.priceSwap24hAgo - 1.0
             : undefined;
+
+    stats.apr =
+        stats.feesChange24h && stats.tvlTotalUsd
+            ? (stats.feesChange24h / stats.tvlTotalUsd) * 100 * 365
+            : undefined;
+
+    stats.displayPrice = !stats.isBaseTokenMoneynessGreaterOrEqual
+        ? 1 /
+          toDisplayPrice(
+              pool.lastPriceSwap || 0,
+              pool.base.decimals,
+              pool.quote.decimals,
+          )
+        : toDisplayPrice(
+              pool.lastPriceSwap || 0,
+              pool.base.decimals,
+              pool.quote.decimals,
+          );
+
+    stats.displayPriceString = getFormattedNumber({
+        value: stats.displayPrice,
+        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+    });
+
+    if (stats.priceChange24h === undefined || stats.volumeChange24h === 0) {
+        stats.priceChangePercent = '';
+    } else if (stats.priceChange24h * 100 >= 0.01) {
+        stats.priceChangePercent =
+            '+' +
+            (stats.priceChange24h * 100).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }) +
+            '%';
+    } else if (stats.priceChange24h * 100 <= -0.01) {
+        stats.priceChangePercent =
+            (stats.priceChange24h * 100).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }) + '%';
+    } else {
+        stats.priceChangePercent = 'No Change';
+    }
+
+    const tokenPriceForUsd = pool.isBaseTokenMoneynessGreaterOrEqual
+        ? stats.baseUsdPrice || 0
+        : stats.quoteUsdPrice || 0;
+
+    stats.usdPriceMoneynessBased = (stats.displayPrice || 0) * tokenPriceForUsd;
+
+    stats.name = stats.isBaseTokenMoneynessGreaterOrEqual
+        ? `${pool.quote.symbol} / ${pool.base.symbol}`
+        : `${pool.base.symbol} / ${pool.quote.symbol}`;
+
     return stats;
 }
 
@@ -338,29 +399,6 @@ interface PoolStatsServerIF {
     feeRate: number;
     isHistorical: boolean;
 }
-
-// type PoolStatsIF = PoolStatsServerIF & {
-//     base: string;
-//     quote: string;
-//     poolIdx: number;
-//     baseTvlDecimal: number;
-//     quoteTvlDecimal: number;
-//     baseVolumeDecimal: number;
-//     quoteVolumeDecimal: number;
-//     baseFeeDecimal: number;
-//     quoteFeeDecimal: number;
-//     baseTvlUsd: number;
-//     quoteTvlUsd: number;
-//     baseVolumeUsd: number;
-//     quoteVolumeUsd: number;
-//     baseFeeUsd: number;
-//     quoteFeeUsd: number;
-//     tvlTotalUsd: number;
-//     volumeTotalUsd: number;
-//     feesTotalUsd: number;
-//     baseFdvUsd?: number;
-//     quoteFdvUsd?: number;
-// };
 
 const get24hChange = async (
     chainId: string,

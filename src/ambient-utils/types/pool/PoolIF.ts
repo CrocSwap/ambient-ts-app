@@ -47,4 +47,12 @@ export interface PoolIF {
     feesChange24h?: number;
 
     priceChange24h?: number | undefined;
+
+    apr?: number | undefined;
+
+    displayPrice?: number | undefined;
+    displayPriceString?: string | undefined;
+    priceChangePercent?: string | undefined;
+
+    usdPriceMoneynessBased?: number | undefined;
 }
