@@ -14,11 +14,7 @@ import {
     getUnicodeCharacter,
     isETHorStakedEthToken,
 } from '../../ambient-utils/dataLayer';
-import {
-    PoolIF,
-    PoolStatIF,
-    SinglePoolDataIF,
-} from '../../ambient-utils/types';
+import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 // import{ CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -26,6 +22,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 const useFetchPoolStats = (
     pool: PoolIF,
+    poolList: PoolIF[] | undefined,
     spotPriceRetrieved: number | undefined,
     isTradePair = false,
     enableTotalSupply = false,
@@ -61,21 +58,19 @@ const useFetchPoolStats = (
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const { lastBlockNumber, allPoolStats } = useContext(ChainDataContext);
-
+    const { lastBlockNumber } = useContext(ChainDataContext);
     // useMemo to filter allPoolStats for the current pool
-    const currentPoolStats = useMemo(
+    const activeTradePoolStats = useMemo(
         () =>
-            allPoolStats?.find(
-                (poolStat: SinglePoolDataIF) =>
-                    poolStat.base.toLowerCase() ===
+            poolList?.find(
+                (poolListEntry: PoolIF) =>
+                    poolListEntry.base.address.toLowerCase() ===
                         pool.base.address.toLowerCase() &&
-                    poolStat.quote.toLowerCase() ===
+                    poolListEntry.quote.address.toLowerCase() ===
                         pool.quote.address.toLowerCase(),
             ),
-        [allPoolStats, pool.base.address, pool.quote.address],
+        [JSON.stringify(poolList), pool.base.address, pool.quote.address],
     );
-
     const { tokens } = useContext(TokenContext);
 
     const [poolPriceDisplayNum, setPoolPriceDisplayNum] = useState<
@@ -308,8 +303,7 @@ const useFetchPoolStats = (
 
     const fetchPoolStats = async () => {
         if (
-            poolIndex &&
-            chainId &&
+            activeTradePoolStats &&
             lastBlockNumber &&
             shouldInvertDisplay !== undefined &&
             crocEnv &&
@@ -319,26 +313,8 @@ const useFetchPoolStats = (
                     localPoolPriceNonDisplay[0] ===
                         pool.base.address + pool.quote.address))
         ) {
-            const poolStatsNow = {
-                baseFees: currentPoolStats?.baseFees || 0,
-                baseTvl: currentPoolStats?.baseTvl || 0,
-                baseVolume: currentPoolStats?.baseVolume || 0,
-                quoteFees: currentPoolStats?.quoteFees || 0,
-                quoteTvl: currentPoolStats?.quoteTvl || 0,
-                quoteVolume: currentPoolStats?.quoteVolume || 0,
-                feeRate: currentPoolStats?.feeRate || 0,
-                lastPriceIndic: currentPoolStats?.lastPriceIndic || 0,
-                lastPriceLiq: currentPoolStats?.lastPriceLiq || 0,
-                lastPriceSwap: currentPoolStats?.lastPriceSwap || 0,
-                latestTime: currentPoolStats?.latestTime || 0,
-                isHistorical: false,
-            };
-
-            const expandedPoolStatsNow = await expandPoolStats(
-                poolStatsNow,
-                pool.base.address,
-                pool.quote.address,
-                chainId,
+            const expandedPoolStats = await expandPoolStats(
+                activeTradePoolStats,
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
@@ -346,38 +322,10 @@ const useFetchPoolStats = (
                 enableTotalSupply,
             );
 
-            const poolStats24hAgo = {
-                baseFees: currentPoolStats?.baseFees24hAgo || 0,
-                baseTvl: currentPoolStats?.baseTvl || 0,
-                baseVolume: currentPoolStats?.baseVolume24hAgo || 0,
-                quoteFees: currentPoolStats?.quoteFees24hAgo || 0,
-                quoteTvl: currentPoolStats?.quoteTvl || 0,
-                quoteVolume: currentPoolStats?.quoteVolume24hAgo || 0,
-                feeRate: currentPoolStats?.feeRate || 0,
-                lastPriceIndic: currentPoolStats?.lastPriceIndic || 0,
-                lastPriceLiq: currentPoolStats?.lastPriceLiq || 0,
-                lastPriceSwap: currentPoolStats?.lastPriceSwap || 0,
-                latestTime: currentPoolStats?.latestTime || 0,
-                isHistorical: true,
-            };
+            const volumeChange24h = expandedPoolStats.volumeChange24h || 0;
 
-            const expandedPoolStats24hAgo = await expandPoolStats(
-                poolStats24hAgo,
-                pool.base.address,
-                pool.quote.address,
-                chainId,
-                crocEnv,
-                cachedFetchTokenPrice,
-                cachedTokenDetails,
-                tokens.tokenUniv,
-            );
-
-            const volumeTotalNow = expandedPoolStatsNow?.volumeTotalUsd;
-            const volumeTotal24hAgo = expandedPoolStats24hAgo?.volumeTotalUsd;
-            const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
-
-            const nowPrice = currentPoolStats?.lastPriceSwap;
-            const ydayPrice = currentPoolStats?.priceSwap24hAgo;
+            const nowPrice = expandedPoolStats?.lastPriceSwap;
+            const ydayPrice = expandedPoolStats?.priceSwap24hAgo;
 
             const priceChangeResult =
                 ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
@@ -386,19 +334,18 @@ const useFetchPoolStats = (
                         : nowPrice / ydayPrice - 1.0
                     : undefined;
 
-            const tvlResult = expandedPoolStatsNow?.tvlTotalUsd;
-            const feesTotalNow = expandedPoolStatsNow?.feesTotalUsd;
-            const feesTotal24hAgo = expandedPoolStats24hAgo?.feesTotalUsd;
-            const volumeResult = expandedPoolStatsNow?.volumeTotalUsd;
+            const tvlResult = expandedPoolStats.tvlTotalUsd || 0;
 
-            const feesChange24h = feesTotalNow - feesTotal24hAgo;
+            const volumeResult = expandedPoolStats.volumeTotalUsd || 0;
 
-            setQuoteTvlDecimal(expandedPoolStatsNow.quoteTvlDecimal);
-            setBaseTvlDecimal(expandedPoolStatsNow.baseTvlDecimal);
-            setQuoteTvlUsd(expandedPoolStatsNow.quoteTvlUsd);
-            setBaseFdvUsd(expandedPoolStatsNow.baseFdvUsd);
-            setQuoteFdvUsd(expandedPoolStatsNow.quoteFdvUsd);
-            setBaseTvlUsd(expandedPoolStatsNow.baseTvlUsd);
+            const feesChange24h = expandedPoolStats.feesChange24h || 0;
+
+            setQuoteTvlDecimal(expandedPoolStats.quoteTvlDecimal);
+            setBaseTvlDecimal(expandedPoolStats.baseTvlDecimal);
+            setQuoteTvlUsd(expandedPoolStats.quoteTvlUsd);
+            setBaseFdvUsd(expandedPoolStats.baseFdvUsd);
+            setQuoteFdvUsd(expandedPoolStats.quoteFdvUsd);
+            setBaseTvlUsd(expandedPoolStats.baseTvlUsd);
 
             if (tvlResult) {
                 const tvlString = getFormattedNumber({
@@ -407,9 +354,9 @@ const useFetchPoolStats = (
                 });
                 setPoolTvl(tvlString);
             }
-            if (feesTotalNow) {
+            if (expandedPoolStats.feesTotalUsd) {
                 const feesTotalString = getFormattedNumber({
-                    value: feesTotalNow,
+                    value: expandedPoolStats.feesTotalUsd,
                     isTvl: false,
                 });
                 setPoolFeesTotal(feesTotalString);

@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { getMoneynessRank, uriToHttp } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
-import { AppStateContext } from '../../../contexts';
+import { AppStateContext, PoolContext } from '../../../contexts';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -31,6 +31,8 @@ export default function PoolsListItem(props: propsIF) {
     const { pool, spotPrice } = props;
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
+
+    const { poolList } = useContext(PoolContext);
 
     const {
         activeNetwork: { chainId, poolIndex },
@@ -72,8 +74,7 @@ export default function PoolsListItem(props: propsIF) {
             : favePools.add(quoteToken, baseToken, chainId, poolIndex);
     }
 
-    // hook to get human-readable values for pool volume and TVL
-    const poolData = useFetchPoolStats(pool, spotPrice);
+    const poolData = useFetchPoolStats(pool, poolList, spotPrice);
 
     const {
         poolPrice,

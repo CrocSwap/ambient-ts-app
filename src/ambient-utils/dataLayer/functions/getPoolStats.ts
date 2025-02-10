@@ -1,5 +1,5 @@
 import { CrocEnv, bigIntToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
-import { isETHorStakedEthToken } from '..';
+import { getMoneynessRank, isETHorStakedEthToken } from '..';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import {
     ZERO_ADDRESS,
@@ -7,7 +7,7 @@ import {
     excludedTokenAddressesLowercase,
 } from '../../constants';
 import { MAINNET_TOKENS } from '../../constants/networks/ethereumMainnet';
-import { SinglePoolDataIF, TokenIF } from '../../types';
+import { PoolIF, SinglePoolDataIF, TokenIF } from '../../types';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 const getLiquidityFee = async (
@@ -138,29 +138,25 @@ const fetchAllPoolStats = async (
 };
 
 export async function expandPoolStats(
-    payload: PoolStatsServerIF,
-    base: string,
-    quote: string,
-    chainId: string,
+    pool: PoolIF,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     tokenList: TokenIF[],
     enableTotalSupply?: boolean,
-): Promise<PoolStatsIF> {
+): Promise<PoolIF> {
     const provider = (await crocEnv.context).provider;
 
-    const basePricePromise = cachedFetchTokenPrice(base, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
-
-    const baseUsdPrice = (await basePricePromise)?.usdPrice;
-    const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
+    const baseUsdPrice = pool.baseUsdPrice || 0;
+    const quoteUsdPrice = pool.quoteUsdPrice || 0;
 
     const baseTokenListed = tokenList.find(
-        (token) => token.address.toLowerCase() === base.toLowerCase(),
+        (token) =>
+            token.address.toLowerCase() === pool.base.address.toLowerCase(),
     );
     const quoteTokenListed = tokenList.find(
-        (token) => token.address.toLowerCase() === quote.toLowerCase(),
+        (token) =>
+            token.address.toLowerCase() === pool.quote.address.toLowerCase(),
     );
 
     const baseTokenListedDecimals = baseTokenListed?.decimals;
@@ -173,24 +169,43 @@ export async function expandPoolStats(
 
     const baseDecimals =
         (baseTokenListedDecimals ||
-            (await cachedTokenDetails(provider, base, chainId))?.decimals) ??
+            (
+                await cachedTokenDetails(
+                    provider,
+                    pool.base.address,
+                    pool.chainId,
+                )
+            )?.decimals) ??
         DEFAULT_DECIMALS;
 
     const quoteDecimals =
         (quoteTokenListedDecimals ||
-            (await cachedTokenDetails(provider, quote, chainId))?.decimals) ??
+            (
+                await cachedTokenDetails(
+                    provider,
+                    pool.quote.address,
+                    pool.chainId,
+                )
+            )?.decimals) ??
         DEFAULT_DECIMALS;
 
     const baseTotalSupplyBigInt =
-        !enableTotalSupply || base === ZERO_ADDRESS
+        !enableTotalSupply || pool.base.address === ZERO_ADDRESS
             ? undefined
             : baseTokenListedTotalSupply ||
-              (await cachedTokenDetails(provider, base, chainId))?.totalSupply;
+              (
+                  await cachedTokenDetails(
+                      provider,
+                      pool.base.address,
+                      pool.chainId,
+                  )
+              )?.totalSupply;
 
     const quoteTotalSupplyBigInt = !enableTotalSupply
         ? undefined
         : quoteTokenListedTotalSupply ||
-          (await cachedTokenDetails(provider, quote, chainId))?.totalSupply;
+          (await cachedTokenDetails(provider, pool.quote.address, pool.chainId))
+              ?.totalSupply;
 
     const baseTotalSupplyNum = baseTotalSupplyBigInt
         ? bigIntToFloat(baseTotalSupplyBigInt)
@@ -208,7 +223,7 @@ export async function expandPoolStats(
         return mainnetEthPrice?.usdPrice;
     };
 
-    const lastPriceSwap = payload.lastPriceSwap;
+    const lastPriceSwap = pool.lastPriceSwap || 0;
 
     const displayPoolPrice = toDisplayPrice(
         lastPriceSwap,
@@ -218,7 +233,7 @@ export async function expandPoolStats(
 
     const basePrice = baseUsdPrice
         ? baseUsdPrice
-        : isETHorStakedEthToken(base)
+        : isETHorStakedEthToken(pool.base.address)
           ? (await getEthPrice()) || 0.0
           : quoteUsdPrice && displayPoolPrice
             ? quoteUsdPrice / displayPoolPrice
@@ -226,14 +241,14 @@ export async function expandPoolStats(
 
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
-        : isETHorStakedEthToken(quote)
+        : isETHorStakedEthToken(pool.quote.address)
           ? (await getEthPrice()) || 0.0
           : baseUsdPrice
             ? baseUsdPrice * displayPoolPrice
             : 0.0;
 
     return decoratePoolStats(
-        payload,
+        pool,
         baseDecimals,
         quoteDecimals,
         baseTotalSupplyNum,
@@ -244,22 +259,31 @@ export async function expandPoolStats(
 }
 
 function decoratePoolStats(
-    payload: PoolStatsServerIF,
+    pool: PoolIF,
     baseDecimals: number,
     quoteDecimals: number,
     baseTotalSupplyNum: number | undefined,
     quoteTotalSupplyNum: number | undefined,
     basePrice: number,
     quotePrice: number,
-): PoolStatsIF {
-    const stats = Object.assign({}, payload) as PoolStatsIF;
-    stats.baseTvlDecimal = payload.baseTvl / Math.pow(10, baseDecimals);
-    stats.quoteTvlDecimal = payload.quoteTvl / Math.pow(10, quoteDecimals);
-    stats.baseVolumeDecimal = payload.baseVolume / Math.pow(10, baseDecimals);
+): PoolIF {
+    const stats = Object.assign({}, pool) as PoolIF;
+    stats.baseTvlDecimal = (pool.baseTvl || 0) / Math.pow(10, baseDecimals);
+    stats.quoteTvlDecimal = (pool.quoteTvl || 0) / Math.pow(10, quoteDecimals);
+    stats.baseVolumeDecimal =
+        (pool.baseVolume || 0) / Math.pow(10, baseDecimals);
+    const baseVolumeDecimal24hAgo =
+        (pool.baseVolume24hAgo || 0) / Math.pow(10, baseDecimals);
     stats.quoteVolumeDecimal =
-        payload.quoteVolume / Math.pow(10, quoteDecimals);
-    stats.baseFeeDecimal = payload.baseFees / Math.pow(10, baseDecimals);
-    stats.quoteFeeDecimal = payload.quoteFees / Math.pow(10, quoteDecimals);
+        (pool.quoteVolume || 0) / Math.pow(10, quoteDecimals);
+    const quoteVolumeDecimal24hAgo =
+        (pool.quoteVolume24hAgo || 0) / Math.pow(10, quoteDecimals);
+    stats.baseFeeDecimal = (pool.baseFees || 0) / Math.pow(10, baseDecimals);
+    const baseFeeDecimal24hAgo =
+        (pool.baseFees24hAgo || 0) / Math.pow(10, baseDecimals);
+    stats.quoteFeeDecimal = (pool.quoteFees || 0) / Math.pow(10, quoteDecimals);
+    const quoteFeeDecimal24hAgo =
+        (pool.quoteFees24hAgo || 0) / Math.pow(10, quoteDecimals);
 
     stats.baseFdvUsd = baseTotalSupplyNum
         ? (baseTotalSupplyNum / Math.pow(10, baseDecimals)) * basePrice
@@ -277,8 +301,28 @@ function decoratePoolStats(
 
     stats.tvlTotalUsd = stats.baseTvlUsd + stats.quoteTvlUsd;
     stats.volumeTotalUsd = (stats.baseVolumeUsd + stats.quoteVolumeUsd) / 2.0;
+    const volumeTotalUsd24hAgo =
+        (baseVolumeDecimal24hAgo + quoteVolumeDecimal24hAgo) / 2.0;
+    stats.volumeChange24h = stats.volumeTotalUsd - volumeTotalUsd24hAgo;
     stats.feesTotalUsd = stats.baseFeeUsd + stats.quoteFeeUsd;
+    const feesTotalUsd24hAgo =
+        baseFeeDecimal24hAgo * basePrice + quoteFeeDecimal24hAgo * quotePrice;
+    stats.feesChange24h = stats.feesTotalUsd - feesTotalUsd24hAgo;
 
+    const baseMoneyness: number = getMoneynessRank(pool.base.symbol);
+    const quoteMoneyness: number = getMoneynessRank(pool.quote.symbol);
+    const shouldInvert = baseMoneyness < quoteMoneyness;
+    stats.isBaseTokenMoneynessGreaterOrEqual = baseMoneyness >= quoteMoneyness;
+
+    stats.priceChange24h =
+        pool.priceSwap24hAgo &&
+        pool.lastPriceSwap &&
+        pool.priceSwap24hAgo > 0 &&
+        pool.lastPriceSwap > 0
+            ? shouldInvert
+                ? pool.priceSwap24hAgo / pool.lastPriceSwap - 1.0
+                : pool.lastPriceSwap / pool.priceSwap24hAgo - 1.0
+            : undefined;
     return stats;
 }
 
@@ -290,34 +334,33 @@ interface PoolStatsServerIF {
     quoteVolume: number;
     baseFees: number;
     quoteFees: number;
-    lastPriceIndic: number;
     lastPriceSwap: number;
     feeRate: number;
     isHistorical: boolean;
 }
 
-type PoolStatsIF = PoolStatsServerIF & {
-    base: string;
-    quote: string;
-    poolIdx: number;
-    baseTvlDecimal: number;
-    quoteTvlDecimal: number;
-    baseVolumeDecimal: number;
-    quoteVolumeDecimal: number;
-    baseFeeDecimal: number;
-    quoteFeeDecimal: number;
-    baseTvlUsd: number;
-    quoteTvlUsd: number;
-    baseVolumeUsd: number;
-    quoteVolumeUsd: number;
-    baseFeeUsd: number;
-    quoteFeeUsd: number;
-    tvlTotalUsd: number;
-    volumeTotalUsd: number;
-    feesTotalUsd: number;
-    baseFdvUsd?: number;
-    quoteFdvUsd?: number;
-};
+// type PoolStatsIF = PoolStatsServerIF & {
+//     base: string;
+//     quote: string;
+//     poolIdx: number;
+//     baseTvlDecimal: number;
+//     quoteTvlDecimal: number;
+//     baseVolumeDecimal: number;
+//     quoteVolumeDecimal: number;
+//     baseFeeDecimal: number;
+//     quoteFeeDecimal: number;
+//     baseTvlUsd: number;
+//     quoteTvlUsd: number;
+//     baseVolumeUsd: number;
+//     quoteVolumeUsd: number;
+//     baseFeeUsd: number;
+//     quoteFeeUsd: number;
+//     tvlTotalUsd: number;
+//     volumeTotalUsd: number;
+//     feesTotalUsd: number;
+//     baseFdvUsd?: number;
+//     quoteFdvUsd?: number;
+// };
 
 const get24hChange = async (
     chainId: string,

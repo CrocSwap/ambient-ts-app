@@ -71,6 +71,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
 
     const poolData = useFetchPoolStats(
         poolArg,
+        poolList,
         undefined,
         true,
         true,

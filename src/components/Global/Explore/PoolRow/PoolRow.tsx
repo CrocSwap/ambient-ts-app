@@ -25,7 +25,7 @@ export default function PoolRow(props: propsIF) {
     // const [isHovered, setIsHovered] = useState(false);
 
     const [firstToken, secondToken]: [TokenIF, TokenIF] =
-        pool.moneyness.base < pool.moneyness.quote
+        !pool.isBaseTokenMoneynessGreaterOrEqual
             ? [pool.base, pool.quote]
             : [pool.quote, pool.base];
 
@@ -38,7 +38,7 @@ export default function PoolRow(props: propsIF) {
 
     const characterToDisplay = useMemo(
         () =>
-            pool.moneyness.base < pool.moneyness.quote
+            !pool.isBaseTokenMoneynessGreaterOrEqual
                 ? quoteTokenCharacter
                 : baseTokenCharacter,
         [pool],

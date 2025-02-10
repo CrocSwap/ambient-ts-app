@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { PoolIF } from '../../../../../ambient-utils/types';
+import { PoolContext } from '../../../../../contexts/PoolContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { Results } from '../../../../../styled/Components/Sidebar';
 import useFetchPoolStats from '../../../../hooks/useFetchPoolStats';
@@ -15,7 +16,9 @@ export default function PoolSearchResult(props: propsIF) {
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
 
-    const poolData = useFetchPoolStats(pool, spotPrice);
+    const { poolList } = useContext(PoolContext);
+
+    const poolData = useFetchPoolStats(pool, poolList, spotPrice);
 
     function handleClickFunction() {
         handleClick(pool.base.address, pool.quote.address);

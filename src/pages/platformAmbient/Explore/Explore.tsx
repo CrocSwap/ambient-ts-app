@@ -34,9 +34,9 @@ export default function Explore(props: ExploreIF) {
     } = useContext(AppStateContext);
     const { poolList } = useContext(PoolContext);
 
-    const getAllPoolData = async (): Promise<void> => {
+    const refreshPoolData = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
-            pools.getAllPools(poolList, crocEnv, chainId);
+            pools.processPoolListForActiveChain();
         }
     };
 
@@ -56,7 +56,7 @@ export default function Explore(props: ExploreIF) {
             // pause for a moment to allow spinner to appear
             await new Promise((resolve) => setTimeout(resolve, 100));
             // use metadata to get expanded pool data
-            getAllPoolData();
+            refreshPoolData();
         }
     };
 
