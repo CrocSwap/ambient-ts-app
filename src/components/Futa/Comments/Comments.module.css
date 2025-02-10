@@ -245,8 +245,13 @@
         display: none;
     }
 
+
+    .comments_outer{
+        height: 100%;
+    }
+
     .mainContainer.tradePage {
-        height: calc(100svh - 190px);
+        height: 100%;
     }
 
     .commentsWrapper {
