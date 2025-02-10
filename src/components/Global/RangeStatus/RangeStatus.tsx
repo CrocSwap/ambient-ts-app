@@ -17,7 +17,6 @@ export default function RangeStatus(props: propsIF) {
 
     const ambientWithTooltip = (
         <DefaultTooltip
-            interactive
             title={'ambient'}
             placement={'right'}
             arrow
@@ -33,7 +32,6 @@ export default function RangeStatus(props: propsIF) {
     );
     const emptyWithTooltip = (
         <DefaultTooltip
-            interactive
             title={'Empty'}
             placement={'right'}
             arrow
@@ -49,7 +47,6 @@ export default function RangeStatus(props: propsIF) {
     );
     const rangeWithTooltip = (
         <DefaultTooltip
-            interactive
             title={isInRange ? 'In Range' : 'Out of Range'}
             placement={'right'}
             arrow

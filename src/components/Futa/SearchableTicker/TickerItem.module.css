@@ -7,13 +7,14 @@
     gap: 8px;
     font-size: 18px;
     letter-spacing: 1px;
+    min-height: 27px;
+    /* height: 400px; */
 }
 
 /* transparent ticker arrow in base state with transition */
 .ticker_arrow {
     transition: all var(--animation-speed) ease-in-out;
     color: #f0f0f800;
-    ;
 }
 
 /* add color to ticker arrow when parent elem is hovered */
@@ -85,8 +86,29 @@
     justify-content: flex-end;
 }
 
-@media (max-width: 500px) {
-    .ticker_item > * {
-        font-size: 10px;
+@media (max-width: 599px) {
+    .ticker_item > p {
+        font-size: 16px;
+    }
+
+     /* Add these new styles */
+     .ticker_name {
+        flex: 2 1 auto; /* Increase flex-grow to take more space */
+        min-width: 120px; /* Ensure minimum width for readability */
+    }
+
+    .auction_status {
+        flex: 0.5 1 auto; /* Reduce flex-grow to take less space */
+        min-width: 60px; /* Smaller minimum width */
+    }
+
+    .time_remaining {
+        flex: 0.5 1 auto; /* Reduce flex-grow to take less space */
+        min-width: 60px; /* Smaller minimum width */
+    }
+
+    .market_cap {
+        flex: 1 1 auto; /* Keep market cap at normal ratio */
+        min-width: 80px;
     }
 }

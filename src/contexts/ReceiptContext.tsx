@@ -19,7 +19,7 @@ export interface ReceiptContextIF {
     setShowRedDot: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-interface TransactionByType {
+export interface TransactionByType {
     chainId: string;
     userAddress: string;
     txHash: string;
@@ -56,6 +56,10 @@ interface TransactionByType {
         gridSize?: number;
         originalLowTick?: number;
         originalHighTick?: number;
+        initialTokenQty?: string;
+        secondaryTokenQty?: string;
+        currentLiquidity?: bigint | undefined;
+        prevPositionHash?: string;
     };
     isRemoved?: boolean;
 }

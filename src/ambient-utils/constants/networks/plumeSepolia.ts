@@ -1,12 +1,9 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
+import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import {
-    plumeSepoliaETH,
-    plumeSepoliaNEV,
-    plumeSepoliaUSD,
-} from '../defaultTokens';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -38,6 +35,25 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://test-explorer.plumenetwork.xyz/',
 };
 
+const defaultTokenEntries = [
+    ['ETH', '0x0000000000000000000000000000000000000000'],
+    ['pUSD', '0xe644F07B1316f28a7F134998e021eA9f7135F351'],
+    ['NEV', '0x659619AEdf381c3739B0375082C2d61eC1fD8835'],
+] as const;
+
+// Infer the type of the keys and define the resulting type
+type PlumeSepoliaTokens = {
+    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
+};
+
+// Safely construct the object with type inference
+export const PLUME_SEPOLIA_TOKENS: PlumeSepoliaTokens = Object.fromEntries(
+    defaultTokenEntries.map(([key, address]) => [
+        key,
+        findTokenByAddress(address, chainIdHex),
+    ]),
+) as PlumeSepoliaTokens;
+
 export const plumeSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
@@ -45,8 +61,8 @@ export const plumeSepolia: NetworkIF = {
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [plumeSepoliaETH, plumeSepoliaUSD],
-    defaultPairFuta: [plumeSepoliaETH, plumeSepoliaUSD],
+    defaultPair: [PLUME_SEPOLIA_TOKENS.ETH, PLUME_SEPOLIA_TOKENS.pUSD],
+    defaultPairFuta: [PLUME_SEPOLIA_TOKENS.ETH, PLUME_SEPOLIA_TOKENS.pUSD],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
@@ -56,18 +72,18 @@ export const plumeSepolia: NetworkIF = {
     tempestApiNetworkName: '',
     topPools: [
         new TopPool(
-            plumeSepoliaETH,
-            plumeSepoliaUSD,
+            PLUME_SEPOLIA_TOKENS.ETH,
+            PLUME_SEPOLIA_TOKENS.pUSD,
             chainSpecFromSDK.poolIndex,
         ),
         new TopPool(
-            plumeSepoliaUSD,
-            plumeSepoliaNEV,
+            PLUME_SEPOLIA_TOKENS.pUSD,
+            PLUME_SEPOLIA_TOKENS.NEV,
             chainSpecFromSDK.poolIndex,
         ),
         new TopPool(
-            plumeSepoliaETH,
-            plumeSepoliaNEV,
+            PLUME_SEPOLIA_TOKENS.ETH,
+            PLUME_SEPOLIA_TOKENS.NEV,
             chainSpecFromSDK.poolIndex,
         ),
     ],

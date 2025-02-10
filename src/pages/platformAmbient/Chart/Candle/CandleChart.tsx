@@ -75,6 +75,11 @@ export default function CandleChart(props: candlePropsIF) {
                 const domainLeft = scaleData?.xScale.domain()[0];
                 const domainRight = scaleData?.xScale.domain()[1];
 
+                const drawDomainLeft =
+                    scaleData?.drawingLinearxScale.domain()[0];
+                const drawDomainRight =
+                    scaleData?.drawingLinearxScale.domain()[1];
+
                 const count = data.filter(
                     (i: CandleDataChart) =>
                         i.time <= lastCandleData.time - period &&
@@ -83,10 +88,31 @@ export default function CandleChart(props: candlePropsIF) {
 
                 setPrevLastCandleTime(lastCandleData.time - period);
 
-                scaleData?.xScale.domain([
-                    domainLeft + count * period * 1000,
-                    domainRight + count * period * 1000,
-                ]);
+                if (count > 0) {
+                    const diff =
+                        scaleData.xScale(domainLeft + count * period * 1000) -
+                        scaleData.xScale(domainLeft);
+
+                    scaleData?.xScale.domain([
+                        scaleData.xScale.invert(
+                            scaleData.xScale(domainLeft) + diff,
+                        ),
+                        scaleData.xScale.invert(
+                            scaleData.xScale(domainRight) + diff,
+                        ),
+                    ]);
+
+                    scaleData?.drawingLinearxScale.domain([
+                        scaleData.drawingLinearxScale.invert(
+                            scaleData.drawingLinearxScale(drawDomainLeft) +
+                                diff,
+                        ),
+                        scaleData.drawingLinearxScale.invert(
+                            scaleData.drawingLinearxScale(drawDomainRight) +
+                                diff,
+                        ),
+                    ]);
+                }
             }
         }
     }, [tradeTableState, lastCandleData?.time, showFutaCandles]);
@@ -196,6 +222,10 @@ export default function CandleChart(props: candlePropsIF) {
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
+                    scaleData?.drawingLinearxScale.range([
+                        0,
+                        event.detail.width,
+                    ]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     candlestick.context(ctx);
                 });

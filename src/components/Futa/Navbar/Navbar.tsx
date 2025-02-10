@@ -178,6 +178,7 @@ export default function Navbar() {
     // Custom Hooks
     useOnClickOutside(dropdownRef, clickOutsideHandler);
     const desktopScreen = useMediaQuery('(min-width: 768px)');
+    const isTabletPortrait = useMediaQuery('tabletPortrait');
 
     // Data
     const dropdownData = [
@@ -227,7 +228,11 @@ export default function Navbar() {
             onClick={openWalletModal}
             className={styles.connectButton}
         >
-            {desktopScreen ? 'CONNECT WALLET' : 'CONNECT'}
+            {isTabletPortrait
+                ? 'CONNECT'
+                : desktopScreen
+                  ? 'CONNECT WALLET'
+                  : 'CONNECT'}
         </button>
     );
 
@@ -289,7 +294,9 @@ export default function Navbar() {
                     <li key={navLink.id} className={styles.navItem}>
                         <div
                             className={`${styles.navLink} ${
-                                location.pathname.includes(navLink.link)
+                                decodeURIComponent(location.pathname).includes(
+                                    navLink.link,
+                                )
                                     ? styles.active
                                     : styles.not_active
                             }`}
@@ -330,13 +337,14 @@ export default function Navbar() {
                         ref={tutorialBtnRef}
                         onClick={() => setReplayTutorial(true)}
                     >
-                        {' '}
-                        <AiOutlineQuestionCircle /> Help
+                        <AiOutlineQuestionCircle />
+                        <p>Help</p>
                     </div>
                     {!isUserConnected && connectWagmiButton}
                     <NotificationCenter />
                     <div className={styles.moreContainer} ref={dropdownRef}>
                         <FiMoreHorizontal
+                            size={25}
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         />
                         {/* <AnimatePresence> */}

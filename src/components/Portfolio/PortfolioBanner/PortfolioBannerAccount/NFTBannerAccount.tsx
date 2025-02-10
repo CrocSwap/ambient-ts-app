@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
@@ -13,6 +12,7 @@ import {
     NftListByChain,
 } from '../../../../contexts/TokenBalanceContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { getAvatarForType } from '../../../Chat/ChatRenderUtils';
 import ChatToaster from '../../../Chat/ChatToaster/ChatToaster';
@@ -404,7 +404,6 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                 event.stopPropagation();
                 setIsContractNameOptionTabActive(false);
             }}
-            ref={NftComponentItemRef}
         >
             <div>
                 <NFTBannerHeader>
@@ -529,7 +528,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                         </IconContainer>
                     </SelectedNftCotainer>
                     {nftContractName.length > 0 && (
-                        <NFTBannerFilter>
+                        <NFTBannerFilter ref={NftComponentItemRef}>
                             <DropDownContainer>
                                 <DropDownHeader
                                     onClick={(

@@ -1,12 +1,9 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
+import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import {
-    swellSepoliaETH,
-    swellSepoliaUSDC,
-    swellSepoliaUSDT,
-} from '../defaultTokens';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -38,6 +35,25 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://swell-testnet-explorer.alt.technology/',
 };
 
+const defaultTokenEntries = [
+    ['ETH', '0x0000000000000000000000000000000000000000'],
+    ['USDC', '0xfEfD8bCB0034A2B0E3CC22e2f5A59279FAe67128'],
+    ['USDT', '0x60bBA138A74C5e7326885De5090700626950d509'],
+] as const;
+
+// Infer the type of the keys and define the resulting type
+type SwellSepoliaTokens = {
+    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
+};
+
+// Safely construct the object with type inference
+export const SWELL_SEPOLIA_TOKENS: SwellSepoliaTokens = Object.fromEntries(
+    defaultTokenEntries.map(([key, address]) => [
+        key,
+        findTokenByAddress(address, chainIdHex),
+    ]),
+) as SwellSepoliaTokens;
+
 export const swellSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
@@ -45,8 +61,8 @@ export const swellSepolia: NetworkIF = {
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [swellSepoliaETH, swellSepoliaUSDC],
-    defaultPairFuta: [swellSepoliaETH, swellSepoliaUSDC],
+    defaultPair: [SWELL_SEPOLIA_TOKENS.ETH, SWELL_SEPOLIA_TOKENS.USDC],
+    defaultPairFuta: [SWELL_SEPOLIA_TOKENS.ETH, SWELL_SEPOLIA_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
@@ -56,13 +72,13 @@ export const swellSepolia: NetworkIF = {
     tempestApiNetworkName: '',
     topPools: [
         new TopPool(
-            swellSepoliaETH,
-            swellSepoliaUSDC,
+            SWELL_SEPOLIA_TOKENS.ETH,
+            SWELL_SEPOLIA_TOKENS.USDC,
             chainSpecFromSDK.poolIndex,
         ),
         new TopPool(
-            swellSepoliaETH,
-            swellSepoliaUSDT,
+            SWELL_SEPOLIA_TOKENS.ETH,
+            SWELL_SEPOLIA_TOKENS.USDT,
             chainSpecFromSDK.poolIndex,
         ),
     ],

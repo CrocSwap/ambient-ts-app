@@ -16,6 +16,7 @@ export const domDebug = (key: string, value: any) => {
     if (key) {
         key = key.trim();
         key = key.replaceAll(' ', '_');
+        key = key.replaceAll('>', '_');
     }
 
     el.classList.add(styles.active);

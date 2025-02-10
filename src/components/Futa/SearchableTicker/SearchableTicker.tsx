@@ -1,10 +1,5 @@
-import { NumberSize, Resizable } from 're-resizable';
-import { Direction } from 're-resizable/lib/resizer';
+import { motion } from 'framer-motion';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { BiSearch } from 'react-icons/bi';
-import { FaEye } from 'react-icons/fa';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import { MdClose } from 'react-icons/md';
 import { AuctionDataIF, diffHashSig } from '../../../ambient-utils/dataLayer';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { FutaSearchableTickerContext } from '../../../contexts/Futa/FutaSearchableTickerContext';
@@ -14,16 +9,16 @@ import {
 } from '../../../pages/platformFuta/Auctions/useSortedAuctions';
 import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import AuctionLoader from '../AuctionLoader/AuctionLoader';
-import Chart from '../Chart/Chart';
+
 // import Divider from '../Divider/FutaDivider';
-import { LuCheck, LuPencil } from 'react-icons/lu';
 import { auctionDataSets } from '../../../pages/platformFuta/Account/Account';
-import Typewriter from '../TypeWriter/TypeWriter';
 import styles from './SearchableTicker.module.css';
-import TickerItem from './TickerItem';
+
 import { GoChevronRight } from 'react-icons/go';
+import useDeviceDetection from '../../../utils/hooks/useDeviceDetection';
+import ResizeableTableHeader from '../ResizeableTable/ResizeableTableHeader/ResizeableTableHeader';
+import Typewriter from '../TypeWriter/TypeWriter';
+import TickerItem from './TickerItem';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
@@ -39,26 +34,22 @@ export default function SearchableTicker(props: propsIF) {
     const { auctions, placeholderTicker, isAccount, dataState } = props;
 
     const {
-        setIsLoading,
-        selectedTicker,
         hoveredTicker,
         setSelectedTicker,
+        selectedTicker,
         setHoveredTicker,
+
         showComplete,
         setShowComplete,
         watchlists,
         setFilteredAuctionList,
     } = useContext(AuctionsContext);
 
-    const {
-        searchableTickerHeights,
-        setSearchableTickerHeight,
-        canvasRef,
-        setIsSearchableTickerHeightMinimum,
-    } = useContext(FutaSearchableTickerContext);
+    const { searchableTickerHeights, setSearchableTickerHeight } = useContext(
+        FutaSearchableTickerContext,
+    );
 
-    const tableParentRef = useRef<HTMLDivElement>(null);
-
+    const tickerTableRef = useRef<HTMLDivElement>(null);
     // logic to expand table to full height if no data is available, this
     // ... keeps the 'no data available' msg centered in the visual space,
     useEffect(() => {
@@ -80,16 +71,14 @@ export default function SearchableTicker(props: propsIF) {
         // !important:  ... adds additional data to what we already have
     }, [auctions.data.length === 0]);
 
-    const [isSortDropdownOpen, setIsSortDropdownOpen] =
-        useState<boolean>(false);
     // scrolling is disabled when hover on table
     const [isMouseEnter, setIsMouseEnter] = useState(false);
-    const customLoading = false;
 
-    const isMobile = useMediaQuery('(max-width: 767px)');
-    const isTabletScreen = useMediaQuery(
-        '(min-width: 768px) and (max-width: 1200px)',
-    );
+    const deviceType = useDeviceDetection();
+    false && console.log(deviceType);
+
+    const isMobile = useMediaQuery('(max-width: 768px)');
+
     // shape of data to create filter dropdown menu options
     interface filterOptionIF {
         label: string;
@@ -118,34 +107,8 @@ export default function SearchableTicker(props: propsIF) {
         sortDropdownOptions[0],
     );
 
-    // DOM id for search input field
-    const INPUT_DOM_ID = 'ticker_auction_search_input';
-
     // variable to hold user search input from the DOM
     const [searchInputRaw, setSearchInputRaw] = useState<string>('');
-
-    // fn to clear search input and re-focus the input element
-    function clearInput(): void {
-        setSearchInputRaw('');
-        focusInput();
-    }
-
-    function focusInput(): void {
-        document.getElementById(INPUT_DOM_ID)?.focus();
-    }
-
-    // clear search input on ESC keypress
-    useEffect(() => {
-        const handleEscape = (e: KeyboardEvent): void => {
-            if (document.activeElement?.id === INPUT_DOM_ID) {
-                e.code === 'Escape' && clearInput();
-            }
-        };
-        document.body.addEventListener('keydown', handleEscape);
-        return function cleanUp() {
-            document.body.removeEventListener('keydown', handleEscape);
-        };
-    });
 
     // split auction data into complete vs incomplete subsets
     // runs any time new data is received by the components
@@ -212,16 +175,6 @@ export default function SearchableTicker(props: propsIF) {
         watchlists.shouldDisplay,
     ]);
 
-    const timeDropdownRef = useRef<HTMLDivElement>(null);
-
-    // fn to close the sort filter menu when user clicks outside
-    const clickOutsideHandler = (): void => {
-        setIsSortDropdownOpen(false);
-    };
-
-    // hook to handle user click outside of the dropdown modal
-    useOnClickOutside(timeDropdownRef, clickOutsideHandler);
-
     useEffect(() => {
         if (placeholderTicker) setSelectedTicker(undefined);
     }, [placeholderTicker]);
@@ -239,185 +192,18 @@ export default function SearchableTicker(props: propsIF) {
             !isMouseEnter
         ) {
             const itemRef = tickerItemRefs.current[hoveredTicker];
-            const tableRef = containerRef.current;
+            const tableRef = tickerTableRef.current;
+            const localContainerRef = containerRef.current;
 
-            if (itemRef && containerRef.current && tableRef) {
-                containerRef.current.scrollTo({
-                    top: itemRef.offsetTop - tableRef.offsetTop,
+            if (itemRef && tableRef && localContainerRef) {
+                tickerTableRef.current.scrollTo({
+                    top: itemRef.offsetTop - localContainerRef.offsetTop,
                     behavior: 'smooth',
                 });
             }
         }
     }, [hoveredTicker, isMouseEnter]);
 
-    // @Junior: do we still need this? `customLoading` is hardcoded to `false`
-    // @Junior: ... so this isn't actually being consumed by the app
-    if (customLoading) return <AuctionLoader setIsLoading={setIsLoading} />;
-
-    // fn to determine directionality sort arrows should indicate
-    function getArrowDirection(): 'up' | 'down' | null {
-        let output: 'up' | 'down' | null = null;
-        if (auctions.active === 'marketCap') {
-            output = auctions.isReversed ? 'up' : 'down';
-        } else if (auctions.active === 'timeLeft') {
-            output = auctions.isReversed ? 'down' : 'up';
-        }
-        return output;
-    }
-
-    // apply a consistent size to all icons inside buttons
-    const BUTTON_ICON_SIZE = 17;
-
-    const smallScreen: boolean = useMediaQuery('(max-width: 400px)');
-
-    const headerDisplay = (
-        <div className={styles.header}>
-            <div className={styles.search_and_sort}>
-                <div className={styles.text_search_box}>
-                    <BiSearch
-                        size={20}
-                        color='var(--text2)'
-                        id='searchable_ticker_input'
-                        onClick={() => focusInput()}
-                    />
-                    <input
-                        type='text'
-                        id={INPUT_DOM_ID}
-                        value={searchInputRaw}
-                        onChange={(e) => setSearchInputRaw(e.target.value)}
-                        placeholder='SEARCH...'
-                        spellCheck={false}
-                        autoComplete='off'
-                        tabIndex={1}
-                    />
-                    {searchInputRaw && (
-                        <MdClose
-                            size={20}
-                            color='var(--text2)'
-                            onClick={() => clearInput()}
-                        />
-                    )}
-                </div>
-                <div className={styles.sort_clickable} ref={timeDropdownRef}>
-                    <div className={styles.sort_selection}>
-                        <div
-                            className={styles.timeDropdownButton}
-                            onClick={() =>
-                                setIsSortDropdownOpen(!isSortDropdownOpen)
-                            }
-                        >
-                            <p>{activeSortOption.label}</p>
-                            {isSortDropdownOpen ? (
-                                <IoIosArrowUp color='var(--accent1)' />
-                            ) : (
-                                <IoIosArrowDown color='var(--accent1)' />
-                            )}
-                        </div>
-                        <div
-                            className={styles.sort_direction}
-                            onClick={() => auctions.reverse()}
-                        >
-                            <IoIosArrowUp
-                                size={14}
-                                color={
-                                    getArrowDirection() === 'up'
-                                        ? 'var(--accent1)'
-                                        : ''
-                                }
-                            />
-
-                            <IoIosArrowDown
-                                size={14}
-                                color={
-                                    getArrowDirection() === 'down'
-                                        ? 'var(--accent1)'
-                                        : ''
-                                }
-                            />
-                        </div>
-                    </div>
-                    {isSortDropdownOpen && (
-                        <div className={styles.dropdown}>
-                            {sortDropdownOptions.map((item, idx) => (
-                                <p
-                                    className={styles.timeItem}
-                                    key={idx}
-                                    onClick={() => {
-                                        setActiveSortOption(item);
-                                        setIsSortDropdownOpen(false);
-                                        auctions.update(
-                                            item.slug as auctionSorts,
-                                        );
-                                    }}
-                                >
-                                    {item.label}
-                                </p>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-            <div className={styles.filters}>
-                <button
-                    onClick={() => setShowComplete(!showComplete)}
-                    className={
-                        styles[showComplete ? 'button_on' : 'button_off']
-                    }
-                >
-                    <LuCheck size={BUTTON_ICON_SIZE} />
-                    <div>COMPLETED</div>
-                </button>
-                {isAccount || (
-                    <button
-                        onClick={() => watchlists.toggle()}
-                        className={
-                            styles[
-                                watchlists.shouldDisplay
-                                    ? 'button_on'
-                                    : 'button_off'
-                            ]
-                        }
-                    >
-                        <FaEye size={BUTTON_ICON_SIZE} />
-                        <div>WATCHLIST</div>
-                    </button>
-                )}
-                {isAccount ? (
-                    <button
-                        className={
-                            styles[
-                                dataState?.active === 'created'
-                                    ? 'button_on'
-                                    : 'button_off'
-                            ]
-                        }
-                        onClick={() => dataState?.toggle && dataState.toggle()}
-                    >
-                        <LuPencil size={BUTTON_ICON_SIZE} />
-                        <div>CREATED</div>
-                    </button>
-                ) : null}
-            </div>
-        </div>
-    );
-
-    const noAuctionsContent = (
-        <div className={styles.no_auctions_content}>
-            <Typewriter
-                text={
-                    watchlists.shouldDisplay
-                        ? 'No tickers found in your watchlist'
-                        : 'No tickers to display'
-                }
-            />
-            {watchlists.shouldDisplay && <p>Consider viewing all tickers</p>}
-            {watchlists.shouldDisplay && (
-                <button onClick={() => watchlists.toggle()}>
-                    View all tickers
-                </button>
-            )}
-        </div>
-    );
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -449,8 +235,30 @@ export default function SearchableTicker(props: propsIF) {
         };
     }, []);
 
+    const noAuctionsContent = (
+        <div className={styles.no_auctions_content}>
+            <Typewriter
+                text={
+                    watchlists.shouldDisplay
+                        ? 'No tickers found in your watchlist'
+                        : 'No tickers to display'
+                }
+            />
+            {watchlists.shouldDisplay && <p>Consider viewing all tickers</p>}
+            {watchlists.shouldDisplay && (
+                <button onClick={() => watchlists.toggle()}>
+                    View all tickers
+                </button>
+            )}
+        </div>
+    );
+    const orderedData =
+        showComplete && auctions.active === 'timeLeft'
+            ? [...filteredData].reverse()
+            : [...filteredData];
+
     const searchableContent = (
-        <div className={styles.ticker_table}>
+        <div className={styles.ticker_table} ref={tickerTableRef}>
             {filteredData.length ? (
                 <header>
                     <p className={styles.cell_left}>
@@ -459,10 +267,12 @@ export default function SearchableTicker(props: propsIF) {
                             // ... way to keep the header text aligned
                             // ... with the content below
                         }
-                        <GoChevronRight
-                            size={20}
-                            className={styles.ticker_col_header_spacer}
-                        />
+                        {isMobile || (
+                            <GoChevronRight
+                                size={20}
+                                className={styles.ticker_col_header_spacer}
+                            />
+                        )}
                         TICKER
                     </p>
                     <p className={styles.cell_right}>MARKET CAP</p>
@@ -476,7 +286,7 @@ export default function SearchableTicker(props: propsIF) {
                     )}
                 </header>
             ) : null}
-            <div
+            <motion.div
                 className={styles.ticker_table_content}
                 onMouseEnter={() => setIsMouseEnter(true)}
                 onMouseLeave={() => {
@@ -484,17 +294,18 @@ export default function SearchableTicker(props: propsIF) {
                     setHoveredTicker(undefined);
                 }}
                 ref={containerRef}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6 }}
             >
                 {filteredData.length
-                    ? (showComplete && auctions.active === 'timeLeft'
-                          ? [...filteredData].reverse()
-                          : [...filteredData]
-                      ).map((auction: AuctionDataIF) => (
+                    ? orderedData.map((auction: AuctionDataIF) => (
                           <TickerItem
                               key={JSON.stringify(auction)}
                               auction={auction}
                               isAccount={isAccount}
-                              isMobile={smallScreen}
+                              isMobile={isMobile}
                               selectedTicker={selectedTicker}
                               setSelectedTicker={setSelectedTicker}
                               setShowComplete={setShowComplete}
@@ -503,95 +314,22 @@ export default function SearchableTicker(props: propsIF) {
                           />
                       ))
                     : noAuctionsContent}
-            </div>
+            </motion.div>
         </div>
-    );
-
-    const resizableChart = (
-        <Resizable
-            enable={{
-                bottom: !isAccount,
-                top: false,
-                left: false,
-                topLeft: false,
-                bottomLeft: false,
-                right: false,
-                topRight: false,
-                bottomRight: false,
-            }}
-            size={{
-                height:
-                    !isMobile || isTabletScreen
-                        ? isAccount && tableParentRef.current
-                            ? tableParentRef.current.getBoundingClientRect()
-                                  .height * 0.99
-                            : searchableTickerHeights.current
-                        : '90%',
-            }}
-            minHeight={200}
-            maxHeight={
-                isAccount || (isMobile && !isTabletScreen)
-                    ? undefined
-                    : window.innerHeight - 200
-            }
-            onResize={(
-                evt: MouseEvent | TouchEvent,
-                dir: Direction,
-                ref: HTMLElement,
-                d: NumberSize,
-            ) => {
-                const newHeight = searchableTickerHeights.current + d.height;
-                if (newHeight <= searchableTickerHeights.min) {
-                    setIsSearchableTickerHeightMinimum(true);
-                } else {
-                    setIsSearchableTickerHeightMinimum(false);
-                }
-            }}
-            onResizeStart={() => {
-                /* may be useful later */
-            }}
-            onResizeStop={(
-                evt: MouseEvent | TouchEvent,
-                dir: Direction,
-                ref: HTMLElement,
-                d: NumberSize,
-            ) => {
-                const newHeight = Math.max(
-                    searchableTickerHeights.min,
-                    Math.min(
-                        searchableTickerHeights.current + d.height,
-                        searchableTickerHeights.max,
-                    ),
-                );
-
-                setSearchableTickerHeight(newHeight);
-            }}
-            bounds={'parent'}
-            className={styles.resizable}
-            style={{ borderBottom: 'none !important' }}
-        >
-            {headerDisplay}
-            {searchableContent}
-        </Resizable>
     );
 
     return (
-        <div
-            className={styles.container}
-            style={{
-                gridTemplateRows: isAccount ? 'auto 100%' : '',
-            }}
-            ref={canvasRef}
-        >
-            <FlexContainer
-                flexDirection='column'
-                fullHeight
-                className={styles.contentContainer}
-                ref={tableParentRef}
-            >
-                {resizableChart}
-                {!isAccount && !isMobile && <Chart />}
-            </FlexContainer>
-        </div>
+        <FlexContainer flexDirection='column' fullHeight fullWidth>
+            <ResizeableTableHeader
+                auctions={auctions}
+                dataState={dataState}
+                searchInputRaw={searchInputRaw}
+                setSearchInputRaw={setSearchInputRaw}
+                filteredData={filteredData}
+                activeSortOption={activeSortOption}
+                setActiveSortOption={setActiveSortOption}
+            />
+            {searchableContent}
+        </FlexContainer>
     );
 }

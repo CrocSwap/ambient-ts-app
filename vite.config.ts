@@ -2,14 +2,12 @@ import react from '@vitejs/plugin-react';
 import { execSync } from 'child_process';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
-import macrosPlugin from 'vite-plugin-babel-macros';
 import checker from 'vite-plugin-checker';
 
 export default defineConfig({
     base: '/',
     plugins: [
         react(),
-        macrosPlugin(),
         checker({
             eslint: {
                 // for example, lint .ts and .tsx
@@ -75,8 +73,6 @@ export default defineConfig({
                         return 'styled-components';
                     } else if (id.toLowerCase().includes('ens-normalize')) {
                         return 'ens';
-                    } else if (id.toLowerCase().includes('intro.js')) {
-                        return 'intro';
                     } else if (
                         id.toLowerCase().includes('numbro') ||
                         id.toLowerCase().includes('moment')
@@ -95,7 +91,6 @@ export default defineConfig({
                     } else if (id.toLowerCase().includes('web3modal')) {
                         return 'web3modal';
                     } else if (
-                        id.toLowerCase().includes('material-ui') ||
                         id.toLowerCase().includes('popper') ||
                         id.toLowerCase().includes('mui') ||
                         id.toLowerCase().includes('react-color') ||

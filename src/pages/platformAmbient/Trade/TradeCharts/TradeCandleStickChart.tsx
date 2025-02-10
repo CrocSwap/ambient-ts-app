@@ -5,6 +5,7 @@ import {
     useContext,
     useEffect,
     useMemo,
+    useRef,
     useState,
 } from 'react';
 import Chart from '../../Chart/Chart';
@@ -111,6 +112,10 @@ function TradeCandleStickChart(props: propsIF) {
         [chartSettings.candleTime.global.time, location.pathname],
     );
 
+    const periodRef = useRef<60 | 300 | 900 | 3600 | 14400 | 86400 | undefined>(
+        undefined,
+    );
+
     const [currentData, setCurrentData] = useState<CandleDataIF | undefined>();
     const periodToReadableTime = useMemo(() => {
         if (period) {
@@ -178,6 +183,8 @@ function TradeCandleStickChart(props: propsIF) {
         }),
         [tokenB.address, tokenB.chainId, tokenA.address, tokenA.chainId],
     );
+
+    const [isCheckGap, setIsCheckGap] = useState(false);
 
     const isFetchingEnoughData = useMemo(() => {
         if (candleData && candleData.candles && period) {
@@ -265,6 +272,62 @@ function TradeCandleStickChart(props: propsIF) {
             scaleData.xScale.discontinuityProvider(newDiscontinuityProvider);
         }
     }, [isFetchingEnoughData]);
+
+    useEffect(() => {
+        (async () => {
+            if (!isFetchingEnoughData) {
+                if (scaleData && period) {
+                    const firstCandleDate = unparsedCandleData?.reduce(
+                        function (prev, current) {
+                            return prev.time < current.time ? prev : current;
+                        },
+                    ).time;
+
+                    if (firstCandleDate && period === periodRef.current) {
+                        const gapLeft =
+                            (scaleData.xScale.domain()[1] -
+                                firstCandleDate * 1000) /
+                            (period * 1000);
+
+                        const candles = filterCandleWithTransaction(
+                            unparsedCandleData,
+                            period,
+                        ).filter((i) => i.isShowData && i.time * 1000);
+
+                        if (
+                            (timeOfEndCandle && candles.length < 30) ||
+                            gapLeft > 500
+                        ) {
+                            setCandleDomains((prev: CandleDomainIF) => {
+                                return {
+                                    ...prev,
+                                    isResetRequest: true,
+                                };
+                            });
+
+                            await resetXScale(scaleData.xScale);
+                            periodRef.current = period;
+
+                            return;
+                        }
+                    }
+                    periodRef.current = period;
+                }
+                setIsCheckGap(true);
+            } else {
+                setIsCheckGap(false);
+            }
+        })();
+    }, [isFetchingEnoughData]);
+
+    /**
+     * open chart if reset request completed
+     */
+    useEffect(() => {
+        if (!candleDomains.isResetRequest) {
+            setIsCheckGap(true);
+        }
+    }, [candleDomains.isResetRequest]);
 
     const sumActiveLiq = unparsedLiquidityData
         ? unparsedLiquidityData.ranges.reduce((sum, range) => {
@@ -738,23 +801,15 @@ function TradeCandleStickChart(props: propsIF) {
                 ])
                 .pad([0.05, 0.05]);
 
-            const xExtent = d3fc
-                .extentLinear()
-                .accessors([(d: any) => d.time * 1000])
-                .padUnit('domain')
-                .pad([
-                    period * 1000,
-                    (period / 2) * (mobileView ? 30 : 80) * 1000,
-                ]);
-
             let xScale: any = undefined;
 
             const xScaleTime = d3.scaleTime();
             const yScale = d3.scaleLinear();
             xScale = d3fc.scaleDiscontinuous(d3.scaleLinear());
-            xScale.domain(xExtent(boundaryCandles));
+            const drawingLinearxScale = d3.scaleLinear();
 
             resetXScale(xScale);
+            resetXScale(drawingLinearxScale);
 
             yScale.domain(priceRange(boundaryCandles));
 
@@ -773,8 +828,8 @@ function TradeCandleStickChart(props: propsIF) {
                         xScaleTime: xScaleTime,
                         yScale: yScale,
                         volumeScale: volumeScale,
-                        xExtent: xExtent,
                         priceRange: priceRange,
+                        drawingLinearxScale: drawingLinearxScale,
                     };
                 });
             } else {
@@ -863,6 +918,10 @@ function TradeCandleStickChart(props: propsIF) {
                         !isShowLatestCandle
                     ) {
                         scaleData.xScale.domain([domainLeft, domainRight]);
+                        scaleData.drawingLinearxScale.domain([
+                            domainLeft,
+                            domainRight,
+                        ]);
 
                         let nCandles = Math.floor(
                             (fethcingCandles - domainLeft) / (period * 1000),
@@ -922,7 +981,7 @@ function TradeCandleStickChart(props: propsIF) {
             : undefined,
     ]);
 
-    const resetXScale = (xScale: any) => {
+    const resetXScale = async (xScale: any) => {
         if (!period) return;
         const localInitialDisplayCandleCount =
             getInitialDisplayCandleCount(mobileView);
@@ -948,6 +1007,7 @@ function TradeCandleStickChart(props: propsIF) {
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
             resetXScale(scaleData.xScale);
+            resetXScale(scaleData.drawingLinearxScale);
 
             setCandleScale((prev: CandleScaleIF) => {
                 return {
@@ -1061,7 +1121,7 @@ function TradeCandleStickChart(props: propsIF) {
         candleData.pool.quoteAddress.toLowerCase() ===
             quoteTokenAddress.toLowerCase() &&
         !isFetchingCandle &&
-        !isFetchingEnoughData;
+        isCheckGap;
 
     useEffect(() => {
         isOpenChart !== undefined && setIsChartOpen(isOpenChart);

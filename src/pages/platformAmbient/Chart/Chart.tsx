@@ -14,9 +14,12 @@ import { useLocation } from 'react-router-dom';
 import {
     pinTickLower,
     pinTickUpper,
+    priceHalfAboveTick,
+    priceHalfBelowTick,
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { useDrawSettings } from '../../../App/hooks/useDrawSettings';
@@ -25,6 +28,7 @@ import {
     diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
+    formatSubscript,
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
@@ -37,8 +41,10 @@ import {
     CandleDataIF,
     CandleDomainIF,
     CandlesByPoolAndDurationIF,
+    LimitOrderIF,
     TransactionIF,
 } from '../../../ambient-utils/types';
+import { GraphDataContext } from '../../../contexts';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { CandleContext } from '../../../contexts/CandleContext';
@@ -61,6 +67,7 @@ import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 import YAxisCanvas from './Axes/yAxis/YaxisCanvas';
 import CandleChart from './Candle/CandleChart';
 import './Chart.css';
+import { updateZeroPriceCandles } from './ChartUtils/candleDataUtils';
 import {
     LS_KEY_CHART_ANNOTATIONS,
     defaultCandleBandwith,
@@ -121,7 +128,6 @@ import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
 import RangeLinesChart from './RangeLine/RangeLinesChart';
 import TvlChart from './Tvl/TvlChart';
 import VolumeBarCanvas from './Volume/VolumeBarCanvas';
-import { updateZeroPriceCandles } from './ChartUtils/candleDataUtils';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -292,6 +298,9 @@ export default function Chart(props: propsIF) {
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
 
+    const { userPositionsByPool, userLimitOrdersByPool } =
+        useContext(GraphDataContext);
+
     const [isChartZoom, setIsChartZoom] = useState(false);
     const [cursorStyleTrigger, setCursorStyleTrigger] = useState(false);
 
@@ -382,8 +391,14 @@ export default function Chart(props: propsIF) {
         selectedDrawnData | undefined
     >(undefined);
 
-    const [hoveredOrderHistory, setHoveredOrderHistory] =
-        useState<TransactionIF>();
+    const [hoveredOrderHistory, setHoveredOrderHistory] = useState<{
+        type: string;
+        id: string;
+        totalValueUSD: number;
+        tokenFlowDecimalCorrected: number;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        order: any;
+    }>();
 
     const [isHoveredOrderHistory, setIsHoveredOrderHistory] =
         useState<boolean>(false);
@@ -391,8 +406,14 @@ export default function Chart(props: propsIF) {
     const [isSelectedOrderHistory, setIsSelectedOrderHistory] =
         useState<boolean>(false);
 
-    const [selectedOrderHistory, setSelectedOrderHistory] =
-        useState<TransactionIF>();
+    const [selectedOrderHistory, setSelectedOrderHistory] = useState<{
+        type: string;
+        id: string;
+        totalValueUSD: number;
+        tokenFlowDecimalCorrected: number;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        order: any;
+    }>();
 
     const [hoverOHTooltip, setHoverOHTooltip] = useState<boolean>(true);
 
@@ -422,6 +443,8 @@ export default function Chart(props: propsIF) {
         setShowAllData,
         setOutsideControl,
         setSelectedOutsideTab,
+        setCurrentPositionActive,
+        setCurrentLimitOrderActive,
     } = useContext(TradeTableContext);
 
     const clickOutsideChartHandler = (event: Event) => {
@@ -461,7 +484,7 @@ export default function Chart(props: propsIF) {
         let notTransactionDataTime: undefined | number = undefined;
         let transationDataTime: undefined | number = undefined;
         if (scaleData) {
-            data.slice(isShowLatestCandle ? 2 : 1).forEach((item) => {
+            data.slice(1).forEach((item) => {
                 if (notTransactionDataTime === undefined && !item.isShowData) {
                     notTransactionDataTime = item.time * 1000;
                 }
@@ -544,6 +567,41 @@ export default function Chart(props: propsIF) {
         );
     };
 
+    const minimum = (data: CandleDataIF[], mouseX: number) => {
+        const xScale = scaleData?.xScale;
+        if (xScale) {
+            const accessor = (d: CandleDataIF) =>
+                Math.abs(mouseX - xScale(d.time * 1000));
+
+            return data
+                .map(function (dataPoint: CandleDataIF) {
+                    return [accessor(dataPoint), dataPoint];
+                })
+                .reduce(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    function (accumulator: any, dataPoint: any) {
+                        return accumulator[0] > dataPoint[0]
+                            ? dataPoint
+                            : accumulator;
+                    },
+                    [Number.MAX_VALUE, null],
+                );
+        }
+    };
+
+    // finds candle closest to the mouse
+    const snapForCandle = (point: number, filtered: Array<CandleDataIF>) => {
+        if (scaleData) {
+            if (point == undefined) return [];
+            if (filtered.length > 1) {
+                const nearest = minimum(filtered, point)[1];
+                return nearest;
+            }
+        }
+
+        return filtered[0];
+    };
+
     const unparsedCandleData = useMemo(() => {
         const updatedZeroCandles = updateZeroPriceCandles(
             unparsedData.candles,
@@ -585,6 +643,507 @@ export default function Chart(props: propsIF) {
         diffHashSigScaleData(scaleData),
         unparsedCandleData,
         isCondensedModeEnabled,
+    ]);
+
+    const closestValue = (
+        data: Array<{
+            order: TransactionIF;
+            totalValueUSD: number;
+            tokenFlowDecimalCorrected: number;
+            mergedIds: Array<{ hash: string; type: string }>;
+        }>,
+        pointX: number,
+        pointY: number,
+    ) => {
+        const xScale = scaleData?.xScale;
+        const yScale = scaleData?.yScale;
+
+        if (xScale && yScale) {
+            const accessor = (d: TransactionIF) =>
+                Math.sqrt(
+                    Math.pow(pointX - xScale(d.txTime * 1000), 2) +
+                        Math.pow(
+                            pointY -
+                                yScale(
+                                    denomInBase
+                                        ? d.swapInvPriceDecimalCorrected
+                                        : d.swapPriceDecimalCorrected,
+                                ),
+                            2,
+                        ),
+                );
+            return data
+                .map(function (dataPoint: {
+                    order: TransactionIF;
+                    totalValueUSD: number;
+                    tokenFlowDecimalCorrected: number;
+                    mergedIds: Array<{ hash: string; type: string }>;
+                }) {
+                    return [accessor(dataPoint.order), dataPoint];
+                })
+                .reduce(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    function (accumulator: any, dataPoint: any) {
+                        return accumulator[0] > dataPoint[0]
+                            ? dataPoint
+                            : accumulator;
+                    },
+                    [Number.MAX_VALUE, null],
+                );
+        }
+    };
+
+    const closestLimitValue = (
+        data: Array<{
+            order: LimitOrderIF;
+            totalValueUSD: number;
+            tokenFlowDecimalCorrected: number;
+            mergedIds: Array<{ hash: string; type: string }>;
+        }>,
+        pointX: number,
+        pointY: number,
+    ) => {
+        const xScale = scaleData?.xScale;
+        const yScale = scaleData?.yScale;
+
+        if (xScale && yScale) {
+            const accessor = (d: LimitOrderIF) =>
+                Math.sqrt(
+                    Math.pow(pointX - xScale(d.crossTime * 1000), 2) +
+                        Math.pow(
+                            pointY -
+                                yScale(
+                                    denomInBase
+                                        ? d.invLimitPriceDecimalCorrected
+                                        : d.limitPriceDecimalCorrected,
+                                ),
+                            2,
+                        ),
+                );
+            return data
+                .map(function (dataPoint: {
+                    order: LimitOrderIF;
+                    totalValueUSD: number;
+                    tokenFlowDecimalCorrected: number;
+                    mergedIds: Array<{ hash: string; type: string }>;
+                }) {
+                    return [accessor(dataPoint.order), dataPoint];
+                })
+                .reduce(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    function (accumulator: any, dataPoint: any) {
+                        return accumulator[0] > dataPoint[0]
+                            ? dataPoint
+                            : accumulator;
+                    },
+                    [Number.MAX_VALUE, null],
+                );
+        }
+    };
+
+    const filteredTransactionalData = useMemo(() => {
+        if (
+            userTransactionData &&
+            showSwap &&
+            scaleData &&
+            d3CanvasMain.current !== null
+        ) {
+            const canvas = d3
+                .select(d3CanvasMain.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const rectCanvas = canvas.getBoundingClientRect();
+            const width = rectCanvas.width;
+            scaleData.xScale.range([0, width]);
+
+            const mergedSellArray: Array<{
+                order: TransactionIF;
+                totalValueUSD: number;
+                tokenFlowDecimalCorrected: number;
+                mergedIds: Array<{ hash: string; type: string }>;
+            }> = [];
+            const mergedBuyArray: Array<{
+                order: TransactionIF;
+                totalValueUSD: number;
+                tokenFlowDecimalCorrected: number;
+                mergedIds: Array<{ hash: string; type: string }>;
+            }> = [];
+            const mergedLimitSellArray: Array<{
+                order: TransactionIF;
+                totalValueUSD: number;
+                tokenFlowDecimalCorrected: number;
+                mergedIds: Array<{ hash: string; type: string }>;
+            }> = [];
+            const mergedLimitBuyArray: Array<{
+                order: TransactionIF;
+                totalValueUSD: number;
+                tokenFlowDecimalCorrected: number;
+                mergedIds: Array<{ hash: string; type: string }>;
+            }> = [];
+
+            const leftDomain = scaleData.xScale.domain()[0] / 1000;
+            const rightDomain = scaleData.xScale.domain()[1] / 1000;
+
+            const userSwaps: Array<TransactionIF> = userTransactionData.filter(
+                (transaction) => transaction.entityType === 'swap',
+            );
+
+            const userClaimedLimit = userTransactionData.filter(
+                (transaction) =>
+                    transaction.entityType === 'limitOrder' &&
+                    transaction.changeType === 'recover',
+            );
+
+            userClaimedLimit.forEach((limit) => {
+                limit.swapInvPriceDecimalCorrected =
+                    limit.invLimitPriceDecimalCorrected;
+                limit.swapPriceDecimalCorrected =
+                    limit.limitPriceDecimalCorrected;
+                limit.baseFlowDecimalCorrected = Math.abs(
+                    limit.baseFlowDecimalCorrected,
+                );
+            });
+
+            userSwaps.push(...userClaimedLimit);
+
+            const sortedUserSwaps = userSwaps.sort((a, b) =>
+                d3.descending(a.txTime, b.txTime),
+            );
+
+            if (leftDomain !== undefined && rightDomain !== undefined) {
+                sortedUserSwaps.map((swap) => {
+                    if (swap.txTime > leftDomain && swap.txTime < rightDomain) {
+                        const mergedIds: Array<{ hash: string; type: string }> =
+                            [];
+
+                        mergedIds.push({
+                            hash: swap.txHash,
+                            type: swap.entityType,
+                        });
+
+                        const totalValueUSD = swap.totalValueUSD;
+
+                        const limitTick = swap.isBid
+                            ? swap.askTick
+                            : swap.bidTick;
+
+                        const gridSize = lookupChain(swap.chainId).gridSize;
+
+                        const priceHalfAbove = toDisplayPrice(
+                            priceHalfAboveTick(limitTick, gridSize),
+                            swap.baseDecimals,
+                            swap.quoteDecimals,
+                        );
+                        const priceHalfBelow = toDisplayPrice(
+                            priceHalfBelowTick(limitTick, gridSize),
+                            swap.baseDecimals,
+                            swap.quoteDecimals,
+                        );
+
+                        const middlePriceDisplayNum = isDenomBase
+                            ? swap.isBid
+                                ? 1 / priceHalfBelow
+                                : 1 / priceHalfAbove
+                            : swap.isBid
+                              ? priceHalfBelow
+                              : priceHalfAbove;
+
+                        const baseFlowAbsNum = swap.baseFlowDecimalCorrected;
+
+                        const quoteFlowDisplayNum =
+                            swap.quoteFlowDecimalCorrected;
+                        const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
+
+                        const estimatedBaseFlowDisplay = isDenomBase
+                            ? quoteFlowAbsNum / middlePriceDisplayNum
+                            : quoteFlowAbsNum * middlePriceDisplayNum;
+
+                        const estimatedQuoteFlowDisplay = isDenomBase
+                            ? baseFlowAbsNum * middlePriceDisplayNum
+                            : baseFlowAbsNum / middlePriceDisplayNum;
+
+                        const tokenFlowDecimalCorrected =
+                            swap.entityType === 'limitOrder'
+                                ? Math.abs(
+                                      swap.isBuy
+                                          ? denomInBase
+                                              ? estimatedBaseFlowDisplay
+                                              : swap.quoteFlowDecimalCorrected
+                                          : denomInBase
+                                            ? swap.baseFlowDecimalCorrected
+                                            : estimatedQuoteFlowDisplay,
+                                  )
+                                : denomInBase
+                                  ? swap.baseFlowDecimalCorrected
+                                  : swap.quoteFlowDecimalCorrected;
+
+                        const selectedArray = swap.isBuy
+                            ? swap.entityType === 'limitOrder'
+                                ? mergedLimitBuyArray
+                                : mergedBuyArray
+                            : swap.entityType === 'limitOrder'
+                              ? mergedLimitSellArray
+                              : mergedSellArray;
+
+                        if (selectedArray.length > 0) {
+                            const nearestSwap = closestValue(
+                                selectedArray,
+                                scaleData.xScale(swap.txTime * 1000),
+                                scaleData.yScale(
+                                    denomInBase
+                                        ? swap.swapInvPriceDecimalCorrected
+                                        : swap.swapPriceDecimalCorrected,
+                                ),
+                            );
+
+                            const shouldMerge = nearestSwap[0] < 30;
+
+                            if (shouldMerge) {
+                                const order =
+                                    swap.totalValueUSD >
+                                    nearestSwap[1].order.totalValueUSD
+                                        ? swap
+                                        : nearestSwap[1].order;
+
+                                const mergedMergeIds = nearestSwap[1].mergedIds;
+
+                                nearestSwap[1].order = order;
+
+                                nearestSwap[1].mergedIds =
+                                    mergedIds.concat(mergedMergeIds);
+
+                                nearestSwap[1].totalValueUSD += totalValueUSD;
+                                nearestSwap[1].tokenFlowDecimalCorrected +=
+                                    tokenFlowDecimalCorrected;
+                            } else {
+                                selectedArray.push({
+                                    order: swap,
+                                    mergedIds: mergedIds,
+                                    totalValueUSD: totalValueUSD,
+                                    tokenFlowDecimalCorrected:
+                                        tokenFlowDecimalCorrected,
+                                });
+                            }
+                        } else {
+                            selectedArray.push({
+                                order: swap,
+                                mergedIds: mergedIds,
+                                totalValueUSD: totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
+                            });
+                        }
+                    }
+                });
+            }
+
+            return [
+                ...mergedBuyArray,
+                ...mergedSellArray,
+                ...mergedLimitBuyArray,
+                ...mergedLimitSellArray,
+            ];
+        }
+
+        return undefined;
+    }, [
+        userTransactionData,
+        diffHashSigScaleData(scaleData, 'x'),
+        showSwap,
+        denomInBase,
+    ]);
+
+    const filteredLimitTxData = useMemo(() => {
+        if (
+            userTransactionData &&
+            userLimitOrdersByPool &&
+            showSwap &&
+            scaleData &&
+            d3CanvasMain.current !== null
+        ) {
+            const userLimitOrderHistory = userTransactionData.filter(
+                (transaction) =>
+                    transaction.entityType === 'limitOrder' &&
+                    transaction.changeType === 'mint',
+            );
+
+            const processLimitOrder = (entity: LimitOrderIF) => {
+                const mintedInTick = userLimitOrderHistory.filter(
+                    (his) =>
+                        his.isBuy === entity.isBid &&
+                        his.bidTick === entity.bidTick &&
+                        his.askTick === entity.askTick,
+                );
+
+                if (mintedInTick?.length > 0) {
+                    return mintedInTick;
+                }
+            };
+
+            const canvas = d3
+                .select(d3CanvasMain.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const rectCanvas = canvas.getBoundingClientRect();
+            const width = rectCanvas.width;
+            scaleData.xScale.range([0, width]);
+
+            const mergedSellArray: Array<{
+                order: LimitOrderIF;
+                totalValueUSD: number;
+                tokenFlowDecimalCorrected: number;
+                mergedIds: Array<{ hash: string; type: string }>;
+            }> = [];
+            const mergedBuyArray: Array<{
+                order: LimitOrderIF;
+                totalValueUSD: number;
+                tokenFlowDecimalCorrected: number;
+                mergedIds: Array<{ hash: string; type: string }>;
+            }> = [];
+
+            const leftDomain = scaleData.xScale.domain()[0] / 1000;
+            const rightDomain = scaleData.xScale.domain()[1] / 1000;
+
+            const userLimitTx: Array<LimitOrderIF> =
+                userLimitOrdersByPool.limitOrders;
+
+            const sortedUserLimits = userLimitTx?.sort((a, b) =>
+                d3.descending(a.crossTime, b.crossTime),
+            );
+
+            if (leftDomain !== undefined && rightDomain !== undefined) {
+                sortedUserLimits.map((limit) => {
+                    if (
+                        limit.crossTime > leftDomain &&
+                        limit.crossTime < rightDomain
+                    ) {
+                        const mergedIds: Array<{ hash: string; type: string }> =
+                            [];
+
+                        const selectedArray = limit.isBid
+                            ? mergedBuyArray
+                            : mergedSellArray;
+
+                        const mintedInTick = processLimitOrder(limit);
+
+                        mintedInTick?.forEach((mint) => {
+                            const isIn = mergedIds.find(
+                                (id) => id.hash === mint.txHash,
+                            );
+
+                            if (isIn === undefined) {
+                                mergedIds.push({
+                                    hash: mint.txHash,
+                                    type: mint.entityType,
+                                });
+                            }
+                        });
+
+                        const tokenFlowDecimalCorrected = limit.isBid
+                            ? denomInBase
+                                ? limit.originalPositionLiqBaseDecimalCorrected
+                                : limit.expectedPositionLiqQuoteDecimalCorrected
+                            : denomInBase
+                              ? limit.expectedPositionLiqBaseDecimalCorrected
+                              : limit.originalPositionLiqQuoteDecimalCorrected;
+
+                        if (selectedArray.length > 0) {
+                            const nearestSwap = closestLimitValue(
+                                selectedArray,
+                                scaleData.xScale(limit.crossTime * 1000),
+                                scaleData.yScale(
+                                    denomInBase
+                                        ? limit.invLimitPriceDecimalCorrected
+                                        : limit.limitPriceDecimalCorrected,
+                                ),
+                            );
+
+                            const shouldMerge = nearestSwap[0] < 30;
+
+                            if (shouldMerge) {
+                                const order =
+                                    limit.totalValueUSD >
+                                    nearestSwap[1].totalValueUSD
+                                        ? limit
+                                        : nearestSwap[1];
+
+                                const mergedmergeIds: Array<{
+                                    hash: string;
+                                    type: string;
+                                }> = nearestSwap[1].mergedIds;
+
+                                const mergedMintedInTick = processLimitOrder(
+                                    nearestSwap[1],
+                                );
+
+                                mergedMintedInTick?.forEach((mint) => {
+                                    const isIn = mergedmergeIds.find(
+                                        (id) => id.hash === mint.txHash,
+                                    );
+
+                                    if (isIn === undefined) {
+                                        mergedmergeIds.push({
+                                            hash: mint.txHash,
+                                            type: mint.entityType,
+                                        });
+                                    }
+                                });
+
+                                nearestSwap[1] = order;
+
+                                nearestSwap[1].mergedIds =
+                                    mergedIds.concat(mergedmergeIds);
+
+                                nearestSwap[1].totalValueUSD +=
+                                    order.totalValueUSD;
+
+                                const limitMergedTokenFlowDecimalCorrected =
+                                    nearestSwap[1].isBid
+                                        ? denomInBase
+                                            ? nearestSwap[1]
+                                                  .originalPositionLiqBaseDecimalCorrected
+                                            : nearestSwap[1]
+                                                  .expectedPositionLiqQuoteDecimalCorrected
+                                        : denomInBase
+                                          ? nearestSwap[1]
+                                                .expectedPositionLiqBaseDecimalCorrected
+                                          : nearestSwap[1]
+                                                .originalPositionLiqQuoteDecimalCorrected;
+
+                                nearestSwap[1].tokenFlowDecimalCorrected =
+                                    tokenFlowDecimalCorrected +
+                                    limitMergedTokenFlowDecimalCorrected;
+                            } else {
+                                selectedArray.push({
+                                    order: limit,
+                                    mergedIds: mergedIds,
+                                    totalValueUSD: limit.totalValueUSD,
+                                    tokenFlowDecimalCorrected:
+                                        tokenFlowDecimalCorrected,
+                                });
+                            }
+                        } else {
+                            selectedArray.push({
+                                order: limit,
+                                mergedIds: mergedIds,
+                                totalValueUSD: limit.totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
+                            });
+                        }
+                    }
+                });
+            }
+
+            return mergedBuyArray.concat(mergedSellArray);
+        }
+    }, [
+        userTransactionData,
+        diffHashSigScaleData(scaleData, 'x'),
+        showSwap,
+        denomInBase,
     ]);
 
     const lastCandleData = unparsedData.candles?.reduce(
@@ -687,8 +1246,9 @@ export default function Chart(props: propsIF) {
             period,
             isCondensedModeEnabled,
             candleDomains,
+            timeGaps,
         );
-    }, [period, isCondensedModeEnabled]);
+    }, [period, isCondensedModeEnabled, timeGaps]);
 
     const chartPoolPrice = useMemo(() => {
         let poolPrice = poolPriceDisplay;
@@ -720,6 +1280,22 @@ export default function Chart(props: propsIF) {
             localCandleDomains.domainBoundry &&
             localCandleDomains.lastCandleDate
         ) {
+            if (visibleCandleData.length > 0) {
+                const minDomain = scaleData.xScale.domain()[0];
+                const visibleCandleDataFirstCandleTime =
+                    visibleCandleData[visibleCandleData.length - 1]?.time *
+                    1000;
+
+                if (
+                    Math.floor(
+                        (visibleCandleDataFirstCandleTime - minDomain) /
+                            (period * 1000),
+                    ) > 2
+                ) {
+                    localCandleDomains.lastCandleDate =
+                        visibleCandleDataFirstCandleTime;
+                }
+            }
             setCandleDomains(localCandleDomains);
         }
     }, [debouncedGetNewCandleDataRight]);
@@ -853,7 +1429,10 @@ export default function Chart(props: propsIF) {
 
                 const rectCanvas = canvas.getBoundingClientRect();
                 const width = rectCanvas.width;
+
                 scaleData.xScale.range([0, width]);
+                scaleData.drawingLinearxScale.range([0, width]);
+
                 const lastDateArray = timeGaps
                     .sort((a, b) => b.range[1] - a.range[1])
                     .filter((i) => i.isAddedPixel);
@@ -984,19 +1563,6 @@ export default function Chart(props: propsIF) {
         // auto zoom active
         setRescale(true);
     }, [location.pathname, period, denomInBase]);
-
-    // finds candle closest to the mouse
-    const snapForCandle = (point: number, filtered: Array<CandleDataIF>) => {
-        if (scaleData) {
-            if (point == undefined) return [];
-            if (filtered.length > 1) {
-                const nearest = minimum(filtered, point)[1];
-                return nearest;
-            }
-        }
-
-        return filtered[0];
-    };
 
     // calculates first fetch candle domain for time and pool change
     useEffect(() => {
@@ -2235,11 +2801,11 @@ export default function Chart(props: propsIF) {
             .node() as HTMLCanvasElement;
         const rectCanvas = canvas.getBoundingClientRect();
         let offsetY = 0;
-        let movemementY = 0;
+        let movementY = 0;
         let newLimitValue: number | undefined;
         let tempNewLimitValue: number | undefined;
 
-        let tempMovemementY = 0;
+        let tempMovementY = 0;
         let cancelDrag = false;
         let oldLimitValue: number | undefined = undefined;
         // clicking esc while dragging the line sets the line to the last value
@@ -2273,7 +2839,7 @@ export default function Chart(props: propsIF) {
                     typeof TouchEvent !== 'undefined' &&
                     event.sourceEvent instanceof TouchEvent
                 ) {
-                    tempMovemementY =
+                    tempMovementY =
                         event.sourceEvent.touches[0].clientY - rectCanvas?.top;
                 }
             })
@@ -2289,11 +2855,11 @@ export default function Chart(props: propsIF) {
                             event.sourceEvent.touches[0].clientY -
                             rectCanvas?.top;
 
-                        movemementY = offsetY - tempMovemementY;
+                        movementY = offsetY - tempMovementY;
                     } else {
                         offsetY = event.sourceEvent.clientY - rectCanvas?.top;
 
-                        movemementY = event.sourceEvent.movementY;
+                        movementY = event.sourceEvent.movementY;
                     }
                     if (!cancelDrag) {
                         // to hide the crosshair when dragging the line set the crosshairActive to 'none'.
@@ -2303,7 +2869,7 @@ export default function Chart(props: propsIF) {
                         if (tempNewLimitValue !== undefined) {
                             tempNewLimitValue = scaleData?.yScale.invert(
                                 scaleData?.yScale(tempNewLimitValue) +
-                                    movemementY,
+                                    movementY,
                             );
 
                             // Perform calculations based on the new limit value
@@ -2325,14 +2891,14 @@ export default function Chart(props: propsIF) {
                         typeof TouchEvent !== 'undefined' &&
                         event.sourceEvent instanceof TouchEvent
                     ) {
-                        tempMovemementY =
+                        tempMovementY =
                             event.sourceEvent.touches[0].clientY -
                             rectCanvas?.top;
                     }
                 });
             })
             .on('end', () => {
-                tempMovemementY = 0;
+                tempMovementY = 0;
                 setIsLineDrag(false);
                 // If the drag is not canceled
                 if (!cancelDrag) {
@@ -2516,6 +3082,7 @@ export default function Chart(props: propsIF) {
             const domain = [newDomainMin, newDomainMax];
 
             scaleData?.xScale.domain([domain[0], domain[1]]);
+            scaleData?.drawingLinearxScale.domain([domain[0], domain[1]]);
         }
     }
 
@@ -2956,6 +3523,10 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
+                    scaleData?.drawingLinearxScale.range([
+                        0,
+                        event.detail.width,
+                    ]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     ctx.setLineDash([4, 2]);
                     crosshairVerticalCanvas.context(ctx);
@@ -2972,17 +3543,17 @@ export default function Chart(props: propsIF) {
     ]);
 
     const circleSeries = createCircle(
-        scaleData?.xScale,
+        scaleData?.drawingLinearxScale,
         scaleData?.yScale,
-        60,
+        50,
         0.5,
         denomInBase,
     );
 
     const selectedCircleSeries = createCircle(
-        scaleData?.xScale,
+        scaleData?.drawingLinearxScale,
         scaleData?.yScale,
-        80,
+        70,
         0.5,
         denomInBase,
         true,
@@ -2999,13 +3570,13 @@ export default function Chart(props: propsIF) {
 
         if (scaleData && lineSeries) {
             const rayLine = createAnnotationLineSeries(
-                scaleData?.xScale.copy(),
+                scaleData?.drawingLinearxScale.copy(),
                 scaleData?.yScale,
                 denomInBase,
             );
 
             const bandArea = createBandArea(
-                scaleData?.xScale.copy(),
+                scaleData?.drawingLinearxScale.copy(),
                 scaleData?.yScale,
                 denomInBase,
             );
@@ -3042,6 +3613,7 @@ export default function Chart(props: propsIF) {
                                     );
 
                                     lineSeries(item?.data);
+                                    if (ctx) ctx.setLineDash([0, 0]);
                                 }
 
                                 if (
@@ -3049,8 +3621,12 @@ export default function Chart(props: propsIF) {
                                     item.type === 'DPRange'
                                 ) {
                                     const range = [
-                                        scaleData?.xScale(item.data[0].x),
-                                        scaleData?.xScale(item.data[1].x),
+                                        scaleData?.drawingLinearxScale(
+                                            item.data[0].x,
+                                        ),
+                                        scaleData?.drawingLinearxScale(
+                                            item.data[1].x,
+                                        ),
                                     ];
 
                                     bandArea.xScale().range(range);
@@ -3159,6 +3735,10 @@ export default function Chart(props: propsIF) {
                                                                     );
                                                                 }
                                                             } else {
+                                                                if (ctx)
+                                                                    ctx.setLineDash(
+                                                                        [0, 0],
+                                                                    );
                                                                 circleSeries([
                                                                     element,
                                                                 ]);
@@ -3192,7 +3772,7 @@ export default function Chart(props: propsIF) {
                                         const lineOfDPRange =
                                             createPointsOfDPRangeLine(
                                                 item.data,
-                                                scaleData.xScale,
+                                                scaleData.drawingLinearxScale,
                                             );
 
                                         lineOfDPRange?.forEach((line) => {
@@ -3254,8 +3834,10 @@ export default function Chart(props: propsIF) {
                                         );
 
                                         const width = Math.abs(
-                                            scaleData.xScale(item.data[0].x) -
-                                                scaleData.xScale(
+                                            scaleData.drawingLinearxScale(
+                                                item.data[0].x,
+                                            ) -
+                                                scaleData.drawingLinearxScale(
                                                     item.data[1].x,
                                                 ),
                                         );
@@ -3297,16 +3879,16 @@ export default function Chart(props: propsIF) {
 
                                         const diff =
                                             Math.abs(
-                                                scaleData.xScale(
+                                                scaleData.drawingLinearxScale(
                                                     item.data[0].x,
                                                 ) -
-                                                    scaleData.xScale(
+                                                    scaleData.drawingLinearxScale(
                                                         item.data[1].x,
                                                     ),
                                             ) / 2;
 
                                         const infoLabelXAxisData =
-                                            scaleData.xScale(
+                                            scaleData.drawingLinearxScale(
                                                 Math.min(
                                                     item.data[0].x,
                                                     item.data[1].x,
@@ -3430,8 +4012,8 @@ export default function Chart(props: propsIF) {
                                             );
                                             const showCandleCount =
                                                 getCandleCount(
-                                                    scaleData.xScale,
-                                                    visibleCandleData,
+                                                    scaleData.drawingLinearxScale,
+                                                    unparsedCandleData,
                                                     [min, max],
                                                     period,
                                                     isCondensedModeEnabled,
@@ -3496,6 +4078,8 @@ export default function Chart(props: propsIF) {
                                                     ]);
                                                 }
                                             } else {
+                                                if (ctx)
+                                                    ctx.setLineDash([0, 0]);
                                                 circleSeries([element]);
                                             }
                                         });
@@ -3505,15 +4089,19 @@ export default function Chart(props: propsIF) {
                                 if (item.type === 'Ray') {
                                     rayLine
                                         .xScale()
-                                        .domain(scaleData.xScale.domain());
+                                        .domain(
+                                            scaleData.drawingLinearxScale.domain(),
+                                        );
 
                                     rayLine
                                         .yScale()
                                         .domain(scaleData.yScale.domain());
 
                                     const range = [
-                                        scaleData.xScale(item.data[0].x),
-                                        scaleData.xScale.range()[1],
+                                        scaleData.drawingLinearxScale(
+                                            item.data[0].x,
+                                        ),
+                                        scaleData.drawingLinearxScale.range()[1],
                                     ];
 
                                     rayLine.xScale().range(range);
@@ -3574,6 +4162,7 @@ export default function Chart(props: propsIF) {
                                                 ]);
                                             }
                                         } else {
+                                            if (ctx) ctx.setLineDash([0, 0]);
                                             circleSeries([
                                                 {
                                                     denomInBase:
@@ -3599,16 +4188,16 @@ export default function Chart(props: propsIF) {
 
                                     const range = [
                                         item.extendLeft
-                                            ? scaleData.xScale.range()[0]
-                                            : scaleData?.xScale(
+                                            ? scaleData.drawingLinearxScale.range()[0]
+                                            : scaleData?.drawingLinearxScale(
                                                   Math.min(
                                                       item.data[0].x,
                                                       item.data[1].x,
                                                   ),
                                               ),
                                         item.extendRight
-                                            ? scaleData.xScale.range()[1]
-                                            : scaleData?.xScale(
+                                            ? scaleData.drawingLinearxScale.range()[1]
+                                            : scaleData?.drawingLinearxScale(
                                                   Math.max(
                                                       item.data[0].x,
                                                       item.data[1].x,
@@ -3623,12 +4212,14 @@ export default function Chart(props: propsIF) {
                                     const fibLineData = calculateFibRetracement(
                                         data,
                                         item.extraData,
+                                        denomInBase,
                                     );
 
                                     const bandAreaData =
                                         calculateFibRetracementBandAreas(
                                             data,
                                             item.extraData,
+                                            denomInBase,
                                         );
 
                                     bandAreaData.forEach((bandData) => {
@@ -3645,12 +4236,21 @@ export default function Chart(props: propsIF) {
                                     });
 
                                     fibLineData.forEach((lineData) => {
+                                        const level =
+                                            lineData[0].denomInBase ===
+                                            denomInBase
+                                                ? lineData[0].y
+                                                : 1 / lineData[0].y;
+
+                                        const priceLevel =
+                                            level < 1
+                                                ? formatSubscript(level)
+                                                : level.toFixed(2).toString();
+
                                         const lineLabel =
                                             lineData[0].level +
                                             ' (' +
-                                            lineData[0].y
-                                                .toFixed(2)
-                                                .toString() +
+                                            priceLevel +
                                             ')';
 
                                         const lineMeasures =
@@ -3695,17 +4295,18 @@ export default function Chart(props: propsIF) {
                                             lineMeasures &&
                                             ctx
                                         ) {
-                                            const buffer = scaleData.xScale(
-                                                Math.min(
-                                                    lineData[0].x,
-                                                    lineData[1].x,
-                                                ) +
-                                                    Math.abs(
-                                                        lineData[0].x -
-                                                            lineData[1].x,
-                                                    ) /
-                                                        2,
-                                            );
+                                            const buffer =
+                                                scaleData.drawingLinearxScale(
+                                                    Math.min(
+                                                        lineData[0].x,
+                                                        lineData[1].x,
+                                                    ) +
+                                                        Math.abs(
+                                                            lineData[0].x -
+                                                                lineData[1].x,
+                                                        ) /
+                                                            2,
+                                                );
 
                                             ctx.save();
                                             ctx.beginPath();
@@ -3808,14 +4409,14 @@ export default function Chart(props: propsIF) {
                                                         'Left'
                                                     ) {
                                                         location =
-                                                            scaleData.xScale.domain()[0];
+                                                            scaleData.drawingLinearxScale.domain()[0];
                                                     } else if (
                                                         item.labelPlacement ===
                                                         'Right'
                                                     ) {
                                                         if (item.extendRight) {
                                                             location =
-                                                                scaleData.xScale.domain()[1];
+                                                                scaleData.drawingLinearxScale.domain()[1];
                                                         } else {
                                                             location = Math.max(
                                                                 lineData[0].x,
@@ -3831,7 +4432,7 @@ export default function Chart(props: propsIF) {
                                                                   lineData[0].x,
                                                                   lineData[1].x,
                                                               )
-                                                            : scaleData.xScale.domain()[1];
+                                                            : scaleData.drawingLinearxScale.domain()[1];
                                                 } else {
                                                     location =
                                                         item.labelPlacement ===
@@ -3848,7 +4449,9 @@ export default function Chart(props: propsIF) {
                                             }
 
                                             const linePlacement =
-                                                scaleData.xScale(location) +
+                                                scaleData.drawingLinearxScale(
+                                                    location,
+                                                ) +
                                                 (alignment === 'right'
                                                     ? -10
                                                     : alignment === 'left'
@@ -4054,6 +4657,10 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
+                    scaleData?.drawingLinearxScale.range([
+                        0,
+                        event.detail.width,
+                    ]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     ctx.setLineDash([5, 3]);
                     marketLine.context(ctx);
@@ -4436,7 +5043,9 @@ export default function Chart(props: propsIF) {
         tokenA,
         tokenB,
         showSwap,
+        showHistorical,
         isCondensedModeEnabled,
+        diffHashSig(filteredTransactionalData),
     ]);
 
     useEffect(() => {
@@ -4525,7 +5134,7 @@ export default function Chart(props: propsIF) {
                 }
 
                 let isOrderHistorySelected = undefined;
-                if (showSwap) {
+                if (showSwap || showHistorical || showLiquidity) {
                     isOrderHistorySelected = orderHistoryHoverStatus(
                         event.offsetX,
                         event.offsetY,
@@ -4675,6 +5284,8 @@ export default function Chart(props: propsIF) {
         isSelectedOrderHistory,
         selectedOrderHistory,
         showSwap,
+        showHistorical,
+        showLiquidity,
     ]);
 
     function checkLineLocation(
@@ -4699,9 +5310,9 @@ export default function Chart(props: propsIF) {
             const distance = distanceToLine(
                 mouseX,
                 mouseY,
-                scaleData.xScale(startX),
+                scaleData.drawingLinearxScale(startX),
                 scaleData.yScale(startY),
-                scaleData.xScale(endX),
+                scaleData.drawingLinearxScale(endX),
                 scaleData.yScale(endY),
             );
 
@@ -4738,8 +5349,8 @@ export default function Chart(props: propsIF) {
             const endX = Math.max(element[0].x, element[1].x);
 
             if (
-                mouseX > scaleData.xScale(startX) - threshold &&
-                mouseX < scaleData.xScale(endX) + threshold &&
+                mouseX > scaleData.drawingLinearxScale(startX) - threshold &&
+                mouseX < scaleData.drawingLinearxScale(endX) + threshold &&
                 mouseY < scaleData.yScale(startY) + threshold &&
                 mouseY > scaleData.yScale(endY) - threshold
             ) {
@@ -4762,7 +5373,7 @@ export default function Chart(props: propsIF) {
                 element[0].denomInBase === denomInBase
                     ? element[0].y
                     : 1 / element[0].y;
-            const endX = scaleData.xScale.domain()[1];
+            const endX = scaleData.drawingLinearxScale.domain()[1];
             const endY =
                 element[0].denomInBase === denomInBase
                     ? element[0].y
@@ -4772,9 +5383,9 @@ export default function Chart(props: propsIF) {
             const distance = distanceToLine(
                 mouseX,
                 mouseY,
-                scaleData.xScale(startX),
+                scaleData.drawingLinearxScale(startX),
                 scaleData.yScale(startY),
-                scaleData.xScale(endX),
+                scaleData.drawingLinearxScale(endX),
                 scaleData.yScale(endY),
             );
 
@@ -4789,12 +5400,15 @@ export default function Chart(props: propsIF) {
         mouseX: number,
         mouseY: number,
         diameter: number,
+        isTriangle = false,
     ) {
         if (scaleData && circleScale) {
             const startX = scaleData.xScale(element[0].x);
             const startY = scaleData.yScale(element[0].y);
 
-            const circleDiameter = Math.sqrt(circleScale(diameter) / Math.PI);
+            const circleDiameter = Math.sqrt(
+                (isTriangle ? 1000 : circleScale(diameter)) / Math.PI,
+            );
 
             let distance = false;
 
@@ -4821,14 +5435,24 @@ export default function Chart(props: propsIF) {
         mouseX: number,
         mouseY: number,
         denomInBase: boolean,
+        extendLeft: boolean,
+        extendRight: boolean,
     ) {
         if (scaleData) {
-            const fibLineData = calculateFibRetracement(data, extraData);
+            const fibLineData = calculateFibRetracement(
+                data,
+                extraData,
+                denomInBase,
+            );
 
-            const startX = fibLineData[0][0].x;
-            const endX = fibLineData[0][1].x;
-            const tempStartXLocation = scaleData.xScale(startX);
-            const tempEndXLocation = scaleData.xScale(endX);
+            const startX = extendLeft
+                ? scaleData.drawingLinearxScale.domain()[0]
+                : fibLineData[0][0].x;
+            const endX = extendRight
+                ? scaleData.drawingLinearxScale.domain()[1]
+                : fibLineData[0][1].x;
+            const tempStartXLocation = scaleData.drawingLinearxScale(startX);
+            const tempEndXLocation = scaleData.drawingLinearxScale(endX);
 
             const threshold = 10;
 
@@ -4901,6 +5525,8 @@ export default function Chart(props: propsIF) {
                             mouseX,
                             mouseY,
                             denomInBase,
+                            element.extendLeft,
+                            element.extendRight,
                         )
                     ) {
                         resElement = element;
@@ -4933,8 +5559,8 @@ export default function Chart(props: propsIF) {
 
                         const dpRangeTooltipData: lineData[] = [
                             {
-                                x: scaleData.xScale.invert(
-                                    scaleData.xScale(
+                                x: scaleData.drawingLinearxScale.invert(
+                                    scaleData.drawingLinearxScale(
                                         Math.min(
                                             element.data[0].x,
                                             element.data[1].x,
@@ -4953,8 +5579,8 @@ export default function Chart(props: propsIF) {
                                 denomInBase: element.data[0].denomInBase,
                             },
                             {
-                                x: scaleData.xScale.invert(
-                                    scaleData.xScale(
+                                x: scaleData.drawingLinearxScale.invert(
+                                    scaleData.drawingLinearxScale(
                                         Math.min(
                                             element.data[0].x,
                                             element.data[1].x,
@@ -5030,18 +5656,34 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (userTransactionData) {
-            const domainRight = d3.max(userTransactionData, (data) => {
-                if (data.entityType === 'swap') return data.totalValueUSD;
-            });
-            const domainLeft = d3.min(userTransactionData, (data) => {
-                if (data.entityType === 'swap') return data.totalValueUSD;
-            });
+            const domainRight = d3.max(
+                userTransactionData.filter(
+                    (transaction) =>
+                        (transaction.entityType === 'limitOrder' ||
+                            transaction.entityType === 'swap') &&
+                        transaction.totalValueUSD > 0,
+                ),
+                (data) => data.totalValueUSD,
+            );
+
+            const domainLeft = d3.min(
+                userTransactionData.filter(
+                    (transaction) =>
+                        (transaction.entityType === 'limitOrder' ||
+                            transaction.entityType === 'swap') &&
+                        transaction.totalValueUSD > 0,
+                ),
+                (data) => data.totalValueUSD,
+            );
 
             if (domainRight && domainLeft) {
                 const scale = d3
                     .scaleLinear()
-                    .range([1000, 3000])
-                    .domain([domainLeft, domainRight]);
+                    .range([750, 3000])
+                    .domain([
+                        userTransactionData.length > 2 ? domainLeft : 0,
+                        domainRight,
+                    ]);
 
                 setCircleScale(() => {
                     return scale;
@@ -5050,12 +5692,21 @@ export default function Chart(props: propsIF) {
         }
     }, [userTransactionData, denomInBase]);
 
-    const handleCardClick = (tx: TransactionIF): void => {
+    const handleCardClick = (id: string, type: string): void => {
         setSelectedDate(undefined);
         setOutsideControl(true);
-        setSelectedOutsideTab(0);
         setShowAllData(false);
-        setCurrentTxActiveInTransactions(tx.txId);
+
+        if (type === 'historicalLiq') {
+            setCurrentPositionActive(id);
+            setSelectedOutsideTab(2);
+        } else if (type === 'limitSwapLine') {
+            setCurrentLimitOrderActive(id);
+            setSelectedOutsideTab(1);
+        } else if (['claimableLimit', 'swap'].includes(type)) {
+            setCurrentTxActiveInTransactions(id);
+            setSelectedOutsideTab(0);
+        }
     };
 
     useEffect(() => {
@@ -5073,18 +5724,216 @@ export default function Chart(props: propsIF) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let resElement: any = undefined;
 
-        if (scaleData && userTransactionData) {
-            userTransactionData.forEach((element) => {
-                if (element.entityType === 'swap' && showSwap) {
+        if (scaleData) {
+            if (userPositionsByPool) {
+                userPositionsByPool.positions.forEach((position) => {
+                    if (
+                        (position.positionLiq === 0 && showHistorical) ||
+                        (position.positionLiq > 0 && showLiquidity)
+                    ) {
+                        const rectLocation = [
+                            {
+                                x: position?.timeFirstMint * 1000,
+                                y: denomInBase
+                                    ? position.bidTickInvPriceDecimalCorrected
+                                    : position.bidTickPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                            {
+                                x:
+                                    position.positionLiq > 0
+                                        ? new Date().getTime() +
+                                          5 * 86400 * 1000
+                                        : position?.latestUpdateTime * 1000,
+                                y: denomInBase
+                                    ? position.askTickInvPriceDecimalCorrected
+                                    : position.askTickPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkRectLocation(
+                                rectLocation,
+                                mouseX,
+                                mouseY,
+                                denomInBase,
+                            )
+                        ) {
+                            resElement = {
+                                id: position.positionId,
+                                type:
+                                    position.positionLiq === 0
+                                        ? 'historical'
+                                        : 'historicalLiq',
+                                order: position,
+                                totalValueUSD: position.totalValueUSD,
+                                tokenFlowDecimalCorrected: 0,
+                                mergedIds: [
+                                    {
+                                        hash: position.positionId,
+                                        type: 'historical',
+                                    },
+                                ],
+                            };
+                        }
+                    }
+                });
+            }
+
+            if (userLimitOrdersByPool && showLiquidity && userTransactionData) {
+                const userLimitOrderHistory = userTransactionData.filter(
+                    (transaction) =>
+                        transaction.entityType === 'limitOrder' &&
+                        transaction.changeType === 'mint',
+                );
+
+                const processLimitOrder = (entity: LimitOrderIF) => {
+                    const mintedInTick = userLimitOrderHistory.filter(
+                        (his) =>
+                            his.isBuy === entity.isBid &&
+                            his.bidTick === entity.bidTick &&
+                            his.askTick === entity.askTick,
+                    );
+
+                    if (mintedInTick?.length > 0) {
+                        return mintedInTick;
+                    }
+                };
+
+                userLimitOrdersByPool.limitOrders.forEach((limitOrder) => {
+                    if (limitOrder.claimableLiq === 0) {
+                        const mergedIds: Array<{ hash: string; type: string }> =
+                            [];
+
+                        const mintedInTick = processLimitOrder(limitOrder);
+
+                        mintedInTick?.forEach((mint) => {
+                            const isIn = mergedIds.find(
+                                (id) => id.hash === mint.txHash,
+                            );
+
+                            if (isIn === undefined) {
+                                mergedIds.push({
+                                    hash: mint.txHash,
+                                    type: mint.entityType,
+                                });
+                            }
+                        });
+
+                        const tokenFlowDecimalCorrected = limitOrder.isBid
+                            ? denomInBase
+                                ? limitOrder.originalPositionLiqBaseDecimalCorrected
+                                : limitOrder.expectedPositionLiqQuoteDecimalCorrected
+                            : denomInBase
+                              ? limitOrder.expectedPositionLiqBaseDecimalCorrected
+                              : limitOrder.originalPositionLiqQuoteDecimalCorrected;
+
+                        const swapOrderData = [
+                            {
+                                x: limitOrder.timeFirstMint * 1000,
+                                y: denomInBase
+                                    ? limitOrder.invLimitPriceDecimalCorrected
+                                    : limitOrder.limitPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkSwapLoation(
+                                swapOrderData,
+                                mouseX,
+                                mouseY,
+                                limitOrder.totalValueUSD,
+                                true,
+                            )
+                        ) {
+                            resElement = {
+                                id: limitOrder.limitOrderId,
+                                type: 'limitSwapLine',
+                                order: limitOrder,
+                                totalValueUSD: limitOrder.totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
+                                mergedIds: mergedIds,
+                            };
+                        }
+
+                        const line = [
+                            ...swapOrderData,
+                            {
+                                x: new Date().getTime() + 5 * 86400 * 1000,
+                                y: denomInBase
+                                    ? limitOrder.invLimitPriceDecimalCorrected
+                                    : limitOrder.limitPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkLineLocation(line, mouseX, mouseY, denomInBase)
+                        ) {
+                            resElement = {
+                                id: limitOrder.limitOrderId,
+                                type: 'limitSwapLine',
+                                order: limitOrder,
+                                totalValueUSD: limitOrder.totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    tokenFlowDecimalCorrected,
+                                mergedIds: mergedIds,
+                            };
+                        }
+                    }
+                });
+            }
+
+            if (filteredTransactionalData && showSwap && userTransactionData) {
+                filteredTransactionalData.forEach((element) => {
+                    if (showSwap) {
+                        const swapOrderData = [
+                            {
+                                x: element.order.txTime * 1000,
+                                y: denomInBase
+                                    ? element.order.swapInvPriceDecimalCorrected
+                                    : element.order.swapPriceDecimalCorrected,
+                                denomInBase: denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkSwapLoation(
+                                swapOrderData,
+                                mouseX,
+                                mouseY,
+                                element.totalValueUSD,
+                            )
+                        ) {
+                            resElement = {
+                                id: element.order.txId,
+                                type: element.order.entityType,
+                                order: element,
+                                totalValueUSD: element.totalValueUSD,
+                                tokenFlowDecimalCorrected:
+                                    element.tokenFlowDecimalCorrected,
+                                mergedIds: element.mergedIds,
+                            };
+                        }
+                    }
+                });
+            }
+
+            if (filteredLimitTxData && userTransactionData && showSwap) {
+                filteredLimitTxData.forEach((element) => {
                     const swapOrderData = [
                         {
-                            x: element.txTime * 1000,
+                            x: element.order.crossTime * 1000,
                             y: denomInBase
-                                ? element.swapInvPriceDecimalCorrected
-                                : element.swapPriceDecimalCorrected,
+                                ? element.order.invLimitPriceDecimalCorrected
+                                : element.order.limitPriceDecimalCorrected,
                             denomInBase: denomInBase,
                         },
                     ];
+
                     if (
                         checkSwapLoation(
                             swapOrderData,
@@ -5093,10 +5942,18 @@ export default function Chart(props: propsIF) {
                             element.totalValueUSD,
                         )
                     ) {
-                        resElement = element;
+                        resElement = {
+                            id: element.order.limitOrderId,
+                            type: 'claimableLimit',
+                            order: element,
+                            totalValueUSD: element.totalValueUSD,
+                            tokenFlowDecimalCorrected:
+                                element.tokenFlowDecimalCorrected,
+                            mergedIds: element.mergedIds,
+                        };
                     }
-                }
-            });
+                });
+            }
 
             if (resElement && scaleData) {
                 setHoveredOrderHistory(() => {
@@ -5114,10 +5971,11 @@ export default function Chart(props: propsIF) {
             if (onClick && scaleData) {
                 if (resElement) {
                     const shouldSelect = selectedOrderHistory
-                        ? resElement.txId !== selectedOrderHistory?.txId
+                        ? resElement.id !== selectedOrderHistory?.id
                         : true;
 
-                    shouldSelect && handleCardClick(resElement);
+                    shouldSelect &&
+                        handleCardClick(resElement.id, resElement.type);
 
                     setSelectedOrderHistory(() => {
                         return shouldSelect ? resElement : undefined;
@@ -5316,28 +6174,6 @@ export default function Chart(props: propsIF) {
         }
     };
 
-    const minimum = (data: CandleDataIF[], mouseX: number) => {
-        const xScale = scaleData?.xScale;
-        if (xScale) {
-            const accessor = (d: CandleDataIF) =>
-                Math.abs(mouseX - xScale(d.time * 1000));
-
-            return data
-                .map(function (dataPoint: CandleDataIF) {
-                    return [accessor(dataPoint), dataPoint];
-                })
-                .reduce(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    function (accumulator: any, dataPoint: any) {
-                        return accumulator[0] > dataPoint[0]
-                            ? dataPoint
-                            : accumulator;
-                    },
-                    [Number.MAX_VALUE, null],
-                );
-        }
-    };
-
     useEffect(() => {
         d3.select(d3CanvasCrosshair.current).style(
             'visibility',
@@ -5397,7 +6233,7 @@ export default function Chart(props: propsIF) {
 
                 let isOrderHistorySelected = undefined;
                 if (
-                    showSwap &&
+                    (showSwap || showHistorical || showLiquidity) &&
                     !isDragActive &&
                     activeDrawingType === 'Cross'
                 ) {
@@ -5587,7 +6423,7 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (scaleData) {
             const lineSeries = createLinearLineSeries(
-                scaleData?.xScale,
+                scaleData?.drawingLinearxScale,
                 scaleData?.yScale,
                 denomInBase,
             );
@@ -5595,7 +6431,7 @@ export default function Chart(props: propsIF) {
             setLineSeries(() => lineSeries);
 
             const annotationLineSeries = createAnnotationLineSeries(
-                scaleData?.xScale.copy(),
+                scaleData?.drawingLinearxScale.copy(),
                 scaleData?.yScale,
                 denomInBase,
             );
@@ -5683,84 +6519,450 @@ export default function Chart(props: propsIF) {
         isUpdatingShape,
     };
 
+    const isShapeOverlaps = (
+        tempLeft: number,
+        tempTop: number,
+        selectedLeft: number,
+        selectedTop: number,
+    ) => {
+        const isOverLeft =
+            isSelectedOrderHistory &&
+            selectedOrderTooltipPlacement &&
+            ((tempLeft + 75 <= selectedLeft + 75 &&
+                tempLeft + 75 >= selectedLeft - 75) ||
+                (tempLeft - 75 <= selectedLeft + 75 &&
+                    tempLeft - 75 >= selectedLeft - 75));
+
+        const isOverTop =
+            isSelectedOrderHistory &&
+            selectedOrderTooltipPlacement &&
+            ((selectedTop - 35 <= tempTop + 35 &&
+                selectedTop - 35 >= tempTop - 35) ||
+                (selectedTop + 35 >= tempTop - 35 &&
+                    selectedTop + 35 <= tempTop + 35));
+
+        return { isOverLeft, isOverTop };
+    };
+
     const calculateOrderHistoryTooltipPlacements = (scaleData: scaleData) => {
-        if (scaleData && circleScale) {
+        if (scaleData) {
             const scale = d3.scaleLinear().range([60, 75]).domain([1000, 3000]);
 
+            const canvas = d3
+                .select(d3CanvasMain.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const rectCanvas = canvas.getBoundingClientRect();
+            const canvasRightEnd = rectCanvas.right;
+            const canvasLeftEnd = rectCanvas.left;
+
             if (isHoveredOrderHistory && hoveredOrderHistory) {
-                setHoveredOrderTooltipPlacement(() => {
-                    const top = scaleData.yScale(
-                        denomInBase
-                            ? hoveredOrderHistory.swapInvPriceDecimalCorrected
-                            : hoveredOrderHistory.swapPriceDecimalCorrected,
-                    );
+                if (
+                    circleScale &&
+                    showSwap &&
+                    (hoveredOrderHistory.type === 'swap' ||
+                        hoveredOrderHistory.type === 'limitOrder')
+                ) {
+                    setHoveredOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? hoveredOrderHistory.order.order
+                                      .swapInvPriceDecimalCorrected
+                                : hoveredOrderHistory.order.order
+                                      .swapPriceDecimalCorrected,
+                        );
 
-                    const tempPlace =
-                        scaleData?.xScale(hoveredOrderHistory.txTime * 1000) +
-                        scale(circleScale(hoveredOrderHistory.totalValueUSD));
+                        let left =
+                            scaleData?.xScale(
+                                hoveredOrderHistory.order.order.txTime * 1000,
+                            ) +
+                            scale(
+                                circleScale(hoveredOrderHistory.totalValueUSD),
+                            );
 
-                    const isOverLeft =
-                        isSelectedOrderHistory &&
-                        selectedOrderTooltipPlacement &&
-                        ((tempPlace + 75 <
-                            selectedOrderTooltipPlacement.left + 75 &&
-                            tempPlace + 75 >
-                                selectedOrderTooltipPlacement.left - 75) ||
-                            (tempPlace - 75 <
-                                selectedOrderTooltipPlacement.left + 75 &&
-                                tempPlace - 75 >
-                                    selectedOrderTooltipPlacement.left - 75));
+                        let isOnLeftSide = false;
+                        if (
+                            isSelectedOrderHistory &&
+                            selectedOrderTooltipPlacement
+                        ) {
+                            const { isOverLeft, isOverTop } = isShapeOverlaps(
+                                left,
+                                top,
+                                selectedOrderTooltipPlacement.left,
+                                selectedOrderTooltipPlacement.top,
+                            );
 
-                    const isOverTop =
-                        isSelectedOrderHistory &&
-                        selectedOrderTooltipPlacement &&
-                        ((selectedOrderTooltipPlacement.top - 35 < top + 35 &&
-                            selectedOrderTooltipPlacement.top - 35 >
-                                top - 35) ||
-                            (selectedOrderTooltipPlacement.top + 35 >
-                                top - 35 &&
-                                selectedOrderTooltipPlacement.top + 35 <
-                                    top + 35));
+                            isOnLeftSide = !!(isOverLeft && isOverTop);
 
-                    const left =
-                        scaleData?.xScale(hoveredOrderHistory.txTime * 1000) +
-                        (isOverLeft && isOverTop
-                            ? -scale(
-                                  circleScale(
-                                      hoveredOrderHistory.totalValueUSD,
-                                  ),
-                              ) +
-                              (circleScale(hoveredOrderHistory.totalValueUSD) <
-                              1500
-                                  ? -105
-                                  : -90)
-                            : +scale(
-                                  circleScale(
-                                      hoveredOrderHistory.totalValueUSD,
-                                  ),
-                              ));
+                            left =
+                                scaleData?.xScale(
+                                    hoveredOrderHistory.order.order.txTime *
+                                        1000,
+                                ) +
+                                (isOverLeft && isOverTop
+                                    ? -scale(
+                                          circleScale(
+                                              hoveredOrderHistory.totalValueUSD,
+                                          ),
+                                      ) +
+                                      (circleScale(
+                                          hoveredOrderHistory.totalValueUSD,
+                                      ) < 1500
+                                          ? -105
+                                          : -90)
+                                    : +scale(
+                                          circleScale(
+                                              hoveredOrderHistory.totalValueUSD,
+                                          ),
+                                      ));
+                        }
 
-                    return {
-                        top,
-                        left,
-                        isOnLeftSide: !!(isOverLeft && isOverTop),
-                    };
-                });
+                        return {
+                            top,
+                            left,
+                            isOnLeftSide,
+                        };
+                    });
+                }
+
+                if (
+                    circleScale &&
+                    showSwap &&
+                    hoveredOrderHistory.type === 'claimableLimit'
+                ) {
+                    setHoveredOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? hoveredOrderHistory.order.order
+                                      .invLimitPriceDecimalCorrected
+                                : hoveredOrderHistory.order.order
+                                      .limitPriceDecimalCorrected,
+                        );
+
+                        let left =
+                            scaleData?.xScale(
+                                hoveredOrderHistory.order.order.crossTime *
+                                    1000,
+                            ) +
+                            scale(
+                                circleScale(hoveredOrderHistory.totalValueUSD),
+                            );
+
+                        let isOnLeftSide = false;
+                        if (
+                            isSelectedOrderHistory &&
+                            selectedOrderTooltipPlacement
+                        ) {
+                            const { isOverLeft, isOverTop } = isShapeOverlaps(
+                                left,
+                                top,
+                                selectedOrderTooltipPlacement.left,
+                                selectedOrderTooltipPlacement.top,
+                            );
+
+                            isOnLeftSide = !!(isOverLeft && isOverTop);
+
+                            left =
+                                scaleData?.xScale(
+                                    hoveredOrderHistory.order.order.crossTime *
+                                        1000,
+                                ) +
+                                (isOverLeft && isOverTop
+                                    ? -scale(
+                                          circleScale(
+                                              hoveredOrderHistory.totalValueUSD,
+                                          ),
+                                      ) +
+                                      (circleScale(
+                                          hoveredOrderHistory.totalValueUSD,
+                                      ) < 1500
+                                          ? -105
+                                          : -90)
+                                    : +scale(
+                                          circleScale(
+                                              hoveredOrderHistory.totalValueUSD,
+                                          ),
+                                      ));
+                        }
+
+                        return {
+                            top,
+                            left,
+                            isOnLeftSide,
+                        };
+                    });
+                }
+
+                if (
+                    (hoveredOrderHistory.type === 'historical' ||
+                        hoveredOrderHistory.type === 'historicalLiq') &&
+                    (showHistorical || showLiquidity)
+                ) {
+                    const minPrice = denomInBase
+                        ? hoveredOrderHistory.order
+                              .bidTickInvPriceDecimalCorrected
+                        : hoveredOrderHistory.order
+                              .bidTickPriceDecimalCorrected;
+
+                    const maxPrice = denomInBase
+                        ? hoveredOrderHistory.order
+                              .askTickInvPriceDecimalCorrected
+                        : hoveredOrderHistory.order
+                              .askTickPriceDecimalCorrected;
+
+                    const diff = Math.abs(maxPrice - minPrice) / 2;
+
+                    const pricePlacement = minPrice + diff;
+
+                    setHoveredOrderTooltipPlacement(() => {
+                        let top = scaleData.yScale(pricePlacement);
+
+                        const latestTime =
+                            hoveredOrderHistory.type === 'historicalLiq'
+                                ? new Date().getTime() + 5 * 86400 * 1000
+                                : hoveredOrderHistory.order.latestUpdateTime *
+                                  1000;
+
+                        const left = scaleData?.xScale(latestTime);
+
+                        if (
+                            isSelectedOrderHistory &&
+                            selectedOrderTooltipPlacement
+                        ) {
+                            const { isOverLeft, isOverTop } = isShapeOverlaps(
+                                left,
+                                top,
+                                selectedOrderTooltipPlacement.left,
+                                selectedOrderTooltipPlacement.top,
+                            );
+
+                            if (isOverLeft && isOverTop) {
+                                const direction =
+                                    selectedOrderTooltipPlacement.top - top < 0
+                                        ? -1
+                                        : 1;
+
+                                const diff =
+                                    90 -
+                                    Math.abs(
+                                        selectedOrderTooltipPlacement.top - top,
+                                    );
+
+                                top = top - diff * direction;
+                            }
+                        }
+
+                        const leftPlacement =
+                            left > canvasRightEnd
+                                ? canvasRightEnd - 150
+                                : left < canvasLeftEnd
+                                  ? canvasLeftEnd + 50
+                                  : left;
+
+                        return {
+                            top: top < 0 ? 10 : top,
+                            left: leftPlacement,
+                            isOnLeftSide: false,
+                        };
+                    });
+                }
+
+                if (
+                    hoveredOrderHistory.type === 'limitSwapLine' &&
+                    circleScale &&
+                    showLiquidity
+                ) {
+                    setHoveredOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? hoveredOrderHistory.order
+                                      .invLimitPriceDecimalCorrected
+                                : hoveredOrderHistory.order
+                                      .limitPriceDecimalCorrected,
+                        );
+
+                        const time =
+                            hoveredOrderHistory.order.claimableLiq === 0
+                                ? hoveredOrderHistory.order.timeFirstMint
+                                : hoveredOrderHistory.order.crossTime;
+
+                        if (hoveredOrderHistory.order.claimableLiq === 0) {
+                            const left = scaleData?.xScale(time * 1000) + 55;
+
+                            let topPlacement = top;
+
+                            if (
+                                isSelectedOrderHistory &&
+                                selectedOrderTooltipPlacement
+                            ) {
+                                const { isOverLeft, isOverTop } =
+                                    isShapeOverlaps(
+                                        left,
+                                        top,
+                                        selectedOrderTooltipPlacement.left,
+                                        selectedOrderTooltipPlacement.top,
+                                    );
+
+                                if (isOverLeft && isOverTop) {
+                                    const direction =
+                                        selectedOrderTooltipPlacement.top -
+                                            top <
+                                        0
+                                            ? -1
+                                            : 1;
+
+                                    const diff =
+                                        90 -
+                                        Math.abs(
+                                            selectedOrderTooltipPlacement.top -
+                                                top,
+                                        );
+
+                                    topPlacement = top - diff * direction;
+                                }
+                            }
+
+                            return {
+                                top: topPlacement,
+                                left: left > 50 ? left : 50,
+                                isOnLeftSide: false,
+                            };
+                        }
+                    });
+                }
             }
 
             if (isSelectedOrderHistory && selectedOrderHistory) {
-                setSelectedOrderTooltipPlacement(() => {
-                    const top = scaleData.yScale(
-                        denomInBase
-                            ? selectedOrderHistory.swapInvPriceDecimalCorrected
-                            : selectedOrderHistory.swapPriceDecimalCorrected,
-                    );
-                    const left =
-                        scaleData?.xScale(selectedOrderHistory.txTime * 1000) +
-                        scale(circleScale(selectedOrderHistory.totalValueUSD));
+                if (
+                    (selectedOrderHistory.type === 'swap' ||
+                        selectedOrderHistory.type === 'limitOrder') &&
+                    circleScale &&
+                    showSwap
+                ) {
+                    setSelectedOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? selectedOrderHistory.order.order
+                                      .swapInvPriceDecimalCorrected
+                                : selectedOrderHistory.order.order
+                                      .swapPriceDecimalCorrected,
+                        );
+                        const left =
+                            scaleData?.xScale(
+                                selectedOrderHistory.order.order.txTime * 1000,
+                            ) +
+                            scale(
+                                circleScale(selectedOrderHistory.totalValueUSD),
+                            );
 
-                    return { top, left, isOnLeftSide: false };
-                });
+                        return { top, left, isOnLeftSide: false };
+                    });
+                }
+
+                if (
+                    selectedOrderHistory.type === 'claimableLimit' &&
+                    circleScale &&
+                    showSwap
+                ) {
+                    setSelectedOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? selectedOrderHistory.order.order
+                                      .invLimitPriceDecimalCorrected
+                                : selectedOrderHistory.order.order
+                                      .limitPriceDecimalCorrected,
+                        );
+                        const left =
+                            scaleData?.xScale(
+                                selectedOrderHistory.order.order.crossTime *
+                                    1000,
+                            ) +
+                            scale(
+                                circleScale(selectedOrderHistory.totalValueUSD),
+                            );
+
+                        return { top, left, isOnLeftSide: false };
+                    });
+                }
+
+                if (
+                    selectedOrderHistory.type === 'limitSwapLine' &&
+                    circleScale &&
+                    showLiquidity
+                ) {
+                    setSelectedOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(
+                            denomInBase
+                                ? selectedOrderHistory.order
+                                      .invLimitPriceDecimalCorrected
+                                : selectedOrderHistory.order
+                                      .limitPriceDecimalCorrected,
+                        );
+
+                        const time =
+                            selectedOrderHistory.order.claimableLiq === 0
+                                ? selectedOrderHistory.order.timeFirstMint
+                                : selectedOrderHistory.order.crossTime;
+
+                        const distance =
+                            selectedOrderHistory.order.claimableLiq > 0
+                                ? scale(
+                                      circleScale(
+                                          selectedOrderHistory.totalValueUSD,
+                                      ),
+                                  )
+                                : 55;
+
+                        const left = scaleData?.xScale(time * 1000) + distance;
+
+                        return { top, left, isOnLeftSide: false };
+                    });
+                }
+
+                if (
+                    (selectedOrderHistory.type === 'historical' &&
+                        showHistorical) ||
+                    (selectedOrderHistory.type === 'historicalLiq' &&
+                        showLiquidity)
+                ) {
+                    const minPrice = denomInBase
+                        ? selectedOrderHistory.order
+                              .bidTickInvPriceDecimalCorrected
+                        : selectedOrderHistory.order
+                              .bidTickPriceDecimalCorrected;
+
+                    const maxPrice = denomInBase
+                        ? selectedOrderHistory.order
+                              .askTickInvPriceDecimalCorrected
+                        : selectedOrderHistory.order
+                              .askTickPriceDecimalCorrected;
+
+                    const diff = Math.abs(maxPrice - minPrice) / 2;
+
+                    const pricePlacement = minPrice + diff;
+
+                    setSelectedOrderTooltipPlacement(() => {
+                        const top = scaleData.yScale(pricePlacement);
+
+                        const latestTime =
+                            selectedOrderHistory.type === 'historicalLiq'
+                                ? new Date().getTime() + 5 * 86400 * 1000
+                                : selectedOrderHistory.order.latestUpdateTime *
+                                  1000;
+
+                        const left = scaleData?.xScale(latestTime);
+
+                        return {
+                            top: top < 0 ? 10 : top,
+                            left:
+                                left > canvasRightEnd
+                                    ? canvasRightEnd - 150
+                                    : left,
+                            isOnLeftSide: false,
+                        };
+                    });
+                }
             }
         }
     };
@@ -5775,6 +6977,9 @@ export default function Chart(props: propsIF) {
         diffHashSigScaleData(scaleData),
         reset,
         denomInBase,
+        showHistorical,
+        showLiquidity,
+        showSwap,
     ]);
 
     useEffect(() => {
@@ -5886,8 +7091,9 @@ export default function Chart(props: propsIF) {
                     />
                 )}
 
-                {(showSwap || showLiquidity || showHistorical) &&
-                    circleScale &&
+                {((showSwap && circleScale) ||
+                    showLiquidity ||
+                    showHistorical) &&
                     scaleData && (
                         <OrderHistoryCanvas
                             scaleData={scaleData}
@@ -5898,7 +7104,10 @@ export default function Chart(props: propsIF) {
                             hoveredOrderHistory={hoveredOrderHistory}
                             isHoveredOrderHistory={isHoveredOrderHistory}
                             drawSettings={drawSettings}
-                            userTransactionData={userTransactionData}
+                            filteredTransactionalData={
+                                filteredTransactionalData
+                            }
+                            filteredLimitTxData={filteredLimitTxData}
                             circleScale={circleScale}
                             isSelectedOrderHistory={isSelectedOrderHistory}
                             selectedOrderHistory={selectedOrderHistory}
@@ -5938,7 +7147,9 @@ export default function Chart(props: propsIF) {
                         period={period}
                         crosshairData={crosshairData}
                         snapForCandle={snapForCandle}
-                        visibleCandleData={visibleCandleData}
+                        visibleCandleData={
+                            unparsedData.candles as Array<CandleDataChart>
+                        }
                         render={render}
                         zoomBase={zoomBase}
                         setIsChartZoom={setIsChartZoom}
@@ -5962,7 +7173,7 @@ export default function Chart(props: propsIF) {
                         drawnShapeHistory={drawnShapeHistory}
                         render={render}
                         mousemove={mousemove}
-                        setCrossHairDataFunc={setCrossHairDataFunc}
+                        setCrosshairActive={setCrosshairActive}
                         setSelectedDrawnShape={setSelectedDrawnShape}
                         setIsUpdatingShape={setIsUpdatingShape}
                         denomInBase={denomInBase}
@@ -6075,6 +7286,7 @@ export default function Chart(props: propsIF) {
                         isUpdatingShape={isUpdatingShape}
                         timeGaps={timeGaps}
                         isDiscontinuityScaleEnabled={isCondensedModeEnabled}
+                        bandwidth={bandwidth}
                     />
                 </div>
             </d3fc-group>
@@ -6094,9 +7306,9 @@ export default function Chart(props: propsIF) {
             )}
 
             {scaleData &&
-                showSwap &&
+                (showSwap || showLiquidity || showHistorical) &&
                 hoveredOrderHistory &&
-                hoveredOrderHistory.txId !== selectedOrderHistory?.txId &&
+                hoveredOrderHistory.id !== selectedOrderHistory?.id &&
                 hoveredOrderTooltipPlacement && (
                     <OrderHistoryTooltip
                         hoveredOrderHistory={hoveredOrderHistory}
@@ -6116,8 +7328,16 @@ export default function Chart(props: propsIF) {
                 )}
 
             {scaleData &&
-                showSwap &&
                 selectedOrderHistory &&
+                ((showSwap &&
+                    (selectedOrderHistory.type === 'swap' ||
+                        selectedOrderHistory.type === 'limitOrder' ||
+                        selectedOrderHistory.type === 'claimableLimit')) ||
+                    (showLiquidity &&
+                        (selectedOrderHistory.type === 'limitSwapLine' ||
+                            selectedOrderHistory.type === 'historicalLiq')) ||
+                    (showHistorical &&
+                        selectedOrderHistory.type === 'historical')) &&
                 selectedOrderTooltipPlacement && (
                     <OrderHistoryTooltip
                         hoveredOrderHistory={selectedOrderHistory}

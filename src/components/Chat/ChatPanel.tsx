@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import { EmojiClickData } from 'emoji-picker-react';
 import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
@@ -16,6 +15,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import NotFound from '../../pages/common/NotFound/NotFound';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
@@ -27,7 +27,6 @@ import styles from './ChatPanel.module.css';
 import { getEmojiPack } from './ChatRenderUtils';
 import ChatToaster from './ChatToaster/ChatToaster';
 import DomDebugger from './DomDebugger/DomDebugger';
-import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import FullChat from './FullChat/FullChat';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
@@ -850,8 +849,6 @@ function ChatPanel(props: propsIF) {
             {getEmojiPack(reactionCodes, addReactionEmojiPickListener, 30)}
         </div>
     );
-
-    domDebug('isUserConnected', isUserConnected);
 
     const header = (
         <div

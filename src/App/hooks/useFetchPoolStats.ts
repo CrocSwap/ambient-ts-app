@@ -342,7 +342,7 @@ const useFetchPoolStats = (
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
-                tokens.allDefaultTokens,
+                tokens.tokenUniv,
                 enableTotalSupply,
             );
 
@@ -369,7 +369,7 @@ const useFetchPoolStats = (
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
-                tokens.allDefaultTokens,
+                tokens.tokenUniv,
             );
 
             const volumeTotalNow = expandedPoolStatsNow?.volumeTotalUsd;
@@ -461,9 +461,7 @@ const useFetchPoolStats = (
             }
 
             try {
-                if (priceChangeResult === undefined || volumeChange24h === 0) {
-                    setPoolPriceChangePercent(undefined);
-                    setIsPoolPriceChangePositive(true);
+                if (priceChangeResult === undefined) {
                     return;
                 }
                 const priceChangePercent = priceChangeResult * 100;

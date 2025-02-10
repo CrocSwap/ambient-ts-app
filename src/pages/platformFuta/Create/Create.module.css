@@ -78,7 +78,7 @@
     color: var(--dark1);
     border: none;
     transition: all var(--animation-speed) ease-in-out;
-    height: 62PX;
+    height: 32PX;
     overflow: hidden;
 }
 
@@ -107,6 +107,7 @@
     flex-direction: row;
     justify-content: space-between;
 }
+
 
 @keyframes pulse {
     0% {

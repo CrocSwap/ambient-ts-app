@@ -5,6 +5,20 @@
 
 /* For simple theme change(special occasion), change portfolio and swap background. No need for a different color scheme*/
 :root {
+    /* Media Queries for Tablets (including iPads) */
+    --tablet-portrait: (min-width: 600px) and (max-width: 1366px) and
+        (orientation: portrait);
+    --tablet-landscape: (min-width: 600px) and (max-width: 1366px) and
+        (orientation: landscape);
+
+    /* Media Queries for Mobile Devices */
+    --mobile-portrait: (max-width: 599px) and (orientation: portrait);
+    --mobile-landscape: (max-width: 599px) and (orientation: landscape);
+
+    /* Media Queries for Desktop Devices */
+    --desktop: (min-width: 1367px);
+    --desktop-large: (min-width: 1920px); /* Optional for ultra-wide monitors */
+
     --font-logo: 'Lexend Exa', sans-serif;
     --font-family: 'Lexend Deca', sans-serif;
     --roboto: 'Roboto Mono', monospace;
@@ -66,6 +80,8 @@
     --triangle-color: #8b98a5;
     --liq-ask-color: #26a69a;
     --liq-bid-color: #ef5350;
+    --order-buy-color: #26a69a;
+    --order-sell-color: #ef5350;
 
     --other-green: #41d18e;
     --other-red: #e75670;
@@ -246,6 +262,8 @@
     --chart-limit-line-color: #5c6f72;
     --shareable-line-color: #5c6f72;
     --triangle-color: #5c6f72;
+    --order-buy-color: #26a69a;
+    --order-sell-color: #ef5350;
 
     --other-green: #6bae52;
     --other-red: #e75670;

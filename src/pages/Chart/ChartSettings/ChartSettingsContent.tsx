@@ -1,13 +1,14 @@
-import Divider from '@material-ui/core/Divider/Divider';
 import * as d3 from 'd3';
 import { MouseEvent, useContext, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
+import Divider from '../../../components/Global/Divider/Divider';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { ChartContext, ChartThemeIF } from '../../../contexts/ChartContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../../platformAmbient/Chart/ChartUtils/chartConstants';
 import {
     chartItemStates,
@@ -45,7 +46,6 @@ import {
     StyledCheckbox,
     StyledSelectbox,
 } from './ChartSettingsCss';
-import { useMediaQuery } from '@material-ui/core';
 
 interface ContextMenuContentIF {
     chartThemeColors: ChartThemeIF;
@@ -298,6 +298,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 liqBidColor: chartThemeColors.liqBidColor.toString(),
                 selectedDateStrokeColor:
                     chartThemeColors.selectedDateStrokeColor.toString(),
+                orderSell: chartThemeColors.orderSellColor.toString(),
+                orderBuy: chartThemeColors.orderBuyColor.toString(),
             },
             isTradeDollarizationEnabled: isTradeDollarizationEnabled,
             showVolume: showVolume,
@@ -386,6 +388,14 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             upColor: 'liqAskColor',
             exclude: ['futa'],
         },
+        {
+            selection: 'Order History',
+            actionHandler: 'order',
+            action: handleCandleColorPicker,
+            downColor: 'orderSellColor',
+            upColor: 'orderBuyColor',
+            exclude: [''],
+        },
     ];
 
     const resetAndRescaleMobileDisplay = (
@@ -439,14 +449,14 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
 
     const extendedOptions = (
         <ContextOptions>
-            <Divider></Divider>
+            <Divider />
 
             <ContextOptionsSection>
                 <OptionsHeader>Chart Scale:</OptionsHeader>
                 <OptionsContent>{resetAndRescaleMobileDisplay}</OptionsContent>
             </ContextOptionsSection>
 
-            <Divider></Divider>
+            <Divider />
 
             <ContextOptionsSection>
                 <OptionsHeader>Curve/Depth:</OptionsHeader>
@@ -569,6 +579,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 <ColorPickerContainer>
                     {colorPickerContent.map(
                         (item, index) =>
+                            (item.actionHandler !== 'order' ||
+                                isUserConnected) &&
                             !item.exclude.includes(platformName) && (
                                 <ColorList key={index}>
                                     <ContextMenuContextText>

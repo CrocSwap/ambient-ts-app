@@ -921,7 +921,6 @@ function SentMessagePanel(props: SentMessageProps) {
                                             props.isCurrentUser && (
                                                 <>
                                                     <DefaultTooltip
-                                                        interactive
                                                         title={
                                                             'Verify this message'
                                                         }

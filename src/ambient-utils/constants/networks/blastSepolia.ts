@@ -1,8 +1,9 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Provider } from 'ethers';
+import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
+import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import { blastSepoliaETH, blastSepoliaUSDB } from '../defaultTokens';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
@@ -34,6 +35,24 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://testnet.blastscan.io/',
 };
 
+const defaultTokenEntries = [
+    ['ETH', '0x0000000000000000000000000000000000000000'],
+    ['USDB', '0x4200000000000000000000000000000000000022'],
+] as const;
+
+// Infer the type of the keys and define the resulting type
+type BlastSepoliaTokens = {
+    [Key in (typeof defaultTokenEntries)[number][0]]: TokenIF;
+};
+
+// Safely construct the object with type inference
+export const BLAST_SEPOLIA_TOKENS: BlastSepoliaTokens = Object.fromEntries(
+    defaultTokenEntries.map(([key, address]) => [
+        key,
+        findTokenByAddress(address, chainIdHex),
+    ]),
+) as BlastSepoliaTokens;
+
 export const blastSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
@@ -41,7 +60,7 @@ export const blastSepolia: NetworkIF = {
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
-    defaultPair: [blastSepoliaETH, blastSepoliaUSDB],
+    defaultPair: [BLAST_SEPOLIA_TOKENS.ETH, BLAST_SEPOLIA_TOKENS.USDB],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     displayName: 'Blast Testnet',
@@ -50,8 +69,8 @@ export const blastSepolia: NetworkIF = {
     tempestApiNetworkName: '',
     topPools: [
         new TopPool(
-            blastSepoliaETH,
-            blastSepoliaUSDB,
+            BLAST_SEPOLIA_TOKENS.ETH,
+            BLAST_SEPOLIA_TOKENS.USDB,
             chainSpecFromSDK.poolIndex,
         ),
     ],

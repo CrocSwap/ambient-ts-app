@@ -4,6 +4,7 @@ import {
     useContext,
     useEffect,
     useMemo,
+    useRef,
     useState,
 } from 'react';
 import { fetchRecords, fetchUserRecentChanges } from '../ambient-utils/api';
@@ -13,17 +14,21 @@ import {
     LiquidityDataIF,
     PositionIF,
     RecordType,
-    TokenIF,
     TransactionIF,
 } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { DataLoadingContext } from './DataLoadingContext';
-import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
+import {
+    PositionUpdateIF,
+    ReceiptContext,
+    TransactionByType,
+} from './ReceiptContext';
 import { TokenContext } from './TokenContext';
 import { TradeDataContext } from './TradeDataContext';
 import { UserDataContext } from './UserDataContext';
+import useGenFakeTableRow from '../components/Trade/InfiniteScroll/useGenFakeTableRow';
 
 export interface Changes {
     dataReceived: boolean;
@@ -52,6 +57,21 @@ interface PoolRequestParams {
     poolIndex: number;
     chainId: string;
 }
+
+export type RecentlyUpdatedPositionStatus = 'pending' | 'onchain' | 'indexed';
+
+export type RecentlyUpdatedPositionIF = {
+    positionHash: string;
+    timestamp: number;
+    position?: LimitOrderIF | PositionIF;
+    type: string;
+    action: string;
+    status: RecentlyUpdatedPositionStatus;
+    txByType?: TransactionByType;
+    currentLiquidity?: bigint | undefined;
+    isSuccess?: boolean;
+    prevPositionHash?: string;
+};
 
 export interface GraphDataContextIF {
     positionsByUser: PositionsByUser;
@@ -88,6 +108,10 @@ export interface GraphDataContextIF {
         React.SetStateAction<LimitOrdersByPool>
     >;
     resetUserGraphData: () => void;
+    recentlyUpdatedPositions: RecentlyUpdatedPositionIF[];
+    pendingRecentlyUpdatedPositions: RecentlyUpdatedPositionIF[];
+    removeFromRecentlyUpdatedPositions: (positionHash: string) => void;
+    prevPositionHashes: Set<string>;
 }
 
 function normalizeAddr(addr: string): string {
@@ -99,14 +123,18 @@ export const GraphDataContext = createContext({} as GraphDataContextIF);
 
 export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { GCGO_URL, chainId },
+        activeNetwork: { GCGO_URL, chainId, poolIndex },
         server: { isEnabled: isServerEnabled },
         isUserIdle,
         isUserOnline,
     } = useContext(AppStateContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
-    const { pendingTransactions, allReceipts, sessionPositionUpdates } =
-        useContext(ReceiptContext);
+    const {
+        pendingTransactions,
+        allReceipts,
+        sessionPositionUpdates,
+        transactionsByType,
+    } = useContext(ReceiptContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         cachedQuerySpotPrice,
@@ -118,6 +146,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const { tokens } = useContext(TokenContext);
     const { userAddress: userDefaultAddress, isUserConnected } =
         useContext(UserDataContext);
+    const { genFakeLimitOrder, genFakePosition } = useGenFakeTableRow();
 
     const [positionsByUser, setPositionsByUser] = useState<PositionsByUser>({
         dataReceived: false,
@@ -168,6 +197,28 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     >(undefined);
 
     const [liquidityFee, setLiquidityFee] = useState<number | undefined>();
+
+    const [recentlyUpdatedPositions, setRecentlyUpdatedPositions] = useState<
+        RecentlyUpdatedPositionIF[]
+    >([]);
+
+    const [
+        pendingRecentlyUpdatedPositions,
+        setPendingRecentlyUpdatedPositions,
+    ] = useState<RecentlyUpdatedPositionIF[]>([]);
+    const pendingRecentlyUpdatedPositionsRef = useRef<
+        RecentlyUpdatedPositionIF[]
+    >([]);
+
+    const [prevPositionHashes, setPrevPositionHashes] = useState<Set<string>>(
+        new Set(),
+    );
+
+    pendingRecentlyUpdatedPositionsRef.current =
+        pendingRecentlyUpdatedPositions;
+
+    const recentlyUpdatedPositionsRef = useRef<RecentlyUpdatedPositionIF[]>([]);
+    recentlyUpdatedPositionsRef.current = recentlyUpdatedPositions;
 
     const userAddress = userDefaultAddress;
 
@@ -420,6 +471,180 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         ],
     );
 
+    const addIntoRelevantPositions = (
+        relevantLimitOrders: RecentlyUpdatedPositionIF[],
+    ) => {
+        const positionsMap = new Map();
+
+        relevantLimitOrders.forEach((e) => {
+            positionsMap.set(e.positionHash, e);
+        });
+
+        const uniqueRelevantLimitOrders = Array.from(positionsMap.values());
+
+        if (recentlyUpdatedPositionsRef.current) {
+            setRecentlyUpdatedPositions([
+                ...recentlyUpdatedPositionsRef.current.filter(
+                    (e) =>
+                        !uniqueRelevantLimitOrders.some(
+                            (e2) => e2.positionHash === e.positionHash,
+                        ),
+                ),
+                ...uniqueRelevantLimitOrders,
+            ]);
+        }
+
+        setTimeout(() => {
+            removePendingRelevantPosition(uniqueRelevantLimitOrders);
+        }, 300);
+    };
+
+    const removeFromRecentlyUpdatedPositions = (positonHash: string) => {
+        setRecentlyUpdatedPositions(
+            recentlyUpdatedPositionsRef.current.filter(
+                (e) => e.positionHash !== positonHash,
+            ),
+        );
+    };
+
+    const addPendingRelevantPosition = (pending: RecentlyUpdatedPositionIF) => {
+        setPendingRecentlyUpdatedPositions([
+            ...pendingRecentlyUpdatedPositions.filter(
+                (e) => pending.positionHash !== e.positionHash,
+            ),
+            pending,
+        ]);
+    };
+
+    const removePendingRelevantPosition = (
+        pendings: RecentlyUpdatedPositionIF[],
+    ) => {
+        if (pendingRecentlyUpdatedPositionsRef.current) {
+            setPendingRecentlyUpdatedPositions(
+                pendingRecentlyUpdatedPositionsRef.current.filter(
+                    (e) =>
+                        !pendings.some(
+                            (pending) =>
+                                pending.positionHash === e.positionHash,
+                        ),
+                ),
+            );
+        }
+    };
+
+    const getPositionHashForTxByType = (tbt: TransactionByType) => {
+        const posHashObject = {
+            isPositionTypeAmbient: tbt.txDetails?.isAmbient || false,
+            user: tbt.userAddress.toLowerCase(),
+            baseAddress: tbt.txDetails?.baseAddress.toLowerCase() || '',
+            quoteAddress: tbt.txDetails?.quoteAddress.toLowerCase() || '',
+            poolIdx: tbt.txDetails?.poolIdx || 0,
+            bidTick: tbt.txDetails?.lowTick || 0,
+            askTick: tbt.txDetails?.highTick || 0,
+        };
+
+        return getPositionHash(undefined, posHashObject);
+    };
+
+    const tempBool = false;
+
+    useEffect(() => {
+        if (tempBool) return;
+
+        const relevantLimitOrders = transactionsByType.filter(
+            (tx) =>
+                !tx.isRemoved &&
+                unindexedNonFailedSessionLimitOrderUpdates.some(
+                    (update) => update.txHash === tx.txHash,
+                ) &&
+                tx.userAddress.toLowerCase() ===
+                    (userAddress || '').toLowerCase() &&
+                tx.txDetails?.baseAddress.toLowerCase() ===
+                    baseToken.address.toLowerCase() &&
+                tx.txDetails?.quoteAddress.toLowerCase() ===
+                    quoteToken.address.toLowerCase() &&
+                tx.txDetails?.poolIdx === poolIndex &&
+                tx.txType === 'Limit',
+        );
+
+        relevantLimitOrders.forEach((tx) => {
+            addPendingRelevantPosition({
+                positionHash: getPositionHashForTxByType(tx),
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                type: 'Limit',
+                action: tx.txAction || '',
+                status: 'pending',
+                txByType: tx,
+            });
+        });
+
+        Promise.all(
+            relevantLimitOrders.map((tx) => genFakeLimitOrder(tx)),
+        ).then((rows) => {
+            addIntoRelevantPositions(rows);
+        });
+    }, [
+        unindexedNonFailedSessionLimitOrderUpdates.length,
+        transactionsByType.length,
+    ]);
+
+    useEffect(() => {
+        if (tempBool) return;
+
+        const relevantPositions = transactionsByType.filter(
+            (tx) =>
+                !tx.isRemoved &&
+                unindexedNonFailedSessionPositionUpdates.some(
+                    (update) => update.txHash === tx.txHash,
+                ) &&
+                tx.userAddress.toLowerCase() ===
+                    (userAddress || '').toLowerCase() &&
+                tx.txDetails?.baseAddress.toLowerCase() ===
+                    baseToken.address.toLowerCase() &&
+                tx.txDetails?.quoteAddress.toLowerCase() ===
+                    quoteToken.address.toLowerCase() &&
+                tx.txDetails?.poolIdx === poolIndex &&
+                tx.txType === 'Range',
+        );
+
+        relevantPositions.forEach((tx) => {
+            addPendingRelevantPosition({
+                positionHash: getPositionHashForTxByType(tx),
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                type: 'Range',
+                action: tx.txAction || '',
+                status: 'pending',
+                txByType: tx,
+            });
+        });
+
+        Promise.all(relevantPositions.map((tx) => genFakePosition(tx))).then(
+            (rows) => {
+                addIntoRelevantPositions(rows);
+
+                rows.filter((row) => row.isSuccess).map((e) => {
+                    if (e.prevPositionHash) {
+                        const prevPosHash = e.prevPositionHash;
+                        setPrevPositionHashes((prev) => {
+                            prev.add(prevPosHash);
+                            return prev;
+                        });
+                    }
+                    if (e.type === 'Add') {
+                        const hash = e.positionHash;
+                        setPrevPositionHashes((prev) => {
+                            prev.delete(hash);
+                            return prev;
+                        });
+                    }
+                });
+            },
+        );
+    }, [
+        unindexedNonFailedSessionPositionUpdates.length,
+        transactionsByType.length,
+    ]);
+
     const onAccountRoute = location.pathname.includes('account');
 
     const userDataByPoolLength = useMemo(
@@ -497,7 +722,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider,
-                    n: 100, // fetch last 100 changes,
+                    n: 200,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
@@ -505,62 +730,14 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
+                            const userTransactionsWithoutFills =
+                                updatedTransactions.filter(
+                                    (tx) => tx.changeType !== 'cross',
+                                );
                             setTransactionsByUser({
                                 dataReceived: true,
-                                changes: updatedTransactions,
+                                changes: userTransactionsWithoutFills,
                             });
-                            const result: TokenIF[] = [];
-                            const tokenMap = new Map();
-                            for (const item of updatedTransactions as TransactionIF[]) {
-                                if (!tokenMap.has(item.base)) {
-                                    const isFoundInAmbientList =
-                                        tokens.defaultTokens.some(
-                                            (ambientToken) => {
-                                                if (
-                                                    ambientToken.address.toLowerCase() ===
-                                                    item.base.toLowerCase()
-                                                )
-                                                    return true;
-                                                return false;
-                                            },
-                                        );
-                                    if (!isFoundInAmbientList) {
-                                        tokenMap.set(item.base, true); // set any value to Map
-                                        result.push({
-                                            name: item.baseName,
-                                            address: item.base,
-                                            symbol: item.baseSymbol,
-                                            decimals: item.baseDecimals,
-                                            chainId: parseInt(item.chainId),
-                                            logoURI: item.baseTokenLogoURI,
-                                        });
-                                    }
-                                }
-                                if (!tokenMap.has(item.quote)) {
-                                    const isFoundInAmbientList =
-                                        tokens.defaultTokens.some(
-                                            (ambientToken) => {
-                                                if (
-                                                    ambientToken.address.toLowerCase() ===
-                                                    item.quote.toLowerCase()
-                                                )
-                                                    return true;
-                                                return false;
-                                            },
-                                        );
-                                    if (!isFoundInAmbientList) {
-                                        tokenMap.set(item.quote, true); // set any value to Map
-                                        result.push({
-                                            name: item.quoteName,
-                                            address: item.quote,
-                                            symbol: item.quoteSymbol,
-                                            decimals: item.quoteDecimals,
-                                            chainId: parseInt(item.chainId),
-                                            logoURI: item.quoteTokenLogoURI,
-                                        });
-                                    }
-                                }
-                            }
                         }
 
                         setDataLoadingStatus({
@@ -615,6 +792,10 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         setLiquidity,
         liquidityFee,
         setLiquidityFee,
+        recentlyUpdatedPositions,
+        pendingRecentlyUpdatedPositions,
+        removeFromRecentlyUpdatedPositions,
+        prevPositionHashes,
     };
 
     return (

@@ -3,7 +3,6 @@ import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { toDisplayPrice } from '@crocswap-libs/sdk';
-import { useMediaQuery } from '@material-ui/core';
 import moment from 'moment';
 import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
@@ -20,6 +19,7 @@ import {
     setCanvasResolution,
 } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 import { FlexContainer } from '../../../../styled/Common';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import {
     formatAmountChartData,
     formatPoolPriceAxis,
@@ -203,7 +203,7 @@ export default function TransactionDetailsGraph(
                 Math.floor(diff / 1000),
             );
 
-            if (nowTime - minTimeBeforeOffset * 1000 < oneWeekMilliseconds) {
+            if (nowTime - minTimeBeforeOffset < oneWeekMilliseconds) {
                 tempPeriod = 3600;
             }
 

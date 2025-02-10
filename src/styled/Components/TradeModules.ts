@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import styled, { css } from 'styled-components/macro';
+import styled, { css } from 'styled-components';
 import { FlexContainer, GridContainer, Text } from '../Common';
 import { AnimationProps, Animations } from '../Common/Animations';
 

@@ -1,6 +1,11 @@
 
+.ambi{
+    /* this is wrapper selector for ambient brand  */
+    /* style changes for childiren elements implemented from this parent classname */
+}
+
 .tutorial_blur {
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(3px);
     position: fixed;
     z-index: 100;
 }
@@ -53,6 +58,8 @@
     opacity: 0;
 }
 
+
+
 .tooltip_wrapper {
     position: fixed;
     background: var(--dark1);
@@ -66,6 +73,10 @@
 
 .tooltip_wrapper.animated {
     animation: tooltipAnim 0.5s ease-in-out forwards;
+}
+
+.ambi .tooltip_wrapper.animated{
+    animation: ambiTutoAnim .5s ease-in-out forwards;
 }
 
 .tooltip_title {
@@ -104,6 +115,24 @@
     }
     100% {
         transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes ambiTutoAnim {
+    0%{
+        opacity: 0;
+        transform: scale(1);
+        background-color: color-mix(in srgb, var(--accent1) 0%, var(--dark2));
+    }
+    50%{
+        transform: scale(1.1);
+        background-color: var(--accent1);
+        background-color: color-mix(in srgb, var(--accent1) 10%, var(--dark2));
+    }
+    100%{
+        transform: scale(1);
+        background-color: color-mix(in srgb, var(--accent1) 0%, var(--dark2));
         opacity: 1;
     }
 }
@@ -195,6 +224,10 @@
     background-color: var(--accent1);
 }
 
+.ambi .step_dot.active{
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
 .next_button {
     border: 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);
     color: var(--accent1);
@@ -215,6 +248,82 @@
     border: 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);
     color: var(--accent1);
 }
+
+
+.ambi .focus_outline{  box-shadow:
+    0 0 3px 0px color-mix(in srgb, var(--accent1) 20%, transparent),
+    0 0 0 9999px color-mix(in srgb, var(--dark2) 20%, transparent);
+}
+
+.ambi .tooltip_wrapper{
+border: none;
+background-color: var(--dark2);
+border-radius: 1rem;
+box-shadow: 0 10px 10px 0px rgba(0, 0, 0, 0.2);
+min-width: 20rem;
+}
+
+.ambi .tooltip_title{
+border: none;
+font-size: 1.2rem;
+padding: .5rem;
+background: transparent;
+}
+
+.ambi .steps_on_tooltip{
+right: auto;
+left: 1.4rem;
+top: .8rem;
+}
+
+.ambi .next_button, .ambi .complete_button{
+background-color: var(--accent1) !important;
+color: white;
+}
+
+
+.ambi .step_btn{
+background-color: var(--dark3);
+border: none;
+border-radius: .5rem;
+border: none;
+opacity: .8;
+padding: .2rem 1rem;
+}
+
+.ambi .tooltip_wrapper .step_btn{
+font-size: .9rem;
+padding: .2rem .5rem;
+}
+
+.ambi .step_btn:hover{
+background-color: var(--dark3) !important;
+color: white !important;
+opacity: 1;
+}
+
+.ambi .next_button:hover, .ambi .complete_button:hover{
+background-color: var(--accent1) !important;
+}
+
+.ambi .step_dots_wrapper{
+    padding-top: .4rem;
+}
+
+
+.ambi .dismiss_button{
+right: .5rem;
+border: none;
+background-color: transparent;
+opacity: .4;
+}
+
+.ambi .tooltip_content{
+opacity: .4;
+font-size: 1.1rem;
+padding-top: 0rem;
+}
+
 
 @media only screen and (max-width: 600px) {
     .tooltip_wrapper {

@@ -19,6 +19,7 @@ import LDO from './LDO.svg';
 import LINK from './LINK.svg';
 import MIA from './MIA.png';
 import MKR from './MKR.png';
+import NELIXIR from './NELIXIR.svg';
 import NEV from './NEV.webp';
 import NRWA from './NRWA.svg';
 import NTBILL from './NTBILL.svg';
@@ -55,6 +56,7 @@ import USDPLUS from './USD+.png';
 import USDB from './USDB.png';
 import USDC from './USDC.svg';
 import USDE from './USDe-Black.svg';
+import USDQ from './USDQ.svg';
 import USDT from './USDT.svg';
 import WBTC from './WBTC.webp';
 import WEETH from './WEETH.svg';
@@ -89,6 +91,7 @@ export {
     LINK,
     MIA,
     MKR,
+    NELIXIR,
     NEV,
     NRWA,
     NTBILL,
@@ -124,6 +127,7 @@ export {
     USDC,
     USDE,
     USDPLUS,
+    USDQ,
     USDT,
     WBTC,
     WEETH,

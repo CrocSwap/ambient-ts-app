@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
     ChangeEvent,
@@ -32,6 +31,7 @@ import {
     SearchContainer,
     SearchInput,
 } from '../../../styled/Components/Sidebar';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import FavoritePools from '../Sidebar/FavoritePools';
 import RecentPools from '../Sidebar/RecentPools';

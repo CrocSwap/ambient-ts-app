@@ -1,6 +1,6 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     CURRENT_AUCTION_VERSION,
     GAS_DROPS_ESTIMATE_AUCTION_CREATE,
@@ -25,7 +25,7 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import styles from './Create.module.css';
 import CreateInput from './CreateInput';
-
+import { motion } from 'framer-motion';
 export default function Create() {
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
     const navigate = useNavigate();
@@ -36,6 +36,7 @@ export default function Create() {
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
+    const [searchParams] = useSearchParams();
 
     const { tickerInput, setTickerInput } = useContext(AuctionsContext);
 
@@ -99,6 +100,18 @@ export default function Create() {
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
+    useEffect(() => {
+        const tickerParam = searchParams.get('ticker');
+        if (tickerParam) {
+            // Use the same validation logic as handleChange
+            const sanitized = tickerParam.trim();
+            if (checkTickerPattern(sanitized)) {
+                setIsValidationInProgress(true);
+                setTickerInput(sanitized.toUpperCase());
+            }
+        }
+    }, [searchParams]);
 
     const extraInfoData = [
         {
@@ -171,6 +184,29 @@ export default function Create() {
         tickerCreationResponse?.isSuccess === false ||
         (isUserConnected && (isValidationInProgress || !isValidated));
 
+    // Helper function to determine button text
+    function getButtonText() {
+        if (!isUserConnected) return 'Connect Wallet';
+        if (displayPendingTxMessage) return 'Creation Pending...';
+        if (tickerCreationFailed) return 'Creation Failed';
+        if (tickerCreationSucceeded) return 'Go To Auction';
+        if (tickerInput === '') return 'Enter a Token Ticker';
+        if (isValidationInProgress) return 'Validating Ticker...';
+        if (isValidated) return 'Create Auction';
+        return invalidReason;
+    }
+
+    // Helper function to handle button click
+    function handleButtonClick() {
+        if (!isUserConnected) {
+            openWalletModal();
+        } else if (tickerCreationSucceeded) {
+            navigate(`/auctions/v${CURRENT_AUCTION_VERSION}/${tickerInput}`);
+        } else {
+            sendCreationTransaction(crocEnv, tickerInput);
+        }
+    }
+
     const footerDisplay = (
         <footer className={styles.footerContainer}>
             {extraInfoDisplay}
@@ -185,47 +221,34 @@ export default function Create() {
                         ? styles.create_button
                         : styles.create_button_disabled
                 }
-                onClick={() =>
-                    !isUserConnected
-                        ? openWalletModal()
-                        : tickerCreationSucceeded
-                          ? navigate(
-                                `/auctions/v${CURRENT_AUCTION_VERSION}/${tickerInput}`,
-                            )
-                          : sendCreationTransaction(crocEnv, tickerInput)
-                }
+                onClick={handleButtonClick}
                 disabled={isButtonDisabled}
             >
-                {!isUserConnected
-                    ? 'Connect Wallet'
-                    : displayPendingTxMessage
-                      ? 'Creation Pending...'
-                      : tickerCreationFailed
-                        ? 'Creation Failed'
-                        : tickerCreationSucceeded
-                          ? 'Go To Auction'
-                          : tickerInput === ''
-                            ? 'Enter a Token Ticker'
-                            : isValidationInProgress
-                              ? 'Validating Ticker...'
-                              : isValidated
-                                ? 'Create Auction'
-                                : `${invalidReason}: ${tickerInput}`}
+                {getButtonText()}
             </button>
         </footer>
     );
 
     return (
         <section className={styles.mainContainer}>
-            <div className={styles.create_token}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6 }}
+                className={styles.create_token}
+            >
                 {createHeader}
 
                 <CreateInput
                     tickerInput={tickerInput}
                     handleChange={handleChange}
+                    isValidated={isValidated}
+                    isValidationInProgress={isValidationInProgress}
                 />
+
                 {footerDisplay}
-            </div>
+            </motion.div>
 
             {getActionTrigger('create_auction_input_trigger', () => {
                 setTickerInput('MY TOKEN');

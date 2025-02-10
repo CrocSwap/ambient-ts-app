@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useContext } from 'react';
 import { FiPlusCircle } from 'react-icons/fi';
-import { MdOutlineExplore, MdOutlineSwapVerticalCircle } from 'react-icons/md';
+import { MdOutlineExplore } from 'react-icons/md';
 import { RiAccountCircleLine } from 'react-icons/ri';
 import { Link, useLocation } from 'react-router-dom';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
@@ -10,6 +10,7 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import DesktopFooter from './DesktopFooter';
 import styles from './Footer.module.css';
+import { GoArrowSwitch } from 'react-icons/go';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -36,31 +37,19 @@ export default function Footer() {
         tokenA: tokenA.address,
         tokenB: tokenB.address,
     });
+    const activeColor = '#AACFD1';
+    const inactiveColor = '#5C6F72';
     const footerItems = [
         {
-            label: 'Explore',
+            label: 'Auctions',
             link: '/auctions',
             icon: (
                 <MdOutlineExplore
                     size={24}
                     color={
                         location.pathname.includes('auctions')
-                            ? 'var(--text1)'
-                            : 'var(--text2)'
-                    }
-                />
-            ),
-        },
-        {
-            label: 'Create',
-            link: '/create',
-            icon: (
-                <FiPlusCircle
-                    size={24}
-                    color={
-                        location.pathname.includes('create')
-                            ? 'var(--text1)'
-                            : 'var(--text2)'
+                            ? activeColor
+                            : inactiveColor
                     }
                 />
             ),
@@ -69,12 +58,12 @@ export default function Footer() {
             label: 'Swap',
             link: '/swap/' + paramsSlug,
             icon: (
-                <MdOutlineSwapVerticalCircle
+                <GoArrowSwitch
                     size={24}
                     color={
                         location.pathname.includes('swap')
-                            ? 'var(--text1)'
-                            : 'var(--text2)'
+                            ? activeColor
+                            : inactiveColor
                     }
                 />
             ),
@@ -88,8 +77,22 @@ export default function Footer() {
                     size={24}
                     color={
                         location.pathname.includes('account')
-                            ? 'var(--text1)'
-                            : 'var(--text2)'
+                            ? activeColor
+                            : inactiveColor
+                    }
+                />
+            ),
+        },
+        {
+            label: 'Create',
+            link: '/create',
+            icon: (
+                <FiPlusCircle
+                    size={24}
+                    color={
+                        location.pathname.includes('create')
+                            ? activeColor
+                            : inactiveColor
                     }
                 />
             ),
@@ -122,8 +125,8 @@ export default function Footer() {
                                     ? 'auctions'
                                     : item.label.toLowerCase(),
                             )
-                                ? 'var(--text1)'
-                                : 'var(--text2)',
+                                ? activeColor
+                                : inactiveColor,
                         }}
                     >
                         {item.icon}

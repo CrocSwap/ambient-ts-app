@@ -1,25 +1,74 @@
 import * as d3 from 'd3';
 import { Dispatch, SetStateAction } from 'react';
+import { findSnapTime, scaleData, timeGapsValue } from './chartUtils';
 import { CandleDomainIF } from '../../../../ambient-utils/types';
-import { findSnapTime, scaleData } from './chartUtils';
-
-const maxNumCandlesForZoom = 2000;
 
 export class Zoom {
     setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>;
     period: number;
     isDiscontinuityScaleEnabled: boolean;
     candleDomains: CandleDomainIF;
+    timeGaps: timeGapsValue[];
     constructor(
         setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>,
         period: number,
         isDiscontinuityScaleEnabled: boolean,
         candleDomains: CandleDomainIF,
+        timeGaps: timeGapsValue[],
     ) {
         this.setCandleDomains = setCandleDomains;
         this.candleDomains = candleDomains;
         this.period = period;
         this.isDiscontinuityScaleEnabled = isDiscontinuityScaleEnabled;
+        this.timeGaps = timeGaps;
+    }
+
+    private calculateDrawingDomains(
+        deltaX: number,
+        scaleData: scaleData,
+        isWheel: boolean,
+        drawMouseX?: number,
+        lastCandleDate?: number,
+    ) {
+        if (!isWheel) {
+            const newMinDomain = scaleData?.drawingLinearxScale.invert(
+                scaleData?.drawingLinearxScale.range()[0] - deltaX,
+            );
+            const newMaxDomain = scaleData?.drawingLinearxScale.invert(
+                scaleData?.drawingLinearxScale.range()[1] - deltaX,
+            );
+
+            scaleData?.drawingLinearxScale.domain([newMinDomain, newMaxDomain]);
+        } else {
+            if (drawMouseX && lastCandleDate) {
+                const drawDomain = this.changeCandleSize(
+                    scaleData.drawingLinearxScale,
+                    deltaX,
+                    drawMouseX,
+                    lastCandleDate,
+                );
+                if (drawDomain) {
+                    const newMaxDomain = scaleData?.drawingLinearxScale.invert(
+                        scaleData?.drawingLinearxScale(drawDomain[1]) -
+                            deltaX / 10,
+                    );
+
+                    if (deltaX > 0) {
+                        scaleData?.drawingLinearxScale.domain([
+                            drawDomain[0],
+                            newMaxDomain < lastCandleDate
+                                ? lastCandleDate
+                                : newMaxDomain,
+                        ]);
+                    } else {
+                        scaleData?.drawingLinearxScale.domain([
+                            drawDomain[0],
+                            newMaxDomain,
+                        ]);
+                    }
+                }
+            }
+        }
     }
 
     private isNegativeZero(value: number) {
@@ -54,6 +103,7 @@ export class Zoom {
                 : event.deltaY / zoomSpeedFactor;
 
         const mouseX = scaleData?.xScale.invert(event.offsetX);
+        const drawMouseX = scaleData?.drawingLinearxScale.invert(event.offsetX);
 
         const isPressAltOrShiftKey =
             (event.shiftKey || event.altKey) &&
@@ -82,6 +132,7 @@ export class Zoom {
                     firstCandleDate,
                     lastCandleDate,
                     mouseX,
+                    drawMouseX,
                 );
             } else {
                 this.wheelWithoutPressKey(
@@ -94,7 +145,7 @@ export class Zoom {
             }
         } else {
             if (isPressCtrlOrMetaKey) {
-                this.wheelWithPressCtrlKey(dx, scaleData, mouseX);
+                this.wheelWithPressCtrlKey(dx, scaleData, mouseX, drawMouseX);
             } else {
                 if (isTouchPad) {
                     this.wheelWithoutPressKey(
@@ -111,6 +162,7 @@ export class Zoom {
                         firstCandleDate,
                         lastCandleDate,
                         mouseX,
+                        drawMouseX,
                     );
                 }
             }
@@ -121,12 +173,25 @@ export class Zoom {
         deltaX: number,
         scaleData: scaleData,
         mouseX: number,
+        drawMouseX?: number,
     ) {
         const beforeMinDomain = scaleData.xScale.domain()[0];
-        const domain = this.changeCandleSize(scaleData, deltaX, mouseX);
+        const domain = this.changeCandleSize(scaleData.xScale, deltaX, mouseX);
 
         if (domain) {
             scaleData?.xScale.domain(domain);
+        }
+
+        if (drawMouseX) {
+            const drawDomain = this.changeCandleSize(
+                scaleData.drawingLinearxScale,
+                deltaX,
+                drawMouseX,
+            );
+
+            if (drawDomain) {
+                scaleData?.drawingLinearxScale.domain(drawDomain);
+            }
         }
 
         this.getNewCandleDataLeftWithRight(scaleData, beforeMinDomain);
@@ -138,6 +203,7 @@ export class Zoom {
         firstCandleDate: number,
         lastCandleDate: number,
         mouseX: number,
+        drawMouseX?: number,
     ) {
         const newMinDomain = scaleData?.xScale.invert(
             scaleData?.xScale.range()[0] - deltaX,
@@ -151,7 +217,7 @@ export class Zoom {
             this.getNewCandleDataLeft(newMinDomain, firstCandleDate);
 
             const domain = this.changeCandleSize(
-                scaleData,
+                scaleData.xScale,
                 deltaX,
                 mouseX,
                 lastCandleDate,
@@ -171,6 +237,16 @@ export class Zoom {
                 } else {
                     scaleData?.xScale.domain([domain[0], newMaxDomain]);
                 }
+            }
+
+            if (drawMouseX) {
+                this.calculateDrawingDomains(
+                    deltaX,
+                    scaleData,
+                    true,
+                    drawMouseX,
+                    lastCandleDate,
+                );
             }
         }
     }
@@ -196,6 +272,8 @@ export class Zoom {
                 this.getNewCandleDataRight(scaleData, lastCandleDate);
             }
         }
+
+        this.calculateDrawingDomains(deltaX, scaleData, false);
 
         scaleData?.xScale.domain([newMinDomain, newMaxDomain]);
     }
@@ -227,26 +305,23 @@ export class Zoom {
 
     public getNewCandleDataLeft(newBoundary: number, firstCandleTime: number) {
         // Implementation for getting new candle data
-        if (newBoundary && firstCandleTime && newBoundary < firstCandleTime) {
-            const newCandleCount = this.isDiscontinuityScaleEnabled ? 500 : 100;
-            const newLastCandle =
-                newBoundary - newCandleCount * this.period * 1000;
+        const newCandleCount = this.isDiscontinuityScaleEnabled ? 500 : 100;
+        const newLastCandle = newBoundary - newCandleCount * this.period * 1000;
 
-            const candleDomain = {
-                lastCandleDate: firstCandleTime,
-                domainBoundry: newLastCandle,
-                isAbortedRequest: false,
-                isResetRequest: false,
-                isCondensedFetching: this.candleDomains.isCondensedFetching,
-            };
+        const candleDomain = {
+            lastCandleDate: firstCandleTime,
+            domainBoundry: newLastCandle,
+            isAbortedRequest: false,
+            isResetRequest: false,
+            isCondensedFetching: this.candleDomains.isCondensedFetching,
+        };
 
-            this.setCandleDomains(candleDomain);
-        }
+        this.setCandleDomains(candleDomain);
     }
 
     public changeCandleSize(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        scaleData: any,
+        scale: any,
         deltaX: number,
         mouseX: number,
         zoomCandle?: number | Date,
@@ -255,22 +330,19 @@ export class Zoom {
             ? zoomCandle
             : findSnapTime(mouseX, this.period);
 
-        const domain = scaleData.xScale.domain();
-        const pixelPoint = scaleData.xScale(point);
-        const maxDomainPixel = scaleData.xScale(domain[1]);
-        const minDomainPixel = scaleData.xScale(domain[0]);
+        const domain = scale.domain();
+        const pixelPoint = scale(point);
+        const maxDomainPixel = scale(domain[1]);
+        const minDomainPixel = scale(domain[0]);
         const gapRight = maxDomainPixel - pixelPoint;
         const gapLeft = pixelPoint - minDomainPixel;
 
         const zoomPixelMax = (deltaX * gapRight) / (gapLeft + gapRight);
         const zoomPixelMin = (deltaX * gapLeft) / (gapLeft + gapRight);
 
-        const newMinDomain = scaleData.xScale.invert(
-            scaleData.xScale.range()[0] - zoomPixelMin,
-        );
-        const newMaxDomain = scaleData.xScale.invert(
-            scaleData.xScale.range()[1] + zoomPixelMax,
-        );
+        const newMinDomain = scale.invert(scale.range()[0] - zoomPixelMin);
+        const newMaxDomain = scale.invert(scale.range()[1] + zoomPixelMax);
+
         return [newMinDomain, newMaxDomain];
     }
 
@@ -396,7 +468,7 @@ export class Zoom {
             const point = firstTouch - (firstTouch - secondTouch) / 2;
 
             const domain = this.changeCandleSize(
-                scaleData,
+                scaleData.xScale,
                 deltaX,
                 firstTouch,
                 point,
@@ -430,65 +502,38 @@ export class Zoom {
         firstCandleDate: number,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         previousTouch: any,
+        bandwidth: number,
     ) {
         const domainX = scaleData?.xScale.domain();
+        const drawDomain = scaleData?.drawingLinearxScale.domain();
 
-        let deltaX;
+        let dx = event.movementX;
+
         if (event.type === 'touchmove') {
-            deltaX = this.handlePanningXMobile(event, scaleData, previousTouch);
-        } else {
-            deltaX = this.handlePanningXDesktop(event, scaleData);
+            const touch = event.changedTouches[0];
+            const currentPageX = touch.pageX;
+            const previousTouchPageX = previousTouch.pageX;
+            const movement = currentPageX - previousTouchPageX;
+            // calculate panning speed based on bandwidth
+            dx = movement * (bandwidth < 1 ? 1 : Math.sqrt(bandwidth));
         }
-        const lastTime = domainX[1];
 
-        const firstTime = domainX[0];
-        const isZoomingIn = deltaX > 0;
+        const newMinDomainDrawScale = scaleData?.drawingLinearxScale.invert(
+            scaleData?.drawingLinearxScale.range()[0] - dx,
+        );
 
-        const isZoomingOutCandleCount =
-            isZoomingIn ||
-            Math.abs(lastTime - firstTime) <=
-                this.period * 1000 * maxNumCandlesForZoom;
+        scaleData?.drawingLinearxScale.domain([
+            newMinDomainDrawScale,
+            drawDomain[1],
+        ]);
 
-        if (deltaX !== undefined && isZoomingOutCandleCount) {
-            this.getNewCandleDataLeft(domainX[0] + deltaX, firstCandleDate);
+        const newMinDomain = scaleData?.xScale.invert(
+            scaleData?.xScale.range()[0] - dx,
+        );
 
-            scaleData?.xScale.domain([domainX[0] + deltaX, domainX[1]]);
-        }
-    }
+        this.getNewCandleDataLeft(newMinDomain, firstCandleDate);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public handlePanningXDesktop(event: any, scaleData: scaleData) {
-        const domainX = scaleData?.xScale.domain();
-
-        const linearX = d3
-            .scaleTime()
-            .domain(scaleData?.xScale.range())
-            .range([0, domainX[1] - domainX[0]]);
-
-        const deltaX = linearX(-event.movementX);
-        return deltaX;
-    }
-
-    public handlePanningXMobile(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        event: any,
-        scaleData: scaleData,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        previousTouch: any,
-    ) {
-        const domainX = scaleData?.xScale.domain();
-        const linearX = d3
-            .scaleTime()
-            .domain(scaleData?.xScale.range())
-            .range([0, domainX[1] - domainX[0]]);
-
-        const touch = event.changedTouches[0];
-        const currentPageX = touch.pageX;
-        const previousTouchPageX = previousTouch.pageX;
-        const movement = previousTouchPageX - currentPageX;
-        const deltaX = linearX(movement);
-
-        return deltaX;
+        scaleData?.xScale.domain([newMinDomain, domainX[1]]);
     }
 
     public handlePanningYMobile(

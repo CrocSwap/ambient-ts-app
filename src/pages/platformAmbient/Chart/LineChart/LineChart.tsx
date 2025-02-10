@@ -124,6 +124,10 @@ export default function CandleLineChart(props: LineChartIF) {
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
+                    scaleData?.drawingLinearxScale.range([
+                        0,
+                        event.detail.width,
+                    ]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     candleLine.context(ctx);
                 });

@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import { useContext, useRef, useState } from 'react';
 import DeleteSvg from '../../../../../assets/images/icons/draw/DeleteSvg';
 import DpRangeSvg from '../../../../../assets/images/icons/draw/DpRangeSvg';
@@ -14,6 +13,7 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { BrandContext } from '../../../../../contexts/BrandContext';
 import { ChartContext } from '../../../../../contexts/ChartContext';
 import { ArrowContainer } from '../../../../../styled/Components/Chart';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
 import { actionKeyIF, actionStackIF } from '../../ChartUtils/useUndoRedo';
 import HoveredTooltip from './HoveredTooltip';

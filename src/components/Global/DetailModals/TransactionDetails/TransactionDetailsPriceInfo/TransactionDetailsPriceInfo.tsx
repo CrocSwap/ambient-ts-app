@@ -114,7 +114,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <Row>
                 <span>Order Value: </span>
                 <DefaultTooltip
-                    interactive
                     title={usdValue}
                     placement={'right-end'}
                     arrow

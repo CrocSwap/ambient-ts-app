@@ -1,55 +1,84 @@
-import { withStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
+import { Tooltip, tooltipClasses, TooltipProps } from '@mui/material';
+import { styled } from '@mui/system';
 
-export const DefaultTooltip = withStyles({
-    tooltip: {
-        color: 'var(--text1)',
-        backgroundColor: 'var(--dark2)',
-        zIndex: 999,
-    },
-    arrow: {
-        color: '#171d27',
-        zIndex: 999,
-    },
-})(Tooltip);
+const createStyledTooltip = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    styles: Record<string, any>,
+    displayName: string,
+) => {
+    const BaseTooltip = (props: TooltipProps) => (
+        <Tooltip {...props} classes={{ popper: props.className }} />
+    );
+    BaseTooltip.displayName = displayName;
 
-export const TextOnlyTooltip = withStyles({
-    tooltip: {
-        color: '#ffffff',
-        backgroundColor: 'transparent',
-        zIndex: 999,
-    },
-})(Tooltip);
+    return styled(BaseTooltip)(() => styles);
+};
 
-export const NoColorTooltip = withStyles({
-    tooltip: {
-        backgroundColor: 'transparent',
+export const DefaultTooltip = createStyledTooltip(
+    {
+        [`& .${tooltipClasses.tooltip}`]: {
+            color: 'var(--text1)',
+            backgroundColor: 'var(--dark2)',
+            zIndex: 999,
+        },
+        [`& .${tooltipClasses.arrow}`]: {
+            color: '#171d27',
+            zIndex: 999,
+        },
     },
-})(Tooltip);
+    'DefaultTooltip',
+);
 
-export const GreenTextTooltip = withStyles({
-    tooltip: {
-        color: 'green',
-        backgroundColor: 'transparent',
-        fontSize: '.8rem',
+export const TextOnlyTooltip = createStyledTooltip(
+    {
+        [`& .${tooltipClasses.tooltip}`]: {
+            color: '#ffffff',
+            backgroundColor: 'transparent',
+            zIndex: 999,
+        },
     },
-})(Tooltip);
+    'TextOnlyTooltip',
+);
 
-export const RedTextTooltip = withStyles({
-    tooltip: {
-        color: 'red',
-        backgroundColor: 'transparent',
-        fontSize: '.8rem',
+export const NoColorTooltip = createStyledTooltip(
+    {
+        [`& .${tooltipClasses.tooltip}`]: {
+            backgroundColor: 'transparent',
+        },
     },
-})(Tooltip);
+    'NoColorTooltip',
+);
 
-export const FutaTooltip = withStyles({
-    tooltip: {
-        color: 'var(--text2)',
-        backgroundColor: 'var(--dark2)',
-        border: '1px solid yellow',
-        padding: '8px',
+export const GreenTextTooltip = createStyledTooltip(
+    {
+        [`& .${tooltipClasses.tooltip}`]: {
+            color: 'green',
+            backgroundColor: 'transparent',
+            fontSize: '.8rem',
+        },
     },
-})(Tooltip);
+    'GreenTextTooltip',
+);
 
-//   https://stackoverflow.com/questions/36759985/how-to-style-mui-tooltip
+export const RedTextTooltip = createStyledTooltip(
+    {
+        [`& .${tooltipClasses.tooltip}`]: {
+            color: 'red',
+            backgroundColor: 'transparent',
+            fontSize: '.8rem',
+        },
+    },
+    'RedTextTooltip',
+);
+
+export const FutaTooltip = createStyledTooltip(
+    {
+        [`& .${tooltipClasses.tooltip}`]: {
+            color: 'var(--text2)',
+            backgroundColor: 'var(--dark2)',
+            border: '1px solid yellow',
+            padding: '8px',
+        },
+    },
+    'FutaTooltip',
+);

@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect } from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import Button from '../../../components/Form/Button';
 import StepperComponent from '../../../components/Global/MultiStepTransaction/StepperComponent';
 import SelectedRange from '../../../components/Trade/Range/ConfirmRangeModal/SelectedRange/SelectedRange';

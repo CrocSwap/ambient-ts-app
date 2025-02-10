@@ -57,7 +57,6 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../../../utils/TransactionError';
-import { limitTutorialSteps } from '../../../../utils/tutorial/Limit';
 
 export default function Limit() {
     const { crocEnv, ethMainnetUsdPrice, provider } =
@@ -656,7 +655,20 @@ export default function Limit() {
         });
 
         let tx;
+
         try {
+            const pos = crocEnv.positions(
+                baseToken.address,
+                quoteToken.address,
+                userAddress ?? '',
+            );
+            const liqBigInt = (
+                await pos.queryKnockoutLivePos(
+                    isSellTokenBase,
+                    isSellTokenBase ? limitTick : limitTick - gridSize,
+                    isSellTokenBase ? limitTick + gridSize : limitTick,
+                )
+            ).liq;
             try {
                 tx = await submitLimitOrder({
                     crocEnv,
@@ -761,6 +773,13 @@ export default function Limit() {
                         ? limitTick + gridSize
                         : limitTick,
                     isBid: isSellTokenBase,
+                    initialTokenQty: isSellTokenBase
+                        ? tokenAInputQtyNoExponentString
+                        : tokenBInputQtyNoExponentString,
+                    secondaryTokenQty: isSellTokenBase
+                        ? tokenBInputQtyNoExponentString
+                        : tokenAInputQtyNoExponentString,
+                    currentLiquidity: liqBigInt,
                 },
             });
 
@@ -1116,7 +1135,6 @@ export default function Limit() {
                     />
                 ) : undefined
             }
-            tutorialSteps={limitTutorialSteps}
         />
     );
 }

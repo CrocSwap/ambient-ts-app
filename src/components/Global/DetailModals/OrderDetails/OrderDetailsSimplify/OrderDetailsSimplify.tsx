@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import moment from 'moment';
 import { memo, useContext } from 'react';
 import { FiCopy } from 'react-icons/fi';
@@ -10,6 +9,7 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import InfoRow from '../../../InfoRow';
 import styles from './OrderDetailsSimplify.module.css';
@@ -94,8 +94,7 @@ function OrderDetailsSimplify(props: propsIF) {
         elapsedTimeSinceCrossString,
     } = useProcessOrder(limitOrder, crocEnv, userAddress, isAccountView);
 
-    const showMobileVersion = useMediaQuery<boolean>('(max-width: 768px)');
-    const showFullAddresses = useMediaQuery<boolean>('(min-width: 768px)');
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     const [_, copy] = useCopyToClipboard();
 
@@ -132,7 +131,7 @@ function OrderDetailsSimplify(props: propsIF) {
             style={{ cursor: 'pointer' }}
         >
             <p style={!ensName ? { fontFamily: 'monospace' } : undefined}>
-                {showFullAddresses
+                {!showMobileVersion
                     ? ensName
                         ? ensName
                         : ownerId

@@ -55,7 +55,6 @@ import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { useUrlParams } from '../../../../utils/hooks/useUrlParams';
-import { swapTutorialSteps } from '../../../../utils/tutorial/Swap';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -976,7 +975,6 @@ function Swap(props: propsIF) {
                     </>
                 ) : undefined
             }
-            tutorialSteps={swapTutorialSteps}
         />
     );
 }

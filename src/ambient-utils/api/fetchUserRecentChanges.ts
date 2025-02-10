@@ -61,7 +61,7 @@ export const fetchUserRecentChanges = (args: argsIF) => {
     )
         .then((response) => response?.json())
         .then((json) => {
-            const userTransactions = json?.data;
+            const userTransactions = json?.data as TransactionIF[];
 
             if (!userTransactions) {
                 return [] as TransactionIF[];

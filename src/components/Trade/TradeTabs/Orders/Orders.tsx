@@ -1,6 +1,9 @@
 /* eslint-disable no-irregular-whitespace */
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { LimitOrderIF } from '../../../../ambient-utils/types';
+import {
+    LimitOrderIF,
+    LimitOrderServerIF,
+} from '../../../../ambient-utils/types';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -8,25 +11,26 @@ import NoTableData from '../NoTableData/NoTableData';
 import { useSortedLimits } from '../useSortedLimits';
 import OrderHeader from './OrderTable/OrderHeader';
 
-import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLimitOrders';
-import { AppStateContext } from '../../../../contexts';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import {
-    GraphDataContext,
-    LimitOrdersByPool,
-} from '../../../../contexts/GraphDataContext';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import { TokenContext } from '../../../../contexts/TokenContext';
+    filterLimitArray,
+    getLimitOrderData,
+} from '../../../../ambient-utils/dataLayer';
+import {
+    AppStateContext,
+    CachedDataContext,
+    CrocEnvContext,
+    TokenContext,
+} from '../../../../contexts';
+import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import { OrderRow as OrderRowStyled } from '../../../../styled/Components/TransactionTable';
-import { PageDataCountIF } from '../../../Chat/ChatIFs';
 import Spinner from '../../../Global/Spinner/Spinner';
+import InfiniteScroll from '../../InfiniteScroll/InfiniteScroll';
+import useMergeWithPendingTxs from '../../InfiniteScroll/useMergeWithPendingTxs';
 import TableRows from '../TableRows';
-import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
 
 interface propsIF {
@@ -44,22 +48,21 @@ function Orders(props: propsIF) {
         unselectCandle,
     } = props;
     const { showAllData: showAllDataSelection } = useContext(TradeTableContext);
-    const {
-        sidebar: { isOpen: isSidebarOpen },
-    } = useContext(SidebarContext);
-
+    const { tokens } = useContext(TokenContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
-
-    const {
-        activeNetwork: { chainId, poolIndex, GCGO_URL },
-    } = useContext(AppStateContext);
-
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
+
+    const {
+        activeNetwork: { poolIndex, GCGO_URL, chainId },
+    } = useContext(AppStateContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -68,13 +71,12 @@ function Orders(props: propsIF) {
         limitOrdersByUser,
         userLimitOrdersByPool,
         limitOrdersByPool,
-        unindexedNonFailedSessionLimitOrderUpdates,
+        setUserLimitOrdersByPool,
+        pendingRecentlyUpdatedPositions,
     } = useContext(GraphDataContext);
 
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
-
-    const { transactionsByType } = useContext(ReceiptContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -89,40 +91,6 @@ function Orders(props: propsIF) {
         [userLimitOrdersByPool],
     );
 
-    // infinite scroll props, methods ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    const [fetchedTransactions, setFetchedTransactions] =
-        useState<LimitOrdersByPool>({
-            dataReceived: false,
-            limitOrders: [...limitOrdersByPool.limitOrders],
-        });
-
-    const fetchedTransactionsRef = useRef<LimitOrdersByPool>();
-    fetchedTransactionsRef.current = fetchedTransactions;
-
-    const [hotTransactions, setHotTransactions] = useState<LimitOrderIF[]>([]);
-
-    const {
-        tokens: { tokenUniv: tokenList },
-    } = useContext(TokenContext);
-
-    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
-
-    const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
-    const moreDataAvailableRef = useRef<boolean>();
-    moreDataAvailableRef.current = moreDataAvailable;
-
-    const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
-
-    const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
-
-    const selectedBaseAddress: string = baseToken.address;
-    const selectedQuoteAddress: string = quoteToken.address;
-
-    const prevBaseQuoteAddressRef = useRef<string>(
-        selectedBaseAddress + selectedQuoteAddress,
-    );
-
     const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(
         !isAccountView && showAllData,
     );
@@ -131,360 +99,95 @@ function Orders(props: propsIF) {
         setShowInfiniteScroll(!isAccountView && showAllData);
     }, [isAccountView, showAllData]);
 
-    useEffect(() => {
-        if (
-            prevBaseQuoteAddressRef.current !==
-            selectedBaseAddress + selectedQuoteAddress
-        ) {
-            setPagesVisible([0, 1]);
-            setPageDataCountShouldReset(true);
-            setExtraPagesAvailable(0);
-            setMoreDataAvailable(true);
-            setTimeout(() => {
-                setMoreDataAvailable(true);
-            }, 1000);
-            setLastFetchedCount(0);
-            setHotTransactions([]);
-        }
-
-        prevBaseQuoteAddressRef.current =
-            selectedBaseAddress + selectedQuoteAddress;
-    }, [selectedBaseAddress + selectedQuoteAddress]);
-
-    const [pageDataCountShouldReset, setPageDataCountShouldReset] =
-        useState(false);
-
-    const getInitialDataPageCounts = () => {
-        let counts;
-        if (limitOrdersByPool.limitOrders.length == 0) {
-            counts = [0, 0];
-        }
-        if (limitOrdersByPool.limitOrders.length / dataPerPage < 2) {
-            counts = [
-                Math.ceil(limitOrdersByPool.limitOrders.length / 2),
-                Math.floor(limitOrdersByPool.limitOrders.length / 2),
-            ];
-        } else {
-            counts = [
-                limitOrdersByPool.limitOrders.length > dataPerPage
-                    ? dataPerPage
-                    : limitOrdersByPool.limitOrders.length,
-                limitOrdersByPool.limitOrders.length / dataPerPage == 2
-                    ? dataPerPage
-                    : limitOrdersByPool.limitOrders.length - dataPerPage,
-            ];
-        }
-
-        return {
-            pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
-            counts: counts,
-        };
-    };
-
-    const updatePageDataCount = (dataCount: number) => {
-        setPageDataCount((prev) => {
-            return {
-                pair: prev.pair,
-                counts: [...prev.counts, dataCount],
-            };
-        });
-    };
-
-    const dataPerPage = 50;
-    const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
-    const [pageDataCount, setPageDataCount] = useState<PageDataCountIF>(
-        getInitialDataPageCounts(),
-    );
-
-    const pageDataCountRef = useRef<PageDataCountIF>();
-    pageDataCountRef.current = pageDataCount;
-
-    const getIndexForPages = (start: boolean) => {
-        const pageDataCountVal = (
-            pageDataCountRef.current ? pageDataCountRef.current : pageDataCount
-        ).counts;
-        let ret = 0;
-        if (start) {
-            for (let i = 0; i < pagesVisible[0]; i++) {
-                ret += pageDataCountVal[i];
-            }
-        } else {
-            for (let i = 0; i <= pagesVisible[1]; i++) {
-                ret += pageDataCountVal[i];
-            }
-        }
-
-        return ret;
-    };
-
-    const getCurrentDataPair = () => {
-        if (limitOrdersByPool.limitOrders.length > 0) {
-            return (
-                limitOrdersByPool.limitOrders[0].base +
-                limitOrdersByPool.limitOrders[0].quote
-            ).toLowerCase();
-        } else {
-            return '';
-        }
-    };
-
-    const updateHotTransactions = (changes: LimitOrderIF[]) => {
-        const existingChanges = new Set(
-            hotTransactions.map((change) => change.limitOrderId),
-        );
-
-        const uniqueChanges = changes.filter(
-            (change) => !existingChanges.has(change.limitOrderId),
-        );
-
-        setHotTransactions((prev) => [...uniqueChanges, ...prev]);
-    };
-
-    const mergePageDataCountValues = (hotTxsCount: number) => {
-        const counts = pageDataCountRef.current?.counts || pageDataCount.counts;
-        const newCounts = counts.map((e) => {
-            if (e < dataPerPage && hotTxsCount > 0) {
-                const gap = dataPerPage - e;
-                if (hotTxsCount > gap) {
-                    e += gap;
-                    hotTxsCount -= gap;
-                } else {
-                    e += hotTxsCount;
-                    hotTxsCount = 0;
-                }
-            }
-            return e;
-        });
-
-        if (hotTxsCount > 0) {
-            for (let i = 0; i < hotTxsCount / dataPerPage - 1; i++) {
-                newCounts.push(dataPerPage);
-            }
-            newCounts.push(hotTxsCount % dataPerPage);
-        }
-
-        setPageDataCount((prev) => {
-            return {
-                pair: prev.pair,
-                counts: newCounts,
-            };
-        });
-    };
-
-    useEffect(() => {
-        if (pagesVisible[0] === 0 && hotTransactions.length > 0) {
-            setFetchedTransactions((prev) => {
-                return {
-                    dataReceived: true,
-                    limitOrders: [...hotTransactions, ...prev.limitOrders],
-                };
-            });
-            mergePageDataCountValues(hotTransactions.length);
-            setHotTransactions([]);
-        }
-    }, [pagesVisible[0]]);
-
-    useEffect(() => {
-        // clear fetched transactions when switching pools
-        if (limitOrdersByPool.limitOrders.length === 0) {
-            setFetchedTransactions({
-                dataReceived: true,
-                limitOrders: [],
-            });
-        } else {
-            const existingChanges = new Set(
-                fetchedTransactions.limitOrders.map(
-                    // (change) => change.positionHash || change.limitOrderId,
-                    (change) => change.limitOrderId,
-                ),
-            ); // Adjust if using a different unique identifier
-
-            const uniqueChanges = limitOrdersByPool.limitOrders.filter(
-                // (change) => !existingChanges.has(change.positionHash || change.limitOrderId),
-                (change) => !existingChanges.has(change.limitOrderId),
-            );
-
-            if (uniqueChanges.length > 0) {
-                if (pagesVisible[0] === 0) {
-                    setFetchedTransactions((prev) => {
-                        return {
-                            dataReceived: true,
-                            limitOrders: [
-                                ...uniqueChanges,
-                                ...prev.limitOrders,
-                            ],
-                        };
-                    });
-                } else {
-                    updateHotTransactions(uniqueChanges);
-                }
-            }
-        }
-    }, [limitOrdersByPool]);
-
-    useEffect(() => {
-        if (
-            pageDataCountShouldReset &&
-            pageDataCountRef.current?.pair !== getCurrentDataPair() &&
-            fetchedTransactions.limitOrders.length > 0
-        ) {
-            setPagesVisible([0, 1]);
-            setPageDataCount(getInitialDataPageCounts());
-            setPageDataCountShouldReset(false);
-        }
-
-        if (
-            pageDataCountRef.current?.counts[0] == 0 &&
-            fetchedTransactions.limitOrders.length > 0
-        ) {
-            setPageDataCount(getInitialDataPageCounts());
-        }
-    }, [fetchedTransactions]);
-
-    const fetchNewData = async (
-        OLDEST_TIME: number,
-    ): Promise<LimitOrderIF[]> => {
-        return new Promise((resolve) => {
-            if (!crocEnv || !provider) resolve([]);
-            else {
-                fetchPoolLimitOrders({
-                    tokenList: tokenList,
-                    base: baseToken.address,
-                    quote: quoteToken.address,
-                    poolIdx: poolIndex,
-                    chainId: chainId,
-                    n: dataPerPage,
-                    timeBefore: OLDEST_TIME,
-                    crocEnv: crocEnv,
-                    GCGO_URL: GCGO_URL,
-                    provider: provider,
-                    cachedFetchTokenPrice: cachedFetchTokenPrice,
-                    cachedQuerySpotPrice: cachedQuerySpotPrice,
-                    cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
-                }).then((poolChangesJsonData) => {
-                    if (poolChangesJsonData && poolChangesJsonData.length > 0) {
-                        resolve(poolChangesJsonData as LimitOrderIF[]);
-                    } else {
-                        resolve([]);
-                    }
-                });
-            }
-        });
-    };
-
-    const dataDiffCheck = (dirty: LimitOrderIF[]): LimitOrderIF[] => {
-        const txs = fetchedTransactionsRef.current
-            ? fetchedTransactionsRef.current.limitOrders
-            : fetchedTransactions.limitOrders;
-
-        const existingChanges = new Set(
-            txs.map((change) => change.limitOrderId),
-        );
-
-        const ret = dirty.filter(
-            (change) => !existingChanges.has(change.limitOrderId),
-        );
-
-        return ret;
-    };
-
-    const getOldestTime = (data: LimitOrderIF[]): number => {
-        let oldestTime = 0;
-        if (data.length > 0) {
-            oldestTime = data.reduce((min, order) => {
-                return order.latestUpdateTime < min
-                    ? order.latestUpdateTime
-                    : min;
-            }, data[0].latestUpdateTime);
-        }
-        return oldestTime;
-    };
-
-    const addMoreData = async () => {
-        setMoreDataLoading(true);
-        const targetCount = 30;
-        let addedDataCount = 0;
-
-        const newTxData: LimitOrderIF[] = [];
-        let oldestTimeParam = oldestTxTime;
-        while (addedDataCount < targetCount) {
-            // fetch data
-            const dirtyData = await fetchNewData(oldestTimeParam);
-            if (dirtyData.length == 0) {
-                break;
-            }
-            // check diff
-            const cleanData = dataDiffCheck(dirtyData);
-            if (cleanData.length == 0) {
-                break;
-            } else {
-                addedDataCount += cleanData.length;
-                newTxData.push(...cleanData);
-                const oldestTimeTemp = getOldestTime(newTxData);
-                oldestTimeParam =
-                    oldestTimeTemp < oldestTimeParam
-                        ? oldestTimeTemp
-                        : oldestTimeParam;
-            }
-        }
-        if (addedDataCount > 0) {
-            // new data found
-            setFetchedTransactions((prev) => {
-                const sortedData = sortData([
-                    ...prev.limitOrders,
-                    ...newTxData,
-                ]);
-                return {
-                    dataReceived: true,
-                    limitOrders: sortedData,
-                };
-            });
-            setLastFetchedCount(addedDataCount);
-            updatePageDataCount(addedDataCount);
-            setExtraPagesAvailable((prev) => prev + 1);
-            setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
-        } else {
-            setMoreDataAvailable(false);
-        }
-
-        setMoreDataLoading(false);
-    };
-
-    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
     const limitOrderData = useMemo<LimitOrderIF[]>(
         () =>
             isAccountView
                 ? activeAccountLimitOrderData || []
                 : !showAllData
                   ? activeUserLimitOrdersByPool
-                  : fetchedTransactions.limitOrders,
+                  : limitOrdersByPool.limitOrders,
         [
             showAllData,
             isAccountView,
-            activeAccountLimitOrderData,
-            activeUserLimitOrdersByPool,
-            fetchedTransactions.limitOrders, // infinite scroll
+            JSON.stringify(activeAccountLimitOrderData),
+            JSON.stringify(activeUserLimitOrdersByPool),
+            JSON.stringify(limitOrdersByPool.limitOrders), // infinite scroll
         ],
     );
 
-    // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
-    const oldestTxTime = useMemo(
-        () =>
-            limitOrderData.length > 0
-                ? limitOrderData.reduce((min, order) => {
-                      return order.latestUpdateTime < min
-                          ? order.latestUpdateTime
-                          : min;
-                  }, limitOrderData[0].latestUpdateTime)
-                : 0,
-        [limitOrderData],
-    );
+    useEffect(() => {
+        if (
+            showAllData ||
+            !userAddress ||
+            !baseToken ||
+            !quoteToken ||
+            !poolIndex ||
+            !GCGO_URL ||
+            !crocEnv
+        )
+            return;
+        // retrieve user_pool_limit_orders
+        const userPoolLimitOrdersCacheEndpoint =
+            GCGO_URL + '/user_pool_limit_orders?';
+        fetch(
+            userPoolLimitOrdersCacheEndpoint +
+                new URLSearchParams({
+                    user: userAddress,
+                    base: baseToken.address.toLowerCase(),
+                    quote: quoteToken.address.toLowerCase(),
+                    poolIdx: poolIndex.toString(),
+                    chainId: chainId,
+                }),
+        )
+            .then((response) => response?.json())
+            .then((json) => {
+                const userPoolLimitOrderStates = json?.data;
+                if (userPoolLimitOrderStates) {
+                    Promise.all(
+                        userPoolLimitOrderStates.map(
+                            (limitOrder: LimitOrderServerIF) => {
+                                return getLimitOrderData(
+                                    limitOrder,
+                                    tokens.tokenUniv,
+                                    crocEnv,
+                                    provider,
+                                    chainId,
+                                    cachedFetchTokenPrice,
+                                    cachedQuerySpotPrice,
+                                    cachedTokenDetails,
+                                    cachedEnsResolve,
+                                );
+                            },
+                        ),
+                    ).then((updatedLimitOrderStates) => {
+                        const filteredData = filterLimitArray(
+                            updatedLimitOrderStates,
+                        );
+                        setUserLimitOrdersByPool({
+                            dataReceived: true,
+                            limitOrders: filteredData,
+                        });
 
-    // ------------------------------------------------------------------------------------------------------------------------------
+                        dataLoadingStatus.setDataLoadingStatus({
+                            datasetName: 'isConnectedUserPoolOrderDataLoading',
+                            loadingStatus: false,
+                        });
+                    });
+                } else {
+                    setUserLimitOrdersByPool({
+                        dataReceived: false,
+                        limitOrders: [],
+                    });
+                    dataLoadingStatus.setDataLoadingStatus({
+                        datasetName: 'isConnectedUserPoolOrderDataLoading',
+                        loadingStatus: false,
+                    });
+                }
+            })
+            .catch(console.error);
+    }, [userAddress, showAllData]);
 
-    const activeUserLimitOrdersLength = useMemo(
+    const activeUserLimitOrdersInOtherPoolsLength = useMemo(
         () =>
             isAccountView
                 ? activeAccountLimitOrderData
@@ -496,9 +199,24 @@ function Orders(props: propsIF) {
                     : 0
                 : limitOrdersByUser.limitOrders.filter(
                       (order) =>
-                          order.positionLiq != 0 || order.claimableLiq !== 0,
+                          order.positionLiq != 0 ||
+                          (order.claimableLiq !== 0 &&
+                              !(
+                                  order.base.toLowerCase() ===
+                                      baseToken.address.toLowerCase() &&
+                                  order.quote.toLowerCase() ===
+                                      quoteToken.address.toLowerCase() &&
+                                  order.poolIdx === poolIndex
+                              )),
                   ).length,
-        [activeAccountLimitOrderData, isAccountView, limitOrdersByUser],
+        [
+            activeAccountLimitOrderData,
+            isAccountView,
+            limitOrdersByUser,
+            baseToken.address,
+            quoteToken.address,
+            poolIndex,
+        ],
     );
 
     const isLoading = useMemo(
@@ -522,26 +240,6 @@ function Orders(props: propsIF) {
         ],
     );
 
-    const relevantTransactionsByType = transactionsByType.filter(
-        (tx) =>
-            !tx.isRemoved &&
-            unindexedNonFailedSessionLimitOrderUpdates.some(
-                (update) => update.txHash === tx.txHash,
-            ) &&
-            tx.userAddress.toLowerCase() ===
-                (userAddress || '').toLowerCase() &&
-            tx.txDetails?.baseAddress.toLowerCase() ===
-                baseToken.address.toLowerCase() &&
-            tx.txDetails?.quoteAddress.toLowerCase() ===
-                quoteToken.address.toLowerCase() &&
-            tx.txDetails?.poolIdx === poolIndex,
-    );
-
-    const shouldDisplayNoTableData =
-        !isLoading &&
-        !limitOrderData.length &&
-        relevantTransactionsByType.length === 0;
-
     const [
         sortBy,
         setSortBy,
@@ -551,15 +249,22 @@ function Orders(props: propsIF) {
         sortData,
     ] = useSortedLimits('time', limitOrderData);
 
-    // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
-    const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
-        return isAccountView
-            ? sortedLimits
-            : sortedLimits.slice(
-                  getIndexForPages(true),
-                  getIndexForPages(false),
-              );
-    }, [sortedLimits, pagesVisible, isAccountView]);
+    const { mergedData } = useMergeWithPendingTxs({
+        type: 'Order',
+        data: sortedLimits,
+    });
+
+    const shouldDisplayNoTableData = useMemo(
+        () =>
+            !isLoading &&
+            !mergedData.length &&
+            pendingRecentlyUpdatedPositions.length === 0,
+        [isLoading, mergedData.length, pendingRecentlyUpdatedPositions.length],
+    );
+
+    const sortedLimitsToDisplayAccount = useMemo(() => {
+        return mergedData;
+    }, [mergedData]);
 
     // -----------------------------------------------------------------------------------------------------------------------------
 
@@ -589,7 +294,7 @@ function Orders(props: propsIF) {
             <p>Side</p>
         </>
     );
-    const tokens = isAccountView ? (
+    const tokensElement = isAccountView ? (
         <>Tokens</>
     ) : (
         <>
@@ -684,7 +389,7 @@ function Orders(props: propsIF) {
             alignRight: true,
         },
         {
-            name: tokens,
+            name: tokensElement,
             className: 'tokens',
             show: tableView === 'medium',
             slug: 'tokens',
@@ -760,8 +465,8 @@ function Orders(props: propsIF) {
         <NoTableData
             type='limits'
             isAccountView={isAccountView}
-            activeUserPositionsLength={activeUserLimitOrdersLength}
-            activeUserPositionsByPoolLength={activeUserLimitOrdersByPool.length}
+            activeUserPositionsLength={activeUserLimitOrdersInOtherPoolsLength}
+            activeUserPositionsByPoolLength={mergedData.length}
             unselectCandle={unselectCandle}
         />
     ) : (
@@ -785,47 +490,47 @@ function Orders(props: propsIF) {
                 }
             >
                 {!isAccountView &&
-                    relevantTransactionsByType.length > 0 &&
-                    relevantTransactionsByType.reverse().map((tx, idx) => (
-                        <OrderRowPlaceholder
-                            key={idx}
-                            transaction={{
-                                hash: tx.txHash,
-                                baseSymbol: tx.txDetails?.baseSymbol ?? '...',
-                                quoteSymbol: tx.txDetails?.quoteSymbol ?? '...',
-                                side: tx.txAction,
-                                type: tx.txType,
-                                details: tx.txDetails,
-                            }}
-                            tableView={tableView}
-                        />
-                    ))}
+                    pendingRecentlyUpdatedPositions.length > 0 &&
+                    pendingRecentlyUpdatedPositions
+                        .filter((e) => e.type === 'Limit')
+                        .reverse()
+                        .map((tx, idx) => (
+                            <OrderRowPlaceholder
+                                key={idx}
+                                transaction={{
+                                    hash: tx.txByType?.txHash || '',
+                                    baseSymbol:
+                                        tx.txByType?.txDetails?.baseSymbol ??
+                                        '...',
+                                    quoteSymbol:
+                                        tx.txByType?.txDetails?.quoteSymbol ??
+                                        '...',
+                                    side: tx.txByType?.txAction || '',
+                                    type: tx.txByType?.txType || '',
+                                    details: tx.txByType?.txDetails,
+                                }}
+                                tableView={tableView}
+                            />
+                        ))}
                 {showInfiniteScroll ? (
-                    <TableRowsInfiniteScroll
+                    <InfiniteScroll
                         type='Order'
-                        data={sortedLimitDataToDisplay}
+                        data={sortedLimits}
                         tableView={tableView}
                         isAccountView={isAccountView}
-                        fetcherFunction={addMoreData}
                         sortBy={sortBy}
+                        reverseSort={reverseSort}
                         showAllData={showAllData}
-                        moreDataAvailable={moreDataAvailableRef.current}
-                        pagesVisible={pagesVisible}
-                        setPagesVisible={setPagesVisible}
-                        extraPagesAvailable={extraPagesAvailable}
-                        // setExtraPagesAvailable={setExtraPagesAvailable}
-                        tableKey='Orders'
-                        dataPerPage={dataPerPage}
-                        pageDataCount={pageDataCountRef.current.counts}
-                        lastFetchedCount={lastFetchedCount}
-                        setLastFetchedCount={setLastFetchedCount}
-                        moreDataLoading={moreDataLoading}
+                        dataPerPage={50}
+                        fetchCount={50}
+                        targetCount={30}
+                        sortOrders={sortData}
                     />
                 ) : (
                     <TableRows
                         type='Order'
-                        data={sortedLimits}
-                        fullData={sortedLimits}
+                        data={sortedLimitsToDisplayAccount}
+                        fullData={sortedLimitsToDisplayAccount}
                         tableView={tableView}
                         isAccountView={isAccountView}
                     />

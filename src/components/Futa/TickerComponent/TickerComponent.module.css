@@ -14,10 +14,11 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     gap: 8px;
     scrollbar-color: var(--dark2) var(--dark2);
+    position: relative;
 }
 
 .scrolling {
@@ -35,13 +36,27 @@
 .tickerContainer {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
+    padding: 0 8px;
+    /* outline: 1px solid green; */
 }
 
-.openBidContainer,
-.maxMarketContainer {
-    /* border-top: 1px solid var(--dark3); */
+.openBidContainer {
     padding-top: 8px;
+}
+
+/* empty space between divider and begining of content */
+.openBidContainer > *:first-child {
+    margin-bottom: 8px;
+}
+
+.maxMarketContainer {
+    padding-top: 8px;
+}
+
+/* empty space between divider and begining of content */
+.maxMarketContainer > *:first-child {
+    margin-bottom: 8px;
 }
 
 .tickerContainer h2 {
@@ -55,11 +70,18 @@
 
 .tickerContainer h3 {
     color: var(--text1, #f0f0f8);
-
     font-size: 24px;
     text-transform: uppercase;
 }
-.tickerRow,
+
+.tickerRow {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    font-size: 14px;
+}
+
 .maxRow {
     display: flex;
     justify-content: space-between;
@@ -213,6 +235,7 @@
     transition: all var(--animation-speed) ease-in-out;
     font-size: 24px;
     text-transform: uppercase;
+    margin: 0 8px;
 }
 
 .bidButtonDisabled {
@@ -240,6 +263,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    padding: 0 8px;
 }
 
 .allocationContainer h3 {
@@ -261,6 +285,7 @@
     grid-template-columns: auto 150px;
     gap: 8px;
     align-items: center;
+    margin: 0 -8px !important
 }
 
 .commentWatchlistContainer {
@@ -309,6 +334,21 @@
     color: var(--accent1);
 }
 
+.noTickerContent{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+position: absolute;
+margin: 0 auto;
+font-size: 18px;
+}
+.inputContainerBlurred{
+    filter: blur(10px);
+    pointer-events: none;
+}
 @media (min-width: 968px) {
     .container {
         padding: 0;
@@ -321,7 +361,15 @@
     }
 
     .bidButton {
-        margin: 0 auto;
+        margin: 0 8px;
         width: 100%;
     }
+}
+
+@media (max-width: 400px) {
+.tickerContainer h2 {
+
+    font-size: 26px;
+ 
+}
 }
