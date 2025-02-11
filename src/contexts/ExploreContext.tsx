@@ -21,6 +21,7 @@ import {
 } from '../pages/platformAmbient/Explore/useTokenStats';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
+import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { PoolContext } from './PoolContext';
 import { TokenContext } from './TokenContext';
@@ -45,13 +46,18 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
+    const { gcgoPoolList } = useContext(ChainDataContext);
+    const { analyticsPoolList } = useContext(PoolContext);
+    const activePoolList = analyticsPoolList?.length
+        ? analyticsPoolList
+        : gcgoPoolList;
+
     const {
         topPools: hardcodedTopPools,
         crocEnv,
         provider,
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { poolList } = useContext(PoolContext);
 
     const [intermediaryPoolData, setIntermediaryPoolData] = useState<
         Array<PoolIF>
@@ -76,9 +82,12 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     const processPoolListForActiveChain = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
-        if (poolList?.length && crocEnv) {
+        if (
+            // poolList?.length &&
+            crocEnv
+        ) {
             // use metadata to get expanded pool data
-            processPoolList(poolList, activeNetwork.chainId, crocEnv);
+            processPoolList(activeNetwork.chainId, crocEnv);
         }
     };
 
@@ -98,12 +107,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         return expandedPoolData;
     }
 
-    function processPoolList(
-        poolList: PoolIF[],
-        chainId: string,
-        crocEnv: CrocEnv,
-    ): void {
-        const expandedPoolDataOnCurrentChain = poolList
+    function processPoolList(chainId: string, crocEnv: CrocEnv): void {
+        if (!activePoolList || !activePoolList.length) return;
+        const expandedPoolDataOnCurrentChain = activePoolList
             .filter((pool) => {
                 return pool.chainId === chainId;
             })
@@ -149,17 +155,17 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             poolDataFilteredByActiveChain.filter(
                 (pool) =>
                     !excludedTokenAddressesLowercase.includes(
-                        pool.base.address.toLowerCase(),
+                        pool.base.toLowerCase(),
                     ) &&
                     !excludedTokenAddressesLowercase.includes(
-                        pool.quote.address.toLowerCase(),
+                        pool.quote.toLowerCase(),
                     ) &&
                     !hiddenTokens.some(
                         (excluded) =>
                             (excluded.address.toLowerCase() ===
-                                pool.base.address.toLowerCase() ||
+                                pool.base.toLowerCase() ||
                                 excluded.address.toLowerCase() ===
-                                    pool.quote.address.toLowerCase()) &&
+                                    pool.quote.toLowerCase()) &&
                             excluded.chainId === parseInt(pool.chainId),
                     ),
             ),
@@ -172,7 +178,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             if (
                 isUserOnline &&
                 crocEnv !== undefined &&
-                poolList?.length &&
+                // poolList?.length &&
                 (await crocEnv.context).chain.chainId === activeNetwork.chainId
             ) {
                 processPoolListForActiveChain();
@@ -180,19 +186,46 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         })();
     }, [
         isUserOnline,
-        poolList
-            ?.map((pool) => pool.base.address + pool.quote.address)
-            .join(''),
+        activePoolList?.map((pool) => pool.base + pool.quote).join(''),
         crocEnv,
         activeNetwork.chainId,
         intermediaryPoolData.length !== poolDataFilteredByActiveChain.length,
     ]);
 
     const topPools = useMemo(() => {
-        const topPoolsFilteredByVolume =
+        let topPoolsFilteredByVolume;
+        if (
             filteredPoolsNoExcludedOrHiddenTokens.filter(
                 (pool) => pool.volumeChange24h && pool.volumeChange24h > 1000,
-            );
+            ).length >= 3
+        ) {
+            topPoolsFilteredByVolume =
+                filteredPoolsNoExcludedOrHiddenTokens.filter(
+                    (pool) =>
+                        pool.volumeChange24h && pool.volumeChange24h > 1000,
+                );
+        } else if (
+            filteredPoolsNoExcludedOrHiddenTokens.filter(
+                (pool) => pool.volumeChange24h && pool.volumeChange24h > 100,
+            ).length >= 3
+        ) {
+            topPoolsFilteredByVolume =
+                filteredPoolsNoExcludedOrHiddenTokens.filter(
+                    (pool) =>
+                        pool.volumeChange24h && pool.volumeChange24h > 100,
+                );
+        } else if (
+            filteredPoolsNoExcludedOrHiddenTokens.filter(
+                (pool) => pool.volumeChange24h && pool.volumeChange24h > 0,
+            ).length >= 3
+        ) {
+            topPoolsFilteredByVolume =
+                filteredPoolsNoExcludedOrHiddenTokens.filter(
+                    (pool) => pool.volumeChange24h && pool.volumeChange24h > 0,
+                );
+        } else {
+            topPoolsFilteredByVolume = hardcodedTopPools;
+        }
         return isFetchError
             ? hardcodedTopPools
             : topPoolsFilteredByVolume
@@ -205,7 +238,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     }, [
         isFetchError,
         filteredPoolsNoExcludedOrHiddenTokens
-            .map((pool) => pool.base.address + pool.quote.address)
+            .map((pool) => pool.base + pool.quote)
             .join(''),
     ]);
 

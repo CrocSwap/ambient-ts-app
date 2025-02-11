@@ -64,12 +64,12 @@ const useFetchPoolStats = (
         () =>
             poolList?.find(
                 (poolListEntry: PoolIF) =>
-                    poolListEntry.base.address.toLowerCase() ===
-                        pool.base.address.toLowerCase() &&
-                    poolListEntry.quote.address.toLowerCase() ===
-                        pool.quote.address.toLowerCase(),
+                    poolListEntry.base.toLowerCase() ===
+                        pool.base.toLowerCase() &&
+                    poolListEntry.quote.toLowerCase() ===
+                        pool.quote.toLowerCase(),
             ),
-        [JSON.stringify(poolList), pool.base.address, pool.quote.address],
+        [JSON.stringify(poolList), pool.base, pool.quote],
     );
     const { tokens } = useContext(TokenContext);
 
@@ -83,12 +83,12 @@ const useFetchPoolStats = (
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
-            pool.base.symbol && pool.quote.symbol
-                ? getMoneynessRank(pool.base.symbol) -
-                      getMoneynessRank(pool.quote.symbol) >=
+            pool.baseToken.symbol && pool.quoteToken.symbol
+                ? getMoneynessRank(pool.baseToken.symbol) -
+                      getMoneynessRank(pool.quoteToken.symbol) >=
                   0
                 : false,
-        [pool.base.symbol, pool.quote.symbol],
+        [pool.baseToken.symbol, pool.quoteToken.symbol],
     );
 
     const shouldInvertDisplay = !isBaseTokenMoneynessGreaterOrEqual;
@@ -98,19 +98,19 @@ const useFetchPoolStats = (
     >();
 
     const baseTokenCharacter = poolPriceDisplay
-        ? getUnicodeCharacter(pool.base.symbol)
+        ? getUnicodeCharacter(pool.baseToken.symbol)
         : '';
     const quoteTokenCharacter = poolPriceDisplay
-        ? getUnicodeCharacter(pool.quote.symbol)
+        ? getUnicodeCharacter(pool.quoteToken.symbol)
         : '';
 
     const baseLogoUri = shouldInvertDisplay
-        ? pool?.base.logoURI
-        : pool?.quote.logoURI;
+        ? pool?.baseToken.logoURI
+        : pool?.quoteToken.logoURI;
 
     const quoteLogoUri = shouldInvertDisplay
-        ? pool?.quote.logoURI
-        : pool?.base.logoURI;
+        ? pool?.quoteToken.logoURI
+        : pool?.baseToken.logoURI;
 
     const poolPriceCacheTime = isTradePair
         ? isUserIdle
@@ -135,15 +135,15 @@ const useFetchPoolStats = (
                         ? spotPriceRetrieved
                         : await cachedQuerySpotPrice(
                               crocEnv,
-                              pool.base.address,
-                              pool.quote.address,
+                              pool.base,
+                              pool.quote,
                               chainId,
                               poolPriceCacheTime,
                           );
                 if (spotPrice) {
                     setIsPoolInitialized(true);
                     setLocalPoolPriceNonDisplay([
-                        pool.base.address + pool.quote.address,
+                        pool.base + pool.quote,
                         spotPrice,
                     ]);
 
@@ -156,8 +156,8 @@ const useFetchPoolStats = (
                     }
                     const displayPrice = toDisplayPrice(
                         spotPrice,
-                        pool.base.decimals,
-                        pool.quote.decimals,
+                        pool.baseToken.decimals,
+                        pool.quoteToken.decimals,
                     );
 
                     setPoolPriceDisplayNum(displayPrice);
@@ -186,8 +186,8 @@ const useFetchPoolStats = (
         lastBlockNumber !== 0,
         poolPriceNonDisplay,
         poolPriceCacheTime,
-        pool.base.address,
-        pool.quote.address,
+        pool.base,
+        pool.quote,
         isTradePair,
     ]);
 
@@ -219,7 +219,7 @@ const useFetchPoolStats = (
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
-    const [baseAddr, quoteAddr] = [pool?.base.address, pool?.quote.address];
+    const [baseAddr, quoteAddr] = [pool?.base, pool?.quote];
 
     // Reset pool metric states that require asynchronous updates when pool changes
     const resetPoolStats = () => {
@@ -310,8 +310,7 @@ const useFetchPoolStats = (
             provider &&
             (!isTradePair ||
                 (localPoolPriceNonDisplay !== undefined &&
-                    localPoolPriceNonDisplay[0] ===
-                        pool.base.address + pool.quote.address))
+                    localPoolPriceNonDisplay[0] === pool.base + pool.quote))
         ) {
             const expandedPoolStats = await expandPoolStats(
                 activeTradePoolStats,
@@ -392,8 +391,8 @@ const useFetchPoolStats = (
             if (isTradePair) {
                 try {
                     const ambientAprEst = await estimateFrom24HrAmbientApr(
-                        pool.base.address,
-                        pool.quote.address,
+                        pool.base,
+                        pool.quote,
                         crocEnv,
                         provider,
                         lastBlockNumber,
@@ -481,7 +480,7 @@ const useFetchPoolStats = (
         crocEnv,
         provider,
         poolIndex,
-        pool.base.address + pool.quote.address,
+        pool.base + pool.quote,
         localPoolPriceNonDisplay,
         didUserFlipDenom,
     ]);

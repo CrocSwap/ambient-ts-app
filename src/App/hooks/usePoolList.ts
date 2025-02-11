@@ -37,8 +37,8 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] | undefined => {
                         if (baseToken && quoteToken) {
                             return {
                                 ...result, // Spreads all properties of result
-                                base: baseToken, // Overwrite base with the mapped token
-                                quote: quoteToken, // Overwrite quote with the mapped token
+                                baseToken, // Overwrite base with the mapped token
+                                quoteToken, // Overwrite quote with the mapped token
                             };
                         } else {
                             return null;

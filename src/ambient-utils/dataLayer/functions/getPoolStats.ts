@@ -11,7 +11,7 @@ import {
     excludedTokenAddressesLowercase,
 } from '../../constants';
 import { MAINNET_TOKENS } from '../../constants/networks/ethereumMainnet';
-import { PoolIF, SinglePoolDataIF, TokenIF } from '../../types';
+import { PoolIF, TokenIF } from '../../types';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 const getLiquidityFee = async (
@@ -155,12 +155,10 @@ export async function expandPoolStats(
     const quoteUsdPrice = pool.quoteUsdPrice || 0;
 
     const baseTokenListed = tokenList.find(
-        (token) =>
-            token.address.toLowerCase() === pool.base.address.toLowerCase(),
+        (token) => token.address.toLowerCase() === pool.base.toLowerCase(),
     );
     const quoteTokenListed = tokenList.find(
-        (token) =>
-            token.address.toLowerCase() === pool.quote.address.toLowerCase(),
+        (token) => token.address.toLowerCase() === pool.quote.toLowerCase(),
     );
 
     const baseTokenListedDecimals = baseTokenListed?.decimals;
@@ -173,42 +171,27 @@ export async function expandPoolStats(
 
     const baseDecimals =
         (baseTokenListedDecimals ||
-            (
-                await cachedTokenDetails(
-                    provider,
-                    pool.base.address,
-                    pool.chainId,
-                )
-            )?.decimals) ??
+            (await cachedTokenDetails(provider, pool.base, pool.chainId))
+                ?.decimals) ??
         DEFAULT_DECIMALS;
 
     const quoteDecimals =
         (quoteTokenListedDecimals ||
-            (
-                await cachedTokenDetails(
-                    provider,
-                    pool.quote.address,
-                    pool.chainId,
-                )
-            )?.decimals) ??
+            (await cachedTokenDetails(provider, pool.quote, pool.chainId))
+                ?.decimals) ??
         DEFAULT_DECIMALS;
 
     const baseTotalSupplyBigInt =
-        !enableTotalSupply || pool.base.address === ZERO_ADDRESS
+        !enableTotalSupply || pool.base === ZERO_ADDRESS
             ? undefined
             : baseTokenListedTotalSupply ||
-              (
-                  await cachedTokenDetails(
-                      provider,
-                      pool.base.address,
-                      pool.chainId,
-                  )
-              )?.totalSupply;
+              (await cachedTokenDetails(provider, pool.base, pool.chainId))
+                  ?.totalSupply;
 
     const quoteTotalSupplyBigInt = !enableTotalSupply
         ? undefined
         : quoteTokenListedTotalSupply ||
-          (await cachedTokenDetails(provider, pool.quote.address, pool.chainId))
+          (await cachedTokenDetails(provider, pool.quote, pool.chainId))
               ?.totalSupply;
 
     const baseTotalSupplyNum = baseTotalSupplyBigInt
@@ -237,7 +220,7 @@ export async function expandPoolStats(
 
     const basePrice = baseUsdPrice
         ? baseUsdPrice
-        : isETHorStakedEthToken(pool.base.address)
+        : isETHorStakedEthToken(pool.base)
           ? (await getEthPrice()) || 0.0
           : quoteUsdPrice && displayPoolPrice
             ? quoteUsdPrice / displayPoolPrice
@@ -245,7 +228,7 @@ export async function expandPoolStats(
 
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
-        : isETHorStakedEthToken(pool.quote.address)
+        : isETHorStakedEthToken(pool.quote)
           ? (await getEthPrice()) || 0.0
           : baseUsdPrice
             ? baseUsdPrice * displayPoolPrice
@@ -315,8 +298,8 @@ function decoratePoolStats(
         baseFeeDecimal24hAgo * basePrice + quoteFeeDecimal24hAgo * quotePrice;
     stats.feesChange24h = stats.feesTotalUsd - feesTotalUsd24hAgo;
 
-    const baseMoneyness: number = getMoneynessRank(pool.base.symbol);
-    const quoteMoneyness: number = getMoneynessRank(pool.quote.symbol);
+    const baseMoneyness: number = getMoneynessRank(pool.baseToken.symbol);
+    const quoteMoneyness: number = getMoneynessRank(pool.quoteToken.symbol);
 
     const shouldInvert = baseMoneyness < quoteMoneyness;
     stats.isBaseTokenMoneynessGreaterOrEqual = baseMoneyness >= quoteMoneyness;
@@ -340,13 +323,13 @@ function decoratePoolStats(
         ? 1 /
           toDisplayPrice(
               pool.lastPriceSwap || 0,
-              pool.base.decimals,
-              pool.quote.decimals,
+              pool.baseToken.decimals,
+              pool.quoteToken.decimals,
           )
         : toDisplayPrice(
               pool.lastPriceSwap || 0,
-              pool.base.decimals,
-              pool.quote.decimals,
+              pool.baseToken.decimals,
+              pool.quoteToken.decimals,
           );
 
     stats.displayPriceString = getFormattedNumber({
@@ -381,8 +364,8 @@ function decoratePoolStats(
     stats.usdPriceMoneynessBased = (stats.displayPrice || 0) * tokenPriceForUsd;
 
     stats.name = stats.isBaseTokenMoneynessGreaterOrEqual
-        ? `${pool.quote.symbol} / ${pool.base.symbol}`
-        : `${pool.base.symbol} / ${pool.quote.symbol}`;
+        ? `${pool.quoteToken.symbol} / ${pool.baseToken.symbol}`
+        : `${pool.baseToken.symbol} / ${pool.quoteToken.symbol}`;
 
     return stats;
 }
@@ -624,7 +607,7 @@ export type AllPoolStatsFn = (
     GCGO_URL: string,
     _cacheTimeTag: number | string,
     with24hPrices?: boolean,
-) => Promise<SinglePoolDataIF[]>;
+) => Promise<PoolIF[]>;
 
 export type Change24Fn = (
     chainId: string,

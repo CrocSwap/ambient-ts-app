@@ -25,14 +25,14 @@ export default function PoolRow(props: propsIF) {
 
     const [firstToken, secondToken]: [TokenIF, TokenIF] =
         pool.isBaseTokenMoneynessGreaterOrEqual
-            ? [pool.quote, pool.base]
-            : [pool.base, pool.quote];
+            ? [pool.quoteToken, pool.baseToken]
+            : [pool.baseToken, pool.quoteToken];
 
-    const baseTokenCharacter = pool.base.symbol
-        ? getUnicodeCharacter(pool.base.symbol)
+    const baseTokenCharacter = pool.baseToken.symbol
+        ? getUnicodeCharacter(pool.baseToken.symbol)
         : '';
-    const quoteTokenCharacter = pool.quote.symbol
-        ? getUnicodeCharacter(pool.quote.symbol)
+    const quoteTokenCharacter = pool.quoteToken.symbol
+        ? getUnicodeCharacter(pool.quoteToken.symbol)
         : '';
 
     const characterToDisplay = useMemo(
@@ -72,7 +72,7 @@ export default function PoolRow(props: propsIF) {
 
     const splitPoolDisplay = (
         <>
-            {pool?.base?.symbol + ' /'} <br /> {pool?.quote?.symbol}
+            {pool?.baseToken?.symbol + ' /'} <br /> {pool?.quoteToken?.symbol}
         </>
     );
 
@@ -146,7 +146,7 @@ export default function PoolRow(props: propsIF) {
         <div
             className={styles.tradeIcon}
             onClick={(event: React.MouseEvent) => {
-                goToMarket(pool.base.address, pool.quote.address);
+                goToMarket(pool.base, pool.quote);
                 event?.stopPropagation();
             }}
         >
@@ -202,7 +202,7 @@ export default function PoolRow(props: propsIF) {
         <div
             className={styles.gridContainer}
             onClick={(event: React.MouseEvent) => {
-                goToMarket(pool.base.address, pool.quote.address);
+                goToMarket(pool.base, pool.quote);
                 event?.stopPropagation();
             }}
         >

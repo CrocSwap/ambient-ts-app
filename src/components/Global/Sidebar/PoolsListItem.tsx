@@ -32,7 +32,7 @@ export default function PoolsListItem(props: propsIF) {
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
 
-    const { poolList } = useContext(PoolContext);
+    const { analyticsPoolList } = useContext(PoolContext);
 
     const {
         activeNetwork: { chainId, poolIndex },
@@ -42,18 +42,18 @@ export default function PoolsListItem(props: propsIF) {
     const isFuta = platformName.toLowerCase() === 'futa';
 
     const isBaseTokenMoneynessGreaterOrEqual =
-        pool.base.address && pool.quote.address
-            ? getMoneynessRank(pool.base.symbol) -
-                  getMoneynessRank(pool.quote.symbol) >=
+        pool.baseToken.symbol && pool.quoteToken.symbol
+            ? getMoneynessRank(pool.baseToken.symbol) -
+                  getMoneynessRank(pool.quoteToken.symbol) >=
               0
             : false;
 
     const baseToken = isBaseTokenMoneynessGreaterOrEqual
-        ? pool.quote
-        : pool.base;
+        ? pool.quoteToken
+        : pool.baseToken;
     const quoteToken = isBaseTokenMoneynessGreaterOrEqual
-        ? pool.base
-        : pool.quote;
+        ? pool.baseToken
+        : pool.quoteToken;
     const currentPoolData = {
         base: baseToken,
         quote: quoteToken,
@@ -74,7 +74,7 @@ export default function PoolsListItem(props: propsIF) {
             : favePools.add(quoteToken, baseToken, chainId, poolIndex);
     }
 
-    const poolData = useFetchPoolStats(pool, poolList, spotPrice);
+    const poolData = useFetchPoolStats(pool, analyticsPoolList, spotPrice);
 
     const {
         poolPrice,
@@ -116,13 +116,13 @@ export default function PoolsListItem(props: propsIF) {
     const linkGenMarket: linkGenMethodsIF = useLinkGen(navTarget);
 
     const [addrTokenA, addrTokenB] =
-        tokenA.address.toLowerCase() === pool.base.address.toLowerCase()
-            ? [pool.base.address, pool.quote.address]
-            : tokenA.address.toLowerCase() === pool.quote.address.toLowerCase()
-              ? [pool.quote.address, pool.base.address]
-              : tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
-                ? [pool.quote.address, pool.base.address]
-                : [pool.base.address, pool.quote.address];
+        tokenA.address.toLowerCase() === pool.base.toLowerCase()
+            ? [pool.base, pool.quote]
+            : tokenA.address.toLowerCase() === pool.quote.toLowerCase()
+              ? [pool.quote, pool.base]
+              : tokenB.address.toLowerCase() === pool.base.toLowerCase()
+                ? [pool.quote, pool.base]
+                : [pool.base, pool.quote];
 
     const mobileScreen = useMediaQuery('(max-width: 500px)');
 
@@ -133,8 +133,8 @@ export default function PoolsListItem(props: propsIF) {
                     <TokenIcon
                         token={
                             isBaseTokenMoneynessGreaterOrEqual
-                                ? pool.quote
-                                : pool.base
+                                ? pool.quoteToken
+                                : pool.baseToken
                         }
                         src={uriToHttp(
                             (isBaseTokenMoneynessGreaterOrEqual
@@ -143,16 +143,16 @@ export default function PoolsListItem(props: propsIF) {
                         )}
                         alt={
                             isBaseTokenMoneynessGreaterOrEqual
-                                ? pool.quote.symbol
-                                : pool.base.symbol
+                                ? pool.quoteToken.symbol
+                                : pool.baseToken.symbol
                         }
                         size='m'
                     />
                     <TokenIcon
                         token={
                             isBaseTokenMoneynessGreaterOrEqual
-                                ? pool.base
-                                : pool.quote
+                                ? pool.baseToken
+                                : pool.quoteToken
                         }
                         src={uriToHttp(
                             (isBaseTokenMoneynessGreaterOrEqual
@@ -161,20 +161,20 @@ export default function PoolsListItem(props: propsIF) {
                         )}
                         alt={
                             isBaseTokenMoneynessGreaterOrEqual
-                                ? pool.base.symbol
-                                : pool.quote.symbol
+                                ? pool.baseToken.symbol
+                                : pool.quoteToken.symbol
                         }
                         size='m'
                     />
                 </FlexContainer>
             )}
             {isBaseTokenMoneynessGreaterOrEqual
-                ? pool.quote.symbol
-                : pool.base.symbol}{' '}
+                ? pool.quoteToken.symbol
+                : pool.baseToken.symbol}{' '}
             /{' '}
             {isBaseTokenMoneynessGreaterOrEqual
-                ? pool.base.symbol
-                : pool.quote.symbol}
+                ? pool.baseToken.symbol
+                : pool.quoteToken.symbol}
         </FlexContainer>
     );
 

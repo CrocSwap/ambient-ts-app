@@ -2,8 +2,10 @@ import { TokenIF } from '../token/TokenIF';
 
 export interface PoolIF {
     name?: string;
-    base: TokenIF;
-    quote: TokenIF;
+    base: string;
+    quote: string;
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
     chainId: string;
     poolIdx: number;
     isBaseTokenMoneynessGreaterOrEqual?: boolean;

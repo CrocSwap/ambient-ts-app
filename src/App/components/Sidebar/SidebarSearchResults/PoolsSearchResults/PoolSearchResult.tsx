@@ -16,12 +16,12 @@ export default function PoolSearchResult(props: propsIF) {
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
 
-    const { poolList } = useContext(PoolContext);
+    const { analyticsPoolList } = useContext(PoolContext);
 
-    const poolData = useFetchPoolStats(pool, poolList, spotPrice);
+    const poolData = useFetchPoolStats(pool, analyticsPoolList, spotPrice);
 
     function handleClickFunction() {
-        handleClick(pool.base.address, pool.quote.address);
+        handleClick(pool.base, pool.quote);
         if (isPoolDropdownOpen) {
             setIsPoolDropdownOpen(false);
         }
@@ -38,7 +38,8 @@ export default function PoolSearchResult(props: propsIF) {
             onClick={handleClickFunction}
         >
             <p>
-                {pool.base.symbol ?? '--'} / {pool.quote.symbol ?? '--'}
+                {pool.baseToken.symbol ?? '--'} /{' '}
+                {pool.quoteToken.symbol ?? '--'}
             </p>
             <p style={{ textAlign: 'center' }}>
                 {`${

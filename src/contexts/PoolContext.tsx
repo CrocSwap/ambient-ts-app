@@ -26,7 +26,7 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { TradeDataContext } from './TradeDataContext';
 
 export interface PoolContextIF {
-    poolList: PoolIF[] | undefined;
+    analyticsPoolList: PoolIF[] | undefined;
     pool: CrocPoolView | undefined;
     isPoolInitialized: boolean | undefined;
     poolPriceDisplay: number | undefined;
@@ -55,7 +55,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
 
-    const poolList: PoolIF[] | undefined = usePoolList(crocEnv);
+    const analyticsPoolList: PoolIF[] | undefined = usePoolList(crocEnv);
 
     const pool = useMemo(
         () => crocEnv?.pool(baseToken.address, quoteToken.address),
@@ -63,15 +63,17 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     );
 
     const poolArg: PoolIF = {
-        base: baseToken,
-        quote: quoteToken,
+        baseToken,
+        quoteToken,
+        base: baseToken.address,
+        quote: quoteToken.address,
         chainId: chainId,
         poolIdx: poolIndex,
     };
 
     const poolData = useFetchPoolStats(
         poolArg,
-        poolList,
+        analyticsPoolList,
         undefined,
         true,
         true,
@@ -166,7 +168,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     }, [baseToken.address, quoteToken.address, usdPrice !== undefined]);
 
     const poolContext: PoolContextIF = {
-        poolList,
+        analyticsPoolList,
         pool,
         isPoolInitialized,
         poolPriceDisplay,
