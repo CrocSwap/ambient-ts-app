@@ -1,7 +1,6 @@
 import { Dispatch, memo, SetStateAction } from 'react';
 import checkPoolForWETH from '../../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../../ambient-utils/types';
-import { PoolDataIF } from '../../../../contexts/ExploreContext';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
@@ -26,7 +25,7 @@ export type HeaderItem = {
 };
 
 interface propsIF {
-    allPools: Array<PoolDataIF>;
+    allPools: Array<PoolIF>;
     goToMarket: (tknA: string, tknB: string) => void;
     isExploreDollarizationEnabled: boolean;
     searchQuery: string;
@@ -177,7 +176,7 @@ function TopPools(props: propsIF) {
                 {sortedPools.pools.length ? (
                     sortedPools.pools
                         .filter((pool: PoolIF) => !checkPoolForWETH(pool))
-                        .map((pool: PoolDataIF, idx: number) => (
+                        .map((pool: PoolIF, idx: number) => (
                             <PoolRow
                                 key={idx}
                                 pool={pool}

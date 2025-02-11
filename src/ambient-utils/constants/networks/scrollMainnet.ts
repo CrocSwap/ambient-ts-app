@@ -79,12 +79,6 @@ const topPools = curentTopPoolsList.map(
         ),
 );
 
-const priorityPool = new TopPool(
-    SCROLL_TOKENS['USDQ'],
-    SCROLL_TOKENS['USDC'],
-    chainSpecFromSDK.poolIndex,
-);
-
 const getGasPriceInGwei = async (provider?: Provider) => {
     if (!provider) return 0;
     return (
@@ -109,6 +103,6 @@ export const scrollMainnet: NetworkIF = {
     vaultsEnabled: true,
     tempestApiNetworkName: 'scroll',
     topPools,
-    priorityPool,
+    priorityPool: [SCROLL_TOKENS['USDQ'], SCROLL_TOKENS['USDC']],
     getGasPriceInGwei,
 };

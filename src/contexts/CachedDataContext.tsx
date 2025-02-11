@@ -6,12 +6,14 @@ import {
     FetchBlockTimeFn,
     FetchContractDetailsFn,
     FetchTopPairedTokenFn,
+    PoolListFn,
     TokenPriceFn,
     memoizeFetchAmbientListWalletBalances,
     memoizeFetchBlockTime,
     memoizeFetchContractDetails,
     memoizeFetchDexBalances,
     memoizeFetchEnsAddress,
+    memoizeFetchPoolList,
     memoizeFetchTopPairedToken,
     memoizeTokenPrice,
 } from '../ambient-utils/api';
@@ -55,6 +57,7 @@ export interface CachedDataContextIF {
     cachedFetchTopPairedToken: FetchTopPairedTokenFn;
     cachedFetchBlockTime: FetchBlockTimeFn;
     cachedFetchNFT: NFTQueryFn;
+    cachedFetchPoolList: PoolListFn;
 }
 
 export const CachedDataContext = createContext({} as CachedDataContextIF);
@@ -82,6 +85,7 @@ export const CachedDataContextProvider = (props: {
         cachedFetchTopPairedToken: memoizeFetchTopPairedToken(),
         cachedFetchBlockTime: memoizeFetchBlockTime(),
         cachedFetchNFT: memoizeFetchNFT(),
+        cachedFetchPoolList: memoizeFetchPoolList(),
     };
 
     return (

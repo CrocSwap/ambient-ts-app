@@ -247,10 +247,10 @@ function FullChat(props: FullChatPropsIF) {
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
-        const roomName = pool.base.symbol + ' / ' + pool.quote.symbol;
+        const roomName = pool.baseToken.symbol + ' / ' + pool.quoteToken.symbol;
         props.setRoom(roomName);
 
-        const readableRoomName = `${pool.base.symbol} / ${pool.quote.symbol}`;
+        const readableRoomName = `${pool.baseToken.symbol} / ${pool.quoteToken.symbol}`;
         setReadableName(readableRoomName);
         setReadableRoom(pool);
 
@@ -275,7 +275,7 @@ function FullChat(props: FullChatPropsIF) {
 
     // eslint-disable-next-line
     function findSpeed(pool: any) {
-        switch (pool.base.symbol + ' / ' + pool.quote.symbol) {
+        switch (pool.baseToken.symbol + ' / ' + pool.quoteToken.symbol) {
             case 'ETH / USDC':
                 return 0 as number;
             case 'ETH / WBTC':
@@ -295,7 +295,7 @@ function FullChat(props: FullChatPropsIF) {
 
     // eslint-disable-next-line
     function findId(pool: any) {
-        switch (pool.base.symbol + ' / ' + pool.quote.symbol) {
+        switch (pool.baseToken.symbol + ' / ' + pool.quoteToken.symbol) {
             case 'ETH / USDC':
                 return 1;
             case 'ETH / WBTC':
@@ -323,7 +323,9 @@ function FullChat(props: FullChatPropsIF) {
             | PoolIF[]
             | {
                   name: string;
-                  base: {
+                  base: string;
+                  quote: string;
+                  baseToken: {
                       name: string;
                       address: string;
                       symbol: string;
@@ -331,7 +333,7 @@ function FullChat(props: FullChatPropsIF) {
                       chainId: number;
                       logoURI: string;
                   };
-                  quote: {
+                  quoteToken: {
                       name: string;
                       address: string;
                       symbol: string;
@@ -346,22 +348,24 @@ function FullChat(props: FullChatPropsIF) {
               }[] = [];
         favePools.pools.forEach((pool: PoolIF) => {
             const favPool = {
-                name: pool.base.symbol + ' / ' + pool.quote.symbol,
-                base: {
-                    name: pool.base.name,
-                    address: pool.base.address,
-                    symbol: pool.base.symbol,
-                    decimals: pool.base.decimals,
-                    chainId: pool.base.chainId,
-                    logoURI: pool.base.logoURI,
+                name: pool.baseToken.symbol + ' / ' + pool.quoteToken.symbol,
+                base: pool.base,
+                quote: pool.quote,
+                baseToken: {
+                    name: pool.baseToken.name,
+                    address: pool.base,
+                    symbol: pool.baseToken.symbol,
+                    decimals: pool.baseToken.decimals,
+                    chainId: pool.baseToken.chainId,
+                    logoURI: pool.baseToken.logoURI,
                 },
-                quote: {
-                    name: pool.quote.name,
-                    address: pool.quote.address,
-                    symbol: pool.quote.symbol,
-                    decimals: pool.quote.decimals,
-                    chainId: pool.quote.chainId,
-                    logoURI: pool.quote.logoURI,
+                quoteToken: {
+                    name: pool.quoteToken.name,
+                    address: pool.quote,
+                    symbol: pool.quoteToken.symbol,
+                    decimals: pool.quoteToken.decimals,
+                    chainId: pool.quoteToken.chainId,
+                    logoURI: pool.quoteToken.logoURI,
                 },
                 chainId: pool.chainId,
                 poolIdx: pool.poolIdx,
@@ -418,8 +422,8 @@ function FullChat(props: FullChatPropsIF) {
             poolIsCurrentPool && pool?.name === readableRoomName;
         const smallScrenView = useMediaQuery('(max-width: 968px)');
         const isButtonFavorited = favePools.check(
-            pool.base.address,
-            pool.quote.address,
+            pool.base,
+            pool.quote,
             pool.chainId,
             pool.poolIdx,
         );
@@ -465,9 +469,12 @@ function FullChat(props: FullChatPropsIF) {
                 )}
 
                 <div className={styles.token_logos}>
-                    <img src={uriToHttp(pool?.base.logoURI)} alt='base token' />
                     <img
-                        src={uriToHttp(pool?.quote.logoURI)}
+                        src={uriToHttp(pool?.baseToken.logoURI)}
+                        alt='base token'
+                    />
+                    <img
+                        src={uriToHttp(pool?.quoteToken.logoURI)}
                         alt='quote token'
                     />
                 </div>

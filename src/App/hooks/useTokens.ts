@@ -127,20 +127,6 @@ export const useTokens = (): tokenMethodsIF => {
         return retMap;
     }, [tokenLists, ackTokens, chainId]);
 
-    const defaultTokenMap = useMemo<Map<string, TokenIF>>(() => {
-        const retMap = new Map<string, TokenIF>();
-        ambientTokenList.tokens
-            .filter((t) => chainNumToString(t.chainId) === chainId)
-            .forEach((t) => {
-                const deepToken: TokenIF = deepCopyToken(
-                    t,
-                    tokenListURIs.ambient,
-                );
-                retMap.set(deepToken.address.toLowerCase(), deepToken);
-            });
-        return retMap;
-    }, [ambientTokenList.tokens, chainId]);
-
     const tokenUniv: TokenIF[] = useMemo(() => {
         if (tokenMap.size) {
             const newArray = [...tokenMap.values()];
@@ -279,7 +265,9 @@ export const useTokens = (): tokenMethodsIF => {
     // fn to verify a token is on a known list or user-acknowledged
     const verifyToken = useCallback(
         (addr: string): boolean => {
-            for (const token of ambientTokenList.tokens) {
+            for (const token of ambientTokenList.tokens.concat(
+                testnetTokenList.tokens,
+            )) {
                 if (
                     token.address.toLowerCase() === addr.toLowerCase() &&
                     token.chainId === parseInt(chainId)
@@ -328,10 +316,8 @@ export const useTokens = (): tokenMethodsIF => {
     );
 
     const getTokenByAddress = useCallback(
-        (addr: string): TokenIF | undefined =>
-            defaultTokenMap.get(addr.toLowerCase()) ||
-            tokenMap.get(addr.toLowerCase()),
-        [chainId, tokenUniv],
+        (addr: string): TokenIF | undefined => tokenMap.get(addr.toLowerCase()),
+        [tokenMap],
     );
 
     const getTokensFromList = useCallback(
@@ -414,9 +400,9 @@ export const useTokens = (): tokenMethodsIF => {
             verify: verifyToken,
             acknowledge: ackToken,
             tokenUniv: tokenUniv,
-            getTokenByAddress: getTokenByAddress,
-            getTokensFromList: getTokensFromList,
-            getTokensByNameOrSymbol: getTokensByNameOrSymbol,
+            getTokenByAddress,
+            getTokensFromList,
+            getTokensByNameOrSymbol,
         }),
         [tokenUniv, chainId],
     );

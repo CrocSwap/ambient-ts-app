@@ -288,7 +288,7 @@ export const createRoomIF = (
 };
 
 export const getRoomNameFromPool = (pool: PoolIF) => {
-    return `${pool.base.symbol} / ${pool.quote.symbol}`;
+    return `${pool.baseToken.symbol} / ${pool.quoteToken.symbol}`;
 };
 
 export const getRoomObjFromBaseQuote = (

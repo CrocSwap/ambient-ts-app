@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { PoolIF } from '../../../../../ambient-utils/types';
+import { ExploreContext } from '../../../../../contexts';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { Results } from '../../../../../styled/Components/Sidebar';
 import useFetchPoolStats from '../../../../hooks/useFetchPoolStats';
@@ -15,10 +16,14 @@ export default function PoolSearchResult(props: propsIF) {
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
 
-    const poolData = useFetchPoolStats(pool, spotPrice);
+    const {
+        pools: { activePoolList },
+    } = useContext(ExploreContext);
+
+    const poolData = useFetchPoolStats(pool, activePoolList, spotPrice);
 
     function handleClickFunction() {
-        handleClick(pool.base.address, pool.quote.address);
+        handleClick(pool.base, pool.quote);
         if (isPoolDropdownOpen) {
             setIsPoolDropdownOpen(false);
         }
@@ -35,7 +40,8 @@ export default function PoolSearchResult(props: propsIF) {
             onClick={handleClickFunction}
         >
             <p>
-                {pool.base.symbol ?? '--'} / {pool.quote.symbol ?? '--'}
+                {pool.baseToken.symbol ?? '--'} /{' '}
+                {pool.quoteToken.symbol ?? '--'}
             </p>
             <p style={{ textAlign: 'center' }}>
                 {`${
