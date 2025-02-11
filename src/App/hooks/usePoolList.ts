@@ -13,7 +13,10 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] | undefined => {
         tokens: { verify, getTokenByAddress, tokenUniv },
     } = useContext(TokenContext);
 
-    const { isUserIdle } = useContext(AppStateContext);
+    const {
+        isUserIdle,
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const { cachedFetchPoolList } = useContext(CachedDataContext);
 
@@ -28,7 +31,8 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] | undefined => {
             return undefined;
         }
 
-        const pools: Promise<AnalyticsServerPoolIF[]> = cachedFetchPoolList();
+        const pools: Promise<AnalyticsServerPoolIF[]> =
+            cachedFetchPoolList(chainId);
         Promise.resolve<AnalyticsServerPoolIF[]>(pools)
             .then((res: AnalyticsServerPoolIF[]) => {
                 return res
@@ -59,7 +63,8 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] | undefined => {
             })
             .catch((err) => console.error(err));
     }, [
-        JSON.stringify(crocEnv),
+        crocEnv === undefined,
+        chainId,
         JSON.stringify(tokenUniv),
         poolListRefreshTime,
     ]);
