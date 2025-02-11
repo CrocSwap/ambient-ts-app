@@ -259,6 +259,6 @@
     }
 
     .tradePage .commentsWrapper {
-        max-height: 70svh;
+        max-height: 100svh;
     }
 }

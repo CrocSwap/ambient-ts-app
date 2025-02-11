@@ -125,9 +125,13 @@
     .chart_mobile_container {
         overflow: hidden !important;
         height: calc(100svh - 56px) !important;
+        padding: 0 8px;
     }
 
-    
+    .chart_mobile_container .activeTabDataContainer {
+        width: calc(100% + 16px);
+        margin-left: -8px;
+    }
 
     .breadcrumbMobileTabs {
         flex-shrink: 0; /* Prevent shrinking */
