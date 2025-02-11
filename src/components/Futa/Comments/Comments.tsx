@@ -83,13 +83,8 @@ function Comments(props: propsIF) {
             });
         }
     };
-    const {
-        messages,
-        isLoading,
-        sendMsg,
-        isWsConnected,
-        getMsgWithRestWithPagination,
-    } = useCommentsWS(room ? room : '', fetchListener, '');
+    const { messages, isLoading, sendMsg, getMsgWithRestWithPagination } =
+        useCommentsWS(room ? room : '', fetchListener, '');
     const [userId, setUserId] = useState('');
     const { userAddress, ensName, isUserConnected } =
         useContext(UserDataContext);
@@ -353,39 +348,11 @@ function Comments(props: propsIF) {
             <div
                 className={`${styles.comments_outer} ${props.isSmall ? styles.small : ' '}`}
             >
-                {userAddress &&
-                    userAddress.length > 0 &&
-                    !props.isSmall &&
-                    !props.isForTrade && (
-                        <div className={styles.connection_status}>
-                            {isWsConnected ? (
-                                <>
-                                    <div
-                                        className={styles.connection_dot}
-                                    ></div>
-                                    <div
-                                        className={styles.connection_dot_anim}
-                                    ></div>
-                                </>
-                            ) : (
-                                <>
-                                    <div
-                                        className={styles.loading_dots_wrapper}
-                                    >
-                                        <div
-                                            className={styles.loading_dot}
-                                        ></div>
-                                        <div
-                                            className={styles.loading_dot}
-                                        ></div>
-                                        <div
-                                            className={styles.loading_dot}
-                                        ></div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    )}
+                {/* to reActivate connection status indicator
+            isWsConnected from useCommentsWs hook
+            connection_status >  connection_dot & connection_dot_anim
+            loading_dots_wrapper > loading_dot x 3
+            combination can be added to that area */}
 
                 <div
                     id='futa_comments_wrapper'
