@@ -8,7 +8,8 @@ import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
+    PUBLIC: 'https://rpc.plumenetwork.xyz',
+    SECONDARY_PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
     RESTRICTED: import.meta.env.VITE_PLUME_RPC_URL,
 };
 
@@ -24,7 +25,7 @@ const chainSpecForWalletConnector = {
     name: 'Plume Mainnet',
     currency: 'ETH',
     rpcUrl: RPC_URLS.PUBLIC,
-    explorerUrl: 'https://phoenix-explorer.plumenetwork.xyz/',
+    explorerUrl: 'https://explorer.plumenetwork.xyz/',
 };
 
 const defaultTokenEntries = [
