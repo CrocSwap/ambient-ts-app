@@ -22,7 +22,7 @@ import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
 import TutorialHelpModal from '../TutorialComponent/TutorialHelpModal/TutorialHelpModal';
 import styles from './TutorialOverlayUrlBased.module.css';
-// import { ambientMarketSteps } from '../../../utils/tutorial/MarketSteps';
+import { ambientMarketSteps } from '../../../utils/tutorial/MarketSteps';
 import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
 
 interface TutorialOverlayPropsIF {
@@ -72,36 +72,44 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         }
     };
 
+    const helpModal = (page: string) => {
+        return {
+            title: 'WHAT IS THIS?',
+            content: (
+                <TutorialHelpModal
+                    page={page}
+                    positiveBtnAction={() => {
+                        setShowHelpModal(false);
+                    }}
+                    negativeBtnAction={() => {
+                        setShowTutorial(false);
+                        pulseTutorialBtn();
+                        handleHardFinish();
+                    }}
+                />
+            ),
+        };
+    };
+
     const getTutorialObjectForPage = (page: string) => {
+        let tutoObj: TutorialIF | undefined = undefined;
+
         switch (page) {
             case 'auctions':
-                return {
+                tutoObj = {
                     lsKey: 'tuto_auctions',
                     steps: futaAuctionsSteps,
-                    helpModal: {
-                        title: 'WHAT IS THIS?',
-                        content: (
-                            <TutorialHelpModal
-                                positiveBtnAction={() => {
-                                    setShowHelpModal(false);
-                                }}
-                                negativeBtnAction={() => {
-                                    setShowTutorial(false);
-                                    pulseTutorialBtn();
-                                    handleHardFinish();
-                                }}
-                                page='auction'
-                            />
-                        ),
-                    },
                 };
+                break;
             case 'account':
-                return {
+                tutoObj = {
                     lsKey: 'tuto_futa_account',
                     steps: futaAccountSteps,
+                    noHelpModal: true,
                 };
+                break;
             case 'auctionCreate':
-                return {
+                tutoObj = {
                     lsKey: 'tuto_futa_create',
                     steps: futaCreateSteps,
                     externalComponents: new Map<
@@ -114,11 +122,20 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
                         ],
                     ]),
                 };
-            // case 'market':
-            //     return { lsKey: 'tuto_market', steps: ambientMarketSteps };
+                break;
+            case 'market':
+                tutoObj = { lsKey: 'tuto_market', steps: ambientMarketSteps };
+                break;
             default:
-                return undefined;
+                tutoObj = undefined;
+                break;
         }
+
+        if (tutoObj && !tutoObj.noHelpModal) {
+            tutoObj.helpModal = helpModal(page);
+        }
+
+        return tutoObj;
     };
 
     const validateURL = () => {
