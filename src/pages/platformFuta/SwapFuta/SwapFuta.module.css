@@ -126,6 +126,9 @@
         overflow: hidden !important;
         height: calc(100svh - 56px) !important;
     }
+
+    
+
     .breadcrumbMobileTabs {
         flex-shrink: 0; /* Prevent shrinking */
         width: 100%;
