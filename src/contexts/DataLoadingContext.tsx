@@ -1,6 +1,7 @@
 import React, { createContext, useState } from 'react';
 
 export interface DataLoadingContextIF {
+    isPoolListLoading: boolean;
     isConnectedUserTxDataLoading: boolean;
     isConnectedUserOrderDataLoading: boolean;
     isConnectedUserPoolOrderDataLoading: boolean;
@@ -27,6 +28,7 @@ export const DataLoadingContext = createContext({} as DataLoadingContextIF);
 export const DataLoadingContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    const [isPoolListLoading, setIsPoolListLoading] = useState(true);
     const [isConnectedUserTxDataLoading, setIsConnectedUserTxDataLoading] =
         useState(true);
     const [
@@ -80,6 +82,9 @@ export const DataLoadingContextProvider = (props: {
         const { datasetName, loadingStatus } = params;
 
         switch (datasetName) {
+            case 'isPoolListLoading':
+                setIsPoolListLoading(loadingStatus);
+                break;
             case 'isConnectedUserTxDataLoading':
                 setIsConnectedUserTxDataLoading(loadingStatus);
                 break;
@@ -123,6 +128,7 @@ export const DataLoadingContextProvider = (props: {
     };
 
     const dataLoadingContext: DataLoadingContextIF = {
+        isPoolListLoading,
         isConnectedUserTxDataLoading,
         isConnectedUserOrderDataLoading,
         isConnectedUserPoolOrderDataLoading,

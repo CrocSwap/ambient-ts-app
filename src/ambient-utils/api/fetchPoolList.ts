@@ -1,8 +1,8 @@
 import { ANALYTICS_URL } from '../constants';
 import { memoizeCacheQueryFn } from '../dataLayer';
-import { GCServerPoolIF } from '../types';
+import { AnalyticsServerPoolIF } from '../types';
 
-export async function fetchPoolList(): Promise<GCServerPoolIF[]> {
+export async function fetchPoolList(): Promise<AnalyticsServerPoolIF[]> {
     const ENDPOINT: string =
         ANALYTICS_URL + 'service=run&config_path=all_pool_stats';
     return fetch(ENDPOINT)
@@ -11,12 +11,12 @@ export async function fetchPoolList(): Promise<GCServerPoolIF[]> {
             if (!json?.data) {
                 return [];
             }
-            const payload = json?.data as GCServerPoolIF[];
+            const payload = json?.data as AnalyticsServerPoolIF[];
             return payload;
         });
 }
 
-export type PoolListFn = () => Promise<GCServerPoolIF[]>;
+export type PoolListFn = () => Promise<AnalyticsServerPoolIF[]>;
 
 export const POOL_LIST_WINDOW_GRANULARITY = 5 * 60 * 1000; // 5 minutes
 

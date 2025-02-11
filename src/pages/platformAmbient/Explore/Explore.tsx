@@ -44,7 +44,7 @@ export default function Explore(props: ExploreIF) {
 
     const refreshPools = async () => {
         // make sure crocEnv exists and pool metadata is present
-        if (crocEnv && poolList.length) {
+        if (crocEnv && poolList?.length) {
             // clear text in DOM for time since last update
             pools.reset();
             // pause for a moment to allow loading indicator to appear

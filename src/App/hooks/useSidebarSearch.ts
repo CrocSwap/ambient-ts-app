@@ -139,6 +139,7 @@ export const useSidebarSearch = (
 
     // logic to update the output pools from the hook
     useEffect(() => {
+        if (!poolList) return;
         // fn to filter pools by address (must be exact)
         const searchByAddress = (addr: string): PoolIF[] =>
             poolList.filter((pool: PoolIF) =>

@@ -76,7 +76,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     const processPoolListForActiveChain = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
-        if (poolList.length && crocEnv) {
+        if (poolList?.length && crocEnv) {
             // use metadata to get expanded pool data
             processPoolList(poolList, activeNetwork.chainId, crocEnv);
         }
@@ -108,6 +108,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 return pool.chainId === chainId;
             })
             .map((pool: PoolIF) => expandPoolListData(pool, crocEnv));
+
         Promise.all(expandedPoolDataOnCurrentChain)
             .then((results: Array<PoolIF>) => {
                 setIsFetchError(false);
@@ -171,7 +172,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             if (
                 isUserOnline &&
                 crocEnv !== undefined &&
-                poolList.length > 0 &&
+                poolList?.length &&
                 (await crocEnv.context).chain.chainId === activeNetwork.chainId
             ) {
                 processPoolListForActiveChain();
@@ -179,7 +180,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         })();
     }, [
         isUserOnline,
-        poolList.map((pool) => pool.base.address + pool.quote.address).join(''),
+        poolList
+            ?.map((pool) => pool.base.address + pool.quote.address)
+            .join(''),
         crocEnv,
         activeNetwork.chainId,
         intermediaryPoolData.length !== poolDataFilteredByActiveChain.length,
@@ -190,9 +193,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             filteredPoolsNoExcludedOrHiddenTokens.filter(
                 (pool) => pool.volumeChange24h && pool.volumeChange24h > 1000,
             );
-        return isFetchError ||
-            (filteredPoolsNoExcludedOrHiddenTokens.length &&
-                !topPoolsFilteredByVolume.length)
+        return isFetchError
             ? hardcodedTopPools
             : topPoolsFilteredByVolume
                   .sort(
@@ -203,7 +204,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                   .slice(0, 5);
     }, [
         isFetchError,
-        hardcodedTopPools,
         filteredPoolsNoExcludedOrHiddenTokens
             .map((pool) => pool.base.address + pool.quote.address)
             .join(''),

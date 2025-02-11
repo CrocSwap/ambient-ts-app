@@ -1,31 +1,35 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
-import { GCServerPoolIF, PoolIF, TokenIF } from '../../ambient-utils/types';
+import {
+    AnalyticsServerPoolIF,
+    PoolIF,
+    TokenIF,
+} from '../../ambient-utils/types';
 import { CachedDataContext } from '../../contexts';
 import { TokenContext } from '../../contexts/TokenContext';
 
-export const usePoolList = (GCGO_URL: string, crocEnv?: CrocEnv): PoolIF[] => {
+export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] | undefined => {
     const {
         tokens: { verify, getTokenByAddress, tokenUniv },
     } = useContext(TokenContext);
 
     const { cachedFetchPoolList } = useContext(CachedDataContext);
 
-    const [poolList, setPoolList] = useState<PoolIF[]>([]);
+    const [poolList, setPoolList] = useState<PoolIF[] | undefined>();
     useEffect(() => {
         if (!crocEnv) {
             return undefined;
         }
 
-        const pools: Promise<GCServerPoolIF[]> = cachedFetchPoolList();
-        Promise.resolve<GCServerPoolIF[]>(pools)
-            .then((res: GCServerPoolIF[]) => {
+        const pools: Promise<AnalyticsServerPoolIF[]> = cachedFetchPoolList();
+        Promise.resolve<AnalyticsServerPoolIF[]>(pools)
+            .then((res: AnalyticsServerPoolIF[]) => {
                 return res
                     .filter(
-                        (result: GCServerPoolIF) =>
+                        (result: AnalyticsServerPoolIF) =>
                             verify(result.base) && verify(result.quote),
                     )
-                    .map((result: GCServerPoolIF) => {
+                    .map((result: AnalyticsServerPoolIF) => {
                         const baseToken: TokenIF | undefined =
                             getTokenByAddress(result.base);
                         const quoteToken: TokenIF | undefined =

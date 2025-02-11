@@ -28,10 +28,6 @@ export default function PoolRow(props: propsIF) {
             ? [pool.quote, pool.base]
             : [pool.base, pool.quote];
 
-    if (pool.quote.symbol === 'WBTC' || pool.base.symbol === 'WBTC') {
-        console.log({ firstToken, secondToken, pool });
-    }
-
     const baseTokenCharacter = pool.base.symbol
         ? getUnicodeCharacter(pool.base.symbol)
         : '';
@@ -125,8 +121,6 @@ export default function PoolRow(props: propsIF) {
                 : tvlDisplayString}
         </p>
     );
-
-    console.log(pool.priceChangePercent);
 
     const priceChangeDisplay = (
         <p
