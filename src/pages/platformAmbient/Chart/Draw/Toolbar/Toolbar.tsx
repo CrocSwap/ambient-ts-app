@@ -350,10 +350,7 @@ function ChartToolbar() {
                 <ScrollableDiv
                     ref={scrollContainerRef}
                     height={
-                        chartContainerOptions.height -
-                        (mobileView && smallScreen ? 20 : 0) -
-                        xAxisHeightPixel +
-                        'px'
+                        chartContainerOptions.height - xAxisHeightPixel + 'px'
                     }
                     isHover={hoveredTool !== undefined}
                 >
