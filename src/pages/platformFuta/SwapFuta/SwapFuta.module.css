@@ -60,7 +60,7 @@
     display: grid;
     align-items: center;
     gap: 8px;
-    padding : 8px 0;
+    padding: 8px 0;
 }
 
 .mobile_tabs_container button {
@@ -70,46 +70,42 @@
     border: 1px solid transparent;
     color: var(--text2);
     padding: 2px 0;
-    color: var(--base-text1, #AACFD1);
-text-align: center;
+    color: var(--base-text1, #aacfd1);
+    text-align: center;
 
-/* Mono 18 */
-font-family: "Fira Mono";
-font-size: 18px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
-letter-spacing: -0.36px;
-text-transform: uppercase;
-
+    /* Mono 18 */
+    font-family: 'Fira Mono';
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.36px;
+    text-transform: uppercase;
 }
 
 .activeTab {
-color: var(--dark1);
+    color: var(--dark1);
     background: var(--accent1);
 }
 
-.label{
+.label {
     font-size: var(--body-size);
-    color: #5C6F72;
+    color: #5c6f72;
     text-transform: uppercase;
     padding: 0 8px;
 }
 
 @media (min-width: 768px) {
-
-
-.chartSection{
-    border: 2px solid var(--borders, #5C6F72);
-    padding: 0 8px;
-}
+    .chartSection {
+        border: 2px solid var(--borders, #5c6f72);
+        padding: 0 8px;
+    }
 }
 @media (min-width: 1280px) {
-    .mainSection{
+    .mainSection {
         display: grid;
         grid-template-columns: auto 390px;
     }
-
 }
 @media (max-width: 599px) {
     /* .chart_mobile_container{
@@ -124,20 +120,20 @@ color: var(--dark1);
     .chartSection {
         height: 130px;
     } */
- 
-    .mobile_container, .chart_mobile_container{
-    
+
+    .mobile_container,
+    .chart_mobile_container {
         overflow: hidden !important;
-        height: calc(100svh - 56px) !important
-        
+        height: calc(100svh - 56px) !important;
     }
     .breadcrumbMobileTabs {
         flex-shrink: 0; /* Prevent shrinking */
         width: 100%;
-        background-color: var(--dark1); /* Or whatever your background color is */
+        background-color: var(
+            --dark1
+        ); /* Or whatever your background color is */
         z-index: 1; /* Ensure it stays on top */
     }
-
 
     .activeTabDataContainer {
         flex: 1; /* Take remaining space */
@@ -145,13 +141,16 @@ color: var(--dark1);
         overflow-x: hidden; /* Prevent horizontal scrolling */
         position: relative;
         height: auto; /* Let flex control the height */
-       
-
-        height: 80% !important;
     }
-
 }
 
+@media (min-width: 600px) and (max-width: 1024px) {
+    .mobile_container,
+    .chart_mobile_container {
+        overflow: hidden !important;
+        height: calc(100svh) !important;
+    }
+}
 
 @keyframes shimmer {
     0% {

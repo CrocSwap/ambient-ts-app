@@ -103,7 +103,7 @@ function SwapFuta() {
 
             <div
                 className={styles.activeTabDataContainer}
-                style={{ height: '100%' }}
+                style={{ height: 'calc(100% - 100px )' }}
             >
                 {activeTabData}
             </div>
