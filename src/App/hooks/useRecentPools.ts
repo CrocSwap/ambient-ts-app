@@ -48,18 +48,18 @@ export const useRecentPools = (chainId: string): recentPoolsMethodsIF => {
         const [baseToken, quoteToken] = sortTokens(tokenA, tokenB);
 
         const nextPool: PoolIF = {
-            base: baseToken,
-            quote: quoteToken,
+            base: baseToken.address,
+            quote: quoteToken.address,
+            baseToken,
+            quoteToken,
             chainId,
             poolIdx: poolId,
         };
 
         function matchPools(pool: PoolIF): boolean {
             return (
-                pool.base.address.toLowerCase() ===
-                    baseTokenAddr.toLowerCase() &&
-                pool.quote.address.toLowerCase() ===
-                    quoteTokenAddr.toLowerCase()
+                pool.base.toLowerCase() === baseTokenAddr.toLowerCase() &&
+                pool.quote.toLowerCase() === quoteTokenAddr.toLowerCase()
             );
         }
 
@@ -84,8 +84,8 @@ export const useRecentPools = (chainId: string): recentPoolsMethodsIF => {
         return recentPools
             .filter(
                 (pool: PoolIF) =>
-                    pool.base.chainId === currentChain &&
-                    pool.quote.chainId === currentChain,
+                    pool.baseToken.chainId === currentChain &&
+                    pool.quoteToken.chainId === currentChain,
             )
             .slice(0, count);
     }

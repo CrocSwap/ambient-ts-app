@@ -32,13 +32,7 @@ export default function Explore(props: ExploreIF) {
     const {
         activeNetwork: { chainId, displayName },
     } = useContext(AppStateContext);
-    const { poolList } = useContext(PoolContext);
-
-    const getAllPoolData = async (): Promise<void> => {
-        if (crocEnv && poolList.length) {
-            pools.getAllPools(poolList, crocEnv, chainId);
-        }
-    };
+    const { analyticsPoolList } = useContext(PoolContext);
 
     // trigger process to fetch and format token data when page loads with
     // ... gatekeeping to prevent re-fetch if data is already loaded
@@ -48,15 +42,15 @@ export default function Explore(props: ExploreIF) {
         }
     }, [crocEnv !== undefined]);
 
-    const refreshPools = async (): Promise<void> => {
+    const refreshPools = async () => {
         // make sure crocEnv exists and pool metadata is present
-        if (crocEnv && poolList.length) {
+        if (crocEnv && analyticsPoolList?.length) {
             // clear text in DOM for time since last update
             pools.reset();
-            // pause for a moment to allow spinner to appear
-            await new Promise((resolve) => setTimeout(resolve, 100));
+            // pause for a moment to allow loading indicator to appear
+            await new Promise((resolve) => setTimeout(resolve, 300));
             // use metadata to get expanded pool data
-            getAllPoolData();
+            await pools.processPoolListForActiveChain();
         }
     };
 
@@ -107,10 +101,18 @@ export default function Explore(props: ExploreIF) {
             ? pools.all.filter((pool: PoolIF) => {
                   const lowerCaseQuery = searchQueryPool.toLowerCase();
                   return (
-                      pool.base.name.toLowerCase().includes(lowerCaseQuery) ||
-                      pool.base.symbol.toLowerCase().includes(lowerCaseQuery) ||
-                      pool.quote.name.toLowerCase().includes(lowerCaseQuery) ||
-                      pool.quote.symbol.toLowerCase().includes(lowerCaseQuery)
+                      pool.baseToken.name
+                          .toLowerCase()
+                          .includes(lowerCaseQuery) ||
+                      pool.baseToken.symbol
+                          .toLowerCase()
+                          .includes(lowerCaseQuery) ||
+                      pool.quoteToken.name
+                          .toLowerCase()
+                          .includes(lowerCaseQuery) ||
+                      pool.quoteToken.symbol
+                          .toLowerCase()
+                          .includes(lowerCaseQuery)
                   );
               })
             : pools.all;

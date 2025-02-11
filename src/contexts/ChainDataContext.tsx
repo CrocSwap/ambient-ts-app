@@ -33,11 +33,7 @@ import {
 } from '../ambient-utils/constants';
 import { tokens as AMBIENT_TOKEN_LIST } from '../ambient-utils/constants/ambient-token-list.json';
 import { getChainStats, getFormattedNumber } from '../ambient-utils/dataLayer';
-import {
-    AllVaultsServerIF,
-    SinglePoolDataIF,
-    TokenIF,
-} from '../ambient-utils/types';
+import { AllVaultsServerIF, PoolIF, TokenIF } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
 import { BrandContext } from './BrandContext';
 import { CachedDataContext } from './CachedDataContext';
@@ -74,7 +70,7 @@ export interface ChainDataContextIF {
     isVaultSupportedOnNetwork: boolean;
     isActiveNetworkL2: boolean;
     nativeTokenUsdPrice: number | undefined;
-    allPoolStats: SinglePoolDataIF[] | undefined;
+    gcgoPoolList: PoolIF[] | undefined;
     allVaultsData: AllVaultsServerIF[] | null | undefined;
     setAllVaultsData: Dispatch<
         SetStateAction<AllVaultsServerIF[] | null | undefined>
@@ -226,22 +222,43 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         return () => clearInterval(interval);
     }, [isUserOnline, chainId, BLOCK_NUM_POLL_MS, blockPollingUrl]);
 
-    const [allPoolStats, setAllPoolStats] = useState<
-        SinglePoolDataIF[] | undefined
-    >();
+    const [gcgoPoolList, setGcgoPoolList] = useState<PoolIF[] | undefined>();
 
     async function updateAllPoolStats(): Promise<void> {
         try {
-            const allPoolStats = await cachedAllPoolStatsFetch(
+            const gcgoPoolList: Promise<PoolIF[]> = cachedAllPoolStatsFetch(
                 chainId,
                 GCGO_URL,
                 poolStatsPollingCacheTime,
                 true,
             );
 
-            if (allPoolStats) {
-                setAllPoolStats(allPoolStats);
-            }
+            Promise.resolve<PoolIF[]>(gcgoPoolList)
+                .then((res: PoolIF[]) => {
+                    return res
+                        .map((result: PoolIF) => {
+                            const baseToken: TokenIF | undefined =
+                                tokens.getTokenByAddress(result.base);
+                            const quoteToken: TokenIF | undefined =
+                                tokens.getTokenByAddress(result.quote);
+                            if (baseToken && quoteToken) {
+                                return {
+                                    ...result, // Spreads all properties of result
+                                    baseToken, // Overwrite base with the mapped token
+                                    quoteToken, // Overwrite quote with the mapped token
+                                };
+                            } else {
+                                return null;
+                            }
+                        })
+                        .filter(
+                            (pool: PoolIF | null) => pool !== null,
+                        ) as PoolIF[];
+                })
+                .then((pools) => {
+                    setGcgoPoolList(pools);
+                })
+                .catch((err) => console.error(err));
         } catch (error) {
             console.log({ error });
         }
@@ -870,7 +887,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isActiveNetworkMainnet,
         isVaultSupportedOnNetwork,
         isActiveNetworkL2,
-        allPoolStats,
+        gcgoPoolList,
         nativeTokenUsdPrice,
         allVaultsData,
         setAllVaultsData,

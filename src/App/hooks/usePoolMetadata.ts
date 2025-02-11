@@ -14,9 +14,9 @@ import {
 import {
     LimitOrderIF,
     LimitOrderServerIF,
+    PoolIF,
     PositionIF,
     PositionServerIF,
-    SinglePoolDataIF,
     TransactionIF,
     TransactionServerIF,
 } from '../../ambient-utils/types';
@@ -37,7 +37,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata() {
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
-    const { allPoolStats, blockPollingUrl } = useContext(ChainDataContext);
+    const { gcgoPoolList, blockPollingUrl } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { sessionReceipts } = useContext(ReceiptContext);
@@ -276,8 +276,8 @@ export function usePoolMetadata() {
     }, [newRangesByPoolData, baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
-        const currentPoolData = allPoolStats?.find(
-            (poolStat: SinglePoolDataIF) =>
+        const currentPoolData = gcgoPoolList?.find(
+            (poolStat: PoolIF) =>
                 poolStat.base.toLowerCase() ===
                     baseTokenAddress.toLowerCase() &&
                 poolStat.quote.toLowerCase() ===
@@ -288,7 +288,7 @@ export function usePoolMetadata() {
                 ? currentPoolData.feeRate
                 : undefined,
         );
-    }, [allPoolStats, baseTokenAddress, quoteTokenAddress]);
+    }, [gcgoPoolList, baseTokenAddress, quoteTokenAddress]);
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
