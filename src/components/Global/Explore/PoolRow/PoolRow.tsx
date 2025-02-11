@@ -126,19 +126,20 @@ export default function PoolRow(props: propsIF) {
         <p
             style={{
                 color:
-                    !pool.priceChangePercent ||
-                    pool.priceChangePercent.includes('No')
+                    !pool.priceChangePercentString ||
+                    pool.priceChangePercentString.includes('No')
                         ? 'var(--text1)'
-                        : pool.priceChangePercent.startsWith('-')
+                        : pool.priceChangePercentString.startsWith('-')
                           ? 'var(--negative)'
                           : 'var(--positive)',
             }}
         >
-            {!pool.priceChangePercent || pool.priceChangePercent.includes('NaN')
+            {!pool.priceChangePercentString ||
+            pool.priceChangePercentString.includes('NaN')
                 ? '...'
-                : !desktopView && pool.priceChangePercent.includes('No')
+                : !desktopView && pool.priceChangePercentString.includes('No')
                   ? 'None'
-                  : pool.priceChangePercent}
+                  : pool.priceChangePercentString}
         </p>
     );
 

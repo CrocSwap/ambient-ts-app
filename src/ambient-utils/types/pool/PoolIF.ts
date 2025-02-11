@@ -40,6 +40,7 @@ export interface PoolIF {
     quoteVolumeUsd?: number;
     baseFeeUsd?: number;
     quoteFeeUsd?: number;
+
     tvlTotalUsd?: number;
     volumeTotalUsd?: number;
     baseFdvUsd?: number;
@@ -48,13 +49,13 @@ export interface PoolIF {
     volumeChange24h?: number;
     feesChange24h?: number;
 
-    priceChange24h?: number | undefined;
-
     apr?: number | undefined;
 
     displayPrice?: number | undefined;
     displayPriceString?: string | undefined;
-    priceChangePercent?: string | undefined;
+
+    priceChange24h?: number | undefined;
+    priceChangePercentString?: string | undefined;
 
     usdPriceMoneynessBased?: number | undefined;
 }

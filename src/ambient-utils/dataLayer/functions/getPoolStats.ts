@@ -151,8 +151,13 @@ export async function expandPoolStats(
 ): Promise<PoolIF> {
     const provider = (await crocEnv.context).provider;
 
-    const baseUsdPrice = pool.baseUsdPrice || 0;
-    const quoteUsdPrice = pool.quoteUsdPrice || 0;
+    const baseUsdPrice =
+        pool.baseUsdPrice ??
+        (await cachedFetchTokenPrice(pool.base, pool.chainId))?.usdPrice;
+
+    const quoteUsdPrice =
+        pool.quoteUsdPrice ??
+        (await cachedFetchTokenPrice(pool.quote, pool.chainId))?.usdPrice;
 
     const baseTokenListed = tokenList.find(
         (token) => token.address.toLowerCase() === pool.base.toLowerCase(),
@@ -279,6 +284,8 @@ function decoratePoolStats(
         ? (quoteTotalSupplyNum / Math.pow(10, quoteDecimals)) * quotePrice
         : undefined;
 
+    stats.baseUsdPrice = basePrice;
+    stats.quoteUsdPrice = quotePrice;
     stats.baseTvlUsd = stats.baseTvlDecimal * basePrice;
     stats.quoteTvlUsd = stats.quoteTvlDecimal * quotePrice;
     stats.baseVolumeUsd = stats.baseVolumeDecimal * basePrice;
@@ -337,10 +344,10 @@ function decoratePoolStats(
         abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
     });
 
-    if (stats.priceChange24h === undefined || stats.volumeChange24h === 0) {
-        stats.priceChangePercent = '';
+    if (stats.priceChange24h === undefined) {
+        stats.priceChangePercentString = '';
     } else if (stats.priceChange24h * 100 >= 0.01) {
-        stats.priceChangePercent =
+        stats.priceChangePercentString =
             '+' +
             (stats.priceChange24h * 100).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
@@ -348,13 +355,13 @@ function decoratePoolStats(
             }) +
             '%';
     } else if (stats.priceChange24h * 100 <= -0.01) {
-        stats.priceChangePercent =
+        stats.priceChangePercentString =
             (stats.priceChange24h * 100).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
             }) + '%';
     } else {
-        stats.priceChangePercent = 'No Change';
+        stats.priceChangePercentString = 'No Change';
     }
 
     const tokenPriceForUsd = pool.isBaseTokenMoneynessGreaterOrEqual

@@ -63,7 +63,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         } else if (analyticsPoolList?.length) {
             setActivePoolList(analyticsPoolList);
         } else {
-            setActivePoolList([]);
+            setActivePoolList(hardcodedTopPools);
         }
     }, [analyticsPoolList, gcgoPoolList]);
 
@@ -240,7 +240,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                     (pool) => pool.volumeChange24h && pool.volumeChange24h > 0,
                 );
         } else {
-            topPoolsFilteredByVolume = hardcodedTopPools;
+            topPoolsFilteredByVolume = filteredPoolsNoExcludedOrHiddenTokens;
         }
         return isFetchError
             ? hardcodedTopPools

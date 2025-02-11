@@ -37,17 +37,11 @@ export default function PoolCard(props: propsIF) {
     const [isHovered, setIsHovered] = useState(false);
 
     const poolData = useFetchPoolStats(pool, analyticsPoolList, spotPrice);
-
     const {
-        poolVolume24h,
         poolPrice,
         poolPriceDisplay,
-        poolTvl,
-        poolPriceChangePercent,
         isPoolPriceChangePositive,
         shouldInvertDisplay,
-        basePrice,
-        quotePrice,
     } = poolData;
 
     const denomTokenIsUsdStableToken = shouldInvertDisplay
@@ -65,10 +59,10 @@ export default function PoolCard(props: propsIF) {
     const isPoolBtcPair = isBtcPair(pool.base, pool.quote);
 
     const usdPrice =
-        poolPriceDisplay && basePrice && quotePrice
+        poolPriceDisplay && pool.baseUsdPrice && pool.quoteUsdPrice
             ? shouldInvertDisplay
-                ? (1 / poolPriceDisplay) * quotePrice
-                : poolPriceDisplay * basePrice
+                ? (1 / poolPriceDisplay) * pool.quoteUsdPrice
+                : poolPriceDisplay * pool.baseUsdPrice
             : undefined;
 
     const poolPriceDisplayDOM = (
@@ -132,18 +126,33 @@ export default function PoolCard(props: propsIF) {
                         : styles.change_negative
                 }
             >
-                {poolPrice === undefined || poolPriceChangePercent === undefined
+                {poolPrice === undefined ||
+                pool.priceChangePercentString === undefined
                     ? '…'
-                    : poolPriceChangePercent}
+                    : pool.priceChangePercentString}
             </div>
         </div>
     );
 
+    const formattedVolumeChange24h = pool.volumeChange24h
+        ? getFormattedNumber({
+              value: pool.volumeChange24h,
+              prefix: '$',
+          })
+        : undefined;
+
+    const formattedTVLTotalUSD = pool.tvlTotalUsd
+        ? getFormattedNumber({
+              value: pool.tvlTotalUsd,
+              prefix: '$',
+          })
+        : undefined;
+
     const ariaDescription = `pool for ${pool.baseToken.symbol} and ${
         pool.quoteToken.symbol
     }. 24 hour volume is ${
-        poolVolume24h ? poolVolume24h : 'not available'
-    }.  TVL is ${poolTvl}. 24 hours pool price change is ${poolPriceChangePercent}. Pool price is ${
+        formattedVolumeChange24h ? formattedVolumeChange24h : 'not available'
+    }.  TVL is ${formattedTVLTotalUSD}. 24 hours pool price change is ${pool.priceChange24h}. Pool price is ${
         poolPrice ? poolPrice : 'not available'
     }. `;
 
@@ -239,15 +248,17 @@ export default function PoolCard(props: propsIF) {
                         <div className={styles.row}>
                             <div className={styles.row_title}>24h Vol.</div>
                             <div className={styles.vol}>
-                                {poolVolume24h === undefined
+                                {formattedVolumeChange24h === undefined
                                     ? '…'
-                                    : `$${poolVolume24h}`}
+                                    : `${formattedVolumeChange24h}`}
                             </div>
                         </div>
                         <div className={styles.row}>
                             <div className={styles.row_title}>TVL</div>
                             <div className={styles.vol}>
-                                {poolTvl === undefined ? '…' : `$${poolTvl}`}
+                                {formattedTVLTotalUSD === undefined
+                                    ? '…'
+                                    : `${formattedTVLTotalUSD}`}
                             </div>
                         </div>
                     </div>
