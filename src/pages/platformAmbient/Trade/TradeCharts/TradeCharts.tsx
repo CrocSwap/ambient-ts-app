@@ -114,6 +114,8 @@ function TradeCharts(props: propsIF) {
     );
 
     const isFuta = ['futa'].includes(platformName);
+    const tabletViewForFuta =
+        isFuta && useMediaQuery('(min-width: 768px) and (max-width: 1440px)');
 
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');
@@ -499,7 +501,7 @@ function TradeCharts(props: propsIF) {
                 </Modal>
             )}
         </>
-    ) : tabletView ? (
+    ) : tabletView || tabletViewForFuta ? (
         timeFrameContentTablet
     ) : (
         timeFrameContentDesktop
