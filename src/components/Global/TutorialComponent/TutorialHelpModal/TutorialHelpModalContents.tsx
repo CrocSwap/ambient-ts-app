@@ -70,7 +70,7 @@ export const DefaultHelpModalAmbient = () => {
     const steps = [
         'Faster, Easier, and Cheaper',
         'Deep, Diversified Liquidity',
-        "Bridge the Gap Between Trading and LP'ing",
+        'Bridge the Gap Between Trading and LPing',
         'Better than CEX',
     ];
 
