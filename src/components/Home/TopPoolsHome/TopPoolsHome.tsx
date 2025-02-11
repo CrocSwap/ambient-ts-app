@@ -82,9 +82,12 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
                 setVisibleTopPoolData(poolData);
                 setIsFading(false);
             }, 1000); // Match the fade-out duration
+        } else {
+            setVisibleTopPoolData(poolData);
         }
     }, [
         topPoolsWithPriority.map((pool) => pool.name?.toLowerCase()).join('|'),
+        JSON.stringify(poolData),
         chainId,
     ]);
 

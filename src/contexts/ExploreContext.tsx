@@ -203,7 +203,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         })();
     }, [
         isUserOnline,
-        activePoolList?.map((pool) => pool.base + pool.quote).join(''),
+        JSON.stringify(activePoolList),
         crocEnv,
         activeNetwork.chainId,
         intermediaryPoolData.length !== poolDataFilteredByActiveChain.length,
@@ -252,12 +252,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                           (poolA['volumeChange24h'] || 0),
                   )
                   .slice(0, 5);
-    }, [
-        isFetchError,
-        filteredPoolsNoExcludedOrHiddenTokens
-            .map((pool) => pool.base + pool.quote)
-            .join(''),
-    ]);
+    }, [isFetchError, JSON.stringify(filteredPoolsNoExcludedOrHiddenTokens)]);
 
     const dexTokens: useTokenStatsIF = useTokenStats(
         activeNetwork.chainId,
