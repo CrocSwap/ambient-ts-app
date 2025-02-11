@@ -117,7 +117,7 @@ const useFetchPoolStats = (
             ? Math.floor(Date.now() / 30000) // 30 second interval if  idle
             : Math.floor(Date.now() / 5000) // 5 second cache for trade pair
         : isUserIdle
-          ? Math.floor(Date.now() / 60000) // 30 second interval if  idle
+          ? Math.floor(Date.now() / 60000) // 60 second interval if  idle
           : Math.floor(Date.now() / 10000); // 10 second interval if not idle
 
     // useEffect to get spot price when tokens change and block updates

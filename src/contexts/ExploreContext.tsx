@@ -48,9 +48,24 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         useContext(CachedDataContext);
     const { gcgoPoolList } = useContext(ChainDataContext);
     const { analyticsPoolList } = useContext(PoolContext);
-    const activePoolList = analyticsPoolList?.length
-        ? analyticsPoolList
-        : gcgoPoolList;
+
+    const [activePoolList, setActivePoolList] = useState<PoolIF[]>(
+        analyticsPoolList?.length ? analyticsPoolList : [],
+    );
+
+    useEffect(() => {
+        if (!analyticsPoolList?.length && gcgoPoolList?.length) {
+            const timeout = setTimeout(() => {
+                setActivePoolList(gcgoPoolList);
+            }, 2000);
+
+            return () => clearTimeout(timeout); // Cleanup on unmount or re-run
+        } else if (analyticsPoolList?.length) {
+            setActivePoolList(analyticsPoolList);
+        } else {
+            setActivePoolList([]);
+        }
+    }, [analyticsPoolList, gcgoPoolList]);
 
     const {
         topPools: hardcodedTopPools,
@@ -109,6 +124,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     function processPoolList(chainId: string, crocEnv: CrocEnv): void {
         if (!activePoolList || !activePoolList.length) return;
+
         const expandedPoolDataOnCurrentChain = activePoolList
             .filter((pool) => {
                 return pool.chainId === chainId;
@@ -178,7 +194,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             if (
                 isUserOnline &&
                 crocEnv !== undefined &&
-                // poolList?.length &&
+                activePoolList?.length &&
                 (await crocEnv.context).chain.chainId === activeNetwork.chainId
             ) {
                 processPoolListForActiveChain();

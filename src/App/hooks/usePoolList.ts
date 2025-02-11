@@ -5,7 +5,7 @@ import {
     PoolIF,
     TokenIF,
 } from '../../ambient-utils/types';
-import { CachedDataContext } from '../../contexts';
+import { AppStateContext, CachedDataContext } from '../../contexts';
 import { TokenContext } from '../../contexts/TokenContext';
 
 export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] | undefined => {
@@ -13,9 +13,16 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] | undefined => {
         tokens: { verify, getTokenByAddress, tokenUniv },
     } = useContext(TokenContext);
 
+    const { isUserIdle } = useContext(AppStateContext);
+
     const { cachedFetchPoolList } = useContext(CachedDataContext);
 
     const [poolList, setPoolList] = useState<PoolIF[] | undefined>();
+
+    const poolListRefreshTime = isUserIdle
+        ? Math.floor(Date.now() / 120000) // 2 minute interval if  idle
+        : Math.floor(Date.now() / 30000); // 30 second interval if not idle
+
     useEffect(() => {
         if (!crocEnv) {
             return undefined;
@@ -51,7 +58,11 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] | undefined => {
                 setPoolList(pools);
             })
             .catch((err) => console.error(err));
-    }, [JSON.stringify(crocEnv), JSON.stringify(tokenUniv)]);
+    }, [
+        JSON.stringify(crocEnv),
+        JSON.stringify(tokenUniv),
+        poolListRefreshTime,
+    ]);
 
     return poolList;
 };

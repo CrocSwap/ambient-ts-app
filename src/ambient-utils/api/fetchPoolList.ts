@@ -18,7 +18,7 @@ export async function fetchPoolList(): Promise<AnalyticsServerPoolIF[]> {
 
 export type PoolListFn = () => Promise<AnalyticsServerPoolIF[]>;
 
-export const POOL_LIST_WINDOW_GRANULARITY = 5 * 60 * 1000; // 5 minutes
+export const POOL_LIST_WINDOW_GRANULARITY = 15 * 1000; // 15 seconds
 
 export function memoizeFetchPoolList(): PoolListFn {
     const memoFn = memoizeCacheQueryFn(fetchPoolList);
