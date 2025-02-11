@@ -263,8 +263,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         stepsFiltered.length > 0 &&
         showTutorial &&
         isTutoBuild &&
-        (selectedTutorialRef.current?.showDefault ||
-            selectedTutorialRef.current?.helpModal) &&
+        selectedTutorialRef.current?.showDefault &&
         showTutosLocalStorage &&
         !DISABLE_ALL_TUTOS;
 
