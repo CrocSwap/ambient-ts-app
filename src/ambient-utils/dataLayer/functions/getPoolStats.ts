@@ -364,7 +364,7 @@ function decoratePoolStats(
         stats.priceChangePercentString = 'No Change';
     }
 
-    const tokenPriceForUsd = pool.isBaseTokenMoneynessGreaterOrEqual
+    const tokenPriceForUsd = stats.isBaseTokenMoneynessGreaterOrEqual
         ? stats.baseUsdPrice || 0
         : stats.quoteUsdPrice || 0;
 
