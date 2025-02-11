@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { getMoneynessRank, uriToHttp } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
-import { AppStateContext, PoolContext } from '../../../contexts';
+import { AppStateContext, ExploreContext } from '../../../contexts';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -32,7 +32,9 @@ export default function PoolsListItem(props: propsIF) {
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
 
-    const { analyticsPoolList } = useContext(PoolContext);
+    const {
+        pools: { activePoolList },
+    } = useContext(ExploreContext);
 
     const {
         activeNetwork: { chainId, poolIndex },
@@ -74,7 +76,7 @@ export default function PoolsListItem(props: propsIF) {
             : favePools.add(quoteToken, baseToken, chainId, poolIndex);
     }
 
-    const poolData = useFetchPoolStats(pool, analyticsPoolList, spotPrice);
+    const poolData = useFetchPoolStats(pool, activePoolList, spotPrice);
 
     const {
         poolPrice,

@@ -33,6 +33,7 @@ export interface ExploreContextIF {
         visibleTopPoolData: PoolIF[];
         setVisibleTopPoolData: Dispatch<SetStateAction<PoolIF[]>>;
         processPoolListForActiveChain: () => Promise<void>;
+        activePoolList: PoolIF[];
         reset: () => void;
     };
     topTokensOnchain: useTokenStatsIF;
@@ -275,6 +276,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             topPools: topPools,
             visibleTopPoolData,
             setVisibleTopPoolData,
+            activePoolList,
             reset: () => {
                 setIntermediaryPoolData([]);
                 setPoolDataFilteredByActiveChain([]);

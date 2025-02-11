@@ -11,7 +11,7 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
-import { AppStateContext, PoolContext } from '../../../contexts';
+import { AppStateContext, ExploreContext } from '../../../contexts';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import TokenIcon from '../TokenIcon/TokenIcon';
@@ -31,12 +31,14 @@ export default function PoolCard(props: propsIF) {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const { analyticsPoolList } = useContext(PoolContext);
+    const {
+        pools: { activePoolList },
+    } = useContext(ExploreContext);
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const [isHovered, setIsHovered] = useState(false);
 
-    const poolData = useFetchPoolStats(pool, analyticsPoolList, spotPrice);
+    const poolData = useFetchPoolStats(pool, activePoolList, spotPrice);
     const {
         poolPrice,
         poolPriceDisplay,

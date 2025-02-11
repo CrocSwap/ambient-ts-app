@@ -22,6 +22,7 @@ import { PoolIF, PoolStatIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { usePoolList } from '../App/hooks/usePoolList';
 import { AppStateContext } from './AppStateContext';
+import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeDataContext } from './TradeDataContext';
 
@@ -50,12 +51,31 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const {
         activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
-    const { crocEnv } = useContext(CrocEnvContext);
+    const { crocEnv, topPools: hardcodedTopPools } = useContext(CrocEnvContext);
+    const { gcgoPoolList } = useContext(ChainDataContext);
+
+    const analyticsPoolList: PoolIF[] | undefined = usePoolList(crocEnv);
+
+    const [activePoolList, setActivePoolList] = useState<PoolIF[]>(
+        analyticsPoolList?.length ? analyticsPoolList : [],
+    );
+
+    useEffect(() => {
+        if (!analyticsPoolList?.length && gcgoPoolList?.length) {
+            const timeout = setTimeout(() => {
+                setActivePoolList(gcgoPoolList);
+            }, 2000);
+
+            return () => clearTimeout(timeout); // Cleanup on unmount or re-run
+        } else if (analyticsPoolList?.length) {
+            setActivePoolList(analyticsPoolList);
+        } else {
+            setActivePoolList(hardcodedTopPools);
+        }
+    }, [analyticsPoolList, gcgoPoolList]);
 
     const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
-
-    const analyticsPoolList: PoolIF[] | undefined = usePoolList(crocEnv);
 
     const pool = useMemo(
         () => crocEnv?.pool(baseToken.address, quoteToken.address),
@@ -73,7 +93,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
 
     const poolData = useFetchPoolStats(
         poolArg,
-        analyticsPoolList,
+        activePoolList,
         undefined,
         true,
         true,

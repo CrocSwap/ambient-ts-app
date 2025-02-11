@@ -71,6 +71,7 @@ const useFetchPoolStats = (
             ),
         [JSON.stringify(poolList), pool.base, pool.quote],
     );
+
     const { tokens } = useContext(TokenContext);
 
     const [poolPriceDisplayNum, setPoolPriceDisplayNum] = useState<
