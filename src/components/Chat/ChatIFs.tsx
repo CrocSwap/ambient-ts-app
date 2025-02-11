@@ -80,6 +80,7 @@ export interface TutorialIF {
     steps: TutorialStepIF[];
     showDefault?: boolean;
     externalComponents?: Map<string, TutorialStepExternalComponent>;
+    noHelpModal?: boolean;
     helpModal?: {
         title?: string;
         content: JSX.Element;
