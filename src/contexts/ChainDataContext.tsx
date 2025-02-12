@@ -268,7 +268,13 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         if (chainId && GCGO_URL && isUserOnline) {
             updateAllPoolStats();
         }
-    }, [chainId, GCGO_URL, poolStatsPollingCacheTime, isUserOnline]);
+    }, [
+        chainId,
+        GCGO_URL,
+        poolStatsPollingCacheTime,
+        isUserOnline,
+        tokens.getTokenByAddress,
+    ]);
 
     useEffect(() => {
         isPrimaryRpcNodeInactive.current = false;

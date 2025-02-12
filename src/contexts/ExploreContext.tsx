@@ -21,7 +21,6 @@ import {
 } from '../pages/platformAmbient/Explore/useTokenStats';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
-import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { PoolContext } from './PoolContext';
 import { TokenContext } from './TokenContext';
@@ -47,28 +46,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
-    const { gcgoPoolList } = useContext(ChainDataContext);
-    const { analyticsPoolList } = useContext(PoolContext);
-
-    const [activePoolList, setActivePoolList] = useState<PoolIF[]>(
-        analyticsPoolList?.length ? analyticsPoolList : [],
-    );
-
-    useEffect(() => {
-        let timeout: NodeJS.Timeout;
-
-        if (!analyticsPoolList?.length) {
-            timeout = setTimeout(() => {
-                if (!analyticsPoolList?.length && gcgoPoolList?.length) {
-                    setActivePoolList(gcgoPoolList);
-                }
-            }, 2000);
-        } else {
-            setActivePoolList(analyticsPoolList);
-        }
-
-        return () => clearTimeout(timeout); // Cleanup on re-run or unmount
-    }, [JSON.stringify(analyticsPoolList), JSON.stringify(gcgoPoolList)]);
+    const { activePoolList } = useContext(PoolContext);
 
     const {
         topPools: hardcodedTopPools,
