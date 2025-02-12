@@ -526,7 +526,8 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
             );
         }
 
-        removeFromRecentlyUpdatedPositions(positionHash);
+        // this removal may cause problem once toggle has been switched on Limits and Ranges tabs
+        // removeFromRecentlyUpdatedPositions(positionHash);
     };
 
     const handleRedundantPendings = (pendings: RecentlyUpdatedPositionIF[]) => {
