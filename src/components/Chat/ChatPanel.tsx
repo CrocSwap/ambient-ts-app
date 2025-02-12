@@ -15,7 +15,6 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import NotFound from '../../pages/common/NotFound/NotFound';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
@@ -37,7 +36,8 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
-
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { LuMessageSquareText } from 'react-icons/lu';
 interface propsIF {
     isFullScreen: boolean;
     appPage?: boolean;
@@ -422,57 +422,48 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
-        if (userAddress && isChatOpen) {
-            if (ens === null || ens === undefined) {
-                setEnsName(defaultEnsName);
-            } else {
-                setEnsName(ens);
+
+        if (!userAddress || !isChatOpen) {
+            setCurrentUser(undefined);
+            setIsModerator(false);
+            console.log(
+                '🚨 User disconnected or chat closed. Resetting currentUser:',
+                currentUser,
+            );
+            return;
+        }
+
+        setEnsName(ens ?? defaultEnsName);
+
+        getID().then((result) => {
+            if (!result || result.status !== 'OK' || !result.userData) {
+                console.warn(
+                    '⚠️ Invalid user data received, resetting currentUser.',
+                );
+                setCurrentUser(undefined);
+                return;
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            getID().then((result: any) => {
-                if (result && result.status === 'Not OK') {
-                    // this flow moved to backend due to triggering more than one
-                    // whole of initial data fetching process will be refactored
-                    // saveUser(address, ensName).then((result: any) => {
-                    //     setCurrentUser(result.userData._id);
-                    //     return result;
-                    // });
-                } else {
-                    result.userData.isModerator === true
-                        ? setIsModerator(true)
-                        : setIsModerator(false);
-                    setCurrentUser(result.userData._id);
-                    setCurrentUserID(result.userData._id);
-                    setUserCurrentPool(result.userData.userCurrentPool);
-                    if (result.userData.ensName !== ensName) {
-                        updateUser(
-                            currentUser as string,
-                            ensName,
-                            userCurrentPool,
-                        ).then(
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            (result: any) => {
-                                if (result && result.status === 'OK') {
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    updateMessageUser(
-                                        currentUser as string,
-                                        ensName,
-                                    ).then(
-                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                        (result: any) => {
-                                            return result;
-                                        },
-                                    );
-                                }
-                            },
-                        );
+            const {
+                _id,
+                isModerator,
+                userCurrentPool,
+                ensName: fetchedEnsName,
+            } = result.userData;
+
+            setCurrentUser(_id);
+            setCurrentUserID(_id);
+            setUserCurrentPool(userCurrentPool);
+            setIsModerator(!!isModerator);
+
+            if (fetchedEnsName !== ens && ens) {
+                updateUser(_id, ens, userCurrentPool).then((updateResult) => {
+                    if (updateResult?.status === 'OK' && ens) {
+                        updateMessageUser(_id, ens);
                     }
-                }
-            });
-        } else {
-            setCurrentUser(undefined);
-        }
+                });
+            }
+        });
     }, [ens, userAddress, isChatOpen, isFullScreen, setUserCurrentPool]);
 
     useEffect(() => {
@@ -853,7 +844,16 @@ function ChatPanel(props: propsIF) {
 
     domDebug('isUserConnected', isUserConnected);
 
-    const header = (
+    const closedHeader = (
+        <div
+            className={styles.closedChatHeader}
+            onClick={() => setIsChatOpen(true)}
+        >
+            <LuMessageSquareText size={24} color='white' strokeWidth={1} />
+        </div>
+    );
+
+    const header = isChatOpen ? (
         <div
             className={styles.chat_header}
             onClick={() => {
@@ -876,25 +876,21 @@ function ChatPanel(props: propsIF) {
                         userAddress &&
                         isUserConnected && (
                             <AiOutlineUser
-                                className={`${styles.verify_button_icon} ${
-                                    styles.verify_button_mod_icon
-                                } ${
+                                className={`${styles.verify_button_icon} ${styles.verify_button_mod_icon} ${
                                     !isWsConnected ? styles.not_connected : ''
                                 }`}
                                 color='var(--other-green)'
                                 size={14}
-                            ></AiOutlineUser>
+                            />
                         )}
                     {isVerified && userAddress && isUserConnected ? (
-                        <>
-                            <AiOutlineCheck
-                                className={`${styles.verify_button_icon} ${
-                                    !isWsConnected ? styles.not_connected : ''
-                                }`}
-                                color='var(--other-green)'
-                                size={10}
-                            />
-                        </>
+                        <AiOutlineCheck
+                            className={`${styles.verify_button_icon} ${
+                                !isWsConnected ? styles.not_connected : ''
+                            }`}
+                            color='var(--other-green)'
+                            size={10}
+                        />
                     ) : (
                         <>
                             <AiOutlineClose
@@ -910,23 +906,6 @@ function ChatPanel(props: propsIF) {
             )}
 
             <section style={{ paddingRight: '10px' }}>
-                {isFullScreen || !isChatOpen ? (
-                    <></>
-                ) : (
-                    // <<div
-                    //     className={styles.open_full_button}
-                    //     onClick={() =>
-                    //         window.open('/chat/' + convertCurreny(room))
-                    //     }
-                    //     aria-label='Open chat in full screen'
-                    // >
-                    //     <img
-                    //         src={ExpandChatIcon}
-                    //         alt='Open chat in full screen'
-                    //     />
-                    // </div>>
-                    <></>
-                )}
                 {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
@@ -948,6 +927,9 @@ function ChatPanel(props: propsIF) {
                 )}
             </section>
         </div>
+    ) : (
+        // Closed header (icon only)
+        closedHeader
     );
 
     let mentionIxdexPointer = 0;
@@ -972,7 +954,10 @@ function ChatPanel(props: propsIF) {
                             isUserLoggedIn={isUserConnected as boolean}
                             message={item}
                             ensName={ensName}
-                            isCurrentUser={item && item.sender === currentUser}
+                            isCurrentUser={
+                                currentUser !== undefined &&
+                                item.sender === currentUser
+                            }
                             currentUser={currentUser}
                             resolvedAddress={resolvedAddressFromContext}
                             connectedAccountActive={userAddress}
@@ -1368,9 +1353,7 @@ function ChatPanel(props: propsIF) {
 
     return (
         <div
-            className={`${styles.main_container} ${
-                isChatOpen ? styles.chat_open : ''
-            }`}
+            className={`${styles.main_container} ${isChatOpen ? styles.chat_open : styles.chat_closed}`}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
@@ -1398,27 +1381,29 @@ function ChatPanel(props: propsIF) {
                         Go to Chart
                     </div>
                     {header}
-                    <Room
-                        selectedRoom={room}
-                        setRoom={setRoom}
-                        room={room}
-                        setIsCurrentPool={setIsCurrentPool}
-                        isCurrentPool={isCurrentPool}
-                        showCurrentPoolButton={showCurrentPoolButton}
-                        setShowCurrentPoolButton={setShowCurrentPoolButton}
-                        userCurrentPool={userCurrentPool}
-                        setUserCurrentPool={setUserCurrentPool}
-                        currentUser={currentUser}
-                        ensName={ensName}
-                        setIsFocusMentions={setIsFocusMentions}
-                        notifications={notifications}
-                        mentCount={mentions.length}
-                        mentionIndex={mentionIndex}
-                        isModerator={isModerator}
-                        isFocusMentions={isFocusMentions}
-                        setGoToChartParams={setGoToChartParams}
-                        isChatOpen={isChatOpen}
-                    />
+                    {isChatOpen && (
+                        <Room
+                            selectedRoom={room}
+                            setRoom={setRoom}
+                            room={room}
+                            setIsCurrentPool={setIsCurrentPool}
+                            isCurrentPool={isCurrentPool}
+                            showCurrentPoolButton={showCurrentPoolButton}
+                            setShowCurrentPoolButton={setShowCurrentPoolButton}
+                            userCurrentPool={userCurrentPool}
+                            setUserCurrentPool={setUserCurrentPool}
+                            currentUser={currentUser}
+                            ensName={ensName}
+                            setIsFocusMentions={setIsFocusMentions}
+                            notifications={notifications}
+                            mentCount={mentions.length}
+                            mentionIndex={mentionIndex}
+                            isModerator={isModerator}
+                            isFocusMentions={isFocusMentions}
+                            setGoToChartParams={setGoToChartParams}
+                            isChatOpen={isChatOpen}
+                        />
+                    )}
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
                     {rndPreviousMessagesButton()}
