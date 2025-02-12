@@ -421,48 +421,57 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
-
-        if (!userAddress || !isChatOpen) {
-            setCurrentUser(undefined);
-            setIsModerator(false);
-            console.log(
-                '🚨 User disconnected or chat closed. Resetting currentUser:',
-                currentUser,
-            );
-            return;
-        }
-
-        setEnsName(ens ?? defaultEnsName);
-
-        getID().then((result) => {
-            if (!result || result.status !== 'OK' || !result.userData) {
-                console.warn(
-                    '⚠️ Invalid user data received, resetting currentUser.',
-                );
-                setCurrentUser(undefined);
-                return;
+        if (userAddress && isChatOpen) {
+            if (ens === null || ens === undefined) {
+                setEnsName(defaultEnsName);
+            } else {
+                setEnsName(ens);
             }
 
-            const {
-                _id,
-                isModerator,
-                userCurrentPool,
-                ensName: fetchedEnsName,
-            } = result.userData;
-
-            setCurrentUser(_id);
-            setCurrentUserID(_id);
-            setUserCurrentPool(userCurrentPool);
-            setIsModerator(!!isModerator);
-
-            if (fetchedEnsName !== ens && ens) {
-                updateUser(_id, ens, userCurrentPool).then((updateResult) => {
-                    if (updateResult?.status === 'OK' && ens) {
-                        updateMessageUser(_id, ens);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            getID().then((result: any) => {
+                if (result && result.status === 'Not OK') {
+                    // this flow moved to backend due to triggering more than one
+                    // whole of initial data fetching process will be refactored
+                    // saveUser(address, ensName).then((result: any) => {
+                    //     setCurrentUser(result.userData._id);
+                    //     return result;
+                    // });
+                } else {
+                    result.userData.isModerator === true
+                        ? setIsModerator(true)
+                        : setIsModerator(false);
+                    setCurrentUser(result.userData._id);
+                    setCurrentUserID(result.userData._id);
+                    setUserCurrentPool(result.userData.userCurrentPool);
+                    if (result.userData.ensName !== ensName) {
+                        updateUser(
+                            currentUser as string,
+                            ensName,
+                            userCurrentPool,
+                        ).then(
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (result: any) => {
+                                if (result && result.status === 'OK') {
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    updateMessageUser(
+                                        currentUser as string,
+                                        ensName,
+                                    ).then(
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        (result: any) => {
+                                            return result;
+                                        },
+                                    );
+                                }
+                            },
+                        );
                     }
-                });
-            }
-        });
+                }
+            });
+        } else {
+            setCurrentUser(undefined);
+        }
     }, [ens, userAddress, isChatOpen, isFullScreen, setUserCurrentPool]);
 
     useEffect(() => {
@@ -925,7 +934,6 @@ function ChatPanel(props: propsIF) {
             </section>
         </div>
     ) : (
-        // Closed header (icon only)
         closedHeader
     );
 
