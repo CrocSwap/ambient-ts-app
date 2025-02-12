@@ -391,7 +391,7 @@ export default function Room(props: propsIF) {
                                     className={styles.dropdown_item}
                                     key={i}
                                     data-value={pool.name}
-                                    data-icon='glyphicon glyphicon-eye-open'
+                                    // data-icon='glyphicon glyphicon-eye-open'
                                     onClick={(event: any) =>
                                         handleRoomClick(event, pool.name)
                                     }
