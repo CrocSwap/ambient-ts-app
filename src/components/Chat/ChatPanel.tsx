@@ -36,6 +36,7 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
+import { LuMessageSquareText } from 'react-icons/lu';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -850,7 +851,16 @@ function ChatPanel(props: propsIF) {
         </div>
     );
 
-    const header = (
+    const closedHeader = (
+        <div
+            className={styles.closedChatHeader}
+            onClick={() => setIsChatOpen(true)}
+        >
+            <LuMessageSquareText size={24} color='white' strokeWidth={1} />
+        </div>
+    );
+
+    const header = isChatOpen ? (
         <div
             className={styles.chat_header}
             onClick={() => {
@@ -873,14 +883,12 @@ function ChatPanel(props: propsIF) {
                         userAddress &&
                         isUserConnected && (
                             <AiOutlineUser
-                                className={`${styles.verify_button_icon} ${
-                                    styles.verify_button_mod_icon
-                                } ${
+                                className={`${styles.verify_button_icon} ${styles.verify_button_mod_icon} ${
                                     !isWsConnected ? styles.not_connected : ''
                                 }`}
                                 color='var(--other-green)'
                                 size={14}
-                            ></AiOutlineUser>
+                            />
                         )}
                     {isVerified && userAddress && isUserConnected ? (
                         <>
@@ -945,6 +953,8 @@ function ChatPanel(props: propsIF) {
                 )}
             </section>
         </div>
+    ) : (
+        closedHeader
     );
 
     let mentionIxdexPointer = 0;
@@ -1365,9 +1375,7 @@ function ChatPanel(props: propsIF) {
 
     return (
         <div
-            className={`${styles.main_container} ${
-                isChatOpen ? styles.chat_open : ''
-            }`}
+            className={`${styles.main_container} ${isChatOpen ? styles.chat_open : styles.chat_closed}`}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
@@ -1395,27 +1403,29 @@ function ChatPanel(props: propsIF) {
                         Go to Chart
                     </div>
                     {header}
-                    <Room
-                        selectedRoom={room}
-                        setRoom={setRoom}
-                        room={room}
-                        setIsCurrentPool={setIsCurrentPool}
-                        isCurrentPool={isCurrentPool}
-                        showCurrentPoolButton={showCurrentPoolButton}
-                        setShowCurrentPoolButton={setShowCurrentPoolButton}
-                        userCurrentPool={userCurrentPool}
-                        setUserCurrentPool={setUserCurrentPool}
-                        currentUser={currentUser}
-                        ensName={ensName}
-                        setIsFocusMentions={setIsFocusMentions}
-                        notifications={notifications}
-                        mentCount={mentions.length}
-                        mentionIndex={mentionIndex}
-                        isModerator={isModerator}
-                        isFocusMentions={isFocusMentions}
-                        setGoToChartParams={setGoToChartParams}
-                        isChatOpen={isChatOpen}
-                    />
+                    {isChatOpen && (
+                        <Room
+                            selectedRoom={room}
+                            setRoom={setRoom}
+                            room={room}
+                            setIsCurrentPool={setIsCurrentPool}
+                            isCurrentPool={isCurrentPool}
+                            showCurrentPoolButton={showCurrentPoolButton}
+                            setShowCurrentPoolButton={setShowCurrentPoolButton}
+                            userCurrentPool={userCurrentPool}
+                            setUserCurrentPool={setUserCurrentPool}
+                            currentUser={currentUser}
+                            ensName={ensName}
+                            setIsFocusMentions={setIsFocusMentions}
+                            notifications={notifications}
+                            mentCount={mentions.length}
+                            mentionIndex={mentionIndex}
+                            isModerator={isModerator}
+                            isFocusMentions={isFocusMentions}
+                            setGoToChartParams={setGoToChartParams}
+                            isChatOpen={isChatOpen}
+                        />
+                    )}
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
                     {rndPreviousMessagesButton()}
