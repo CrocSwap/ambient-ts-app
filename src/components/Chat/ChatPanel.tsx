@@ -15,6 +15,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import NotFound from '../../pages/common/NotFound/NotFound';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
@@ -35,8 +36,8 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { LuMessageSquareText } from 'react-icons/lu';
+
 interface propsIF {
     isFullScreen: boolean;
     appPage?: boolean;
@@ -890,13 +891,15 @@ function ChatPanel(props: propsIF) {
                             />
                         )}
                     {isVerified && userAddress && isUserConnected ? (
-                        <AiOutlineCheck
-                            className={`${styles.verify_button_icon} ${
-                                !isWsConnected ? styles.not_connected : ''
-                            }`}
-                            color='var(--other-green)'
-                            size={10}
-                        />
+                        <>
+                            <AiOutlineCheck
+                                className={`${styles.verify_button_icon} ${
+                                    !isWsConnected ? styles.not_connected : ''
+                                }`}
+                                color='var(--other-green)'
+                                size={10}
+                            />
+                        </>
                     ) : (
                         <>
                             <AiOutlineClose
@@ -912,6 +915,23 @@ function ChatPanel(props: propsIF) {
             )}
 
             <section style={{ paddingRight: '10px' }}>
+                {isFullScreen || !isChatOpen ? (
+                    <></>
+                ) : (
+                    // <<div
+                    //     className={styles.open_full_button}
+                    //     onClick={() =>
+                    //         window.open('/chat/' + convertCurreny(room))
+                    //     }
+                    //     aria-label='Open chat in full screen'
+                    // >
+                    //     <img
+                    //         src={ExpandChatIcon}
+                    //         alt='Open chat in full screen'
+                    //     />
+                    // </div>>
+                    <></>
+                )}
                 {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
@@ -959,10 +979,7 @@ function ChatPanel(props: propsIF) {
                             isUserLoggedIn={isUserConnected as boolean}
                             message={item}
                             ensName={ensName}
-                            isCurrentUser={
-                                currentUser !== undefined &&
-                                item.sender === currentUser
-                            }
+                            isCurrentUser={item && item.sender === currentUser}
                             currentUser={currentUser}
                             resolvedAddress={resolvedAddressFromContext}
                             connectedAccountActive={userAddress}
