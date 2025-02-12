@@ -168,9 +168,6 @@ export default function Room(props: propsIF) {
                 baseToken.symbol,
                 quoteToken.symbol,
             );
-            currentPoolRoomObj.shownName =
-                getRoomNameFromBaseQuote(baseToken.symbol, quoteToken.symbol) +
-                ' 📈';
             newRoomList.push(currentPoolRoomObj);
         }
 
