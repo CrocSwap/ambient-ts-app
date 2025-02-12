@@ -35,13 +35,13 @@ function RecentPools(props: propsIF) {
             const spotPricePromises = recentPools.get(5).map((pool) =>
                 cachedQuerySpotPrice(
                     crocEnv,
-                    pool.base.address,
-                    pool.quote.address,
+                    pool.base,
+                    pool.quote,
                     chainId,
                     poolPriceCacheTime,
                 ).catch((error) => {
                     console.error(
-                        `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
+                        `Failed to fetch spot price for pool ${pool.baseToken.symbol}-${pool.quoteToken.symbol}:`,
                         error,
                     );
                     return undefined; // Handle the case where fetching spot price fails

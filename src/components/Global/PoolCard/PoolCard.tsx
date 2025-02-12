@@ -11,7 +11,7 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
-import { AppStateContext } from '../../../contexts';
+import { AppStateContext, ExploreContext } from '../../../contexts';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import TokenIcon from '../TokenIcon/TokenIcon';
@@ -31,45 +31,40 @@ export default function PoolCard(props: propsIF) {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
+    const {
+        pools: { activePoolList },
+    } = useContext(ExploreContext);
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const [isHovered, setIsHovered] = useState(false);
-    const poolData = useFetchPoolStats(pool, spotPrice);
 
+    const poolData = useFetchPoolStats(pool, activePoolList, spotPrice);
     const {
-        poolVolume24h,
         poolPrice,
         poolPriceDisplay,
-        poolTvl,
-        poolPriceChangePercent,
         isPoolPriceChangePositive,
         shouldInvertDisplay,
-        basePrice,
-        quotePrice,
     } = poolData;
 
     const denomTokenIsUsdStableToken = shouldInvertDisplay
-        ? isUsdStableToken(pool.quote.address)
-        : isUsdStableToken(pool.base.address);
+        ? isUsdStableToken(pool.quote)
+        : isUsdStableToken(pool.base);
 
     const denomTokenIsWBTCToken = shouldInvertDisplay
-        ? isWbtcOrStakedBTCToken(pool.quote.address)
-        : isWbtcOrStakedBTCToken(pool.base.address);
+        ? isWbtcOrStakedBTCToken(pool.quote)
+        : isWbtcOrStakedBTCToken(pool.base);
 
     const excludeFromUsdConversion =
-        isDefaultDenomTokenExcludedFromUsdConversion(
-            pool.base.address,
-            pool.quote.address,
-        );
+        isDefaultDenomTokenExcludedFromUsdConversion(pool.base, pool.quote);
 
-    const isEthStakedEthPair = isETHPair(pool.base.address, pool.quote.address);
-    const isPoolBtcPair = isBtcPair(pool.base.address, pool.quote.address);
+    const isEthStakedEthPair = isETHPair(pool.base, pool.quote);
+    const isPoolBtcPair = isBtcPair(pool.base, pool.quote);
 
     const usdPrice =
-        poolPriceDisplay && basePrice && quotePrice
+        poolPriceDisplay && pool.baseUsdPrice && pool.quoteUsdPrice
             ? shouldInvertDisplay
-                ? (1 / poolPriceDisplay) * quotePrice
-                : poolPriceDisplay * basePrice
+                ? (1 / poolPriceDisplay) * pool.quoteUsdPrice
+                : poolPriceDisplay * pool.baseUsdPrice
             : undefined;
 
     const poolPriceDisplayDOM = (
@@ -109,13 +104,13 @@ export default function PoolCard(props: propsIF) {
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const [addrTokenA, addrTokenB] =
-        tokenA.address.toLowerCase() === pool.base.address.toLowerCase()
-            ? [pool.base.address, pool.quote.address]
-            : tokenA.address.toLowerCase() === pool.quote.address.toLowerCase()
-              ? [pool.quote.address, pool.base.address]
-              : tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
-                ? [pool.quote.address, pool.base.address]
-                : [pool.base.address, pool.quote.address];
+        tokenA.address.toLowerCase() === pool.base.toLowerCase()
+            ? [pool.base, pool.quote]
+            : tokenA.address.toLowerCase() === pool.quote.toLowerCase()
+              ? [pool.quote, pool.base]
+              : tokenB.address.toLowerCase() === pool.base.toLowerCase()
+                ? [pool.quote, pool.base]
+                : [pool.base, pool.quote];
 
     const poolLink = linkGenMarket.getFullURL({
         chain: chainId,
@@ -133,18 +128,33 @@ export default function PoolCard(props: propsIF) {
                         : styles.change_negative
                 }
             >
-                {poolPrice === undefined || poolPriceChangePercent === undefined
+                {poolPrice === undefined ||
+                pool.priceChangePercentString === undefined
                     ? '…'
-                    : poolPriceChangePercent}
+                    : pool.priceChangePercentString}
             </div>
         </div>
     );
 
-    const ariaDescription = `pool for ${pool.base.symbol} and ${
-        pool.quote.symbol
+    const formattedVolumeChange24h = pool.volumeChange24h
+        ? getFormattedNumber({
+              value: pool.volumeChange24h,
+              prefix: '$',
+          })
+        : undefined;
+
+    const formattedTVLTotalUSD = pool.tvlTotalUsd
+        ? getFormattedNumber({
+              value: pool.tvlTotalUsd,
+              prefix: '$',
+          })
+        : undefined;
+
+    const ariaDescription = `pool for ${pool.baseToken.symbol} and ${
+        pool.quoteToken.symbol
     }. 24 hour volume is ${
-        poolVolume24h ? poolVolume24h : 'not available'
-    }.  TVL is ${poolTvl}. 24 hours pool price change is ${poolPriceChangePercent}. Pool price is ${
+        formattedVolumeChange24h ? formattedVolumeChange24h : 'not available'
+    }.  TVL is ${formattedTVLTotalUSD}. 24 hours pool price change is ${pool.priceChange24h}. Pool price is ${
         poolPrice ? poolPrice : 'not available'
     }. `;
 
@@ -167,58 +177,58 @@ export default function PoolCard(props: propsIF) {
                         <TokenIcon
                             token={
                                 shouldInvertDisplay === undefined
-                                    ? pool.base
+                                    ? pool.baseToken
                                     : shouldInvertDisplay
-                                      ? pool.base
-                                      : pool.quote
+                                      ? pool.baseToken
+                                      : pool.quoteToken
                             }
                             size='2xl'
                             src={uriToHttp(
                                 shouldInvertDisplay === undefined
-                                    ? pool.base.logoURI
+                                    ? pool.baseToken.logoURI
                                     : shouldInvertDisplay
-                                      ? pool.base.logoURI
-                                      : pool.quote.logoURI,
+                                      ? pool.baseToken.logoURI
+                                      : pool.quoteToken.logoURI,
                             )}
                             alt={
                                 shouldInvertDisplay === undefined
-                                    ? pool.base.symbol
+                                    ? pool.baseToken.symbol
                                     : shouldInvertDisplay
-                                      ? pool.base.symbol
-                                      : pool.quote.symbol
+                                      ? pool.baseToken.symbol
+                                      : pool.quoteToken.symbol
                             }
                         />
                         <TokenIcon
                             token={
                                 shouldInvertDisplay === undefined
-                                    ? pool.quote
+                                    ? pool.quoteToken
                                     : shouldInvertDisplay
-                                      ? pool.quote
-                                      : pool.base
+                                      ? pool.quoteToken
+                                      : pool.baseToken
                             }
                             size='2xl'
                             src={uriToHttp(
                                 shouldInvertDisplay === undefined
-                                    ? pool.quote.logoURI
+                                    ? pool.quoteToken.logoURI
                                     : shouldInvertDisplay
-                                      ? pool.quote.logoURI
-                                      : pool.base.logoURI,
+                                      ? pool.quoteToken.logoURI
+                                      : pool.baseToken.logoURI,
                             )}
                             alt={
                                 shouldInvertDisplay === undefined
-                                    ? pool.quote.symbol
+                                    ? pool.quoteToken.symbol
                                     : shouldInvertDisplay
-                                      ? pool.quote.symbol
-                                      : pool.base.symbol
+                                      ? pool.quoteToken.symbol
+                                      : pool.baseToken.symbol
                             }
                         />
                     </div>
                     <div className={styles.tokens_name}>
                         {shouldInvertDisplay === undefined
-                            ? `${pool.base.symbol} / ${pool.quote.symbol}`
+                            ? `${pool.baseToken.symbol} / ${pool.quoteToken.symbol}`
                             : shouldInvertDisplay
-                              ? `${pool.base.symbol} / ${pool.quote.symbol}`
-                              : `${pool.quote.symbol} / ${pool.base.symbol}`}
+                              ? `${pool.baseToken.symbol} / ${pool.quoteToken.symbol}`
+                              : `${pool.quoteToken.symbol} / ${pool.baseToken.symbol}`}
                     </div>
                 </div>
                 <div className={styles.row}>
@@ -240,15 +250,17 @@ export default function PoolCard(props: propsIF) {
                         <div className={styles.row}>
                             <div className={styles.row_title}>24h Vol.</div>
                             <div className={styles.vol}>
-                                {poolVolume24h === undefined
+                                {formattedVolumeChange24h === undefined
                                     ? '…'
-                                    : `$${poolVolume24h}`}
+                                    : `${formattedVolumeChange24h}`}
                             </div>
                         </div>
                         <div className={styles.row}>
                             <div className={styles.row_title}>TVL</div>
                             <div className={styles.vol}>
-                                {poolTvl === undefined ? '…' : `$${poolTvl}`}
+                                {formattedTVLTotalUSD === undefined
+                                    ? '…'
+                                    : `${formattedTVLTotalUSD}`}
                             </div>
                         </div>
                     </div>

@@ -238,14 +238,14 @@ export const getDefaultRooms = (isModerator: boolean) => {
     const ret: ChatRoomIF[] = [
         {
             name: 'Global',
-            shownName: 'Global 🌍',
+            shownName: 'Global',
         },
     ];
 
     if (isModerator) {
         ret.push({
             name: 'Admins',
-            shownName: 'Admins 👑',
+            shownName: 'Admins',
         });
     }
 
@@ -271,24 +271,11 @@ export const createRoomIF = (
         };
     }
 
-    try {
-        if (popularityScore && popularityScore > 0) {
-            let append = '';
-            for (let i = 0; i < popularityScore; i++) {
-                append += '🔥';
-            }
-
-            ret.shownName = `${ret.name} ${append}`;
-        }
-    } catch {
-        console.error('Error creating roomIF');
-    }
-
     return ret;
 };
 
 export const getRoomNameFromPool = (pool: PoolIF) => {
-    return `${pool.base.symbol} / ${pool.quote.symbol}`;
+    return `${pool.baseToken.symbol} / ${pool.quoteToken.symbol}`;
 };
 
 export const getRoomObjFromBaseQuote = (

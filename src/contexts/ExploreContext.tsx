@@ -1,5 +1,4 @@
-import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { CrocEnv } from '@crocswap-libs/sdk';
 import {
     Dispatch,
     ReactNode,
@@ -14,12 +13,8 @@ import {
     excludedTokenAddressesLowercase,
     hiddenTokens,
 } from '../ambient-utils/constants';
-import {
-    expandPoolStats,
-    getFormattedNumber,
-    getMoneynessRank,
-} from '../ambient-utils/dataLayer';
-import { PoolIF, SinglePoolDataIF } from '../ambient-utils/types';
+import { expandPoolStats } from '../ambient-utils/dataLayer';
+import { PoolIF } from '../ambient-utils/types';
 import {
     useTokenStats,
     useTokenStatsIF,
@@ -33,39 +28,17 @@ import { TokenContext } from './TokenContext';
 
 export interface ExploreContextIF {
     pools: {
-        all: Array<PoolDataIF>;
+        all: Array<PoolIF>;
         topPools: PoolIF[];
         visibleTopPoolData: PoolIF[];
         setVisibleTopPoolData: Dispatch<SetStateAction<PoolIF[]>>;
-        getAllPools: (
-            poolList: PoolIF[],
-            crocEnv: CrocEnv,
-            chainId: string,
-        ) => void;
-
+        processPoolListForActiveChain: () => Promise<void>;
+        activePoolList: PoolIF[];
         reset: () => void;
     };
     topTokensOnchain: useTokenStatsIF;
     isExploreDollarizationEnabled: boolean;
     setIsExploreDollarizationEnabled: Dispatch<SetStateAction<boolean>>;
-}
-
-export interface PoolDataIF extends PoolIF {
-    spotPrice: number;
-    displayPrice: string;
-    poolIdx: number;
-    tvl: number;
-    tvlStr: string;
-    volume: number;
-    volumeStr: string;
-    apr: number;
-    priceChange: number;
-    priceChangeStr: string;
-    moneyness: {
-        base: number;
-        quote: number;
-    };
-    usdPriceMoneynessBased: number;
 }
 
 export const ExploreContext = createContext({} as ExploreContextIF);
@@ -74,18 +47,36 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
+    const { gcgoPoolList } = useContext(ChainDataContext);
+    const { analyticsPoolList } = useContext(PoolContext);
+
+    const [activePoolList, setActivePoolList] = useState<PoolIF[]>(
+        analyticsPoolList?.length ? analyticsPoolList : [],
+    );
+
+    useEffect(() => {
+        if (!analyticsPoolList?.length && gcgoPoolList?.length) {
+            const timeout = setTimeout(() => {
+                setActivePoolList(gcgoPoolList);
+            }, 2000);
+
+            return () => clearTimeout(timeout); // Cleanup on unmount or re-run
+        } else if (analyticsPoolList?.length) {
+            setActivePoolList(analyticsPoolList);
+        } else {
+            setActivePoolList(hardcodedTopPools);
+        }
+    }, [analyticsPoolList, gcgoPoolList]);
+
     const {
         topPools: hardcodedTopPools,
         crocEnv,
         provider,
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { allPoolStats, isActiveNetworkPlume, isActiveNetworkSwell } =
-        useContext(ChainDataContext);
-    const { poolList } = useContext(PoolContext);
 
     const [intermediaryPoolData, setIntermediaryPoolData] = useState<
-        Array<PoolDataIF>
+        Array<PoolIF>
     >([]);
     const [visibleTopPoolData, setVisibleTopPoolData] = useState<PoolIF[]>([]);
     const [isFetchError, setIsFetchError] = useState(false);
@@ -105,241 +96,47 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         }
     }, [isExploreDollarizationEnabled]);
 
-    const getAllPools = async (): Promise<void> => {
+    const processPoolListForActiveChain = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
-        if (crocEnv && poolList.length) {
+        if (
+            // poolList?.length &&
+            crocEnv
+        ) {
             // use metadata to get expanded pool data
-            getAllPoolData(poolList, crocEnv, activeNetwork.chainId);
+            processPoolList(activeNetwork.chainId, crocEnv);
         }
     };
 
     // fn to get data on a single pool
-    async function getPoolData(
+    async function expandPoolListData(
         pool: PoolIF,
         crocEnv: CrocEnv,
-        chainId: string,
-    ): Promise<PoolDataIF> {
-        // moneyness of base token
-        const baseMoneyness: number = getMoneynessRank(pool.base.symbol);
-        // moneyness of quote token
-        const quoteMoneyness: number = getMoneynessRank(pool.quote.symbol);
-        // determination to invert based on relative moneyness
-        const shouldInvert: boolean = quoteMoneyness - baseMoneyness >= 0;
-
-        // pool index
-        const poolIdx: number = lookupChain(chainId).poolIndex;
-
-        const poolStats = allPoolStats?.find(
-            (poolStat: SinglePoolDataIF) =>
-                poolStat.base.toLowerCase() ===
-                    pool.base.address.toLowerCase() &&
-                poolStat.quote.toLowerCase() ===
-                    pool.quote.address.toLowerCase(),
-        );
-
-        const poolStatsNow = {
-            baseFees: poolStats?.baseFees || 0,
-            baseTvl: poolStats?.baseTvl || 0,
-            baseVolume: poolStats?.baseVolume || 0,
-            quoteFees: poolStats?.quoteFees || 0,
-            quoteTvl: poolStats?.quoteTvl || 0,
-            quoteVolume: poolStats?.quoteVolume || 0,
-            feeRate: poolStats?.feeRate || 0,
-            lastPriceIndic: poolStats?.lastPriceIndic || 0,
-            lastPriceLiq: poolStats?.lastPriceLiq || 0,
-            lastPriceSwap: poolStats?.lastPriceSwap || 0,
-            latestTime: poolStats?.latestTime || 0,
-            isHistorical: false,
-        };
-
-        const expandedPoolStatsNow = await expandPoolStats(
-            poolStatsNow,
-            pool.base.address,
-            pool.quote.address,
-            chainId,
+    ): Promise<PoolIF> {
+        const expandedPoolData = await expandPoolStats(
+            pool,
             crocEnv,
             cachedFetchTokenPrice,
             cachedTokenDetails,
             tokens.tokenUniv,
         );
 
-        const poolStats24hAgo = {
-            baseFees: poolStats?.baseFees24hAgo || 0,
-            baseTvl: poolStats?.baseTvl || 0,
-            baseVolume: poolStats?.baseVolume24hAgo || 0,
-            quoteFees: poolStats?.quoteFees24hAgo || 0,
-            quoteTvl: poolStats?.quoteTvl || 0,
-            quoteVolume: poolStats?.quoteVolume24hAgo || 0,
-            feeRate: poolStats?.feeRate || 0,
-            lastPriceIndic: poolStats?.lastPriceIndic || 0,
-            lastPriceLiq: poolStats?.lastPriceLiq || 0,
-            lastPriceSwap: poolStats?.lastPriceSwap || 0,
-            latestTime: poolStats?.latestTime || 0,
-            isHistorical: false,
-        };
-
-        const expandedPoolStats24hAgo = await expandPoolStats(
-            poolStats24hAgo,
-            pool.base.address,
-            pool.quote.address,
-            chainId,
-            crocEnv,
-            cachedFetchTokenPrice,
-            cachedTokenDetails,
-            tokens.tokenUniv,
-        );
-
-        const volumeTotalNow = expandedPoolStatsNow?.volumeTotalUsd;
-        const volumeTotal24hAgo = expandedPoolStats24hAgo?.volumeTotalUsd;
-
-        const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
-
-        const nowPrice = expandedPoolStatsNow?.lastPriceSwap;
-        const ydayPrice = poolStats?.priceSwap24hAgo;
-
-        const feesTotalNow = expandedPoolStatsNow?.feesTotalUsd;
-        const feesTotal24hAgo = expandedPoolStats24hAgo?.feesTotalUsd;
-        const feesChange24h = feesTotalNow - feesTotal24hAgo;
-
-        const priceChangeRaw =
-            ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
-                ? shouldInvert
-                    ? ydayPrice / nowPrice - 1.0
-                    : nowPrice / ydayPrice - 1.0
-                : undefined;
-
-        const minimumPoolTvl = isActiveNetworkSwell
-            ? 20
-            : isActiveNetworkPlume
-              ? 20
-              : 100;
-
-        if (
-            !expandedPoolStatsNow ||
-            expandedPoolStatsNow.tvlTotalUsd < minimumPoolTvl
-        ) {
-            // return early
-            const poolData: PoolDataIF = {
-                ...pool,
-                spotPrice: 0,
-                displayPrice: '0',
-                poolIdx,
-                tvl: 0,
-                tvlStr: '0',
-                volume: 0,
-                volumeStr: '0',
-                apr: 0,
-                priceChange: 0,
-                priceChangeStr: '0',
-                moneyness: {
-                    base: 0,
-                    quote: 0,
-                },
-                usdPriceMoneynessBased: 0,
-            };
-            return poolData;
-        }
-
-        // format TVL, use empty string as backup value
-        const tvlDisplay: string = expandedPoolStatsNow.tvlTotalUsd
-            ? getFormattedNumber({
-                  value: expandedPoolStatsNow.tvlTotalUsd,
-                  isTvl: true,
-                  prefix: '$',
-              })
-            : '';
-        // format volume, use empty string as backup value
-        const volumeDisplay: string = volumeChange24h
-            ? getFormattedNumber({
-                  value: volumeChange24h,
-                  prefix: '$',
-              })
-            : '';
-        // format fees as apr, use 0 as backup value
-        const aprNum: number =
-            feesChange24h && expandedPoolStatsNow.tvlTotalUsd
-                ? (feesChange24h / expandedPoolStatsNow.tvlTotalUsd) * 100 * 365
-                : 0;
-        // human readable price change over last 24 hours
-        let priceChangePercent: string;
-
-        if (priceChangeRaw === undefined || volumeChange24h === 0) {
-            priceChangePercent = '';
-        } else if (priceChangeRaw * 100 >= 0.01) {
-            priceChangePercent =
-                '+' +
-                (priceChangeRaw * 100).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                }) +
-                '%';
-        } else if (priceChangeRaw * 100 <= -0.01) {
-            priceChangePercent =
-                (priceChangeRaw * 100).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                }) + '%';
-        } else {
-            priceChangePercent = 'No Change';
-        }
-
-        // display price, inverted if necessary
-        const displayPrice: number = shouldInvert
-            ? 1 /
-              toDisplayPrice(nowPrice, pool.base.decimals, pool.quote.decimals)
-            : toDisplayPrice(nowPrice, pool.base.decimals, pool.quote.decimals);
-
-        const tokenPriceForUsd = shouldInvert
-            ? (await cachedFetchTokenPrice(pool.quote.address, pool.chainId))
-                  ?.usdPrice || 0
-            : (await cachedFetchTokenPrice(pool.base.address, pool.chainId))
-                  ?.usdPrice || 0;
-
-        const usdPriceMoneynessBased = displayPrice * tokenPriceForUsd;
-
-        // return variable
-        const poolData: PoolDataIF = {
-            ...pool,
-            spotPrice: nowPrice,
-            displayPrice: getFormattedNumber({
-                value: displayPrice,
-                abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-            }),
-            poolIdx,
-            tvl: expandedPoolStatsNow.tvlTotalUsd,
-            tvlStr: tvlDisplay,
-            volume: volumeChange24h,
-            volumeStr: volumeDisplay,
-            apr: aprNum,
-            priceChange: priceChangeRaw ?? 0,
-            priceChangeStr: priceChangePercent,
-            moneyness: {
-                base: baseMoneyness,
-                quote: quoteMoneyness,
-            },
-            usdPriceMoneynessBased,
-        };
-        // write a pool name should it not be there already
-        poolData.name =
-            baseMoneyness < quoteMoneyness
-                ? `${pool.base.symbol} / ${pool.quote.symbol}`
-                : `${pool.quote.symbol} / ${pool.base.symbol}`;
-        return poolData;
+        return expandedPoolData;
     }
 
-    function getAllPoolData(
-        poolList: PoolIF[],
-        crocEnv: CrocEnv,
-        chainId: string,
-    ): void {
-        const allPoolData = poolList.map((pool: PoolIF) =>
-            getPoolData(pool, crocEnv, chainId),
-        );
-        Promise.all(allPoolData)
-            .then((results: Array<PoolDataIF>) => {
+    function processPoolList(chainId: string, crocEnv: CrocEnv): void {
+        if (!activePoolList || !activePoolList.length) return;
+
+        const expandedPoolDataOnCurrentChain = activePoolList
+            .filter((pool) => {
+                return pool.chainId === chainId;
+            })
+            .map((pool: PoolIF) => expandPoolListData(pool, crocEnv));
+
+        Promise.all(expandedPoolDataOnCurrentChain)
+            .then((results: Array<PoolIF>) => {
                 setIsFetchError(false);
                 const filteredPoolData = results.filter(
-                    (pool) => pool.spotPrice > 0,
+                    (pool) => pool.lastPriceSwap && pool.lastPriceSwap > 0,
                 );
                 if (filteredPoolData.length) {
                     setIntermediaryPoolData(filteredPoolData);
@@ -352,7 +149,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     }
 
     const [poolDataFilteredByActiveChain, setPoolDataFilteredByActiveChain] =
-        useState<Array<PoolDataIF>>([]);
+        useState<Array<PoolIF>>([]);
 
     useEffect(() => {
         setPoolDataFilteredByActiveChain([]);
@@ -375,17 +172,17 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             poolDataFilteredByActiveChain.filter(
                 (pool) =>
                     !excludedTokenAddressesLowercase.includes(
-                        pool.base.address.toLowerCase(),
+                        pool.base.toLowerCase(),
                     ) &&
                     !excludedTokenAddressesLowercase.includes(
-                        pool.quote.address.toLowerCase(),
+                        pool.quote.toLowerCase(),
                     ) &&
                     !hiddenTokens.some(
                         (excluded) =>
                             (excluded.address.toLowerCase() ===
-                                pool.base.address.toLowerCase() ||
+                                pool.base.toLowerCase() ||
                                 excluded.address.toLowerCase() ===
-                                    pool.quote.address.toLowerCase()) &&
+                                    pool.quote.toLowerCase()) &&
                             excluded.chainId === parseInt(pool.chainId),
                     ),
             ),
@@ -398,42 +195,64 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             if (
                 isUserOnline &&
                 crocEnv !== undefined &&
-                poolList.length > 0 &&
+                activePoolList?.length &&
                 (await crocEnv.context).chain.chainId === activeNetwork.chainId
             ) {
-                getAllPools();
+                processPoolListForActiveChain();
             }
         })();
     }, [
         isUserOnline,
-        poolList.map((pool) => pool.base.address + pool.quote.address).join(''),
+        JSON.stringify(activePoolList),
         crocEnv,
         activeNetwork.chainId,
         intermediaryPoolData.length !== poolDataFilteredByActiveChain.length,
     ]);
 
     const topPools = useMemo(() => {
-        const topPoolsFilteredByVolume =
+        let topPoolsFilteredByVolume;
+        if (
             filteredPoolsNoExcludedOrHiddenTokens.filter(
-                (pool) => pool.volume > 1000,
-            );
-        return isFetchError ||
-            (filteredPoolsNoExcludedOrHiddenTokens.length &&
-                !topPoolsFilteredByVolume.length)
+                (pool) => pool.volumeChange24h && pool.volumeChange24h > 1000,
+            ).length >= 3
+        ) {
+            topPoolsFilteredByVolume =
+                filteredPoolsNoExcludedOrHiddenTokens.filter(
+                    (pool) =>
+                        pool.volumeChange24h && pool.volumeChange24h > 1000,
+                );
+        } else if (
+            filteredPoolsNoExcludedOrHiddenTokens.filter(
+                (pool) => pool.volumeChange24h && pool.volumeChange24h > 100,
+            ).length >= 3
+        ) {
+            topPoolsFilteredByVolume =
+                filteredPoolsNoExcludedOrHiddenTokens.filter(
+                    (pool) =>
+                        pool.volumeChange24h && pool.volumeChange24h > 100,
+                );
+        } else if (
+            filteredPoolsNoExcludedOrHiddenTokens.filter(
+                (pool) => pool.volumeChange24h && pool.volumeChange24h > 0,
+            ).length >= 3
+        ) {
+            topPoolsFilteredByVolume =
+                filteredPoolsNoExcludedOrHiddenTokens.filter(
+                    (pool) => pool.volumeChange24h && pool.volumeChange24h > 0,
+                );
+        } else {
+            topPoolsFilteredByVolume = filteredPoolsNoExcludedOrHiddenTokens;
+        }
+        return isFetchError
             ? hardcodedTopPools
             : topPoolsFilteredByVolume
                   .sort(
-                      (poolA: PoolDataIF, poolB: PoolDataIF) =>
-                          poolB['volume'] - poolA['volume'],
+                      (poolA: PoolIF, poolB: PoolIF) =>
+                          (poolB['volumeChange24h'] || 0) -
+                          (poolA['volumeChange24h'] || 0),
                   )
                   .slice(0, 5);
-    }, [
-        isFetchError,
-        hardcodedTopPools,
-        filteredPoolsNoExcludedOrHiddenTokens
-            .map((pool) => pool.base.address + pool.quote.address)
-            .join(''),
-    ]);
+    }, [isFetchError, JSON.stringify(filteredPoolsNoExcludedOrHiddenTokens)]);
 
     const dexTokens: useTokenStatsIF = useTokenStats(
         activeNetwork.chainId,
@@ -448,12 +267,14 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const exploreContext: ExploreContextIF = {
         pools: {
             all: filteredPoolsNoExcludedOrHiddenTokens,
-            getAllPools: getAllPools,
+            processPoolListForActiveChain,
             topPools: topPools,
             visibleTopPoolData,
             setVisibleTopPoolData,
+            activePoolList,
             reset: () => {
                 setIntermediaryPoolData([]);
+                setPoolDataFilteredByActiveChain([]);
             },
         },
         topTokensOnchain: dexTokens,

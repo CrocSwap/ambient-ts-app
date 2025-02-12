@@ -27,14 +27,19 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
-        pools: { topPools, visibleTopPoolData, setVisibleTopPoolData },
+        pools: {
+            all: allPoolsOnChain,
+            topPools,
+            visibleTopPoolData,
+            setVisibleTopPoolData,
+        },
     } = useContext(ExploreContext);
-
-    const { blockPollingUrl } = useContext(ChainDataContext);
 
     const {
         activeNetwork: { chainId, priorityPool },
     } = useContext(AppStateContext);
+
+    const { blockPollingUrl } = useContext(ChainDataContext);
 
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const show4TopPools = useMediaQuery('(max-width: 1500px)');
@@ -46,10 +51,47 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const topPoolsWithPriority = useMemo(() => {
         if (!topPools.length) return [];
         if (!priorityPool) return topPools;
-        const updatedPools = [...topPools];
-        updatedPools.splice(2, 0, priorityPool);
-        return updatedPools;
-    }, [topPools, priorityPool]);
+        const updatedActivePoolList = [...topPools];
+
+        const priorityPoolIndexinTopPools = topPools.findIndex(
+            (pool) =>
+                (pool.base.toLowerCase() ===
+                    priorityPool?.[0].address.toLowerCase() &&
+                    pool.quote.toLowerCase() ===
+                        priorityPool?.[1].address.toLowerCase()) ||
+                (pool.base.toLowerCase() ===
+                    priorityPool?.[1].address.toLowerCase() &&
+                    pool.quote.toLowerCase() ===
+                        priorityPool?.[0].address.toLowerCase()),
+        );
+        const priorityPoolIndexInAllPools = allPoolsOnChain.findIndex(
+            (pool) =>
+                (pool.base.toLowerCase() ===
+                    priorityPool?.[0].address.toLowerCase() &&
+                    pool.quote.toLowerCase() ===
+                        priorityPool?.[1].address.toLowerCase()) ||
+                (pool.base.toLowerCase() ===
+                    priorityPool?.[1].address.toLowerCase() &&
+                    pool.quote.toLowerCase() ===
+                        priorityPool?.[0].address.toLowerCase()),
+        );
+
+        if (priorityPoolIndexInAllPools !== -1) {
+            if (priorityPoolIndexinTopPools !== -1) {
+                const [priorityPool] = updatedActivePoolList.splice(
+                    priorityPoolIndexinTopPools,
+                    1,
+                ); // Remove from current position
+                updatedActivePoolList.splice(2, 0, priorityPool); // Insert at third position (index 2)
+            } else {
+                const priorityPool =
+                    allPoolsOnChain[priorityPoolIndexInAllPools]; // Remove from current position
+                updatedActivePoolList.splice(2, 0, priorityPool); // Insert at third position (index 2)
+            }
+        }
+
+        return updatedActivePoolList;
+    }, [JSON.stringify(allPoolsOnChain), priorityPool]);
 
     const lengthOfTopPoolsDisplay = useMemo(
         () =>
@@ -57,36 +99,36 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         [showMobileVersion, show3TopPools, show4TopPools],
     );
 
-    const poolData = useMemo(
+    const slicedPoolData = useMemo(
         () => topPoolsWithPriority.slice(0, lengthOfTopPoolsDisplay),
 
         [topPoolsWithPriority, showMobileVersion, show3TopPools, show4TopPools],
     );
 
     useEffect(() => {
-        if (
-            !topPoolsWithPriority.length ||
-            chainId !== topPoolsWithPriority[0].chainId
-        ) {
+        if (!slicedPoolData.length || chainId !== slicedPoolData[0].chainId) {
             setVisibleTopPoolData([]);
             return;
         }
         if (
-            poolData.map((pool) => pool.name?.toLowerCase()).join('|') !==
-            visibleTopPoolData.map((pool) => pool.name?.toLowerCase()).join('|')
+            slicedPoolData
+                .map((pool) => pool?.name?.toLowerCase())
+                .join('|') !==
+            visibleTopPoolData
+                .map((pool) => pool?.name?.toLowerCase())
+                .join('|')
         ) {
             // Trigger fade-out effect
             setIsFading(true);
             // After fade-out duration (1s), update pool data and fade back in
             setTimeout(() => {
-                setVisibleTopPoolData(poolData);
+                setVisibleTopPoolData(slicedPoolData);
                 setIsFading(false);
             }, 1000); // Match the fade-out duration
+        } else {
+            setVisibleTopPoolData(slicedPoolData);
         }
-    }, [
-        topPoolsWithPriority.map((pool) => pool.name?.toLowerCase()).join('|'),
-        chainId,
-    ]);
+    }, [JSON.stringify(slicedPoolData), chainId]);
 
     const poolPriceCacheTime = Math.floor(Date.now() / 10000); // 10 second cache
     const poolPriceUpdateInterval = Math.floor(Date.now() / 2000); // 2 second interval
@@ -111,21 +153,21 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
 
     const fetchSpotPrices = async () => {
         if (
-            !poolData.length ||
+            !slicedPoolData.length ||
             !crocEnv ||
             (await crocEnv.context).chain.chainId !== chainId
         )
             return;
-        const spotPricePromises = poolData.map((pool) =>
+        const spotPricePromises = slicedPoolData.map((pool) =>
             cachedQuerySpotPrice(
                 crocEnv,
-                pool.base.address,
-                pool.quote.address,
+                pool.base,
+                pool.quote,
                 pool.chainId,
                 poolPriceCacheTime + providerUrl.length,
             ).catch((error) => {
                 console.error(
-                    `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
+                    `Failed to fetch spot price for pool ${pool.baseToken.symbol}-${pool.quoteToken.symbol}:`,
                     error,
                 );
                 return undefined; // Handle the case where fetching spot price fails
@@ -136,7 +178,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         results &&
             setIntermediarySpotPrices({
                 prices: results,
-                chainId: poolData[0].chainId,
+                chainId: slicedPoolData[0].chainId,
             });
     };
 
@@ -144,7 +186,7 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         if (providerUrl === blockPollingUrl) {
             fetchSpotPrices();
         }
-    }, [poolData, poolPriceUpdateInterval, blockPollingUrl, providerUrl]);
+    }, [slicedPoolData, poolPriceUpdateInterval, blockPollingUrl, providerUrl]);
 
     useEffect(() => {
         if (!crocEnv) return;

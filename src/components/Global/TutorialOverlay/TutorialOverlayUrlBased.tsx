@@ -72,36 +72,44 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         }
     };
 
+    const helpModal = (page: string) => {
+        return {
+            title: 'WHAT IS THIS?',
+            content: (
+                <TutorialHelpModal
+                    page={page}
+                    positiveBtnAction={() => {
+                        setShowHelpModal(false);
+                    }}
+                    negativeBtnAction={() => {
+                        setShowTutorial(false);
+                        pulseTutorialBtn();
+                        handleHardFinish();
+                    }}
+                />
+            ),
+        };
+    };
+
     const getTutorialObjectForPage = (page: string) => {
+        let tutoObj: TutorialIF | undefined = undefined;
+
         switch (page) {
             case 'auctions':
-                return {
+                tutoObj = {
                     lsKey: 'tuto_auctions',
                     steps: futaAuctionsSteps,
-                    helpModal: {
-                        title: 'WHAT IS THIS?',
-                        content: (
-                            <TutorialHelpModal
-                                positiveBtnAction={() => {
-                                    setShowHelpModal(false);
-                                }}
-                                negativeBtnAction={() => {
-                                    setShowTutorial(false);
-                                    pulseTutorialBtn();
-                                    handleHardFinish();
-                                }}
-                                page='auction'
-                            />
-                        ),
-                    },
                 };
+                break;
             case 'account':
-                return {
+                tutoObj = {
                     lsKey: 'tuto_futa_account',
                     steps: futaAccountSteps,
+                    noHelpModal: true,
                 };
+                break;
             case 'auctionCreate':
-                return {
+                tutoObj = {
                     lsKey: 'tuto_futa_create',
                     steps: futaCreateSteps,
                     externalComponents: new Map<
@@ -114,11 +122,20 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
                         ],
                     ]),
                 };
+                break;
             // case 'market':
-            //     return { lsKey: 'tuto_market', steps: ambientMarketSteps };
+            //     tutoObj = { lsKey: 'tuto_market', steps: ambientMarketSteps };
+            //     break;
             default:
-                return undefined;
+                tutoObj = undefined;
+                break;
         }
+
+        if (tutoObj && !tutoObj.noHelpModal) {
+            tutoObj.helpModal = helpModal(page);
+        }
+
+        return tutoObj;
     };
 
     const validateURL = () => {
@@ -246,8 +263,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         stepsFiltered.length > 0 &&
         showTutorial &&
         isTutoBuild &&
-        (selectedTutorialRef.current?.showDefault ||
-            selectedTutorialRef.current?.helpModal) &&
+        selectedTutorialRef.current?.showDefault &&
         showTutosLocalStorage &&
         !DISABLE_ALL_TUTOS;
 

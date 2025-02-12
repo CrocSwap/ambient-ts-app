@@ -14,7 +14,7 @@
         opacity: 0;
     }
     to {
-        opacity: 0.3;
+        opacity: 1;
     }
 }
 
@@ -51,7 +51,7 @@
     padding-top: 0rem;
     padding-bottom: 0rem;
     text-align: center;
-    opacity: 0.3;
+    color: var(--text3);
 }
 .comment_sender_info {
     color: var(--accent1);
@@ -67,6 +67,7 @@
     max-width: 80%;
     overflow-wrap: break-word;
     white-space: normal;
+    color: var(--text2);
 }
 
 .comment_bottom_info {
@@ -74,6 +75,7 @@
     bottom: 0.25rem;
     right: 0.5rem;
     font-size: 0.8rem;
+    color: var(--text3);
     animation: kf_comment_bottom_info_anim 0.9s ease-in-out 1 forwards;
 }
 

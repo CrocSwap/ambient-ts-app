@@ -41,10 +41,8 @@ export const useFavePools = (): favePoolsMethodsIF => {
         // returns `true` if any value does not match between objects
         // returns `false` if all values are identical (meaning pools are identical)
         const comparePools = (pool1: PoolIF, pool2: PoolIF): boolean =>
-            pool1.base.address.toLowerCase() !==
-                pool2.base.address.toLowerCase() ||
-            pool1.quote.address.toLowerCase() !==
-                pool2.quote.address.toLowerCase() ||
+            pool1.base.toLowerCase() !== pool2.base.toLowerCase() ||
+            pool1.quote.toLowerCase() !== pool2.quote.toLowerCase() ||
             pool1.chainId !== pool2.chainId ||
             pool1.poolIdx !== pool2.poolIdx;
         // return filtered array of pools
@@ -66,8 +64,10 @@ export const useFavePools = (): favePoolsMethodsIF => {
             baseAddr === tokenA.address ? [tokenA, tokenB] : [tokenB, tokenA];
         // make a pool object from args conforming to PoolIF shape
         const newPool: PoolIF = {
-            base: baseToken,
-            quote: quoteToken,
+            base: baseToken.address,
+            quote: quoteToken.address,
+            baseToken,
+            quoteToken,
             chainId: chainId,
             poolIdx: poolId,
         };
@@ -98,8 +98,8 @@ export const useFavePools = (): favePoolsMethodsIF => {
         // local copy of favePools with the specified pool parameters filtered out
         const updatedPoolsArray: PoolIF[] = favePools.filter(
             (pool: PoolIF) =>
-                pool.base.address.toLowerCase() !== baseAddr.toLowerCase() ||
-                pool.quote.address.toLowerCase() !== quoteAddr.toLowerCase() ||
+                pool.base.toLowerCase() !== baseAddr.toLowerCase() ||
+                pool.quote.toLowerCase() !== quoteAddr.toLowerCase() ||
                 pool.chainId !== chainId ||
                 pool.poolIdx !== poolIdx,
         );
@@ -123,10 +123,8 @@ export const useFavePools = (): favePoolsMethodsIF => {
         // return boolean indicating whether a relevant pool is favorited
         return favePools.some(
             (favePool: PoolIF) =>
-                favePool.base.address.toLowerCase() ===
-                    baseAddr.toLowerCase() &&
-                favePool.quote.address.toLowerCase() ===
-                    quoteAddr.toLowerCase() &&
+                favePool.base.toLowerCase() === baseAddr.toLowerCase() &&
+                favePool.quote.toLowerCase() === quoteAddr.toLowerCase() &&
                 favePool.chainId === chainId &&
                 favePool.poolIdx === poolIdx,
         );
