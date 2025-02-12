@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { getMoneynessRank, uriToHttp } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
-import { AppStateContext } from '../../../contexts';
+import { AppStateContext, ExploreContext } from '../../../contexts';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -33,6 +33,10 @@ export default function PoolsListItem(props: propsIF) {
         useContext(SidebarContext);
 
     const {
+        pools: { activePoolList },
+    } = useContext(ExploreContext);
+
+    const {
         activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
     const { favePools } = useContext(UserPreferenceContext);
@@ -40,18 +44,18 @@ export default function PoolsListItem(props: propsIF) {
     const isFuta = platformName.toLowerCase() === 'futa';
 
     const isBaseTokenMoneynessGreaterOrEqual =
-        pool.base.address && pool.quote.address
-            ? getMoneynessRank(pool.base.symbol) -
-                  getMoneynessRank(pool.quote.symbol) >=
+        pool.baseToken.symbol && pool.quoteToken.symbol
+            ? getMoneynessRank(pool.baseToken.symbol) -
+                  getMoneynessRank(pool.quoteToken.symbol) >=
               0
             : false;
 
     const baseToken = isBaseTokenMoneynessGreaterOrEqual
-        ? pool.quote
-        : pool.base;
+        ? pool.quoteToken
+        : pool.baseToken;
     const quoteToken = isBaseTokenMoneynessGreaterOrEqual
-        ? pool.base
-        : pool.quote;
+        ? pool.baseToken
+        : pool.quoteToken;
     const currentPoolData = {
         base: baseToken,
         quote: quoteToken,
@@ -72,8 +76,7 @@ export default function PoolsListItem(props: propsIF) {
             : favePools.add(quoteToken, baseToken, chainId, poolIndex);
     }
 
-    // hook to get human-readable values for pool volume and TVL
-    const poolData = useFetchPoolStats(pool, spotPrice);
+    const poolData = useFetchPoolStats(pool, activePoolList, spotPrice);
 
     const {
         poolPrice,
@@ -115,13 +118,13 @@ export default function PoolsListItem(props: propsIF) {
     const linkGenMarket: linkGenMethodsIF = useLinkGen(navTarget);
 
     const [addrTokenA, addrTokenB] =
-        tokenA.address.toLowerCase() === pool.base.address.toLowerCase()
-            ? [pool.base.address, pool.quote.address]
-            : tokenA.address.toLowerCase() === pool.quote.address.toLowerCase()
-              ? [pool.quote.address, pool.base.address]
-              : tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
-                ? [pool.quote.address, pool.base.address]
-                : [pool.base.address, pool.quote.address];
+        tokenA.address.toLowerCase() === pool.base.toLowerCase()
+            ? [pool.base, pool.quote]
+            : tokenA.address.toLowerCase() === pool.quote.toLowerCase()
+              ? [pool.quote, pool.base]
+              : tokenB.address.toLowerCase() === pool.base.toLowerCase()
+                ? [pool.quote, pool.base]
+                : [pool.base, pool.quote];
 
     const mobileScreen = useMediaQuery('(max-width: 500px)');
 
@@ -132,8 +135,8 @@ export default function PoolsListItem(props: propsIF) {
                     <TokenIcon
                         token={
                             isBaseTokenMoneynessGreaterOrEqual
-                                ? pool.quote
-                                : pool.base
+                                ? pool.quoteToken
+                                : pool.baseToken
                         }
                         src={uriToHttp(
                             (isBaseTokenMoneynessGreaterOrEqual
@@ -142,16 +145,16 @@ export default function PoolsListItem(props: propsIF) {
                         )}
                         alt={
                             isBaseTokenMoneynessGreaterOrEqual
-                                ? pool.quote.symbol
-                                : pool.base.symbol
+                                ? pool.quoteToken.symbol
+                                : pool.baseToken.symbol
                         }
                         size='m'
                     />
                     <TokenIcon
                         token={
                             isBaseTokenMoneynessGreaterOrEqual
-                                ? pool.base
-                                : pool.quote
+                                ? pool.baseToken
+                                : pool.quoteToken
                         }
                         src={uriToHttp(
                             (isBaseTokenMoneynessGreaterOrEqual
@@ -160,20 +163,20 @@ export default function PoolsListItem(props: propsIF) {
                         )}
                         alt={
                             isBaseTokenMoneynessGreaterOrEqual
-                                ? pool.base.symbol
-                                : pool.quote.symbol
+                                ? pool.baseToken.symbol
+                                : pool.quoteToken.symbol
                         }
                         size='m'
                     />
                 </FlexContainer>
             )}
             {isBaseTokenMoneynessGreaterOrEqual
-                ? pool.quote.symbol
-                : pool.base.symbol}{' '}
+                ? pool.quoteToken.symbol
+                : pool.baseToken.symbol}{' '}
             /{' '}
             {isBaseTokenMoneynessGreaterOrEqual
-                ? pool.base.symbol
-                : pool.quote.symbol}
+                ? pool.baseToken.symbol
+                : pool.quoteToken.symbol}
         </FlexContainer>
     );
 

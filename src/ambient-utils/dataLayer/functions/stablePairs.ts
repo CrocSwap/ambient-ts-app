@@ -33,12 +33,20 @@ export function isUsdcToken(addr: string): boolean {
     return USDC_TOKENS.includes(addr.toLowerCase());
 }
 
+export function isPriorityStakedUSD(addr: string): boolean {
+    return PLUME_TOKENS.pUSD.address.toLowerCase() === addr.toLowerCase();
+}
+
 export function isBlastRewardToken(addr: string): boolean {
     return BLAST_REWARD_TOKENS.includes(addr.toLowerCase());
 }
 
 export function isUSDQtoken(addr: string): boolean {
     return SCROLL_TOKENS.USDQ.address.toLowerCase() === addr.toLowerCase();
+}
+
+export function isPriorityStakedETH(addr: string): boolean {
+    return PLUME_TOKENS.pETH.address.toLowerCase() === addr.toLowerCase();
 }
 
 export function isETHorStakedEthToken(addr: string): boolean {
@@ -112,6 +120,7 @@ export const STABLE_USD_TOKENS = [
     PLUME_TOKENS.USDT,
     PLUME_TOKENS.NTBILL,
     PLUME_TOKENS.NYIELD,
+    PLUME_TOKENS.nELIXIR,
     BLAST_TOKENS.USDPLUS,
     SCROLL_TOKENS.USDT,
     SCROLL_TOKENS.USDQ,
@@ -140,9 +149,9 @@ export const WBTC_TOKENS = [
 ].map((x) => x.address.toLowerCase());
 
 export const STAKED_ETH_TOKENS = [
-    MAINNET_TOKENS.SWETH,
-    MAINNET_TOKENS.RSETH,
-    MAINNET_TOKENS.RSWETH,
+    MAINNET_TOKENS.swETH,
+    MAINNET_TOKENS.rsETH,
+    MAINNET_TOKENS.rswETH,
     MAINNET_TOKENS.STONE,
     SCROLL_TOKENS.wstETH,
     SCROLL_TOKENS.wrsETH,
@@ -174,8 +183,8 @@ export const USD_EXCLUDED_TOKENS = [
 
 export const STAKED_BTC_TOKENS = [
     SCROLL_TOKENS.SolvBTC,
-    MAINNET_TOKENS.TBTC,
-    SWELL_TOKENS.UBTC,
+    MAINNET_TOKENS.tBTC,
+    SWELL_TOKENS.uBTC,
     SWELL_TOKENS.swBTC,
     SWELL_TOKENS.stBTC,
 ].map((x) => x.address.toLowerCase());

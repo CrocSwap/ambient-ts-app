@@ -23,7 +23,7 @@ export interface NetworkIF {
     defaultPair: TokenIF[];
     defaultPairFuta?: [TokenIF, TokenIF];
     topPools: TopPool[];
-    priorityPool?: TopPool;
+    priorityPool?: [TokenIF, TokenIF];
     blockExplorer: string;
     displayName: string;
     tokenPriceQueryAssetPlatform: string | undefined;

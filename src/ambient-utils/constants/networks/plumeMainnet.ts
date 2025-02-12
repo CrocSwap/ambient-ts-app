@@ -8,7 +8,8 @@ import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
+    PUBLIC: 'https://rpc.plumenetwork.xyz',
+    SECONDARY_PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
     RESTRICTED: import.meta.env.VITE_PLUME_RPC_URL,
 };
 
@@ -24,7 +25,7 @@ const chainSpecForWalletConnector = {
     name: 'Plume Mainnet',
     currency: 'ETH',
     rpcUrl: RPC_URLS.PUBLIC,
-    explorerUrl: 'https://phoenix-explorer.plumenetwork.xyz/',
+    explorerUrl: 'https://explorer.plumenetwork.xyz/',
 };
 
 const defaultTokenEntries = [
@@ -36,6 +37,7 @@ const defaultTokenEntries = [
     ['NRWA', '0x81537d879ACc8a290a1846635a0cAA908f8ca3a6'],
     ['NTBILL', '0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9'],
     ['NYIELD', '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8'],
+    ['nELIXIR', '0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c'],
 ] as const;
 
 type PlumeTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;

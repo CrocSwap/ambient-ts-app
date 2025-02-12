@@ -14,9 +14,9 @@ import {
 import {
     LimitOrderIF,
     LimitOrderServerIF,
+    PoolIF,
     PositionIF,
     PositionServerIF,
-    SinglePoolDataIF,
     TransactionIF,
     TransactionServerIF,
 } from '../../ambient-utils/types';
@@ -37,7 +37,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata() {
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
-    const { allPoolStats, blockPollingUrl } = useContext(ChainDataContext);
+    const { gcgoPoolList, blockPollingUrl } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { sessionReceipts } = useContext(ReceiptContext);
@@ -276,8 +276,8 @@ export function usePoolMetadata() {
     }, [newRangesByPoolData, baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
-        const currentPoolData = allPoolStats?.find(
-            (poolStat: SinglePoolDataIF) =>
+        const currentPoolData = gcgoPoolList?.find(
+            (poolStat: PoolIF) =>
                 poolStat.base.toLowerCase() ===
                     baseTokenAddress.toLowerCase() &&
                 poolStat.quote.toLowerCase() ===
@@ -288,7 +288,7 @@ export function usePoolMetadata() {
                 ? currentPoolData.feeRate
                 : undefined,
         );
-    }, [allPoolStats, baseTokenAddress, quoteTokenAddress]);
+    }, [gcgoPoolList, baseTokenAddress, quoteTokenAddress]);
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
@@ -392,7 +392,11 @@ export function usePoolMetadata() {
                             poolChangesJsonData &&
                             poolChangesJsonData.length > 0
                         ) {
-                            setNewTxByPoolData(poolChangesJsonData);
+                            const newTxByPoolDataWithoutFills =
+                                poolChangesJsonData.filter(
+                                    (tx) => tx.changeType !== 'cross',
+                                );
+                            setNewTxByPoolData(newTxByPoolDataWithoutFills);
                         } else {
                             setNewTxByPoolData(undefined);
                             setTransactionsByPool({
@@ -455,16 +459,21 @@ export function usePoolMetadata() {
                                 quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: poolIndex.toString(),
                                 chainId: chainId,
-                                n: '100',
+                                n: '200',
                             }),
                     )
                         .then((response) => response.json())
                         .then((json) => {
-                            const userPoolTransactions = json.data;
+                            const userPoolTransactions =
+                                json.data as TransactionIF[];
                             const skipENSFetch = true;
                             if (userPoolTransactions) {
+                                const userPoolTransactionsWithoutFills =
+                                    userPoolTransactions.filter(
+                                        (tx) => tx.changeType !== 'cross',
+                                    );
                                 Promise.all(
-                                    userPoolTransactions.map(
+                                    userPoolTransactionsWithoutFills.map(
                                         (position: TransactionServerIF) => {
                                             return getTransactionData(
                                                 position,

@@ -30,7 +30,6 @@ import {
     isLinkInCrocodileLabsLinks,
     isLinkInCrocodileLabsLinksForInput,
 } from '../../ChatUtils';
-import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
 import { emojiMeta } from '../../EmojiMeta';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
@@ -576,7 +575,6 @@ export default function MessageInput(props: MessageInputProps) {
         const needToShowCustomEmojiPanel =
             filteredEmojis.length > 0 && message.includes(':');
         setShowCustomEmojiPanel(needToShowCustomEmojiPanel);
-        domDebug('filteredEmojis', filteredEmojis.length);
     }, [filteredEmojis]);
 
     useEffect(() => {
@@ -624,10 +622,6 @@ export default function MessageInput(props: MessageInputProps) {
         if (customEmojiPickerSelectedIndex < -1) {
             resetCustomEmojiPickerStates();
         }
-        domDebug(
-            'customEmojiPickerSelectedIndex',
-            customEmojiPickerSelectedIndex,
-        );
     }, [customEmojiPickerSelectedIndex, filteredEmojis]);
 
     const resetCustomEmojiPickerStates = () => {
@@ -668,7 +662,6 @@ export default function MessageInput(props: MessageInputProps) {
             }
         });
 
-        domDebug('filtered emojis', filteredElements.length);
         setFilteredEmojis([...filteredElements]);
     };
 

@@ -146,8 +146,8 @@ export default function Room(props: propsIF) {
                 newRoomList.push({
                     name: getRoomNameFromPool(pool),
                     shownName: getRoomNameFromPool(pool) + ' ❤️',
-                    base: pool.base.symbol,
-                    quote: pool.quote.symbol,
+                    base: pool.baseToken.symbol,
+                    quote: pool.quoteToken.symbol,
                     isFavourite: true,
                 });
             }
@@ -186,8 +186,8 @@ export default function Room(props: propsIF) {
                 newRoomList.push({
                     name: getRoomNameFromPool(pool),
                     shownName: getRoomNameFromPool(pool) + ' 🏊',
-                    base: pool.base.symbol,
-                    quote: pool.quote.symbol,
+                    base: pool.baseToken.symbol,
+                    quote: pool.quoteToken.symbol,
                 });
             }
             i++;
