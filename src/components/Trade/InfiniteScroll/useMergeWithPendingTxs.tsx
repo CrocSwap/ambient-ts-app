@@ -4,7 +4,11 @@ import { useContext, useMemo } from 'react';
 import { TransactionIF } from '../../../ambient-utils/types';
 import { LimitOrderIF } from '../../../ambient-utils/types/limitOrder';
 import { PositionIF } from '../../../ambient-utils/types/position';
-import { GraphDataContext, TradeDataContext } from '../../../contexts';
+import {
+    GraphDataContext,
+    ReceiptContext,
+    TradeDataContext,
+} from '../../../contexts';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -14,8 +18,13 @@ interface propsIF {
 const useMergeWithPendingTxs = (props: propsIF) => {
     const { data, type } = props;
 
-    const { recentlyUpdatedPositions, prevPositionHashes } =
-        useContext(GraphDataContext);
+    const {
+        recentlyUpdatedPositions,
+        prevPositionHashes,
+        handleIndexedPosition,
+    } = useContext(GraphDataContext);
+
+    const { removePendingTxIfs } = useContext(ReceiptContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const mergedData = useMemo(() => {
@@ -38,6 +47,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                             e.position &&
                             e.position.positionLiq > 0
                         ) {
+                            // remove from pendings if indexed -------------------
                             const matchingOrder = (data as LimitOrderIF[]).find(
                                 (order) =>
                                     order.positionHash === e.positionHash,
@@ -47,8 +57,12 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                                 matchingOrder.liqRefreshTime >
                                     e.timestamp / 1000
                             ) {
+                                removePendingTxIfs(e.positionHash);
+                                handleIndexedPosition(e.positionHash);
                                 return;
                             }
+                            // ------------------------------------------------------
+
                             (recentlyUpdatedToShow as LimitOrderIF[]).push(
                                 e.position as LimitOrderIF,
                             );
@@ -60,6 +74,21 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                             e.position.positionLiq > 0 &&
                             !prevPositionHashes.has(e.positionHash)
                         ) {
+                            // remove from pendings if indexed -------------------
+                            const matchingOrder = (data as PositionIF[]).find(
+                                (order) => order.positionId === e.positionHash,
+                            );
+                            if (
+                                matchingOrder?.liqRefreshTime &&
+                                matchingOrder.liqRefreshTime >
+                                    e.timestamp / 1000
+                            ) {
+                                removePendingTxIfs(e.positionHash);
+                                handleIndexedPosition(e.positionHash);
+                                return;
+                            }
+                            // ------------------------------------------------------
+
                             (recentlyUpdatedToShow as PositionIF[]).push(
                                 e.position as PositionIF,
                             );

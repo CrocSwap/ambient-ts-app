@@ -112,6 +112,7 @@ export interface GraphDataContextIF {
     pendingRecentlyUpdatedPositions: RecentlyUpdatedPositionIF[];
     removeFromRecentlyUpdatedPositions: (positionHash: string) => void;
     prevPositionHashes: Set<string>;
+    handleIndexedPosition: (positionHash: string) => void;
 }
 
 function normalizeAddr(addr: string): string {
@@ -133,7 +134,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         pendingTransactions,
         allReceipts,
         sessionPositionUpdates,
-        transactionsByType,
+        transactionsByTypeIfs,
     } = useContext(ReceiptContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
@@ -495,7 +496,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         }
 
         setTimeout(() => {
-            removePendingRelevantPosition(uniqueRelevantLimitOrders);
+            handleRedundantPendings(uniqueRelevantLimitOrders);
         }, 300);
     };
 
@@ -516,9 +517,20 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         ]);
     };
 
-    const removePendingRelevantPosition = (
-        pendings: RecentlyUpdatedPositionIF[],
-    ) => {
+    const handleIndexedPosition = (positionHash: string) => {
+        if (pendingRecentlyUpdatedPositionsRef.current) {
+            setPendingRecentlyUpdatedPositions(
+                pendingRecentlyUpdatedPositionsRef.current.filter(
+                    (e) => e.positionHash !== positionHash,
+                ),
+            );
+        }
+
+        // this removal may cause problem once toggle has been switched on Limits and Ranges tabs
+        // removeFromRecentlyUpdatedPositions(positionHash);
+    };
+
+    const handleRedundantPendings = (pendings: RecentlyUpdatedPositionIF[]) => {
         if (pendingRecentlyUpdatedPositionsRef.current) {
             setPendingRecentlyUpdatedPositions(
                 pendingRecentlyUpdatedPositionsRef.current.filter(
@@ -551,7 +563,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     useEffect(() => {
         if (tempBool) return;
 
-        const relevantLimitOrders = transactionsByType.filter(
+        const relevantLimitOrders = transactionsByTypeIfs.filter(
             (tx) =>
                 !tx.isRemoved &&
                 unindexedNonFailedSessionLimitOrderUpdates.some(
@@ -585,13 +597,13 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         });
     }, [
         unindexedNonFailedSessionLimitOrderUpdates.length,
-        transactionsByType.length,
+        transactionsByTypeIfs.length,
     ]);
 
     useEffect(() => {
         if (tempBool) return;
 
-        const relevantPositions = transactionsByType.filter(
+        const relevantPositions = transactionsByTypeIfs.filter(
             (tx) =>
                 !tx.isRemoved &&
                 unindexedNonFailedSessionPositionUpdates.some(
@@ -642,7 +654,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         );
     }, [
         unindexedNonFailedSessionPositionUpdates.length,
-        transactionsByType.length,
+        transactionsByTypeIfs.length,
     ]);
 
     const onAccountRoute = location.pathname.includes('account');
@@ -796,6 +808,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         pendingRecentlyUpdatedPositions,
         removeFromRecentlyUpdatedPositions,
         prevPositionHashes,
+        handleIndexedPosition,
     };
 
     return (
