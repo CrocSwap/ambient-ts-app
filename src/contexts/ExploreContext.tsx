@@ -55,19 +55,19 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     );
 
     useEffect(() => {
+        let timeout: NodeJS.Timeout;
+
         if (!analyticsPoolList?.length) {
-            const timeout = setTimeout(() => {
-                return;
+            timeout = setTimeout(() => {
+                if (!analyticsPoolList?.length && gcgoPoolList?.length) {
+                    setActivePoolList(gcgoPoolList);
+                }
             }, 2000);
-
-            if (gcgoPoolList?.length) {
-                setActivePoolList(gcgoPoolList);
-            }
-
-            return () => clearTimeout(timeout); // Cleanup on unmount or re-run
-        } else if (analyticsPoolList?.length) {
+        } else {
             setActivePoolList(analyticsPoolList);
         }
+
+        return () => clearTimeout(timeout); // Cleanup on re-run or unmount
     }, [JSON.stringify(analyticsPoolList), JSON.stringify(gcgoPoolList)]);
 
     const {
