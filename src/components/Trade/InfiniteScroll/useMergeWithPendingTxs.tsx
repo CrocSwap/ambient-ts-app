@@ -1,6 +1,7 @@
 /* eslint-disable no-irregular-whitespace */
 
 import { useContext, useMemo } from 'react';
+import { bigintReplacer } from '../../../ambient-utils/dataLayer/functions/bigIntReplacer';
 import { TransactionIF } from '../../../ambient-utils/types';
 import { LimitOrderIF } from '../../../ambient-utils/types/limitOrder';
 import { PositionIF } from '../../../ambient-utils/types/position';
@@ -127,9 +128,9 @@ const useMergeWithPendingTxs = (props: propsIF) => {
     }, [
         type,
         JSON.stringify(data),
-        JSON.stringify(recentlyUpdatedPositions),
-        JSON.stringify(baseToken),
-        JSON.stringify(quoteToken),
+        JSON.stringify(recentlyUpdatedPositions, bigintReplacer),
+        baseToken.address,
+        quoteToken.address,
     ]);
 
     return {

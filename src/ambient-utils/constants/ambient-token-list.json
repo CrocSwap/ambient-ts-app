@@ -219,14 +219,6 @@
             "logoURI": "https://assets.coingecko.com/coins/images/35658/standard/logo_200.png"
         },
         {
-            "address": "0x569FcbDa292f1a69AB14e401bAD13Cc0E1DEC790",
-            "chainId": 81457,
-            "decimals": 18,
-            "name": "Hyper Thrust",
-            "symbol": "hyperTHRUST",
-            "logoURI": "https://app.hyperlock.finance/assets/hyperthrust-3dda8fba.png"
-        },
-        {
             "address": "0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C",
             "chainId": 81457,
             "decimals": 18,
