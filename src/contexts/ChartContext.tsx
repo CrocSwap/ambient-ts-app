@@ -145,9 +145,6 @@ export interface ChartThemeIF {
     // triangle color
     triangleColor: d3.RGBColor | d3.HSLColor;
 
-    // drawing color
-    drawngShapeDefaultColor: d3.RGBColor | d3.HSLColor;
-
     // order color
     orderSellColor: d3.RGBColor | d3.HSLColor;
     orderBuyColor: d3.RGBColor | d3.HSLColor;
@@ -453,7 +450,6 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             orderBuyColor: getCssVariable(skin.active, '--order-buy-color'),
 
             triangleColor: getCssVariable(skin.active, '--triangle-color'),
-            drawngShapeDefaultColor: getCssVariable(skin.active, '--accent1'),
             textColor: getCssVariable(skin.active, '--text2'),
             text1: getCssVariable(skin.active, '--text1'),
             text2: getCssVariable(skin.active, '--text2'),
@@ -520,9 +516,6 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
                         getColorFromLocalStorageOrDefault('triangleColor'),
                     shareableLineColor:
                         getColorFromLocalStorageOrDefault('shareableLineColor'),
-                    drawngShapeDefaultColor: getColorFromLocalStorageOrDefault(
-                        'drawngShapeDefaultColor',
-                    ),
 
                     orderSellColor:
                         getColorFromLocalStorageOrDefault('orderSell'),

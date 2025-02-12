@@ -259,8 +259,11 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 liqBidColor: d3.color(
                     parsedContextData.chartColors.liqBidColor,
                 ) as d3.RGBColor,
-                drawngShapeDefaultColor: d3.color(
-                    parsedContextData.chartColors.drawngShapeDefaultColor,
+                orderSellColor: d3.color(
+                    parsedContextData.chartColors.orderSell,
+                ) as d3.RGBColor,
+                orderBuyColor: d3.color(
+                    parsedContextData.chartColors.orderBuy,
                 ) as d3.RGBColor,
             };
 
