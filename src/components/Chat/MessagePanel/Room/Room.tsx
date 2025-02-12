@@ -368,7 +368,7 @@ export default function Room(props: propsIF) {
                                     : styles.current_pool_text
                             }
                         >
-                            Current Pool
+                            Go to Current Pool
                         </div>
                     </div>
                 ) : (
