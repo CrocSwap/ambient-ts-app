@@ -118,6 +118,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         setColorChangeTrigger,
         setContextmenu,
         chartSettings,
+        getColorFromLocalStorageOrDefault,
     } = useContext(ChartContext);
 
     const {
@@ -235,36 +236,58 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             );
 
             const oldColorData = {
-                upCandleBodyColor: d3.color(
-                    parsedContextData.chartColors.upCandleBodyColor,
-                ) as d3.RGBColor,
-                upCandleBorderColor: d3.color(
-                    parsedContextData.chartColors.upCandleBorderColor,
-                ) as d3.RGBColor,
-                downCandleBodyColor: d3.color(
-                    parsedContextData.chartColors.downCandleBodyColor,
-                ) as d3.RGBColor,
-                downCandleBorderColor: d3.color(
-                    parsedContextData.chartColors.downCandleBorderColor,
-                ) as d3.RGBColor,
-                selectedDateFillColor: d3.color(
-                    parsedContextData.chartColors.selectedDateFillColor,
-                ) as d3.RGBColor,
-                selectedDateStrokeColor: d3.color(
-                    parsedContextData.chartColors.selectedDateStrokeColor,
-                ) as d3.RGBColor,
-                liqAskColor: d3.color(
-                    parsedContextData.chartColors.liqAskColor,
-                ) as d3.RGBColor,
-                liqBidColor: d3.color(
-                    parsedContextData.chartColors.liqBidColor,
-                ) as d3.RGBColor,
-                orderSellColor: d3.color(
-                    parsedContextData.chartColors.orderSell,
-                ) as d3.RGBColor,
-                orderBuyColor: d3.color(
-                    parsedContextData.chartColors.orderBuy,
-                ) as d3.RGBColor,
+                upCandleBodyColor:
+                    (d3.color(
+                        parsedContextData.chartColors.upCandleBodyColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('upCandleBodyColor'),
+                upCandleBorderColor:
+                    (d3.color(
+                        parsedContextData.chartColors.upCandleBorderColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('upCandleBorderColor'),
+                downCandleBodyColor:
+                    (d3.color(
+                        parsedContextData.chartColors.downCandleBodyColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('downCandleBodyColor'),
+                downCandleBorderColor:
+                    (d3.color(
+                        parsedContextData.chartColors.downCandleBorderColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('downCandleBorderColor'),
+                selectedDateFillColor:
+                    (d3.color(
+                        parsedContextData.chartColors.selectedDateFillColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('selectedDateFillColor'),
+                selectedDateStrokeColor:
+                    (d3.color(
+                        parsedContextData.chartColors.selectedDateStrokeColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault(
+                        'selectedDateStrokeColor',
+                    ),
+                liqAskColor:
+                    (d3.color(
+                        parsedContextData.chartColors.liqAskColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('liqAskColor'),
+                liqBidColor:
+                    (d3.color(
+                        parsedContextData.chartColors.liqBidColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('liqBidColor'),
+                orderSellColor:
+                    (d3.color(
+                        parsedContextData.chartColors.orderSellColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('orderSellColor'),
+                orderBuyColor:
+                    (d3.color(
+                        parsedContextData.chartColors.orderBuyColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('orderBuyColor'),
             };
 
             Object.assign(chartThemeColors, oldColorData);
@@ -301,8 +324,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 liqBidColor: chartThemeColors.liqBidColor.toString(),
                 selectedDateStrokeColor:
                     chartThemeColors.selectedDateStrokeColor.toString(),
-                orderSell: chartThemeColors.orderSellColor.toString(),
-                orderBuy: chartThemeColors.orderBuyColor.toString(),
+                orderSellColor: chartThemeColors.orderSellColor.toString(),
+                orderBuyColor: chartThemeColors.orderBuyColor.toString(),
             },
             isTradeDollarizationEnabled: isTradeDollarizationEnabled,
             showVolume: showVolume,

@@ -100,6 +100,8 @@ export interface ChartContextIF {
     chartThemeColors: ChartThemeIF | undefined;
     setColorChangeTrigger: React.Dispatch<SetStateAction<boolean>>;
     colorChangeTrigger: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getColorFromLocalStorageOrDefault: (key: string) => any;
     defaultChartSettings: LocalChartSettingsIF | undefined;
     setContextmenu: React.Dispatch<SetStateAction<boolean>>;
     contextmenu: boolean;
@@ -367,6 +369,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setContextMenuPlacement,
         shouldResetBuffer,
         setShouldResetBuffer,
+        getColorFromLocalStorageOrDefault,
     };
 
     useEffect(() => {
@@ -518,9 +521,9 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
                         getColorFromLocalStorageOrDefault('shareableLineColor'),
 
                     orderSellColor:
-                        getColorFromLocalStorageOrDefault('orderSell'),
+                        getColorFromLocalStorageOrDefault('orderSellColor'),
                     orderBuyColor:
-                        getColorFromLocalStorageOrDefault('orderBuy'),
+                        getColorFromLocalStorageOrDefault('orderBuyColor'),
 
                     textColor: getColorFromLocalStorageOrDefault('textColor'),
                     text1: getColorFromLocalStorageOrDefault('text1'),
