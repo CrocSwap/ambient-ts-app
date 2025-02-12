@@ -24,6 +24,8 @@
     border-top: 0.5px solid var(--accent1);
     border-left: 0.5px solid var(--accent1);
     border-right: 0.5px solid var(--accent1);
+    bottom: 26px;
+    right: 21px;
 }
 
 .chat_body {
@@ -465,7 +467,7 @@
     width: 40px !important;
     height: 40px !important;
     padding: 0 !important;
-    margin: 0 !important;
+    margin: 25px !important;
     overflow: visible !important;
   }
   
