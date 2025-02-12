@@ -1,11 +1,13 @@
 import { TransactionReceipt } from 'ethers';
 import React, { createContext } from 'react';
+import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
 
 export interface ReceiptContextIF {
     sessionReceipts: Array<TransactionReceipt>;
     allReceipts: Array<TransactionReceipt>;
     pendingTransactions: Array<string>;
     transactionsByType: Array<TransactionByType>;
+    transactionsByTypeIfs: Array<TransactionByType>;
     sessionPositionUpdates: PositionUpdateIF[];
     addTransactionByType: (txByType: TransactionByType) => void;
     addReceipt: (receipt: TransactionReceipt) => void;
@@ -13,6 +15,7 @@ export interface ReceiptContextIF {
     addPositionUpdate: (positionUpdate: PositionUpdateIF) => void;
     updateTransactionHash: (oldHash: string, newHash: string) => void;
     removePendingTx: (pendingTx: string, isRemoved?: boolean) => void;
+    removePendingTxIfs: (positionHash: string) => void;
     removeReceipt: (txHash: string) => void;
     resetReceiptData: () => void;
     showRedDot: boolean;
@@ -60,6 +63,7 @@ export interface TransactionByType {
         secondaryTokenQty?: string;
         currentLiquidity?: bigint | undefined;
         prevPositionHash?: string;
+        positionHash?: string;
     };
     isRemoved?: boolean;
 }
@@ -97,11 +101,31 @@ export const ReceiptContextProvider = (props: {
         TransactionByType[]
     >([]);
 
+    const [transactionsByTypeIfs, setTransactionsByTypeIfs] = React.useState<
+        TransactionByType[]
+    >([]);
+
     const [showRedDot, setShowRedDot] = React.useState(true);
 
     const addTransactionByType = (txByType: TransactionByType) => {
         setTransactionsByType((prev) => [...prev, txByType]);
+        addTransactionByTypeIfs(txByType);
     };
+    const addTransactionByTypeIfs = (txByType: TransactionByType) => {
+        if (txByType.txDetails) {
+            txByType.txDetails.positionHash = getPositionHash(undefined, {
+                isPositionTypeAmbient: txByType.txDetails.isAmbient || false,
+                user: txByType.userAddress,
+                baseAddress: txByType.txDetails.baseAddress.toLowerCase(),
+                quoteAddress: txByType.txDetails.quoteAddress.toLowerCase(),
+                poolIdx: txByType.txDetails.poolIdx,
+                bidTick: txByType.txDetails.lowTick || 0,
+                askTick: txByType.txDetails.highTick || 0,
+            });
+        }
+        setTransactionsByTypeIfs((prev) => [...prev, txByType]);
+    };
+
     const addReceipt = (receipt: TransactionReceipt) => {
         setSessionReceipts((prev) => [receipt, ...prev]);
         setAllReceipts((prev) => [receipt, ...prev]);
@@ -124,6 +148,12 @@ export const ReceiptContextProvider = (props: {
                         : tx,
                 ),
             );
+    };
+
+    const removePendingTxIfs = (positionHash: string) => {
+        setTransactionsByTypeIfs((prev) =>
+            prev.filter((tx) => tx.txDetails?.positionHash !== positionHash),
+        );
     };
 
     const addPositionUpdate = (positionUpdate: PositionUpdateIF) => {
@@ -172,6 +202,8 @@ export const ReceiptContextProvider = (props: {
         removePendingTx,
         removeReceipt,
         resetReceiptData,
+        transactionsByTypeIfs,
+        removePendingTxIfs,
         showRedDot,
         setShowRedDot,
     };
