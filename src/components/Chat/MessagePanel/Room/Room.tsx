@@ -323,6 +323,7 @@ export default function Room(props: propsIF) {
         setShowCurrentPoolButton(false);
         setIsActive(false);
         setIsCurrentPool(true);
+        setIsHovering(false);
     }
 
     function handleNotiDot(key: string) {
@@ -368,7 +369,7 @@ export default function Room(props: propsIF) {
                                     : styles.current_pool_text
                             }
                         >
-                            Current Pool
+                            Go to Current Pool
                         </div>
                     </div>
                 ) : (
