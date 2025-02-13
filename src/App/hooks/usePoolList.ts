@@ -66,6 +66,8 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] | undefined => {
         crocEnv === undefined,
         chainId,
         JSON.stringify(tokenUniv),
+        getTokenByAddress,
+        verify,
         poolListRefreshTime,
     ]);
 

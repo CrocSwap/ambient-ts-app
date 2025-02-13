@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "3.2.4",
+    "version": "3.2.6",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -8,7 +8,7 @@
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
-        "@mui/material": "^6.4.1",
+        "@mui/material": "^6.4.3",
         "@web3modal/ethers": "4.2.1",
         "d3": "^7.4.4",
         "d3fc": "^15.2.4",
@@ -29,8 +29,8 @@
         "react-reveal": "^1.2.2",
         "react-router-dom": "^6.27.0",
         "react-transition-group": "^4.4.2",
-        "react-use-websocket": "^4.12.0",
-        "styled-components": "^6.1.14",
+        "react-use-websocket": "^4.13.0",
+        "styled-components": "^6.1.15",
         "web-vitals": "^2.1.0"
     },
     "resolutions": {
@@ -92,7 +92,7 @@
         "rollup-plugin-visualizer": "^5.12.0",
         "superagent": "^10.0.0",
         "typescript": "^4.4.2",
-        "vite": "^6.0.3",
+        "vite": "^6.1.0",
         "vite-plugin-checker": "^0.8.0",
         "vitest": "^3.0.5"
     }

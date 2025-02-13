@@ -28,6 +28,7 @@ import { TradeDataContext } from './TradeDataContext';
 
 export interface PoolContextIF {
     analyticsPoolList: PoolIF[] | undefined;
+    activePoolList: PoolIF[];
     pool: CrocPoolView | undefined;
     isPoolInitialized: boolean | undefined;
     poolPriceDisplay: number | undefined;
@@ -51,7 +52,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const {
         activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
-    const { crocEnv, topPools: hardcodedTopPools } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const { gcgoPoolList } = useContext(ChainDataContext);
 
     const analyticsPoolList: PoolIF[] | undefined = usePoolList(crocEnv);
@@ -61,18 +62,20 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     );
 
     useEffect(() => {
-        if (!analyticsPoolList?.length && gcgoPoolList?.length) {
-            const timeout = setTimeout(() => {
-                setActivePoolList(gcgoPoolList);
-            }, 2000);
+        let timeout: NodeJS.Timeout;
 
-            return () => clearTimeout(timeout); // Cleanup on unmount or re-run
-        } else if (analyticsPoolList?.length) {
-            setActivePoolList(analyticsPoolList);
+        if (!analyticsPoolList?.length) {
+            timeout = setTimeout(() => {
+                if (!analyticsPoolList?.length && gcgoPoolList?.length) {
+                    setActivePoolList(gcgoPoolList);
+                }
+            }, 2000);
         } else {
-            setActivePoolList(hardcodedTopPools);
+            setActivePoolList(analyticsPoolList);
         }
-    }, [analyticsPoolList, gcgoPoolList]);
+
+        return () => clearTimeout(timeout); // Cleanup on re-run or unmount
+    }, [JSON.stringify(analyticsPoolList), JSON.stringify(gcgoPoolList)]);
 
     const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
@@ -189,6 +192,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
 
     const poolContext: PoolContextIF = {
         analyticsPoolList,
+        activePoolList,
         pool,
         isPoolInitialized,
         poolPriceDisplay,
