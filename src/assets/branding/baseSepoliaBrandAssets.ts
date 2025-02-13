@@ -1,5 +1,5 @@
 import baseLogo from '../../assets/images/logos/Base_Wordmark_White.svg';
-import large from '../images/logos/large.svg';
+import large from '../images/logos/ambient_logo_large.svg';
 import { brandIF } from './types';
 
 export const baseSepoliaBrandAssets: brandIF = {
