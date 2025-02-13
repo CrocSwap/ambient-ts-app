@@ -1,5 +1,5 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PoolIF, TokenIF } from '../../ambient-utils/types';
 
 export interface favePoolsMethodsIF {
@@ -27,9 +27,38 @@ export interface favePoolsMethodsIF {
 export const useFavePools = (): favePoolsMethodsIF => {
     // list of favorite pools, will initialize from local storage or use an empty
     // ... array if local storage has no value (for first-time users)
-    const [favePools, setFavePools] = useState<PoolIF[]>(
-        JSON.parse(localStorage.getItem('favePools') as string) ?? [],
-    );
+    const [favePools, setFavePools] = useState<PoolIF[]>([]);
+
+    // necessary due to a change in PoolIF
+    const updateLocalStorageOnLoad = () => {
+        const storedValue = localStorage.getItem('favePools');
+
+        if (!storedValue) {
+            return;
+        } else {
+            const parsedValue = JSON.parse(storedValue);
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const newArray = parsedValue.map((pool: any) => {
+                if (typeof pool.base === 'string') return pool;
+                return {
+                    base: pool.base.address,
+                    baseToken: pool.base,
+                    quote: pool.quote.address,
+                    quoteToken: pool.quote,
+                    chainId: pool.chainId,
+                    poolIdx: pool.poolIdx,
+                };
+            });
+            setFavePools(newArray);
+
+            localStorage.setItem('favePools', JSON.stringify(newArray));
+        }
+    };
+
+    useEffect(() => {
+        updateLocalStorageOnLoad();
+    }, []);
 
     // fn to remove a PoolIF item from a PoolIF[] array
     // this is not returned from the hook, just to centralize logic
