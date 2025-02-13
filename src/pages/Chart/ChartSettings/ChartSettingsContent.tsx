@@ -118,6 +118,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         setColorChangeTrigger,
         setContextmenu,
         chartSettings,
+        chartSettingsRef,
     } = useContext(ChartContext);
 
     const {
@@ -471,7 +472,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
     );
 
     return (
-        <>
+        <div ref={chartSettingsRef}>
             <>
                 {isMobile && extendedOptions}
 
@@ -851,6 +852,6 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                     </ActionButtonContainer>
                 </ContextMenuFooter>
             )}
-        </>
+        </div>
     );
 }

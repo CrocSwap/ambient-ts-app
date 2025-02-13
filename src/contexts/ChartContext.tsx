@@ -80,6 +80,8 @@ export interface ChartContextIF {
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     toolbarRef: React.MutableRefObject<any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    chartSettingsRef: React.MutableRefObject<any>;
     activeDrawingType: string;
     setActiveDrawingType: React.Dispatch<SetStateAction<string>>;
     selectedDrawnShape: selectedDrawnData | undefined;
@@ -217,6 +219,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const { isDenomBase, isTokenABase } = useContext(TradeDataContext);
     const toolbarRef = useRef<HTMLDivElement | null>(null);
+    const chartSettingsRef = useRef<HTMLDivElement | null>(null);
 
     const denominationsInBase = isDenomBase;
     const undoRedoOptions = useUndoRedo(denominationsInBase, isTokenABase);
@@ -346,6 +349,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setIsToolbarOpen,
         undoRedoOptions,
         toolbarRef,
+        chartSettingsRef,
         activeDrawingType,
         setActiveDrawingType,
         selectedDrawnShape,
