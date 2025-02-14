@@ -651,6 +651,14 @@
             "logoURI": "https://mantlescan.xyz/token/images/ethena_32.png"
         },
         {
+            "name": "King Protocol",
+            "address": "0xc2606aade4bdd978a4fa5a6edb3b66657acee6f8",
+            "symbol": "KING",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": ""
+        },
+        {
             "name": "Native Ether",
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",
