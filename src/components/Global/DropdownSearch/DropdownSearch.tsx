@@ -4,7 +4,6 @@ import {
     KeyboardEvent,
     useContext,
     useEffect,
-    useRef,
     useState,
 } from 'react';
 import { AiOutlineFire } from 'react-icons/ai';
@@ -32,7 +31,6 @@ import {
     SearchInput,
 } from '../../../styled/Components/Sidebar';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import FavoritePools from '../Sidebar/FavoritePools';
 import RecentPools from '../Sidebar/RecentPools';
 import TopPools from '../Sidebar/TopPools';
@@ -61,10 +59,6 @@ const DropdownSearch = () => {
         ? [baseToken, quoteToken]
         : [quoteToken, baseToken];
     const smallScrenView = useMediaQuery('(max-width: 968px)');
-
-    const searchDropdownItemRef = useRef<HTMLDivElement>(null);
-    const clickOutsideHandler = () => setIsPoolDropdownOpen(false);
-    useOnClickOutside(searchDropdownItemRef, clickOutsideHandler);
 
     const searchInputElementId = 'sidebar_search_input';
     const focusInput = (): void => {
@@ -241,11 +235,7 @@ const DropdownSearch = () => {
 
     return (
         <AnimatePresence>
-            <FlexContainer
-                gap={8}
-                className={styles.main_container}
-                ref={searchDropdownItemRef}
-            >
+            <FlexContainer gap={8} className={styles.main_container}>
                 <HeaderButtons
                     id='token_pair_in_chart_header'
                     aria-label='toggle dropdown.'
