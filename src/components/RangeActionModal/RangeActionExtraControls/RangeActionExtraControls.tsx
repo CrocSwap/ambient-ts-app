@@ -1,5 +1,5 @@
 import { MdAccountBalanceWallet } from 'react-icons/md';
-import ambientLogo from '../../../assets/images/logos/logo_mark.svg';
+import ambientLogo from '../../../assets/images/logos/ambient_logo_mark.svg';
 import styles from './RangeActionExtraControls.module.css';
 
 import { useContext } from 'react';
