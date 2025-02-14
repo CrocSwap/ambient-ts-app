@@ -1,5 +1,5 @@
 import blastLogo from '../../assets/images/logos/blast_logo.svg';
-import large from '../images/logos/large.svg';
+import large from '../images/logos/ambient_logo_large.svg';
 import { brandIF } from './types';
 
 export const blastBrandAssets: brandIF = {
