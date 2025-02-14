@@ -1,7 +1,7 @@
 import blastLogo from '../../assets/images/logos/blast_logo.svg';
 import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
 import swellLogo from '../../assets/images/logos/swell_dark_theme_logo.svg';
-import large from '../images/logos/large.svg';
+import large from '../images/logos/ambient_logo_large.svg';
 import { brandIF } from './types';
 
 export const ambientProductionBrandAssets: brandIF = {

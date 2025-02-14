@@ -1,6 +1,8 @@
 import { AnimateSharedLayout, motion } from 'framer-motion';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { Link, useLocation } from 'react-router-dom';
+import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
 import {
     chainNumToString,
     checkEoaHexAddress,
@@ -8,8 +10,9 @@ import {
     someSupportedNetworkIsVaultSupportedNetwork,
     trimString,
 } from '../../../ambient-utils/dataLayer';
-import logo from '../../../assets/images/logos/logo_mark.svg';
+import logo from '../../../assets/images/logos/ambient_logo_mark.svg';
 import Button from '../../../components/Form/Button';
+import TutorialOverlayUrlBased from '../../../components/Global/TutorialOverlay/TutorialOverlayUrlBased';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import { BrandContext } from '../../../contexts';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -34,9 +37,6 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import styles from './PageHeader.module.css';
 import UserMenu from './UserMenu/UserMenu';
-import TutorialOverlayUrlBased from '../../../components/Global/TutorialOverlay/TutorialOverlayUrlBased';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
-import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
 
 const PageHeader = function () {
     const {
