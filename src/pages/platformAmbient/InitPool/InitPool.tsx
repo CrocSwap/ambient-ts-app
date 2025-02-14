@@ -1094,6 +1094,7 @@ export default function InitPool() {
             setIsTxCompletedRange: setIsTxCompletedRange,
             activeRangeTxHash: activeRangeTxHash,
         };
+        console.log('>>> >>>>>  sendRangePosition', params);
         createRangePosition(params);
     };
 

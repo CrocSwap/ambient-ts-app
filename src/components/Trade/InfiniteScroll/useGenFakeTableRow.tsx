@@ -309,6 +309,8 @@ const useGenFakeTableRow = () => {
             lastBlockNumber,
         );
 
+        console.log('>>> poolPriceNonDisplay', poolPriceNonDisplay);
+
         const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
 
         let position, positionLiqBase, positionLiqQuote, liqBigInt, liqNum;
@@ -322,6 +324,9 @@ const useGenFakeTableRow = () => {
 
         liqBigInt = position.liq;
         liqNum = bigIntToFloat(liqBigInt);
+
+        console.log('>>> liqNum', liqNum);
+        console.log('>>> liqBigInt', liqBigInt);
 
         for (
             let attempt = 1;
@@ -342,9 +347,13 @@ const useGenFakeTableRow = () => {
             liqNum = bigIntToFloat(liqBigInt);
         }
 
+        console.log('>>> pos', position);
+
         if (pendingTx.txDetails.isAmbient) {
             positionLiqBase = liqNum * Math.sqrt(poolPriceNonDisplay);
+            console.log('>>> positionLiqBase', positionLiqBase);
             positionLiqQuote = liqNum / Math.sqrt(poolPriceNonDisplay);
+            console.log('>>> positionLiqQuote', positionLiqQuote);
         } else {
             positionLiqBase = bigIntToFloat(
                 baseTokenForConcLiq(
@@ -354,6 +363,7 @@ const useGenFakeTableRow = () => {
                     tickToPrice(pendingTx.txDetails.highTick || 0),
                 ),
             );
+            console.log('>>> positionLiqBase', positionLiqBase);
             positionLiqQuote = bigIntToFloat(
                 quoteTokenForConcLiq(
                     poolPriceNonDisplay,
@@ -362,6 +372,7 @@ const useGenFakeTableRow = () => {
                     tickToPrice(pendingTx.txDetails.highTick || 0),
                 ),
             );
+            console.log('>>> positionLiqQuote', positionLiqQuote);
         }
 
         const posHashObject = {
@@ -514,6 +525,17 @@ const useGenFakeTableRow = () => {
         ) {
             isSuccess = true;
         }
+
+        console.log('>>> fakeRowObject', {
+            positionHash: posHash,
+            timestamp: Date.now(),
+            position: onChainPosition,
+            type: pendingTx.txType,
+            action: pendingTx.txAction || '',
+            status: 'onchain',
+            isSuccess: isSuccess,
+            prevPositionHash: pendingTx.txDetails?.prevPositionHash,
+        });
 
         return {
             positionHash: posHash,
