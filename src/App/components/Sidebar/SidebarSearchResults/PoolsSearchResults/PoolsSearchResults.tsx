@@ -1,8 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
+import { expandPoolStats } from '../../../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../../../ambient-utils/types';
-import { AppStateContext } from '../../../../../contexts';
-import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import {
+    AppStateContext,
+    CachedDataContext,
+    CrocEnvContext,
+    ExploreContext,
+    TokenContext,
+} from '../../../../../contexts';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import {
     FlexContainer,
@@ -24,13 +29,66 @@ interface propsIF {
 export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools } = props;
     const { tokenA, tokenB } = useContext(TradeDataContext);
-    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
-    const { crocEnv } = useContext(CrocEnvContext);
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const poolPriceCacheTime = Math.floor(Date.now() / 60000); // 60 second cache
+    const { tokens } = useContext(TokenContext);
+
+    const {
+        pools: { all: explorePools },
+    } = useContext(ExploreContext);
+    const { cachedFetchTokenPrice, cachedTokenDetails, cachedQuerySpotPrice } =
+        useContext(CachedDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+
+    const [expandedPoolData, setExpandedPoolData] = useState<PoolIF[]>([]);
+
+    useEffect(() => {
+        if (!searchedPools || !crocEnv) return;
+
+        const expandedPoolDataOnCurrentChain = searchedPools
+
+            .filter((pool) => {
+                return pool.chainId === chainId;
+            })
+            .map((pool: PoolIF) => {
+                const poolDataFromExplore = explorePools.find(
+                    (explorePool) =>
+                        explorePool.poolIdx === pool.poolIdx &&
+                        explorePool.chainId === pool.chainId &&
+                        explorePool.baseToken.address ===
+                            pool.baseToken.address &&
+                        explorePool.quoteToken.address ===
+                            pool.quoteToken.address,
+                );
+                if (poolDataFromExplore) return poolDataFromExplore;
+                return expandPoolStats(
+                    pool,
+                    crocEnv,
+                    cachedFetchTokenPrice,
+                    cachedTokenDetails,
+                    cachedQuerySpotPrice,
+                    tokens.tokenUniv,
+                );
+            });
+
+        Promise.all(expandedPoolDataOnCurrentChain)
+            .then((results: Array<PoolIF>) => {
+                // setIsFetchError(false);
+                if (results.length) {
+                    setExpandedPoolData(results);
+                }
+            })
+            .catch((err) => {
+                // setIsFetchError(true);
+                console.warn(err);
+            });
+    }, [
+        JSON.stringify(searchedPools),
+        crocEnv === undefined,
+        JSON.stringify(explorePools),
+    ]);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -56,40 +114,6 @@ export default function PoolsSearchResults(props: propsIF) {
         });
     };
 
-    const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
-
-    useEffect(() => {
-        if (!crocEnv) return;
-
-        const fetchSpotPrices = async () => {
-            if ((await crocEnv.context).chain.chainId !== chainId) return;
-            const spotPricePromises = searchedPools
-                .filter((pool: PoolIF) => !checkPoolForWETH(pool))
-                // max five elements before content overflows container
-                .slice(0, 5)
-                .map((pool) =>
-                    cachedQuerySpotPrice(
-                        crocEnv,
-                        pool.base,
-                        pool.quote,
-                        chainId,
-                        poolPriceCacheTime,
-                    ).catch((error) => {
-                        console.error(
-                            `Failed to fetch spot price for pool ${pool.baseToken.symbol}-${pool.quoteToken.symbol}:`,
-                            error,
-                        );
-                        return undefined; // Handle the case where fetching spot price fails
-                    }),
-                );
-
-            const results = await Promise.all(spotPricePromises);
-            setSpotPrices(results);
-        };
-
-        fetchSpotPrices();
-    }, [searchedPools, crocEnv, chainId, poolPriceCacheTime]);
-
     return (
         <FlexContainer
             flexDirection='column'
@@ -100,7 +124,7 @@ export default function PoolsSearchResults(props: propsIF) {
             <Text fontWeight='500' fontSize='body' color='accent5'>
                 Pools
             </Text>
-            {searchedPools.length ? (
+            {expandedPoolData.length ? (
                 <FlexContainer flexDirection='column' fullWidth>
                     <GridContainer
                         numCols={3}
@@ -124,7 +148,7 @@ export default function PoolsSearchResults(props: propsIF) {
                         ))}
                     </GridContainer>
                     <ResultsContainer flexDirection='column'>
-                        {searchedPools
+                        {expandedPoolData
                             .filter((pool: PoolIF) => !checkPoolForWETH(pool))
                             // max five elements before content overflows container
                             .slice(0, 5)
@@ -133,7 +157,6 @@ export default function PoolsSearchResults(props: propsIF) {
                                     pool={pool}
                                     key={idx}
                                     handleClick={handleClick}
-                                    spotPrice={spotPrices[idx]} // Pass the corresponding spot price
                                 />
                             ))}
                     </ResultsContainer>

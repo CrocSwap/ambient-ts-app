@@ -93,7 +93,6 @@ export default function PoolRow(props: propsIF) {
         </p>
     );
 
-    // format volume, use empty string as backup value
     const volumeDisplayString: string = pool.volumeChange24h
         ? getFormattedNumber({
               value: pool.volumeChange24h,
@@ -105,7 +104,6 @@ export default function PoolRow(props: propsIF) {
 
     const aprDisplay = <p>{aprString}</p>;
 
-    // format TVL, use empty string as backup value
     const tvlDisplayString: string = pool.tvlTotalUsd
         ? getFormattedNumber({
               value: pool.tvlTotalUsd,
