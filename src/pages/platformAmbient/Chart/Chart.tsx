@@ -453,7 +453,12 @@ export default function Chart(props: propsIF) {
 
         const el = chartSettingsRef?.current;
 
-        if (el.contains((e as Node) || null)) {
+        const contextButton = document.getElementById('chart_settings_button');
+
+        if (
+            (contextButton && contextButton.contains(e as Node)) ||
+            el.contains((e as Node) || null)
+        ) {
             return;
         }
 
