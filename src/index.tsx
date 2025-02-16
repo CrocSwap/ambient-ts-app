@@ -22,6 +22,7 @@ import blastLogo from './assets/images/networks/blast_logo.png';
 import blastSepoliaLogo from './assets/images/networks/blast_sepolia.webp';
 import ethLogo from './assets/images/networks/ethereum_logo.svg';
 import sepoliaLogo from './assets/images/networks/ethereum_sepolia.webp';
+import monadLogo from './assets/images/networks/monad_logo_small.svg';
 import plumeLogo from './assets/images/networks/plume_mainnet_logo_small.webp';
 import plumeSepoliaLogo from './assets/images/networks/plume_sepolia.webp';
 import scrollLogo from './assets/images/networks/scroll_logo.webp';
@@ -86,6 +87,7 @@ const modal = createWeb3Modal({
         1923: swellLogo,
         1924: swellSepoliaLogo,
         84532: baseSepoliaLogo,
+        10143: monadLogo,
     },
     termsConditionsUrl: '/terms',
     privacyPolicyUrl: '/privacy',

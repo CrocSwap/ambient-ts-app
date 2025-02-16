@@ -30,7 +30,8 @@ const chainSpecFromSDK = lookupChain(chainIdHex);
 const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
     name: 'Monad Testnet',
-    currency: 'ETH',
+    currency: 'MON',
+    // rpcUrl: 'https://testnet-rpc2.monad.xyz/52227f026fa8fac9e2014c58fbf5643369b3bfc6/',
     rpcUrl: 'https://testnet-rpc.monad.xyz/',
     explorerUrl: 'https://testnet.monadexplorer.com/',
 };
@@ -53,7 +54,7 @@ export const MONAD_TESTNET_TOKENS: MonadTestnetTokens = Object.fromEntries(
     ]),
 ) as MonadTestnetTokens;
 
-export const blastSepolia: NetworkIF = {
+export const monadTestnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_TESTNET_URL,
