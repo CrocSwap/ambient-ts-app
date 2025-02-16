@@ -10,6 +10,7 @@ import { BLAST_TOKENS } from '../../constants/networks/blastMainnet';
 import { BLAST_SEPOLIA_TOKENS } from '../../constants/networks/blastSepolia';
 import { MAINNET_TOKENS } from '../../constants/networks/ethereumMainnet';
 import { SEPOLIA_TOKENS } from '../../constants/networks/ethereumSepolia';
+import { MONAD_TESTNET_TOKENS } from '../../constants/networks/monadTestnet';
 import { PLUME_TOKENS } from '../../constants/networks/plumeMainnet';
 import { PLUME_SEPOLIA_TOKENS } from '../../constants/networks/plumeSepolia';
 import { SCROLL_TOKENS } from '../../constants/networks/scrollMainnet';
@@ -45,8 +46,8 @@ export function isUSDQtoken(addr: string): boolean {
     return SCROLL_TOKENS.USDQ.address.toLowerCase() === addr.toLowerCase();
 }
 
-export function isPriorityStakedETH(addr: string): boolean {
-    return PLUME_TOKENS.pETH.address.toLowerCase() === addr.toLowerCase();
+export function isPriorityEthEquivalent(addr: string): boolean {
+    return PRIORITY_ETH_EQUIVALENT_TOKENS.includes(addr.toLowerCase());
 }
 
 export function isETHorStakedEthToken(addr: string): boolean {
@@ -110,6 +111,7 @@ export const USDC_TOKENS = [
     SCROLL_TOKENS.USDC,
     SWELL_SEPOLIA_TOKENS.USDC,
     BASE_SEPOLIA_TOKENS.USDC,
+    MONAD_TESTNET_TOKENS.USDC,
 ].map((x) => x.address.toLowerCase());
 
 export const STABLE_USD_TOKENS = [
@@ -174,6 +176,11 @@ export const STAKED_ETH_TOKENS = [
     SWELL_TOKENS.rsETH,
     SWELL_TOKENS.swETH,
     SWELL_TOKENS.rswETH,
+].map((x) => x.address.toLowerCase());
+
+export const PRIORITY_ETH_EQUIVALENT_TOKENS = [
+    PLUME_TOKENS.pETH,
+    MONAD_TESTNET_TOKENS.WETH,
 ].map((x) => x.address.toLowerCase());
 
 export const USD_EXCLUDED_TOKENS = [

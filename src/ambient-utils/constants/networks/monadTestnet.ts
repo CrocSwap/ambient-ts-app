@@ -39,6 +39,7 @@ const chainSpecForWalletConnector = {
 const defaultTokenEntries = [
     ['MON', '0x0000000000000000000000000000000000000000'],
     ['USDC', '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea'],
+    ['WETH', '0xB5a30b0FDc5EA94A52fDc42e3E9760Cb8449Fb37'],
 ] as const;
 
 // Infer the type of the keys and define the resulting type
