@@ -51,14 +51,14 @@ const useFetchPoolStats = (
         crocEnv,
         // activeNetwork,
         provider,
-        ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
 
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, nativeTokenUsdPrice } =
+        useContext(ChainDataContext);
     // useMemo to filter allPoolStats for the current pool
     const activeTradePoolStats = useMemo(
         () =>
@@ -266,9 +266,9 @@ const useFetchPoolStats = (
                     setBasePrice(baseTokenPrice);
                 } else if (
                     isETHorStakedEthToken(baseAddr) &&
-                    ethMainnetUsdPrice
+                    nativeTokenUsdPrice
                 ) {
-                    setBasePrice(ethMainnetUsdPrice);
+                    setBasePrice(nativeTokenUsdPrice);
                 } else if (poolPriceDisplayNum && quoteTokenPrice) {
                     // calculation of estimated base price below may be backwards;
                     // having a hard time finding an example of base missing a price
@@ -282,9 +282,9 @@ const useFetchPoolStats = (
                     setQuotePrice(quoteTokenPrice);
                 } else if (
                     isETHorStakedEthToken(quoteAddr) &&
-                    ethMainnetUsdPrice
+                    nativeTokenUsdPrice
                 ) {
-                    setQuotePrice(ethMainnetUsdPrice);
+                    setQuotePrice(nativeTokenUsdPrice);
                 } else if (poolPriceDisplayNum && baseTokenPrice) {
                     const estimatedQuotePrice =
                         baseTokenPrice * poolPriceDisplayNum;
@@ -299,7 +299,7 @@ const useFetchPoolStats = (
         quoteAddr,
         chainId,
         poolPriceDisplayNum,
-        ethMainnetUsdPrice === undefined,
+        nativeTokenUsdPrice === undefined,
     ]);
 
     const fetchPoolStats = async () => {

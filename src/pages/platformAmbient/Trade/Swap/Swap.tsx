@@ -62,15 +62,18 @@ interface propsIF {
 
 function Swap(props: propsIF) {
     const { isOnTradeRoute } = props;
-    const { crocEnv, ethMainnetUsdPrice, provider } =
-        useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
         activeNetwork: { chainId, poolIndex },
         isUserOnline,
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
-    const { gasPriceInGwei, isActiveNetworkL2, isActiveNetworkPlume } =
-        useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        nativeTokenUsdPrice,
+        isActiveNetworkL2,
+        isActiveNetworkPlume,
+    } = useContext(ChainDataContext);
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
@@ -449,7 +452,7 @@ function Swap(props: propsIF) {
 
     // calculate price of gas for swap
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const averageSwapCostInGasDrops = isSellTokenNativeToken
                 ? GAS_DROPS_ESTIMATE_SWAP_NATIVE
                 : isWithdrawFromDexChecked
@@ -486,7 +489,7 @@ function Swap(props: propsIF) {
                 gasPriceInGwei *
                 averageSwapCostInGasDrops *
                 NUM_GWEI_IN_WEI *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setSwapGasPriceinDollars(
                 getFormattedNumber({
@@ -497,7 +500,7 @@ function Swap(props: propsIF) {
         }
     }, [
         gasPriceInGwei,
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
         isSellTokenNativeToken,
         isWithdrawFromDexChecked,
         isTokenADexSurplusSufficient,
@@ -528,8 +531,8 @@ function Swap(props: propsIF) {
                   })
                 : undefined;
 
-            const costOfEthInCents = BigInt(
-                Math.floor((ethMainnetUsdPrice || 0) * 100),
+            const costOfNativeTokenInCents = BigInt(
+                Math.floor((nativeTokenUsdPrice || 0) * 100),
             );
             const l1GasInGwei =
                 l1Gas && l1Gas != BigInt(0)
@@ -539,7 +542,8 @@ function Swap(props: propsIF) {
                 setL1GasFeeSwapInGwei(bigIntToFloat(l1GasInGwei) || 0);
 
             const l1GasCents = l1GasInGwei
-                ? (l1GasInGwei * costOfEthInCents) / BigInt(NUM_GWEI_IN_ETH)
+                ? (l1GasInGwei * costOfNativeTokenInCents) /
+                  BigInt(NUM_GWEI_IN_ETH)
                 : undefined;
 
             const l1GasDollarsNum =
@@ -560,7 +564,7 @@ function Swap(props: propsIF) {
         slippageTolerancePercentage,
         isWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
         L1_GAS_CALC_ENABLED,
     ]);
 

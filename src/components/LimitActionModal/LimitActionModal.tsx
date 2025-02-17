@@ -38,8 +38,7 @@ interface propsIF {
 export default function LimitActionModal(props: propsIF) {
     const { limitOrder, type, onClose, isAccountView } = props;
     const { userAddress } = useContext(UserDataContext);
-    const { crocEnv, ethMainnetUsdPrice, provider } =
-        useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
         activeNetwork: { poolIndex, chainId },
@@ -74,7 +73,8 @@ export default function LimitActionModal(props: propsIF) {
         fillPercentage,
     } = useProcessOrder(limitOrder, crocEnv, userAddress);
 
-    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
+    const { gasPriceInGwei, lastBlockNumber, nativeTokenUsdPrice } =
+        useContext(ChainDataContext);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newTxHash, setNewTxHash] = useState('');
@@ -138,12 +138,12 @@ export default function LimitActionModal(props: propsIF) {
             : GAS_DROPS_ESTIMATE_LIMIT_CLAIM;
 
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageGasUnitsForHarvestTxInGasDrops *
                 NUM_GWEI_IN_WEI *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setNetworkFee(
                 getFormattedNumber({
@@ -152,7 +152,7 @@ export default function LimitActionModal(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     const posHash = getPositionHash(undefined, {
         isPositionTypeAmbient: false,
