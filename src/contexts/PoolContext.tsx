@@ -32,7 +32,7 @@ export interface PoolContextIF {
     pool: CrocPoolView | undefined;
     isPoolInitialized: boolean | undefined;
     poolPriceDisplay: number | undefined;
-    isPoolPriceChangePositive: boolean;
+    isPoolPriceChangePositive: boolean | undefined;
     poolPriceChangePercent: string | undefined;
     dailyVol: number | undefined;
     poolData: PoolStatIF;

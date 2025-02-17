@@ -16,7 +16,7 @@ interface PoolDataIF {
     poolPrice: string;
     poolPriceChangeString: string;
     toggleDidUserFlipDenom: () => void;
-    isPoolPriceChangePositive: boolean;
+    isPoolPriceChangePositive: boolean | undefined;
 }
 
 const sideScroll = (
@@ -96,7 +96,11 @@ export default function PoolData(props: PoolDataIF) {
         {
             label: '24h Change',
             value: `${poolPriceChangeString}`,
-            color: isPoolPriceChangePositive ? 'positive' : 'negative',
+            color: isPoolPriceChangePositive
+                ? 'positive'
+                : isPoolPriceChangePositive === undefined
+                  ? 'white'
+                  : 'negative',
         },
 
         {

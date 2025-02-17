@@ -112,13 +112,20 @@ export default function PoolCard(props: propsIF) {
             <div className={styles.pool_price_title}>24h Δ</div>
             <div
                 className={
-                    pool.isPoolPriceChangePositive
+                    pool.isPoolPriceChangePositive ||
+                    pool.isPoolPriceChangePositive === undefined
                         ? styles.change_positive
                         : styles.change_negative
                 }
+                style={{
+                    color:
+                        pool.isPoolPriceChangePositive === undefined
+                            ? 'var(--text1)'
+                            : undefined,
+                }}
             >
                 {pool.displayPrice === undefined ||
-                pool.priceChangePercentString === undefined
+                !pool.priceChangePercentString
                     ? '…'
                     : pool.priceChangePercentString}
             </div>
