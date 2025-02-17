@@ -215,8 +215,9 @@ const useFetchPoolStats = (
         string | undefined
     >();
 
-    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] =
-        useState<boolean>(true);
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<
+        boolean | undefined
+    >();
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
@@ -236,7 +237,7 @@ const useFetchPoolStats = (
         setQuoteTvlUsd(undefined);
         setBaseTvlUsd(undefined);
         setPoolPriceChangePercent(undefined);
-        setIsPoolPriceChangePositive(true);
+        setIsPoolPriceChangePositive(undefined);
         setPoolPriceDisplayNum(undefined);
         setPoolFees24h(undefined);
         setApr(undefined);
@@ -416,7 +417,7 @@ const useFetchPoolStats = (
 
                 if (priceChangeResult > -0.0001 && priceChangeResult < 0.0001) {
                     setPoolPriceChangePercent('No Change');
-                    setIsPoolPriceChangePositive(true);
+                    setIsPoolPriceChangePositive(undefined);
                 } else {
                     (priceChangeResult > 0 && !didUserFlipDenom) ||
                     (priceChangeResult < 0 && didUserFlipDenom)
