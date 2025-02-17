@@ -64,6 +64,10 @@ const useGenFakeTableRow = () => {
         }
     };
 
+    const getExtendedDelayTime = () => {
+        return getDelayTime() * 2;
+    };
+
     const {
         tokens: { tokenUniv: tokenList },
     } = useContext(TokenContext);
@@ -294,7 +298,11 @@ const useGenFakeTableRow = () => {
         if (!crocEnv || !pendingTx.txDetails)
             return {} as RecentlyUpdatedPositionIF;
 
-        await wait(getDelayTime());
+        if (pendingTx.txAction === 'Add') {
+            await wait(getExtendedDelayTime());
+        } else {
+            await wait(getDelayTime());
+        }
 
         const pos = crocEnv.positions(
             pendingTx.txDetails.baseAddress,
