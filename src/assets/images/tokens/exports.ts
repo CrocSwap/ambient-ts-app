@@ -15,6 +15,7 @@ import EZETH from './EZETH.png';
 import FRAX from './FRAX.png';
 import GLORY from './GLORY.png';
 import JUICE from './JUICE.svg';
+import KING from './KING.svg';
 import LDO from './LDO.svg';
 import LINK from './LINK.svg';
 import MIA from './MIA.png';
@@ -87,6 +88,7 @@ export {
     FRAX,
     GLORY,
     JUICE,
+    KING,
     LDO,
     LINK,
     MIA,

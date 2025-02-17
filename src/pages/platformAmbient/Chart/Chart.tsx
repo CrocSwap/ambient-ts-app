@@ -58,7 +58,6 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import useHandleSwipeBack from '../../../utils/hooks/useHandleSwipeBack';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import ChartSettings from '../../Chart/ChartSettings/ChartSettings';
@@ -255,6 +254,7 @@ export default function Chart(props: propsIF) {
         setShouldResetBuffer,
         colorChangeTrigger,
         setColorChangeTrigger,
+        chartSettingsRef,
     } = useContext(ChartContext);
     const {
         setCandleDomains,
@@ -450,16 +450,26 @@ export default function Chart(props: propsIF) {
     const clickOutsideChartHandler = (event: Event) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const e = event.target as any;
-        if (!e.id.includes('chart_settings') && shouldDisableChartSettings) {
-            setContextmenu(false);
+
+        const el = chartSettingsRef?.current;
+
+        const contextButton = document.getElementById('chart_settings_button');
+
+        if (
+            (contextButton && contextButton.contains(e as Node)) ||
+            el.contains((e as Node) || null)
+        ) {
+            return;
         }
 
         if (!shouldDisableChartSettings) {
             setCloseOutherChartSetting(true);
         }
-    };
 
-    useOnClickOutside(d3Container, clickOutsideChartHandler);
+        if (shouldDisableChartSettings) {
+            setContextmenu(false);
+        }
+    };
 
     const isShowLatestCandle = useMemo(() => {
         return checkShowLatestCandle(period, scaleData?.xScale);
@@ -5058,6 +5068,8 @@ export default function Chart(props: propsIF) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleDocumentClick = (event: any) => {
             setHandleDocumentEvent(event);
+            clickOutsideChartHandler(event);
+
             if (
                 d3Container.current &&
                 !d3Container.current.contains(event.target) &&
@@ -5073,7 +5085,7 @@ export default function Chart(props: propsIF) {
         return () => {
             document.removeEventListener('click', handleDocumentClick);
         };
-    }, []);
+    }, [chartSettingsRef]);
 
     // mouseleave
     useEffect(() => {

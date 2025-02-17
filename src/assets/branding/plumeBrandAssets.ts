@@ -1,5 +1,5 @@
 import plumeLogo from '../../assets/images/logos/plume_brand_logo.svg';
-import large from '../images/logos/large.svg';
+import large from '../images/logos/ambient_logo_large.svg';
 import { brandIF } from './types';
 
 export const plumeBrandAssets: brandIF = {
