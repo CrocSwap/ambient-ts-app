@@ -44,6 +44,12 @@ export const defaultBrandAssets: brandIF = {
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
         },
+        '0x279f': {
+            // monad testnet
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
+            premiumColor: [],
+            cobrandingLogo: monadLogo,
+        },
         // plume sepolia
         '0x18230': {
             color: ['purple_dark', 'purple_light', 'futa_dark'],
@@ -73,11 +79,6 @@ export const defaultBrandAssets: brandIF = {
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             cobrandingLogo: blastLogo,
-        }, // monad testnet
-        '0x279f': {
-            color: ['purple_dark', 'purple_light', 'futa_dark'],
-            premiumColor: [],
-            cobrandingLogo: monadLogo,
         },
     },
     platformName: 'ambient',
