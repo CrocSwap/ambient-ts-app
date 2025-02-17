@@ -2,10 +2,12 @@
 import { ZeroAddress } from 'ethers';
 import { PRICE_WINDOW_GRANULARITY } from '../constants';
 import { allNetworks } from '../constants/networks';
+import { MAINNET_TOKENS } from '../constants/networks/ethereumMainnet';
 import {
     isETHorStakedEthToken,
     isPriorityEthEquivalent,
     isUsdStableToken,
+    isWbtcToken,
     memoizePromiseFn,
     translateToken,
 } from '../dataLayer/functions';
@@ -53,6 +55,23 @@ export const fetchTokenPrice = async (
                 config_path: 'price',
                 asset_platform: 'ethereum',
                 token_address: ZeroAddress,
+            };
+
+            const response = await fetchBatch<'price'>(body);
+
+            if ('error' in response) throw new Error(response.error);
+            if (response.value.source === '') {
+                throw new Error('no source available');
+            }
+            if (response.value.usdPrice === Infinity) {
+                throw new Error('USD value returned as Infinity');
+            }
+            return response.value;
+        } else if (isWbtcToken(dispToken)) {
+            const body = {
+                config_path: 'price',
+                asset_platform: 'ethereum',
+                token_address: MAINNET_TOKENS.WBTC.address,
             };
 
             const response = await fetchBatch<'price'>(body);
