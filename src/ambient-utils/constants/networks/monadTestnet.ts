@@ -66,7 +66,7 @@ export const monadTestnet: NetworkIF = {
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     displayName: 'Monad Testnet',
-    tokenPriceQueryAssetPlatform: undefined,
+    tokenPriceQueryAssetPlatform: 'monad',
     vaultsEnabled: false,
     tempestApiNetworkName: '',
     topPools: [
