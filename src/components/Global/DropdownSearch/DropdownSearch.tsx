@@ -19,7 +19,6 @@ import {
     useSidebarSearch,
 } from '../../../App/hooks/useSidebarSearch';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -47,7 +46,6 @@ const DropdownSearch = () => {
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
@@ -159,17 +157,17 @@ const DropdownSearch = () => {
         {
             id: 1,
             name: 'Top Pools',
-            data: <TopPools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
+            data: <TopPools />,
         },
         {
             id: 2,
             name: 'Favorites',
-            data: <FavoritePools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
+            data: <FavoritePools />,
         },
         {
             id: 3,
             name: 'Recent Pairs',
-            data: <RecentPools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
+            data: <RecentPools />,
         },
     ];
 

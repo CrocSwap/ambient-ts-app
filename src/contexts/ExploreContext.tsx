@@ -44,7 +44,7 @@ export const ExploreContext = createContext({} as ExploreContextIF);
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { activeNetwork, isUserOnline } = useContext(AppStateContext);
-    const { cachedFetchTokenPrice, cachedTokenDetails } =
+    const { cachedFetchTokenPrice, cachedTokenDetails, cachedQuerySpotPrice } =
         useContext(CachedDataContext);
     const { activePoolList } = useContext(PoolContext);
 
@@ -97,6 +97,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedTokenDetails,
+            cachedQuerySpotPrice,
             tokens.tokenUniv,
         );
 
@@ -104,7 +105,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     }
 
     function processPoolList(chainId: string, crocEnv: CrocEnv): void {
-        if (!activePoolList || !activePoolList.length) return;
+        if (!activePoolList.length) return;
 
         const expandedPoolDataOnCurrentChain = activePoolList
             .filter((pool) => {

@@ -318,6 +318,7 @@ const useFetchPoolStats = (
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
+                cachedQuerySpotPrice,
                 tokens.tokenUniv,
                 enableTotalSupply,
             );

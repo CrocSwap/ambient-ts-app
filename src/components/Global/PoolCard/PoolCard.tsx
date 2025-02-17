@@ -10,8 +10,7 @@ import {
     uriToHttp,
 } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
-import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
-import { AppStateContext, ExploreContext } from '../../../contexts';
+import { AppStateContext } from '../../../contexts';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import TokenIcon from '../TokenIcon/TokenIcon';
@@ -19,11 +18,10 @@ import styles from './PoolCard.module.css';
 
 interface propsIF {
     pool: PoolIF;
-    spotPrice: number | undefined;
 }
 
 export default function PoolCard(props: propsIF) {
-    const { pool, spotPrice } = props;
+    const { pool } = props;
 
     const navigate = useNavigate();
 
@@ -31,20 +29,11 @@ export default function PoolCard(props: propsIF) {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const {
-        pools: { activePoolList },
-    } = useContext(ExploreContext);
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const [isHovered, setIsHovered] = useState(false);
 
-    const poolData = useFetchPoolStats(pool, activePoolList, spotPrice);
-    const {
-        poolPrice,
-        poolPriceDisplay,
-        isPoolPriceChangePositive,
-        shouldInvertDisplay,
-    } = poolData;
+    const shouldInvertDisplay = !pool.isBaseTokenMoneynessGreaterOrEqual;
 
     const denomTokenIsUsdStableToken = shouldInvertDisplay
         ? isUsdStableToken(pool.quote)
@@ -60,16 +49,13 @@ export default function PoolCard(props: propsIF) {
     const isEthStakedEthPair = isETHPair(pool.base, pool.quote);
     const isPoolBtcPair = isBtcPair(pool.base, pool.quote);
 
-    const usdPrice =
-        poolPriceDisplay && pool.baseUsdPrice && pool.quoteUsdPrice
-            ? shouldInvertDisplay
-                ? (1 / poolPriceDisplay) * pool.quoteUsdPrice
-                : poolPriceDisplay * pool.baseUsdPrice
-            : undefined;
+    const usdPrice = pool.isBaseTokenMoneynessGreaterOrEqual
+        ? pool.baseUsdPrice
+        : pool.quoteUsdPrice;
 
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
-            {poolPrice === undefined
+            {pool.displayPrice === undefined
                 ? '…'
                 : isHovered || denomTokenIsUsdStableToken
                   ? denomTokenIsWBTCToken ||
@@ -84,12 +70,12 @@ export default function PoolCard(props: propsIF) {
                                   })
                                 : '…'
                         }`
-                      : poolPrice
+                      : pool.displayPriceString
                   : denomTokenIsWBTCToken ||
                       isEthStakedEthPair ||
                       isPoolBtcPair ||
                       excludeFromUsdConversion
-                    ? poolPrice
+                    ? pool.displayPriceString
                     : `${
                           usdPrice
                               ? getFormattedNumber({
@@ -123,12 +109,12 @@ export default function PoolCard(props: propsIF) {
             <div className={styles.pool_price_title}>24h Δ</div>
             <div
                 className={
-                    isPoolPriceChangePositive
+                    pool.isPoolPriceChangePositive
                         ? styles.change_positive
                         : styles.change_negative
                 }
             >
-                {poolPrice === undefined ||
+                {pool.displayPrice === undefined ||
                 pool.priceChangePercentString === undefined
                     ? '…'
                     : pool.priceChangePercentString}
@@ -155,7 +141,7 @@ export default function PoolCard(props: propsIF) {
     }. 24 hour volume is ${
         formattedVolumeChange24h ? formattedVolumeChange24h : 'not available'
     }.  TVL is ${formattedTVLTotalUSD}. 24 hours pool price change is ${pool.priceChange24h}. Pool price is ${
-        poolPrice ? poolPrice : 'not available'
+        pool.displayPrice ? pool.displayPrice : 'not available'
     }. `;
 
     return (
