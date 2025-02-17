@@ -29,6 +29,7 @@ import { TransactionByType } from '../../../contexts/ReceiptContext';
 import { getPositionData } from '../../../ambient-utils/dataLayer/functions/getPositionData';
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { RecentlyUpdatedPositionIF } from '../../../contexts/GraphDataContext';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -309,11 +310,17 @@ const useGenFakeTableRow = () => {
             lastBlockNumber,
         );
 
-        console.log('>>> poolPriceNonDisplay', poolPriceNonDisplay);
-
         const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
 
-        let position, positionLiqBase, positionLiqQuote, liqBigInt, liqNum;
+        let position,
+            positionLiqBase,
+            positionLiqQuote,
+            liqBigInt,
+            liqNum,
+            positionLiqBaseDecimalCorrected,
+            positionLiqQuoteDecimalCorrected,
+            positionLiqBaseTruncated,
+            positionLiqQuoteTruncated;
 
         position = pendingTx.txDetails.isAmbient
             ? await pos.queryAmbientPos()
@@ -324,9 +331,6 @@ const useGenFakeTableRow = () => {
 
         liqBigInt = position.liq;
         liqNum = bigIntToFloat(liqBigInt);
-
-        console.log('>>> liqNum', liqNum);
-        console.log('>>> liqBigInt', liqBigInt);
 
         for (
             let attempt = 1;
@@ -347,13 +351,9 @@ const useGenFakeTableRow = () => {
             liqNum = bigIntToFloat(liqBigInt);
         }
 
-        console.log('>>> pos', position);
-
         if (pendingTx.txDetails.isAmbient) {
             positionLiqBase = liqNum * Math.sqrt(poolPriceNonDisplay);
-            console.log('>>> positionLiqBase', positionLiqBase);
             positionLiqQuote = liqNum / Math.sqrt(poolPriceNonDisplay);
-            console.log('>>> positionLiqQuote', positionLiqQuote);
         } else {
             positionLiqBase = bigIntToFloat(
                 baseTokenForConcLiq(
@@ -363,7 +363,6 @@ const useGenFakeTableRow = () => {
                     tickToPrice(pendingTx.txDetails.highTick || 0),
                 ),
             );
-            console.log('>>> positionLiqBase', positionLiqBase);
             positionLiqQuote = bigIntToFloat(
                 quoteTokenForConcLiq(
                     poolPriceNonDisplay,
@@ -372,7 +371,27 @@ const useGenFakeTableRow = () => {
                     tickToPrice(pendingTx.txDetails.highTick || 0),
                 ),
             );
-            console.log('>>> positionLiqQuote', positionLiqQuote);
+        }
+
+        if (positionLiqBase && pendingTx.txDetails.baseTokenDecimals) {
+            positionLiqBaseDecimalCorrected =
+                positionLiqBase /
+                Math.pow(10, pendingTx.txDetails.baseTokenDecimals);
+            positionLiqBaseTruncated = getFormattedNumber({
+                value: positionLiqBaseDecimalCorrected,
+                zeroDisplay: '0',
+                removeExtraTrailingZeros: true,
+            });
+        }
+        if (positionLiqQuote && pendingTx.txDetails.quoteTokenDecimals) {
+            positionLiqQuoteDecimalCorrected =
+                positionLiqQuote /
+                Math.pow(10, pendingTx.txDetails.quoteTokenDecimals);
+            positionLiqQuoteTruncated = getFormattedNumber({
+                value: positionLiqQuoteDecimalCorrected,
+                zeroDisplay: '0',
+                removeExtraTrailingZeros: true,
+            });
         }
 
         const posHashObject = {
@@ -427,14 +446,17 @@ const useGenFakeTableRow = () => {
         if (
             pendingTx.txDetails.initialTokenQty &&
             pendingTx.txDetails.secondaryTokenQty &&
-            positionData.baseUsdPrice &&
-            positionData.quoteUsdPrice
+            positionData.baseUsdPrice
         ) {
+            const quoteUsdPrice =
+                positionData.quoteUsdPrice ||
+                poolPriceNonDisplay * positionData.baseUsdPrice ||
+                0;
             backupUsdValue =
                 parseFloat(pendingTx.txDetails.initialTokenQty) *
                     positionData.baseUsdPrice +
                 parseFloat(pendingTx.txDetails.secondaryTokenQty) *
-                    positionData.quoteUsdPrice;
+                    quoteUsdPrice;
         }
 
         const onChainPosition: PositionIF = {
@@ -498,11 +520,17 @@ const useGenFakeTableRow = () => {
             feesLiqQuoteDecimalCorrected:
                 positionData.feesLiqQuoteDecimalCorrected,
             positionLiqBaseDecimalCorrected:
+                positionLiqBaseDecimalCorrected ||
                 positionData.positionLiqBaseDecimalCorrected,
             positionLiqQuoteDecimalCorrected:
+                positionLiqQuoteDecimalCorrected ||
                 positionData.positionLiqQuoteDecimalCorrected,
-            positionLiqBaseTruncated: positionData.positionLiqBaseTruncated,
-            positionLiqQuoteTruncated: positionData.positionLiqQuoteTruncated,
+            positionLiqBaseTruncated:
+                positionLiqBaseTruncated ||
+                positionData.positionLiqBaseTruncated,
+            positionLiqQuoteTruncated:
+                positionLiqQuoteTruncated ||
+                positionData.positionLiqQuoteTruncated,
             totalValueUSD: positionData.totalValueUSD
                 ? positionData.totalValueUSD
                 : backupUsdValue,
@@ -525,17 +553,6 @@ const useGenFakeTableRow = () => {
         ) {
             isSuccess = true;
         }
-
-        console.log('>>> fakeRowObject', {
-            positionHash: posHash,
-            timestamp: Date.now(),
-            position: onChainPosition,
-            type: pendingTx.txType,
-            action: pendingTx.txAction || '',
-            status: 'onchain',
-            isSuccess: isSuccess,
-            prevPositionHash: pendingTx.txDetails?.prevPositionHash,
-        });
 
         return {
             positionHash: posHash,
