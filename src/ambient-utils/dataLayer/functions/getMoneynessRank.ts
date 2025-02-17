@@ -69,10 +69,16 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
     return rank;
 };
 
-export const getMoneynessRankByAddr = (tokenAddress: string): number => {
+export const getMoneynessRankByAddr = (
+    tokenAddress: string,
+    chainId: string,
+): number => {
     let moneynessRank = 0;
     ambientTokenList.tokens.concat(testnetTokenList.tokens).forEach((token) => {
-        if (token.address.toLowerCase() === tokenAddress.toLowerCase()) {
+        if (
+            token.address.toLowerCase() === tokenAddress.toLowerCase() &&
+            token.chainId === Number(chainId)
+        ) {
             const translatedSymbol = getTranslatedSymbol(token.symbol);
 
             moneynessRank = getMoneynessRank(translatedSymbol);

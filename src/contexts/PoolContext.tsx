@@ -163,10 +163,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
         const isPoolBtcPair = isBtcPair(baseToken.address, quoteToken.address);
 
         const excludeFromUsdConversion =
-            isDefaultDenomTokenExcludedFromUsdConversion(
-                baseToken.address,
-                quoteToken.address,
-            );
+            isDefaultDenomTokenExcludedFromUsdConversion(baseToken, quoteToken);
 
         const isPairEthWbtc =
             baseToken.address === ZERO_ADDRESS &&

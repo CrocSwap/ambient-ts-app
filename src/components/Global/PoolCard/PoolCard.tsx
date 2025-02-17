@@ -44,14 +44,17 @@ export default function PoolCard(props: propsIF) {
         : isWbtcOrStakedBTCToken(pool.base);
 
     const excludeFromUsdConversion =
-        isDefaultDenomTokenExcludedFromUsdConversion(pool.base, pool.quote);
+        isDefaultDenomTokenExcludedFromUsdConversion(
+            pool.baseToken,
+            pool.quoteToken,
+        );
 
     const isEthStakedEthPair = isETHPair(pool.base, pool.quote);
     const isPoolBtcPair = isBtcPair(pool.base, pool.quote);
 
     const usdPrice = pool.isBaseTokenMoneynessGreaterOrEqual
-        ? pool.baseUsdPrice
-        : pool.quoteUsdPrice;
+        ? pool.quoteUsdPrice
+        : pool.baseUsdPrice;
 
     const poolPriceDisplayDOM = (
         <div className={styles.price}>

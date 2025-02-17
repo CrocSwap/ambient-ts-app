@@ -3,7 +3,7 @@
 // NOTE: Definition of what constitutes a "stable pair" is arbitrary and just based
 //       on the devs discretion. Users should not assume that true/false implies
 
-import { getMoneynessRankByAddr } from '.';
+import { getMoneynessRank } from '.';
 import { ZERO_ADDRESS } from '../../constants';
 import { BASE_SEPOLIA_TOKENS } from '../../constants/networks/baseSepolia';
 import { BLAST_TOKENS } from '../../constants/networks/blastMainnet';
@@ -17,6 +17,7 @@ import { SCROLL_TOKENS } from '../../constants/networks/scrollMainnet';
 import { SCROLL_SEPOLIA_TOKENS } from '../../constants/networks/scrollSepolia';
 import { SWELL_TOKENS } from '../../constants/networks/swellMainnet';
 import { SWELL_SEPOLIA_TOKENS } from '../../constants/networks/swellSepolia';
+import { TokenIF } from '../../types';
 
 //       any sort of specific guaranteed relation between the tokens.
 export function isStablePair(addr1: string, addr2: string): boolean {
@@ -74,17 +75,17 @@ export function isWbtcToken(addr: string): boolean {
 
 // added so rswETH / SWELL would be denominated in SWELL by default
 export function isDefaultDenomTokenExcludedFromUsdConversion(
-    baseToken: string,
-    quoteToken: string,
+    baseToken: TokenIF,
+    quoteToken: TokenIF,
 ): boolean {
     const isBaseTokenMoneynessGreaterOrEqual =
-        getMoneynessRankByAddr(baseToken) -
-            getMoneynessRankByAddr(quoteToken) >=
+        getMoneynessRank(baseToken.symbol) -
+            getMoneynessRank(quoteToken.symbol) >=
         0;
     return USD_EXCLUDED_TOKENS.includes(
         isBaseTokenMoneynessGreaterOrEqual
-            ? baseToken.toLowerCase()
-            : quoteToken.toLowerCase(),
+            ? baseToken.address.toLowerCase()
+            : quoteToken.address.toLowerCase(),
     );
 }
 
