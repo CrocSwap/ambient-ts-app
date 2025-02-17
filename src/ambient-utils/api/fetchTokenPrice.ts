@@ -19,6 +19,12 @@ export const fetchTokenPrice = async (
 ) => {
     const address = translateToken(dispToken, chain);
     const assetPlatform = allNetworks[chain]?.tokenPriceQueryAssetPlatform;
+    if (chain === '0x279f' && address === ZeroAddress) {
+        return {
+            usdPrice: 1,
+            usdPriceFormatted: 1,
+        };
+    }
     try {
         const body = {
             config_path: 'price',
