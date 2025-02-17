@@ -216,6 +216,17 @@ export default function NetworkSelector(props: propsIF) {
             condition: includeCanto && platformName === 'ambient',
         },
         {
+            id: 'monad_testnet_network_selector',
+            chainId: '0x279f',
+            name: 'Monad',
+            logo: monadLogo,
+            custom: 2,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x279f'),
+        },
+        {
             id: 'sepolia_network_selector',
             chainId: '0xaa36a7',
             name: 'Sepolia',
@@ -280,17 +291,6 @@ export default function NetworkSelector(props: propsIF) {
             testnet: true,
             link: '',
             condition: chainMap.has('0x14a34'),
-        },
-        {
-            id: 'monad_testnet_network_selector',
-            chainId: '0x279f',
-            name: 'Monad',
-            logo: monadLogo,
-            custom: 2,
-            isExternal: false,
-            testnet: true,
-            link: '',
-            condition: chainMap.has('0x279f'),
         },
     ];
 
