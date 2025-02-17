@@ -52,7 +52,9 @@ export function isPriorityEthEquivalent(addr: string): boolean {
 
 export function isETHorStakedEthToken(addr: string): boolean {
     return (
-        addr === ZERO_ADDRESS || STAKED_ETH_TOKENS.includes(addr.toLowerCase())
+        addr === ZERO_ADDRESS ||
+        STAKED_ETH_TOKENS.includes(addr.toLowerCase()) ||
+        PRIORITY_ETH_EQUIVALENT_TOKENS.includes(addr.toLowerCase())
     );
 }
 
