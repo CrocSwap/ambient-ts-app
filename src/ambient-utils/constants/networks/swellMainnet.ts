@@ -46,6 +46,7 @@ const defaultTokenEntries = [
     ['uBTC', '0xFA3198ecF05303a6d96E57a45E6c815055D255b1'],
     ['swBTC', '0x1cf7b5f266A0F39d6f9408B90340E3E71dF8BF7B'],
     ['stBTC', '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3'],
+    ['KING', '0xc2606aade4bdd978a4fa5a6edb3b66657acee6f8'],
 ] as const;
 
 type SwellTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
@@ -98,5 +99,6 @@ export const swellMainnet: NetworkIF = {
     vaultsEnabled: true,
     tempestApiNetworkName: 'swell',
     topPools,
+    priorityPool: [SWELL_TOKENS['KING'], SWELL_TOKENS['ETH']],
     getGasPriceInGwei,
 };
