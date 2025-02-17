@@ -34,12 +34,6 @@ export const useRecentPools = (chainId: string): recentPoolsMethodsIF => {
         chainId: string,
         poolId: number,
     ): void {
-        // Necessary because tokenA and tokenB are dispatched separately and
-        // during switch may temporarily have the same value
-        if (tokenA.address === tokenB.address) {
-            return;
-        }
-
         const [baseTokenAddr, quoteTokenAddr] = sortBaseQuoteTokens(
             tokenA.address,
             tokenB.address,
