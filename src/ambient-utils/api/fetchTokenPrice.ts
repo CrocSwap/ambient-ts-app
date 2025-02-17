@@ -4,6 +4,7 @@ import { PRICE_WINDOW_GRANULARITY } from '../constants';
 import { allNetworks } from '../constants/networks';
 import {
     isETHorStakedEthToken,
+    isPriorityEthEquivalent,
     isUsdStableToken,
     memoizePromiseFn,
     translateToken,
@@ -45,7 +46,8 @@ export const fetchTokenPrice = async (
     } catch (error) {
         if (
             // if token is ETH or Staked ETH, return current value of mainnet ETH
-            isETHorStakedEthToken(dispToken)
+            isETHorStakedEthToken(dispToken) ||
+            isPriorityEthEquivalent(dispToken)
         ) {
             const body = {
                 config_path: 'price',

@@ -52,9 +52,7 @@ export function isPriorityEthEquivalent(addr: string): boolean {
 
 export function isETHorStakedEthToken(addr: string): boolean {
     return (
-        addr === ZERO_ADDRESS ||
-        STAKED_ETH_TOKENS.includes(addr.toLowerCase()) ||
-        PRIORITY_ETH_EQUIVALENT_TOKENS.includes(addr.toLowerCase())
+        addr === ZERO_ADDRESS || STAKED_ETH_TOKENS.includes(addr.toLowerCase())
     );
 }
 
@@ -138,6 +136,7 @@ export const STABLE_USD_TOKENS = [
     SWELL_TOKENS.USDe,
     SWELL_TOKENS.SUSDe,
     BASE_SEPOLIA_TOKENS.USDT,
+    MONAD_TESTNET_TOKENS.USDT,
 ]
     .map((x) => x.address.toLowerCase())
     .concat(USDC_TOKENS);
@@ -150,6 +149,7 @@ export const WBTC_TOKENS = [
     MAINNET_TOKENS.WBTC,
     SCROLL_TOKENS.WBTC,
     SEPOLIA_TOKENS.WBTC,
+    MONAD_TESTNET_TOKENS.WBTC,
 ].map((x) => x.address.toLowerCase());
 
 export const STAKED_ETH_TOKENS = [
