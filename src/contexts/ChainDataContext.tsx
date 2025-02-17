@@ -541,7 +541,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 setNativeTokenUsdPrice(response?.usdPrice);
             },
         );
-    }, [chainId]);
+    }, [chainId, everyFiveMinutes]);
 
     const [connectedUserXp, setConnectedUserXp] = useState<UserXpDataIF>({
         dataReceived: false,
