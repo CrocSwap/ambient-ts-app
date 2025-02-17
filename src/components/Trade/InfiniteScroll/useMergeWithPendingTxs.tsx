@@ -100,6 +100,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
         }
 
         let clearedData: LimitOrderIF[] | PositionIF[] = [];
+
         if (type === 'Order') {
             clearedData = (data as LimitOrderIF[]).filter(
                 (e) => !recentlyUpdatedHashes.has(e.positionHash),
