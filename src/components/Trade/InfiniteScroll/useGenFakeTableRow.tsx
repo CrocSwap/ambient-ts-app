@@ -29,6 +29,7 @@ import { TransactionByType } from '../../../contexts/ReceiptContext';
 import { getPositionData } from '../../../ambient-utils/dataLayer/functions/getPositionData';
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { RecentlyUpdatedPositionIF } from '../../../contexts/GraphDataContext';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -61,6 +62,10 @@ const useGenFakeTableRow = () => {
             default:
                 return 2000 * factor;
         }
+    };
+
+    const getExtendedDelayTime = () => {
+        return getDelayTime() * 2;
     };
 
     const {
@@ -293,7 +298,11 @@ const useGenFakeTableRow = () => {
         if (!crocEnv || !pendingTx.txDetails)
             return {} as RecentlyUpdatedPositionIF;
 
-        await wait(getDelayTime());
+        if (pendingTx.txAction === 'Add') {
+            await wait(getExtendedDelayTime());
+        } else {
+            await wait(getDelayTime());
+        }
 
         const pos = crocEnv.positions(
             pendingTx.txDetails.baseAddress,
@@ -311,7 +320,15 @@ const useGenFakeTableRow = () => {
 
         const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
 
-        let position, positionLiqBase, positionLiqQuote, liqBigInt, liqNum;
+        let position,
+            positionLiqBase,
+            positionLiqQuote,
+            liqBigInt,
+            liqNum,
+            positionLiqBaseDecimalCorrected,
+            positionLiqQuoteDecimalCorrected,
+            positionLiqBaseTruncated,
+            positionLiqQuoteTruncated;
 
         position = pendingTx.txDetails.isAmbient
             ? await pos.queryAmbientPos()
@@ -362,6 +379,27 @@ const useGenFakeTableRow = () => {
                     tickToPrice(pendingTx.txDetails.highTick || 0),
                 ),
             );
+        }
+
+        if (positionLiqBase && pendingTx.txDetails.baseTokenDecimals) {
+            positionLiqBaseDecimalCorrected =
+                positionLiqBase /
+                Math.pow(10, pendingTx.txDetails.baseTokenDecimals);
+            positionLiqBaseTruncated = getFormattedNumber({
+                value: positionLiqBaseDecimalCorrected,
+                zeroDisplay: '0',
+                removeExtraTrailingZeros: true,
+            });
+        }
+        if (positionLiqQuote && pendingTx.txDetails.quoteTokenDecimals) {
+            positionLiqQuoteDecimalCorrected =
+                positionLiqQuote /
+                Math.pow(10, pendingTx.txDetails.quoteTokenDecimals);
+            positionLiqQuoteTruncated = getFormattedNumber({
+                value: positionLiqQuoteDecimalCorrected,
+                zeroDisplay: '0',
+                removeExtraTrailingZeros: true,
+            });
         }
 
         const posHashObject = {
@@ -416,14 +454,17 @@ const useGenFakeTableRow = () => {
         if (
             pendingTx.txDetails.initialTokenQty &&
             pendingTx.txDetails.secondaryTokenQty &&
-            positionData.baseUsdPrice &&
-            positionData.quoteUsdPrice
+            positionData.baseUsdPrice
         ) {
+            const quoteUsdPrice =
+                positionData.quoteUsdPrice ||
+                poolPriceNonDisplay * positionData.baseUsdPrice ||
+                0;
             backupUsdValue =
                 parseFloat(pendingTx.txDetails.initialTokenQty) *
                     positionData.baseUsdPrice +
                 parseFloat(pendingTx.txDetails.secondaryTokenQty) *
-                    positionData.quoteUsdPrice;
+                    quoteUsdPrice;
         }
 
         const onChainPosition: PositionIF = {
@@ -487,11 +528,17 @@ const useGenFakeTableRow = () => {
             feesLiqQuoteDecimalCorrected:
                 positionData.feesLiqQuoteDecimalCorrected,
             positionLiqBaseDecimalCorrected:
+                positionLiqBaseDecimalCorrected ||
                 positionData.positionLiqBaseDecimalCorrected,
             positionLiqQuoteDecimalCorrected:
+                positionLiqQuoteDecimalCorrected ||
                 positionData.positionLiqQuoteDecimalCorrected,
-            positionLiqBaseTruncated: positionData.positionLiqBaseTruncated,
-            positionLiqQuoteTruncated: positionData.positionLiqQuoteTruncated,
+            positionLiqBaseTruncated:
+                positionLiqBaseTruncated ||
+                positionData.positionLiqBaseTruncated,
+            positionLiqQuoteTruncated:
+                positionLiqQuoteTruncated ||
+                positionData.positionLiqQuoteTruncated,
             totalValueUSD: positionData.totalValueUSD
                 ? positionData.totalValueUSD
                 : backupUsdValue,

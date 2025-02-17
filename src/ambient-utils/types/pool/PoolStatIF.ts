@@ -13,7 +13,7 @@ export interface PoolStatIF {
     apr?: string | undefined;
     poolAmbientAprEstimate: number | undefined;
     poolPriceChangePercent?: string;
-    isPoolPriceChangePositive: boolean;
+    isPoolPriceChangePositive: boolean | undefined;
 
     baseTokenCharacter?: string;
     quoteTokenCharacter?: string;

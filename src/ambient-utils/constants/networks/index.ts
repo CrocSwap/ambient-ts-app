@@ -5,6 +5,7 @@ import {
     blastBrandAssets,
     defaultBrandAssets,
     futaBrandAssets,
+    monadTestnetBrandAssets,
     plumeBrandAssets,
     plumeSepoliaBrandAssets,
     scrollBrandAssets,
@@ -17,6 +18,7 @@ import { blastMainnet } from './blastMainnet';
 import { blastSepolia } from './blastSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
 import { ethereumSepolia } from './ethereumSepolia';
+import { monadTestnet } from './monadTestnet';
 import { plumeMainnet } from './plumeMainnet';
 import { plumeSepolia } from './plumeSepolia';
 import { scrollMainnet } from './scrollMainnet';
@@ -39,6 +41,7 @@ const networkDefinitions: NetworkIF[] = [
     swellSepolia,
     scrollSepolia,
     baseSepolia,
+    monadTestnet,
 ];
 
 function getNetworks(chns: (string | chainHexIds)[]): {
@@ -84,13 +87,17 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
                         ? getNetworks(
                               Object.keys(swellSepoliaBrandAssets.networks),
                           )
-                        : brand === 'baseSepolia'
+                        : brand === 'monadTestnet'
                           ? getNetworks(
-                                Object.keys(baseSepoliaBrandAssets.networks),
+                                Object.keys(monadTestnetBrandAssets.networks),
                             )
-                          : getNetworks(
-                                Object.keys(defaultBrandAssets.networks),
-                            );
+                          : brand === 'baseSepolia'
+                            ? getNetworks(
+                                  Object.keys(baseSepoliaBrandAssets.networks),
+                              )
+                            : getNetworks(
+                                  Object.keys(defaultBrandAssets.networks),
+                              );
 
 const vaultNetworks = networkDefinitions.filter((n: NetworkIF) =>
     n.vaultsEnabled ? n : null,
@@ -123,6 +130,7 @@ export {
     blastSepolia,
     ethereumMainnet,
     ethereumSepolia,
+    monadTestnet,
     plumeMainnet,
     plumeSepolia,
     scrollMainnet,

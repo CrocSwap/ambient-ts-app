@@ -61,8 +61,7 @@ function RangeActionModal(props: propsIF) {
         activeNetwork: { GCGO_URL, chainId, poolIndex },
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
-    const { crocEnv, provider, ethMainnetUsdPrice } =
-        useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
         isAmbient,
@@ -75,7 +74,8 @@ function RangeActionModal(props: propsIF) {
         isPositionInRange,
     } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
-    const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
+    const { lastBlockNumber, gasPriceInGwei, nativeTokenUsdPrice } =
+        useContext(ChainDataContext);
 
     const {
         cachedQuerySpotPrice,
@@ -137,12 +137,12 @@ function RangeActionModal(props: propsIF) {
             : GAS_DROPS_ESTIMATE_RANGE_HARVEST;
 
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageGasUnitsForRemovalTxInGasDrops *
                 NUM_GWEI_IN_WEI *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setRemovalGasPriceinDollars(
                 getFormattedNumber({
@@ -151,7 +151,7 @@ function RangeActionModal(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     const [currentLiquidity, setCurrentLiquidity] = useState<
         bigint | undefined

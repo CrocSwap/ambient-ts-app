@@ -56,16 +56,19 @@ function Reposition() {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, provider, ethMainnetUsdPrice } =
-        useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
         activeNetwork: { blockExplorer, chainId },
     } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
-    const { gasPriceInGwei, lastBlockNumber, isActiveNetworkL2 } =
-        useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        nativeTokenUsdPrice,
+        lastBlockNumber,
+        isActiveNetworkL2,
+    } = useContext(ChainDataContext);
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
@@ -743,12 +746,12 @@ function Reposition() {
     const [extraL1GasFeePool] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 GAS_DROPS_ESTIMATE_REPOSITION *
                 NUM_GWEI_IN_WEI *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setRangeGasPriceinDollars(
                 getFormattedNumber({
@@ -757,7 +760,7 @@ function Reposition() {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, extraL1GasFeePool]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice, extraL1GasFeePool]);
 
     // navigate the user to the redirect URL path if locationHook.state has no data
     // ... this value will be truthy if the user arrived here by clicking a link

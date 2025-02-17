@@ -65,6 +65,7 @@ export interface ChainDataContextIF {
     isActiveNetworkPlume: boolean;
     isActiveNetworkSwell: boolean;
     isActiveNetworkBase: boolean;
+    isActiveNetworkMonad: boolean;
     isActiveNetworkScroll: boolean;
     isActiveNetworkMainnet: boolean;
     isVaultSupportedOnNetwork: boolean;
@@ -139,6 +140,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkPlume = ['0x18230', '0x18231'].includes(chainId);
     const isActiveNetworkSwell = ['0x783', '0x784'].includes(chainId);
     const isActiveNetworkBase = ['0x14a34'].includes(chainId);
+    const isActiveNetworkMonad = ['0x0x279f4a34'].includes(chainId);
 
     const isVaultSupportedOnNetwork =
         vaultSupportedNetworkIds.includes(chainId);
@@ -539,7 +541,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 setNativeTokenUsdPrice(response?.usdPrice);
             },
         );
-    }, [chainId]);
+    }, [chainId, everyFiveMinutes]);
 
     const [connectedUserXp, setConnectedUserXp] = useState<UserXpDataIF>({
         dataReceived: false,
@@ -889,6 +891,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isActiveNetworkPlume,
         isActiveNetworkSwell,
         isActiveNetworkBase,
+        isActiveNetworkMonad,
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
         isVaultSupportedOnNetwork,

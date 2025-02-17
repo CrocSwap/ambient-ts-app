@@ -51,8 +51,8 @@ export const UserPreferenceContextProvider = (props: {
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(() => {
         if (baseTokenAddress && quoteTokenAddress) {
             return (
-                getMoneynessRankByAddr(baseTokenAddress) -
-                    getMoneynessRankByAddr(quoteTokenAddress) >=
+                getMoneynessRankByAddr(baseTokenAddress, chainId) -
+                    getMoneynessRankByAddr(quoteTokenAddress, chainId) >=
                 0
             );
         }

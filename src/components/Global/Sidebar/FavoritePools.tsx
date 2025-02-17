@@ -1,7 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
-import { PoolQueryFn } from '../../../ambient-utils/dataLayer';
-import { AppStateContext } from '../../../contexts';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { expandPoolStats } from '../../../ambient-utils/dataLayer';
+import { PoolIF } from '../../../ambient-utils/types';
+import {
+    AppStateContext,
+    CachedDataContext,
+    CrocEnvContext,
+    ExploreContext,
+    TokenContext,
+} from '../../../contexts';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { FlexContainer } from '../../../styled/Common';
@@ -12,20 +18,24 @@ import {
 } from '../../../styled/Components/Sidebar';
 import PoolsListItem from './PoolsListItem';
 
-interface propsIF {
-    cachedQuerySpotPrice: PoolQueryFn;
-}
-
-export default function FavoritePools(props: propsIF) {
-    const { cachedQuerySpotPrice } = props;
-
+export default function FavoritePools() {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
+    const {
+        pools: { all: explorePools },
+    } = useContext(ExploreContext);
+
     const { crocEnv } = useContext(CrocEnvContext);
+
     const {
         activeNetwork: { chainId, poolIndex: poolId },
     } = useContext(AppStateContext);
     const { favePools } = useContext(UserPreferenceContext);
+
+    const { tokens } = useContext(TokenContext);
+
+    const { cachedFetchTokenPrice, cachedTokenDetails, cachedQuerySpotPrice } =
+        useContext(CachedDataContext);
 
     const isAlreadyFavorited = favePools.check(
         baseToken.address,
@@ -34,40 +44,52 @@ export default function FavoritePools(props: propsIF) {
         poolId,
     );
 
-    const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
-
-    const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
+    const [expandedPoolData, setExpandedPoolData] = useState<PoolIF[]>([]);
 
     useEffect(() => {
-        if (!crocEnv) return;
+        if (!favePools.pools || !crocEnv) return;
 
-        const fetchSpotPrices = async () => {
-            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
-                return;
-            const spotPricePromises = favePools.pools
-                .filter((pool) => pool.chainId === chainId)
-                .map((pool) =>
-                    cachedQuerySpotPrice(
-                        crocEnv,
-                        pool.base,
-                        pool.quote,
-                        chainId,
-                        poolPriceCacheTime,
-                    ).catch((error) => {
-                        console.error(
-                            `Failed to fetch spot price for pool ${pool.baseToken.symbol}-${pool.quoteToken.symbol}:`,
-                            error,
-                        );
-                        return undefined; // Handle the case where fetching spot price fails
-                    }),
+        const expandedPoolDataOnCurrentChain = favePools.pools
+            .filter((pool) => {
+                return pool.chainId === chainId;
+            })
+            .map((pool: PoolIF) => {
+                const poolDataFromExplore = explorePools.find(
+                    (explorePool) =>
+                        explorePool.poolIdx === pool.poolIdx &&
+                        explorePool.chainId === pool.chainId &&
+                        explorePool.baseToken.address ===
+                            pool.baseToken.address &&
+                        explorePool.quoteToken.address ===
+                            pool.quoteToken.address,
                 );
+                if (poolDataFromExplore) return poolDataFromExplore;
+                return expandPoolStats(
+                    pool,
+                    crocEnv,
+                    cachedFetchTokenPrice,
+                    cachedTokenDetails,
+                    cachedQuerySpotPrice,
+                    tokens.tokenUniv,
+                );
+            });
 
-            const results = await Promise.all(spotPricePromises);
-            setSpotPrices(results);
-        };
-
-        fetchSpotPrices();
-    }, [favePools.pools, crocEnv, chainId, poolPriceCacheTime]);
+        Promise.all(expandedPoolDataOnCurrentChain)
+            .then((results: Array<PoolIF>) => {
+                // setIsFetchError(false);
+                if (results.length) {
+                    setExpandedPoolData(results);
+                }
+            })
+            .catch((err) => {
+                // setIsFetchError(true);
+                console.warn(err);
+            });
+    }, [
+        JSON.stringify(favePools.pools),
+        crocEnv === undefined,
+        JSON.stringify(explorePools),
+    ]);
 
     return (
         <FlexContainer
@@ -95,14 +117,10 @@ export default function FavoritePools(props: propsIF) {
                 </ViewMoreFlex>
             )}
             <ItemsContainer>
-                {favePools.pools
+                {expandedPoolData
                     .filter((pool) => pool.chainId === chainId)
                     .map((pool, idx) => (
-                        <PoolsListItem
-                            pool={pool}
-                            key={idx}
-                            spotPrice={spotPrices[idx]} // Pass the corresponding spot price
-                        />
+                        <PoolsListItem pool={pool} key={idx} />
                     ))}
             </ItemsContainer>
         </FlexContainer>

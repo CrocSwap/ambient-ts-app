@@ -1,4 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { motion } from 'framer-motion';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -25,14 +26,14 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import styles from './Create.module.css';
 import CreateInput from './CreateInput';
-import { motion } from 'framer-motion';
 export default function Create() {
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
     const navigate = useNavigate();
 
     const { isUserConnected } = useContext(UserDataContext);
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
-    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { gasPriceInGwei, nativeTokenUsdPrice, lastBlockNumber } =
+        useContext(ChainDataContext);
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
@@ -85,11 +86,11 @@ export default function Create() {
 
     // calculate price of gas for exchange balance deposit
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 NUM_GWEI_IN_WEI *
-                ethMainnetUsdPrice *
+                nativeTokenUsdPrice *
                 GAS_DROPS_ESTIMATE_AUCTION_CREATE;
 
             setAuctionCreateGasPriceinDollars(
@@ -99,7 +100,7 @@ export default function Create() {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     useEffect(() => {
         const tickerParam = searchParams.get('ticker');

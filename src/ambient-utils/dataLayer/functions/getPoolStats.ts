@@ -1,7 +1,9 @@
 import { CrocEnv, bigIntToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
 import {
+    PoolQueryFn,
     getFormattedNumber,
     getMoneynessRank,
+    getUnicodeCharacter,
     isETHorStakedEthToken,
 } from '..';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
@@ -146,6 +148,7 @@ export async function expandPoolStats(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
+    cachedQuerySpotPrice: PoolQueryFn,
     tokenList: TokenIF[],
     enableTotalSupply?: boolean,
 ): Promise<PoolIF> {
@@ -217,8 +220,18 @@ export async function expandPoolStats(
 
     const lastPriceSwap = pool.lastPriceSwap || 0;
 
-    const displayPoolPrice = toDisplayPrice(
-        lastPriceSwap,
+    const poolPriceCacheTime = Math.floor(Date.now() / 10000);
+
+    const spotPrice = await cachedQuerySpotPrice(
+        crocEnv,
+        pool.base,
+        pool.quote,
+        pool.chainId,
+        poolPriceCacheTime,
+    );
+
+    const displayPoolPriceInBase = toDisplayPrice(
+        spotPrice || lastPriceSwap,
         baseDecimals,
         quoteDecimals,
     );
@@ -227,8 +240,8 @@ export async function expandPoolStats(
         ? baseUsdPrice
         : isETHorStakedEthToken(pool.base)
           ? (await getEthPrice()) || 0.0
-          : quoteUsdPrice && displayPoolPrice
-            ? quoteUsdPrice / displayPoolPrice
+          : quoteUsdPrice && displayPoolPriceInBase
+            ? quoteUsdPrice / displayPoolPriceInBase
             : 0.0;
 
     const quotePrice = quoteUsdPrice
@@ -236,7 +249,7 @@ export async function expandPoolStats(
         : isETHorStakedEthToken(pool.quote)
           ? (await getEthPrice()) || 0.0
           : baseUsdPrice
-            ? baseUsdPrice * displayPoolPrice
+            ? baseUsdPrice * displayPoolPriceInBase
             : 0.0;
 
     return decoratePoolStats(
@@ -247,6 +260,7 @@ export async function expandPoolStats(
         quoteTotalSupplyNum,
         basePrice,
         quotePrice,
+        displayPoolPriceInBase,
     );
 }
 
@@ -258,6 +272,7 @@ function decoratePoolStats(
     quoteTotalSupplyNum: number | undefined,
     basePrice: number,
     quotePrice: number,
+    displayPoolPriceInBase: number,
 ): PoolIF {
     const stats = Object.assign({}, pool) as PoolIF;
     stats.baseTvlDecimal = (pool.baseTvl || 0) / Math.pow(10, baseDecimals);
@@ -321,29 +336,6 @@ function decoratePoolStats(
                 : pool.lastPriceSwap / pool.priceSwap24hAgo - 1.0
             : undefined;
 
-    stats.apr =
-        stats.feesChange24h && stats.tvlTotalUsd
-            ? (stats.feesChange24h / stats.tvlTotalUsd) * 100 * 365
-            : undefined;
-
-    stats.displayPrice = !stats.isBaseTokenMoneynessGreaterOrEqual
-        ? 1 /
-          toDisplayPrice(
-              pool.lastPriceSwap || 0,
-              pool.baseToken.decimals,
-              pool.quoteToken.decimals,
-          )
-        : toDisplayPrice(
-              pool.lastPriceSwap || 0,
-              pool.baseToken.decimals,
-              pool.quoteToken.decimals,
-          );
-
-    stats.displayPriceString = getFormattedNumber({
-        value: stats.displayPrice,
-        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-    });
-
     if (stats.priceChange24h === undefined) {
         stats.priceChangePercentString = '';
     } else if (stats.priceChange24h * 100 >= 0.01) {
@@ -354,15 +346,40 @@ function decoratePoolStats(
                 maximumFractionDigits: 2,
             }) +
             '%';
+        stats.isPoolPriceChangePositive = true;
     } else if (stats.priceChange24h * 100 <= -0.01) {
         stats.priceChangePercentString =
             (stats.priceChange24h * 100).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
             }) + '%';
+        stats.isPoolPriceChangePositive = false;
     } else {
         stats.priceChangePercentString = 'No Change';
+        stats.isPoolPriceChangePositive = true;
     }
+
+    stats.apr =
+        stats.feesChange24h && stats.tvlTotalUsd
+            ? (stats.feesChange24h / stats.tvlTotalUsd) * 100 * 365
+            : undefined;
+
+    stats.displayPrice = stats.isBaseTokenMoneynessGreaterOrEqual
+        ? displayPoolPriceInBase
+        : 1 / displayPoolPriceInBase;
+
+    const baseTokenCharacter = getUnicodeCharacter(pool.baseToken.symbol);
+    const quoteTokenCharacter = getUnicodeCharacter(pool.quoteToken.symbol);
+    const characterByMoneyness = stats.isBaseTokenMoneynessGreaterOrEqual
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
+    stats.displayPriceString =
+        characterByMoneyness +
+        getFormattedNumber({
+            value: stats.displayPrice,
+            abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+        });
 
     const tokenPriceForUsd = stats.isBaseTokenMoneynessGreaterOrEqual
         ? stats.baseUsdPrice || 0

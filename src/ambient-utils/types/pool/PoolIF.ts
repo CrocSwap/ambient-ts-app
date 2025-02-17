@@ -56,6 +56,7 @@ export interface PoolIF {
 
     priceChange24h?: number | undefined;
     priceChangePercentString?: string | undefined;
+    isPoolPriceChangePositive?: boolean | undefined;
 
     usdPriceMoneynessBased?: number | undefined;
 }

@@ -1,12 +1,10 @@
 import {
     getFormattedNumber,
-    getUnicodeCharacter,
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
 import { PoolIF, TokenIF } from '../../../../ambient-utils/types';
 import TokenIcon from '../../TokenIcon/TokenIcon';
 
-import { useMemo } from 'react';
 import { GrLineChart } from 'react-icons/gr';
 import { FlexContainer } from '../../../../styled/Common';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -27,21 +25,6 @@ export default function PoolRow(props: propsIF) {
         pool.isBaseTokenMoneynessGreaterOrEqual
             ? [pool.quoteToken, pool.baseToken]
             : [pool.baseToken, pool.quoteToken];
-
-    const baseTokenCharacter = pool.baseToken.symbol
-        ? getUnicodeCharacter(pool.baseToken.symbol)
-        : '';
-    const quoteTokenCharacter = pool.quoteToken.symbol
-        ? getUnicodeCharacter(pool.quoteToken.symbol)
-        : '';
-
-    const characterToDisplay = useMemo(
-        () =>
-            !pool.isBaseTokenMoneynessGreaterOrEqual
-                ? quoteTokenCharacter
-                : baseTokenCharacter,
-        [pool],
-    );
 
     const desktopView = useMediaQuery('(min-width: 768px)');
 
@@ -88,12 +71,11 @@ export default function PoolRow(props: propsIF) {
                       })
                     : '...'
                 : pool.displayPrice
-                  ? characterToDisplay + pool.displayPriceString
+                  ? pool.displayPriceString
                   : '...'}
         </p>
     );
 
-    // format volume, use empty string as backup value
     const volumeDisplayString: string = pool.volumeChange24h
         ? getFormattedNumber({
               value: pool.volumeChange24h,
@@ -105,7 +87,6 @@ export default function PoolRow(props: propsIF) {
 
     const aprDisplay = <p>{aprString}</p>;
 
-    // format TVL, use empty string as backup value
     const tvlDisplayString: string = pool.tvlTotalUsd
         ? getFormattedNumber({
               value: pool.tvlTotalUsd,

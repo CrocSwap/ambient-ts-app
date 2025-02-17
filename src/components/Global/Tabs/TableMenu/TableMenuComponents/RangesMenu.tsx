@@ -106,10 +106,10 @@ function RangesMenu(props: propsIF) {
         (position.feesLiqBase || 0) + (position.feesLiqQuote || 0) > 0;
 
     const showAbbreviatedCopyTradeButton = isAccountView
-        ? sidebar.isOpen
+        ? sidebar?.isOpen
             ? useMediaQuery('(max-width: 1300px)')
             : useMediaQuery('(max-width: 1150px)')
-        : sidebar.isOpen
+        : sidebar?.isOpen
           ? useMediaQuery('(max-width: 1400px)')
           : useMediaQuery('(max-width: 1150px)');
 
