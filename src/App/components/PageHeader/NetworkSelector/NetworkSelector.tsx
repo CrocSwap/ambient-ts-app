@@ -15,6 +15,7 @@ import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_n
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
 import sepoliaLogo from '../../../../assets/images/networks/ethereum_sepolia_no_margin.webp';
+import monadLogo from '../../../../assets/images/networks/monad_logo_small.svg';
 import plumeLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
 import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_no_margin.webp';
 import scrollLogo from '../../../../assets/images/networks/scroll_logo_no_margin.webp';
@@ -213,6 +214,17 @@ export default function NetworkSelector(props: propsIF) {
             testnet: false,
             link: 'https://www.canto.io/lp',
             condition: includeCanto && platformName === 'ambient',
+        },
+        {
+            id: 'monad_testnet_network_selector',
+            chainId: '0x279f',
+            name: 'Monad',
+            logo: monadLogo,
+            custom: 2,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x279f'),
         },
         {
             id: 'sepolia_network_selector',

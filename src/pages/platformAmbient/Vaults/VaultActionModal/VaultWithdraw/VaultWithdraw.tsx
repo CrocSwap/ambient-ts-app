@@ -53,9 +53,9 @@ export default function VaultWithdraw(props: propsIF) {
     } = props;
     const [showSubmitted, setShowSubmitted] = useState(false);
     const [removalPercentage, setRemovalPercentage] = useState(100);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { ethMainnetUsdPrice, crocEnv, provider } =
-        useContext(CrocEnvContext);
+    const { gasPriceInGwei, nativeTokenUsdPrice } =
+        useContext(ChainDataContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
     const {
         activeNetwork: { chainId },
@@ -265,11 +265,11 @@ export default function VaultWithdraw(props: propsIF) {
 
     // calculate price of gas for vault withdrawal
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 Number(NUM_GWEI_IN_WEI) *
-                ethMainnetUsdPrice *
+                nativeTokenUsdPrice *
                 Number(GAS_DROPS_ESTIMATE_VAULT_WITHDRAWAL);
 
             setWithdrawGasPriceinDollars(
@@ -279,7 +279,7 @@ export default function VaultWithdraw(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     const submittedButtonTitle = (
         <div className={styles.loading}>

@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { tokenListURIs, ZERO_ADDRESS } from '../../ambient-utils/constants';
 import {
     isBlastRewardToken,
-    isPriorityStakedETH,
+    isPriorityEthEquivalent,
     isPriorityStakedUSD,
     isUsdcToken,
     isUSDQtoken,
@@ -237,7 +237,7 @@ export const useTokenSearch = (
                     // canonical token addresses to assign probability
                     if (tknAddress === ZERO_ADDRESS) {
                         priority = 100;
-                    } else if (isPriorityStakedETH(tknAddress)) {
+                    } else if (isPriorityEthEquivalent(tknAddress)) {
                         priority = 95;
                     } else if (isUsdcToken(tknAddress)) {
                         priority = 90;

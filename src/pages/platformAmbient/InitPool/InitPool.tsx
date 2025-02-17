@@ -81,14 +81,14 @@ import { isTransactionDeniedError } from '../../../utils/TransactionError';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 // react functional component
 export default function InitPool() {
-    const { crocEnv, provider, ethMainnetUsdPrice } =
-        useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const { dexBalRange } = useContext(UserPreferenceContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, nativeTokenUsdPrice } =
+        useContext(ChainDataContext);
     const { poolPriceDisplay } = useContext(PoolContext);
 
     const { tokens } = useContext(TokenContext);
@@ -820,7 +820,7 @@ export default function InitPool() {
 
     // calculate price of gas for pool init
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasDropsEstimateInit = isMintLiqEnabled
                 ? GAS_DROPS_ESTIMATE_INIT_WITH_POOL
                 : GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL;
@@ -843,7 +843,7 @@ export default function InitPool() {
                 gasPriceInGwei *
                 gasDropsEstimateInit *
                 NUM_GWEI_IN_WEI *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setInitGasPriceinDollars(
                 getFormattedNumber({
@@ -852,7 +852,7 @@ export default function InitPool() {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, isMintLiqEnabled]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice, isMintLiqEnabled]);
 
     const { isTokenAInputDisabled, isTokenBInputDisabled } =
         useRangeInputDisable(

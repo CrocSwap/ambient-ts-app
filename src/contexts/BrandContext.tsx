@@ -8,6 +8,7 @@ import {
     blastBrandAssets,
     defaultBrandAssets,
     futaBrandAssets,
+    monadTestnetBrandAssets,
     plumeBrandAssets,
     plumeSepoliaBrandAssets,
     scrollBrandAssets,
@@ -93,6 +94,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return plumeSepoliaBrandAssets;
             case 'swellSepolia':
                 return swellSepoliaBrandAssets;
+            case 'monadTestnet':
+                return monadTestnetBrandAssets;
             case 'baseSepolia':
                 return baseSepoliaBrandAssets;
             default:

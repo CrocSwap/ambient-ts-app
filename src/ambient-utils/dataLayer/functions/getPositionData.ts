@@ -142,8 +142,8 @@ export const getPositionData = async (
     const quotePrice = await quotePricePromise;
 
     newPosition.isBaseTokenMoneynessGreaterOrEqual =
-        getMoneynessRankByAddr(baseTokenAddress) -
-            getMoneynessRankByAddr(quoteTokenAddress) >=
+        getMoneynessRankByAddr(baseTokenAddress, position.chainId) -
+            getMoneynessRankByAddr(quoteTokenAddress, position.chainId) >=
         0;
 
     newPosition.baseUsdPrice = basePrice?.usdPrice;

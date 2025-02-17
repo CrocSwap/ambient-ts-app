@@ -63,14 +63,17 @@ export default function Deposit(props: propsIF) {
         selectedTokenDecimals,
         setTokenModalOpen = () => null,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice, provider } =
-        useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
         isUserOnline,
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const { gasPriceInGwei, isActiveNetworkL2, isActiveNetworkPlume } =
-        useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        nativeTokenUsdPrice,
+        isActiveNetworkL2,
+        isActiveNetworkPlume,
+    } = useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -360,11 +363,11 @@ export default function Deposit(props: propsIF) {
 
     // calculate price of gas for exchange balance deposit
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 NUM_GWEI_IN_WEI *
-                ethMainnetUsdPrice *
+                nativeTokenUsdPrice *
                 (isTokenEth
                     ? GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE
                     : GAS_DROPS_ESTIMATE_DEPOSIT_ERC20);
@@ -376,7 +379,7 @@ export default function Deposit(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth, extraL1GasFeeDeposit]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice, isTokenEth, extraL1GasFeeDeposit]);
 
     return (
         <FlexContainer flexDirection='column' gap={16} padding={'16px'}>

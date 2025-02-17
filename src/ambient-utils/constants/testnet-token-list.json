@@ -177,6 +177,46 @@
             "decimals": 6,
             "chainId": 98865,
             "logoURI": ""
+        },
+        {
+            "name": "Monad",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "MON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/MON.png/public"
+        },
+        {
+            "name": "USD Coin",
+            "address": "0xf817257fed379853cDe0fa4F97AB987181B1E5Ea",
+            "symbol": "USDC",
+            "decimals": 6,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/usdc.png/public"
+        },
+        {
+            "name": "Tether USD",
+            "address": "0x88b8E2161DEDC77EF4ab7585569D2415a1C1055D",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/images.png/public"
+        },
+        {
+            "name": "Wrapped BTC",
+            "address": "0xcf5a6076cfa32686c0Df13aBaDa2b40dec133F1d",
+            "symbol": "WBTC",
+            "decimals": 8,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/wbtc.png/public"
+        },
+        {
+            "name": "Wrapped ETH",
+            "address": "0xB5a30b0FDc5EA94A52fDc42e3E9760Cb8449Fb37",
+            "symbol": "WETH",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/weth.jpg/public"
         }
     ]
 }

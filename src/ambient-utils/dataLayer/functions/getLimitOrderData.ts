@@ -298,8 +298,8 @@ export const getLimitOrderData = async (
     newOrder.quoteUsdPrice = quotePrice?.usdPrice;
 
     newOrder.isBaseTokenMoneynessGreaterOrEqual =
-        getMoneynessRankByAddr(baseTokenAddress) -
-            getMoneynessRankByAddr(quoteTokenAddress) >=
+        getMoneynessRankByAddr(baseTokenAddress, chainId) -
+            getMoneynessRankByAddr(quoteTokenAddress, chainId) >=
         0;
 
     const totalBaseLiq =

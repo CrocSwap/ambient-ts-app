@@ -6,6 +6,7 @@ import {
     blastSepolia,
     ethereumMainnet,
     ethereumSepolia,
+    monadTestnet,
     plumeMainnet,
     plumeSepolia,
     scrollMainnet,
@@ -195,6 +196,8 @@ export const useAppChain = (): {
                                 nextNetwork = plumeSepolia;
                             } else if (incomingChainFromWallet === '0x784') {
                                 nextNetwork = swellSepolia;
+                            } else if (incomingChainFromWallet === '0x279f') {
+                                nextNetwork = monadTestnet;
                             } else if (incomingChainFromWallet === '0x14a34') {
                                 nextNetwork = baseSepolia;
                             }

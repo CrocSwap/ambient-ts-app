@@ -37,6 +37,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         SUSDE: 90,
         DAI: 90,
         USDT: 80,
+        MON: 77,
         NRWA: 75,
         FRAX: 70,
         WBTC: 60,
@@ -47,6 +48,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         UBTC: 55,
         SWELL: 52,
         ETH: 50,
+        WETH: 49,
         WEETH: 48,
         WSTETH: 45,
         WRSETH: 45,
@@ -67,10 +69,16 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
     return rank;
 };
 
-export const getMoneynessRankByAddr = (tokenAddress: string): number => {
+export const getMoneynessRankByAddr = (
+    tokenAddress: string,
+    chainId: string,
+): number => {
     let moneynessRank = 0;
     ambientTokenList.tokens.concat(testnetTokenList.tokens).forEach((token) => {
-        if (token.address.toLowerCase() === tokenAddress.toLowerCase()) {
+        if (
+            token.address.toLowerCase() === tokenAddress.toLowerCase() &&
+            token.chainId === Number(chainId)
+        ) {
             const translatedSymbol = getTranslatedSymbol(token.symbol);
 
             moneynessRank = getMoneynessRank(translatedSymbol);

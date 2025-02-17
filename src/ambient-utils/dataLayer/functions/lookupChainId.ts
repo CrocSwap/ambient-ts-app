@@ -84,6 +84,11 @@ export function lookupChainId(
         case '0x14a34':
             chainIdHex = '0x14a34';
             break;
+        case 'monadtestnet':
+        case '10143':
+        case '0x279f':
+            chainIdHex = '0x279f';
+            break;
     }
     // output variable
     let output: string | number | undefined;

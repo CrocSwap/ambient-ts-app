@@ -81,10 +81,9 @@ export default function VaultDeposit(props: Props) {
         updateTransactionHash,
     } = useContext(ReceiptContext);
     const { isUserConnected } = useContext(UserDataContext);
-    const { gasPriceInGwei, isActiveNetworkPlume } =
+    const { gasPriceInGwei, nativeTokenUsdPrice, isActiveNetworkPlume } =
         useContext(ChainDataContext);
-    const { ethMainnetUsdPrice, crocEnv, provider } =
-        useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
@@ -166,11 +165,11 @@ export default function VaultDeposit(props: Props) {
 
     // calculate price of gas for vault deposit
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 Number(NUM_GWEI_IN_WEI) *
-                ethMainnetUsdPrice *
+                nativeTokenUsdPrice *
                 Number(GAS_DROPS_ESTIMATE_VAULT_DEPOSIT);
             setDepositGasPriceinDollars(
                 getFormattedNumber({
@@ -179,7 +178,7 @@ export default function VaultDeposit(props: Props) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     const submitDeposit = async () => {
         if (!crocEnv || !userAddress || !vault || !depositBigint) return;

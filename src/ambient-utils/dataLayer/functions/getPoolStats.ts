@@ -3,6 +3,7 @@ import {
     PoolQueryFn,
     getFormattedNumber,
     getMoneynessRank,
+    getUnicodeCharacter,
     isETHorStakedEthToken,
 } from '..';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
@@ -367,10 +368,18 @@ function decoratePoolStats(
         ? displayPoolPriceInBase
         : 1 / displayPoolPriceInBase;
 
-    stats.displayPriceString = getFormattedNumber({
-        value: stats.displayPrice,
-        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-    });
+    const baseTokenCharacter = getUnicodeCharacter(pool.baseToken.symbol);
+    const quoteTokenCharacter = getUnicodeCharacter(pool.quoteToken.symbol);
+    const characterByMoneyness = stats.isBaseTokenMoneynessGreaterOrEqual
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
+    stats.displayPriceString =
+        characterByMoneyness +
+        getFormattedNumber({
+            value: stats.displayPrice,
+            abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+        });
 
     const tokenPriceForUsd = stats.isBaseTokenMoneynessGreaterOrEqual
         ? stats.baseUsdPrice || 0

@@ -213,17 +213,17 @@ export default function WalletDropdown(props: propsIF) {
               })
             : undefined;
 
-    const ethMainnetUsdValue =
+    const nativeTokenUsdValue =
         nativeTokenUsdPrice !== undefined &&
         nativeCombinedBalanceDisplayNum !== undefined
             ? nativeTokenUsdPrice * nativeCombinedBalanceDisplayNum
             : undefined;
 
     const nativeTokenMainnetUsdValueTruncated =
-        ethMainnetUsdValue !== undefined
-            ? ethMainnetUsdValue
+        nativeTokenUsdValue !== undefined
+            ? nativeTokenUsdValue
                 ? getFormattedNumber({
-                      value: ethMainnetUsdValue,
+                      value: nativeTokenUsdValue,
                       isUSD: true,
                   })
                 : '$0.00'
