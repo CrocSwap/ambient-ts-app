@@ -351,7 +351,7 @@ export default function NetworkSelector(props: propsIF) {
                             size={14}
                             style={{
                                 position: 'absolute', // Position external link absolutely
-                                right: '0', // Pin it to the right
+                                right: '0', // pin
                             }}
                         />
                     )}
