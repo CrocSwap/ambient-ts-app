@@ -406,3 +406,10 @@ export async function generateObjectHash(jsonObject: any) {
 
     return hashHex;
 }
+
+export const defaultRoom = {
+    name: 'ETH / USDC',
+    shownName: 'ETH / USDC',
+    base: '0x0000000000000000000000000000000000000000',
+    quote: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
+};

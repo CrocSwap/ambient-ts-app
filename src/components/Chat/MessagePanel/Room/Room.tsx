@@ -30,6 +30,7 @@ import {
     getRoomNameFromBaseQuote,
     getRoomNameFromPool,
     getRoomObjFromBaseQuote,
+    defaultRoom,
 } from '../../ChatUtils';
 import useChatApi from '../../Service/ChatApi';
 import styles from './Room.module.css';
@@ -188,6 +189,10 @@ export default function Room(props: propsIF) {
                 });
             }
             i++;
+        }
+
+        if (newRoomList.length === 1) {
+            newRoomList.push(defaultRoom);
         }
 
         setRoomList(newRoomList);
