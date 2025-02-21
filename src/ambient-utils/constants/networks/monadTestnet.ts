@@ -7,9 +7,8 @@ import { NetworkIF } from '../../types/NetworkIF';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-const PUBLIC_RPC_URL = 'https://testnet-rpc.monad.xyz';
-const SECONDARY_PUBLIC_RPC_URL =
-    'https://proportionate-damp-dinghy.monad-testnet.quiknode.pro/aa00727df8eac0aa06add5d5d9595dd3ebb19b2f/';
+const PUBLIC_RPC_URL = 'https://testnet-rpc.monad.xyz/';
+const SECONDARY_PUBLIC_RPC_URL = 'https://testnet-rpc.monad.xyz/';
 
 const RESTRICTED_RPC_URL =
     import.meta.env.VITE_MONAD_TESTNET_RPC_URL !== undefined
