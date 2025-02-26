@@ -157,11 +157,11 @@ export async function expandPoolStats(
     const isActiveNetworkMonad = pool.chainId === '0x279f';
 
     const baseUsdPrice =
-        pool.baseUsdPrice ??
+        pool.baseUsdPrice ||
         (await cachedFetchTokenPrice(pool.base, pool.chainId))?.usdPrice;
 
     const quoteUsdPrice =
-        pool.quoteUsdPrice ??
+        pool.quoteUsdPrice ||
         (await cachedFetchTokenPrice(pool.quote, pool.chainId))?.usdPrice;
 
     const baseTokenListed = tokenList.find(
@@ -242,7 +242,7 @@ export async function expandPoolStats(
 
     const basePrice = baseUsdPrice
         ? baseUsdPrice
-        : isETHorStakedEthToken(pool.base)
+        : isETHorStakedEthToken(pool.base, pool.chainId)
           ? (await getEthPrice()) || 0.0
           : quoteUsdPrice && displayPoolPriceInBase
             ? quoteUsdPrice / displayPoolPriceInBase
@@ -250,7 +250,7 @@ export async function expandPoolStats(
 
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
-        : isETHorStakedEthToken(pool.quote)
+        : isETHorStakedEthToken(pool.quote, pool.chainId)
           ? (await getEthPrice()) || 0.0
           : baseUsdPrice
             ? baseUsdPrice * displayPoolPriceInBase

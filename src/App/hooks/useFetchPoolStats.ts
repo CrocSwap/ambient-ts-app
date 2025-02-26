@@ -268,7 +268,7 @@ const useFetchPoolStats = (
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
                 } else if (
-                    isETHorStakedEthToken(baseAddr) &&
+                    isETHorStakedEthToken(baseAddr, chainId) &&
                     nativeTokenUsdPrice
                 ) {
                     setBasePrice(nativeTokenUsdPrice);
@@ -284,7 +284,7 @@ const useFetchPoolStats = (
                 if (quoteTokenPrice) {
                     setQuotePrice(quoteTokenPrice);
                 } else if (
-                    isETHorStakedEthToken(quoteAddr) &&
+                    isETHorStakedEthToken(quoteAddr, chainId) &&
                     nativeTokenUsdPrice
                 ) {
                     setQuotePrice(nativeTokenUsdPrice);
