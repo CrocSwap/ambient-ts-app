@@ -103,6 +103,6 @@ export const scrollMainnet: NetworkIF = {
     vaultsEnabled: true,
     tempestApiNetworkName: 'scroll',
     topPools,
-    priorityPool: [SCROLL_TOKENS['USDQ'], SCROLL_TOKENS['USDC']],
+    // priorityPool: [SCROLL_TOKENS['USDQ'], SCROLL_TOKENS['USDC']],
     getGasPriceInGwei,
 };
