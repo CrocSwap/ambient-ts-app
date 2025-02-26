@@ -4755,7 +4755,7 @@ export default function Chart(props: propsIF) {
                     ? 1 / poolPriceWithoutDenom
                     : poolPriceWithoutDenom;
 
-                const filteredMin = d3.min(unparsedCandleData, (d) =>
+                const filteredMin = d3.min(visibleCandleData, (d) =>
                     denomInBase
                         ? isLine
                             ? d.invPriceCloseExclMEVDecimalCorrected
@@ -4765,7 +4765,7 @@ export default function Chart(props: propsIF) {
                           : d.minPriceExclMEVDecimalCorrected,
                 );
 
-                const filteredMax = d3.max(unparsedCandleData, (d) =>
+                const filteredMax = d3.max(visibleCandleData, (d) =>
                     denomInBase
                         ? isLine
                             ? d.invPriceCloseExclMEVDecimalCorrected
