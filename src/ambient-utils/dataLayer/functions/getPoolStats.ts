@@ -154,6 +154,8 @@ export async function expandPoolStats(
 ): Promise<PoolIF> {
     const provider = (await crocEnv.context).provider;
 
+    const isActiveNetworkMonad = pool.chainId === '0x279f';
+
     const baseUsdPrice =
         pool.baseUsdPrice ??
         (await cachedFetchTokenPrice(pool.base, pool.chainId))?.usdPrice;
@@ -222,13 +224,15 @@ export async function expandPoolStats(
 
     const poolPriceCacheTime = Math.floor(Date.now() / 10000);
 
-    const spotPrice = await cachedQuerySpotPrice(
-        crocEnv,
-        pool.base,
-        pool.quote,
-        pool.chainId,
-        poolPriceCacheTime,
-    );
+    const spotPrice = isActiveNetworkMonad
+        ? pool.lastPriceSwap
+        : await cachedQuerySpotPrice(
+              crocEnv,
+              pool.base,
+              pool.quote,
+              pool.chainId,
+              poolPriceCacheTime,
+          );
 
     const displayPoolPriceInBase = toDisplayPrice(
         spotPrice || lastPriceSwap,
