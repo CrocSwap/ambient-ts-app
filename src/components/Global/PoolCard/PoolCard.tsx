@@ -49,7 +49,7 @@ export default function PoolCard(props: propsIF) {
             pool.quoteToken,
         );
 
-    const isEthStakedEthPair = isETHPair(pool.base, pool.quote);
+    const isEthStakedEthPair = isETHPair(pool.base, pool.quote, chainId);
     const isPoolBtcPair = isBtcPair(pool.base, pool.quote);
 
     const usdPrice = pool.isBaseTokenMoneynessGreaterOrEqual
