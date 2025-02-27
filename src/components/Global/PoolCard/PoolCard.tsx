@@ -52,9 +52,9 @@ export default function PoolCard(props: propsIF) {
     const isEthStakedEthPair = isETHPair(pool.base, pool.quote, chainId);
     const isPoolBtcPair = isBtcPair(pool.base, pool.quote);
 
-    const usdPrice = pool.isBaseTokenMoneynessGreaterOrEqual
-        ? pool.quoteUsdPrice
-        : pool.baseUsdPrice;
+    const usdPrice = !pool.isBaseTokenMoneynessGreaterOrEqual
+        ? (pool.quoteUsdPrice || 0) * (pool.displayPrice || 0)
+        : (pool.baseUsdPrice || 0) * (pool.displayPrice || 0);
 
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
