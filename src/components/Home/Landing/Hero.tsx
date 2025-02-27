@@ -81,6 +81,7 @@ export default function Hero() {
                             marginRight: '15px',
                             fontSize: '70px',
                             padding: '0 20px',
+                            height: '50px',
                         }}
                     >
                         {h.content}
