@@ -212,7 +212,9 @@ const byBitHackBlacklist = [
     '0xD5b58Cf7813c1eDC412367b97876bD400ea5c489',
 ];
 
-export const blacklist = ofacBlacklist.concat(byBitHackBlacklist);
+export const blacklist = ofacBlacklist
+    .concat(byBitHackBlacklist)
+    .map((addr: string) => addr.toLowerCase());
 
 // if blacklist is already lowercase
 export const checkBlacklist = (addr: string) => {
