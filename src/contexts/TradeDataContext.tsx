@@ -85,7 +85,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     const [noGoZoneBoundaries, setNoGoZoneBoundaries] = useState([0, 0]);
 
     const tokensMatchingA =
-        savedTokenASymbol === 'ETH'
+        savedTokenASymbol === dfltTokenA.symbol
             ? [dfltTokenA]
             : tokens.getTokensByNameOrSymbol(
                   savedTokenASymbol || '',
@@ -93,7 +93,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
                   true,
               );
     const tokensMatchingB =
-        savedTokenBSymbol === 'ETH'
+        savedTokenBSymbol === dfltTokenA.symbol
             ? [dfltTokenA]
             : tokens.getTokensByNameOrSymbol(
                   savedTokenBSymbol || '',
@@ -247,7 +247,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     ) => {
         const isPoolStable =
             isStablePair(baseAddress, quoteAddress) ||
-            isETHPair(baseAddress, quoteAddress) ||
+            isETHPair(baseAddress, quoteAddress, chainId) ||
             isBtcPair(baseAddress, quoteAddress);
         const defaultWidth = isPoolStable ? 0.5 : 10;
 

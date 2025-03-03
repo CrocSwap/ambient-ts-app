@@ -57,7 +57,7 @@ const useFetchPoolStats = (
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const { lastBlockNumber, nativeTokenUsdPrice } =
+    const { isActiveNetworkMonad, lastBlockNumber, nativeTokenUsdPrice } =
         useContext(ChainDataContext);
     // useMemo to filter allPoolStats for the current pool
     const activeTradePoolStats = useMemo(
@@ -114,10 +114,10 @@ const useFetchPoolStats = (
         : pool?.baseToken.logoURI;
 
     const poolPriceCacheTime = isTradePair
-        ? isUserIdle
+        ? isUserIdle || isActiveNetworkMonad
             ? Math.floor(Date.now() / 30000) // 30 second interval if  idle
             : Math.floor(Date.now() / 5000) // 5 second cache for trade pair
-        : isUserIdle
+        : isUserIdle || isActiveNetworkMonad
           ? Math.floor(Date.now() / 60000) // 60 second interval if  idle
           : Math.floor(Date.now() / 10000); // 10 second interval if not idle
 
@@ -134,13 +134,15 @@ const useFetchPoolStats = (
                 const spotPrice =
                     spotPriceRetrieved !== undefined
                         ? spotPriceRetrieved
-                        : await cachedQuerySpotPrice(
-                              crocEnv,
-                              pool.base,
-                              pool.quote,
-                              chainId,
-                              poolPriceCacheTime,
-                          );
+                        : isActiveNetworkMonad && pool.lastPriceSwap
+                          ? pool.lastPriceSwap
+                          : await cachedQuerySpotPrice(
+                                crocEnv,
+                                pool.base,
+                                pool.quote,
+                                chainId,
+                                poolPriceCacheTime,
+                            );
                 if (spotPrice) {
                     setIsPoolInitialized(true);
                     setLocalPoolPriceNonDisplay([
@@ -266,7 +268,7 @@ const useFetchPoolStats = (
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
                 } else if (
-                    isETHorStakedEthToken(baseAddr) &&
+                    isETHorStakedEthToken(baseAddr, chainId) &&
                     nativeTokenUsdPrice
                 ) {
                     setBasePrice(nativeTokenUsdPrice);
@@ -282,7 +284,7 @@ const useFetchPoolStats = (
                 if (quoteTokenPrice) {
                     setQuotePrice(quoteTokenPrice);
                 } else if (
-                    isETHorStakedEthToken(quoteAddr) &&
+                    isETHorStakedEthToken(quoteAddr, chainId) &&
                     nativeTokenUsdPrice
                 ) {
                     setQuotePrice(nativeTokenUsdPrice);

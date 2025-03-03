@@ -22,12 +22,6 @@ export const fetchTokenPrice = async (
 ) => {
     const address = translateToken(dispToken, chain);
     const assetPlatform = allNetworks[chain]?.tokenPriceQueryAssetPlatform;
-    if (chain === '0x279f' && address === ZeroAddress) {
-        return {
-            usdPrice: 1,
-            usdPriceFormatted: 1,
-        };
-    }
     try {
         const body = {
             config_path: 'price',
@@ -48,7 +42,7 @@ export const fetchTokenPrice = async (
     } catch (error) {
         if (
             // if token is ETH or Staked ETH, return current value of mainnet ETH
-            isETHorStakedEthToken(dispToken) ||
+            isETHorStakedEthToken(dispToken, chain) ||
             isPriorityEthEquivalent(dispToken)
         ) {
             const body = {
@@ -91,6 +85,12 @@ export const fetchTokenPrice = async (
             return {
                 usdPrice: 1,
                 usdPriceFormatted: 1,
+            };
+        }
+        if (chain === '0x279f' && address === ZeroAddress) {
+            return {
+                usdPrice: 12.69,
+                usdPriceFormatted: 12.69,
             };
         }
         return undefined;
