@@ -14,7 +14,7 @@ import logo from '../../../assets/images/logos/ambient_logo_mark.svg';
 import Button from '../../../components/Form/Button';
 import TutorialOverlayUrlBased from '../../../components/Global/TutorialOverlay/TutorialOverlayUrlBased';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
-import { BrandContext } from '../../../contexts';
+import { BrandContext, ChainDataContext } from '../../../contexts';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -48,6 +48,7 @@ const PageHeader = function () {
     const { crocEnv, setCrocEnv } = useContext(CrocEnvContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
+    const { isActiveNetworkMonad } = useContext(ChainDataContext);
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
@@ -315,7 +316,8 @@ const PageHeader = function () {
         {
             title: 'Points',
             destination: '/account/points',
-            shouldDisplay: !!isUserConnected && desktopScreen,
+            shouldDisplay:
+                !!isUserConnected && desktopScreen && !isActiveNetworkMonad,
         },
     ];
 
