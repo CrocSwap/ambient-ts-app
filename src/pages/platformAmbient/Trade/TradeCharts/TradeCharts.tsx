@@ -549,6 +549,7 @@ function TradeCharts(props: propsIF) {
                         setShowLatest={setShowLatest}
                         updateURL={updateURL}
                         openMobileSettingsModal={openMobileSettingsModal}
+                        isMobileSettingsModalOpen={isMobileSettingsModalOpen}
                     />
                 </div>
             </MainContainer>

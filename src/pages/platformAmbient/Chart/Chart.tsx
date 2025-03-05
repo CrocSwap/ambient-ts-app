@@ -174,6 +174,7 @@ interface propsIF {
         isResetChart: boolean;
     };
     openMobileSettingsModal: () => void;
+    isMobileSettingsModalOpen: boolean;
 }
 
 export default function Chart(props: propsIF) {
@@ -204,6 +205,7 @@ export default function Chart(props: propsIF) {
         setChartResetStatus,
         chartResetStatus,
         // openMobileSettingsModal,
+        isMobileSettingsModalOpen,
     } = props;
 
     const {
@@ -1422,6 +1424,13 @@ export default function Chart(props: propsIF) {
             setXScaleDefault();
         }
     }, []);
+
+    useEffect(() => {
+        if (isMobileSettingsModalOpen) {
+            setHoveredDrawnShape(undefined);
+            setSelectedDrawnShape(undefined);
+        }
+    }, [isMobileSettingsModalOpen]);
 
     useEffect(() => {
         if (shouldResetBuffer) {
@@ -5174,7 +5183,12 @@ export default function Chart(props: propsIF) {
 
                     selectedDateEvent(isHoverCandleOrVolumeData, nearest);
 
-                    setSelectedDrawnShape(undefined);
+                    if (selectedDrawnShape) {
+                        setSelectedDrawnShape(undefined);
+                    }
+                    if (hoveredDrawnShape) {
+                        setHoveredDrawnShape(undefined);
+                    }
                     // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
 
                     if (
@@ -7340,6 +7354,7 @@ export default function Chart(props: propsIF) {
                     addDrawActionStack={addDrawActionStack}
                     drawnShapeHistory={drawnShapeHistory}
                     chartThemeColors={chartThemeColors}
+                    setHoveredDrawnShape={setHoveredDrawnShape}
                 />
             )}
 
