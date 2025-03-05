@@ -1922,7 +1922,17 @@ export default function Chart(props: propsIF) {
                         }
                     })
                     .filter((event) => {
-                        setSelectedDrawnShape(undefined);
+                        if (tabletView && mainCanvasBoundingClientRect) {
+                            const { offsetX, offsetY } =
+                                getXandYLocationForChart(
+                                    event,
+                                    mainCanvasBoundingClientRect,
+                                );
+
+                            drawnShapesHoverStatus(offsetX, offsetY);
+                        } else {
+                            setSelectedDrawnShape(undefined);
+                        }
 
                         if (event.type.includes('touch')) {
                             const canvas = d3
