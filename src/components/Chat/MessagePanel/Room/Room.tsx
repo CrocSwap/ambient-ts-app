@@ -190,6 +190,15 @@ export default function Room(props: propsIF) {
             i++;
         }
 
+        if (newRoomList.length === 1) {
+            newRoomList.push({
+                name: baseToken.symbol + ' / ' + quoteToken.symbol,
+                shownName: baseToken.symbol + ' / ' + quoteToken.symbol,
+                base: baseToken.symbol,
+                quote: quoteToken.symbol,
+            });
+        }
+
         setRoomList(newRoomList);
     };
 
