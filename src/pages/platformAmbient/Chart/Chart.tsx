@@ -1884,6 +1884,8 @@ export default function Chart(props: propsIF) {
 
                                     event.preventDefault();
                                 } else {
+                                    setSelectedDrawnShape(undefined);
+                                    setIsShowFloatingToolbar(false);
                                     // openMobileSettingsModal();
                                 }
                             }
@@ -2050,18 +2052,16 @@ export default function Chart(props: propsIF) {
 
         if (today !== undefined && scaleData !== undefined) {
             if (
-                !showLatest &&
                 today &&
                 (scaleData?.xScale.domain()[1] < today.getTime() ||
                     scaleData?.xScale.domain()[0] > today.getTime())
             ) {
-                setShowLatest(true);
+                setShowLatest(() => true);
             } else if (
-                showLatest &&
                 !(scaleData?.xScale.domain()[1] < today.getTime()) &&
                 !(scaleData?.xScale.domain()[0] > today.getTime())
             ) {
-                setShowLatest(false);
+                setShowLatest(() => false);
             }
         }
     };
@@ -2879,6 +2879,7 @@ export default function Chart(props: propsIF) {
                     } else {
                         offsetY = event.sourceEvent.clientY - rectCanvas?.top;
 
+                        movementY = event.sourceEvent.movementY;
                         movementY = event.sourceEvent.movementY;
                     }
                     if (!cancelDrag) {
@@ -5225,6 +5226,8 @@ export default function Chart(props: propsIF) {
                 (event: PointerEvent) => {
                     if (mobileView) {
                         event.preventDefault();
+                        setSelectedDrawnShape(undefined);
+                        setIsShowFloatingToolbar(false);
                         // openMobileSettingsModal();
                     } else {
                         if (!event.shiftKey) {
@@ -6314,6 +6317,9 @@ export default function Chart(props: propsIF) {
     const relocateTooltip = (tooltip: any, data: number) => {
         if (tooltip && scaleData) {
             const width = tooltip.style('width').split('p')[0] / 2;
+            const height = tooltip.style('height').split('p')[0];
+
+            const labelTopPlacement = height > 30 ? 15 : 0;
 
             const xAxisNode = d3.select(d3XaxisRef.current).node();
             const xAxisTop = xAxisNode?.getBoundingClientRect().top;
@@ -6321,7 +6327,9 @@ export default function Chart(props: propsIF) {
                 .style(
                     'top',
                     (xAxisTop && mainCanvasBoundingClientRect
-                        ? xAxisTop - mainCanvasBoundingClientRect.top
+                        ? xAxisTop -
+                          mainCanvasBoundingClientRect.top -
+                          labelTopPlacement
                         : 0) -
                         xAxisHeightPixel +
                         'px',
@@ -7218,6 +7226,7 @@ export default function Chart(props: propsIF) {
                         period={period}
                         setContextmenu={setContextmenu}
                         setContextMenuPlacement={setContextMenuPlacement}
+                        setIsShowFloatingToolbar={setIsShowFloatingToolbar}
                     />
                 )}
                 <YAxisCanvas {...yAxisCanvasProps} />
@@ -7399,6 +7408,7 @@ export default function Chart(props: propsIF) {
                     }
                     setCloseOutherChartSetting={setCloseOutherChartSetting}
                     closeOutherChartSetting={closeOutherChartSetting}
+                    showLatest={showLatest}
                 />
             )}
         </div>
