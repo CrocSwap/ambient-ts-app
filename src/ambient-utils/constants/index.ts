@@ -79,6 +79,11 @@ export const DISABLE_INIT_SETTINGS =
         ? import.meta.env.VITE_DISABLE_INIT_SETTINGS.toLowerCase() === 'true'
         : false;
 
+export const HIDE_TOKEN_VALUES =
+    import.meta.env.VITE_HIDE_TOKEN_VALUES !== undefined
+        ? import.meta.env.VITE_HIDE_TOKEN_VALUES.toLowerCase() === 'true'
+        : false;
+
 export const SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 export const SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 
