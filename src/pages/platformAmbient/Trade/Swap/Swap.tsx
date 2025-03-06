@@ -765,7 +765,8 @@ function Swap(props: propsIF) {
         usdValueTokenA &&
         usdValueTokenB &&
         buyQtyBigInt > 0n &&
-        sellQtyBigInt > 0n
+        sellQtyBigInt > 0n &&
+        !HIDE_TOKEN_VALUES
             ? ((usdValueTokenB * parseFloat(buyQtyNoExponentString) -
                   usdValueTokenA * parseFloat(sellQtyNoExponentString)) /
                   (usdValueTokenA * parseFloat(sellQtyNoExponentString))) *
