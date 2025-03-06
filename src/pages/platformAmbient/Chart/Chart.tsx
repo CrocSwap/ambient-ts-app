@@ -456,8 +456,12 @@ export default function Chart(props: propsIF) {
         const el = chartSettingsRef?.current;
 
         const contextButton = document.getElementById('chart_settings_button');
+        const contextButtonTablet = document.getElementById(
+            'chart_settings_tooltip_tablet',
+        );
 
         if (
+            (contextButtonTablet && contextButtonTablet.contains(e as Node)) ||
             (contextButton && contextButton.contains(e as Node)) ||
             el.contains((e as Node) || null)
         ) {
