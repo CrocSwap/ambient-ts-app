@@ -1,8 +1,10 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
+    expandLiquidityData,
     fetchPoolLiquidity,
     fetchPoolRecentChanges,
+    LiquidityCurveServerIF,
 } from '../../ambient-utils/api';
 import { fetchPoolLimitOrders } from '../../ambient-utils/api/fetchPoolLimitOrders';
 import {
@@ -672,61 +674,102 @@ export function usePoolMetadata() {
         [positionsByPool, limitOrdersByPool],
     );
 
+    const [rawLiqData, setRawLiqData] = useState<
+        | {
+              rawCurveData: LiquidityCurveServerIF;
+              request: {
+                  baseAddress: string;
+                  quoteAddress: string;
+                  chainId: string;
+                  poolIndex: number;
+              };
+          }
+        | undefined
+    >();
+
+    const prevTotalPositionLiq = useRef(0);
+    const totalPositionLiqForUpdateTrigger = useRef(0);
+
+    useEffect(() => {
+        const change =
+            Math.abs(totalPositionLiq - prevTotalPositionLiq.current) /
+            prevTotalPositionLiq.current;
+        if (change < 0.01) return; // Skip effect if change is less than 1%
+
+        prevTotalPositionLiq.current = totalPositionLiq;
+        totalPositionLiqForUpdateTrigger.current = totalPositionLiq;
+    }, [totalPositionLiq]);
+
     useEffect(() => {
         (async () => {
             if (
                 baseTokenAddress &&
                 quoteTokenAddress &&
-                baseTokenDecimals &&
-                quoteTokenDecimals &&
                 crocEnv &&
-                currentPoolPriceTick &&
-                totalPositionLiq &&
+                totalPositionLiqForUpdateTrigger.current &&
                 GCGO_URL &&
-                Math.abs(currentPoolPriceTick) !== Infinity &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
-                // Reset existing liquidity data until the fetch completes, because it's a new pool
                 const request = {
                     baseAddress: baseTokenAddress.toLowerCase(),
                     quoteAddress: quoteTokenAddress.toLowerCase(),
                     chainId: chainId,
                     poolIndex: poolIndex,
                 };
-
                 fetchPoolLiquidity(
                     chainId,
                     baseTokenAddress.toLowerCase(),
-                    baseTokenDecimals,
                     quoteTokenAddress.toLowerCase(),
-                    quoteTokenDecimals,
                     poolIndex,
-                    crocEnv,
                     GCGO_URL,
-                    cachedFetchTokenPrice,
-                    cachedQuerySpotTick,
-                    currentPoolPriceTick,
                 )
-                    .then((liqCurve) => {
-                        if (liqCurve) {
-                            setLiquidity(liqCurve, request);
+                    .then((rawCurveData) => {
+                        if (rawCurveData) {
+                            setRawLiqData({ rawCurveData, request });
                         }
                     })
                     .catch(console.error);
             }
         })();
     }, [
-        currentPoolPriceTick,
-        totalPositionLiq,
         crocEnv,
         chainId,
         baseTokenAddress,
         quoteTokenAddress,
-        baseTokenDecimals,
-        quoteTokenDecimals,
         poolIndex,
         GCGO_URL,
+        totalPositionLiqForUpdateTrigger.current,
     ]);
+
+    useEffect(() => {
+        (async () => {
+            if (
+                rawLiqData &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId
+            ) {
+                const { rawCurveData, request } = rawLiqData;
+
+                const expandedLiqData = await expandLiquidityData(
+                    rawCurveData,
+                    request.baseAddress,
+                    baseTokenDecimals,
+                    request.quoteAddress,
+                    quoteTokenDecimals,
+                    request.poolIndex,
+                    chainId,
+                    crocEnv,
+                    cachedFetchTokenPrice,
+                    cachedQuerySpotTick,
+                    currentPoolPriceTick,
+                );
+                if (expandedLiqData) {
+                    setLiquidity(expandedLiqData, request);
+                }
+            }
+        })();
+    }, [rawLiqData, crocEnv, chainId, currentPoolPriceTick]);
+
     return {
         contextMatchesParams,
         baseTokenAddress,

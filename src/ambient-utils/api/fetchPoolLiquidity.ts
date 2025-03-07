@@ -5,18 +5,12 @@ import { TokenPriceFn } from './fetchTokenPrice';
 export const fetchPoolLiquidity = async (
     chainId: string,
     base: string,
-    baseTokenDecimals: number,
     quote: string,
-    quoteTokenDecimals: number,
     poolIdx: number,
-    crocEnv: CrocEnv,
     GCGO_URL: string,
-    cachedFetchTokenPrice: TokenPriceFn,
-    cachedQuerySpotTick: SpotPriceFn,
-    currentPoolPriceTick?: number | undefined,
-): Promise<LiquidityDataIF | undefined> => {
+): Promise<LiquidityCurveServerIF | undefined> => {
     const poolLiquidityCacheEndpoint = GCGO_URL + '/pool_liq_curve?';
-    return fetch(
+    return await fetch(
         poolLiquidityCacheEndpoint +
             new URLSearchParams({
                 chainId: chainId,
@@ -31,23 +25,11 @@ export const fetchPoolLiquidity = async (
                 return undefined;
             }
             const bumps = json.data as LiquidityCurveServerIF;
-            return await expandLiquidityData(
-                bumps,
-                base,
-                baseTokenDecimals,
-                quote,
-                quoteTokenDecimals,
-                poolIdx,
-                chainId,
-                crocEnv,
-                cachedFetchTokenPrice,
-                cachedQuerySpotTick,
-                currentPoolPriceTick,
-            );
+            return bumps;
         });
 };
 
-async function expandLiquidityData(
+export async function expandLiquidityData(
     liq: LiquidityCurveServerIF,
     base: string,
     baseTokenDecimals: number,
@@ -278,7 +260,7 @@ export interface LiquidityRangeIF {
     cumAverageUSD: number;
 }
 
-interface LiquidityCurveServerIF {
+export interface LiquidityCurveServerIF {
     ambientLiq: number;
     liquidityBumps: {
         bumpTick: number;
