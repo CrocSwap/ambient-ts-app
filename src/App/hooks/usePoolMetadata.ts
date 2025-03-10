@@ -762,7 +762,8 @@ export function usePoolMetadata() {
                 GCGO_URL &&
                 crocEnvChainMatches &&
                 tokenChainMatches &&
-                isChartVisible
+                isChartVisible &&
+                contextMatchesParams
             ) {
                 const request = {
                     baseAddress: baseTokenAddress.toLowerCase(),
@@ -801,6 +802,7 @@ export function usePoolMetadata() {
         GCGO_URL,
         totalPositionUsdValueForUpdateTrigger.current,
         isChartVisible,
+        contextMatchesParams,
     ]);
 
     useEffect(() => {
