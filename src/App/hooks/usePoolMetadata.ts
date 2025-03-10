@@ -1,8 +1,10 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
+    expandLiquidityData,
     fetchPoolLiquidity,
     fetchPoolRecentChanges,
+    LiquidityCurveServerIF,
 } from '../../ambient-utils/api';
 import { fetchPoolLimitOrders } from '../../ambient-utils/api/fetchPoolLimitOrders';
 import {
@@ -661,72 +663,130 @@ export function usePoolMetadata() {
         blockPollingUrl,
     ]);
 
-    const totalPositionLiq = useMemo(
+    const totalPositionUsdValue = useMemo(
         () =>
             positionsByPool.positions.reduce((sum, position) => {
-                return sum + position.positionLiq;
+                return sum + position.totalValueUSD;
             }, 0) +
             limitOrdersByPool.limitOrders.reduce((sum, order) => {
-                return sum + order.positionLiq;
+                return sum + order.totalValueUSD;
             }, 0),
         [positionsByPool, limitOrdersByPool],
     );
+
+    const [rawLiqData, setRawLiqData] = useState<
+        | {
+              rawCurveData: LiquidityCurveServerIF;
+              request: {
+                  baseAddress: string;
+                  quoteAddress: string;
+                  chainId: string;
+                  poolIndex: number;
+              };
+          }
+        | undefined
+    >();
+
+    const prevTotalPositionUsdValue = useRef(0);
+    const totalPositionUsdValueForUpdateTrigger = useRef(0);
+
+    useEffect(() => {
+        const change =
+            Math.abs(
+                totalPositionUsdValue - prevTotalPositionUsdValue.current,
+            ) / totalPositionUsdValue;
+
+        if (change < 0.01) return; // Skip effect if change is less than 1%
+
+        totalPositionUsdValueForUpdateTrigger.current =
+            prevTotalPositionUsdValue.current === 0 ? 0 : totalPositionUsdValue;
+        prevTotalPositionUsdValue.current = totalPositionUsdValue;
+    }, [totalPositionUsdValue]);
+
+    const [crocEnvChainMatches, setCrocEnvChainMatches] =
+        useState<boolean>(false);
+
+    useEffect(() => {
+        (async () => {
+            if (crocEnv) {
+                setCrocEnvChainMatches(
+                    (await crocEnv.context).chain.chainId === chainId,
+                );
+            } else {
+                setCrocEnvChainMatches(false);
+            }
+        })();
+    }, [crocEnv, chainId]);
 
     useEffect(() => {
         (async () => {
             if (
                 baseTokenAddress &&
                 quoteTokenAddress &&
-                baseTokenDecimals &&
-                quoteTokenDecimals &&
                 crocEnv &&
-                currentPoolPriceTick &&
-                totalPositionLiq &&
                 GCGO_URL &&
-                Math.abs(currentPoolPriceTick) !== Infinity &&
-                (await crocEnv.context).chain.chainId === chainId
+                crocEnvChainMatches
             ) {
-                // Reset existing liquidity data until the fetch completes, because it's a new pool
                 const request = {
                     baseAddress: baseTokenAddress.toLowerCase(),
                     quoteAddress: quoteTokenAddress.toLowerCase(),
                     chainId: chainId,
                     poolIndex: poolIndex,
                 };
-
                 fetchPoolLiquidity(
                     chainId,
                     baseTokenAddress.toLowerCase(),
-                    baseTokenDecimals,
                     quoteTokenAddress.toLowerCase(),
-                    quoteTokenDecimals,
                     poolIndex,
-                    crocEnv,
                     GCGO_URL,
-                    cachedFetchTokenPrice,
-                    cachedQuerySpotTick,
-                    currentPoolPriceTick,
                 )
-                    .then((liqCurve) => {
-                        if (liqCurve) {
-                            setLiquidity(liqCurve, request);
+                    .then((rawCurveData) => {
+                        if (rawCurveData) {
+                            setRawLiqData({ rawCurveData, request });
                         }
                     })
                     .catch(console.error);
             }
         })();
     }, [
-        currentPoolPriceTick,
-        totalPositionLiq,
-        crocEnv,
+        crocEnvChainMatches,
         chainId,
         baseTokenAddress,
         quoteTokenAddress,
-        baseTokenDecimals,
-        quoteTokenDecimals,
         poolIndex,
         GCGO_URL,
+        totalPositionUsdValueForUpdateTrigger.current,
     ]);
+
+    useEffect(() => {
+        (async () => {
+            if (
+                rawLiqData &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId
+            ) {
+                const { rawCurveData, request } = rawLiqData;
+
+                const expandedLiqData = await expandLiquidityData(
+                    rawCurveData,
+                    request.baseAddress,
+                    baseTokenDecimals,
+                    request.quoteAddress,
+                    quoteTokenDecimals,
+                    request.poolIndex,
+                    chainId,
+                    crocEnv,
+                    cachedFetchTokenPrice,
+                    cachedQuerySpotTick,
+                    currentPoolPriceTick,
+                );
+                if (expandedLiqData) {
+                    setLiquidity(expandedLiqData, request);
+                }
+            }
+        })();
+    }, [rawLiqData, crocEnv, chainId, currentPoolPriceTick]);
+
     return {
         contextMatchesParams,
         baseTokenAddress,
