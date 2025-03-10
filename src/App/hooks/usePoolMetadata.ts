@@ -665,12 +665,14 @@ export function usePoolMetadata() {
 
     const totalPositionUsdValue = useMemo(
         () =>
-            positionsByPool.positions.reduce((sum, position) => {
-                return sum + position.totalValueUSD;
-            }, 0) +
-            limitOrdersByPool.limitOrders.reduce((sum, order) => {
-                return sum + order.totalValueUSD;
-            }, 0),
+            positionsByPool.dataReceived && limitOrdersByPool.dataReceived
+                ? positionsByPool.positions.reduce((sum, position) => {
+                      return sum + position.totalValueUSD;
+                  }, 0) +
+                  limitOrdersByPool.limitOrders.reduce((sum, order) => {
+                      return sum + order.totalValueUSD;
+                  }, 0)
+                : 0,
         [positionsByPool, limitOrdersByPool],
     );
 
@@ -718,6 +720,21 @@ export function usePoolMetadata() {
         })();
     }, [crocEnv, chainId]);
 
+    const [tokenChainMatches, setTokenChainMatches] = useState<boolean>(false);
+
+    useEffect(() => {
+        (async () => {
+            if (tokenA && tokenB && chainId) {
+                setTokenChainMatches(
+                    tokenA.chainId === parseInt(chainId) &&
+                        tokenB.chainId === parseInt(chainId),
+                );
+            } else {
+                setCrocEnvChainMatches(false);
+            }
+        })();
+    }, [tokenA, tokenB, chainId]);
+
     useEffect(() => {
         (async () => {
             if (
@@ -725,7 +742,8 @@ export function usePoolMetadata() {
                 quoteTokenAddress &&
                 crocEnv &&
                 GCGO_URL &&
-                crocEnvChainMatches
+                crocEnvChainMatches &&
+                tokenChainMatches
             ) {
                 const request = {
                     baseAddress: baseTokenAddress.toLowerCase(),
@@ -750,6 +768,7 @@ export function usePoolMetadata() {
         })();
     }, [
         crocEnvChainMatches,
+        tokenChainMatches,
         chainId,
         baseTokenAddress,
         quoteTokenAddress,
