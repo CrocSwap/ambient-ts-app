@@ -367,8 +367,8 @@ export const useSidebarSearch = (
             let walletEndpoint: string = activeNetwork.GCGO_URL;
             walletEndpoint += '/user_txs?';
             walletEndpoint += new URLSearchParams({
-                user: searchStr,
-                chainId: activeNetwork.chainId,
+                user: searchStr.toLowerCase(),
+                chainId: activeNetwork.chainId.toLowerCase(),
                 n: '1',
             });
             // determine if user-created search input is a wallet (implied by tx data present)

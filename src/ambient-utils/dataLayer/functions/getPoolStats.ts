@@ -28,10 +28,10 @@ const getLiquidityFee = async (
     return fetch(
         poolStatsFreshEndpoint +
             new URLSearchParams({
-                base: base,
-                quote: quote,
+                base: base.toLowerCase(),
+                quote: quote.toLowerCase(),
                 poolIdx: poolIdx.toString(),
-                chainId: chainId,
+                chainId: chainId.toLowerCase(),
             }),
     )
         .then((response) => response?.json())
@@ -63,9 +63,9 @@ const fetchPoolStats = async (
         return fetch(
             poolStatsFreshEndpoint +
                 new URLSearchParams({
-                    chainId: chainId,
-                    base: base,
-                    quote: quote,
+                    chainId: chainId.toLowerCase(),
+                    base: base.toLowerCase(),
+                    quote: quote.toLowerCase(),
                     poolIdx: poolIdx.toString(),
                     histTime: histTime.toString(),
                 }),
@@ -83,9 +83,9 @@ const fetchPoolStats = async (
         return fetch(
             poolStatsFreshEndpoint +
                 new URLSearchParams({
-                    chainId: chainId,
-                    base: base,
-                    quote: quote,
+                    chainId: chainId.toLowerCase(),
+                    base: base.toLowerCase(),
+                    quote: quote.toLowerCase(),
                     poolIdx: poolIdx.toString(),
                 }),
         )
@@ -113,7 +113,7 @@ const fetchAllPoolStats = async (
         return fetch(
             allPoolStatsEndpoint +
                 new URLSearchParams({
-                    chainId: chainId,
+                    chainId: chainId.toLowerCase(),
                     with24hPrices: 'true',
                 }),
         )
@@ -129,7 +129,7 @@ const fetchAllPoolStats = async (
         return fetch(
             allPoolStatsEndpoint +
                 new URLSearchParams({
-                    chainId: chainId,
+                    chainId: chainId.toLowerCase(),
                 }),
         )
             .then((response) => response.json())
@@ -425,9 +425,9 @@ const get24hChange = async (
     const nowQuery = fetch(
         poolStatsFreshEndpoint +
             new URLSearchParams({
-                chainId: chainId,
-                base: baseToken,
-                quote: quoteToken,
+                chainId: chainId.toLowerCase(),
+                base: baseToken.toLowerCase(),
+                quote: quoteToken.toLowerCase(),
                 poolIdx: poolIdx.toString(),
             }),
     )
@@ -444,9 +444,9 @@ const get24hChange = async (
     const ydayQuery = fetch(
         poolStatsFreshEndpoint +
             new URLSearchParams({
-                chainId: chainId,
-                base: baseToken,
-                quote: quoteToken,
+                chainId: chainId.toLowerCase(),
+                base: baseToken.toLowerCase(),
+                quote: quoteToken.toLowerCase(),
                 poolIdx: poolIdx.toString(),
                 histTime: ydayTime.toString(),
             }),
@@ -523,7 +523,7 @@ export async function getChainStats(
     return fetch(
         chainStatsFreshEndpoint +
             new URLSearchParams({
-                chainId: chainId,
+                chainId: chainId.toLowerCase(),
                 n: tokenCount.toString(),
             }),
     )

@@ -53,7 +53,7 @@ export const fetchPoolLimitOrders = (args: argsIF) => {
                       base: base.toLowerCase(),
                       quote: quote.toLowerCase(),
                       poolIdx: poolIdx.toString(),
-                      chainId: chainId,
+                      chainId: chainId.toLowerCase(),
                       n: n ? n.toString() : '',
                       timeBefore: timeBefore.toString(),
                   })
@@ -62,7 +62,7 @@ export const fetchPoolLimitOrders = (args: argsIF) => {
                       base: base.toLowerCase(),
                       quote: quote.toLowerCase(),
                       poolIdx: poolIdx.toString(),
-                      chainId: chainId,
+                      chainId: chainId.toLowerCase(),
                       n: n ? n.toString() : '',
                   }),
     )

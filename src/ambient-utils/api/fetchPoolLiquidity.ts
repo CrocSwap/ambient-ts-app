@@ -19,10 +19,10 @@ export const fetchPoolLiquidity = async (
     return fetch(
         poolLiquidityCacheEndpoint +
             new URLSearchParams({
-                chainId: chainId,
-                base: base,
-                quote: quote,
+                base: base.toLowerCase(),
+                quote: quote.toLowerCase(),
                 poolIdx: poolIdx.toString(),
+                chainId: chainId.toLowerCase(),
             }),
     )
         .then((response) => response.json())

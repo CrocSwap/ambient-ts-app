@@ -60,8 +60,8 @@ const fetchUserPositions = async ({
     const res = await fetch(
         selectedEndpoint +
             new URLSearchParams({
-                user: user,
-                chainId: chainId,
+                user: user.toLowerCase(),
+                chainId: chainId.toLowerCase(),
             }),
     );
     return res;

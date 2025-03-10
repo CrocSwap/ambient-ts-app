@@ -310,7 +310,7 @@ export function usePoolMetadata() {
                             base: baseTokenAddress.toLowerCase(),
                             quote: quoteTokenAddress.toLowerCase(),
                             poolIdx: poolIndex.toString(),
-                            chainId: chainId,
+                            chainId: chainId.toLowerCase(),
                             // n: '100',
                             n: '200',
                         }),
@@ -454,11 +454,11 @@ export function usePoolMetadata() {
                     fetch(
                         userPoolTransactionsCacheEndpoint +
                             new URLSearchParams({
-                                user: userAddress,
+                                user: userAddress.toLowerCase(),
                                 base: baseTokenAddress.toLowerCase(),
                                 quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: poolIndex.toString(),
-                                chainId: chainId,
+                                chainId: chainId.toLowerCase(),
                                 n: '200',
                             }),
                     )
@@ -523,11 +523,11 @@ export function usePoolMetadata() {
                     fetch(
                         userPoolPositionsCacheEndpoint +
                             new URLSearchParams({
-                                user: userAddress,
+                                user: userAddress.toLowerCase(),
                                 base: baseTokenAddress.toLowerCase(),
                                 quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: poolIndex.toString(),
-                                chainId: chainId,
+                                chainId: chainId.toLowerCase(),
                             }),
                     )
                         .then((response) => response.json())
@@ -587,11 +587,11 @@ export function usePoolMetadata() {
                     fetch(
                         userPoolLimitOrdersCacheEndpoint +
                             new URLSearchParams({
-                                user: userAddress,
+                                user: userAddress.toLowerCase(),
                                 base: baseTokenAddress.toLowerCase(),
                                 quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: poolIndex.toString(),
-                                chainId: chainId,
+                                chainId: chainId.toLowerCase(),
                             }),
                     )
                         .then((response) => response?.json())
