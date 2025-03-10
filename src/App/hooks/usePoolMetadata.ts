@@ -663,13 +663,13 @@ export function usePoolMetadata() {
         blockPollingUrl,
     ]);
 
-    const totalPositionLiq = useMemo(
+    const totalPositionUsdValue = useMemo(
         () =>
             positionsByPool.positions.reduce((sum, position) => {
-                return sum + position.positionLiq;
+                return sum + position.totalValueUSD;
             }, 0) +
             limitOrdersByPool.limitOrders.reduce((sum, order) => {
-                return sum + order.positionLiq;
+                return sum + order.totalValueUSD;
             }, 0),
         [positionsByPool, limitOrdersByPool],
     );
@@ -687,18 +687,20 @@ export function usePoolMetadata() {
         | undefined
     >();
 
-    const prevTotalPositionLiq = useRef(0);
-    const totalPositionLiqForUpdateTrigger = useRef(0);
+    const prevTotalPositionUsdValue = useRef(0);
+    const totalPositionUsdValueForUpdateTrigger = useRef(0);
 
     useEffect(() => {
         const change =
-            Math.abs(totalPositionLiq - prevTotalPositionLiq.current) /
-            prevTotalPositionLiq.current;
+            Math.abs(
+                totalPositionUsdValue - prevTotalPositionUsdValue.current,
+            ) / prevTotalPositionUsdValue.current;
+
         if (change < 0.01) return; // Skip effect if change is less than 1%
 
-        prevTotalPositionLiq.current = totalPositionLiq;
-        totalPositionLiqForUpdateTrigger.current = totalPositionLiq;
-    }, [totalPositionLiq]);
+        prevTotalPositionUsdValue.current = totalPositionUsdValue;
+        totalPositionUsdValueForUpdateTrigger.current = totalPositionUsdValue;
+    }, [totalPositionUsdValue]);
 
     useEffect(() => {
         (async () => {
@@ -706,7 +708,6 @@ export function usePoolMetadata() {
                 baseTokenAddress &&
                 quoteTokenAddress &&
                 crocEnv &&
-                totalPositionLiqForUpdateTrigger.current &&
                 GCGO_URL &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
@@ -738,7 +739,7 @@ export function usePoolMetadata() {
         quoteTokenAddress,
         poolIndex,
         GCGO_URL,
-        totalPositionLiqForUpdateTrigger.current,
+        totalPositionUsdValueForUpdateTrigger.current,
     ]);
 
     useEffect(() => {
