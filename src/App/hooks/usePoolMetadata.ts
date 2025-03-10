@@ -35,6 +35,7 @@ import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import useMediaQuery from '../../utils/hooks/useMediaQuery';
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata() {
@@ -73,6 +74,7 @@ export function usePoolMetadata() {
         tokenB,
         defaultRangeWidthForActivePool,
         currentPoolPriceTick,
+        activeTab,
     } = useContext(TradeDataContext);
 
     const {
@@ -84,6 +86,21 @@ export function usePoolMetadata() {
     } = useContext(CachedDataContext);
 
     const { pathname } = location;
+
+    const isMobile = useMediaQuery('(max-width: 500px)');
+
+    const [isChartOpenOnMobile, setIsChartOpenOnMobile] = useState(false);
+
+    useEffect(() => {
+        if (isMobile && activeTab === 'Chart') {
+            setIsChartOpenOnMobile(true);
+        } else {
+            setIsChartOpenOnMobile(false);
+        }
+    }, [isMobile && activeTab]);
+
+    const isChartVisible =
+        isChartOpenOnMobile || (!isMobile && pathname.includes('/trade'));
 
     const ticksInParams =
         pathname.includes('lowTick') && pathname.includes('highTick');
@@ -743,27 +760,34 @@ export function usePoolMetadata() {
                 crocEnv &&
                 GCGO_URL &&
                 crocEnvChainMatches &&
-                tokenChainMatches
+                tokenChainMatches &&
+                isChartVisible
             ) {
                 const request = {
                     baseAddress: baseTokenAddress.toLowerCase(),
                     quoteAddress: quoteTokenAddress.toLowerCase(),
                     chainId: chainId,
                     poolIndex: poolIndex,
+                    currentTVL: totalPositionUsdValueForUpdateTrigger.current,
                 };
-                fetchPoolLiquidity(
-                    chainId,
-                    baseTokenAddress.toLowerCase(),
-                    quoteTokenAddress.toLowerCase(),
-                    poolIndex,
-                    GCGO_URL,
-                )
-                    .then((rawCurveData) => {
-                        if (rawCurveData) {
-                            setRawLiqData({ rawCurveData, request });
-                        }
-                    })
-                    .catch(console.error);
+                if (
+                    JSON.stringify(request) !==
+                    JSON.stringify(rawLiqData?.request)
+                ) {
+                    fetchPoolLiquidity(
+                        chainId,
+                        baseTokenAddress.toLowerCase(),
+                        quoteTokenAddress.toLowerCase(),
+                        poolIndex,
+                        GCGO_URL,
+                    )
+                        .then((rawCurveData) => {
+                            if (rawCurveData) {
+                                setRawLiqData({ rawCurveData, request });
+                            }
+                        })
+                        .catch(console.error);
+                }
             }
         })();
     }, [
@@ -775,6 +799,7 @@ export function usePoolMetadata() {
         poolIndex,
         GCGO_URL,
         totalPositionUsdValueForUpdateTrigger.current,
+        isChartVisible,
     ]);
 
     useEffect(() => {
