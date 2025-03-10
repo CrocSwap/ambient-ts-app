@@ -694,13 +694,29 @@ export function usePoolMetadata() {
         const change =
             Math.abs(
                 totalPositionUsdValue - prevTotalPositionUsdValue.current,
-            ) / prevTotalPositionUsdValue.current;
+            ) / totalPositionUsdValue;
 
         if (change < 0.01) return; // Skip effect if change is less than 1%
 
+        totalPositionUsdValueForUpdateTrigger.current =
+            prevTotalPositionUsdValue.current === 0 ? 0 : totalPositionUsdValue;
         prevTotalPositionUsdValue.current = totalPositionUsdValue;
-        totalPositionUsdValueForUpdateTrigger.current = totalPositionUsdValue;
     }, [totalPositionUsdValue]);
+
+    const [crocEnvChainMatches, setCrocEnvChainMatches] =
+        useState<boolean>(false);
+
+    useEffect(() => {
+        (async () => {
+            if (crocEnv) {
+                setCrocEnvChainMatches(
+                    (await crocEnv.context).chain.chainId === chainId,
+                );
+            } else {
+                setCrocEnvChainMatches(false);
+            }
+        })();
+    }, [crocEnv, chainId]);
 
     useEffect(() => {
         (async () => {
@@ -709,7 +725,7 @@ export function usePoolMetadata() {
                 quoteTokenAddress &&
                 crocEnv &&
                 GCGO_URL &&
-                (await crocEnv.context).chain.chainId === chainId
+                crocEnvChainMatches
             ) {
                 const request = {
                     baseAddress: baseTokenAddress.toLowerCase(),
@@ -733,7 +749,7 @@ export function usePoolMetadata() {
             }
         })();
     }, [
-        crocEnv,
+        crocEnvChainMatches,
         chainId,
         baseTokenAddress,
         quoteTokenAddress,
