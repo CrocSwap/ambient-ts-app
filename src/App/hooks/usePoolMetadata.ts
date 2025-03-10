@@ -1,5 +1,6 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation } from 'react-router';
 import {
     expandLiquidityData,
     fetchPoolLiquidity,
@@ -35,6 +36,7 @@ import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import useMediaQuery from '../../utils/hooks/useMediaQuery';
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata() {
@@ -73,6 +75,7 @@ export function usePoolMetadata() {
         tokenB,
         defaultRangeWidthForActivePool,
         currentPoolPriceTick,
+        activeTab,
     } = useContext(TradeDataContext);
 
     const {
@@ -83,7 +86,22 @@ export function usePoolMetadata() {
         cachedEnsResolve,
     } = useContext(CachedDataContext);
 
-    const { pathname } = location;
+    const pathname = useLocation().pathname;
+
+    const isMobile = useMediaQuery('(max-width: 500px)');
+
+    const [isChartOpenOnMobile, setIsChartOpenOnMobile] = useState(false);
+
+    useEffect(() => {
+        if (isMobile && activeTab === 'Chart') {
+            setIsChartOpenOnMobile(true);
+        } else {
+            setIsChartOpenOnMobile(false);
+        }
+    }, [isMobile && activeTab]);
+
+    const isChartVisible =
+        isChartOpenOnMobile || (!isMobile && pathname.includes('/trade'));
 
     const ticksInParams =
         pathname.includes('lowTick') && pathname.includes('highTick');
@@ -665,12 +683,14 @@ export function usePoolMetadata() {
 
     const totalPositionUsdValue = useMemo(
         () =>
-            positionsByPool.positions.reduce((sum, position) => {
-                return sum + position.totalValueUSD;
-            }, 0) +
-            limitOrdersByPool.limitOrders.reduce((sum, order) => {
-                return sum + order.totalValueUSD;
-            }, 0),
+            positionsByPool.dataReceived && limitOrdersByPool.dataReceived
+                ? positionsByPool.positions.reduce((sum, position) => {
+                      return sum + position.totalValueUSD;
+                  }, 0) +
+                  limitOrdersByPool.limitOrders.reduce((sum, order) => {
+                      return sum + order.totalValueUSD;
+                  }, 0)
+                : 0,
         [positionsByPool, limitOrdersByPool],
     );
 
@@ -718,6 +738,21 @@ export function usePoolMetadata() {
         })();
     }, [crocEnv, chainId]);
 
+    const [tokenChainMatches, setTokenChainMatches] = useState<boolean>(false);
+
+    useEffect(() => {
+        (async () => {
+            if (tokenA && tokenB && chainId) {
+                setTokenChainMatches(
+                    tokenA.chainId === parseInt(chainId) &&
+                        tokenB.chainId === parseInt(chainId),
+                );
+            } else {
+                setCrocEnvChainMatches(false);
+            }
+        })();
+    }, [tokenA, tokenB, chainId]);
+
     useEffect(() => {
         (async () => {
             if (
@@ -725,37 +760,47 @@ export function usePoolMetadata() {
                 quoteTokenAddress &&
                 crocEnv &&
                 GCGO_URL &&
-                crocEnvChainMatches
+                crocEnvChainMatches &&
+                tokenChainMatches &&
+                isChartVisible
             ) {
                 const request = {
                     baseAddress: baseTokenAddress.toLowerCase(),
                     quoteAddress: quoteTokenAddress.toLowerCase(),
                     chainId: chainId,
                     poolIndex: poolIndex,
+                    currentTVL: totalPositionUsdValueForUpdateTrigger.current,
                 };
-                fetchPoolLiquidity(
-                    chainId,
-                    baseTokenAddress.toLowerCase(),
-                    quoteTokenAddress.toLowerCase(),
-                    poolIndex,
-                    GCGO_URL,
-                )
-                    .then((rawCurveData) => {
-                        if (rawCurveData) {
-                            setRawLiqData({ rawCurveData, request });
-                        }
-                    })
-                    .catch(console.error);
+                if (
+                    JSON.stringify(request) !==
+                    JSON.stringify(rawLiqData?.request)
+                ) {
+                    fetchPoolLiquidity(
+                        chainId,
+                        baseTokenAddress.toLowerCase(),
+                        quoteTokenAddress.toLowerCase(),
+                        poolIndex,
+                        GCGO_URL,
+                    )
+                        .then((rawCurveData) => {
+                            if (rawCurveData) {
+                                setRawLiqData({ rawCurveData, request });
+                            }
+                        })
+                        .catch(console.error);
+                }
             }
         })();
     }, [
         crocEnvChainMatches,
+        tokenChainMatches,
         chainId,
         baseTokenAddress,
         quoteTokenAddress,
         poolIndex,
         GCGO_URL,
         totalPositionUsdValueForUpdateTrigger.current,
+        isChartVisible,
     ]);
 
     useEffect(() => {
