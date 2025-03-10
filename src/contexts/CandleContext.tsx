@@ -235,8 +235,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     ]);
 
     const fetchFirst200Candles = () => {
-        const nowTime = Math.floor(Date.now() / 1000);
-        fetchCandlesByNumDurations(200, nowTime);
+        fetchCandlesByNumDurations(200, 0);
     };
 
     /**
@@ -323,7 +322,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             crocEnv
         ) {
             const candleTime = candleScale.isShowLatestCandle
-                ? Math.floor(Date.now() / 1000)
+                ? 0
                 : candleScale.lastCandleDate || 0;
 
             const nCandles = Math.min(Math.max(candleScale?.nCandles), 2999);

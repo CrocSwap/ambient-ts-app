@@ -57,8 +57,8 @@ export const fetchPoolUserChanges = (args: argsIF) => {
                       base: base.toLowerCase(),
                       quote: quote.toLowerCase(),
                       poolIdx: poolIdx.toString(),
-                      chainId: chainId,
-                      user: user,
+                      chainId: chainId.toLowerCase(),
+                      user: user.toLowerCase(),
                       n: n ? n.toString() : '',
                       period: period.toString(),
                       time: time.toString(),
@@ -69,8 +69,8 @@ export const fetchPoolUserChanges = (args: argsIF) => {
                     base: base.toLowerCase(),
                     quote: quote.toLowerCase(),
                     poolIdx: poolIdx.toString(),
-                    chainId: chainId,
-                    user: user,
+                    chainId: chainId.toLowerCase(),
+                    user: user.toLowerCase(),
                     n: n ? n.toString() : '',
                     timeBefore: timeBefore.toString(),
                 })
@@ -79,8 +79,8 @@ export const fetchPoolUserChanges = (args: argsIF) => {
                     base: base.toLowerCase(),
                     quote: quote.toLowerCase(),
                     poolIdx: poolIdx.toString(),
-                    chainId: chainId,
-                    user: user,
+                    chainId: chainId.toLowerCase(),
+                    user: user.toLowerCase(),
                     n: n ? n.toString() : '',
                     // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                     // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
