@@ -38,6 +38,7 @@ import {
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET,
     GAS_DROPS_ESTIMATE_SWAP_NATIVE,
     GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX,
+    HIDE_TOKEN_VALUES,
     L1_GAS_CALC_ENABLED,
     NUM_GWEI_IN_ETH,
     NUM_GWEI_IN_WEI,
@@ -764,7 +765,8 @@ function Swap(props: propsIF) {
         usdValueTokenA &&
         usdValueTokenB &&
         buyQtyBigInt > 0n &&
-        sellQtyBigInt > 0n
+        sellQtyBigInt > 0n &&
+        !HIDE_TOKEN_VALUES
             ? ((usdValueTokenB * parseFloat(buyQtyNoExponentString) -
                   usdValueTokenA * parseFloat(sellQtyNoExponentString)) /
                   (usdValueTokenA * parseFloat(sellQtyNoExponentString))) *
@@ -783,7 +785,7 @@ function Swap(props: propsIF) {
     );
 
     const showUsdDiffWarning = usdDiffGreaterThanThreshold
-        ? usdDiffGreaterThanThresholdDebounced
+        ? usdDiffGreaterThanThresholdDebounced && !HIDE_TOKEN_VALUES
         : false;
 
     const showWarning = showPriceImpactWarning || showUsdDiffWarning;
