@@ -181,11 +181,11 @@ function Ranges(props: propsIF) {
         fetch(
             userPoolPositionsCacheEndpoint +
                 new URLSearchParams({
-                    user: userAddress,
+                    user: userAddress.toLowerCase(),
                     base: baseToken.address.toLowerCase(),
                     quote: quoteToken.address.toLowerCase(),
                     poolIdx: poolIndex.toString(),
-                    chainId: chainId,
+                    chainId: chainId.toLowerCase(),
                 }),
         )
             .then((response) => response.json())

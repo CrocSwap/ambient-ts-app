@@ -224,6 +224,9 @@ export function isValidNumberString(value: string): boolean {
 
 // Helper function to normalize exponential numbers
 export function normalizeExponential(value: string, decimals: number): string {
+    if (!value.toLowerCase().includes('e')) {
+        return value;
+    }
     const num = Number(value);
     if (!isNaN(num) && isFinite(num)) {
         return num.toFixed(decimals).replace(/\.?0+$/, ''); // High precision to avoid rounding errors
