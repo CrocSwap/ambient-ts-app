@@ -518,7 +518,7 @@ function Ranges(props: propsIF) {
                 (isAccountView && !hideEmptyPositionsOnAccount) ||
                 pos.positionLiq !== 0,
         );
-    }, [mergedData]);
+    }, [mergedData, hideEmptyPositionsOnAccount]);
 
     const handleKeyDownViewRanges = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
