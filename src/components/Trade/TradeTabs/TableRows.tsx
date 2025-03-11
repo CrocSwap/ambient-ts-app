@@ -1,4 +1,11 @@
-import { memo, MutableRefObject, useContext, useEffect, useState } from 'react';
+import {
+    memo,
+    MutableRefObject,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { getMoneynessRank } from '../../../ambient-utils/dataLayer';
 import {
     LimitModalAction,
@@ -195,7 +202,10 @@ function TableRows({
         );
     };
 
-    const txDataToDisplay = isAccountView ? data : data.slice(0, 100);
+    const txDataToDisplay = useMemo(
+        () => (isAccountView ? data : data.slice(0, 100)),
+        [isAccountView, data],
+    );
 
     const transactionContent = () => {
         return (
