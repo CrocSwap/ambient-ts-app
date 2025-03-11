@@ -508,8 +508,15 @@ function Ranges(props: propsIF) {
         () =>
             !isLoading &&
             !mergedData.length &&
-            pendingRecentlyUpdatedPositions.length === 0,
-        [isLoading, mergedData.length, pendingRecentlyUpdatedPositions.length],
+            pendingRecentlyUpdatedPositions.length === 0 &&
+            !(isAccountView && activeAccountPositionData?.length),
+        [
+            isLoading,
+            mergedData.length,
+            pendingRecentlyUpdatedPositions.length,
+            activeAccountPositionData?.length,
+            isAccountView,
+        ],
     );
 
     const sortedPositionsToDisplayAccount = useMemo(() => {
