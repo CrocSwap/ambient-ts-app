@@ -484,13 +484,13 @@ function TradeCandleStickChart(props: propsIF) {
             reducedData[i].cumAverageUSD = runningSum;
         }
 
-        // Log verification
-        console.log(
-            `Liquidity reduction - Points: ${data.length} → ${reducedData.length}`,
-        );
-        console.log(
-            `Delta USD sum - Original: ${originalSums.deltaAverageUSD.toFixed(2)}, Reduced: ${reducedSums.deltaAverageUSD.toFixed(2)}`,
-        );
+        // // Log verification
+        // console.log(
+        //     `Liquidity reduction - Points: ${data.length} → ${reducedData.length}`,
+        // );
+        // console.log(
+        //     `Delta USD sum - Original: ${originalSums.deltaAverageUSD.toFixed(2)}, Reduced: ${reducedSums.deltaAverageUSD.toFixed(2)}`,
+        // );
 
         // Final sort and return
         return reducedData.sort((a, b) => b.liqPrices - a.liqPrices);
