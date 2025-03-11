@@ -121,24 +121,24 @@ function TradeTabs2(props: propsIF) {
               },
           ]
         : [
-              {
-                  label: 'Transactions',
-                  content: <Transactions {...transactionsProps} />,
-                  icon: recentTransactionsImage,
-                  showRightSideOption: true,
-              },
-              {
-                  label: 'Limits',
-                  content: <Orders {...ordersProps} />,
-                  icon: openOrdersImage,
-                  showRightSideOption: true,
-              },
-              {
-                  label: 'Liquidity',
-                  content: <Ranges {...rangesProps} />,
-                  icon: rangePositionsImage,
-                  showRightSideOption: true,
-              },
+              //   {
+              //       label: 'Transactions',
+              //       content: <Transactions {...transactionsProps} />,
+              //       icon: recentTransactionsImage,
+              //       showRightSideOption: true,
+              //   },
+              //   {
+              //       label: 'Limits',
+              //       content: <Orders {...ordersProps} />,
+              //       icon: openOrdersImage,
+              //       showRightSideOption: true,
+              //   },
+              //   {
+              //       label: 'Liquidity',
+              //       content: <Ranges {...rangesProps} />,
+              //       icon: rangePositionsImage,
+              //       showRightSideOption: true,
+              //   },
               {
                   label: 'Info',
                   content: <TableInfo />,
