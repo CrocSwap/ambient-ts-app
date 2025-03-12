@@ -1,4 +1,11 @@
-import { memo, MutableRefObject, useContext, useEffect, useState } from 'react';
+import {
+    memo,
+    MutableRefObject,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { getMoneynessRank } from '../../../ambient-utils/dataLayer';
 import {
     LimitModalAction,
@@ -24,8 +31,6 @@ interface propsIF {
     fullData: TransactionIF[] | LimitOrderIF[] | PositionIF[];
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
-    isLeaderboard?: boolean;
-    positionsByApy?: string[];
     firstRowRef?: MutableRefObject<HTMLDivElement | null>;
     lastRowRef?: MutableRefObject<HTMLDivElement | null>;
 }
@@ -38,11 +43,16 @@ function TableRows({
     fullData,
     isAccountView,
     tableView,
-    isLeaderboard,
-    positionsByApy,
     firstRowRef,
     lastRowRef,
 }: propsIF) {
+    // console.log({
+    //     dataLength: data.length,
+    //     type,
+    //     fullDataLength: fullData.length,
+    //     firstRowRef,
+    //     lastRowRef,
+    // });
     const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
         useModal();
 
@@ -164,13 +174,6 @@ function TableRows({
                         }
                         tableView={tableView}
                         isAccountView={isAccountView}
-                        isLeaderboard={isLeaderboard}
-                        rank={
-                            positionsByApy
-                                ? positionsByApy.indexOf(position.positionId) +
-                                  1
-                                : undefined
-                        }
                         openDetailsModal={() =>
                             openRangeModal(position.positionId, 'details')
                         }
@@ -199,18 +202,22 @@ function TableRows({
         );
     };
 
+    const txDataToDisplay = useMemo(
+        () => (isAccountView ? data : data.slice(0, 100)),
+        [isAccountView, data],
+    );
+
     const transactionContent = () => {
         return (
             <>
-                {/* <div id='omega'>OMEGA</div> */}
-                {(data as TransactionIF[]).map((tx, idx) => (
+                {(txDataToDisplay as TransactionIF[]).map((tx, idx) => (
                     <TransactionRow
                         key={idx}
                         idForDOM={`tx_row_${idx}`}
                         observedRowRef={
                             idx === 0
                                 ? firstRowRef
-                                : idx === data.length - 1
+                                : idx === txDataToDisplay.length - 1
                                   ? lastRowRef
                                   : undefined
                         }

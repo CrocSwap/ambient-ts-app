@@ -170,44 +170,67 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liqDataAll: LiquidityDataLocal[],
     ): nearestLiquidity => {
         if (scaleData !== undefined) {
-            const point = scaleData?.yScale.domain()[0];
+            const minDomain = scaleData?.yScale.domain()[0];
+            const maxDomain = scaleData?.yScale.domain()[1];
 
-            if (point == undefined) return { min: undefined, max: undefined };
-            if (liqDataAll) {
-                const tempLiqData = liqDataAll;
+            if (minDomain == undefined)
+                return { min: undefined, max: undefined };
+            if (!liqDataAll || liqDataAll.length === 0)
+                return { min: undefined, max: undefined };
 
-                const sortLiqaData = tempLiqData.sort(function (a, b) {
-                    return a.liqPrices - b.liqPrices;
-                });
+            // Sort data once (if not already sorted)
+            const sortedData = [...liqDataAll].sort(
+                (a, b) => a.liqPrices - b.liqPrices,
+            );
 
-                if (!sortLiqaData || sortLiqaData.length === 0)
-                    return { min: undefined, max: undefined };
-                const closestMin = sortLiqaData.reduce(function (prev, curr) {
-                    return Math.abs(
-                        curr.liqPrices - scaleData?.yScale.domain()[0],
-                    ) < Math.abs(prev.liqPrices - scaleData?.yScale.domain()[0])
-                        ? curr
-                        : prev;
-                });
+            // Binary search for closest to min domain
+            const findClosestPoint = (
+                target: number,
+                data: LiquidityDataLocal[],
+            ): LiquidityDataLocal => {
+                let left = 0;
+                let right = data.length - 1;
+                let closestIndex = 0;
+                let closestDiff = Math.abs(data[0].liqPrices - target);
 
-                const closestMax = sortLiqaData.reduce(function (prev, curr) {
-                    return Math.abs(
-                        curr.liqPrices - scaleData?.yScale.domain()[1],
-                    ) < Math.abs(prev.liqPrices - scaleData?.yScale.domain()[1])
-                        ? curr
-                        : prev;
-                });
+                while (left <= right) {
+                    const mid = Math.floor((left + right) / 2);
+                    const currentDiff = Math.abs(data[mid].liqPrices - target);
 
-                if (closestMin !== undefined && closestMin !== undefined) {
-                    return {
-                        min: closestMin.liqPrices ? closestMin.liqPrices : 0,
-                        max: closestMax.liqPrices,
-                    };
-                } else {
-                    return { min: 0, max: 0 };
+                    // Update closest if we found a better match
+                    if (currentDiff < closestDiff) {
+                        closestDiff = currentDiff;
+                        closestIndex = mid;
+                    }
+
+                    // Continue search in appropriate half
+                    if (data[mid].liqPrices < target) {
+                        left = mid + 1;
+                    } else if (data[mid].liqPrices > target) {
+                        right = mid - 1;
+                    } else {
+                        // Exact match found
+                        return data[mid];
+                    }
                 }
+
+                return data[closestIndex];
+            };
+
+            // Find closest points to domain boundaries
+            const closestMin = findClosestPoint(minDomain, sortedData);
+            const closestMax = findClosestPoint(maxDomain, sortedData);
+
+            if (closestMin && closestMax) {
+                return {
+                    min: closestMin.liqPrices ? closestMin.liqPrices : 0,
+                    max: closestMax.liqPrices,
+                };
+            } else {
+                return { min: 0, max: 0 };
             }
         }
+
         return { min: undefined, max: undefined };
     };
 

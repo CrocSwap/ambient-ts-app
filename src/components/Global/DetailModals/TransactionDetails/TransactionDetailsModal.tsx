@@ -65,13 +65,13 @@ function TransactionDetailsModal(props: propsIF) {
         fetch(
             positionStatsCacheEndpoint +
                 new URLSearchParams({
-                    user: tx.user,
+                    user: tx.user.toLowerCase(),
                     bidTick: tx.bidTick.toString(),
                     askTick: tx.askTick.toString(),
-                    base: tx.base,
-                    quote: tx.quote,
+                    base: tx.base.toLowerCase(),
+                    quote: tx.quote.toLowerCase(),
                     poolIdx: tx.poolIdx.toString(),
-                    chainId: chainId,
+                    chainId: chainId.toLowerCase(),
                     positionType: tx.positionType,
                 }),
         )

@@ -465,13 +465,13 @@ function Reposition() {
             ? fetch(
                   positionStatsCacheEndpoint +
                       new URLSearchParams({
-                          user: position.user,
+                          user: position.user.toLowerCase(),
                           bidTick: position.bidTick.toString(),
                           askTick: position.askTick.toString(),
-                          base: position.base,
-                          quote: position.quote,
+                          base: position.base.toLowerCase(),
+                          quote: position.quote.toLowerCase(),
                           poolIdx: poolIndex.toString(),
-                          chainId: position.chainId,
+                          chainId: position.chainId.toLowerCase(),
                           positionType: position.positionType,
                       }),
               )

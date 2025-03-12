@@ -127,14 +127,14 @@ export default function OrderDetailsModal(props: propsIF) {
             fetch(
                 positionStatsCacheEndpoint +
                     new URLSearchParams({
-                        user: user,
+                        user: user.toLowerCase(),
                         bidTick: bidTick.toString(),
                         askTick: askTick.toString(),
                         isBid: isBid ? 'true' : 'false',
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
+                        base: baseTokenAddress.toLowerCase(),
+                        quote: quoteTokenAddress.toLowerCase(),
                         poolIdx: poolIndex.toString(),
-                        chainId: chainId,
+                        chainId: chainId.toLowerCase(),
                         pivotTime: pivotTime.toString(),
                         positionType: positionType,
                     }),
