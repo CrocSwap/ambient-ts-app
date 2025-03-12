@@ -91,25 +91,27 @@ function TableRowsInfiniteScroll({
         return /iPad|iPhone|iPod/.test(userAgent);
     };
 
-    // added to debug infinite scroll on monadTestnet link
-    // can be removed after detecting issue
-    const [debugMode, setDebugMode] = useState(false);
-    const debugModeRef = useRef<boolean>();
-    debugModeRef.current = debugMode;
+    const debugMode = false;
 
-    const [shortcutAdded, setShortcutAdded] = useState(false);
+    // // added to debug infinite scroll on monadTestnet link
+    // // can be removed after detecting issue
+    // const [debugMode, setDebugMode] = useState(false);
+    // const debugModeRef = useRef<boolean>();
+    // debugModeRef.current = debugMode;
 
-    useEffect(() => {
-        document.addEventListener('keydown', (e) => {
-            if (
-                (e.shiftKey && e.altKey && e.key === 'j') ||
-                (e.shiftKey && e.altKey && e.key === 'J')
-            ) {
-                setDebugMode(!debugModeRef.current);
-            }
-        });
-        setShortcutAdded(true);
-    }, [shortcutAdded == false]);
+    // const [shortcutAdded, setShortcutAdded] = useState(false);
+
+    // useEffect(() => {
+    //     document.addEventListener('keydown', (e) => {
+    //         if (
+    //             (e.shiftKey && e.altKey && e.key === 'j') ||
+    //             (e.shiftKey && e.altKey && e.key === 'J')
+    //         ) {
+    //             setDebugMode(!debugModeRef.current);
+    //         }
+    //     });
+    //     setShortcutAdded(true);
+    // }, [shortcutAdded == false]);
 
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
