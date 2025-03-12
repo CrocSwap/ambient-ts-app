@@ -66,8 +66,8 @@ export async function fetchDepositBalances(
     return fetch(
         depositBalancesCacheEndpoint +
             new URLSearchParams({
-                chainId: chainId,
-                user: user,
+                chainId: chainId.toLowerCase(),
+                user: user.toLowerCase(),
             }),
     )
         .then((response) => response?.json())

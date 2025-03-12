@@ -4755,7 +4755,7 @@ export default function Chart(props: propsIF) {
                     ? 1 / poolPriceWithoutDenom
                     : poolPriceWithoutDenom;
 
-                const filteredMin = d3.min(unparsedCandleData, (d) =>
+                const filteredMin = d3.min(visibleCandleData, (d) =>
                     denomInBase
                         ? isLine
                             ? d.invPriceCloseExclMEVDecimalCorrected
@@ -4765,7 +4765,7 @@ export default function Chart(props: propsIF) {
                           : d.minPriceExclMEVDecimalCorrected,
                 );
 
-                const filteredMax = d3.max(unparsedCandleData, (d) =>
+                const filteredMax = d3.max(visibleCandleData, (d) =>
                     denomInBase
                         ? isLine
                             ? d.invPriceCloseExclMEVDecimalCorrected
@@ -5688,12 +5688,19 @@ export default function Chart(props: propsIF) {
                 (data) => data.totalValueUSD,
             );
 
+            const swapData = userTransactionData.filter(
+                (transaction) =>
+                    (transaction.entityType === 'limitOrder' ||
+                        transaction.entityType === 'swap') &&
+                    transaction.totalValueUSD > 0,
+            );
+
             if (domainRight && domainLeft) {
                 const scale = d3
                     .scaleLinear()
                     .range([750, 3000])
                     .domain([
-                        userTransactionData.length > 2 ? domainLeft : 0,
+                        swapData.length > 3 ? domainLeft : 0,
                         domainRight,
                     ]);
 

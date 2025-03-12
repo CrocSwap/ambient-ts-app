@@ -37,10 +37,13 @@ function RangeWidth(props: propsIF) {
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     const shouldDisplaySub5PercentWidths =
         isStablePair(tokenA.address, tokenB.address) ||
-        isETHPair(tokenA.address, tokenB.address) ||
+        isETHPair(tokenA.address, tokenB.address, chainId) ||
         isBtcPair(tokenA.address, tokenB.address);
 
     // values to generate balanced mode preset buttons

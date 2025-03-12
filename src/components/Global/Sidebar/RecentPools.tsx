@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect, useState } from 'react';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { expandPoolStats } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import {
@@ -34,8 +34,10 @@ function RecentPools() {
 
     const [expandedPoolData, setExpandedPoolData] = useState<PoolIF[]>([]);
 
+    const fiveRecentPools = useMemo(() => recentPools.get(5), [recentPools]);
+
     useEffect(() => {
-        if (!recentPools.get(5) || !crocEnv) return;
+        if (!fiveRecentPools.length || !crocEnv) return;
 
         const expandedPoolDataOnCurrentChain = recentPools
             .get(5)
@@ -74,11 +76,7 @@ function RecentPools() {
                 // setIsFetchError(true);
                 console.warn(err);
             });
-    }, [
-        JSON.stringify(recentPools.get(5)),
-        crocEnv === undefined,
-        JSON.stringify(explorePools),
-    ]);
+    }, [fiveRecentPools, crocEnv === undefined, explorePools]);
 
     return (
         <FlexContainer

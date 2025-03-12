@@ -202,10 +202,10 @@ function RangeActionModal(props: propsIF) {
                 fetch(
                     positionStatsCacheEndpoint +
                         new URLSearchParams({
-                            chainId: position.chainId,
-                            user: position.user,
-                            base: position.base,
-                            quote: position.quote,
+                            chainId: position.chainId.toLowerCase(),
+                            user: position.user.toLowerCase(),
+                            base: position.base.toLowerCase(),
+                            quote: position.quote.toLowerCase(),
                             poolIdx: position.poolIdx.toString(),
                             bidTick: position.bidTick
                                 ? position.bidTick.toString()

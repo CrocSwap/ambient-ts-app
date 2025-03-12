@@ -217,6 +217,22 @@
             "decimals": 18,
             "chainId": 10143,
             "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/weth.jpg/public"
+        },
+        {
+            "name": "ETH",
+            "address": "0x836047a99e11F376522B447bffb6e3495Dd0637c",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://static.optimism.io/data/ETH/logo.svg"
+        },
+        {
+            "name": "ShMonad",
+            "address": "0x3a98250f98dd388c211206983453837c8365bdc1",
+            "symbol": "shMON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://i.imghippo.com/files/Osf1224Egs.png"
         }
     ]
 }

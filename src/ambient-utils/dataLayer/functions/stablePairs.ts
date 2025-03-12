@@ -51,9 +51,11 @@ export function isPriorityEthEquivalent(addr: string): boolean {
     return PRIORITY_ETH_EQUIVALENT_TOKENS.includes(addr.toLowerCase());
 }
 
-export function isETHorStakedEthToken(addr: string): boolean {
+export function isETHorStakedEthToken(addr: string, chainId: string): boolean {
     return (
-        addr === ZERO_ADDRESS || STAKED_ETH_TOKENS.includes(addr.toLowerCase())
+        !chainId.includes('0x279f') &&
+        (ETH_TOKENS.includes(addr.toLowerCase()) ||
+            STAKED_ETH_TOKENS.includes(addr.toLowerCase()))
     );
 }
 
@@ -61,8 +63,15 @@ export function isWbtcOrStakedBTCToken(addr: string): boolean {
     return isWbtcToken(addr) || STAKED_BTC_TOKENS.includes(addr.toLowerCase());
 }
 
-export function isETHPair(addr1: string, addr2: string): boolean {
-    return isETHorStakedEthToken(addr1) && isETHorStakedEthToken(addr2);
+export function isETHPair(
+    addr1: string,
+    addr2: string,
+    chainId: string,
+): boolean {
+    return (
+        isETHorStakedEthToken(addr1, chainId) &&
+        isETHorStakedEthToken(addr2, chainId)
+    );
 }
 
 export function isBtcPair(addr1: string, addr2: string): boolean {
@@ -153,6 +162,21 @@ export const WBTC_TOKENS = [
     MONAD_TESTNET_TOKENS.WBTC,
 ].map((x) => x.address.toLowerCase());
 
+export const ETH_TOKENS = [
+    MAINNET_TOKENS.ETH,
+    SCROLL_TOKENS.ETH,
+    BLAST_TOKENS.ETH,
+    PLUME_TOKENS.ETH,
+    MONAD_TESTNET_TOKENS.ETH,
+    SWELL_TOKENS.ETH,
+    SEPOLIA_TOKENS.ETH,
+    SWELL_SEPOLIA_TOKENS.ETH,
+    PLUME_SEPOLIA_TOKENS.ETH,
+    SCROLL_SEPOLIA_TOKENS.ETH,
+    BLAST_SEPOLIA_TOKENS.ETH,
+    BASE_SEPOLIA_TOKENS.ETH,
+].map((x) => x.address.toLowerCase());
+
 export const STAKED_ETH_TOKENS = [
     MAINNET_TOKENS.swETH,
     MAINNET_TOKENS.rsETH,
@@ -179,11 +203,14 @@ export const STAKED_ETH_TOKENS = [
     SWELL_TOKENS.rsETH,
     SWELL_TOKENS.swETH,
     SWELL_TOKENS.rswETH,
+    MONAD_TESTNET_TOKENS.ETH,
+    MONAD_TESTNET_TOKENS.WETH,
 ].map((x) => x.address.toLowerCase());
 
 export const PRIORITY_ETH_EQUIVALENT_TOKENS = [
     PLUME_TOKENS.pETH,
     MONAD_TESTNET_TOKENS.WETH,
+    MONAD_TESTNET_TOKENS.ETH,
 ].map((x) => x.address.toLowerCase());
 
 export const USD_EXCLUDED_TOKENS = [

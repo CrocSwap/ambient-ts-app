@@ -9,7 +9,10 @@ import {
     useRef,
     useState,
 } from 'react';
-import { fetchPoolLiquidity } from '../../../../ambient-utils/api';
+import {
+    expandLiquidityData,
+    fetchPoolLiquidity,
+} from '../../../../ambient-utils/api';
 import {
     CandleDataIF,
     LiquidityRangeIF,
@@ -148,102 +151,118 @@ export default function TransactionDetailsLiquidityGraph(props: propsIF) {
             if (!crocEnv || !poolPriceDisplay) {
                 return;
             }
-
             await fetchPoolLiquidity(
                 chainId,
                 base,
-                baseDecimals,
+                // baseDecimals,
                 quote,
-                quoteDecimals,
+                // quoteDecimals,
                 poolIdx,
-                crocEnv,
+                // crocEnv,
                 activeNetwork.GCGO_URL,
-                cachedFetchTokenPrice,
-                cachedQuerySpotTick,
-                props.currentPoolPriceTick,
-            ).then((liqCurve) => {
-                if (liqCurve) {
-                    const liqAsk: LiquidityRangeIF[] = [];
-                    const liqBid: LiquidityRangeIF[] = [];
-                    liqCurve.ranges.forEach((element) => {
-                        const liqUpperPrices = isDenomBase
-                            ? element.lowerBoundPriceDecimalCorrected
-                            : element.upperBoundInvPriceDecimalCorrected;
+                // cachedFetchTokenPrice,
+                // cachedQuerySpotTick,
+                // props.currentPoolPriceTick,
+            )
+                .then((rawLiqCurve) => {
+                    if (!rawLiqCurve) return undefined;
+                    return expandLiquidityData(
+                        rawLiqCurve,
+                        base,
+                        baseDecimals,
+                        quote,
+                        quoteDecimals,
+                        poolIdx,
+                        chainId,
+                        crocEnv,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotTick,
+                        props.currentPoolPriceTick,
+                    );
+                })
+                .then((liqCurve) => {
+                    if (liqCurve) {
+                        const liqAsk: LiquidityRangeIF[] = [];
+                        const liqBid: LiquidityRangeIF[] = [];
+                        liqCurve.ranges.forEach((element) => {
+                            const liqUpperPrices = isDenomBase
+                                ? element.lowerBoundPriceDecimalCorrected
+                                : element.upperBoundInvPriceDecimalCorrected;
 
-                        const liqLowerPrices = isDenomBase
-                            ? element.upperBoundPriceDecimalCorrected
-                            : element.lowerBoundInvPriceDecimalCorrected;
+                            const liqLowerPrices = isDenomBase
+                                ? element.upperBoundPriceDecimalCorrected
+                                : element.lowerBoundInvPriceDecimalCorrected;
 
-                        if (
-                            Math.abs(liqUpperPrices) !== Infinity &&
-                            Math.abs(liqLowerPrices) !== Infinity
-                        ) {
-                            if (liqLowerPrices <= poolPriceDisplay) {
-                                liqAsk.push(element);
-                            } else {
-                                if (liqUpperPrices < poolPriceDisplay * 15)
-                                    liqBid.push(element);
+                            if (
+                                Math.abs(liqUpperPrices) !== Infinity &&
+                                Math.abs(liqLowerPrices) !== Infinity
+                            ) {
+                                if (liqLowerPrices <= poolPriceDisplay) {
+                                    liqAsk.push(element);
+                                } else {
+                                    if (liqUpperPrices < poolPriceDisplay * 15)
+                                        liqBid.push(element);
+                                }
                             }
-                        }
-                    });
+                        });
 
-                    liqBid.sort(
-                        (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
-                            getBidPriceValue(b, isDenomBase) -
-                            getBidPriceValue(a, isDenomBase),
-                    );
-
-                    liqAsk.sort(
-                        (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
-                            b.upperBoundInvPriceDecimalCorrected -
-                            a.upperBoundInvPriceDecimalCorrected,
-                    );
-
-                    if (liqBid.length > 1 && liqAsk.length > 1) {
-                        const extent = d3.extent(
-                            liqAsk,
-                            (d: LiquidityRangeIF) => {
-                                return isDenomBase
-                                    ? d.upperBoundPriceDecimalCorrected
-                                    : d.lowerBoundInvPriceDecimalCorrected;
-                            },
+                        liqBid.sort(
+                            (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
+                                getBidPriceValue(b, isDenomBase) -
+                                getBidPriceValue(a, isDenomBase),
                         );
 
-                        const maxAskData = extent[1];
-                        const maxAskObject = liqAsk.find(
-                            (d: LiquidityRangeIF) => {
-                                return (
-                                    (isDenomBase
+                        liqAsk.sort(
+                            (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
+                                b.upperBoundInvPriceDecimalCorrected -
+                                a.upperBoundInvPriceDecimalCorrected,
+                        );
+
+                        if (liqBid.length > 1 && liqAsk.length > 1) {
+                            const extent = d3.extent(
+                                liqAsk,
+                                (d: LiquidityRangeIF) => {
+                                    return isDenomBase
                                         ? d.upperBoundPriceDecimalCorrected
-                                        : d.lowerBoundInvPriceDecimalCorrected) ===
-                                    maxAskData
-                                );
-                            },
+                                        : d.lowerBoundInvPriceDecimalCorrected;
+                                },
+                            );
+
+                            const maxAskData = extent[1];
+                            const maxAskObject = liqAsk.find(
+                                (d: LiquidityRangeIF) => {
+                                    return (
+                                        (isDenomBase
+                                            ? d.upperBoundPriceDecimalCorrected
+                                            : d.lowerBoundInvPriceDecimalCorrected) ===
+                                        maxAskData
+                                    );
+                                },
+                            );
+
+                            if (maxAskObject)
+                                liqBid.push({
+                                    ...liqBid[0],
+                                    activeLiq: maxAskObject.activeLiq,
+                                    upperBoundInvPriceDecimalCorrected:
+                                        maxAskObject.lowerBoundInvPriceDecimalCorrected,
+                                    lowerBoundPriceDecimalCorrected:
+                                        maxAskObject.upperBoundPriceDecimalCorrected,
+                                });
+                        }
+
+                        liqBid.sort(
+                            (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
+                                getBidPriceValue(b, isDenomBase) -
+                                getBidPriceValue(a, isDenomBase),
                         );
 
-                        if (maxAskObject)
-                            liqBid.push({
-                                ...liqBid[0],
-                                activeLiq: maxAskObject.activeLiq,
-                                upperBoundInvPriceDecimalCorrected:
-                                    maxAskObject.lowerBoundInvPriceDecimalCorrected,
-                                lowerBoundPriceDecimalCorrected:
-                                    maxAskObject.upperBoundPriceDecimalCorrected,
-                            });
+                        setLiquidityData({
+                            liquidityDataAsk: liqAsk,
+                            liquidityDataBid: liqBid,
+                        });
                     }
-
-                    liqBid.sort(
-                        (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
-                            getBidPriceValue(b, isDenomBase) -
-                            getBidPriceValue(a, isDenomBase),
-                    );
-
-                    setLiquidityData({
-                        liquidityDataAsk: liqAsk,
-                        liquidityDataBid: liqBid,
-                    });
-                }
-            });
+                });
         })();
     }, [poolPriceDisplay]);
 
