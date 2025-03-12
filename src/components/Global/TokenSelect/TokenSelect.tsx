@@ -6,6 +6,7 @@ import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import styles from './TokenSelect.module.css';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 
 interface propsIF {
     token: TokenIF;
@@ -14,6 +15,8 @@ interface propsIF {
 }
 
 export default function TokenSelect(props: propsIF) {
+    const { isBottomSheetOpen, closeBottomSheet } = useBottomSheet();
+
     const { token, chooseToken, fromListsText } = props;
 
     const { isUserConnected } = useContext(UserDataContext);
@@ -54,7 +57,12 @@ export default function TokenSelect(props: propsIF) {
         <button
             id={`token_select_button_${token.address}`}
             className={styles.main_container}
-            onClick={() => chooseToken(token, false)}
+            onClick={() => {
+                chooseToken(token, false);
+                if (isBottomSheetOpen) {
+                    closeBottomSheet();
+                }
+            }}
             role='button'
             tabIndex={0}
             aria-label={`Select ${token.symbol}`}
