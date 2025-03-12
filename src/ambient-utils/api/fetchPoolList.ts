@@ -11,7 +11,7 @@ export async function fetchPoolList(
     return fetch(
         ENDPOINT +
             new URLSearchParams({
-                chainId: chainId,
+                chainId: chainId.toLowerCase(),
             }),
     )
         .then((response) => response.json())

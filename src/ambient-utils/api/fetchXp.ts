@@ -85,8 +85,8 @@ export const fetchUserXpData = async (args: argsIF) => {
     const userXpFetchData = fetch(
         userXpEndpoint +
             new URLSearchParams({
-                user: user,
-                chainId: chainId || '',
+                user: user.toLowerCase(),
+                chainId: (chainId || '').toLowerCase(),
             }),
     )
         .then((response) => response?.json())
@@ -134,7 +134,7 @@ export const fetchXpLeadersData = async (
         xpLeadersEndpoint +
             new URLSearchParams({
                 leaderboardType: leaderboardType,
-                chainId: chainId || '',
+                chainId: (chainId || '').toLowerCase(),
             }),
     )
         .then((response) => response?.json())

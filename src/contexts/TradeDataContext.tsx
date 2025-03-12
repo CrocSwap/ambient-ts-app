@@ -61,6 +61,8 @@ export interface TradeDataContextIF {
     setNoGoZoneBoundaries: Dispatch<SetStateAction<number[]>>;
     blackListedTimeParams: Map<string, Set<number>>;
     addToBlackList: (tokenPair: string, timeParam: number) => void;
+    activeTab: string;
+    setActiveTab: Dispatch<SetStateAction<string>>;
 }
 
 export const TradeDataContext = createContext({} as TradeDataContextIF);
@@ -84,8 +86,13 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     // Limit NoGoZone
     const [noGoZoneBoundaries, setNoGoZoneBoundaries] = useState([0, 0]);
 
+    const [activeTab, setActiveTab] = useState<string>(() => {
+        const savedTab = localStorage.getItem('activeTradeTabOnMobile');
+        return savedTab ? savedTab : 'Order';
+    });
+
     const tokensMatchingA =
-        savedTokenASymbol === 'ETH'
+        savedTokenASymbol === dfltTokenA.symbol
             ? [dfltTokenA]
             : tokens.getTokensByNameOrSymbol(
                   savedTokenASymbol || '',
@@ -93,7 +100,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
                   true,
               );
     const tokensMatchingB =
-        savedTokenBSymbol === 'ETH'
+        savedTokenBSymbol === dfltTokenA.symbol
             ? [dfltTokenA]
             : tokens.getTokensByNameOrSymbol(
                   savedTokenBSymbol || '',
@@ -247,7 +254,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     ) => {
         const isPoolStable =
             isStablePair(baseAddress, quoteAddress) ||
-            isETHPair(baseAddress, quoteAddress) ||
+            isETHPair(baseAddress, quoteAddress, chainId) ||
             isBtcPair(baseAddress, quoteAddress);
         const defaultWidth = isPoolStable ? 0.5 : 10;
 
@@ -309,6 +316,8 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         setNoGoZoneBoundaries,
         blackListedTimeParams,
         addToBlackList,
+        activeTab,
+        setActiveTab,
     };
 
     return (

@@ -4,7 +4,6 @@ import {
     useCallback,
     useContext,
     useMemo,
-    useState,
 } from 'react';
 import { LuSettings } from 'react-icons/lu';
 import { Outlet } from 'react-router-dom';
@@ -111,6 +110,8 @@ export default function TradeMobile(props: propsIF) {
         isDenomBase,
         limitTick,
         toggleDidUserFlipDenom,
+        activeTab,
+        setActiveTab,
     } = useContext(TradeDataContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const {
@@ -125,11 +126,6 @@ export default function TradeMobile(props: propsIF) {
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
     const { isBottomSheetOpen } = useBottomSheet();
 
-    // Tab management
-    const [activeTab, setActiveTab] = useState<string>(() => {
-        const savedTab = localStorage.getItem('activeTradeTabOnMobile');
-        return savedTab ? savedTab : 'Order';
-    });
     // const [direction, setDirection] = useState<number>(0);
     // const touchStartX = useRef<number | null>(null);
     // const touchEndX = useRef<number | null>(null);

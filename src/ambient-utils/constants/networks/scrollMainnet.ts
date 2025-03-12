@@ -8,7 +8,7 @@ import { GCGO_SCROLL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://scroll-rpc.publicnode.com',
+    PUBLIC: 'https://1rpc.io/scroll',
     SECONDARY_PUBLIC: 'https://rpc.scroll.io',
     RESTRICTED: import.meta.env.VITE_SCROLL_RPC_URL,
 };
@@ -103,6 +103,6 @@ export const scrollMainnet: NetworkIF = {
     vaultsEnabled: true,
     tempestApiNetworkName: 'scroll',
     topPools,
-    priorityPool: [SCROLL_TOKENS['USDQ'], SCROLL_TOKENS['USDC']],
+    // priorityPool: [SCROLL_TOKENS['USDQ'], SCROLL_TOKENS['USDC']],
     getGasPriceInGwei,
 };

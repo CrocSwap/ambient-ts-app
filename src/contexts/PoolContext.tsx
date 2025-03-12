@@ -159,7 +159,11 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
             baseToken.address,
             quoteToken.address,
         );
-        const isPairEthPair = isETHPair(baseToken.address, quoteToken.address);
+        const isPairEthPair = isETHPair(
+            baseToken.address,
+            quoteToken.address,
+            chainId,
+        );
         const isPoolBtcPair = isBtcPair(baseToken.address, quoteToken.address);
 
         const excludeFromUsdConversion =

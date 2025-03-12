@@ -10,7 +10,7 @@ export const fetchEnsAddress = async (address: string) => {
                     service: 'run',
                     config_path: 'ens_address',
                     include_data: '0',
-                    address,
+                    address: address.toLowerCase(),
                 }),
         );
         const result = await response.json();

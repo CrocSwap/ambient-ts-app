@@ -7,8 +7,8 @@ import { NetworkIF } from '../../types/NetworkIF';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-const PUBLIC_RPC_URL = 'https://testnet-rpc.monad.xyz';
-const SECONDARY_PUBLIC_RPC_URL = '';
+const PUBLIC_RPC_URL = 'https://testnet-rpc.monad.xyz/';
+const SECONDARY_PUBLIC_RPC_URL = 'https://testnet-rpc.monad.xyz/';
 
 const RESTRICTED_RPC_URL =
     import.meta.env.VITE_MONAD_TESTNET_RPC_URL !== undefined
@@ -42,6 +42,7 @@ const defaultTokenEntries = [
     ['WETH', '0xB5a30b0FDc5EA94A52fDc42e3E9760Cb8449Fb37'],
     ['USDT', '0x88b8E2161DEDC77EF4ab7585569D2415a1C1055D'],
     ['WBTC', '0xcf5a6076cfa32686c0Df13aBaDa2b40dec133F1d'],
+    ['ETH', '0x836047a99e11F376522B447bffb6e3495Dd0637c'],
 ] as const;
 
 // Infer the type of the keys and define the resulting type
