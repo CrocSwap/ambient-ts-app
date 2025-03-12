@@ -9,10 +9,6 @@ export default defineConfig({
     plugins: [
         react(),
         checker({
-            eslint: {
-                // for example, lint .ts and .tsx
-                lintCommand: 'eslint "./src/**/*.{ts,tsx}"',
-            },
             // e.g. use TypeScript check
             typescript: true,
         }),
@@ -38,6 +34,11 @@ export default defineConfig({
     define: {
         'import.meta.env': {},
         global: {},
+        'process.env': {}, // Prevents "process is not defined" errors
+        'process.env.NEXT_PUBLIC_SECURE_SITE_ORIGIN': JSON.stringify(
+            process.env.NEXT_PUBLIC_SECURE_SITE_ORIGIN ||
+                'https://secure.walletconnect.org',
+        ),
     },
     server: {
         port: 3000,
