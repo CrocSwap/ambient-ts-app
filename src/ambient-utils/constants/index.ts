@@ -52,12 +52,13 @@ export const L1_GAS_CALC_ENABLED =
         ? import.meta.env.VITE_L1_GAS_CALC_ENABLED.toLowerCase() === 'true'
         : false;
 
-export const VIEW_ONLY =
-    (import.meta.env.VITE_VIEW_ONLY !== undefined
-        ? import.meta.env.VITE_VIEW_ONLY.toLowerCase() === 'true'
-        : false) ||
-    window.location.hostname.startsWith('us.') ||
-    window.location.hostname.split('.')[0].endsWith('-us');
+export const VIEW_ONLY = false;
+// export const VIEW_ONLY =
+//     (import.meta.env.VITE_VIEW_ONLY !== undefined
+//         ? import.meta.env.VITE_VIEW_ONLY.toLowerCase() === 'true'
+//         : false) ||
+//     window.location.hostname.startsWith('us.') ||
+//     window.location.hostname.split('.')[0].endsWith('-us');
 
 export const DISABLE_WORKAROUNDS =
     import.meta.env.VITE_DISABLE_WORKAROUNDS !== undefined
