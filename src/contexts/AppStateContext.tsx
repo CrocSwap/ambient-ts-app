@@ -1,4 +1,4 @@
-import { useWeb3Modal } from '@web3modal/ethers/react';
+import { useAppKit } from '@reown/appkit/react';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { useIdleTimer } from 'react-idle-timer';
 import {
@@ -133,7 +133,7 @@ export const AppStateContextProvider = (props: {
         useModal();
 
     const [_, hasAgreedTerms] = useTermsAgreed();
-    const { open: openW3Modal } = useWeb3Modal();
+    const { open: openW3Modal } = useAppKit();
 
     const onIdle = () => {
         setIsUserIdle(true);

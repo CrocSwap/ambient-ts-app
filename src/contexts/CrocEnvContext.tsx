@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useAppKitProvider } from '@reown/appkit/react';
 import { ethers } from 'ethers';
 import {
     ReactNode,
@@ -104,7 +104,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         : fallbackRpcUrl;
 
     const { userAddress } = useContext(UserDataContext);
-    const { walletProvider } = useWeb3ModalProvider();
+    const { walletProvider } = useAppKitProvider('eip155');
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
     const { tokens } = useContext(TokenContext);
 
@@ -234,7 +234,9 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             if (!isUserOnline) return;
             let signer = undefined;
             if (walletProvider) {
-                const w3provider = new ethers.BrowserProvider(walletProvider);
+                const w3provider = new ethers.BrowserProvider(
+                    walletProvider as ethers.Eip1193Provider,
+                );
                 signer = await w3provider.getSigner();
             }
             if (!provider && !signer) {
