@@ -334,7 +334,9 @@ function InfiniteScroll(props: propsIF) {
 
         const newTxData: LimitOrderIF[] | PositionIF[] | TransactionIF[] = [];
 
-        let oldestTimeParam = getOldestTime(fetchedTransactions);
+        let oldestTimeParam = getOldestTime(
+            fetchedTransactionsRef.current || fetchedTransactions,
+        );
 
         // ------------------- FETCH DATA WITH LOOP -------------------
         while (addedDataCount < targetCount) {
