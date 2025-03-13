@@ -53,9 +53,11 @@ export function isPriorityEthEquivalent(addr: string): boolean {
 
 export function isETHorStakedEthToken(addr: string, chainId: string): boolean {
     return (
-        !chainId.includes('0x279f') &&
-        (ETH_TOKENS.includes(addr.toLowerCase()) ||
-            STAKED_ETH_TOKENS.includes(addr.toLowerCase()))
+        ETH_TOKENS.some(
+            ({ address, chainId: chainIdNum }) =>
+                address.toLowerCase() === address.toLowerCase() &&
+                chainIdNum === parseInt(chainId),
+        ) || STAKED_ETH_TOKENS.includes(addr.toLowerCase())
     );
 }
 
@@ -175,7 +177,7 @@ export const ETH_TOKENS = [
     SCROLL_SEPOLIA_TOKENS.ETH,
     BLAST_SEPOLIA_TOKENS.ETH,
     BASE_SEPOLIA_TOKENS.ETH,
-].map((x) => x.address.toLowerCase());
+];
 
 export const STAKED_ETH_TOKENS = [
     MAINNET_TOKENS.swETH,
