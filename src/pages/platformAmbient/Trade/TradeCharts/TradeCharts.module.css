@@ -39,14 +39,12 @@
     text-justify: auto;
     outline: none;
     position: relative;
-text-transform: uppercase;
+    text-transform: uppercase;
     align-items: center;
     justify-content: center;
 
     border: none;
 
-    width: 49px;
-    height: 25px;
     padding: 4px 16px 4px 16px;
 }
 
@@ -80,14 +78,10 @@ text-transform: uppercase;
 }
 
 .futa_active_selected_button {
-    color: var(--accent1);
-    border: 1px solid var(--accent1);
-}
-
-.active_selected_button {
     width: 100%;
     height: 100%;
-    color: var(--text1);
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
 }
 
 .futa_non_active_selected_button {
