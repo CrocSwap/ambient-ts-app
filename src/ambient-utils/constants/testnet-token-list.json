@@ -233,6 +233,54 @@
             "decimals": 18,
             "chainId": 10143,
             "logoURI": "https://i.imghippo.com/files/Osf1224Egs.png"
+        },
+        {
+            "name": "Molandak",
+            "address": "0x0f0bdebf0f83cd1ee3974779bcb7315f9808c714",
+            "symbol": "DAK",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/tWwhAahBw7afBzFUrX5mYQ/27759359-9374-4995-341c-b2636a432800/public"
+        },
+        {
+            "name": "Wrapped Monad",
+            "address": "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701",
+            "symbol": "shMON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/I_t8rg_V_400x400.jpg/public"
+        },
+        {
+            "name": "Moyaki",
+            "address": "0xfe140e1dCe99Be9F4F15d657CD9b7BF622270C50",
+            "symbol": "YAKI",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/tWwhAahBw7afBzFUrX5mYQ/6679b698-a845-412b-504b-23463a3e1900/public"
+        },
+        {
+            "name": "Chog",
+            "address": "0xE0590015A873bF326bd645c3E1266d4db41C4E6B",
+            "symbol": "CHOG",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/tWwhAahBw7afBzFUrX5mYQ/5d1206c2-042c-4edc-9f8b-dcef2e9e8f00/public"
+        },
+        {
+            "name": "Mama BTC",
+            "address": "0x3B428Df09c3508D884C30266Ac1577f099313CF6",
+            "symbol": "mamaBTC",
+            "decimals": 8,
+            "chainId": 10143,
+            "logoURI": "https://dark-purple-cephalopod.myfilebase.com/ipfs/QmQyRz36GsDdaQTXCT717PEyQmZBNqKDMhR2YoNQ2DkgaZ"
+        },
+        {
+            "name": "Wormhole Wrapped ETH",
+            "address": "0xA296f47E8Ff895Ed7A092b4a9498bb13C46ac768",
+            "symbol": "wWETH",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://assets.coingecko.com/coins/images/22990/standard/ETH_wh_small.png"
         }
     ]
 }

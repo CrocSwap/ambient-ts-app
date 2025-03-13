@@ -39,9 +39,9 @@ const metadata = {
         'Swap cryptocurrencies like a pro with Ambient. Decentralized trading is now better than ever',
     url: 'https://ambient.finance', // origin must match your domain & subdomain
     icons: [
-        'https://ambient.finance/apple-touch-icon.png',
-        'https://ambient.finance/favicon-32x32.png',
-        'https://ambient.finance/favicon-16x16.png',
+        'https://ambient.finance/icons/ambient_icon_x180.png',
+        'https://ambient.finance/icons/ambient_icon_transparent_x16.png',
+        'https://ambient.finance/icons/ambient_icon_transparent_x32.png',
     ],
 };
 
