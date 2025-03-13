@@ -280,23 +280,7 @@
             "symbol": "wWETH",
             "decimals": 18,
             "chainId": 10143,
-            "logoURI": ""
-        },
-        {
-            "name": "ShMonad",
-            "address": "0x3a98250f98dd388c211206983453837c8365bdc1",
-            "symbol": "shMON",
-            "decimals": 18,
-            "chainId": 10143,
-            "logoURI": "https://i.imghippo.com/files/Osf1224Egs.png"
-        },
-        {
-            "name": "ShMonad",
-            "address": "0x3a98250f98dd388c211206983453837c8365bdc1",
-            "symbol": "shMON",
-            "decimals": 18,
-            "chainId": 10143,
-            "logoURI": "https://i.imghippo.com/files/Osf1224Egs.png"
+            "logoURI": "https://assets.coingecko.com/coins/images/22990/standard/ETH_wh_small.png"
         }
     ]
 }
