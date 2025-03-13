@@ -8,7 +8,7 @@ import testnetTokenList from '../testnet-token-list.json';
 import { TopPool } from './TopPool';
 
 const PUBLIC_RPC_URL = 'https://sepolia.base.org';
-const SECONDARY_PUBLIC_RPC_URL = 'https://base-sepolia-rpc.publicnode.com';
+const SECONDARY_PUBLIC_RPC_URL = 'https://base-sepolia.drpc.org';
 
 const RESTRICTED_RPC_URL =
     import.meta.env.VITE_BASE_SEPOLIA_RPC_URL !== undefined
