@@ -55,7 +55,7 @@ export function isETHorStakedEthToken(addr: string, chainId: string): boolean {
     return (
         ETH_TOKENS.some(
             ({ address, chainId: chainIdNum }) =>
-                address.toLowerCase() === address.toLowerCase() &&
+                address.toLowerCase() === addr.toLowerCase() &&
                 chainIdNum === parseInt(chainId),
         ) || STAKED_ETH_TOKENS.includes(addr.toLowerCase())
     );
