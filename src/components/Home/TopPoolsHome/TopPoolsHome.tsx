@@ -127,9 +127,10 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
     const skeletonDisplay = tempItems.map((item, idx) => (
         <TopPoolSkeleton key={idx} />
     ));
+    const isHeightSmall = useMediaQuery('(max-height: 800px)');
 
     return (
-        <TopPoolContainer flexDirection='column' gap={16}>
+        <TopPoolContainer flexDirection='column' gap={isHeightSmall ? 8 : 16}>
             <HomeTitle tabIndex={0} aria-label='Top Pools'>
                 Top Pools
             </HomeTitle>
