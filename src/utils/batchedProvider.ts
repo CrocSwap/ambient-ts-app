@@ -91,6 +91,7 @@ type ResolveFunc = (result: JsonRpcResult) => void;
 type RejectFunc = (error: Error) => void;
 type Payload = {
     payload: JsonRpcPayload;
+    ttlMsec: number;
     resolve: ResolveFunc;
     reject: RejectFunc;
 };
@@ -112,6 +113,12 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         batchStallTimeMs: number;
     };
     cachedCalls: Map<string, CachedResponse>;
+    cacheOptions: {
+        ethCallTtlMsec: number;
+        otherCallTtlMsec: number;
+        foreverMethods: string[];
+        foreverContractMethods: string[];
+    };
     constructor(url: string, network?: number, options?: any) {
         super(url, network, options);
         this.multicall = new Multicall(this);
@@ -124,16 +131,34 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
             batchStallTimeMs: 50,
         };
         this.cachedCalls = new Map();
+        this.cacheOptions = {
+            ethCallTtlMsec: 3000,
+            otherCallTtlMsec: 3000,
+            foreverMethods: ['eth_chainId', 'eth_accounts'],
+            foreverContractMethods: [
+                '0x313ce567',
+                '0x06fdde03',
+                '0x95d89b41',
+                '0x18160ddd',
+            ], // ERC20 methods: decimals, name, symbol, totalSupply
+        };
     }
 
     async send(method: string, params: any[]): Promise<any> {
         if (!this.multicall.initialized) {
             this.multicall.initialize();
         }
-        if (method == 'eth_chainId' || method == 'eth_accounts') {
-            return this.sendCached(method, params);
-        } else if (method != 'eth_call' || !this.multicall.ready) {
-            return super.send(method, params);
+        if (
+            method == 'eth_chainId' ||
+            method == 'eth_accounts' ||
+            method != 'eth_call' ||
+            !this.multicall.ready
+        ) {
+            return this.sendCached(
+                method,
+                params,
+                this.pickTTL(method, params),
+            );
         } else {
             const callParams = params as EthCallWithBlockTag;
             if (
@@ -142,12 +167,20 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
             ) {
                 return super.send(method, params);
             }
-            return this.scheduleForBatch(callParams);
+            return this.scheduleForBatch(
+                callParams,
+                this.pickTTL(method, params),
+            );
         }
     }
 
-    scheduleForBatch(call: EthCallWithBlockTag): Promise<any> {
+    scheduleForBatch(call: EthCallWithBlockTag, ttlMsec: number): Promise<any> {
         return new Promise((resolve, reject) => {
+            const cached = this.getFromCache('eth_call', call);
+            if (cached) {
+                resolve(cached);
+                return;
+            }
             const payload: JsonRpcPayload = {
                 id: this.nextId++,
                 method: 'eth_call',
@@ -156,12 +189,21 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
             };
             this.payloads.push({
                 payload,
+                ttlMsec,
                 resolve,
                 reject: (_) => {
                     // attempt to call directly if multicall fails
                     super
                         .send(payload.method, payload.params)
-                        .then(resolve)
+                        .then((result) => {
+                            this.saveInCache(
+                                payload.method,
+                                payload.params,
+                                result,
+                                ttlMsec,
+                            );
+                            resolve(result);
+                        })
                         .catch(reject);
                 },
             });
@@ -169,19 +211,57 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         });
     }
 
-    async sendCached(method: string, params: any[]): Promise<any> {
+    async sendCached(
+        method: string,
+        params: any[],
+        ttlMsec: number,
+    ): Promise<any> {
+        const cachedResponse = this.getFromCache(method, params);
+        if (cachedResponse) return cachedResponse;
+        const response = await super.send(method, params);
+        this.saveInCache(method, params, response, ttlMsec);
+        return response;
+    }
+
+    getFromCache(method: string, params: any[]): any | undefined {
         const cacheKey = JSON.stringify({ method, params });
         const cachedResponse = this.cachedCalls.get(cacheKey);
         if (cachedResponse && cachedResponse.validUntil > new Date()) {
             return cachedResponse.response;
         }
-        const response = super.send(method, params);
-        // I don't think there's a reason to not cache these forever, but it might break some obscure use case.
+        return undefined;
+    }
+
+    saveInCache(
+        method: string,
+        params: any[],
+        response: any,
+        ttlMsec: number,
+    ): void {
+        if (ttlMsec === 0) {
+            return;
+        }
+        const cacheKey = JSON.stringify({ method, params });
         this.cachedCalls.set(cacheKey, {
             response,
-            validUntil: new Date(Date.now() + 9999999999),
+            validUntil: new Date(Date.now() + ttlMsec),
         });
-        return response;
+    }
+
+    pickTTL(method: string, params: any[]): number {
+        if (this.cacheOptions.foreverMethods.includes(method)) {
+            return 999999999;
+        } else if (method == 'eth_call') {
+            if (
+                this.cacheOptions.foreverContractMethods.some((m) =>
+                    params[0].data.startsWith(m),
+                )
+            )
+                return 999999999;
+            else return this.cacheOptions.ethCallTtlMsec;
+        } else {
+            return this.cacheOptions.otherCallTtlMsec;
+        }
     }
 
     scheduleDrain() {
@@ -219,7 +299,15 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                                 batch[0].payload.method,
                                 batch[0].payload.params,
                             )
-                            .then(batch[0].resolve)
+                            .then((result) => {
+                                this.saveInCache(
+                                    batch[0].payload.method,
+                                    batch[0].payload.params,
+                                    result,
+                                    batch[0].ttlMsec,
+                                );
+                                batch[0].resolve(result);
+                            })
                             .catch(batch[0].reject);
                         return;
                     }
@@ -229,7 +317,12 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                     try {
                         const results =
                             await this.multicall.sendMulticall(payload);
-                        for (const { resolve, reject, payload } of batch) {
+                        for (const {
+                            resolve,
+                            reject,
+                            payload,
+                            ttlMsec,
+                        } of batch) {
                             const resp = results.filter(
                                 (r: any) => r.id === payload.id,
                             )[0];
@@ -251,6 +344,12 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                                 continue;
                             }
 
+                            this.saveInCache(
+                                payload.method,
+                                payload.params,
+                                resp.result,
+                                ttlMsec,
+                            );
                             resolve(resp.result);
                         }
                     } catch (error) {
