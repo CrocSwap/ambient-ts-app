@@ -305,6 +305,8 @@ const useFetchPoolStats = (
         nativeTokenUsdPrice === undefined,
     ]);
 
+    const [prevPoolPrice, setPrevPoolPrice] = useState<number | undefined>();
+
     const fetchPoolStats = async () => {
         if (
             activeTradePoolStats &&
@@ -316,6 +318,20 @@ const useFetchPoolStats = (
                 (localPoolPriceNonDisplay !== undefined &&
                     localPoolPriceNonDisplay[0] === pool.base + pool.quote))
         ) {
+            const lastPriceSwap = activeTradePoolStats?.lastPriceSwap;
+
+            if (prevPoolPrice && lastPriceSwap) {
+                const priceChange = Math.abs(
+                    (lastPriceSwap - prevPoolPrice) / prevPoolPrice,
+                );
+                if (priceChange < 0.0002) {
+                    // Price change < 0.02%, skipping fetch
+                    return;
+                }
+            }
+
+            setPrevPoolPrice(lastPriceSwap);
+
             const expandedPoolStats = await expandPoolStats(
                 activeTradePoolStats,
                 crocEnv,

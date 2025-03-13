@@ -76,9 +76,14 @@ export default function Stats() {
             </HomeContent>
         </Fade>
     );
+    const isHeightSmall = useMediaQuery('(max-height: 800px)');
 
     return (
-        <StatContainer flexDirection='column' gap={16} padding='16px 0'>
+        <StatContainer
+            flexDirection='column'
+            gap={isHeightSmall ? 8 : 16}
+            padding={isHeightSmall ? '0' : '16px 0'}
+        >
             {showMobileVersion ? (
                 mobileWrapper
             ) : (
