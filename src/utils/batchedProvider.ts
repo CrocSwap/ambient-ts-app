@@ -118,6 +118,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         otherCallTtlMsec: number;
         foreverMethods: string[];
         foreverContractMethods: string[];
+        excludeContractMethods: string[];
     };
     constructor(url: string, network?: number, options?: any) {
         super(url, network, options);
@@ -141,6 +142,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                 '0x95d89b41',
                 '0x18160ddd',
             ], // ERC20 methods: decimals, name, symbol, totalSupply
+            excludeContractMethods: ['0x4a6c44bf'], // calcImpact
         };
     }
 
@@ -253,6 +255,12 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
             return 999999999;
         } else if (method == 'eth_call') {
             if (
+                this.cacheOptions.excludeContractMethods.some((m) =>
+                    params[0].data.startsWith(m),
+                )
+            ) {
+                return 0;
+            } else if (
                 this.cacheOptions.foreverContractMethods.some((m) =>
                     params[0].data.startsWith(m),
                 )
