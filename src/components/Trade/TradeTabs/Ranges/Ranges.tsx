@@ -181,11 +181,11 @@ function Ranges(props: propsIF) {
         fetch(
             userPoolPositionsCacheEndpoint +
                 new URLSearchParams({
-                    user: userAddress,
+                    user: userAddress.toLowerCase(),
                     base: baseToken.address.toLowerCase(),
                     quote: quoteToken.address.toLowerCase(),
                     poolIdx: poolIndex.toString(),
-                    chainId: chainId,
+                    chainId: chainId.toLowerCase(),
                 }),
         )
             .then((response) => response.json())
@@ -508,8 +508,15 @@ function Ranges(props: propsIF) {
         () =>
             !isLoading &&
             !mergedData.length &&
-            pendingRecentlyUpdatedPositions.length === 0,
-        [isLoading, mergedData.length, pendingRecentlyUpdatedPositions.length],
+            pendingRecentlyUpdatedPositions.length === 0 &&
+            !(isAccountView && activeAccountPositionData?.length),
+        [
+            isLoading,
+            mergedData.length,
+            pendingRecentlyUpdatedPositions.length,
+            activeAccountPositionData?.length,
+            isAccountView,
+        ],
     );
 
     const sortedPositionsToDisplayAccount = useMemo(() => {
@@ -518,7 +525,7 @@ function Ranges(props: propsIF) {
                 (isAccountView && !hideEmptyPositionsOnAccount) ||
                 pos.positionLiq !== 0,
         );
-    }, [mergedData]);
+    }, [mergedData, hideEmptyPositionsOnAccount]);
 
     const handleKeyDownViewRanges = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,

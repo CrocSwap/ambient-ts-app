@@ -53,6 +53,7 @@ interface DragCanvasProps {
     setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setContextMenuPlacement: any;
+    setIsShowFloatingToolbar: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -82,9 +83,13 @@ export default function DragCanvas(props: DragCanvasProps) {
         period,
         setContextmenu,
         setContextMenuPlacement,
+        setIsShowFloatingToolbar,
     } = props;
 
-    const mobileView = useMediaQuery('(max-width: 600px)');
+    const mobileView = useMediaQuery('(max-width: 768px)');
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
 
     useEffect(() => {
         if (scaleData !== undefined && !isChartZoom) {
@@ -259,6 +264,9 @@ export default function DragCanvas(props: DragCanvasProps) {
             isSnapped =
                 snap0.valueX !== hoveredDrawnShape?.data?.data[0].x &&
                 snap1.valueX !== hoveredDrawnShape?.data?.data[1].x;
+            isSnapped =
+                snap0.valueX !== hoveredDrawnShape?.data?.data[0].x &&
+                snap1.valueX !== hoveredDrawnShape?.data?.data[1].x;
 
             const lastData = [
                 {
@@ -273,6 +281,8 @@ export default function DragCanvas(props: DragCanvasProps) {
                 },
             ];
 
+            drawnShapeHistory[index].data = lastData;
+            hoveredDrawnShape.data.data = lastData;
             drawnShapeHistory[index].data = lastData;
             hoveredDrawnShape.data.data = lastData;
 
@@ -423,19 +433,24 @@ export default function DragCanvas(props: DragCanvasProps) {
             'contextmenu',
             (event: PointerEvent) => {
                 if (!event.shiftKey) {
-                    event.preventDefault();
+                    if (tabletView) {
+                        event.preventDefault();
 
-                    const screenHeight = window.innerHeight;
+                        const screenHeight = window.innerHeight;
 
-                    const diff = screenHeight - event.clientY;
+                        const diff = screenHeight - event.clientY;
 
-                    setContextMenuPlacement({
-                        top: event.clientY,
-                        left: event.clientX,
-                        isReversed: diff < 350,
-                    });
+                        setContextMenuPlacement({
+                            top: event.clientY,
+                            left: event.clientX,
+                            isReversed: diff < 350,
+                        });
 
-                    setContextmenu(true);
+                        setContextmenu(true);
+                    } else {
+                        setSelectedDrawnShape(undefined);
+                        setIsShowFloatingToolbar(false);
+                    }
                 } else {
                     setContextmenu(false);
                 }
@@ -578,6 +593,7 @@ export default function DragCanvas(props: DragCanvasProps) {
 
                             movementX =
                                 stackedMovementX + event.sourceEvent.movementX;
+                            movementY = event.sourceEvent.movementY;
                             movementY = event.sourceEvent.movementY;
                         }
 

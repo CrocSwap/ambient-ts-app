@@ -89,8 +89,8 @@ export const fetchTokenPrice = async (
         }
         if (chain === '0x279f' && address === ZeroAddress) {
             return {
-                usdPrice: 12.69,
-                usdPriceFormatted: 12.69,
+                usdPrice: 18.5,
+                usdPriceFormatted: 18.5,
             };
         }
         return undefined;

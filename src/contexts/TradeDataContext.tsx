@@ -61,6 +61,8 @@ export interface TradeDataContextIF {
     setNoGoZoneBoundaries: Dispatch<SetStateAction<number[]>>;
     blackListedTimeParams: Map<string, Set<number>>;
     addToBlackList: (tokenPair: string, timeParam: number) => void;
+    activeTab: string;
+    setActiveTab: Dispatch<SetStateAction<string>>;
 }
 
 export const TradeDataContext = createContext({} as TradeDataContextIF);
@@ -83,6 +85,11 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
 
     // Limit NoGoZone
     const [noGoZoneBoundaries, setNoGoZoneBoundaries] = useState([0, 0]);
+
+    const [activeTab, setActiveTab] = useState<string>(() => {
+        const savedTab = localStorage.getItem('activeTradeTabOnMobile');
+        return savedTab ? savedTab : 'Order';
+    });
 
     const tokensMatchingA =
         savedTokenASymbol === dfltTokenA.symbol
@@ -309,6 +316,8 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         setNoGoZoneBoundaries,
         blackListedTimeParams,
         addToBlackList,
+        activeTab,
+        setActiveTab,
     };
 
     return (

@@ -373,13 +373,13 @@ function RangeDetailsModal(props: propsIF) {
             fetch(
                 positionStatsCacheEndpoint +
                     new URLSearchParams({
-                        user: user,
+                        user: user.toLowerCase(),
                         bidTick: bidTick.toString(),
                         askTick: askTick.toString(),
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
+                        base: baseTokenAddress.toLowerCase(),
+                        quote: quoteTokenAddress.toLowerCase(),
                         poolIdx: poolIndex.toString(),
-                        chainId: chainId,
+                        chainId: chainId.toLowerCase(),
                         positionType: position.positionType,
                     }),
             )

@@ -65,6 +65,7 @@ interface propsIF {
     setShowLatest: Dispatch<SetStateAction<boolean>>;
     updateURL: (changes: updatesIF) => void;
     openMobileSettingsModal: () => void;
+    isMobileSettingsModalOpen: boolean;
 }
 
 function TradeCandleStickChart(props: propsIF) {
@@ -335,7 +336,167 @@ function TradeCandleStickChart(props: propsIF) {
           }, 0)
         : 0;
 
-    // Parse liquidity data
+    /**
+     * Reduces the number of data points while preserving sum values
+     * @param data Original liquidity data array
+     * @param targetPoints Target number of points after reduction
+     * @param currentPrice Current pool price for prioritizing points
+     * @returns Reduced data array with preserved sums
+     */
+    const reduceDataPoints = (
+        data: LiquidityDataLocal[],
+        targetPoints: number,
+        currentPrice: number,
+    ): LiquidityDataLocal[] => {
+        // Early return if no reduction needed
+        if (!data || data.length <= targetPoints) return data;
+
+        // Clone and sort data by price (if not already sorted)
+        const sortedData = [...data].sort((a, b) => b.liqPrices - a.liqPrices);
+
+        // Track these critical points
+        // const firstPoint = sortedData[0];
+        // const lastPoint = sortedData[sortedData.length - 1];
+
+        // Find the price transition point
+        const priceIndex = sortedData.findIndex(
+            (d) => d.liqPrices <= currentPrice,
+        );
+        // const pricePoint = priceIndex !== -1 ? sortedData[priceIndex] : null;
+
+        // Calculate original sum values
+        const originalSums = {
+            deltaAverageUSD: sortedData.reduce(
+                (sum, p) => sum + (p.deltaAverageUSD || 0),
+                0,
+            ),
+            activeLiq: sortedData.reduce((sum, p) => sum + p.activeLiq, 0),
+        };
+
+        // Special case: Keep more points near the current price
+        let nearPriceRange = Math.floor(sortedData.length * 0.2); // 20% of points near price
+        nearPriceRange = Math.min(nearPriceRange, 100); // Cap at 100 points
+
+        const nearPriceStart = Math.max(
+            0,
+            priceIndex - Math.floor(nearPriceRange / 2),
+        );
+        const nearPriceEnd = Math.min(
+            sortedData.length,
+            nearPriceStart + nearPriceRange,
+        );
+
+        // Points to always keep (critical points)
+        const keepIndices = new Set<number>();
+        keepIndices.add(0); // First point
+        keepIndices.add(sortedData.length - 1); // Last point
+        if (priceIndex !== -1) keepIndices.add(priceIndex); // Price point
+
+        // Add indices for near-price range (higher sampling rate)
+        for (let i = nearPriceStart; i < nearPriceEnd; i++) {
+            if (keepIndices.size < targetPoints && i % 3 === 0) {
+                // Keep every 3rd point near price
+                keepIndices.add(i);
+            }
+        }
+
+        // Add remaining points with regular sampling
+        const remainingPoints = targetPoints - keepIndices.size;
+        if (remainingPoints > 0) {
+            // Exclude near-price range from regular sampling
+            const remainingIndices = [];
+            for (let i = 0; i < sortedData.length; i++) {
+                if (
+                    !keepIndices.has(i) &&
+                    (i < nearPriceStart || i >= nearPriceEnd)
+                ) {
+                    remainingIndices.push(i);
+                }
+            }
+
+            // Sample regularly from remaining points
+            const step = remainingIndices.length / remainingPoints;
+            for (
+                let i = 0;
+                i < remainingPoints && i * step < remainingIndices.length;
+                i++
+            ) {
+                const index = remainingIndices[Math.floor(i * step)];
+                keepIndices.add(index);
+            }
+        }
+
+        // Create the reduced dataset from kept indices
+        const keptIndices = Array.from(keepIndices).sort((a, b) => a - b);
+        const reducedData: LiquidityDataLocal[] = keptIndices.map(
+            (i) => sortedData[i],
+        );
+
+        // Now distribute the values from removed points to preserved points
+        // For each segment between kept points, distribute values
+        for (let i = 0; i < keptIndices.length - 1; i++) {
+            const startIdx = keptIndices[i];
+            const endIdx = keptIndices[i + 1];
+
+            // Skip adjacent indices
+            if (endIdx - startIdx <= 1) continue;
+
+            // Calculate sum of removed points in this segment
+            let segmentDeltaUSD = 0;
+
+            for (let j = startIdx + 1; j < endIdx; j++) {
+                segmentDeltaUSD += sortedData[j].deltaAverageUSD || 0;
+            }
+
+            // Add the sum to the end point of the segment
+            // This preserves the cumulative sum at each remaining point
+            reducedData[i + 1].deltaAverageUSD =
+                (reducedData[i + 1].deltaAverageUSD || 0) + segmentDeltaUSD;
+        }
+
+        // Verify our sums match
+        const reducedSums = {
+            deltaAverageUSD: reducedData.reduce(
+                (sum, p) => sum + (p.deltaAverageUSD || 0),
+                0,
+            ),
+            activeLiq: reducedData.reduce((sum, p) => sum + p.activeLiq, 0),
+        };
+
+        // Make final adjustments to ensure sums match exactly
+        if (
+            Math.abs(
+                reducedSums.deltaAverageUSD - originalSums.deltaAverageUSD,
+            ) > 0.001
+        ) {
+            // Adjust the last point to make up any difference
+            const diff =
+                originalSums.deltaAverageUSD - reducedSums.deltaAverageUSD;
+            const lastReducedPoint = reducedData[reducedData.length - 1];
+            lastReducedPoint.deltaAverageUSD =
+                (lastReducedPoint.deltaAverageUSD || 0) + diff;
+        }
+
+        // Update cumAverageUSD values to be consistent
+        // This recalculates the running sum through the reduced dataset
+        let runningSum = 0;
+        for (let i = 0; i < reducedData.length; i++) {
+            runningSum += reducedData[i].deltaAverageUSD || 0;
+            reducedData[i].cumAverageUSD = runningSum;
+        }
+
+        // // Log verification
+        // console.log(
+        //     `Liquidity reduction - Points: ${data.length} → ${reducedData.length}`,
+        // );
+        // console.log(
+        //     `Delta USD sum - Original: ${originalSums.deltaAverageUSD.toFixed(2)}, Reduced: ${reducedSums.deltaAverageUSD.toFixed(2)}`,
+        // );
+
+        // Final sort and return
+        return reducedData.sort((a, b) => b.liqPrices - a.liqPrices);
+    };
+
     const liquidityData: liquidityChartData | undefined = useMemo(() => {
         if (
             poolPriceDisplay &&
@@ -679,6 +840,61 @@ function TradeCandleStickChart(props: propsIF) {
             depthLiqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
             depthLiqAskData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
 
+            if (liqAskData.length > 1 && liqBidData.length > 1) {
+                // // Get current data sizes for logging
+                // const originalSizes = {
+                //     liqAsk: liqAskData.length,
+                //     liqBid: liqBidData.length,
+                //     depthLiqBid: depthLiqBidData.length,
+                //     depthLiqAsk: depthLiqAskData.length
+                // };
+
+                const targetPoints = 1000;
+
+                // Reduce each dataset
+                const reducedLiqAskData = reduceDataPoints(
+                    liqAskData,
+                    targetPoints,
+                    poolPriceDisplay,
+                );
+                const reducedLiqBidData = reduceDataPoints(
+                    liqBidData,
+                    targetPoints,
+                    poolPriceDisplay,
+                );
+                const reducedDepthLiqBidData = reduceDataPoints(
+                    depthLiqBidData,
+                    targetPoints,
+                    poolPriceDisplay,
+                );
+                const reducedDepthLiqAskData = reduceDataPoints(
+                    depthLiqAskData,
+                    targetPoints,
+                    poolPriceDisplay,
+                );
+
+                // // Log the reduction percentages
+                // console.log(`Data reduction:
+                //     liqAsk: ${originalSizes.liqAsk} → ${reducedLiqAskData.length} (${((reducedLiqAskData.length / originalSizes.liqAsk) * 100).toFixed(1)}%)
+                //     liqBid: ${originalSizes.liqBid} → ${reducedLiqBidData.length} (${((reducedLiqBidData.length / originalSizes.liqBid) * 100).toFixed(1)}%)
+                //     depthLiqBid: ${originalSizes.depthLiqBid} → ${reducedDepthLiqBidData.length} (${((reducedDepthLiqBidData.length / originalSizes.depthLiqBid) * 100).toFixed(1)}%)
+                //     depthLiqAsk: ${originalSizes.depthLiqAsk} → ${reducedDepthLiqAskData.length} (${((reducedDepthLiqAskData.length / originalSizes.depthLiqAsk) * 100).toFixed(1)}%)
+                // `);
+
+                // Return the object with reduced data arrays
+                return {
+                    liqAskData: reducedLiqAskData,
+                    liqBidData: reducedLiqBidData,
+                    depthLiqBidData: reducedDepthLiqBidData,
+                    depthLiqAskData: reducedDepthLiqAskData,
+                    topBoundary: topBoundary,
+                    lowBoundary: lowBoundary,
+                    liqTransitionPointforCurve: poolPriceDisplay,
+                    liqTransitionPointforDepth: poolPriceDisplay,
+                };
+            }
+
+            // Original return statement (will only be reached if the reduction above doesn't happen)
             return {
                 liqAskData: liqAskData,
                 liqBidData: liqBidData,
@@ -1227,6 +1443,9 @@ function TradeCandleStickChart(props: propsIF) {
                             setChartResetStatus={setChartResetStatus}
                             chartResetStatus={chartResetStatus}
                             openMobileSettingsModal={openMobileSettingsModal}
+                            isMobileSettingsModalOpen={
+                                props.isMobileSettingsModalOpen
+                            }
                         />
                     </>
                 )}
