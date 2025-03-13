@@ -421,6 +421,22 @@ function ChatPanel(props: propsIF) {
     }, [lastMessage]);
 
     useEffect(() => {
+        async function checkUser() {
+            const data = await getID(); // Fetch user data
+            if (!data || data.status === 'Not OK') {
+                setIsVerified(false);
+            } else {
+                setIsVerified(data.verified);
+                setCurrentUser(data.userData._id);
+            }
+        }
+
+        if (isChatOpen) {
+            checkUser();
+        }
+    }, [isChatOpen, userAddress]);
+
+    useEffect(() => {
         setScrollDirection('Scroll Down');
         if (userAddress && isChatOpen) {
             if (ens === null || ens === undefined) {
