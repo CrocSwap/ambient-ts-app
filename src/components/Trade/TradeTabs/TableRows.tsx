@@ -217,7 +217,7 @@ function TableRows({
                         observedRowRef={
                             idx === 0
                                 ? firstRowRef
-                                : idx === data.length - 1
+                                : idx === txDataToDisplay.length - 1
                                   ? lastRowRef
                                   : undefined
                         }
