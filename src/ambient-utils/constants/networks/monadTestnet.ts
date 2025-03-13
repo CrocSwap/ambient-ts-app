@@ -43,6 +43,7 @@ const defaultTokenEntries = [
     ['USDT', '0x88b8E2161DEDC77EF4ab7585569D2415a1C1055D'],
     ['WBTC', '0xcf5a6076cfa32686c0Df13aBaDa2b40dec133F1d'],
     ['ETH', '0x836047a99e11F376522B447bffb6e3495Dd0637c'],
+    ['WWETH', '0xA296f47E8Ff895Ed7A092b4a9498bb13C46ac768'],
 ] as const;
 
 // Infer the type of the keys and define the resulting type

@@ -766,7 +766,8 @@ function Swap(props: propsIF) {
         usdValueTokenB &&
         buyQtyBigInt > 0n &&
         sellQtyBigInt > 0n &&
-        !HIDE_TOKEN_VALUES
+        !HIDE_TOKEN_VALUES &&
+        tokenA.chainId !== parseInt('0x279f') // monad testnet
             ? ((usdValueTokenB * parseFloat(buyQtyNoExponentString) -
                   usdValueTokenA * parseFloat(sellQtyNoExponentString)) /
                   (usdValueTokenA * parseFloat(sellQtyNoExponentString))) *
@@ -785,7 +786,9 @@ function Swap(props: propsIF) {
     );
 
     const showUsdDiffWarning = usdDiffGreaterThanThreshold
-        ? usdDiffGreaterThanThresholdDebounced && !HIDE_TOKEN_VALUES
+        ? usdDiffGreaterThanThresholdDebounced &&
+          !HIDE_TOKEN_VALUES &&
+          tokenA.chainId !== parseInt('0x279f') // monad testnet
         : false;
 
     const showWarning = showPriceImpactWarning || showUsdDiffWarning;

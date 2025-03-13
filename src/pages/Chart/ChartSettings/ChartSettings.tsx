@@ -29,6 +29,7 @@ interface ContextMenuIF {
         React.SetStateAction<boolean>
     >;
     render: () => void;
+    showLatest: boolean | undefined;
 }
 
 export interface ColorObjIF {
@@ -48,6 +49,7 @@ export default function ChartSettings(props: ContextMenuIF) {
         setShouldDisableChartSettings,
         closeOutherChartSetting,
         setCloseOutherChartSetting,
+        showLatest,
     } = props;
 
     const contextMenuRef = useRef<HTMLInputElement | null>(null);
@@ -145,6 +147,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                     setIsSaving={setIsSaving}
                     isMobile={mobileView}
                     isSettingsClosing={isSettingsClosing}
+                    showLatest={showLatest}
                 />
             </ContextMenu>
         </ChartSettingsContainer>
