@@ -49,6 +49,7 @@ interface FloatingToolbarProps {
     >;
     setIsDragActive: React.Dispatch<boolean>;
     setIsShapeEdited: React.Dispatch<boolean>;
+    setHoveredDrawnShape: React.Dispatch<selectedDrawnData | undefined>;
     deleteItem: (item: drawDataHistory) => void;
     addDrawActionStack: (
         item: drawDataHistory,
@@ -72,6 +73,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         addDrawActionStack,
         drawnShapeHistory,
         chartThemeColors,
+        setHoveredDrawnShape,
     } = props;
 
     const drawSettings = useDrawSettings(chartThemeColors);
@@ -582,7 +584,10 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         {
             name: 'Close',
             type: 'close',
-            operation: () => setSelectedDrawnShape(undefined),
+            operation: () => {
+                setSelectedDrawnShape(undefined);
+                setHoveredDrawnShape(undefined);
+            },
             icon: <IoCloseOutline />,
             hover: '#c21937',
             exclude: [''],
