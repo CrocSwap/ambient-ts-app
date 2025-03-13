@@ -85,11 +85,7 @@ export default function FavoritePools() {
                 // setIsFetchError(true);
                 console.warn(err);
             });
-    }, [
-        JSON.stringify(favePools.pools),
-        crocEnv === undefined,
-        JSON.stringify(explorePools),
-    ]);
+    }, [favePools.pools, crocEnv === undefined, explorePools]);
 
     return (
         <FlexContainer

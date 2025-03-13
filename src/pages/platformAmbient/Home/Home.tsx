@@ -6,7 +6,7 @@ import Stats from '../../../components/Home/Stats/AmbientStats';
 import TopPoolsHome from '../../../components/Home/TopPoolsHome/TopPoolsHome';
 import { BrandContext } from '../../../contexts/BrandContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-
+import styles from './Home.module.css';
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     // hook from web3modal to switch connected wallet in extension
@@ -18,7 +18,7 @@ export default function Home() {
     if (showMobileVersion) return <MobileLandingSections />;
     return (
         <section data-testid={'home'}>
-            <div style={{ width: '100%', height: '480px' }}>
+            <div className={styles.container}>
                 <Hero />
             </div>
             <div>

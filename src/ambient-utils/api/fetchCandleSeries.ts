@@ -73,21 +73,20 @@ export async function fetchCandleSeriesCroc(
 
     const candleSeriesEndpoint = GCGO_URL + '/pool_candles';
 
-    if (endTime == 0) {
-        endTime = Math.floor(Date.now() / 1000);
+    let startTime = 0;
+    if (endTime != 0) {
+        const startTimeRough = endTime - nCandles * period;
+        startTime = Math.ceil(startTimeRough / period) * period;
     }
 
-    const startTimeRough = endTime - nCandles * period;
-    const startTime = Math.ceil(startTimeRough / period) * period;
-
     const reqOptions = new URLSearchParams({
-        base: baseTokenAddress,
-        quote: quoteTokenAddress,
+        base: baseTokenAddress.toLowerCase(),
+        quote: quoteTokenAddress.toLowerCase(),
         poolIdx: poolIndex.toString(),
         period: period.toString(),
         n: capNumDurations(nCandles).toString(),
         time: startTime.toString(),
-        chainId: chainId,
+        chainId: chainId.toLowerCase(),
     });
 
     return fetch(candleSeriesEndpoint + '?' + reqOptions)

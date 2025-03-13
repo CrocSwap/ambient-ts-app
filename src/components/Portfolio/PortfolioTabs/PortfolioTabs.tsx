@@ -106,8 +106,8 @@ export default function PortfolioTabs(props: propsIF) {
         fetch(
             userPositionsCacheEndpoint +
                 new URLSearchParams({
-                    user: accountToSearch,
-                    chainId: chainId,
+                    user: accountToSearch.toLowerCase(),
+                    chainId: chainId.toLowerCase(),
                 }),
         )
             .then((response) => response?.json())
@@ -153,8 +153,8 @@ export default function PortfolioTabs(props: propsIF) {
         fetch(
             userLimitOrdersCacheEndpoint +
                 new URLSearchParams({
-                    user: accountToSearch,
-                    chainId: chainId,
+                    user: accountToSearch.toLowerCase(),
+                    chainId: chainId.toLowerCase(),
                 }),
         )
             .then((response) => response?.json())

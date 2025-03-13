@@ -45,16 +45,16 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         timeBefore
             ? userRecentChangesCacheEndpoint +
                   new URLSearchParams({
-                      user: user,
-                      chainId: chainId,
+                      user: user.toLowerCase(),
+                      chainId: chainId.toLowerCase(),
                       timeBefore: timeBefore.toString(),
                       n: n ? n.toString() : '', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                       // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                   })
             : userRecentChangesCacheEndpoint +
                   new URLSearchParams({
-                      user: user,
-                      chainId: chainId,
+                      user: user.toLowerCase(),
+                      chainId: chainId.toLowerCase(),
                       n: n ? n.toString() : '', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                       // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                   }),
