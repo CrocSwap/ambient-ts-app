@@ -174,6 +174,7 @@ interface propsIF {
         isResetChart: boolean;
     };
     openMobileSettingsModal: () => void;
+    isMobileSettingsModalOpen: boolean;
 }
 
 export default function Chart(props: propsIF) {
@@ -204,6 +205,7 @@ export default function Chart(props: propsIF) {
         setChartResetStatus,
         chartResetStatus,
         // openMobileSettingsModal,
+        isMobileSettingsModalOpen,
     } = props;
 
     const {
@@ -454,8 +456,12 @@ export default function Chart(props: propsIF) {
         const el = chartSettingsRef?.current;
 
         const contextButton = document.getElementById('chart_settings_button');
+        const contextButtonTablet = document.getElementById(
+            'chart_settings_tooltip_tablet',
+        );
 
         if (
+            (contextButtonTablet && contextButtonTablet.contains(e as Node)) ||
             (contextButton && contextButton.contains(e as Node)) ||
             el.contains((e as Node) || null)
         ) {
@@ -1424,6 +1430,13 @@ export default function Chart(props: propsIF) {
     }, []);
 
     useEffect(() => {
+        if (isMobileSettingsModalOpen) {
+            setHoveredDrawnShape(undefined);
+            setSelectedDrawnShape(undefined);
+        }
+    }, [isMobileSettingsModalOpen]);
+
+    useEffect(() => {
         if (shouldResetBuffer) {
             setXScaleDefault();
         }
@@ -1884,6 +1897,8 @@ export default function Chart(props: propsIF) {
 
                                     event.preventDefault();
                                 } else {
+                                    setSelectedDrawnShape(undefined);
+                                    setIsShowFloatingToolbar(false);
                                     // openMobileSettingsModal();
                                 }
                             }
@@ -1922,7 +1937,17 @@ export default function Chart(props: propsIF) {
                         }
                     })
                     .filter((event) => {
-                        setSelectedDrawnShape(undefined);
+                        if (tabletView && mainCanvasBoundingClientRect) {
+                            const { offsetX, offsetY } =
+                                getXandYLocationForChart(
+                                    event,
+                                    mainCanvasBoundingClientRect,
+                                );
+
+                            drawnShapesHoverStatus(offsetX, offsetY);
+                        } else {
+                            setSelectedDrawnShape(undefined);
+                        }
 
                         if (event.type.includes('touch')) {
                             const canvas = d3
@@ -2040,18 +2065,16 @@ export default function Chart(props: propsIF) {
 
         if (today !== undefined && scaleData !== undefined) {
             if (
-                !showLatest &&
                 today &&
                 (scaleData?.xScale.domain()[1] < today.getTime() ||
                     scaleData?.xScale.domain()[0] > today.getTime())
             ) {
-                setShowLatest(true);
+                setShowLatest(() => true);
             } else if (
-                showLatest &&
                 !(scaleData?.xScale.domain()[1] < today.getTime()) &&
                 !(scaleData?.xScale.domain()[0] > today.getTime())
             ) {
-                setShowLatest(false);
+                setShowLatest(() => false);
             }
         }
     };
@@ -2869,6 +2892,7 @@ export default function Chart(props: propsIF) {
                     } else {
                         offsetY = event.sourceEvent.clientY - rectCanvas?.top;
 
+                        movementY = event.sourceEvent.movementY;
                         movementY = event.sourceEvent.movementY;
                     }
                     if (!cancelDrag) {
@@ -5163,7 +5187,12 @@ export default function Chart(props: propsIF) {
 
                     selectedDateEvent(isHoverCandleOrVolumeData, nearest);
 
-                    setSelectedDrawnShape(undefined);
+                    if (selectedDrawnShape) {
+                        setSelectedDrawnShape(undefined);
+                    }
+                    if (hoveredDrawnShape) {
+                        setHoveredDrawnShape(undefined);
+                    }
                     // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
 
                     if (
@@ -5215,6 +5244,8 @@ export default function Chart(props: propsIF) {
                 (event: PointerEvent) => {
                     if (mobileView) {
                         event.preventDefault();
+                        setSelectedDrawnShape(undefined);
+                        setIsShowFloatingToolbar(false);
                         // openMobileSettingsModal();
                     } else {
                         if (!event.shiftKey) {
@@ -6304,6 +6335,9 @@ export default function Chart(props: propsIF) {
     const relocateTooltip = (tooltip: any, data: number) => {
         if (tooltip && scaleData) {
             const width = tooltip.style('width').split('p')[0] / 2;
+            const height = tooltip.style('height').split('p')[0];
+
+            const labelTopPlacement = height > 30 ? 15 : 0;
 
             const xAxisNode = d3.select(d3XaxisRef.current).node();
             const xAxisTop = xAxisNode?.getBoundingClientRect().top;
@@ -6311,7 +6345,9 @@ export default function Chart(props: propsIF) {
                 .style(
                     'top',
                     (xAxisTop && mainCanvasBoundingClientRect
-                        ? xAxisTop - mainCanvasBoundingClientRect.top
+                        ? xAxisTop -
+                          mainCanvasBoundingClientRect.top -
+                          labelTopPlacement
                         : 0) -
                         xAxisHeightPixel +
                         'px',
@@ -7208,6 +7244,7 @@ export default function Chart(props: propsIF) {
                         period={period}
                         setContextmenu={setContextmenu}
                         setContextMenuPlacement={setContextMenuPlacement}
+                        setIsShowFloatingToolbar={setIsShowFloatingToolbar}
                     />
                 )}
                 <YAxisCanvas {...yAxisCanvasProps} />
@@ -7321,6 +7358,7 @@ export default function Chart(props: propsIF) {
                     addDrawActionStack={addDrawActionStack}
                     drawnShapeHistory={drawnShapeHistory}
                     chartThemeColors={chartThemeColors}
+                    setHoveredDrawnShape={setHoveredDrawnShape}
                 />
             )}
 
@@ -7389,6 +7427,7 @@ export default function Chart(props: propsIF) {
                     }
                     setCloseOutherChartSetting={setCloseOutherChartSetting}
                     closeOutherChartSetting={closeOutherChartSetting}
+                    showLatest={showLatest}
                 />
             )}
         </div>
