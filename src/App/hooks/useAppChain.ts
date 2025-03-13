@@ -1,4 +1,5 @@
-import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { mainnet } from '@reown/appkit/networks';
+import { useAppKitNetwork } from '@reown/appkit/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
     baseSepolia,
@@ -29,8 +30,7 @@ export const useAppChain = (): {
     chooseNetwork: (network: NetworkIF) => void;
 } => {
     // metadata on chain authenticated in connected wallet
-    const { chainId: walletChainId } = useWeb3ModalAccount();
-    const { switchNetwork } = useSwitchNetwork();
+    const { chainId, switchNetwork } = useAppKitNetwork();
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
@@ -68,8 +68,11 @@ export const useAppChain = (): {
     // returns `null` if no wallet or if network fails validation
     function getChainFromWallet(): string | null {
         let output: string | null = null;
-        if (walletChainId) {
-            const chainAsString: string = chainNumToString(walletChainId);
+        if (chainId) {
+            const chainAsString: string =
+                typeof chainId === 'string'
+                    ? chainId
+                    : chainNumToString(chainId);
             const isValid: boolean = validateChainId(chainAsString);
             if (isValid) output = chainAsString;
         }
@@ -87,7 +90,7 @@ export const useAppChain = (): {
 
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
-        if (walletChainId) {
+        if (chainId) {
             // chain ID from wallet (current live value, not memoized in the app)
             const incomingChainFromWallet: string | null = getChainFromWallet();
             // if a wallet is connected, evaluate action to take
@@ -151,10 +154,8 @@ export const useAppChain = (): {
                                     );
                                 } else {
                                     setIgnoreFirst(false);
-                                    if (chainInURLValidated)
-                                        switchNetwork(
-                                            parseInt(chainInURLValidated),
-                                        );
+                                    if (chainInURLValidated && switchNetwork)
+                                        switchNetwork(mainnet);
                                     return;
                                 }
                             } else if (
@@ -222,7 +223,7 @@ export const useAppChain = (): {
                 chainInWalletValidated.current = incomingChainFromWallet;
             }
         }
-    }, [walletChainId, chainInWalletValidated.current]);
+    }, [chainId, chainInWalletValidated.current]);
 
     const defaultChain = getDefaultChainId();
 
