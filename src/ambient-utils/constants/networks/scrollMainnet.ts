@@ -8,7 +8,7 @@ import { GCGO_SCROLL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://1rpc.io/scroll',
+    PUBLIC: 'https://scroll-mainnet.public.blastapi.io',
     SECONDARY_PUBLIC: 'https://rpc.scroll.io',
     RESTRICTED: import.meta.env.VITE_SCROLL_RPC_URL,
 };
