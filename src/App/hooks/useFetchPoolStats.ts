@@ -94,9 +94,7 @@ const useFetchPoolStats = (
 
     const shouldInvertDisplay = !isBaseTokenMoneynessGreaterOrEqual;
 
-    const [isPoolInitialized, setIsPoolInitialized] = useState<
-        boolean | undefined
-    >();
+    const [isPoolInitialized, setIsPoolInitialized] = useState<boolean>(true);
 
     const baseTokenCharacter = poolPriceDisplay
         ? getUnicodeCharacter(pool.baseToken.symbol)
@@ -131,11 +129,21 @@ const useFetchPoolStats = (
                 )
                     return;
 
+                const analyticsServerShowsPoolInitialized =
+                    activeTradePoolStats &&
+                    (activeTradePoolStats.lastPriceSwap ||
+                        activeTradePoolStats.quoteTvl ||
+                        activeTradePoolStats.baseTvl);
+
+                if (analyticsServerShowsPoolInitialized) {
+                    setIsPoolInitialized(true);
+                }
+
                 const spotPrice =
                     spotPriceRetrieved !== undefined
                         ? spotPriceRetrieved
-                        : isActiveNetworkMonad && pool.lastPriceSwap
-                          ? pool.lastPriceSwap
+                        : activeTradePoolStats
+                          ? activeTradePoolStats.lastPriceSwap
                           : await cachedQuerySpotPrice(
                                 crocEnv,
                                 pool.base,
@@ -177,7 +185,9 @@ const useFetchPoolStats = (
                     setPoolPriceDisplay(undefined);
                     setLocalPoolPriceNonDisplay(undefined);
                     setPoolPriceDisplayNum(undefined);
-                    setIsPoolInitialized(false);
+                    if (!analyticsServerShowsPoolInitialized) {
+                        setIsPoolInitialized(false);
+                    }
                 }
             })();
         }
@@ -189,8 +199,7 @@ const useFetchPoolStats = (
         lastBlockNumber !== 0,
         poolPriceNonDisplay,
         poolPriceCacheTime,
-        pool.base,
-        pool.quote,
+        JSON.stringify(activeTradePoolStats),
         isTradePair,
     ]);
 
@@ -533,6 +542,7 @@ const useFetchPoolStats = (
         baseTvlDecimal,
         basePrice,
         quotePrice,
+        activeTradePoolStats,
     };
 };
 export default useFetchPoolStats;
