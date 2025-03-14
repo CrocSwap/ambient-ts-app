@@ -129,6 +129,16 @@ const useFetchPoolStats = (
                 )
                     return;
 
+                const analyticsServerShowsPoolInitialized =
+                    activeTradePoolStats &&
+                    (activeTradePoolStats.lastPriceSwap ||
+                        activeTradePoolStats.quoteTvl ||
+                        activeTradePoolStats.baseTvl);
+
+                if (analyticsServerShowsPoolInitialized) {
+                    setIsPoolInitialized(true);
+                }
+
                 const spotPrice =
                     spotPriceRetrieved !== undefined
                         ? spotPriceRetrieved
@@ -175,7 +185,9 @@ const useFetchPoolStats = (
                     setPoolPriceDisplay(undefined);
                     setLocalPoolPriceNonDisplay(undefined);
                     setPoolPriceDisplayNum(undefined);
-                    setIsPoolInitialized(false);
+                    if (!analyticsServerShowsPoolInitialized) {
+                        setIsPoolInitialized(false);
+                    }
                 }
             })();
         }
@@ -187,9 +199,7 @@ const useFetchPoolStats = (
         lastBlockNumber !== 0,
         poolPriceNonDisplay,
         poolPriceCacheTime,
-        activeTradePoolStats?.base,
-        activeTradePoolStats?.quote,
-        !!activeTradePoolStats?.lastPriceSwap,
+        JSON.stringify(activeTradePoolStats),
         isTradePair,
     ]);
 
