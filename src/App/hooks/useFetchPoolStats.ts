@@ -94,9 +94,7 @@ const useFetchPoolStats = (
 
     const shouldInvertDisplay = !isBaseTokenMoneynessGreaterOrEqual;
 
-    const [isPoolInitialized, setIsPoolInitialized] = useState<
-        boolean | undefined
-    >();
+    const [isPoolInitialized, setIsPoolInitialized] = useState<boolean>(true);
 
     const baseTokenCharacter = poolPriceDisplay
         ? getUnicodeCharacter(pool.baseToken.symbol)
@@ -134,8 +132,8 @@ const useFetchPoolStats = (
                 const spotPrice =
                     spotPriceRetrieved !== undefined
                         ? spotPriceRetrieved
-                        : isActiveNetworkMonad && pool.lastPriceSwap
-                          ? pool.lastPriceSwap
+                        : activeTradePoolStats
+                          ? activeTradePoolStats.lastPriceSwap
                           : await cachedQuerySpotPrice(
                                 crocEnv,
                                 pool.base,
@@ -189,8 +187,9 @@ const useFetchPoolStats = (
         lastBlockNumber !== 0,
         poolPriceNonDisplay,
         poolPriceCacheTime,
-        pool.base,
-        pool.quote,
+        activeTradePoolStats?.base,
+        activeTradePoolStats?.quote,
+        !!activeTradePoolStats?.lastPriceSwap,
         isTradePair,
     ]);
 
