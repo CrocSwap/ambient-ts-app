@@ -8,8 +8,8 @@ import { GCGO_ETHEREUM_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://ethereum-rpc.publicnode.com',
-    SECONDARY_PUBLIC: 'https://eth.llamarpc.com',
+    PUBLIC: 'https://eth.llamarpc.com',
+    SECONDARY_PUBLIC: 'https://1rpc.io/eth',
     RESTRICTED: import.meta.env.VITE_MAINNET_RPC_URL,
 };
 

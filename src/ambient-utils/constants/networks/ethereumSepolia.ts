@@ -7,7 +7,7 @@ import { NetworkIF } from '../../types/NetworkIF';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-const PUBLIC_RPC_URL = 'https://ethereum-sepolia-rpc.publicnode.com';
+const PUBLIC_RPC_URL = 'hhttps://eth-sepolia.public.blastapi.io';
 const SECONDARY_PUBLIC_RPC_URL = 'https://1rpc.io/sepolia';
 
 const RESTRICTED_RPC_URL =

@@ -463,7 +463,7 @@ export default function Chart(props: propsIF) {
         if (
             (contextButtonTablet && contextButtonTablet.contains(e as Node)) ||
             (contextButton && contextButton.contains(e as Node)) ||
-            el.contains((e as Node) || null)
+            el?.contains((e as Node) || null)
         ) {
             return;
         }

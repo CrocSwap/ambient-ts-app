@@ -8,8 +8,8 @@ import { GCGO_BLAST_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://blast-rpc.publicnode.com',
-    SECONDARY_PUBLIC: 'https://rpc.blast.io',
+    PUBLIC: 'https://rpc.blast.io',
+    SECONDARY_PUBLIC: 'https://endpoints.omniatech.io/v1/blast/mainnet/public',
     RESTRICTED: import.meta.env.VITE_BLAST_RPC_URL,
 };
 

@@ -40,11 +40,11 @@ export const fetchTokenPrice = async (
         }
         return response.value;
     } catch (error) {
-        if (
+        const isETHorStakedEth = isETHorStakedEthToken(dispToken, chain);
+        const isPriorityEth = isPriorityEthEquivalent(dispToken);
+
+        if (isETHorStakedEth || isPriorityEth) {
             // if token is ETH or Staked ETH, return current value of mainnet ETH
-            isETHorStakedEthToken(dispToken, chain) ||
-            isPriorityEthEquivalent(dispToken)
-        ) {
             const body = {
                 config_path: 'price',
                 asset_platform: 'ethereum',
@@ -86,13 +86,13 @@ export const fetchTokenPrice = async (
                 usdPrice: 1,
                 usdPriceFormatted: 1,
             };
-        }
-        if (chain === '0x279f' && address === ZeroAddress) {
+        } else if (chain === '0x279f' && address === ZeroAddress) {
             return {
-                usdPrice: 18.5,
-                usdPriceFormatted: 18.5,
+                usdPrice: 17,
+                usdPriceFormatted: 17,
             };
         }
+
         return undefined;
     }
 };
