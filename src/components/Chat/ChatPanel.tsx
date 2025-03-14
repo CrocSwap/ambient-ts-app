@@ -270,23 +270,32 @@ function ChatPanel(props: propsIF) {
         setShowPicker(false);
     });
 
+    const chatContainerRef = useRef<HTMLDivElement>(null);
+
     function closeOnEscapeKeyDown(e: KeyboardEvent) {
         if (e.code === 'Escape') {
             if (showPicker) {
-                setShowPicker(false);
-                return;
+                setShowPicker(false); // Sadece emoji panelini kapat
+                console.log('Emoji picker closed');
+            } else {
+                console.log('Chat closed, Trollbox icon should appear');
+                setIsChatOpen(false); // Eğer emoji paneli açık değilse, chat panelini kapat
             }
-            if (isReplyButtonPressed) {
-                setIsReplyButtonPressed(false);
-                return;
-            }
-            setIsChatOpen(false);
         }
     }
 
+    useEffect(() => {
+        document.body.addEventListener('keydown', closeOnEscapeKeyDown);
+        document.body.addEventListener('keydown', openChatPanel);
+        return () => {
+            document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
+            document.body.removeEventListener('keydown', openChatPanel);
+        };
+    }, [isChatOpen]);
+
     function openChatPanel(e: KeyboardEvent) {
         if (e.code === 'KeyC' && e.ctrlKey && e.altKey) {
-            setIsChatOpen(!isChatOpen);
+            setIsChatOpen(!isChatOpen); // Toggle chat panel open/closed
         }
     }
 
@@ -353,13 +362,24 @@ function ChatPanel(props: propsIF) {
             setShowPicker(false);
         }
     };
+
+    useEffect(() => {
+        if (!isChatOpen) {
+            console.log('Rendering Trollbox Icon (Closed Header)');
+        } else {
+            console.log('Chat Opened - Ensuring Header Visibility');
+            if (chatContainerRef.current) {
+                chatContainerRef.current.style.height = 'auto'; // Ensure proper height reset
+            }
+        }
+    }, [isChatOpen]);
+
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
-        document.body.addEventListener('keydown', openChatPanel);
-        return function cleanUp() {
+        return () => {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
-    });
+    }, []);
 
     useEffect(() => {
         async function checkVerified() {
@@ -372,6 +392,7 @@ function ChatPanel(props: propsIF) {
     }, [isChatOpen == true]);
 
     useEffect(() => {
+        console.log('ischatopen: ', isChatOpen);
         if (room == undefined) {
             return;
         }
@@ -419,6 +440,22 @@ function ChatPanel(props: propsIF) {
             // scrollToBottom();
         }
     }, [lastMessage]);
+
+    useEffect(() => {
+        async function checkUser() {
+            const data = await getID(); // Fetch user data
+            if (!data || data.status === 'Not OK') {
+                setIsVerified(false);
+            } else {
+                setIsVerified(data.verified);
+                setCurrentUser(data.userData._id);
+            }
+        }
+
+        if (isChatOpen) {
+            checkUser();
+        }
+    }, [isChatOpen, userAddress]);
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
@@ -854,7 +891,7 @@ function ChatPanel(props: propsIF) {
     const closedHeader = (
         <div
             className={styles.closedChatHeader}
-            onClick={() => setIsChatOpen(true)}
+            onClick={() => setIsChatOpen(!isChatOpen)}
         >
             <LuMessageSquareText size={24} color='white' strokeWidth={1} />
         </div>
@@ -1379,6 +1416,7 @@ function ChatPanel(props: propsIF) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
+            {!isChatOpen && closedHeader}
             <ChatNotificationBubble
                 message={messageForNotificationBubble}
                 setRoom={setRoom}
