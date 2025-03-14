@@ -252,10 +252,10 @@
     preact "^10.16.0"
     sha.js "^2.4.11"
 
-"@crocswap-libs/sdk@^2.0.6":
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-2.0.6.tgz#a4a3d238b028bf6eb807481e7b317ae3acdd63aa"
-  integrity sha512-ud0aGTJyrHN/BxvtP7n9sVfReHMM5M7ZImesBF+UR1r39VIDtaaWZIpoNtyU3guaq1ozHg6LYQOnyRCOkBVqxw==
+"@crocswap-libs/sdk@^2.0.7":
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-2.0.7.tgz#a115570a6fe1aacde8e32f37de3777fac8fb557a"
+  integrity sha512-xEU/ELKp0qkbux8A5c5w5PngyZJ2jCQpBpo05WOcpDxCAPfL/40KFA7v3AXcjqCVY26xkNDbmUE+ejeljxnc8A==
   dependencies:
     ethers "^6.13.5"
 
