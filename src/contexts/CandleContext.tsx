@@ -8,7 +8,7 @@ import {
     useRef,
     useState,
 } from 'react';
-import { TradeDataContext } from '.';
+import { PoolContext, TradeDataContext } from '.';
 import { fetchCandleSeriesHybrid } from '../ambient-utils/api';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
@@ -75,6 +75,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext(CachedDataContext);
+
+    const { poolData } = useContext(PoolContext);
 
     const baseTokenAddress = baseToken.address;
     const quoteTokenAddress = quoteToken.address;
@@ -349,6 +351,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
+                poolData,
             )
                 .then((candles) => {
                     if (
@@ -446,6 +449,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedQuerySpotPrice,
+            poolData,
         )
             .then((incrCandles) => {
                 if (incrCandles && candleData) {

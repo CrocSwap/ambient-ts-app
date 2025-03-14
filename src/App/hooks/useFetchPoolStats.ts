@@ -542,6 +542,7 @@ const useFetchPoolStats = (
         baseTvlDecimal,
         basePrice,
         quotePrice,
+        activeTradePoolStats,
     };
 };
 export default useFetchPoolStats;

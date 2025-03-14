@@ -1,7 +1,7 @@
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../constants';
 import { SpotPriceFn } from '../dataLayer';
-import { TokenIF } from '../types';
+import { PoolStatIF, TokenIF } from '../types';
 import {
     CandleDataIF,
     CandleDataServerIF,
@@ -22,6 +22,7 @@ export async function fetchCandleSeriesHybrid(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
+    poolData?: PoolStatIF,
 ): Promise<CandlesByPoolAndDurationIF | undefined> {
     const candles = await fetchCandleSeriesCroc(
         isFetchEnabled,
@@ -36,6 +37,7 @@ export async function fetchCandleSeriesHybrid(
         crocEnv,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
+        poolData,
     );
 
     if (!candles) {
@@ -67,6 +69,7 @@ export async function fetchCandleSeriesCroc(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
+    poolData?: PoolStatIF,
 ): Promise<CandlesByPoolAndDurationIF | undefined> {
     if (!isFetchEnabled) {
         return undefined;
@@ -106,6 +109,7 @@ export async function fetchCandleSeriesCroc(
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
+                poolData,
             );
 
             return {
@@ -155,6 +159,7 @@ async function expandPoolStatsCandle(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
+    poolData?: PoolStatIF,
 ): Promise<CandleDataIF[]> {
     const baseDecimals = baseToken.decimals;
     const quoteDecimals = quoteToken.decimals;
@@ -165,18 +170,27 @@ async function expandPoolStatsCandle(
         chainId,
     );
 
-    const baseUsdPrice = (await basePricePromise)?.usdPrice;
-    const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
+    const baseUsdPrice = poolData?.basePrice
+        ? poolData.basePrice
+        : (await basePricePromise)?.usdPrice;
+    const quoteUsdPrice = poolData?.quotePrice
+        ? poolData.quotePrice
+        : (await quotePricePromise)?.usdPrice;
 
-    if ((await crocEnv.context).chain.chainId !== chainId) return []; // ! ben
-
-    const spotPrice = await cachedQuerySpotPrice(
-        crocEnv,
-        baseToken.address,
-        quoteToken.address,
-        chainId,
-        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-    );
+    let spotPrice;
+    if (poolData?.activeTradePoolStats?.lastPriceSwap) {
+        spotPrice = poolData?.activeTradePoolStats?.lastPriceSwap;
+    } else if ((await crocEnv.context).chain.chainId === chainId) {
+        spotPrice = await cachedQuerySpotPrice(
+            crocEnv,
+            baseToken.address,
+            quoteToken.address,
+            chainId,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        );
+    } else {
+        return [];
+    }
 
     const displayPrice = toDisplayPrice(spotPrice, baseDecimals, quoteDecimals);
 
