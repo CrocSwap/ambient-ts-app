@@ -160,7 +160,6 @@ export default function TransactionDetailsGraph(
             if (isTimeFirstMintInRemovalRange) {
                 return;
             }
-
             if (graphData === undefined) {
                 setIsDataLoading(true);
             }
@@ -249,6 +248,9 @@ export default function TransactionDetailsGraph(
                         quoteDecimals,
                     );
 
+                    const baseTokenDecimals = tx.baseDecimals;
+                    const quoteTokenDecimals = tx.quoteDecimals;
+
                     const graphData = await fetchCandleSeriesCroc(
                         fetchEnabled,
                         chainId,
@@ -257,6 +259,8 @@ export default function TransactionDetailsGraph(
                         tempPeriod,
                         baseTokenAddress,
                         quoteTokenAddress,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
                         startBoundary,
                         numCandlesNeeded,
                         crocEnv,

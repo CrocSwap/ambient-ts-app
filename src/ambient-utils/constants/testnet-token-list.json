@@ -245,7 +245,7 @@
         {
             "name": "Wrapped Monad",
             "address": "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701",
-            "symbol": "shMON",
+            "symbol": "WMON",
             "decimals": 18,
             "chainId": 10143,
             "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/I_t8rg_V_400x400.jpg/public"
@@ -272,7 +272,7 @@
             "symbol": "mamaBTC",
             "decimals": 8,
             "chainId": 10143,
-            "logoURI": "https://dark-purple-cephalopod.myfilebase.com/ipfs/QmQyRz36GsDdaQTXCT717PEyQmZBNqKDMhR2YoNQ2DkgaZ"
+            "logoURI": ""
         },
         {
             "name": "Wormhole Wrapped ETH",
