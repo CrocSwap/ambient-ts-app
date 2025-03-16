@@ -272,7 +272,7 @@
             "symbol": "mamaBTC",
             "decimals": 8,
             "chainId": 10143,
-            "logoURI": "https://dark-purple-cephalopod.myfilebase.com/ipfs/QmQyRz36GsDdaQTXCT717PEyQmZBNqKDMhR2YoNQ2DkgaZ"
+            "logoURI": ""
         },
         {
             "name": "Wormhole Wrapped ETH",

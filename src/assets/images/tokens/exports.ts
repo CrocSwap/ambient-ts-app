@@ -18,6 +18,7 @@ import JUICE from './JUICE.svg';
 import KING from './KING.svg';
 import LDO from './LDO.svg';
 import LINK from './LINK.svg';
+import MAMABTC from './MAMABTC.svg';
 import MIA from './MIA.png';
 import MKR from './MKR.png';
 import NELIXIR from './NELIXIR.svg';
@@ -91,6 +92,7 @@ export {
     KING,
     LDO,
     LINK,
+    MAMABTC,
     MIA,
     MKR,
     NELIXIR,
