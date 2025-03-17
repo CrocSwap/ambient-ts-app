@@ -617,12 +617,21 @@ function InfiniteScroll(props: propsIF) {
                                         | PositionIF[]
                                         | TransactionIF[],
                                 ) => {
+                                    if (sortOrders) {
+                                        return sortOrders([
+                                            ...(newTxs as LimitOrderIF[]),
+                                            ...(prev as LimitOrderIF[]).filter(
+                                                (e) =>
+                                                    !idSet.has(e.limitOrderId),
+                                            ),
+                                        ] as LimitOrderIF[]);
+                                    }
                                     return [
                                         ...(newTxs as LimitOrderIF[]),
                                         ...(prev as LimitOrderIF[]).filter(
                                             (e) => !idSet.has(e.limitOrderId),
                                         ),
-                                    ];
+                                    ] as LimitOrderIF[];
                                 },
                             );
                             break;
@@ -634,12 +643,20 @@ function InfiniteScroll(props: propsIF) {
                                         | PositionIF[]
                                         | TransactionIF[],
                                 ) => {
+                                    if (sortPositions) {
+                                        return sortPositions([
+                                            ...(newTxs as PositionIF[]),
+                                            ...(prev as PositionIF[]).filter(
+                                                (e) => !idSet.has(e.positionId),
+                                            ),
+                                        ] as PositionIF[]);
+                                    }
                                     return [
                                         ...(newTxs as PositionIF[]),
                                         ...(prev as PositionIF[]).filter(
                                             (e) => !idSet.has(e.positionId),
                                         ),
-                                    ];
+                                    ] as PositionIF[];
                                 },
                             );
                             break;
@@ -651,10 +668,16 @@ function InfiniteScroll(props: propsIF) {
                                         | LimitOrderIF[]
                                         | PositionIF[],
                                 ) => {
+                                    if (sortTransactions) {
+                                        return sortTransactions([
+                                            ...(newTxs as TransactionIF[]),
+                                            ...(prev as TransactionIF[]),
+                                        ] as TransactionIF[]);
+                                    }
                                     return [
                                         ...(newTxs as TransactionIF[]),
                                         ...(prev as TransactionIF[]),
-                                    ];
+                                    ] as TransactionIF[];
                                 },
                             );
                             break;
