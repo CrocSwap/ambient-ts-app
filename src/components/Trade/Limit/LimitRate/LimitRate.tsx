@@ -134,7 +134,7 @@ export default function LimitRate(props: propsIF) {
 
     const willLimitFail = async (testLimitTick: number) => {
         try {
-            if (!crocEnv) return;
+            if (!crocEnv) return true;
 
             const testOrder = isTokenAPrimary
                 ? crocEnv.sell(tokenA.address, 0)
@@ -152,6 +152,7 @@ export default function LimitRate(props: propsIF) {
             }
         } catch (error) {
             console.error(error);
+            return true;
         }
     };
 
@@ -163,19 +164,31 @@ export default function LimitRate(props: propsIF) {
                       gridSize
                     : pinTickToTickUpper(currentPoolPriceTick, gridSize) +
                       gridSize;
-                const willFail = await willLimitFail(newTopOfBookLimit);
 
-                if (willFail) {
-                    newTopOfBookLimit = isTokenABase
-                        ? newTopOfBookLimit - gridSize
-                        : newTopOfBookLimit + gridSize;
+                let attempts = 0;
+                let willFail = true;
+
+                // Retry logic: Check up to 3 times if the limit will fail
+                while (willFail && attempts < 3) {
+                    willFail = await willLimitFail(newTopOfBookLimit);
+
+                    if (willFail) {
+                        newTopOfBookLimit = isTokenABase
+                            ? newTopOfBookLimit - gridSize
+                            : newTopOfBookLimit + gridSize;
+                    }
+
+                    attempts++;
                 }
+
                 setTopOfBookTickValue(newTopOfBookLimit);
+
                 if (selectedPreset === 0) {
-                    setLimitTick(topOfBookTickValue);
+                    setLimitTick(newTopOfBookLimit);
                     updateURL({ update: [['limitTick', newTopOfBookLimit]] });
                     setPriceInputFieldBlurred(true);
                 }
+
                 setOnePercentTickValue(
                     isTokenABase
                         ? pinTickToTickLower(
@@ -187,6 +200,7 @@ export default function LimitRate(props: propsIF) {
                               gridSize,
                           ),
                 );
+
                 setFivePercentTickValue(
                     isTokenABase
                         ? pinTickToTickLower(
@@ -198,6 +212,7 @@ export default function LimitRate(props: propsIF) {
                               gridSize,
                           ),
                 );
+
                 setTenPercentTickValue(
                     isTokenABase
                         ? pinTickToTickLower(

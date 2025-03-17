@@ -257,7 +257,7 @@ export default function Limit() {
 
     // TODO: logic to determine start, middle, end display prices should be refactored into an ambient-utils function
     useEffect(() => {
-        if (!poolPriceNonDisplay) {
+        if (!poolPriceNonDisplay || currentPoolPriceTick === undefined) {
             // pool is uninitialized
             setStartDisplayPrice(undefined);
             setMiddleDisplayPrice(undefined);
@@ -318,21 +318,25 @@ export default function Limit() {
                 priceHalfAboveTick(pinnedTick, gridSize),
                 baseToken.decimals,
                 quoteToken.decimals,
+                isDenomBase,
             );
             const priceHalfBelow = toDisplayPrice(
                 priceHalfBelowTick(pinnedTick, gridSize),
                 baseToken.decimals,
                 quoteToken.decimals,
+                isDenomBase,
             );
             const priceFullTickAbove = toDisplayPrice(
                 tickToPrice(pinnedTick + gridSize),
                 baseToken.decimals,
                 quoteToken.decimals,
+                isDenomBase,
             );
             const priceFullTickBelow = toDisplayPrice(
                 tickToPrice(pinnedTick - gridSize),
                 baseToken.decimals,
                 quoteToken.decimals,
+                isDenomBase,
             );
 
             if (isDenomBase) {
@@ -396,21 +400,25 @@ export default function Limit() {
                 priceHalfAboveTick(limitTick, gridSize),
                 baseToken.decimals,
                 quoteToken.decimals,
+                isDenomBase,
             );
             const priceHalfBelow = toDisplayPrice(
                 priceHalfBelowTick(limitTick, gridSize),
                 baseToken.decimals,
                 quoteToken.decimals,
+                isDenomBase,
             );
             const priceFullTickAbove = toDisplayPrice(
                 tickToPrice(limitTick + gridSize),
                 baseToken.decimals,
                 quoteToken.decimals,
+                isDenomBase,
             );
             const priceFullTickBelow = toDisplayPrice(
                 tickToPrice(limitTick - gridSize),
                 baseToken.decimals,
                 quoteToken.decimals,
+                isDenomBase,
             );
 
             if (isDenomBase) {
@@ -435,6 +443,7 @@ export default function Limit() {
         priceInputFieldBlurred,
         isTokenABase,
         poolPriceNonDisplay,
+        currentPoolPriceTick === undefined,
         isTradeDollarizationEnabled,
         usdPriceInverse,
         basePrice,

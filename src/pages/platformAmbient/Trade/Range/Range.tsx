@@ -243,11 +243,13 @@ function Range() {
 
     const shouldResetAdvancedLowTick =
         !ticksInParams &&
+        currentPoolPriceTick !== undefined &&
         (advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
 
     const shouldResetAdvancedHighTick =
         !ticksInParams &&
+        currentPoolPriceTick !== undefined &&
         (advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
 
@@ -344,8 +346,10 @@ function Range() {
         tokenAInputQtyNoExponentString !== '' ||
         tokenBInputQtyNoExponentString !== '';
 
-    const rangeSpanAboveCurrentPrice = defaultHighTick - currentPoolPriceTick;
-    const rangeSpanBelowCurrentPrice = currentPoolPriceTick - defaultLowTick;
+    const rangeSpanAboveCurrentPrice =
+        defaultHighTick - (currentPoolPriceTick || 0);
+    const rangeSpanBelowCurrentPrice =
+        (currentPoolPriceTick || 0) - defaultLowTick;
     const isOutOfRange = !advancedMode
         ? false
         : rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
@@ -531,7 +535,11 @@ function Range() {
             setIsAmbient(false);
         } else {
             setIsAmbient(false);
-            if (Math.abs(currentPoolPriceTick) === Infinity) return;
+            if (
+                currentPoolPriceTick === undefined ||
+                Math.abs(currentPoolPriceTick) === Infinity
+            )
+                return;
             const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
             const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
@@ -629,9 +637,10 @@ function Range() {
             setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             const highTickDiff =
-                pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick;
+                pinnedDisplayPrices.pinnedHighTick -
+                (currentPoolPriceTick || 0);
             const lowTickDiff =
-                pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick;
+                pinnedDisplayPrices.pinnedLowTick - (currentPoolPriceTick || 0);
 
             const highGeometricDifferencePercentage =
                 Math.abs(highTickDiff) < 200
@@ -742,14 +751,15 @@ function Range() {
             const highGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
                     (pinnedDisplayPrices.pinnedHighTick -
-                        currentPoolPriceTick) /
+                        (currentPoolPriceTick || 0)) /
                         100,
                     0,
                 ),
             );
             const lowGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
-                    (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) /
+                    (pinnedDisplayPrices.pinnedLowTick -
+                        (currentPoolPriceTick || 0)) /
                         100,
                     0,
                 ),
@@ -830,14 +840,15 @@ function Range() {
             const highGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
                     (pinnedDisplayPrices.pinnedHighTick -
-                        currentPoolPriceTick) /
+                        (currentPoolPriceTick || 0)) /
                         100,
                     0,
                 ),
             );
             const lowGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
-                    (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) /
+                    (pinnedDisplayPrices.pinnedLowTick -
+                        (currentPoolPriceTick || 0)) /
                         100,
                     0,
                 ),
