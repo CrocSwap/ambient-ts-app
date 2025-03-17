@@ -30,6 +30,7 @@ const useFetchPoolStats = (
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
+        isTradeRoute,
     } = useContext(AppStateContext);
 
     const {
@@ -269,52 +270,61 @@ const useFetchPoolStats = (
 
     useEffect(() => {
         (async () => {
-            if (poolPriceDisplayNum) {
-                const baseTokenPrice =
+            let baseTokenPrice, quoteTokenPrice;
+            if (activeTradePoolStats?.baseUsdPrice) {
+                baseTokenPrice = activeTradePoolStats.baseUsdPrice;
+            } else {
+                baseTokenPrice =
                     (await cachedFetchTokenPrice(baseAddr, chainId))
                         ?.usdPrice || 0.0;
-                const quoteTokenPrice =
+            }
+            if (activeTradePoolStats?.quoteUsdPrice) {
+                quoteTokenPrice = activeTradePoolStats.quoteUsdPrice;
+            } else {
+                quoteTokenPrice =
                     (await cachedFetchTokenPrice(quoteAddr, chainId))
                         ?.usdPrice || 0.0;
+            }
 
-                if (baseTokenPrice) {
-                    setBasePrice(baseTokenPrice);
-                } else if (
-                    isETHorStakedEthToken(baseAddr, chainId) &&
-                    nativeTokenUsdPrice
-                ) {
-                    setBasePrice(nativeTokenUsdPrice);
-                } else if (poolPriceDisplayNum && quoteTokenPrice) {
-                    // calculation of estimated base price below may be backwards;
-                    // having a hard time finding an example of base missing a price
-                    const estimatedBasePrice =
-                        quoteTokenPrice / poolPriceDisplayNum;
-                    setBasePrice(estimatedBasePrice);
-                } else {
-                    setBasePrice(undefined);
-                }
-                if (quoteTokenPrice) {
-                    setQuotePrice(quoteTokenPrice);
-                } else if (
-                    isETHorStakedEthToken(quoteAddr, chainId) &&
-                    nativeTokenUsdPrice
-                ) {
-                    setQuotePrice(nativeTokenUsdPrice);
-                } else if (poolPriceDisplayNum && baseTokenPrice) {
-                    const estimatedQuotePrice =
-                        baseTokenPrice * poolPriceDisplayNum;
-                    setQuotePrice(estimatedQuotePrice);
-                } else {
-                    setQuotePrice(undefined);
-                }
+            if (baseTokenPrice) {
+                setBasePrice(baseTokenPrice);
+            } else if (
+                isETHorStakedEthToken(baseAddr, chainId) &&
+                nativeTokenUsdPrice
+            ) {
+                setBasePrice(nativeTokenUsdPrice);
+            } else if (poolPriceDisplayNum && quoteTokenPrice) {
+                // calculation of estimated base price below may be backwards;
+                // having a hard time finding an example of base missing a price
+                const estimatedBasePrice =
+                    quoteTokenPrice / poolPriceDisplayNum;
+                setBasePrice(estimatedBasePrice);
+            } else {
+                setBasePrice(undefined);
+            }
+            if (quoteTokenPrice) {
+                setQuotePrice(quoteTokenPrice);
+            } else if (
+                isETHorStakedEthToken(quoteAddr, chainId) &&
+                nativeTokenUsdPrice
+            ) {
+                setQuotePrice(nativeTokenUsdPrice);
+            } else if (poolPriceDisplayNum && baseTokenPrice) {
+                const estimatedQuotePrice =
+                    baseTokenPrice * poolPriceDisplayNum;
+                setQuotePrice(estimatedQuotePrice);
+            } else {
+                setQuotePrice(undefined);
             }
         })();
     }, [
         baseAddr,
         quoteAddr,
         chainId,
-        poolPriceDisplayNum,
+        activeTradePoolStats?.baseUsdPrice,
+        activeTradePoolStats?.quoteUsdPrice,
         nativeTokenUsdPrice === undefined,
+        poolPriceDisplayNum,
     ]);
 
     const [prevPoolPrice, setPrevPoolPrice] = useState<number | undefined>();
@@ -421,7 +431,7 @@ const useFetchPoolStats = (
                 setApr(aprString);
             }
 
-            if (isTradePair) {
+            if (isTradePair && isTradeRoute) {
                 try {
                     const ambientAprEst = await estimateFrom24HrAmbientApr(
                         pool.base,
@@ -516,6 +526,7 @@ const useFetchPoolStats = (
         pool.base + pool.quote,
         localPoolPriceNonDisplay,
         didUserFlipDenom,
+        isTradeRoute,
     ]);
 
     return {
