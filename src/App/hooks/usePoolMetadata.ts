@@ -141,13 +141,6 @@ export function usePoolMetadata() {
         [tokenA, tokenB],
     );
 
-    const isTokenABase = useMemo(
-        () =>
-            tokenA.address ===
-            sortBaseQuoteTokens(tokenA.address, tokenB.address)[0],
-        [tokenA, tokenB],
-    );
-
     const baseTokenDecimals = useMemo(
         () =>
             tokenA.address ===
@@ -840,6 +833,5 @@ export function usePoolMetadata() {
         quoteTokenAddress,
         baseTokenDecimals, // Token contract decimals
         quoteTokenDecimals, // Token contract decimals
-        isTokenABase, // True if the base token is the first token in the panel (e.g. sell token on swap)
     };
 }

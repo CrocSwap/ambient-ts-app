@@ -214,12 +214,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     }
 
     useEffect(() => {
-        console.log({
-            isUserOnline,
-            chainId,
-            BLOCK_NUM_POLL_MS,
-            blockPollingUrl,
-        });
         if (!isUserOnline) return;
         // Grab block right away, then poll on periodic basis; useful for initial load
         pollBlockNum();

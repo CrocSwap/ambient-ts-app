@@ -54,13 +54,14 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
     const {
         isUserIdle,
         activeNetwork: { chainId },
+        isTradeRoute,
     } = useContext(AppStateContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { setTokenBalance } = useContext(TokenBalanceContext);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
-    const { tokenA, tokenB, baseToken, quoteToken } =
+    const { tokenA, tokenB, baseToken, quoteToken, isTokenABase } =
         useContext(TradeDataContext);
     const {
         tokenAAllowance,
@@ -74,7 +75,6 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         quoteTokenAddress,
         baseTokenDecimals,
         quoteTokenDecimals,
-        isTokenABase,
         contextMatchesParams,
     } = usePoolMetadata();
 
@@ -159,6 +159,7 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
     useEffect(() => {
         (async () => {
             if (
+                isTradeRoute &&
                 !isUserIdle &&
                 crocEnv &&
                 userAddress &&
@@ -251,6 +252,7 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         lastBlockNumber,
         baseTokenDecimals,
         quoteTokenDecimals,
+        isTradeRoute,
     ]);
 
     return (

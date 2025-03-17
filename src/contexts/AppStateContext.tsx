@@ -1,6 +1,7 @@
 import { useWeb3Modal } from '@web3modal/ethers/react';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { useIdleTimer } from 'react-idle-timer';
+import { useLocation } from 'react-router';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     CHAT_ENABLED,
@@ -50,6 +51,7 @@ export interface AppStateContextIF {
         contentHeight: number;
         viewportHeight: number;
     };
+    isTradeRoute: boolean;
 }
 
 export const AppStateContext = createContext({} as AppStateContextIF);
@@ -70,6 +72,9 @@ export const AppStateContextProvider = (props: {
     const NAVBAR_HEIGHT = 56;
     const FOOTER_HEIGHT = 56;
     const TOTAL_FIXED_HEIGHT = NAVBAR_HEIGHT + FOOTER_HEIGHT;
+
+    const location = useLocation();
+    const isTradeRoute = location.pathname.includes('trade');
 
     const [dimensions, setDimensions] = useState({
         contentHeight: window.innerHeight - TOTAL_FIXED_HEIGHT,
@@ -284,6 +289,7 @@ export const AppStateContextProvider = (props: {
             },
             activeNetwork,
             chooseNetwork,
+            isTradeRoute,
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -306,6 +312,7 @@ export const AppStateContextProvider = (props: {
             dimensions.viewportHeight,
             activeNetwork,
             chooseNetwork,
+            isTradeRoute,
         ],
     );
 

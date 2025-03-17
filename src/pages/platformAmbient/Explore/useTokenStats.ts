@@ -173,7 +173,7 @@ export const useTokenStats = (
                 price =
                     toDisplayPrice(
                         await poolWithETHNonDisplayPricePromise,
-                        18,
+                        defaultTokensForChain[0].decimals,
                         tokenMeta.decimals,
                     ) * ((await ethPricePromise)?.usdPrice || 0) || 0;
             }
