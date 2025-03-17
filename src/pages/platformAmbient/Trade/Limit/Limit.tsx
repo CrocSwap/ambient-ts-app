@@ -421,17 +421,10 @@ export default function Limit() {
                 isDenomBase,
             );
 
-            if (isDenomBase) {
-                if (isTokenABase) setMiddleDisplayPrice(priceHalfAbove);
-                if (isTokenABase) setStartDisplayPrice(priceFullTickAbove);
-                if (!isTokenABase) setMiddleDisplayPrice(priceHalfBelow);
-                if (!isTokenABase) setStartDisplayPrice(priceFullTickBelow);
-            } else {
-                if (isTokenABase) setMiddleDisplayPrice(1 / priceHalfAbove);
-                if (isTokenABase) setStartDisplayPrice(1 / priceFullTickAbove);
-                if (!isTokenABase) setMiddleDisplayPrice(1 / priceHalfBelow);
-                if (!isTokenABase) setStartDisplayPrice(1 / priceFullTickBelow);
-            }
+            if (isTokenABase) setMiddleDisplayPrice(priceHalfAbove);
+            if (isTokenABase) setStartDisplayPrice(priceFullTickAbove);
+            if (!isTokenABase) setMiddleDisplayPrice(priceHalfBelow);
+            if (!isTokenABase) setStartDisplayPrice(priceFullTickBelow);
 
             setPriceInputFieldBlurred(false);
         }
