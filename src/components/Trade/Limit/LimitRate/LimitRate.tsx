@@ -171,6 +171,13 @@ export default function LimitRate(props: propsIF) {
                 // Retry logic: Check up to 3 times if the limit will fail
                 while (willFail && attempts < 3) {
                     willFail = await willLimitFail(newTopOfBookLimit);
+                    // console.log({
+                    //     willFail,
+                    //     newTopOfBookLimit,
+                    //     currentPoolPriceTick,
+                    //     isTokenABase,
+                    //     gridSize,
+                    // });
 
                     if (willFail) {
                         newTopOfBookLimit = isTokenABase
@@ -182,12 +189,6 @@ export default function LimitRate(props: propsIF) {
                 }
 
                 setTopOfBookTickValue(newTopOfBookLimit);
-
-                if (selectedPreset === 0) {
-                    setLimitTick(newTopOfBookLimit);
-                    updateURL({ update: [['limitTick', newTopOfBookLimit]] });
-                    setPriceInputFieldBlurred(true);
-                }
 
                 setOnePercentTickValue(
                     isTokenABase
@@ -226,7 +227,15 @@ export default function LimitRate(props: propsIF) {
                 );
             }
         })();
-    }, [currentPoolPriceTick, isTokenABase, gridSize, selectedPreset]);
+    }, [currentPoolPriceTick, isTokenABase, gridSize]);
+
+    useEffect(() => {
+        if (selectedPreset === 0 && topOfBookTickValue !== undefined) {
+            setLimitTick(topOfBookTickValue);
+            updateURL({ update: [['limitTick', topOfBookTickValue]] });
+            setPriceInputFieldBlurred(true);
+        }
+    }, [selectedPreset, topOfBookTickValue]);
 
     const updateLimitWithButton = (percent: number) => {
         if (!currentPoolPriceTick) return;

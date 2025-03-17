@@ -23,7 +23,6 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 const useFetchPoolStats = (
     pool: PoolIF,
     poolList: PoolIF[] | undefined,
-    spotPriceRetrieved: number | undefined,
     isTradePair = false,
     enableTotalSupply = false,
     didUserFlipDenom = false,
@@ -40,7 +39,7 @@ const useFetchPoolStats = (
         cachedTokenDetails,
     } = useContext(CachedDataContext);
 
-    const { poolPriceNonDisplay, setPoolPriceNonDisplay, setLimitTick } =
+    const { setPoolPriceNonDisplay, setLimitTick } =
         useContext(TradeDataContext);
 
     const [localPoolPriceNonDisplay, setLocalPoolPriceNonDisplay] = useState<
@@ -119,9 +118,15 @@ const useFetchPoolStats = (
           ? Math.floor(Date.now() / 60000) // 60 second interval if  idle
           : Math.floor(Date.now() / 10000); // 10 second interval if not idle
 
+    const analyticsServerShowsPoolInitialized =
+        activeTradePoolStats !== undefined &&
+        (activeTradePoolStats.lastPriceSwap !== undefined ||
+            activeTradePoolStats.quoteTvl !== undefined ||
+            activeTradePoolStats.baseTvl !== undefined);
+
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        if (isServerEnabled && crocEnv) {
+        if (isServerEnabled && crocEnv && lastBlockNumber !== 0) {
             (async () => {
                 if (
                     !crocEnv ||
@@ -129,28 +134,32 @@ const useFetchPoolStats = (
                 )
                     return;
 
-                const analyticsServerShowsPoolInitialized =
-                    activeTradePoolStats &&
-                    (activeTradePoolStats.lastPriceSwap ||
-                        activeTradePoolStats.quoteTvl ||
-                        activeTradePoolStats.baseTvl);
-
                 if (analyticsServerShowsPoolInitialized) {
                     setIsPoolInitialized(true);
                 }
 
+                const cachedSpotPrice: number | undefined = await Promise.race<
+                    number | undefined
+                >([
+                    cachedQuerySpotPrice(
+                        crocEnv,
+                        pool.base,
+                        pool.quote,
+                        chainId,
+                        poolPriceCacheTime,
+                    ),
+                    new Promise<number | undefined>((resolve) =>
+                        setTimeout(() => resolve(undefined), 2000),
+                    ), // 2-second timeout
+                ]);
+
                 const spotPrice =
-                    spotPriceRetrieved !== undefined
-                        ? spotPriceRetrieved
+                    cachedSpotPrice !== undefined
+                        ? cachedSpotPrice
                         : activeTradePoolStats
                           ? activeTradePoolStats.lastPriceSwap
-                          : await cachedQuerySpotPrice(
-                                crocEnv,
-                                pool.base,
-                                pool.quote,
-                                chainId,
-                                poolPriceCacheTime,
-                            );
+                          : undefined;
+
                 if (spotPrice) {
                     setIsPoolInitialized(true);
                     setLocalPoolPriceNonDisplay([
@@ -158,11 +167,7 @@ const useFetchPoolStats = (
                         spotPrice,
                     ]);
 
-                    if (
-                        isTradePair &&
-                        spotPrice &&
-                        spotPrice !== poolPriceNonDisplay
-                    ) {
+                    if (isTradePair && spotPrice) {
                         setPoolPriceNonDisplay(spotPrice);
                     }
                     const displayPrice = toDisplayPrice(
@@ -192,14 +197,12 @@ const useFetchPoolStats = (
             })();
         }
     }, [
-        spotPriceRetrieved,
         isServerEnabled,
         chainId,
         crocEnv,
+        pool.base + pool.quote,
         lastBlockNumber !== 0,
-        poolPriceNonDisplay,
         poolPriceCacheTime,
-        JSON.stringify(activeTradePoolStats),
         isTradePair,
     ]);
 

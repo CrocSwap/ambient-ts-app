@@ -89,7 +89,6 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const poolData = useFetchPoolStats(
         poolArg,
         activePoolList,
-        undefined,
         true,
         true,
         didUserFlipDenom,
