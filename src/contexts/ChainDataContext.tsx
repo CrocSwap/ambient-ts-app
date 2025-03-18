@@ -410,7 +410,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isUserConnected,
         userAddress,
         chainId,
-        // everyFiveMinutes,
         GCGO_URL,
         isfetchNftTriggered,
     ]);
@@ -449,6 +448,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                         GCGO_URL: GCGO_URL,
                         _refreshTime: everyFiveMinutes,
                     });
+
+                    console.log({ dexBalancesFromCache });
 
                     if (dexBalancesFromCache !== undefined) {
                         await Promise.all(

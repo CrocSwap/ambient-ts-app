@@ -127,7 +127,12 @@ const useFetchPoolStats = (
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        if (isServerEnabled && crocEnv && lastBlockNumber !== 0) {
+        if (
+            isServerEnabled &&
+            crocEnv &&
+            lastBlockNumber !== 0 &&
+            isTradeRoute
+        ) {
             (async () => {
                 if (
                     !crocEnv ||
@@ -204,7 +209,7 @@ const useFetchPoolStats = (
         pool.base + pool.quote,
         lastBlockNumber !== 0,
         poolPriceCacheTime,
-        isTradePair,
+        isTradeRoute,
     ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
@@ -511,7 +516,8 @@ const useFetchPoolStats = (
     });
 
     useEffect(() => {
-        if (isServerEnabled && lastBlockNumber !== 0) fetchPoolStats();
+        if (isServerEnabled && lastBlockNumber !== 0 && isTradeRoute)
+            fetchPoolStats();
     }, [
         isUserIdle
             ? Math.floor(Date.now() / 120000)

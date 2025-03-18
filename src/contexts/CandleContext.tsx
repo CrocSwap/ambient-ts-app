@@ -8,7 +8,7 @@ import {
     useRef,
     useState,
 } from 'react';
-import { PoolContext, TradeDataContext } from '.';
+import { PoolContext, TradeDataContext, TradeTokenContext } from '.';
 import { fetchCandleSeriesHybrid } from '../ambient-utils/api';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
@@ -67,6 +67,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isCandleDataNull,
         setIsCandleDataNull,
     } = useContext(ChartContext);
+
+    const { isChartVisible } = useContext(TradeTokenContext);
     const {
         activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
@@ -209,6 +211,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     useEffect(() => {
         (async () => {
             if (
+                isChartVisible &&
                 crocEnv &&
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
@@ -225,6 +228,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             }
         })();
     }, [
+        isChartVisible,
         isManualCandleFetchRequested,
         isChartEnabled,
         isUserOnline,
@@ -255,7 +259,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             isUserOnline &&
             candleScale.isShowLatestCandle &&
             isChartOpen &&
-            location.pathname.includes('/trade')
+            isChartVisible
         ) {
             if (
                 candleData &&

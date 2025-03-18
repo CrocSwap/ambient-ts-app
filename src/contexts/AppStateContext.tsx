@@ -74,7 +74,9 @@ export const AppStateContextProvider = (props: {
     const TOTAL_FIXED_HEIGHT = NAVBAR_HEIGHT + FOOTER_HEIGHT;
 
     const location = useLocation();
-    const isTradeRoute = location.pathname.includes('trade');
+    const isTradeRoute =
+        location.pathname.includes('trade') ||
+        location.pathname.includes('swap');
 
     const [dimensions, setDimensions] = useState({
         contentHeight: window.innerHeight - TOTAL_FIXED_HEIGHT,

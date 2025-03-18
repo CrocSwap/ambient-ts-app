@@ -828,5 +828,6 @@ export function usePoolMetadata() {
         quoteTokenAddress,
         baseTokenDecimals, // Token contract decimals
         quoteTokenDecimals, // Token contract decimals
+        isChartVisible,
     };
 }

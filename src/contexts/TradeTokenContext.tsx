@@ -46,6 +46,7 @@ export interface TradeTokenContextIF {
     setRecheckTokenBApproval: (val: boolean) => void;
     isTokenABase: boolean;
     contextMatchesParams: boolean;
+    isChartVisible: boolean;
 }
 
 export const TradeTokenContext = createContext({} as TradeTokenContextIF);
@@ -76,6 +77,7 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         baseTokenDecimals,
         quoteTokenDecimals,
         contextMatchesParams,
+        isChartVisible,
     } = usePoolMetadata();
 
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
@@ -153,6 +155,7 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         setRecheckTokenBApproval,
         isTokenABase,
         contextMatchesParams,
+        isChartVisible,
     };
 
     // useEffect to update selected token balances
