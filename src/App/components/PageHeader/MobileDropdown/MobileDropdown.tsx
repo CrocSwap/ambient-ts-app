@@ -57,8 +57,7 @@ export default function MobileDropdown() {
     const { connectedUserXp, setIsTokenBalanceFetchManuallyTriggerered } =
         useContext(ChainDataContext);
 
-    const { resetTokenBalances, tokenBalances } =
-        useContext(TokenBalanceContext);
+    const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
     const { setShowAllData } = useContext(TradeTableContext);
     const { resetReceiptData } = useContext(ReceiptContext);
@@ -77,10 +76,8 @@ export default function MobileDropdown() {
     const { setCrocEnv } = useContext(CrocEnvContext);
 
     useEffect(() => {
-        if (tokenBalances === undefined) {
-            setIsTokenBalanceFetchManuallyTriggerered(true);
-        }
-    }, [tokenBalances === undefined]);
+        setIsTokenBalanceFetchManuallyTriggerered(true);
+    }, []);
 
     const [_, copy] = useCopyToClipboard();
 

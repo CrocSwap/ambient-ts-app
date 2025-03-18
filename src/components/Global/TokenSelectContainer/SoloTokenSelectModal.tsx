@@ -17,7 +17,6 @@ import {
     AppStateContext,
     ChainDataContext,
     SidebarContext,
-    TokenBalanceContext,
 } from '../../../contexts';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -61,7 +60,6 @@ export const SoloTokenSelectModal = (props: propsIF) => {
 
     const { setIsTokenBalanceFetchManuallyTriggerered } =
         useContext(ChainDataContext);
-    const { tokenBalances } = useContext(TokenBalanceContext);
 
     const { setIsPoolDropdownOpen, isPoolDropdownOpen } =
         useContext(SidebarContext);
@@ -73,10 +71,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     }, []);
 
     useEffect(() => {
-        if (tokenBalances === undefined) {
-            setIsTokenBalanceFetchManuallyTriggerered(true);
-        }
-    }, [tokenBalances === undefined]);
+        setIsTokenBalanceFetchManuallyTriggerered(true);
+    }, []);
 
     const {
         tokens,

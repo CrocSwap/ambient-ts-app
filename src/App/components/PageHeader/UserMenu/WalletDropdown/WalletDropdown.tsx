@@ -76,10 +76,8 @@ export default function WalletDropdown(props: propsIF) {
         useContext(CachedDataContext);
 
     useEffect(() => {
-        if (tokenBalances === undefined) {
-            setIsTokenBalanceFetchManuallyTriggerered(true);
-        }
-    }, [tokenBalances === undefined]);
+        setIsTokenBalanceFetchManuallyTriggerered(true);
+    }, []);
 
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF): JSX.Element {
         const { logoUri, symbol, address, amount, value } = props;

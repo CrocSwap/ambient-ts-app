@@ -43,8 +43,6 @@ export const fetchAmbientListWalletBalances = async (
         .concat(testnetTokenList.tokens)
         .filter((token: any) => token.chainId === parseInt(props.chain));
 
-    console.log({ ambientTokensOnActiveChain });
-
     const balancePromises = ambientTokensOnActiveChain.map(async (token) => {
         const walletBalance = (
             await crocEnv.token(token.address.toLowerCase()).wallet(address)

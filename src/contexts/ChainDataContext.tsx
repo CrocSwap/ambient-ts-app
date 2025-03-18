@@ -93,7 +93,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isUserIdle,
         isUserOnline,
         isTradeRoute,
-        isHomeRoute,
+        isAccountRoute,
     } = useContext(AppStateContext);
     const {
         setTokenBalances,
@@ -436,11 +436,9 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 console.debug('fetching native token and ERC20 token balances');
 
             if (
-                (!isHomeRoute || isTokenBalanceFetchManuallyTriggerered) &&
+                (isAccountRoute || isTokenBalanceFetchManuallyTriggerered) &&
                 crocEnv &&
                 userAddress &&
-                chainId &&
-                everyFiveMinutes &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
                 try {
@@ -527,6 +525,9 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                         });
 
                     setTokenBalances(tokensWithLogos);
+                    if (isTokenBalanceFetchManuallyTriggerered) {
+                        setIsTokenBalanceFetchManuallyTriggerered(false);
+                    }
                 } catch (error) {
                     console.error({ error });
                 }
@@ -539,7 +540,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         everyFiveMinutes,
         GCGO_URL,
         sessionReceipts.length,
-        isHomeRoute,
+        isAccountRoute,
         isTokenBalanceFetchManuallyTriggerered,
     ]);
 
