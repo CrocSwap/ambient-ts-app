@@ -90,6 +90,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         activeNetwork: { chainId, evmRpcUrl, fallbackRpcUrl, GCGO_URL },
         isUserIdle,
         isUserOnline,
+        isTradeRoute,
     } = useContext(AppStateContext);
     const {
         setTokenBalances,
@@ -183,7 +184,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     useEffect(() => {
         (async () => {
-            if (chainId && provider) {
+            if (isUserConnected || isTradeRoute) {
                 const network = await provider.getNetwork();
                 if (Number(network.chainId) !== parseInt(chainId)) {
                     console.warn(
@@ -199,7 +200,14 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 setGasPriceinGwei(newGasPrice);
             }
         })();
-    }, [chainId, blockPollingUrl, provider, poolStatsPollingCacheTime]);
+    }, [
+        chainId,
+        blockPollingUrl,
+        provider,
+        poolStatsPollingCacheTime,
+        isUserConnected,
+        isTradeRoute,
+    ]);
 
     async function pollBlockNum(): Promise<void> {
         try {

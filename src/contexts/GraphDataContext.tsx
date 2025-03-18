@@ -130,6 +130,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         isUserIdle,
         isUserOnline,
         isTradeRoute,
+        isAccountRoute,
     } = useContext(AppStateContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
     const {
@@ -671,7 +672,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
             // This useEffect controls a series of other dispatches that fetch data on update of the user object
             // user Postions, limit orders, and recent changes are all governed here
             if (
-                !isTradeRoute ||
+                (!isTradeRoute && !isAccountRoute) ||
                 !isUserOnline ||
                 !isServerEnabled ||
                 !isUserConnected ||
@@ -764,7 +765,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         };
         fetchData();
     }, [
-        isTradeRoute,
+        isTradeRoute || isAccountRoute,
         isUserOnline,
         isServerEnabled,
         tokens.tokenUniv.length,

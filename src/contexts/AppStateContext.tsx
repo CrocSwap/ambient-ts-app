@@ -52,6 +52,7 @@ export interface AppStateContextIF {
         viewportHeight: number;
     };
     isTradeRoute: boolean;
+    isAccountRoute: boolean;
 }
 
 export const AppStateContext = createContext({} as AppStateContextIF);
@@ -73,10 +74,19 @@ export const AppStateContextProvider = (props: {
     const FOOTER_HEIGHT = 56;
     const TOTAL_FIXED_HEIGHT = NAVBAR_HEIGHT + FOOTER_HEIGHT;
 
-    const location = useLocation();
+    const pathNoLeadingSlash = useLocation().pathname?.slice(1);
     const isTradeRoute =
-        location.pathname.includes('trade') ||
-        location.pathname.includes('swap');
+        pathNoLeadingSlash.includes('trade') ||
+        pathNoLeadingSlash.includes('swap');
+
+    const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
+    const isAddressHex =
+        (pathNoLeadingSlash?.startsWith('0x') &&
+            pathNoLeadingSlash?.length == 42) ||
+        (pathNoLeadingSlash?.startsWith('account/0x') &&
+            pathNoLeadingSlash?.length == 50);
+    const isAccountRoute =
+        isAddressEns || isAddressHex || pathNoLeadingSlash?.includes('account');
 
     const [dimensions, setDimensions] = useState({
         contentHeight: window.innerHeight - TOTAL_FIXED_HEIGHT,
@@ -292,6 +302,7 @@ export const AppStateContextProvider = (props: {
             activeNetwork,
             chooseNetwork,
             isTradeRoute,
+            isAccountRoute,
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -315,6 +326,7 @@ export const AppStateContextProvider = (props: {
             activeNetwork,
             chooseNetwork,
             isTradeRoute,
+            isAccountRoute,
         ],
     );
 
