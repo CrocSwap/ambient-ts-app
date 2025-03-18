@@ -78,7 +78,8 @@ export const AppStateContextProvider = (props: {
     const pathNoLeadingSlash = useLocation().pathname?.slice(1);
     const isTradeRoute =
         pathNoLeadingSlash.includes('trade') ||
-        pathNoLeadingSlash.includes('swap');
+        pathNoLeadingSlash.includes('swap') ||
+        pathNoLeadingSlash.includes('initpool');
 
     const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
     const isAddressHex =
