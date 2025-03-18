@@ -83,6 +83,7 @@ export interface ChainDataContextIF {
     setIsTokenBalanceFetchManuallyTriggerered: Dispatch<
         SetStateAction<boolean>
     >;
+    setIsGasPriceFetchManuallyTriggerered: Dispatch<SetStateAction<boolean>>;
 }
 
 export const ChainDataContext = createContext({} as ChainDataContextIF);
@@ -142,6 +143,11 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         setIsTokenBalanceFetchManuallyTriggerered,
     ] = useState<boolean>(false);
 
+    const [
+        isGasPriceFetchManuallyTriggerered,
+        setIsGasPriceFetchManuallyTriggerered,
+    ] = useState<boolean>(false);
+
     const [rpcNodeStatus, setRpcNodeStatus] =
         useState<RpcNodeStatus>('unknown');
 
@@ -192,7 +198,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     useEffect(() => {
         (async () => {
-            if (isUserConnected || isTradeRoute) {
+            if (isTradeRoute || isGasPriceFetchManuallyTriggerered) {
                 const network = await provider.getNetwork();
                 if (Number(network.chainId) !== parseInt(chainId)) {
                     console.warn(
@@ -206,6 +212,9 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                         provider,
                     );
                 setGasPriceinGwei(newGasPrice);
+                if (isGasPriceFetchManuallyTriggerered) {
+                    setIsGasPriceFetchManuallyTriggerered(false);
+                }
             }
         })();
     }, [
@@ -213,8 +222,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         blockPollingUrl,
         provider,
         poolStatsPollingCacheTime,
-        isUserConnected,
         isTradeRoute,
+        isGasPriceFetchManuallyTriggerered,
     ]);
 
     async function pollBlockNum(): Promise<void> {
@@ -918,6 +927,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         totalFeesString,
         analyticsPoolList,
         setIsTokenBalanceFetchManuallyTriggerered,
+        setIsGasPriceFetchManuallyTriggerered,
     };
 
     return (

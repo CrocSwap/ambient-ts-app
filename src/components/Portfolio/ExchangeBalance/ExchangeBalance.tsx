@@ -47,7 +47,11 @@ export default function ExchangeBalance(props: propsIF) {
     const { userAddress } = useContext(UserDataContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const {
+        lastBlockNumber,
+        gasPriceInGwei,
+        setIsGasPriceFetchManuallyTriggerered,
+    } = useContext(ChainDataContext);
     const { setTokenBalance } = useContext(TokenBalanceContext);
 
     const [tokenAllowance, setTokenAllowance] = useState<bigint | undefined>();
@@ -75,6 +79,11 @@ export default function ExchangeBalance(props: propsIF) {
         setTokenWalletBalance('');
         setTokenDexBalance('');
     }, [selectedToken.address, userAddress]);
+
+    useEffect(() => {
+        if (gasPriceInGwei === undefined)
+            setIsGasPriceFetchManuallyTriggerered(true);
+    }, [gasPriceInGwei]);
 
     useEffect(() => {
         if (crocEnv && selectedToken.address && userAddress) {
