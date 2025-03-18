@@ -71,7 +71,8 @@ export function usePoolMetadata() {
         limitOrdersByPool,
     } = useContext(GraphDataContext);
 
-    const { analyticsPoolList } = useContext(ChainDataContext);
+    const { analyticsPoolList, isAnalyticsPoolListDefinedOrUnavailable } =
+        useContext(ChainDataContext);
 
     const {
         tokenA,
@@ -316,7 +317,8 @@ export function usePoolMetadata() {
                 baseTokenAddress !== '' &&
                 quoteTokenAddress !== '' &&
                 (await crocEnv.context).chain.chainId === chainId &&
-                isTradeRoute
+                isTradeRoute &&
+                isAnalyticsPoolListDefinedOrUnavailable
             ) {
                 // retrieve pool_positions
                 const allPositionsCacheEndpoint = GCGO_URL + '/pool_positions?';
@@ -670,6 +672,7 @@ export function usePoolMetadata() {
         sessionReceipts.length,
         blockPollingUrl,
         isTradeRoute,
+        isAnalyticsPoolListDefinedOrUnavailable,
     ]);
 
     const totalPositionUsdValue = useMemo(

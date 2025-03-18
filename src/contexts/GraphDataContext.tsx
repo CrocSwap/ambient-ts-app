@@ -139,7 +139,8 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         sessionPositionUpdates,
         transactionsByTypeIfs,
     } = useContext(ReceiptContext);
-    const { analyticsPoolList } = useContext(ChainDataContext);
+    const { analyticsPoolList, isAnalyticsPoolListDefinedOrUnavailable } =
+        useContext(ChainDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
@@ -672,6 +673,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
             // This useEffect controls a series of other dispatches that fetch data on update of the user object
             // user Postions, limit orders, and recent changes are all governed here
             if (
+                !isAnalyticsPoolListDefinedOrUnavailable ||
                 (!isTradeRoute && !isAccountRoute) ||
                 !isUserOnline ||
                 !isServerEnabled ||
@@ -765,6 +767,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         };
         fetchData();
     }, [
+        isAnalyticsPoolListDefinedOrUnavailable,
         isTradeRoute || isAccountRoute,
         isUserOnline,
         isServerEnabled,

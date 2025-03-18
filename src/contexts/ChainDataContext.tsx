@@ -84,6 +84,7 @@ export interface ChainDataContextIF {
         SetStateAction<boolean>
     >;
     setIsGasPriceFetchManuallyTriggerered: Dispatch<SetStateAction<boolean>>;
+    isAnalyticsPoolListDefinedOrUnavailable: boolean;
 }
 
 export const ChainDataContext = createContext({} as ChainDataContextIF);
@@ -115,6 +116,25 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     } = useContext(CrocEnvContext);
 
     const analyticsPoolList: PoolIF[] | undefined = usePoolList(crocEnv);
+
+    const [
+        isAnalyticsPoolListDefinedOrUnavailable,
+        setIsAnalyticsPoolListDefinedOrUnavailable,
+    ] = useState(false);
+
+    useEffect(() => {
+        if (analyticsPoolList) {
+            setIsAnalyticsPoolListDefinedOrUnavailable(true);
+            return; // Exit early to prevent setting a timeout
+        }
+
+        const timer = setTimeout(
+            () => setIsAnalyticsPoolListDefinedOrUnavailable(true),
+            2000,
+        ); // Flip after 2s
+
+        return () => clearTimeout(timer); // Cleanup if component unmounts early
+    }, [analyticsPoolList]);
 
     const {
         cachedFetchAmbientListWalletBalances,
@@ -928,6 +948,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         analyticsPoolList,
         setIsTokenBalanceFetchManuallyTriggerered,
         setIsGasPriceFetchManuallyTriggerered,
+        isAnalyticsPoolListDefinedOrUnavailable,
     };
 
     return (
