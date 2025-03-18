@@ -146,6 +146,7 @@ const fetchDecorated = async ({
     tokenUniv,
     crocEnv,
     provider,
+    analyticsPoolList,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
@@ -181,6 +182,7 @@ const fetchDecorated = async ({
             crocEnv: crocEnv!,
             provider: provider!,
             chainId: chainId,
+            analyticsPoolList,
             cachedFetchTokenPrice: cachedFetchTokenPrice!,
             cachedQuerySpotPrice: cachedQuerySpotPrice!,
             cachedTokenDetails: cachedTokenDetails!,
@@ -198,6 +200,7 @@ const fetchSimpleDecorated = async ({
     provider,
     tokenUniv,
     crocEnv,
+    analyticsPoolList,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
@@ -220,7 +223,7 @@ const fetchSimpleDecorated = async ({
         provider: provider,
         tokenUniv: tokenUniv,
         crocEnv: crocEnv,
-
+        analyticsPoolList,
         // Data Sources
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
