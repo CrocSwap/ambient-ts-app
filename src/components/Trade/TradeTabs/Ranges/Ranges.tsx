@@ -8,6 +8,7 @@ import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
 import {
     AppStateContext,
     CachedDataContext,
+    ChainDataContext,
     CrocEnvContext,
     TokenContext,
 } from '../../../../contexts';
@@ -69,18 +70,14 @@ function Ranges(props: propsIF) {
     const { tokens } = useContext(TokenContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
 
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
 
     const { userAddress } = useContext(UserDataContext);
-
+    const { analyticsPoolList } = useContext(ChainDataContext);
     const {
         positionsByUser,
         userPositionsByPool,
@@ -191,7 +188,6 @@ function Ranges(props: propsIF) {
             .then((response) => response.json())
             .then((json) => {
                 const userPoolPositions = json.data;
-                const skipENSFetch = true;
 
                 if (userPoolPositions) {
                     Promise.all(
@@ -202,11 +198,10 @@ function Ranges(props: propsIF) {
                                 crocEnv,
                                 provider,
                                 chainId,
+                                analyticsPoolList,
                                 cachedFetchTokenPrice,
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
-                                cachedEnsResolve,
-                                skipENSFetch,
                                 forceOnchainLiqUpdate,
                             );
                         }),

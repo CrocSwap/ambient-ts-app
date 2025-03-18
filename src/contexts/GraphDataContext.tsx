@@ -16,8 +16,10 @@ import {
     RecordType,
     TransactionIF,
 } from '../ambient-utils/types';
+import useGenFakeTableRow from '../components/Trade/InfiniteScroll/useGenFakeTableRow';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
+import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { DataLoadingContext } from './DataLoadingContext';
 import {
@@ -28,7 +30,6 @@ import {
 import { TokenContext } from './TokenContext';
 import { TradeDataContext } from './TradeDataContext';
 import { UserDataContext } from './UserDataContext';
-import useGenFakeTableRow from '../components/Trade/InfiniteScroll/useGenFakeTableRow';
 
 export interface Changes {
     dataReceived: boolean;
@@ -136,13 +137,10 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         sessionPositionUpdates,
         transactionsByTypeIfs,
     } = useContext(ReceiptContext);
+    const { analyticsPoolList } = useContext(ChainDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { userAddress: userDefaultAddress, isUserConnected } =
@@ -695,10 +693,10 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                         provider,
                         tokenUniv: tokens.tokenUniv,
                         crocEnv,
+                        analyticsPoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                        cachedEnsResolve,
                     });
 
                     if (recordTargets[i] == RecordType.Position) {
@@ -735,10 +733,10 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                     GCGO_URL: GCGO_URL,
                     provider,
                     n: 200,
+                    analyticsPoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {

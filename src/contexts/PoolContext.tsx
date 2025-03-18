@@ -18,10 +18,8 @@ import {
 } from '../ambient-utils/dataLayer';
 import { PoolIF, PoolStatIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
-import { usePoolList } from '../App/hooks/usePoolList';
 import { AppStateContext } from './AppStateContext';
 import { ChainDataContext } from './ChainDataContext';
-import { CrocEnvContext } from './CrocEnvContext';
 import { TradeDataContext } from './TradeDataContext';
 
 export interface PoolContextIF {
@@ -49,10 +47,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const {
         activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
-    const { crocEnv } = useContext(CrocEnvContext);
-    const { gcgoPoolList } = useContext(ChainDataContext);
-
-    const analyticsPoolList: PoolIF[] | undefined = usePoolList(crocEnv);
+    const { gcgoPoolList, analyticsPoolList } = useContext(ChainDataContext);
 
     const [activePoolList, setActivePoolList] = useState<PoolIF[]>(
         analyticsPoolList?.length ? analyticsPoolList : [],

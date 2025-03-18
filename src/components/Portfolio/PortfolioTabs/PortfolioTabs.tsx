@@ -23,6 +23,7 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
@@ -62,12 +63,10 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedUserBlastXp,
     } = props;
 
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
+
+    const { analyticsPoolList } = useContext(ChainDataContext);
 
     const {
         server: { isEnabled: isServerEnabled },
@@ -114,7 +113,6 @@ export default function PortfolioTabs(props: propsIF) {
             .then((json) => {
                 const userPositions = json?.data;
                 // temporarily skip ENS fetch
-                const skipENSFetch = true;
                 if (userPositions && crocEnv && provider) {
                     Promise.all(
                         userPositions.map((position: PositionServerIF) => {
@@ -124,11 +122,10 @@ export default function PortfolioTabs(props: propsIF) {
                                 crocEnv,
                                 provider,
                                 chainId,
+                                analyticsPoolList,
                                 cachedFetchTokenPrice,
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
-                                cachedEnsResolve,
-                                skipENSFetch,
                             );
                         }),
                     )
@@ -170,10 +167,10 @@ export default function PortfolioTabs(props: propsIF) {
                                     crocEnv,
                                     provider,
                                     chainId,
+                                    analyticsPoolList,
                                     cachedFetchTokenPrice,
                                     cachedQuerySpotPrice,
                                     cachedTokenDetails,
-                                    cachedEnsResolve,
                                 );
                             },
                         ),
@@ -204,10 +201,10 @@ export default function PortfolioTabs(props: propsIF) {
                 crocEnv: crocEnv,
                 GCGO_URL: GCGO_URL,
                 provider,
+                analyticsPoolList,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,
                 cachedTokenDetails: cachedTokenDetails,
-                cachedEnsResolve: cachedEnsResolve,
             })
                 .then((updatedTransactions) => {
                     if (updatedTransactions) {

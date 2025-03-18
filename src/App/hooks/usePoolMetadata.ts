@@ -70,6 +70,8 @@ export function usePoolMetadata() {
         limitOrdersByPool,
     } = useContext(GraphDataContext);
 
+    const { analyticsPoolList } = useContext(ChainDataContext);
+
     const {
         tokenA,
         tokenB,
@@ -83,7 +85,6 @@ export function usePoolMetadata() {
         cachedQuerySpotTick,
         cachedFetchTokenPrice,
         cachedTokenDetails,
-        cachedEnsResolve,
     } = useContext(CachedDataContext);
 
     const pathname = useLocation().pathname;
@@ -331,7 +332,6 @@ export function usePoolMetadata() {
                     .then((response) => response.json())
                     .then((json) => {
                         const poolPositions = json.data;
-                        const skipENSFetch = true;
                         if (poolPositions) {
                             Promise.all(
                                 poolPositions.map(
@@ -342,11 +342,10 @@ export function usePoolMetadata() {
                                             crocEnv,
                                             provider,
                                             chainId,
+                                            analyticsPoolList,
                                             cachedFetchTokenPrice,
                                             cachedQuerySpotPrice,
                                             cachedTokenDetails,
-                                            cachedEnsResolve,
-                                            skipENSFetch,
                                         );
                                     },
                                 ),
@@ -395,10 +394,10 @@ export function usePoolMetadata() {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
+                    analyticsPoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((poolChangesJsonData) => {
                         if (
@@ -434,10 +433,10 @@ export function usePoolMetadata() {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
+                    analyticsPoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((updatedLimitOrderStates) => {
                         if (
@@ -479,7 +478,6 @@ export function usePoolMetadata() {
                         .then((json) => {
                             const userPoolTransactions =
                                 json.data as TransactionIF[];
-                            const skipENSFetch = true;
                             if (userPoolTransactions) {
                                 const userPoolTransactionsWithoutFills =
                                     userPoolTransactions.filter(
@@ -494,11 +492,10 @@ export function usePoolMetadata() {
                                                 crocEnv,
                                                 provider,
                                                 chainId,
+                                                analyticsPoolList,
                                                 cachedFetchTokenPrice,
                                                 cachedQuerySpotPrice,
                                                 cachedTokenDetails,
-                                                cachedEnsResolve,
-                                                skipENSFetch,
                                             );
                                         },
                                     ),
@@ -546,7 +543,6 @@ export function usePoolMetadata() {
                         .then((response) => response.json())
                         .then((json) => {
                             const userPoolPositions = json.data;
-                            const skipENSFetch = true;
 
                             if (userPoolPositions) {
                                 Promise.all(
@@ -558,11 +554,10 @@ export function usePoolMetadata() {
                                                 crocEnv,
                                                 provider,
                                                 chainId,
+                                                analyticsPoolList,
                                                 cachedFetchTokenPrice,
                                                 cachedQuerySpotPrice,
                                                 cachedTokenDetails,
-                                                cachedEnsResolve,
-                                                skipENSFetch,
                                                 forceOnchainLiqUpdate,
                                             );
                                         },
@@ -620,10 +615,10 @@ export function usePoolMetadata() {
                                                 crocEnv,
                                                 provider,
                                                 chainId,
+                                                analyticsPoolList,
                                                 cachedFetchTokenPrice,
                                                 cachedQuerySpotPrice,
                                                 cachedTokenDetails,
-                                                cachedEnsResolve,
                                             );
                                         },
                                     ),

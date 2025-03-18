@@ -34,6 +34,7 @@ import {
 import { tokens as AMBIENT_TOKEN_LIST } from '../ambient-utils/constants/ambient-token-list.json';
 import { getChainStats, getFormattedNumber } from '../ambient-utils/dataLayer';
 import { AllVaultsServerIF, PoolIF, TokenIF } from '../ambient-utils/types';
+import { usePoolList } from '../App/hooks/usePoolList';
 import { AppStateContext } from './AppStateContext';
 import { BrandContext } from './BrandContext';
 import { CachedDataContext } from './CachedDataContext';
@@ -79,6 +80,7 @@ export interface ChainDataContextIF {
     totalTvlString: string | undefined;
     totalVolumeString: string | undefined;
     totalFeesString: string | undefined;
+    analyticsPoolList: PoolIF[] | undefined;
 }
 
 export const ChainDataContext = createContext({} as ChainDataContextIF);
@@ -106,6 +108,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         plumeProvider,
         isPrimaryRpcNodeInactive,
     } = useContext(CrocEnvContext);
+
+    const analyticsPoolList: PoolIF[] | undefined = usePoolList(crocEnv);
 
     const {
         cachedFetchAmbientListWalletBalances,
@@ -905,6 +909,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         totalTvlString,
         totalVolumeString,
         totalFeesString,
+        analyticsPoolList,
     };
 
     return (
