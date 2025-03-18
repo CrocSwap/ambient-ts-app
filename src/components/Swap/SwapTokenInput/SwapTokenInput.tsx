@@ -407,7 +407,7 @@ function SwapTokenInput(props: propsIF) {
                 await refreshTokenData();
             }
         })();
-    }, [crocEnv, chainId, isUserOnline]);
+    }, [crocEnv, chainId, isUserOnline, isPoolInitialized]);
 
     useEffect(() => {
         if (isTokenAPrimary) {
