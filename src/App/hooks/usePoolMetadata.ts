@@ -50,6 +50,7 @@ export function usePoolMetadata() {
         isUserIdle,
         isUserOnline,
         activeNetwork: { chainId, poolIndex, GCGO_URL },
+        isTradeRoute,
     } = useContext(AppStateContext);
     const {
         setAdvancedLowTick,
@@ -314,7 +315,8 @@ export function usePoolMetadata() {
                 provider &&
                 baseTokenAddress !== '' &&
                 quoteTokenAddress !== '' &&
-                (await crocEnv.context).chain.chainId === chainId
+                (await crocEnv.context).chain.chainId === chainId &&
+                isTradeRoute
             ) {
                 // retrieve pool_positions
                 const allPositionsCacheEndpoint = GCGO_URL + '/pool_positions?';
@@ -667,6 +669,7 @@ export function usePoolMetadata() {
         provider,
         sessionReceipts.length,
         blockPollingUrl,
+        isTradeRoute,
     ]);
 
     const totalPositionUsdValue = useMemo(
