@@ -53,6 +53,7 @@ export interface AppStateContextIF {
     };
     isTradeRoute: boolean;
     isAccountRoute: boolean;
+    isHomeRoute: boolean;
 }
 
 export const AppStateContext = createContext({} as AppStateContextIF);
@@ -87,6 +88,8 @@ export const AppStateContextProvider = (props: {
             pathNoLeadingSlash?.length == 50);
     const isAccountRoute =
         isAddressEns || isAddressHex || pathNoLeadingSlash?.includes('account');
+
+    const isHomeRoute = pathNoLeadingSlash === '';
 
     const [dimensions, setDimensions] = useState({
         contentHeight: window.innerHeight - TOTAL_FIXED_HEIGHT,
@@ -303,6 +306,7 @@ export const AppStateContextProvider = (props: {
             chooseNetwork,
             isTradeRoute,
             isAccountRoute,
+            isHomeRoute,
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -327,6 +331,7 @@ export const AppStateContextProvider = (props: {
             chooseNetwork,
             isTradeRoute,
             isAccountRoute,
+            isHomeRoute,
         ],
     );
 

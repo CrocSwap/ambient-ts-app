@@ -52,7 +52,8 @@ export default function WalletDropdown(props: propsIF) {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const { nativeTokenUsdPrice } = useContext(ChainDataContext);
+    const { nativeTokenUsdPrice, setIsTokenBalanceFetchManuallyTriggerered } =
+        useContext(ChainDataContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
     const { tokens } = useContext(TokenContext);
@@ -73,6 +74,12 @@ export default function WalletDropdown(props: propsIF) {
 
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext(CachedDataContext);
+
+    useEffect(() => {
+        if (tokenBalances === undefined) {
+            setIsTokenBalanceFetchManuallyTriggerered(true);
+        }
+    }, [tokenBalances === undefined]);
 
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF): JSX.Element {
         const { logoUri, symbol, address, amount, value } = props;
