@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 export function useRangeInputDisable(
     isAmbient: boolean,
     isTokenABase: boolean,
-    currentPoolPriceTick: number,
+    currentPoolPriceTick: number | undefined,
     defaultLowTick: number,
     defaultHighTick: number,
     isDenomBase: boolean,
@@ -16,6 +16,7 @@ export function useRangeInputDisable(
     // Or at least made more readable
     useEffect(() => {
         if (
+            currentPoolPriceTick === undefined ||
             currentPoolPriceTick === Infinity ||
             currentPoolPriceTick === -Infinity ||
             (defaultLowTick === 0 && defaultHighTick === 0)

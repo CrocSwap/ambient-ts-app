@@ -1,5 +1,6 @@
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router';
 import {
     FetchContractDetailsFn,
     TokenPriceFn,
@@ -54,6 +55,8 @@ export const useTokenStats = (
 ): useTokenStatsIF => {
     const [dexTokens, setDexTokens] = useState<dexTokenData[]>([]);
     const { activeNetwork } = useContext(AppStateContext);
+    const pathname = useLocation().pathname;
+    const userIsOnExplorePage = pathname.includes('/explore');
 
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const defaultTokensForChain: [TokenIF, TokenIF] =
@@ -77,11 +80,15 @@ export const useTokenStats = (
     // redecorate token data when token lists are pulled for the first time
     useEffect(() => {
         (async () => {
-            if (crocEnv && (await crocEnv.context).chain.chainId === chainId) {
+            if (
+                userIsOnExplorePage &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId
+            ) {
                 await fetchData();
             }
         })();
-    }, [crocEnv, chainId, providerUrl]);
+    }, [crocEnv, chainId, providerUrl, userIsOnExplorePage]);
 
     async function fetchData(): Promise<void> {
         if (crocEnv) {
@@ -166,7 +173,7 @@ export const useTokenStats = (
                 price =
                     toDisplayPrice(
                         await poolWithETHNonDisplayPricePromise,
-                        18,
+                        defaultTokensForChain[0].decimals,
                         tokenMeta.decimals,
                     ) * ((await ethPricePromise)?.usdPrice || 0) || 0;
             }

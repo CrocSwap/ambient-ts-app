@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { LuRefreshCcw, LuSearch } from 'react-icons/lu';
 import { hiddenTokens } from '../../../ambient-utils/constants';
@@ -33,14 +33,6 @@ export default function Explore(props: ExploreIF) {
         activeNetwork: { chainId, displayName },
     } = useContext(AppStateContext);
     const { analyticsPoolList } = useContext(PoolContext);
-
-    // trigger process to fetch and format token data when page loads with
-    // ... gatekeeping to prevent re-fetch if data is already loaded
-    useEffect(() => {
-        if (crocEnv !== undefined && topTokensOnchain.data.length === 0) {
-            topTokensOnchain.update();
-        }
-    }, [crocEnv !== undefined]);
 
     const refreshPools = async () => {
         // make sure crocEnv exists and pool metadata is present

@@ -187,7 +187,8 @@ function TokenInputWithWalletBalance(props: propsIF) {
                     !usdValueForDom ||
                     disabledContent ||
                     !isPoolInitialized ||
-                    HIDE_TOKEN_VALUES
+                    HIDE_TOKEN_VALUES ||
+                    token.chainId === parseInt('0x279f') // monad testnet
                         ? ''
                         : usdValueForDom
                 }

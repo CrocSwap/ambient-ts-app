@@ -8,6 +8,7 @@ import {
     useRef,
     useState,
 } from 'react';
+import { PoolContext, TradeDataContext, TradeTokenContext } from '.';
 import { fetchCandleSeriesHybrid } from '../ambient-utils/api';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
@@ -26,7 +27,6 @@ import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
-import { TradeTokenContext } from './TradeTokenContext';
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
     setCandleData: Dispatch<
@@ -67,17 +67,21 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isCandleDataNull,
         setIsCandleDataNull,
     } = useContext(ChartContext);
+
+    const { isChartVisible } = useContext(TradeTokenContext);
     const {
         activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
-    const {
-        baseToken: { address: baseTokenAddress },
-        quoteToken: { address: quoteTokenAddress },
-    } = useContext(TradeTokenContext);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext(CachedDataContext);
+
+    const { poolData } = useContext(PoolContext);
+
+    const baseTokenAddress = baseToken.address;
+    const quoteTokenAddress = quoteToken.address;
 
     const baseTokenAddressRef = useRef(baseTokenAddress);
     const quoteTokenAddressRef = useRef(quoteTokenAddress);
@@ -207,6 +211,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     useEffect(() => {
         (async () => {
             if (
+                isChartVisible &&
                 crocEnv &&
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
@@ -223,6 +228,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             }
         })();
     }, [
+        isChartVisible,
         isManualCandleFetchRequested,
         isChartEnabled,
         isUserOnline,
@@ -253,7 +259,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             isUserOnline &&
             candleScale.isShowLatestCandle &&
             isChartOpen &&
-            location.pathname.includes('/trade')
+            isChartVisible
         ) {
             if (
                 candleData &&
@@ -342,13 +348,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 poolIndex,
                 GCGO_URL,
                 candleTimeLocal || defaultCandleDuration,
-                baseTokenAddress,
-                quoteTokenAddress,
+                baseToken,
+                quoteToken,
                 candleTime,
                 nCandles,
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
+                poolData,
             )
                 .then((candles) => {
                     if (
@@ -439,13 +446,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             poolIndex,
             GCGO_URL,
             candleTimeLocal,
-            baseTokenAddress,
-            quoteTokenAddress,
+            baseToken,
+            quoteToken,
             minTimeMemo ? minTimeMemo : 0,
             numDurations,
             crocEnv,
             cachedFetchTokenPrice,
             cachedQuerySpotPrice,
+            poolData,
         )
             .then((incrCandles) => {
                 if (incrCandles && candleData) {

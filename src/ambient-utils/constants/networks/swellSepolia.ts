@@ -65,6 +65,7 @@ export const swellSepolia: NetworkIF = {
     defaultPairFuta: [SWELL_SEPOLIA_TOKENS.ETH, SWELL_SEPOLIA_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Swell Testnet',
     tokenPriceQueryAssetPlatform: undefined,

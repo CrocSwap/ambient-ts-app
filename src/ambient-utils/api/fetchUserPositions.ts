@@ -2,11 +2,9 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
 import {
-    FetchAddrFn,
     FetchContractDetailsFn,
     TokenPriceFn,
     fetchContractDetails,
-    fetchEnsAddress,
     fetchTokenPrice,
 } from '../api';
 import {
@@ -19,6 +17,7 @@ import {
 import {
     LimitOrderIF,
     LimitOrderServerIF,
+    PoolIF,
     PositionIF,
     PositionServerIF,
     RecordType,
@@ -33,10 +32,11 @@ interface RecordRequestIF {
     tokenUniv?: TokenIF[];
     crocEnv?: CrocEnv;
     provider?: Provider;
+    isTestnet: boolean;
+    analyticsPoolList?: PoolIF[] | undefined;
     cachedFetchTokenPrice?: TokenPriceFn;
     cachedQuerySpotPrice?: SpotPriceFn;
     cachedTokenDetails?: FetchContractDetailsFn;
-    cachedEnsResolve?: FetchAddrFn;
 }
 
 const fetchUserPositions = async ({
@@ -74,10 +74,11 @@ const decorateUserPositions = async ({
     crocEnv,
     provider,
     chainId,
+    isTestnet,
+    analyticsPoolList,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
-    cachedEnsResolve,
 }: {
     recordType: RecordType;
     userPositions: PositionIF[] | LimitOrderIF[];
@@ -85,13 +86,13 @@ const decorateUserPositions = async ({
     crocEnv: CrocEnv;
     provider: Provider;
     chainId: string;
+    isTestnet: boolean;
+    analyticsPoolList?: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
-    cachedEnsResolve: FetchAddrFn;
 }) => {
-    const skipENSFetch = true;
-    const forceOnchainLiqUpdate = userPositions.length < 30; // temporary solution to fix batch RPC call failure when user has a lot of positions
+    const forceOnchainLiqUpdate = userPositions.length < 30 && !isTestnet; // temporary solution to fix batch RPC call failure when user has a lot of positions
     if (recordType == RecordType.LimitOrder) {
         return await Promise.all(
             (userPositions as LimitOrderServerIF[]).map(
@@ -102,10 +103,10 @@ const decorateUserPositions = async ({
                         crocEnv,
                         provider,
                         chainId,
+                        analyticsPoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                        cachedEnsResolve,
                     );
                 },
             ),
@@ -128,11 +129,10 @@ const decorateUserPositions = async ({
                         crocEnv,
                         provider,
                         chainId,
+                        analyticsPoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                        cachedEnsResolve,
-                        skipENSFetch,
                         forceOnchainLiqUpdate,
                     );
                 },
@@ -149,10 +149,11 @@ const fetchDecorated = async ({
     tokenUniv,
     crocEnv,
     provider,
+    analyticsPoolList,
+    isTestnet,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
-    cachedEnsResolve,
 }: RecordRequestIF): Promise<PositionIF[] | LimitOrderIF[]> => {
     const response = await fetchUserPositions({
         recordType,
@@ -169,7 +170,6 @@ const fetchDecorated = async ({
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
-        cachedEnsResolve,
     };
     for (const [key, value] of Object.entries(fieldsToCheck)) {
         if (value === undefined || value === null) {
@@ -186,10 +186,11 @@ const fetchDecorated = async ({
             crocEnv: crocEnv!,
             provider: provider!,
             chainId: chainId,
+            analyticsPoolList,
+            isTestnet,
             cachedFetchTokenPrice: cachedFetchTokenPrice!,
             cachedQuerySpotPrice: cachedQuerySpotPrice!,
             cachedTokenDetails: cachedTokenDetails!,
-            cachedEnsResolve: cachedEnsResolve!,
         });
         return updatedPositions;
     }
@@ -204,10 +205,11 @@ const fetchSimpleDecorated = async ({
     provider,
     tokenUniv,
     crocEnv,
+    analyticsPoolList,
+    isTestnet,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
-    cachedEnsResolve,
 }: RecordRequestIF) => {
     cachedFetchTokenPrice =
         cachedFetchTokenPrice || (fetchTokenPrice as TokenPriceFn);
@@ -215,7 +217,6 @@ const fetchSimpleDecorated = async ({
         cachedQuerySpotPrice || (querySpotPrice as SpotPriceFn);
     cachedTokenDetails =
         cachedTokenDetails || (fetchContractDetails as FetchContractDetailsFn);
-    cachedEnsResolve = cachedEnsResolve || (fetchEnsAddress as FetchAddrFn);
 
     return await fetchDecorated({
         // Query:
@@ -228,12 +229,12 @@ const fetchSimpleDecorated = async ({
         provider: provider,
         tokenUniv: tokenUniv,
         crocEnv: crocEnv,
-
+        analyticsPoolList,
+        isTestnet,
         // Data Sources
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
-        cachedEnsResolve,
     });
 };
 

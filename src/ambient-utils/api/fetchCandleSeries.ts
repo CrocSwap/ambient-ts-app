@@ -1,6 +1,7 @@
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../constants';
 import { SpotPriceFn } from '../dataLayer';
+import { PoolStatIF, TokenIF } from '../types';
 import {
     CandleDataIF,
     CandleDataServerIF,
@@ -14,14 +15,20 @@ export async function fetchCandleSeriesHybrid(
     poolIndex: number,
     GCGO_URL: string,
     period: number,
-    baseTokenAddress: string,
-    quoteTokenAddress: string,
+    baseToken: TokenIF,
+    quoteToken: TokenIF,
     endTime: number,
     nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
+    poolData?: PoolStatIF,
 ): Promise<CandlesByPoolAndDurationIF | undefined> {
+    const baseTokenAddress = baseToken.address;
+    const quoteTokenAddress = quoteToken.address;
+    const baseTokenDecimals = baseToken.decimals;
+    const quoteTokenDecimals = quoteToken.decimals;
+
     const candles = await fetchCandleSeriesCroc(
         isFetchEnabled,
         chainId,
@@ -30,11 +37,14 @@ export async function fetchCandleSeriesHybrid(
         period,
         baseTokenAddress,
         quoteTokenAddress,
+        baseTokenDecimals,
+        quoteTokenDecimals,
         endTime,
         nCandles,
         crocEnv,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
+        poolData,
     );
 
     if (!candles) {
@@ -61,11 +71,14 @@ export async function fetchCandleSeriesCroc(
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
+    baseTokenDecimals: number,
+    quoteTokenDecimals: number,
     endTime: number,
     nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
+    poolData?: PoolStatIF,
 ): Promise<CandlesByPoolAndDurationIF | undefined> {
     if (!isFetchEnabled) {
         return undefined;
@@ -96,15 +109,17 @@ export async function fetchCandleSeriesCroc(
                 return undefined;
             }
             const payload = json?.data as CandleDataServerIF[];
-
             const candles = expandPoolStatsCandle(
                 payload,
                 baseTokenAddress,
                 quoteTokenAddress,
+                baseTokenDecimals,
+                quoteTokenDecimals,
                 chainId,
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
+                poolData,
             );
 
             return {
@@ -148,33 +163,46 @@ function capNumDurations(numDurations: number): number {
 
 async function expandPoolStatsCandle(
     payload: CandleDataServerIF[],
-    base: string,
-    quote: string,
+    baseTokenAddress: string,
+    quoteTokenAddress: string,
+    baseTokenDecimals: number,
+    quoteTokenDecimals: number,
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
+    poolData?: PoolStatIF,
 ): Promise<CandleDataIF[]> {
-    const baseDecimals = await crocEnv.token(base).decimals;
-    const quoteDecimals = await crocEnv.token(quote).decimals;
+    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
 
-    const basePricePromise = cachedFetchTokenPrice(base, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
+    const baseUsdPrice = poolData?.basePrice
+        ? poolData.basePrice
+        : (await basePricePromise)?.usdPrice;
+    const quoteUsdPrice = poolData?.quotePrice
+        ? poolData.quotePrice
+        : (await quotePricePromise)?.usdPrice;
 
-    const baseUsdPrice = (await basePricePromise)?.usdPrice;
-    const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
+    let spotPrice;
+    if (poolData?.activeTradePoolStats?.lastPriceSwap) {
+        spotPrice = poolData?.activeTradePoolStats?.lastPriceSwap;
+    } else if ((await crocEnv.context).chain.chainId === chainId) {
+        spotPrice = await cachedQuerySpotPrice(
+            crocEnv,
+            baseTokenAddress,
+            quoteTokenAddress,
+            chainId,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        );
+    } else {
+        return [];
+    }
 
-    if ((await crocEnv.context).chain.chainId !== chainId) return []; // ! ben
-
-    const spotPrice = await cachedQuerySpotPrice(
-        crocEnv,
-        base,
-        quote,
-        chainId,
-        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+    const displayPrice = toDisplayPrice(
+        spotPrice,
+        baseTokenDecimals,
+        quoteTokenDecimals,
     );
-
-    const displayPrice = toDisplayPrice(spotPrice, baseDecimals, quoteDecimals);
 
     const basePrice = baseUsdPrice
         ? baseUsdPrice
@@ -189,8 +217,8 @@ async function expandPoolStatsCandle(
 
     return decorateCandleData(
         payload,
-        baseDecimals,
-        quoteDecimals,
+        baseTokenDecimals,
+        quoteTokenDecimals,
         basePrice,
         quotePrice,
     ).reverse();

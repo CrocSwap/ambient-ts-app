@@ -176,13 +176,14 @@ function SwapTokenInput(props: propsIF) {
     ): Promise<number | undefined> {
         if (
             !isUserOnline ||
+            !isPoolInitialized ||
+            !crocEnv ||
             isNaN(parseFloat(input)) ||
-            parseFloat(input) <= 0 ||
-            !crocEnv
+            parseFloat(input) <= 0
         ) {
             setIsLiquidityInsufficient(false);
 
-            return undefined;
+            return;
         }
         const impact = await calcImpact(
             sellToken,
@@ -192,15 +193,14 @@ function SwapTokenInput(props: propsIF) {
             slippageTolerancePercentage / 100,
             input,
         );
-        if (impact === undefined) {
-            setLastImpactQuery(undefined);
-        } else {
-            setLastImpactQuery({
-                input,
-                isInputSell: sellToken,
-                impact,
-            });
-        }
+        if (impact === undefined) return;
+
+        setLastImpactQuery({
+            input,
+            isInputSell: sellToken,
+            impact,
+        });
+
         if (sellToken) {
             const estimatedBuyBigInt = impact?.buyQty
                 ? stringToBigInt(impact.buyQty, tokenB.decimals)
@@ -407,7 +407,7 @@ function SwapTokenInput(props: propsIF) {
                 await refreshTokenData();
             }
         })();
-    }, [crocEnv, chainId, isUserOnline]);
+    }, [crocEnv, chainId, isUserOnline, isPoolInitialized]);
 
     useEffect(() => {
         if (isTokenAPrimary) {

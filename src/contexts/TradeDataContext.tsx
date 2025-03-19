@@ -10,7 +10,6 @@ import {
     useState,
 } from 'react';
 import { getDefaultPairForChain } from '../ambient-utils/constants';
-import { MAINNET_TOKENS } from '../ambient-utils/constants/networks/ethereumMainnet';
 import {
     isBtcPair,
     isETHPair,
@@ -36,7 +35,7 @@ export interface TradeDataContextIF {
     primaryQuantity: string;
     limitTick: number | undefined;
     poolPriceNonDisplay: number;
-    currentPoolPriceTick: number;
+    currentPoolPriceTick: number | undefined;
     slippageTolerance: number;
 
     setTokenA: Dispatch<SetStateAction<TokenIF>>;
@@ -196,7 +195,12 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
 
-    const [soloToken, setSoloToken] = useState<TokenIF>(MAINNET_TOKENS.ETH);
+    const defaultBaseToken = useMemo(
+        () => getDefaultPairForChain(chainId)[0],
+        [chainId],
+    );
+
+    const [soloToken, setSoloToken] = useState<TokenIF>(defaultBaseToken);
 
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         useState<boolean>(false);
@@ -235,7 +239,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     const currentPoolPriceTick = useMemo(
         () =>
             poolPriceNonDisplay === undefined || poolPriceNonDisplay === 0
-                ? 0
+                ? undefined
                 : Math.log(poolPriceNonDisplay) / Math.log(1.0001),
         [poolPriceNonDisplay],
     );

@@ -26,10 +26,7 @@ export function useApprove() {
     } = useContext(AppStateContext);
 
     const { crocEnv, provider } = useContext(CrocEnvContext);
-    // TODO: useTokenBalancesAndAllowances replaces this in the init page branch
-    // const {
-    //     tradeData: { baseToken, quoteToken },
-    // } = useAppSelector((state) => state);
+
     const { setRecheckTokenAApproval, setRecheckTokenBApproval } =
         useContext(TradeTokenContext);
     const [isApprovalPending, setIsApprovalPending] = useState(false);

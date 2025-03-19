@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 
 import Button from '../../Form/Button';
 
+import { HIDE_TOKEN_VALUES } from '../../../ambient-utils/constants';
 import {
     getFormattedNumber,
     uriToHttp,
@@ -72,7 +73,10 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         useState<boolean>(false);
 
     const showWarning =
-        percentDiffUsdValue !== undefined && percentDiffUsdValue < -10;
+        percentDiffUsdValue !== undefined &&
+        percentDiffUsdValue < -10 &&
+        !HIDE_TOKEN_VALUES &&
+        tokenA.chainId !== parseInt('0x279f'); // monad testnet;
 
     const formattedUsdDifference =
         percentDiffUsdValue !== undefined

@@ -18,6 +18,7 @@ import {
 import {
     AppStateContext,
     CachedDataContext,
+    ChainDataContext,
     CrocEnvContext,
     TokenContext,
 } from '../../../../contexts';
@@ -50,12 +51,8 @@ function Orders(props: propsIF) {
     const { showAllData: showAllDataSelection } = useContext(TradeTableContext);
     const { tokens } = useContext(TokenContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
@@ -63,6 +60,8 @@ function Orders(props: propsIF) {
     const {
         activeNetwork: { poolIndex, GCGO_URL, chainId },
     } = useContext(AppStateContext);
+
+    const { analyticsPoolList } = useContext(ChainDataContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -152,10 +151,10 @@ function Orders(props: propsIF) {
                                     crocEnv,
                                     provider,
                                     chainId,
+                                    analyticsPoolList,
                                     cachedFetchTokenPrice,
                                     cachedQuerySpotPrice,
                                     cachedTokenDetails,
-                                    cachedEnsResolve,
                                 );
                             },
                         ),

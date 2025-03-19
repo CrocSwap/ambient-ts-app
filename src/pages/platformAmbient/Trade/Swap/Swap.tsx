@@ -78,12 +78,8 @@ function Swap(props: propsIF) {
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
-    const {
-        tokenAAllowance,
-        tokenABalance,
-        tokenADexBalance,
-        isTokenABase: isSellTokenBase,
-    } = useContext(TradeTokenContext);
+    const { tokenAAllowance, tokenABalance, tokenADexBalance } =
+        useContext(TradeTokenContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
@@ -201,7 +197,7 @@ function Swap(props: propsIF) {
         parseFloat(priceImpact?.buyQty || '0') /
         parseFloat(priceImpact?.sellQty || '1');
     const isPriceInverted =
-        (isDenomBase && !isSellTokenBase) || (!isDenomBase && isSellTokenBase);
+        (isDenomBase && !isTokenABase) || (!isDenomBase && isTokenABase);
     const effectivePriceWithDenom = effectivePrice
         ? isPriceInverted
             ? 1 / effectivePrice
@@ -630,7 +626,7 @@ function Swap(props: propsIF) {
                         poolIdx: poolIndex,
                         baseSymbol: baseToken.symbol,
                         quoteSymbol: quoteToken.symbol,
-                        isBid: isSellTokenBase,
+                        isBid: isTokenABase,
                     },
                 });
             }
@@ -766,7 +762,8 @@ function Swap(props: propsIF) {
         usdValueTokenB &&
         buyQtyBigInt > 0n &&
         sellQtyBigInt > 0n &&
-        !HIDE_TOKEN_VALUES
+        !HIDE_TOKEN_VALUES &&
+        tokenA.chainId !== parseInt('0x279f') // monad testnet
             ? ((usdValueTokenB * parseFloat(buyQtyNoExponentString) -
                   usdValueTokenA * parseFloat(sellQtyNoExponentString)) /
                   (usdValueTokenA * parseFloat(sellQtyNoExponentString))) *
@@ -785,7 +782,9 @@ function Swap(props: propsIF) {
     );
 
     const showUsdDiffWarning = usdDiffGreaterThanThreshold
-        ? usdDiffGreaterThanThresholdDebounced && !HIDE_TOKEN_VALUES
+        ? usdDiffGreaterThanThresholdDebounced &&
+          !HIDE_TOKEN_VALUES &&
+          tokenA.chainId !== parseInt('0x279f') // monad testnet
         : false;
 
     const showWarning = showPriceImpactWarning || showUsdDiffWarning;
@@ -887,13 +886,14 @@ function Swap(props: propsIF) {
                             slippageTolerancePercentage
                         }
                         effectivePrice={effectivePrice}
-                        isSellTokenBase={isSellTokenBase}
+                        isTokenABase={isTokenABase}
                         sellQtyString={sellQtyNoExponentString}
                         buyQtyString={buyQtyNoExponentString}
                         isTokenAPrimary={isTokenAPrimary}
                         priceImpactWarning={priceImpactWarning}
                         isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                         percentDiffUsdValue={percentDiffUsdValue}
+                        crocEnv={crocEnv}
                     />
                 ) : (
                     <></>
