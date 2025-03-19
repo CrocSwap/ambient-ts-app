@@ -19,9 +19,9 @@ import {
     TokenIF,
     TransactionIF,
 } from '../../ambient-utils/types';
+import { ChainDataContext } from '../../contexts';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { PoolContext } from '../../contexts/PoolContext';
 import matchSearchInput from '../functions/matchSearchInput';
 import { tokenMethodsIF } from './useTokens';
 
@@ -57,7 +57,7 @@ export const useSidebarSearch = (
     tokens: tokenMethodsIF,
 ): sidebarSearchIF => {
     const { activeNetwork } = useContext(AppStateContext);
-    const { analyticsPoolList } = useContext(PoolContext);
+    const { analyticsPoolList } = useContext(ChainDataContext);
 
     // needed to resolve ENS addresses entered by user
     const { mainnetProvider } = useContext(CrocEnvContext);

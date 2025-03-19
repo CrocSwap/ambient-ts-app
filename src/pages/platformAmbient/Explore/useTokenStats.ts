@@ -4,7 +4,6 @@ import { useLocation } from 'react-router';
 import {
     FetchContractDetailsFn,
     TokenPriceFn,
-    TokenPriceFnReturn,
 } from '../../../ambient-utils/api';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
@@ -17,7 +16,7 @@ import {
     getFormattedNumber,
     isWrappedNativeToken,
 } from '../../../ambient-utils/dataLayer';
-import { TokenIF } from '../../../ambient-utils/types';
+import { PoolIF, TokenIF } from '../../../ambient-utils/types';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 import { AppStateContext } from '../../../contexts';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
@@ -52,6 +51,7 @@ export const useTokenStats = (
     cachedTokenDetails: FetchContractDetailsFn,
     tokenMethods: tokenMethodsIF,
     provider: BatchedJsonRpcProvider,
+    activePoolList: PoolIF[] | undefined,
 ): useTokenStatsIF => {
     const [dexTokens, setDexTokens] = useState<dexTokenData[]>([]);
     const { activeNetwork } = useContext(AppStateContext);
@@ -81,6 +81,7 @@ export const useTokenStats = (
     useEffect(() => {
         (async () => {
             if (
+                activePoolList &&
                 userIsOnExplorePage &&
                 crocEnv &&
                 (await crocEnv.context).chain.chainId === chainId
@@ -88,7 +89,7 @@ export const useTokenStats = (
                 await fetchData();
             }
         })();
-    }, [crocEnv, chainId, providerUrl, userIsOnExplorePage]);
+    }, [crocEnv, chainId, providerUrl, userIsOnExplorePage, !!activePoolList]);
 
     async function fetchData(): Promise<void> {
         if (crocEnv) {
@@ -102,7 +103,6 @@ export const useTokenStats = (
                     20,
                     AMBIENT_TOKEN_LIST,
                 );
-
                 if (tokenStats) {
                     const promises = tokenStats.map(
                         async (ts: DexTokenAggServerIF) => {
@@ -111,18 +111,21 @@ export const useTokenStats = (
                                 return decoratedToken;
                             } catch (error) {
                                 console.error('Error decorating token:', error);
-                                return null;
+                                return undefined;
                             }
                         },
                     );
 
                     const settledPromises = await Promise.allSettled(promises);
+
                     const fulfilledResults = settledPromises
-                        .filter((result) => result.status === 'fulfilled')
-                        .map(
+                        .filter(
                             (result) =>
-                                (result as { value: dexTokenData }).value,
+                                result.status === 'fulfilled' && result.value,
                         )
+                        .map((result) => {
+                            return (result as { value: dexTokenData }).value;
+                        })
                         .filter((t) => !isWrappedNativeToken(t.tokenAddr));
                     setDexTokens(fulfilledResults);
                 }
@@ -132,110 +135,127 @@ export const useTokenStats = (
         }
     }
 
+    function findTokenPriceByAddress(poolList: PoolIF[], address: string) {
+        const normalizedAddress = address.toLowerCase();
+
+        for (const pool of poolList) {
+            if (pool.baseToken.address.toLowerCase() === normalizedAddress) {
+                return pool.baseUsdPrice;
+            }
+            if (pool.quoteToken.address.toLowerCase() === normalizedAddress) {
+                return pool.quoteUsdPrice;
+            }
+        }
+
+        return undefined;
+    }
+
     const decorate = async (t: DexTokenAggServerIF): Promise<dexTokenData> => {
-        const tokenMeta: TokenIF | undefined =
+        const tokenMeta =
             tokenMethods.getTokenByAddress(t.tokenAddr) ??
             (await cachedTokenDetails(provider, t.tokenAddr, chainId));
-
-        const tokenStatsNormalized = await expandTokenStats(t);
-
-        async function expandTokenStats(token: DexTokenAggServerIF) {
-            if (
-                !crocEnv ||
-                !tokenMeta ||
-                (await crocEnv.context).chain.chainId !== chainId
-            )
-                return;
-            const tokenPricePromise: Promise<TokenPriceFnReturn> =
-                cachedFetchTokenPrice(token.tokenAddr, chainId);
-            const ethPricePromise: Promise<TokenPriceFnReturn> =
-                cachedFetchTokenPrice(
-                    defaultTokensForChain[0].address,
-                    chainId,
-                );
-            const poolWithETHNonDisplayPricePromise: Promise<number> =
-                tokenMeta.address === defaultTokensForChain[0].address
-                    ? Promise.resolve(1)
-                    : cachedQuerySpotPrice(
-                          crocEnv,
-                          defaultTokensForChain[0].address,
-                          tokenMeta.address,
-                          chainId,
-                          Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-                      );
-
-            let price: number;
-
-            const canonicalTokenPrice = (await tokenPricePromise)?.usdPrice;
-            if (canonicalTokenPrice) {
-                price = canonicalTokenPrice;
-            } else {
-                price =
-                    toDisplayPrice(
-                        await poolWithETHNonDisplayPricePromise,
-                        defaultTokensForChain[0].decimals,
-                        tokenMeta.decimals,
-                    ) * ((await ethPricePromise)?.usdPrice || 0) || 0;
-            }
-
-            const tvlUSD: number = normalizeToUSD(
-                token.dexTvl,
-                tokenMeta.decimals,
-                price,
-            );
-            const tvlDisplay: string = getFormattedNumber({
-                value: tvlUSD,
-                isTvl: true,
-                prefix: '$',
-            });
-
-            const feesUSD: number = normalizeToUSD(
-                token.dexFees,
-                tokenMeta.decimals,
-                price,
-            );
-            const feesDisplay: string = getFormattedNumber({
-                value: feesUSD,
-                isTvl: true,
-                prefix: '$',
-            });
-
-            const volumeUSD: number =
-                normalizeToUSD(token.dexVolume, tokenMeta.decimals, price) / 2;
-            const volumeDisplay: string = getFormattedNumber({
-                value: volumeUSD,
-                isTvl: true,
-                prefix: '$',
-            });
-
-            function normalizeToUSD(
-                num: number,
-                decimals: number,
-                price: number,
-            ): number {
-                return (num / Math.pow(10, decimals)) * price;
-            }
-
-            return {
-                dexTvlNorm: {
-                    raw: tvlUSD,
-                    display: tvlDisplay,
-                },
-                dexFeesNorm: {
-                    raw: feesUSD,
-                    display: feesDisplay,
-                },
-                dexVolNorm: {
-                    raw: volumeUSD,
-                    display: volumeDisplay,
-                },
-            };
+        if (
+            !activePoolList ||
+            !crocEnv ||
+            !tokenMeta ||
+            (await crocEnv.context).chain.chainId !== chainId
+        ) {
+            return { ...t, tokenMeta, normalized: undefined };
         }
+
+        // Attempt to get prices from activePoolList first
+        let canonicalTokenPrice = findTokenPriceByAddress(
+            activePoolList,
+            t.tokenAddr,
+        );
+        let defaultBaseTokenPrice = findTokenPriceByAddress(
+            activePoolList,
+            defaultTokensForChain[0].address,
+        );
+
+        // Fetch missing data only if necessary
+        const [
+            fetchedTokenPrice,
+            fetchedNativeTokenPrice,
+            poolWithNativeTokenPrice,
+        ] =
+            canonicalTokenPrice && defaultBaseTokenPrice
+                ? [undefined, undefined, undefined] // Skip async calls if prices exist
+                : await Promise.all([
+                      canonicalTokenPrice
+                          ? undefined
+                          : cachedFetchTokenPrice(t.tokenAddr, chainId),
+                      defaultBaseTokenPrice
+                          ? undefined
+                          : cachedFetchTokenPrice(
+                                defaultTokensForChain[0].address,
+                                chainId,
+                            ),
+                      tokenMeta.address === defaultTokensForChain[0].address
+                          ? Promise.resolve(1)
+                          : cachedQuerySpotPrice(
+                                crocEnv,
+                                defaultTokensForChain[0].address,
+                                tokenMeta.address,
+                                chainId,
+                                Math.floor(
+                                    Date.now() / CACHE_UPDATE_FREQ_IN_MS,
+                                ),
+                            ),
+                  ]);
+
+        // Use fetched prices if not found in activePoolList
+        canonicalTokenPrice ||= fetchedTokenPrice?.usdPrice;
+        defaultBaseTokenPrice ||= fetchedNativeTokenPrice?.usdPrice;
+
+        // Determine final price
+        const price =
+            canonicalTokenPrice ||
+            toDisplayPrice(
+                poolWithNativeTokenPrice || 0,
+                defaultTokensForChain[0].decimals,
+                tokenMeta.decimals,
+            ) * (defaultBaseTokenPrice || 0) ||
+            0;
+
+        // Utility function for USD normalization
+        const normalizeToUSD = (num: number, decimals: number, price: number) =>
+            (num / 10 ** decimals) * price;
+
+        const tvlUSD = normalizeToUSD(t.dexTvl, tokenMeta.decimals, price);
+        const feesUSD = normalizeToUSD(t.dexFees, tokenMeta.decimals, price);
+        const volumeUSD =
+            normalizeToUSD(t.dexVolume, tokenMeta.decimals, price) / 2;
 
         return {
             ...t,
             tokenMeta,
-            normalized: tokenStatsNormalized,
+            normalized: {
+                dexTvlNorm: {
+                    raw: tvlUSD,
+                    display: getFormattedNumber({
+                        value: tvlUSD,
+                        isTvl: true,
+                        prefix: '$',
+                    }),
+                },
+                dexFeesNorm: {
+                    raw: feesUSD,
+                    display: getFormattedNumber({
+                        value: feesUSD,
+                        isTvl: true,
+                        prefix: '$',
+                    }),
+                },
+                dexVolNorm: {
+                    raw: volumeUSD,
+                    display: getFormattedNumber({
+                        value: volumeUSD,
+                        isTvl: true,
+                        prefix: '$',
+                    }),
+                },
+            },
         };
     };
 

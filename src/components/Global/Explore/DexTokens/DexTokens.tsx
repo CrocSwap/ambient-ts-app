@@ -51,7 +51,7 @@ function DexTokens(props: propsIF) {
         handleToggle,
     } = props;
 
-    const { gcgoPoolList } = useContext(ChainDataContext);
+    const { activePoolList } = useContext(ChainDataContext);
 
     const isPWA = useIsPWA();
 
@@ -175,7 +175,7 @@ function DexTokens(props: propsIF) {
                 {sortedTokens.data.length
                     ? sortedTokens.data.map((token: dexTokenData) => {
                           const matchingPool: PoolIF | undefined = (
-                              gcgoPoolList || []
+                              activePoolList || []
                           ).find(
                               (p: PoolIF) =>
                                   (p.base.toLowerCase() ===
