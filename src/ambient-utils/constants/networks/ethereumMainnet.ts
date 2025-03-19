@@ -88,6 +88,7 @@ export const ethereumMainnet: NetworkIF = {
     defaultPair: [MAINNET_TOKENS.ETH, MAINNET_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Ethereum',
     tokenPriceQueryAssetPlatform: 'ethereum',

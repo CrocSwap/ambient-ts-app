@@ -49,7 +49,7 @@ export function usePoolMetadata() {
     const {
         isUserIdle,
         isUserOnline,
-        activeNetwork: { chainId, poolIndex, GCGO_URL },
+        activeNetwork: { chainId, poolIndex, GCGO_URL, isTestnet },
         isTradeRoute,
     } = useContext(AppStateContext);
     const {
@@ -533,7 +533,7 @@ export function usePoolMetadata() {
                     // retrieve user_pool_positions
                     const userPoolPositionsCacheEndpoint =
                         GCGO_URL + '/user_pool_positions?';
-                    const forceOnchainLiqUpdate = true;
+                    const forceOnchainLiqUpdate = !isTestnet;
                     fetch(
                         userPoolPositionsCacheEndpoint +
                             new URLSearchParams({
@@ -661,7 +661,7 @@ export function usePoolMetadata() {
         isUserOnline,
         userAddress,
         contextMatchesParams,
-        crocEnv,
+        JSON.stringify(crocEnv),
         baseTokenAddress !== '' && quoteTokenAddress !== '',
         chainId,
         tokens.tokenUniv,

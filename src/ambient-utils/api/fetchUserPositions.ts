@@ -32,6 +32,7 @@ interface RecordRequestIF {
     tokenUniv?: TokenIF[];
     crocEnv?: CrocEnv;
     provider?: Provider;
+    isTestnet: boolean;
     analyticsPoolList?: PoolIF[] | undefined;
     cachedFetchTokenPrice?: TokenPriceFn;
     cachedQuerySpotPrice?: SpotPriceFn;
@@ -73,6 +74,7 @@ const decorateUserPositions = async ({
     crocEnv,
     provider,
     chainId,
+    isTestnet,
     analyticsPoolList,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
@@ -84,12 +86,13 @@ const decorateUserPositions = async ({
     crocEnv: CrocEnv;
     provider: Provider;
     chainId: string;
+    isTestnet: boolean;
     analyticsPoolList?: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
 }) => {
-    const forceOnchainLiqUpdate = userPositions.length < 30; // temporary solution to fix batch RPC call failure when user has a lot of positions
+    const forceOnchainLiqUpdate = userPositions.length < 30 && !isTestnet; // temporary solution to fix batch RPC call failure when user has a lot of positions
     if (recordType == RecordType.LimitOrder) {
         return await Promise.all(
             (userPositions as LimitOrderServerIF[]).map(
@@ -147,6 +150,7 @@ const fetchDecorated = async ({
     crocEnv,
     provider,
     analyticsPoolList,
+    isTestnet,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
@@ -183,6 +187,7 @@ const fetchDecorated = async ({
             provider: provider!,
             chainId: chainId,
             analyticsPoolList,
+            isTestnet,
             cachedFetchTokenPrice: cachedFetchTokenPrice!,
             cachedQuerySpotPrice: cachedQuerySpotPrice!,
             cachedTokenDetails: cachedTokenDetails!,
@@ -201,6 +206,7 @@ const fetchSimpleDecorated = async ({
     tokenUniv,
     crocEnv,
     analyticsPoolList,
+    isTestnet,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
@@ -224,6 +230,7 @@ const fetchSimpleDecorated = async ({
         tokenUniv: tokenUniv,
         crocEnv: crocEnv,
         analyticsPoolList,
+        isTestnet,
         // Data Sources
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,

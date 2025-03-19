@@ -125,7 +125,7 @@ export const GraphDataContext = createContext({} as GraphDataContextIF);
 
 export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { GCGO_URL, chainId, poolIndex },
+        activeNetwork: { GCGO_URL, chainId, poolIndex, isTestnet },
         server: { isEnabled: isServerEnabled },
         isUserIdle,
         isUserOnline,
@@ -699,6 +699,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                         tokenUniv: tokens.tokenUniv,
                         crocEnv,
                         analyticsPoolList,
+                        isTestnet,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,

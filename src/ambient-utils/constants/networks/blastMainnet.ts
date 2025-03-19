@@ -78,6 +78,7 @@ export const blastMainnet: NetworkIF = {
     chainSpec: chainSpecFromSDK,
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     GCGO_URL: GCGO_BLAST_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,

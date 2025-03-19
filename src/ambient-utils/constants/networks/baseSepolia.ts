@@ -72,6 +72,7 @@ export const baseSepolia: NetworkIF = {
     defaultPairFuta: [BASE_SEPOLIA_TOKENS.ETH, BASE_SEPOLIA_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,
     tokenPriceQueryAssetPlatform: undefined,

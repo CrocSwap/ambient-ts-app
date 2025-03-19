@@ -269,23 +269,21 @@ export const getPositionData = async (
                 position.quote,
                 position.user,
             );
-            const positionRewards = await pos.queryRewards(
-                position.bidTick,
-                position.askTick,
-            );
+
+            console.log({ position, forceOnchainLiqUpdate });
+
+            const [positionRewards, rangePos] = await Promise.all([
+                pos.queryRewards(position.bidTick, position.askTick),
+                pos.queryRangePos(position.bidTick, position.askTick),
+            ]);
+
             newPosition.feesLiqBase = bigIntToFloat(
                 positionRewards.baseRewards,
             );
             newPosition.feesLiqQuote = bigIntToFloat(
                 positionRewards.quoteRewards,
             );
-
-            const liqBigNum = (
-                await pos.queryRangePos(position.bidTick, position.askTick)
-            ).liq;
-            const liqNum = bigIntToFloat(liqBigNum);
-
-            newPosition.positionLiq = liqNum;
+            newPosition.positionLiq = bigIntToFloat(rangePos.liq);
         } else {
             newPosition.positionLiq = position.concLiq;
 

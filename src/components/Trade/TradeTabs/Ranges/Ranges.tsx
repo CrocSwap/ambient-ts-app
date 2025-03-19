@@ -64,7 +64,7 @@ function Ranges(props: propsIF) {
     const { setCurrentRangeInReposition } = useContext(RangeContext);
 
     const {
-        activeNetwork: { poolIndex, GCGO_URL, chainId },
+        activeNetwork: { poolIndex, GCGO_URL, chainId, isTestnet },
     } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
@@ -174,7 +174,7 @@ function Ranges(props: propsIF) {
         // retrieve user_pool_positions
         const userPoolPositionsCacheEndpoint =
             GCGO_URL + '/user_pool_positions?';
-        const forceOnchainLiqUpdate = true;
+        const forceOnchainLiqUpdate = !isTestnet;
         fetch(
             userPoolPositionsCacheEndpoint +
                 new URLSearchParams({
