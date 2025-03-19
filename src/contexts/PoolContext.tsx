@@ -1,4 +1,3 @@
-import { CrocPoolView } from '@crocswap-libs/sdk';
 import {
     createContext,
     Dispatch,
@@ -6,7 +5,6 @@ import {
     SetStateAction,
     useContext,
     useEffect,
-    useMemo,
     useState,
 } from 'react';
 import { ZERO_ADDRESS } from '../ambient-utils/constants';
@@ -20,16 +18,13 @@ import {
 } from '../ambient-utils/dataLayer';
 import { PoolIF, PoolStatIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
-import { usePoolList } from '../App/hooks/usePoolList';
 import { AppStateContext } from './AppStateContext';
 import { ChainDataContext } from './ChainDataContext';
-import { CrocEnvContext } from './CrocEnvContext';
 import { TradeDataContext } from './TradeDataContext';
 
 export interface PoolContextIF {
     analyticsPoolList: PoolIF[] | undefined;
     activePoolList: PoolIF[];
-    pool: CrocPoolView | undefined;
     isPoolInitialized: boolean | undefined;
     poolPriceDisplay: number | undefined;
     isPoolPriceChangePositive: boolean | undefined;
@@ -52,10 +47,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const {
         activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
-    const { crocEnv } = useContext(CrocEnvContext);
-    const { gcgoPoolList } = useContext(ChainDataContext);
-
-    const analyticsPoolList: PoolIF[] | undefined = usePoolList(crocEnv);
+    const { gcgoPoolList, analyticsPoolList } = useContext(ChainDataContext);
 
     const [activePoolList, setActivePoolList] = useState<PoolIF[]>(
         analyticsPoolList?.length ? analyticsPoolList : [],
@@ -80,11 +72,6 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
 
-    const pool = useMemo(
-        () => crocEnv?.pool(baseToken.address, quoteToken.address),
-        [crocEnv, baseToken.address, quoteToken.address],
-    );
-
     const poolArg: PoolIF = {
         baseToken,
         quoteToken,
@@ -97,7 +84,6 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const poolData = useFetchPoolStats(
         poolArg,
         activePoolList,
-        undefined,
         true,
         true,
         didUserFlipDenom,
@@ -194,7 +180,6 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const poolContext: PoolContextIF = {
         analyticsPoolList,
         activePoolList,
-        pool,
         isPoolInitialized,
         poolPriceDisplay,
         isPoolPriceChangePositive,

@@ -9,7 +9,7 @@ import { TopPool } from './TopPool';
 
 const RPC_URLS = {
     PUBLIC: 'https://rpc.blast.io',
-    SECONDARY_PUBLIC: 'https://endpoints.omniatech.io/v1/blast/mainnet/public',
+    SECONDARY_PUBLIC: 'https://blastl2-mainnet.public.blastapi.io',
     RESTRICTED: import.meta.env.VITE_BLAST_RPC_URL,
 };
 
@@ -78,6 +78,7 @@ export const blastMainnet: NetworkIF = {
     chainSpec: chainSpecFromSDK,
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     GCGO_URL: GCGO_BLAST_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,

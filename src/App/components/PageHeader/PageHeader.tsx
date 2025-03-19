@@ -21,7 +21,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
@@ -40,18 +39,16 @@ import UserMenu from './UserMenu/UserMenu';
 
 const PageHeader = function () {
     const {
-        activeNetwork: { chainId, poolIndex: poolId },
         walletModal: { open: openWalletModal },
         appHeaderDropdown,
     } = useContext(AppStateContext);
     const { headerImage } = useContext(BrandContext);
-    const { crocEnv, setCrocEnv } = useContext(CrocEnvContext);
+    const { setCrocEnv } = useContext(CrocEnvContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
     const { isActiveNetworkMonad } = useContext(ChainDataContext);
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
-    const { recentPools } = useContext(SidebarContext);
     const { setShowAllData, activeTradeTab } = useContext(TradeTableContext);
     const {
         baseToken: {
@@ -113,20 +110,6 @@ const PageHeader = function () {
         useContext(TradeDataContext);
     const baseSymbol = baseToken.symbol;
     const quoteSymbol = quoteToken.symbol;
-    const baseAddressInRtk = baseToken.address;
-    const quoteAddressInRtk = quoteToken.address;
-
-    useEffect(() => {
-        if (baseAddressInRtk && quoteAddressInRtk && crocEnv) {
-            const promise = crocEnv
-                .pool(baseToken.address, quoteToken.address)
-                .isInit();
-            Promise.resolve(promise).then((poolExists: boolean) => {
-                poolExists &&
-                    recentPools.add(baseToken, quoteToken, chainId, poolId);
-            });
-        }
-    }, [baseAddressInRtk, quoteAddressInRtk, crocEnv]);
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase

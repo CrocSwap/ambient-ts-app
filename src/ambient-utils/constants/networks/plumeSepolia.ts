@@ -65,6 +65,7 @@ export const plumeSepolia: NetworkIF = {
     defaultPairFuta: [PLUME_SEPOLIA_TOKENS.ETH, PLUME_SEPOLIA_TOKENS.pUSD],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Plume Devnet',
     tokenPriceQueryAssetPlatform: undefined,

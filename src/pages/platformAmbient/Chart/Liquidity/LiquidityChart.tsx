@@ -67,12 +67,12 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     const d3CanvasLiq = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasLiqHover = useRef<HTMLCanvasElement | null>(null);
     const {
-        pool: pool,
         poolPriceDisplay: poolPriceWithoutDenom,
         isTradeDollarizationEnabled,
     } = useContext(PoolContext);
     const { advancedMode, simpleRangeWidth } = useContext(RangeContext);
-    const { isDenomBase, poolPriceNonDisplay } = useContext(TradeDataContext);
+    const { isDenomBase, poolPriceNonDisplay, baseToken, quoteToken } =
+        useContext(TradeDataContext);
 
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
@@ -403,7 +403,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     }, [
         scaleData,
         liquidityScale,
-        pool,
+        baseToken.address + quoteToken.address,
         liquidityDepthScale,
         isDenomBase,
         isTradeDollarizationEnabled,

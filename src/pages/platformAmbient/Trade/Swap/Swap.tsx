@@ -78,12 +78,8 @@ function Swap(props: propsIF) {
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
-    const {
-        tokenAAllowance,
-        tokenABalance,
-        tokenADexBalance,
-        isTokenABase: isSellTokenBase,
-    } = useContext(TradeTokenContext);
+    const { tokenAAllowance, tokenABalance, tokenADexBalance } =
+        useContext(TradeTokenContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
@@ -201,7 +197,7 @@ function Swap(props: propsIF) {
         parseFloat(priceImpact?.buyQty || '0') /
         parseFloat(priceImpact?.sellQty || '1');
     const isPriceInverted =
-        (isDenomBase && !isSellTokenBase) || (!isDenomBase && isSellTokenBase);
+        (isDenomBase && !isTokenABase) || (!isDenomBase && isTokenABase);
     const effectivePriceWithDenom = effectivePrice
         ? isPriceInverted
             ? 1 / effectivePrice
@@ -630,7 +626,7 @@ function Swap(props: propsIF) {
                         poolIdx: poolIndex,
                         baseSymbol: baseToken.symbol,
                         quoteSymbol: quoteToken.symbol,
-                        isBid: isSellTokenBase,
+                        isBid: isTokenABase,
                     },
                 });
             }
@@ -890,13 +886,14 @@ function Swap(props: propsIF) {
                             slippageTolerancePercentage
                         }
                         effectivePrice={effectivePrice}
-                        isSellTokenBase={isSellTokenBase}
+                        isTokenABase={isTokenABase}
                         sellQtyString={sellQtyNoExponentString}
                         buyQtyString={buyQtyNoExponentString}
                         isTokenAPrimary={isTokenAPrimary}
                         priceImpactWarning={priceImpactWarning}
                         isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                         percentDiffUsdValue={percentDiffUsdValue}
+                        crocEnv={crocEnv}
                     />
                 ) : (
                     <></>

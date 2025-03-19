@@ -49,7 +49,8 @@ export function usePoolMetadata() {
     const {
         isUserIdle,
         isUserOnline,
-        activeNetwork: { chainId, poolIndex, GCGO_URL },
+        activeNetwork: { chainId, poolIndex, GCGO_URL, isTestnet },
+        isTradeRoute,
     } = useContext(AppStateContext);
     const {
         setAdvancedLowTick,
@@ -70,6 +71,9 @@ export function usePoolMetadata() {
         limitOrdersByPool,
     } = useContext(GraphDataContext);
 
+    const { analyticsPoolList, isAnalyticsPoolListDefinedOrUnavailable } =
+        useContext(ChainDataContext);
+
     const {
         tokenA,
         tokenB,
@@ -83,7 +87,6 @@ export function usePoolMetadata() {
         cachedQuerySpotTick,
         cachedFetchTokenPrice,
         cachedTokenDetails,
-        cachedEnsResolve,
     } = useContext(CachedDataContext);
 
     const pathname = useLocation().pathname;
@@ -138,13 +141,6 @@ export function usePoolMetadata() {
 
     const quoteTokenAddress = useMemo(
         () => sortBaseQuoteTokens(tokenA.address, tokenB.address)[1],
-        [tokenA, tokenB],
-    );
-
-    const isTokenABase = useMemo(
-        () =>
-            tokenA.address ===
-            sortBaseQuoteTokens(tokenA.address, tokenB.address)[0],
         [tokenA, tokenB],
     );
 
@@ -320,7 +316,9 @@ export function usePoolMetadata() {
                 provider &&
                 baseTokenAddress !== '' &&
                 quoteTokenAddress !== '' &&
-                (await crocEnv.context).chain.chainId === chainId
+                (await crocEnv.context).chain.chainId === chainId &&
+                isTradeRoute &&
+                isAnalyticsPoolListDefinedOrUnavailable
             ) {
                 // retrieve pool_positions
                 const allPositionsCacheEndpoint = GCGO_URL + '/pool_positions?';
@@ -338,7 +336,6 @@ export function usePoolMetadata() {
                     .then((response) => response.json())
                     .then((json) => {
                         const poolPositions = json.data;
-                        const skipENSFetch = true;
                         if (poolPositions) {
                             Promise.all(
                                 poolPositions.map(
@@ -349,11 +346,10 @@ export function usePoolMetadata() {
                                             crocEnv,
                                             provider,
                                             chainId,
+                                            analyticsPoolList,
                                             cachedFetchTokenPrice,
                                             cachedQuerySpotPrice,
                                             cachedTokenDetails,
-                                            cachedEnsResolve,
-                                            skipENSFetch,
                                         );
                                     },
                                 ),
@@ -402,10 +398,10 @@ export function usePoolMetadata() {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
+                    analyticsPoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((poolChangesJsonData) => {
                         if (
@@ -441,10 +437,10 @@ export function usePoolMetadata() {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
+                    analyticsPoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((updatedLimitOrderStates) => {
                         if (
@@ -486,7 +482,6 @@ export function usePoolMetadata() {
                         .then((json) => {
                             const userPoolTransactions =
                                 json.data as TransactionIF[];
-                            const skipENSFetch = true;
                             if (userPoolTransactions) {
                                 const userPoolTransactionsWithoutFills =
                                     userPoolTransactions.filter(
@@ -501,11 +496,10 @@ export function usePoolMetadata() {
                                                 crocEnv,
                                                 provider,
                                                 chainId,
+                                                analyticsPoolList,
                                                 cachedFetchTokenPrice,
                                                 cachedQuerySpotPrice,
                                                 cachedTokenDetails,
-                                                cachedEnsResolve,
-                                                skipENSFetch,
                                             );
                                         },
                                     ),
@@ -539,7 +533,7 @@ export function usePoolMetadata() {
                     // retrieve user_pool_positions
                     const userPoolPositionsCacheEndpoint =
                         GCGO_URL + '/user_pool_positions?';
-                    const forceOnchainLiqUpdate = true;
+                    const forceOnchainLiqUpdate = !isTestnet;
                     fetch(
                         userPoolPositionsCacheEndpoint +
                             new URLSearchParams({
@@ -553,7 +547,6 @@ export function usePoolMetadata() {
                         .then((response) => response.json())
                         .then((json) => {
                             const userPoolPositions = json.data;
-                            const skipENSFetch = true;
 
                             if (userPoolPositions) {
                                 Promise.all(
@@ -565,11 +558,10 @@ export function usePoolMetadata() {
                                                 crocEnv,
                                                 provider,
                                                 chainId,
+                                                analyticsPoolList,
                                                 cachedFetchTokenPrice,
                                                 cachedQuerySpotPrice,
                                                 cachedTokenDetails,
-                                                cachedEnsResolve,
-                                                skipENSFetch,
                                                 forceOnchainLiqUpdate,
                                             );
                                         },
@@ -627,10 +619,10 @@ export function usePoolMetadata() {
                                                 crocEnv,
                                                 provider,
                                                 chainId,
+                                                analyticsPoolList,
                                                 cachedFetchTokenPrice,
                                                 cachedQuerySpotPrice,
                                                 cachedTokenDetails,
-                                                cachedEnsResolve,
                                             );
                                         },
                                     ),
@@ -669,7 +661,7 @@ export function usePoolMetadata() {
         isUserOnline,
         userAddress,
         contextMatchesParams,
-        crocEnv,
+        JSON.stringify(crocEnv),
         baseTokenAddress !== '' && quoteTokenAddress !== '',
         chainId,
         tokens.tokenUniv,
@@ -679,6 +671,8 @@ export function usePoolMetadata() {
         provider,
         sessionReceipts.length,
         blockPollingUrl,
+        isTradeRoute,
+        isAnalyticsPoolListDefinedOrUnavailable,
     ]);
 
     const totalPositionUsdValue = useMemo(
@@ -840,6 +834,6 @@ export function usePoolMetadata() {
         quoteTokenAddress,
         baseTokenDecimals, // Token contract decimals
         quoteTokenDecimals, // Token contract decimals
-        isTokenABase, // True if the base token is the first token in the panel (e.g. sell token on swap)
+        isChartVisible,
     };
 }

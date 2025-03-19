@@ -1,6 +1,7 @@
 import { useWeb3Modal } from '@web3modal/ethers/react';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { useIdleTimer } from 'react-idle-timer';
+import { useLocation } from 'react-router';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     CHAT_ENABLED,
@@ -50,6 +51,9 @@ export interface AppStateContextIF {
         contentHeight: number;
         viewportHeight: number;
     };
+    isTradeRoute: boolean;
+    isAccountRoute: boolean;
+    isHomeRoute: boolean;
 }
 
 export const AppStateContext = createContext({} as AppStateContextIF);
@@ -70,6 +74,23 @@ export const AppStateContextProvider = (props: {
     const NAVBAR_HEIGHT = 56;
     const FOOTER_HEIGHT = 56;
     const TOTAL_FIXED_HEIGHT = NAVBAR_HEIGHT + FOOTER_HEIGHT;
+
+    const pathNoLeadingSlash = useLocation().pathname?.slice(1);
+    const isTradeRoute =
+        pathNoLeadingSlash.includes('trade') ||
+        pathNoLeadingSlash.includes('swap') ||
+        pathNoLeadingSlash.includes('initpool');
+
+    const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
+    const isAddressHex =
+        (pathNoLeadingSlash?.startsWith('0x') &&
+            pathNoLeadingSlash?.length == 42) ||
+        (pathNoLeadingSlash?.startsWith('account/0x') &&
+            pathNoLeadingSlash?.length == 50);
+    const isAccountRoute =
+        isAddressEns || isAddressHex || pathNoLeadingSlash?.includes('account');
+
+    const isHomeRoute = pathNoLeadingSlash === '';
 
     const [dimensions, setDimensions] = useState({
         contentHeight: window.innerHeight - TOTAL_FIXED_HEIGHT,
@@ -284,6 +305,9 @@ export const AppStateContextProvider = (props: {
             },
             activeNetwork,
             chooseNetwork,
+            isTradeRoute,
+            isAccountRoute,
+            isHomeRoute,
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -306,6 +330,9 @@ export const AppStateContextProvider = (props: {
             dimensions.viewportHeight,
             activeNetwork,
             chooseNetwork,
+            isTradeRoute,
+            isAccountRoute,
+            isHomeRoute,
         ],
     );
 

@@ -14,7 +14,7 @@ import {
 import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
 
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
-import { UserDataContext } from '../../../../contexts';
+import { ChainDataContext, UserDataContext } from '../../../../contexts';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
@@ -67,12 +67,9 @@ function Transactions(props: propsIF) {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
     const { isCandleSelected } = useContext(CandleContext);
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
+    const { analyticsPoolList } = useContext(ChainDataContext);
     const { chartSettings } = useContext(ChartContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
@@ -237,10 +234,10 @@ function Transactions(props: propsIF) {
             crocEnv: crocEnv,
             GCGO_URL: GCGO_URL,
             provider,
+            analyticsPoolList,
             cachedFetchTokenPrice: cachedFetchTokenPrice,
             cachedQuerySpotPrice: cachedQuerySpotPrice,
             cachedTokenDetails: cachedTokenDetails,
-            cachedEnsResolve: cachedEnsResolve,
         })
             .then((selectedCandleChangesJson) => {
                 if (selectedCandleChangesJson) {

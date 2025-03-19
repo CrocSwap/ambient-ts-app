@@ -50,12 +50,8 @@ function Reposition() {
     const { params } = useParams();
 
     const { activeNetwork } = useContext(AppStateContext);
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
@@ -68,6 +64,7 @@ function Reposition() {
         nativeTokenUsdPrice,
         lastBlockNumber,
         isActiveNetworkL2,
+        analyticsPoolList,
     } = useContext(ChainDataContext);
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
@@ -483,18 +480,16 @@ function Reposition() {
                           return;
                       }
                       // temporarily skip ENS fetch
-                      const skipENSFetch = true;
                       const positionStats = await getPositionData(
                           json.data as PositionServerIF,
                           tokens.tokenUniv,
                           crocEnv,
                           provider,
                           position.chainId,
+                          analyticsPoolList,
                           cachedFetchTokenPrice,
                           cachedQuerySpotPrice,
                           cachedTokenDetails,
-                          cachedEnsResolve,
-                          skipENSFetch,
                       );
                       const liqBaseNum =
                           positionStats.positionLiqBaseDecimalCorrected;

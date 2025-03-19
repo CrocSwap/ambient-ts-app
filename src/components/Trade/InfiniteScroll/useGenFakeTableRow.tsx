@@ -26,23 +26,19 @@ import {
 } from '../../../contexts';
 import { TransactionByType } from '../../../contexts/ReceiptContext';
 
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { getPositionData } from '../../../ambient-utils/dataLayer/functions/getPositionData';
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { RecentlyUpdatedPositionIF } from '../../../contexts/GraphDataContext';
-import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const useGenFakeTableRow = () => {
     const { crocEnv, provider } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, analyticsPoolList } = useContext(ChainDataContext);
 
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
 
     const {
         activeNetwork: { chainId, poolIndex },
@@ -177,10 +173,10 @@ const useGenFakeTableRow = () => {
             crocEnv,
             provider,
             chainId,
+            analyticsPoolList,
             cachedFetchTokenPrice,
             cachedQuerySpotPrice,
             cachedTokenDetails,
-            cachedEnsResolve,
         );
 
         const basePrice = limitOrderData.baseUsdPrice || 0;
@@ -434,7 +430,6 @@ const useGenFakeTableRow = () => {
             firstMintTx: '', // unknown
             aprEst: 0, // unknown
         };
-        const skipENSFetch = true;
 
         const positionData = await getPositionData(
             mockServerPosition,
@@ -442,11 +437,10 @@ const useGenFakeTableRow = () => {
             crocEnv,
             provider,
             chainId,
+            analyticsPoolList,
             cachedFetchTokenPrice,
             cachedQuerySpotPrice,
             cachedTokenDetails,
-            cachedEnsResolve,
-            skipENSFetch,
         );
 
         let backupUsdValue = 0;

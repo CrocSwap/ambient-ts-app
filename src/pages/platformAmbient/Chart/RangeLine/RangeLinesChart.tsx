@@ -6,6 +6,7 @@ import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
 import { getPinnedPriceValuesFromTicks } from '../../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../../ambient-utils/types';
+import { ChartContext } from '../../../../contexts';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import {
     lineValue,
@@ -14,7 +15,6 @@ import {
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
 import { createTriangle } from '../ChartUtils/triangle';
-import { ChartContext } from '../../../../contexts';
 
 interface propsIF {
     scaleData: scaleData | undefined;
@@ -22,7 +22,7 @@ interface propsIF {
     tokenB: TokenIF;
     isDenomBase: boolean;
     rescale: boolean | undefined;
-    currentPoolPriceTick: number;
+    currentPoolPriceTick: number | undefined;
     poolPriceDisplay: number;
     /* eslint-disable @typescript-eslint/no-explicit-any */
     changeScale: any;
@@ -303,7 +303,10 @@ export default function RangeLinesChart(props: propsIF) {
     };
 
     const setBalancedLines = (isRepositionLinesSet = false) => {
-        if (tokenA.address !== tokenB.address) {
+        if (
+            tokenA.address !== tokenB.address &&
+            currentPoolPriceTick !== undefined
+        ) {
             if (
                 location.pathname.includes('reposition') &&
                 position !== undefined &&

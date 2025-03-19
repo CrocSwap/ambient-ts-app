@@ -1,8 +1,7 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
 import { getTransactionData, SpotPriceFn } from '../dataLayer/functions';
-import { TokenIF, TransactionIF } from '../types';
-import { FetchAddrFn } from './fetchAddress';
+import { PoolIF, TokenIF, TransactionIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 
@@ -16,10 +15,10 @@ interface argsIF {
     crocEnv: CrocEnv;
     GCGO_URL: string;
     provider: Provider;
+    analyticsPoolList: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
-    cachedEnsResolve: FetchAddrFn;
     timeBefore?: number;
 }
 
@@ -32,10 +31,10 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         crocEnv,
         GCGO_URL,
         provider,
+        analyticsPoolList,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
-        cachedEnsResolve,
         timeBefore,
     } = args;
 
@@ -67,7 +66,6 @@ export const fetchUserRecentChanges = (args: argsIF) => {
                 return [] as TransactionIF[];
             }
 
-            const skipENSFetch = true;
             const updatedTransactions = Promise.all(
                 userTransactions.map((tx: TransactionIF) => {
                     return getTransactionData(
@@ -76,11 +74,10 @@ export const fetchUserRecentChanges = (args: argsIF) => {
                         crocEnv,
                         provider,
                         chainId,
+                        analyticsPoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                        cachedEnsResolve,
-                        skipENSFetch,
                     );
                 }),
             ).then((updatedTransactions) => {
