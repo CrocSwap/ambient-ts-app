@@ -91,7 +91,13 @@ export const ChainDataContext = createContext({} as ChainDataContextIF);
 
 export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { chainId, evmRpcUrl, fallbackRpcUrl, GCGO_URL },
+        activeNetwork: {
+            chainId,
+            evmRpcUrl,
+            fallbackRpcUrl,
+            GCGO_URL,
+            isTestnet,
+        },
         isUserIdle,
         isUserOnline,
         isTradeRoute,
@@ -213,8 +219,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const BLOCK_NUM_POLL_MS = isUserIdle || isActiveNetworkMonad ? 30000 : 5000; // poll for new block every 30 seconds when user is idle, every 5 seconds when user is active
 
     const poolStatsPollingCacheTime = Math.floor(
-        Date.now() / (isUserIdle ? 120000 : 30000),
-    ); // poll for new pool stats every 120 seconds when user is idle, every 30 seconds when user is active
+        Date.now() / (isUserIdle || isTestnet ? 120000 : 30000),
+    ); // poll for new pool stats every 120 seconds when user is idle or on a testnet, every 30 seconds when user is active
 
     useEffect(() => {
         (async () => {
