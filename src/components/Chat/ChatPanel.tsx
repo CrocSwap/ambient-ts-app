@@ -431,7 +431,7 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         async function checkUser() {
-            const data = await getID(); // Fetch user data
+            const data = await getID();
             if (!data || data.status === 'Not OK') {
                 setIsVerified(false);
             } else {
