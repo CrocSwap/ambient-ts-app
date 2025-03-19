@@ -270,8 +270,6 @@ function ChatPanel(props: propsIF) {
         setShowPicker(false);
     });
 
-    const chatContainerRef = useRef<HTMLDivElement>(null);
-
     function closeOnEscapeKeyDown(e: KeyboardEvent) {
         if (e.code === 'Escape') {
             if (showPicker) {
@@ -362,17 +360,6 @@ function ChatPanel(props: propsIF) {
             setShowPicker(false);
         }
     };
-
-    useEffect(() => {
-        if (!isChatOpen) {
-            console.log('Rendering Trollbox Icon (Closed Header)');
-        } else {
-            console.log('Chat Opened - Ensuring Header Visibility');
-            if (chatContainerRef.current) {
-                chatContainerRef.current.style.height = 'auto'; // Ensure proper height reset
-            }
-        }
-    }, [isChatOpen]);
 
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
@@ -888,7 +875,7 @@ function ChatPanel(props: propsIF) {
         </div>
     );
 
-    const closedHeader = (
+    const trollBoxBubble = (
         <div
             className={styles.closedChatHeader}
             onClick={() => setIsChatOpen(!isChatOpen)}
@@ -897,7 +884,7 @@ function ChatPanel(props: propsIF) {
         </div>
     );
 
-    const header = isChatOpen ? (
+    const header = (
         <div
             className={styles.chat_header}
             onClick={() => {
@@ -907,7 +894,7 @@ function ChatPanel(props: propsIF) {
         >
             <h2 className={styles.chat_title}>Trollbox</h2>
 
-            {isChatOpen && ALLOW_AUTH && (
+            {ALLOW_AUTH && (
                 <div
                     ref={verifyBtnRef}
                     className={`${styles.verify_button} ${
@@ -952,7 +939,7 @@ function ChatPanel(props: propsIF) {
             )}
 
             <section style={{ paddingRight: '10px' }}>
-                {isFullScreen || !isChatOpen ? (
+                {isFullScreen ? (
                     <></>
                 ) : (
                     // <<div
@@ -969,7 +956,7 @@ function ChatPanel(props: propsIF) {
                     // </div>>
                     <></>
                 )}
-                {isFullScreen || !isChatOpen ? (
+                {isFullScreen ? (
                     <></>
                 ) : (
                     <IoIosArrowDown
@@ -990,8 +977,6 @@ function ChatPanel(props: propsIF) {
                 )}
             </section>
         </div>
-    ) : (
-        closedHeader
     );
 
     let mentionIxdexPointer = 0;
@@ -1410,13 +1395,12 @@ function ChatPanel(props: propsIF) {
             </>
         );
 
-    return (
+    return isChatOpen ? (
         <div
             className={`${styles.main_container} ${isChatOpen ? styles.chat_open : styles.chat_closed}`}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
-            {!isChatOpen && closedHeader}
             <ChatNotificationBubble
                 message={messageForNotificationBubble}
                 setRoom={setRoom}
@@ -1474,7 +1458,7 @@ function ChatPanel(props: propsIF) {
                     {isChatOpen && (
                         <div
                             id='chatReactionWrapper'
-                            className={`${styles.reaction_picker_wrapper} ${showPicker ? styles.active : ' '}`}
+                            className={`${styles.reaction_picker_wrapper} ${showPicker ? 'styles.active' : ' '}`}
                             ref={reactionsRef}
                             style={{ bottom: pickerBottomPos }}
                         >
@@ -1541,6 +1525,8 @@ function ChatPanel(props: propsIF) {
 
             <DomDebugger />
         </div>
+    ) : (
+        trollBoxBubble
     );
 }
 
