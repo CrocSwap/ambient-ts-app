@@ -273,11 +273,9 @@ function ChatPanel(props: propsIF) {
     function closeOnEscapeKeyDown(e: KeyboardEvent) {
         if (e.code === 'Escape') {
             if (showPicker) {
-                setShowPicker(false); // Sadece emoji panelini kapat
-                console.log('Emoji picker closed');
+                setShowPicker(false);
             } else {
-                console.log('Chat closed, Trollbox icon should appear');
-                setIsChatOpen(false); // Eğer emoji paneli açık değilse, chat panelini kapat
+                setIsChatOpen(false);
             }
         }
     }
@@ -379,7 +377,6 @@ function ChatPanel(props: propsIF) {
     }, [isChatOpen == true]);
 
     useEffect(() => {
-        console.log('ischatopen: ', isChatOpen);
         if (room == undefined) {
             return;
         }
