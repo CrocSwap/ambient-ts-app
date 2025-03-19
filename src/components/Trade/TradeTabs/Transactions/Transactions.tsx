@@ -69,7 +69,7 @@ function Transactions(props: propsIF) {
     const { isCandleSelected } = useContext(CandleContext);
     const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
-    const { analyticsPoolList } = useContext(ChainDataContext);
+    const { activePoolList } = useContext(ChainDataContext);
     const { chartSettings } = useContext(ChartContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
@@ -234,7 +234,7 @@ function Transactions(props: propsIF) {
             crocEnv: crocEnv,
             GCGO_URL: GCGO_URL,
             provider,
-            analyticsPoolList,
+            activePoolList,
             cachedFetchTokenPrice: cachedFetchTokenPrice,
             cachedQuerySpotPrice: cachedQuerySpotPrice,
             cachedTokenDetails: cachedTokenDetails,

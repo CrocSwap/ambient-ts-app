@@ -708,8 +708,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             scrollCrocEnv !== undefined &&
             swellCrocEnv !== undefined &&
             blastCrocEnv !== undefined &&
-            plumeCrocEnv !== undefined &&
-            AMBIENT_TOKEN_LIST.length > 0
+            plumeCrocEnv !== undefined
         ) {
             let tvlTotalUsd = 0,
                 volumeTotalUsd = 0,
@@ -725,6 +724,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_ETHEREUM_URL,
                 cachedFetchTokenPrice,
                 10,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -769,6 +769,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_SCROLL_URL,
                 cachedFetchTokenPrice,
                 20,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -812,6 +813,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_SWELL_URL,
                 cachedFetchTokenPrice,
                 10,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -854,6 +856,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_BLAST_URL,
                 cachedFetchTokenPrice,
                 10,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -896,6 +899,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_PLUME_URL,
                 cachedFetchTokenPrice,
                 10,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -935,8 +939,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         showDexStats,
         mainnetCrocEnv !== undefined &&
             scrollCrocEnv !== undefined &&
-            blastCrocEnv !== undefined &&
-            AMBIENT_TOKEN_LIST.length > 0,
+            blastCrocEnv !== undefined,
     ]);
 
     const chainDataContext = {

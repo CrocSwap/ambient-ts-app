@@ -11,9 +11,46 @@ import {
     memoizePromiseFn,
     translateToken,
 } from '../dataLayer/functions';
+import { PoolIF } from '../types';
 import { fetchBatch } from './fetchBatch';
 
 const randomNum = Math.random();
+
+export function findKnownTokenPriceByAddress(
+    poolList: PoolIF[],
+    address: string,
+) {
+    const normalizedAddress = address.toLowerCase();
+
+    for (const pool of poolList) {
+        if (pool.baseToken.address.toLowerCase() === normalizedAddress) {
+            return pool.baseUsdPrice;
+        }
+        if (pool.quoteToken.address.toLowerCase() === normalizedAddress) {
+            return pool.quoteUsdPrice;
+        }
+    }
+
+    return undefined;
+}
+
+export function findKnownTokenDecimalsByAddress(
+    poolList: PoolIF[],
+    address: string,
+) {
+    const normalizedAddress = address.toLowerCase();
+
+    for (const pool of poolList) {
+        if (pool.baseToken.address.toLowerCase() === normalizedAddress) {
+            return pool.baseToken.decimals;
+        }
+        if (pool.quoteToken.address.toLowerCase() === normalizedAddress) {
+            return pool.quoteToken.decimals;
+        }
+    }
+
+    return undefined;
+}
 
 export const fetchTokenPrice = async (
     dispToken: string,

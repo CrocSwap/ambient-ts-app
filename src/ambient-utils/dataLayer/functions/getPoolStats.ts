@@ -6,7 +6,12 @@ import {
     getUnicodeCharacter,
     isETHorStakedEthToken,
 } from '..';
-import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
+import {
+    FetchContractDetailsFn,
+    TokenPriceFn,
+    findKnownTokenDecimalsByAddress,
+    findKnownTokenPriceByAddress,
+} from '../../api';
 import {
     ZERO_ADDRESS,
     ethereumMainnet,
@@ -491,6 +496,7 @@ export async function getChainStats(
     GCGO_URL: string,
     cachedFetchTokenPrice: TokenPriceFn,
     tokenCount: number,
+    activePoolList: PoolIF[] | undefined,
     ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF | undefined>;
 
@@ -502,6 +508,7 @@ export async function getChainStats(
     GCGO_URL: string,
     cachedFetchTokenPrice: TokenPriceFn,
     tokenCount: number,
+    activePoolList: PoolIF[] | undefined,
     ambientTokenList?: TokenIF[],
 ): Promise<DexTokenAggServerIF[] | undefined>;
 
@@ -513,6 +520,7 @@ export async function getChainStats(
     GCGO_URL: string,
     cachedFetchTokenPrice: TokenPriceFn,
     tokenCount: number,
+    activePoolList: PoolIF[] | undefined,
     ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF | DexTokenAggServerIF[] | undefined> {
     const chainStatsFreshEndpoint = GCGO_URL + '/chain_stats?';
@@ -547,6 +555,7 @@ export async function getChainStats(
                     chainId,
                     crocEnv,
                     cachedFetchTokenPrice,
+                    activePoolList,
                     ambientTokenList,
                 );
             }
@@ -562,6 +571,7 @@ async function expandChainStats(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    activePoolList: PoolIF[] | undefined,
     ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF> {
     const subAggs = await Promise.all(
@@ -571,6 +581,7 @@ async function expandChainStats(
                 chainId,
                 crocEnv,
                 cachedFetchTokenPrice,
+                activePoolList,
                 ambientTokenList,
             ),
         ),
@@ -598,18 +609,45 @@ async function expandTokenStats(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    activePoolList: PoolIF[] | undefined,
     ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF> {
-    // check if tokenUniv includes the token's decimals value
+    // Try to get decimals from ambientTokenList or activePoolList
     const token = ambientTokenList?.find(
         (t) => t.address.toLowerCase() === stats.tokenAddr.toLowerCase(),
     );
-    const decimals = token?.decimals || crocEnv.token(stats.tokenAddr).decimals;
-    const usdPrice = cachedFetchTokenPrice(stats.tokenAddr, chainId).then(
-        (p) => p?.usdPrice || 0.0,
-    );
 
-    const mult = (await usdPrice) / Math.pow(10, await decimals);
+    const decimalsPromise = token?.decimals
+        ? Promise.resolve(token.decimals)
+        : activePoolList &&
+            findKnownTokenDecimalsByAddress(activePoolList, stats.tokenAddr)
+          ? Promise.resolve(
+                findKnownTokenDecimalsByAddress(
+                    activePoolList,
+                    stats.tokenAddr,
+                ),
+            )
+          : crocEnv.token(stats.tokenAddr).decimals;
+
+    // Try to get USD price from activePoolList first, then fallback to fetching
+    const usdPricePromise =
+        activePoolList &&
+        findKnownTokenPriceByAddress(activePoolList, stats.tokenAddr)
+            ? Promise.resolve(
+                  findKnownTokenPriceByAddress(activePoolList, stats.tokenAddr),
+              )
+            : cachedFetchTokenPrice(stats.tokenAddr, chainId).then(
+                  (p) => p?.usdPrice || 0.0,
+              );
+
+    // Await both promises in parallel
+    const [decimals, usdPrice] = await Promise.all([
+        decimalsPromise,
+        usdPricePromise,
+    ]);
+
+    // Calculate multiplier once
+    const mult = (usdPrice || 0) / Math.pow(10, decimals || 0);
     return {
         tvlTotalUsd: stats.dexTvl * mult,
         volumeTotalUsd: stats.dexVolume * mult,

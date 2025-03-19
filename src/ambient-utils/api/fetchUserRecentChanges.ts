@@ -15,7 +15,7 @@ interface argsIF {
     crocEnv: CrocEnv;
     GCGO_URL: string;
     provider: Provider;
-    analyticsPoolList: PoolIF[] | undefined;
+    activePoolList: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
@@ -31,7 +31,7 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         crocEnv,
         GCGO_URL,
         provider,
-        analyticsPoolList,
+        activePoolList,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
@@ -66,24 +66,43 @@ export const fetchUserRecentChanges = (args: argsIF) => {
                 return [] as TransactionIF[];
             }
 
-            const updatedTransactions = Promise.all(
-                userTransactions.map((tx: TransactionIF) => {
-                    return getTransactionData(
+            return Promise.allSettled(
+                userTransactions.map((tx: TransactionIF) =>
+                    getTransactionData(
                         tx,
                         tokenList,
                         crocEnv,
                         provider,
                         chainId,
-                        analyticsPoolList,
+                        activePoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                    );
-                }),
-            ).then((updatedTransactions) => {
-                return updatedTransactions;
+                    ),
+                ),
+            ).then((results) => {
+                // Extract successful results
+                const successfulTransactions = results
+                    .filter(
+                        (
+                            result,
+                        ): result is PromiseFulfilledResult<TransactionIF> =>
+                            result.status === 'fulfilled',
+                    )
+                    .map((result) => result.value);
+
+                // Log errors if needed
+                results.forEach((result) => {
+                    if (result.status === 'rejected') {
+                        console.warn(
+                            'Error processing transaction:',
+                            result.reason,
+                        );
+                    }
+                });
+
+                return successfulTransactions;
             });
-            return updatedTransactions;
         })
         .catch(console.error);
 

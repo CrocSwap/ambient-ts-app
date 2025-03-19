@@ -3,6 +3,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
 import {
     FetchContractDetailsFn,
+    findKnownTokenPriceByAddress,
     TokenPriceFn,
 } from '../../../ambient-utils/api';
 import {
@@ -101,6 +102,7 @@ export const useTokenStats = (
                     backupEndpoint,
                     cachedFetchTokenPrice,
                     20,
+                    activePoolList,
                     AMBIENT_TOKEN_LIST,
                 );
                 if (tokenStats) {
@@ -135,21 +137,6 @@ export const useTokenStats = (
         }
     }
 
-    function findTokenPriceByAddress(poolList: PoolIF[], address: string) {
-        const normalizedAddress = address.toLowerCase();
-
-        for (const pool of poolList) {
-            if (pool.baseToken.address.toLowerCase() === normalizedAddress) {
-                return pool.baseUsdPrice;
-            }
-            if (pool.quoteToken.address.toLowerCase() === normalizedAddress) {
-                return pool.quoteUsdPrice;
-            }
-        }
-
-        return undefined;
-    }
-
     const decorate = async (t: DexTokenAggServerIF): Promise<dexTokenData> => {
         const tokenMeta =
             tokenMethods.getTokenByAddress(t.tokenAddr) ??
@@ -164,11 +151,11 @@ export const useTokenStats = (
         }
 
         // Attempt to get prices from activePoolList first
-        let canonicalTokenPrice = findTokenPriceByAddress(
+        let canonicalTokenPrice = findKnownTokenPriceByAddress(
             activePoolList,
             t.tokenAddr,
         );
-        let defaultBaseTokenPrice = findTokenPriceByAddress(
+        let defaultBaseTokenPrice = findKnownTokenPriceByAddress(
             activePoolList,
             defaultTokensForChain[0].address,
         );
