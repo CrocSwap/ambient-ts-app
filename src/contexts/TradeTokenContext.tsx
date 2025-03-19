@@ -13,6 +13,7 @@ import { ZERO_ADDRESS } from '../ambient-utils/constants';
 import { AppStateContext } from './AppStateContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
+import { ReceiptContext } from './ReceiptContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
 import { TradeDataContext } from './TradeDataContext';
 import { UserDataContext } from './UserDataContext';
@@ -54,7 +55,7 @@ export const TradeTokenContext = createContext({} as TradeTokenContextIF);
 export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
     const {
         isUserIdle,
-        activeNetwork: { chainId },
+        activeNetwork: { chainId, isTestnet },
         isTradeRoute,
     } = useContext(AppStateContext);
 
@@ -64,6 +65,8 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const { tokenA, tokenB, baseToken, quoteToken, isTokenABase } =
         useContext(TradeDataContext);
+
+    const { sessionReceipts } = useContext(ReceiptContext);
     const {
         tokenAAllowance,
         tokenBAllowance,
@@ -157,6 +160,8 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         contextMatchesParams,
         isChartVisible,
     };
+
+    const blockTrigger = isTestnet ? 0 : lastBlockNumber;
 
     useEffect(() => {
         (async () => {
@@ -254,10 +259,11 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         userAddress,
         baseToken.address,
         quoteToken.address,
-        lastBlockNumber,
         baseTokenDecimals,
         quoteTokenDecimals,
         isTradeRoute,
+        blockTrigger,
+        sessionReceipts.length,
     ]);
 
     return (
