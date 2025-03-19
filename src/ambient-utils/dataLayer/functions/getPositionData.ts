@@ -270,8 +270,6 @@ export const getPositionData = async (
                 position.user,
             );
 
-            console.log({ position, forceOnchainLiqUpdate });
-
             const [positionRewards, rangePos] = await Promise.all([
                 pos.queryRewards(position.bidTick, position.askTick),
                 pos.queryRangePos(position.bidTick, position.askTick),
