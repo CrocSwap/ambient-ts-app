@@ -66,6 +66,7 @@ export interface RequestData<K extends keyof RequestResponseMap> {
     reject: ((reason?: any) => void) | null;
     response: RequestResponseMap[K]['response'] | null;
     expiry: number;
+    retryCount: number | null;
 }
 
 export interface FetchBatchOptions {

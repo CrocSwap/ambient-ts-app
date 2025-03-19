@@ -90,7 +90,7 @@ export const useTokenStats = (
                 await fetchData();
             }
         })();
-    }, [crocEnv, chainId, providerUrl, userIsOnExplorePage, !!activePoolList]);
+    }, [crocEnv, chainId, providerUrl, userIsOnExplorePage, activePoolList]);
 
     async function fetchData(): Promise<void> {
         if (crocEnv) {
@@ -119,7 +119,6 @@ export const useTokenStats = (
                     );
 
                     const settledPromises = await Promise.allSettled(promises);
-
                     const fulfilledResults = settledPromises
                         .filter(
                             (result) =>
@@ -141,6 +140,7 @@ export const useTokenStats = (
         const tokenMeta =
             tokenMethods.getTokenByAddress(t.tokenAddr) ??
             (await cachedTokenDetails(provider, t.tokenAddr, chainId));
+
         if (
             !activePoolList ||
             !crocEnv ||
@@ -161,25 +161,25 @@ export const useTokenStats = (
         );
 
         // Fetch missing data only if necessary
-        const [
-            fetchedTokenPrice,
-            fetchedNativeTokenPrice,
-            poolWithNativeTokenPrice,
-        ] =
+        const results =
             canonicalTokenPrice && defaultBaseTokenPrice
-                ? [undefined, undefined, undefined] // Skip async calls if prices exist
-                : await Promise.all([
+                ? [
+                      { status: 'fulfilled', value: undefined },
+                      { status: 'fulfilled', value: undefined },
+                      { status: 'fulfilled', value: undefined },
+                  ] // Skip async calls if prices exist
+                : await Promise.allSettled([
                       canonicalTokenPrice
-                          ? undefined
+                          ? Promise.resolve(undefined)
                           : cachedFetchTokenPrice(t.tokenAddr, chainId),
                       defaultBaseTokenPrice
-                          ? undefined
+                          ? Promise.resolve(undefined)
                           : cachedFetchTokenPrice(
                                 defaultTokensForChain[0].address,
                                 chainId,
                             ),
                       tokenMeta.address === defaultTokensForChain[0].address
-                          ? Promise.resolve(1)
+                          ? Promise.resolve(1) // Base token price is always 1
                           : cachedQuerySpotPrice(
                                 crocEnv,
                                 defaultTokensForChain[0].address,
@@ -190,6 +190,21 @@ export const useTokenStats = (
                                 ),
                             ),
                   ]);
+
+        // Extract results safely
+        const fetchedTokenPrice =
+            results[0].status === 'fulfilled' ? results[0].value : undefined;
+        const fetchedNativeTokenPrice =
+            results[1].status === 'fulfilled' ? results[1].value : undefined;
+        const poolWithNativeTokenPrice =
+            results[2].status === 'fulfilled' ? results[2].value : undefined;
+
+        // Log errors for debugging
+        results.forEach((result, index) => {
+            if (result.status === 'rejected') {
+                console.error(`Fetch attempt ${index} failed:`, result);
+            }
+        });
 
         // Use fetched prices if not found in activePoolList
         canonicalTokenPrice ||= fetchedTokenPrice?.usdPrice;
