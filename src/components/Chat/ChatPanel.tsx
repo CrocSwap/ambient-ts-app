@@ -275,6 +275,10 @@ function ChatPanel(props: propsIF) {
             if (showPicker) {
                 setShowPicker(false);
             } else {
+                if (isReplyButtonPressed) {
+                    setIsReplyButtonPressed(false);
+                    return;
+                }
                 setIsChatOpen(false);
             }
         }
