@@ -194,7 +194,7 @@ export default function NetworkSelector(props: propsIF) {
             condition: chainMap.has('0x18232'),
         },
         {
-            id: 'plume_network_selector',
+            id: 'plume_legacy_network_selector',
             chainId: '0x18231',
             name: 'Plume (Legacy)',
             logo: plumeLogo,
