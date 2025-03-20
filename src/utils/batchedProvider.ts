@@ -63,7 +63,8 @@ const MULTICALL_ADDRESSES: Map<number, string> = new Map([
     [534351, '0xca11bde05977b3631167028862be2a173976ca11'], // scroll testnet
     [1923, '0xca11bde05977b3631167028862be2a173976ca11'], // swell mainnet
     [1924, '0xca11bde05977b3631167028862be2a173976ca11'], // swell testnet
-    [98865, '0xca11bde05977b3631167028862be2a173976ca11'], // plume mainnet
+    [98865, '0xca11bde05977b3631167028862be2a173976ca11'], // plume legacy
+    [98866, '0xf9da0ef6635f6134d9d1b7eae025159d26ce5838'], // plume mainnet
     [98864, '0xca11bde05977b3631167028862be2a173976ca11'], // plume testnet
     [84532, '0xca11bde05977b3631167028862be2a173976ca11'], // base testnet
     [10143, '0xca11bde05977b3631167028862be2a173976ca11'], // monad testnet

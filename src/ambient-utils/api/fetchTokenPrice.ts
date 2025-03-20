@@ -79,7 +79,7 @@ export const fetchTokenPrice = async (
     } catch (error) {
         const isETHorStakedEth = isETHorStakedEthToken(dispToken, chain);
         const isPriorityEth = isPriorityEthEquivalent(dispToken);
-
+        console.log({ isETHorStakedEth, isPriorityEth, dispToken, chain });
         if (isETHorStakedEth || isPriorityEth) {
             // if token is ETH or Staked ETH, return current value of mainnet ETH
             const body = {
@@ -141,6 +141,11 @@ export const fetchTokenPrice = async (
             return {
                 usdPrice: 14,
                 usdPriceFormatted: 14,
+            };
+        } else if (chain === '0x18232' && address === ZeroAddress) {
+            return {
+                usdPrice: 0.2,
+                usdPriceFormatted: 0.2,
             };
         }
 

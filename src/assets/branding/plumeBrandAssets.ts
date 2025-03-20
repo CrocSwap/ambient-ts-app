@@ -4,6 +4,11 @@ import { brandIF } from './types';
 
 export const plumeBrandAssets: brandIF = {
     networks: {
+        '0x18232': {
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
+            premiumColor: [],
+            cobrandingLogo: plumeLogo,
+        },
         '0x18231': {
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],

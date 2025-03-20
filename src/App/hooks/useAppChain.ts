@@ -7,6 +7,7 @@ import {
     ethereumMainnet,
     ethereumSepolia,
     monadTestnet,
+    plumeLegacy,
     plumeMainnet,
     plumeSepolia,
     scrollMainnet,
@@ -178,8 +179,10 @@ export const useAppChain = (): {
                                 nextNetwork = ethereumMainnet;
                             } else if (incomingChainFromWallet === '0x13e31') {
                                 nextNetwork = blastMainnet;
-                            } else if (incomingChainFromWallet === '0x18231') {
+                            } else if (incomingChainFromWallet === '0x18232') {
                                 nextNetwork = plumeMainnet;
+                            } else if (incomingChainFromWallet === '0x18231') {
+                                nextNetwork = plumeLegacy;
                             } else if (incomingChainFromWallet === '0x783') {
                                 nextNetwork = swellMainnet;
                             } else if (incomingChainFromWallet === '0xaa36a7') {
