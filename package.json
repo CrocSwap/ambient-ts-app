@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "3.3.7",
+    "version": "3.3.8",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -92,7 +92,7 @@
         "rollup-plugin-visualizer": "^5.12.0",
         "superagent": "^10.0.0",
         "typescript": "^4.4.2",
-        "vite": "^6.1.0",
+        "vite": "^6.2.2",
         "vite-plugin-checker": "^0.8.0",
         "vitest": "^3.0.5"
     }
