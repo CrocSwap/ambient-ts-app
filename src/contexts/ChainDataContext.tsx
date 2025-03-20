@@ -309,7 +309,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     }
 
     const analyticsPoolList: PoolIF[] | undefined = usePoolList(crocEnv);
-
     useEffect(() => {
         if (analyticsPoolList) {
             setIsAnalyticsPoolListDefinedOrUnavailable(true);
@@ -325,7 +324,8 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     }, [analyticsPoolList]);
 
     const isAnalyticsPoolListUnavailable =
-        !analyticsPoolList && isAnalyticsPoolListDefinedOrUnavailable;
+        (analyticsPoolList === undefined || analyticsPoolList.length === 0) &&
+        isAnalyticsPoolListDefinedOrUnavailable;
 
     useEffect(() => {
         if (
@@ -346,7 +346,11 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     ]);
 
     const activePoolList = useMemo(() => {
-        return analyticsPoolList ?? gcgoPoolList ?? undefined;
+        return analyticsPoolList && analyticsPoolList.length
+            ? analyticsPoolList
+            : gcgoPoolList && gcgoPoolList.length
+              ? gcgoPoolList
+              : undefined;
     }, [gcgoPoolList, analyticsPoolList]);
 
     useEffect(() => {
