@@ -81,12 +81,10 @@ export const AppStateContextProvider = (props: {
         pathNoLeadingSlash.includes('swap') ||
         pathNoLeadingSlash.includes('initpool');
 
-    const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
+    const isAddressEns = pathNoLeadingSlash?.includes('.eth');
     const isAddressHex =
-        (pathNoLeadingSlash?.startsWith('0x') &&
-            pathNoLeadingSlash?.length == 42) ||
-        (pathNoLeadingSlash?.startsWith('account/0x') &&
-            pathNoLeadingSlash?.length == 50);
+        pathNoLeadingSlash?.startsWith('0x') ||
+        pathNoLeadingSlash?.startsWith('account/0x');
     const isAccountRoute =
         isAddressEns || isAddressHex || pathNoLeadingSlash?.includes('account');
 
