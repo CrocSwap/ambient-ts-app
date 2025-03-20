@@ -281,25 +281,29 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
             Promise.resolve<PoolIF[]>(gcgoPoolList)
                 .then((res: PoolIF[]) => {
-                    return res
-                        .map((result: PoolIF) => {
-                            const baseToken: TokenIF | undefined =
-                                tokens.getTokenByAddress(result.base);
-                            const quoteToken: TokenIF | undefined =
-                                tokens.getTokenByAddress(result.quote);
-                            if (baseToken && quoteToken) {
-                                return {
-                                    ...result, // Spreads all properties of result
-                                    baseToken, // Overwrite base with the mapped token
-                                    quoteToken, // Overwrite quote with the mapped token
-                                };
-                            } else {
-                                return null;
-                            }
-                        })
-                        .filter(
-                            (pool: PoolIF | null) => pool !== null,
-                        ) as PoolIF[];
+                    if (res) {
+                        return res
+                            .map((result: PoolIF) => {
+                                const baseToken: TokenIF | undefined =
+                                    tokens.getTokenByAddress(result.base);
+                                const quoteToken: TokenIF | undefined =
+                                    tokens.getTokenByAddress(result.quote);
+                                if (baseToken && quoteToken) {
+                                    return {
+                                        ...result, // Spreads all properties of result
+                                        baseToken, // Overwrite base with the mapped token
+                                        quoteToken, // Overwrite quote with the mapped token
+                                    };
+                                } else {
+                                    return null;
+                                }
+                            })
+                            .filter(
+                                (pool: PoolIF | null) => pool !== null,
+                            ) as PoolIF[];
+                    } else {
+                        setGcgoPoolList([]);
+                    }
                 })
                 .then((pools) => {
                     setGcgoPoolList(pools);
