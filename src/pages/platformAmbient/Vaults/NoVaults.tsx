@@ -1,4 +1,5 @@
-import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { mainnet } from '@reown/appkit/networks';
+import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
 import { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import { vaultSupportedNetworks } from '../../../ambient-utils/constants';
@@ -11,13 +12,11 @@ import styles from './NoVaults.module.css';
 export default function NoVaults() {
     const { chooseNetwork } = useContext(AppStateContext);
 
-    const { isConnected } = useWeb3ModalAccount();
-    const { switchNetwork } = useSwitchNetwork();
+    const { isConnected } = useAppKitAccount();
+    const { switchNetwork } = useAppKitNetwork();
 
     async function changeNetwork(n: NetworkIF): Promise<void> {
-        isConnected
-            ? await switchNetwork(parseInt(n.chainId))
-            : chooseNetwork(n);
+        isConnected ? switchNetwork(mainnet) : chooseNetwork(n);
     }
 
     if (!someSupportedNetworkIsVaultSupportedNetwork) {

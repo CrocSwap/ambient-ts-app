@@ -79,7 +79,7 @@ interface SentMessageProps {
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
     isSubscriptionsEnabled: boolean;
-    address: `0x${string}` | undefined;
+    address: string | undefined;
     isChatOpen: boolean;
     isDeleted: boolean;
     deletedMessageText: string;

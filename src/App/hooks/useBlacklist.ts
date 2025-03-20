@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react';
 import { checkBlacklist } from '../../ambient-utils/constants';
 import { UserDataContext } from '../../contexts/UserDataContext';
 
-export function useBlacklist(account: `0x${string}` | undefined): void {
+export function useBlacklist(account: string | undefined): void {
     const { disconnectUser } = useContext(UserDataContext);
 
     useEffect(() => {

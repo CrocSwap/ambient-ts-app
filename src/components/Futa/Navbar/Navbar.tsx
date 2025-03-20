@@ -1,5 +1,5 @@
 // Imports
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useAppKitAccount } from '@reown/appkit/react';
 import { motion } from 'framer-motion';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
@@ -74,7 +74,7 @@ export default function Navbar() {
     const currentLocationIsHome = location.pathname == '/';
 
     // Context
-    const { isConnected } = useWeb3ModalAccount();
+    const { isConnected } = useAppKitAccount();
     const { isUserConnected, disconnectUser, ensName, userAddress } =
         useContext(UserDataContext);
     const { setCrocEnv } = useContext(CrocEnvContext);

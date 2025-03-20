@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable camelcase */
 import { config } from 'dotenv';
 import { writeFileSync } from 'fs';
 import path from 'path';
