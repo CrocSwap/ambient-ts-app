@@ -29,7 +29,7 @@ const useInfiniteScrollFetchers = () => {
     } = useContext(AppStateContext);
 
     const { crocEnv, provider } = useContext(CrocEnvContext);
-    const { analyticsPoolList } = useContext(ChainDataContext);
+    const { activePoolList } = useContext(ChainDataContext);
 
     const {
         tokens: { tokenUniv: tokenList },
@@ -55,7 +55,7 @@ const useInfiniteScrollFetchers = () => {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
-                    analyticsPoolList,
+                    activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
@@ -121,7 +121,7 @@ const useInfiniteScrollFetchers = () => {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
-                    analyticsPoolList,
+                    activePoolList,
 
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -158,7 +158,7 @@ const useInfiniteScrollFetchers = () => {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
-                    analyticsPoolList,
+                    activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
@@ -199,7 +199,7 @@ const useInfiniteScrollFetchers = () => {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
-                    analyticsPoolList,
+                    activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,

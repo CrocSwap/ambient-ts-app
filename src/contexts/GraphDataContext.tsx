@@ -139,8 +139,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         sessionPositionUpdates,
         transactionsByTypeIfs,
     } = useContext(ReceiptContext);
-    const { analyticsPoolList, isAnalyticsPoolListDefinedOrUnavailable } =
-        useContext(ChainDataContext);
+    const { activePoolList } = useContext(ChainDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
@@ -673,7 +672,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
             // This useEffect controls a series of other dispatches that fetch data on update of the user object
             // user Postions, limit orders, and recent changes are all governed here
             if (
-                !isAnalyticsPoolListDefinedOrUnavailable ||
+                !activePoolList ||
                 (!isTradeRoute && !isAccountRoute) ||
                 !isUserOnline ||
                 !isServerEnabled ||
@@ -698,7 +697,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                         provider,
                         tokenUniv: tokens.tokenUniv,
                         crocEnv,
-                        analyticsPoolList,
+                        activePoolList,
                         isTestnet,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
@@ -739,7 +738,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                     GCGO_URL: GCGO_URL,
                     provider,
                     n: 200,
-                    analyticsPoolList,
+                    activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
@@ -768,7 +767,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
         };
         fetchData();
     }, [
-        isAnalyticsPoolListDefinedOrUnavailable,
+        activePoolList,
         isTradeRoute || isAccountRoute,
         isUserOnline,
         isServerEnabled,

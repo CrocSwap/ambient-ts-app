@@ -41,7 +41,7 @@ import useMediaQuery from '../../utils/hooks/useMediaQuery';
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata() {
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
-    const { gcgoPoolList, blockPollingUrl } = useContext(ChainDataContext);
+
     const { tokens } = useContext(TokenContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { sessionReceipts } = useContext(ReceiptContext);
@@ -71,8 +71,7 @@ export function usePoolMetadata() {
         limitOrdersByPool,
     } = useContext(GraphDataContext);
 
-    const { analyticsPoolList, isAnalyticsPoolListDefinedOrUnavailable } =
-        useContext(ChainDataContext);
+    const { blockPollingUrl, activePoolList } = useContext(ChainDataContext);
 
     const {
         tokenA,
@@ -292,7 +291,7 @@ export function usePoolMetadata() {
     }, [newRangesByPoolData, baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
-        const currentPoolData = gcgoPoolList?.find(
+        const currentPoolData = activePoolList?.find(
             (poolStat: PoolIF) =>
                 poolStat.base.toLowerCase() ===
                     baseTokenAddress.toLowerCase() &&
@@ -304,7 +303,7 @@ export function usePoolMetadata() {
                 ? currentPoolData.feeRate
                 : undefined,
         );
-    }, [gcgoPoolList, baseTokenAddress, quoteTokenAddress]);
+    }, [activePoolList, baseTokenAddress, quoteTokenAddress]);
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
@@ -318,7 +317,7 @@ export function usePoolMetadata() {
                 quoteTokenAddress !== '' &&
                 (await crocEnv.context).chain.chainId === chainId &&
                 isTradeRoute &&
-                isAnalyticsPoolListDefinedOrUnavailable
+                activePoolList
             ) {
                 // retrieve pool_positions
                 const allPositionsCacheEndpoint = GCGO_URL + '/pool_positions?';
@@ -346,7 +345,7 @@ export function usePoolMetadata() {
                                             crocEnv,
                                             provider,
                                             chainId,
-                                            analyticsPoolList,
+                                            activePoolList,
                                             cachedFetchTokenPrice,
                                             cachedQuerySpotPrice,
                                             cachedTokenDetails,
@@ -398,7 +397,7 @@ export function usePoolMetadata() {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
-                    analyticsPoolList,
+                    activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
@@ -437,7 +436,7 @@ export function usePoolMetadata() {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
-                    analyticsPoolList,
+                    activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
@@ -496,7 +495,7 @@ export function usePoolMetadata() {
                                                 crocEnv,
                                                 provider,
                                                 chainId,
-                                                analyticsPoolList,
+                                                activePoolList,
                                                 cachedFetchTokenPrice,
                                                 cachedQuerySpotPrice,
                                                 cachedTokenDetails,
@@ -558,7 +557,7 @@ export function usePoolMetadata() {
                                                 crocEnv,
                                                 provider,
                                                 chainId,
-                                                analyticsPoolList,
+                                                activePoolList,
                                                 cachedFetchTokenPrice,
                                                 cachedQuerySpotPrice,
                                                 cachedTokenDetails,
@@ -619,7 +618,7 @@ export function usePoolMetadata() {
                                                 crocEnv,
                                                 provider,
                                                 chainId,
-                                                analyticsPoolList,
+                                                activePoolList,
                                                 cachedFetchTokenPrice,
                                                 cachedQuerySpotPrice,
                                                 cachedTokenDetails,
@@ -672,7 +671,7 @@ export function usePoolMetadata() {
         sessionReceipts.length,
         blockPollingUrl,
         isTradeRoute,
-        isAnalyticsPoolListDefinedOrUnavailable,
+        activePoolList,
     ]);
 
     const totalPositionUsdValue = useMemo(

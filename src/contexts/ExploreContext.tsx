@@ -21,8 +21,8 @@ import {
 } from '../pages/platformAmbient/Explore/useTokenStats';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
+import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
-import { PoolContext } from './PoolContext';
 import { TokenContext } from './TokenContext';
 
 export interface ExploreContextIF {
@@ -32,7 +32,7 @@ export interface ExploreContextIF {
         visibleTopPoolData: PoolIF[];
         setVisibleTopPoolData: Dispatch<SetStateAction<PoolIF[]>>;
         processPoolListForActiveChain: () => Promise<void>;
-        activePoolList: PoolIF[];
+        activePoolList: PoolIF[] | undefined;
         reset: () => void;
     };
     topTokensOnchain: useTokenStatsIF;
@@ -46,7 +46,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { activeNetwork, isUserOnline } = useContext(AppStateContext);
     const { cachedFetchTokenPrice, cachedTokenDetails, cachedQuerySpotPrice } =
         useContext(CachedDataContext);
-    const { activePoolList } = useContext(PoolContext);
+    const { activePoolList } = useContext(ChainDataContext);
 
     const {
         topPools: hardcodedTopPools,
@@ -105,22 +105,29 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     }
 
     function processPoolList(chainId: string, crocEnv: CrocEnv): void {
-        if (!activePoolList.length) return;
+        if (!activePoolList?.length) return;
 
         const expandedPoolDataOnCurrentChain = activePoolList
-            .filter((pool) => {
-                return pool.chainId === chainId;
-            })
+            .filter((pool) => pool.chainId === chainId)
             .map((pool: PoolIF) => expandPoolListData(pool, crocEnv));
 
-        Promise.all(expandedPoolDataOnCurrentChain)
-            .then((results: Array<PoolIF>) => {
+        Promise.allSettled(expandedPoolDataOnCurrentChain)
+            .then((results) => {
                 setIsFetchError(false);
-                const filteredPoolData = results.filter(
-                    (pool) => pool.lastPriceSwap && pool.lastPriceSwap > 0,
-                );
-                if (filteredPoolData.length) {
-                    setIntermediaryPoolData(filteredPoolData);
+
+                // Extract only successfully resolved pools
+                const successfulPools = results
+                    .filter(
+                        (res): res is PromiseFulfilledResult<PoolIF> =>
+                            res.status === 'fulfilled',
+                    )
+                    .map((res) => res.value)
+                    .filter(
+                        (pool) => pool.lastPriceSwap && pool.lastPriceSwap > 0,
+                    );
+
+                if (successfulPools.length) {
+                    setIntermediaryPoolData(successfulPools);
                 }
             })
             .catch((err) => {
@@ -185,9 +192,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     }, [
         isUserOnline,
         JSON.stringify(activePoolList),
-        crocEnv,
+        JSON.stringify(crocEnv),
         activeNetwork.chainId,
-        intermediaryPoolData.length !== poolDataFilteredByActiveChain.length,
+        // intermediaryPoolData.length !== poolDataFilteredByActiveChain.length,
     ]);
 
     const topPools = useMemo(() => {
@@ -243,6 +250,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedTokenDetails,
         tokens,
         provider,
+        activePoolList,
     );
 
     const exploreContext: ExploreContextIF = {

@@ -85,6 +85,7 @@ export interface ChainDataContextIF {
     >;
     setIsGasPriceFetchManuallyTriggerered: Dispatch<SetStateAction<boolean>>;
     isAnalyticsPoolListDefinedOrUnavailable: boolean;
+    activePoolList: PoolIF[] | undefined;
 }
 
 export const ChainDataContext = createContext({} as ChainDataContextIF);
@@ -121,26 +122,10 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isPrimaryRpcNodeInactive,
     } = useContext(CrocEnvContext);
 
-    const analyticsPoolList: PoolIF[] | undefined = usePoolList(crocEnv);
-
     const [
         isAnalyticsPoolListDefinedOrUnavailable,
         setIsAnalyticsPoolListDefinedOrUnavailable,
     ] = useState(false);
-
-    useEffect(() => {
-        if (analyticsPoolList) {
-            setIsAnalyticsPoolListDefinedOrUnavailable(true);
-            return; // Exit early to prevent setting a timeout
-        }
-
-        const timer = setTimeout(
-            () => setIsAnalyticsPoolListDefinedOrUnavailable(true),
-            2000,
-        ); // Flip after 2s
-
-        return () => clearTimeout(timer); // Cleanup if component unmounts early
-    }, [analyticsPoolList]);
 
     const {
         cachedFetchAmbientListWalletBalances,
@@ -283,7 +268,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     const [gcgoPoolList, setGcgoPoolList] = useState<PoolIF[] | undefined>();
 
-    async function updateAllPoolStats(): Promise<void> {
+    async function fetchGcgoPoolList(): Promise<void> {
         try {
             const gcgoPoolList: Promise<PoolIF[]> = cachedAllPoolStatsFetch(
                 chainId,
@@ -323,9 +308,33 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         }
     }
 
+    const analyticsPoolList: PoolIF[] | undefined = usePoolList(crocEnv);
+
     useEffect(() => {
-        if (chainId && GCGO_URL && isUserOnline) {
-            updateAllPoolStats();
+        if (analyticsPoolList) {
+            setIsAnalyticsPoolListDefinedOrUnavailable(true);
+            return; // Exit early to prevent setting a timeout
+        }
+
+        const timer = setTimeout(
+            () => setIsAnalyticsPoolListDefinedOrUnavailable(true),
+            2000,
+        ); // Flip after 2s
+
+        return () => clearTimeout(timer); // Cleanup if component unmounts early
+    }, [analyticsPoolList]);
+
+    const isAnalyticsPoolListUnavailable =
+        !analyticsPoolList && isAnalyticsPoolListDefinedOrUnavailable;
+
+    useEffect(() => {
+        if (
+            chainId &&
+            GCGO_URL &&
+            isUserOnline &&
+            isAnalyticsPoolListUnavailable
+        ) {
+            fetchGcgoPoolList();
         }
     }, [
         chainId,
@@ -333,7 +342,12 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         poolStatsPollingCacheTime,
         isUserOnline,
         tokens.getTokenByAddress,
+        isAnalyticsPoolListUnavailable,
     ]);
+
+    const activePoolList = useMemo(() => {
+        return analyticsPoolList ?? gcgoPoolList ?? undefined;
+    }, [gcgoPoolList, analyticsPoolList]);
 
     useEffect(() => {
         isPrimaryRpcNodeInactive.current = false;
@@ -694,8 +708,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             scrollCrocEnv !== undefined &&
             swellCrocEnv !== undefined &&
             blastCrocEnv !== undefined &&
-            plumeCrocEnv !== undefined &&
-            AMBIENT_TOKEN_LIST.length > 0
+            plumeCrocEnv !== undefined
         ) {
             let tvlTotalUsd = 0,
                 volumeTotalUsd = 0,
@@ -711,6 +724,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_ETHEREUM_URL,
                 cachedFetchTokenPrice,
                 10,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -755,6 +769,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_SCROLL_URL,
                 cachedFetchTokenPrice,
                 20,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -798,6 +813,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_SWELL_URL,
                 cachedFetchTokenPrice,
                 10,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -840,6 +856,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_BLAST_URL,
                 cachedFetchTokenPrice,
                 10,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -882,6 +899,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_PLUME_URL,
                 cachedFetchTokenPrice,
                 10,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -921,8 +939,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         showDexStats,
         mainnetCrocEnv !== undefined &&
             scrollCrocEnv !== undefined &&
-            blastCrocEnv !== undefined &&
-            AMBIENT_TOKEN_LIST.length > 0,
+            blastCrocEnv !== undefined,
     ]);
 
     const chainDataContext = {
@@ -955,6 +972,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         setIsTokenBalanceFetchManuallyTriggerered,
         setIsGasPriceFetchManuallyTriggerered,
         isAnalyticsPoolListDefinedOrUnavailable,
+        activePoolList,
     };
 
     return (

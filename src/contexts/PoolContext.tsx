@@ -23,8 +23,6 @@ import { ChainDataContext } from './ChainDataContext';
 import { TradeDataContext } from './TradeDataContext';
 
 export interface PoolContextIF {
-    analyticsPoolList: PoolIF[] | undefined;
-    activePoolList: PoolIF[];
     isPoolInitialized: boolean | undefined;
     poolPriceDisplay: number | undefined;
     isPoolPriceChangePositive: boolean | undefined;
@@ -47,27 +45,7 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const {
         activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
-    const { gcgoPoolList, analyticsPoolList } = useContext(ChainDataContext);
-
-    const [activePoolList, setActivePoolList] = useState<PoolIF[]>(
-        analyticsPoolList?.length ? analyticsPoolList : [],
-    );
-
-    useEffect(() => {
-        let timeout: NodeJS.Timeout;
-
-        if (!analyticsPoolList?.length) {
-            timeout = setTimeout(() => {
-                if (!analyticsPoolList?.length && gcgoPoolList?.length) {
-                    setActivePoolList(gcgoPoolList);
-                }
-            }, 2000);
-        } else {
-            setActivePoolList(analyticsPoolList);
-        }
-
-        return () => clearTimeout(timeout); // Cleanup on re-run or unmount
-    }, [JSON.stringify(analyticsPoolList), JSON.stringify(gcgoPoolList)]);
+    const { activePoolList } = useContext(ChainDataContext);
 
     const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
@@ -178,8 +156,6 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     }, [baseToken.address, quoteToken.address, usdPrice !== undefined]);
 
     const poolContext: PoolContextIF = {
-        analyticsPoolList,
-        activePoolList,
         isPoolInitialized,
         poolPriceDisplay,
         isPoolPriceChangePositive,

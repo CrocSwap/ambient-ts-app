@@ -33,7 +33,7 @@ interface RecordRequestIF {
     crocEnv?: CrocEnv;
     provider?: Provider;
     isTestnet: boolean;
-    analyticsPoolList?: PoolIF[] | undefined;
+    activePoolList?: PoolIF[] | undefined;
     cachedFetchTokenPrice?: TokenPriceFn;
     cachedQuerySpotPrice?: SpotPriceFn;
     cachedTokenDetails?: FetchContractDetailsFn;
@@ -75,7 +75,7 @@ const decorateUserPositions = async ({
     provider,
     chainId,
     isTestnet,
-    analyticsPoolList,
+    activePoolList,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
@@ -87,14 +87,14 @@ const decorateUserPositions = async ({
     provider: Provider;
     chainId: string;
     isTestnet: boolean;
-    analyticsPoolList?: PoolIF[] | undefined;
+    activePoolList?: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
 }) => {
     const forceOnchainLiqUpdate = userPositions.length < 30 && !isTestnet; // temporary solution to fix batch RPC call failure when user has a lot of positions
     if (recordType == RecordType.LimitOrder) {
-        return await Promise.all(
+        const results = await Promise.allSettled(
             (userPositions as LimitOrderServerIF[]).map(
                 (position: LimitOrderServerIF) => {
                     return getLimitOrderData(
@@ -103,24 +103,25 @@ const decorateUserPositions = async ({
                         crocEnv,
                         provider,
                         chainId,
-                        analyticsPoolList,
+                        activePoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                     );
                 },
             ),
-        ).then((updatedLimitOrderStates) => {
-            if (updatedLimitOrderStates.length > 0) {
-                const filteredData = filterLimitArray(updatedLimitOrderStates);
-                return filteredData;
-            } else {
-                return [];
-            }
-        });
+        );
+        // Filter out failed results and return only successful ones
+        const fulfilledResults = results
+            .filter(
+                (result): result is PromiseFulfilledResult<LimitOrderIF> =>
+                    result.status === 'fulfilled',
+            )
+            .map((result) => result.value);
+
+        return results.length > 0 ? filterLimitArray(fulfilledResults) : [];
     } else {
-        // default to 'PositionIF'
-        return await Promise.all(
+        const results = await Promise.allSettled(
             (userPositions as PositionServerIF[]).map(
                 async (position: PositionServerIF) => {
                     return getPositionData(
@@ -129,7 +130,7 @@ const decorateUserPositions = async ({
                         crocEnv,
                         provider,
                         chainId,
-                        analyticsPoolList,
+                        activePoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
@@ -138,6 +139,14 @@ const decorateUserPositions = async ({
                 },
             ),
         );
+
+        // Filter out failed results and return only successful ones
+        return results
+            .filter(
+                (result): result is PromiseFulfilledResult<PositionIF> =>
+                    result.status === 'fulfilled',
+            )
+            .map((result) => result.value);
     }
 };
 
@@ -149,7 +158,7 @@ const fetchDecorated = async ({
     tokenUniv,
     crocEnv,
     provider,
-    analyticsPoolList,
+    activePoolList,
     isTestnet,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
@@ -186,7 +195,7 @@ const fetchDecorated = async ({
             crocEnv: crocEnv!,
             provider: provider!,
             chainId: chainId,
-            analyticsPoolList,
+            activePoolList,
             isTestnet,
             cachedFetchTokenPrice: cachedFetchTokenPrice!,
             cachedQuerySpotPrice: cachedQuerySpotPrice!,
@@ -205,7 +214,7 @@ const fetchSimpleDecorated = async ({
     provider,
     tokenUniv,
     crocEnv,
-    analyticsPoolList,
+    activePoolList,
     isTestnet,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
@@ -229,7 +238,7 @@ const fetchSimpleDecorated = async ({
         provider: provider,
         tokenUniv: tokenUniv,
         crocEnv: crocEnv,
-        analyticsPoolList,
+        activePoolList,
         isTestnet,
         // Data Sources
         cachedFetchTokenPrice,

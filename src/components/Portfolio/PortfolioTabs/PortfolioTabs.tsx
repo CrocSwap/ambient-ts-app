@@ -66,7 +66,7 @@ export default function PortfolioTabs(props: propsIF) {
     const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
 
-    const { analyticsPoolList } = useContext(ChainDataContext);
+    const { activePoolList } = useContext(ChainDataContext);
 
     const {
         server: { isEnabled: isServerEnabled },
@@ -122,7 +122,7 @@ export default function PortfolioTabs(props: propsIF) {
                                 crocEnv,
                                 provider,
                                 chainId,
-                                analyticsPoolList,
+                                activePoolList,
                                 cachedFetchTokenPrice,
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
@@ -167,7 +167,7 @@ export default function PortfolioTabs(props: propsIF) {
                                     crocEnv,
                                     provider,
                                     chainId,
-                                    analyticsPoolList,
+                                    activePoolList,
                                     cachedFetchTokenPrice,
                                     cachedQuerySpotPrice,
                                     cachedTokenDetails,
@@ -201,7 +201,7 @@ export default function PortfolioTabs(props: propsIF) {
                 crocEnv: crocEnv,
                 GCGO_URL: GCGO_URL,
                 provider,
-                analyticsPoolList,
+                activePoolList,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,
                 cachedTokenDetails: cachedTokenDetails,

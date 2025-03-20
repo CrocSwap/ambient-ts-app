@@ -19,7 +19,7 @@ interface argsIF {
     crocEnv: CrocEnv;
     GCGO_URL: string;
     provider: Provider;
-    analyticsPoolList: PoolIF[] | undefined;
+    activePoolList: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
@@ -39,7 +39,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         crocEnv,
         GCGO_URL,
         provider,
-        analyticsPoolList,
+        activePoolList,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
@@ -96,7 +96,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                         crocEnv,
                         provider,
                         chainId,
-                        analyticsPoolList,
+                        activePoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
