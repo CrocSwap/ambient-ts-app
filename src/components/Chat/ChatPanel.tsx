@@ -274,19 +274,28 @@ function ChatPanel(props: propsIF) {
         if (e.code === 'Escape') {
             if (showPicker) {
                 setShowPicker(false);
-                return;
+            } else {
+                if (isReplyButtonPressed) {
+                    setIsReplyButtonPressed(false);
+                    return;
+                }
+                setIsChatOpen(false);
             }
-            if (isReplyButtonPressed) {
-                setIsReplyButtonPressed(false);
-                return;
-            }
-            setIsChatOpen(false);
         }
     }
 
+    useEffect(() => {
+        document.body.addEventListener('keydown', closeOnEscapeKeyDown);
+        document.body.addEventListener('keydown', openChatPanel);
+        return () => {
+            document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
+            document.body.removeEventListener('keydown', openChatPanel);
+        };
+    }, [isChatOpen]);
+
     function openChatPanel(e: KeyboardEvent) {
         if (e.code === 'KeyC' && e.ctrlKey && e.altKey) {
-            setIsChatOpen(!isChatOpen);
+            setIsChatOpen(!isChatOpen); // Toggle chat panel open/closed
         }
     }
 
@@ -353,13 +362,13 @@ function ChatPanel(props: propsIF) {
             setShowPicker(false);
         }
     };
+
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
-        document.body.addEventListener('keydown', openChatPanel);
-        return function cleanUp() {
+        return () => {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
-    });
+    }, []);
 
     useEffect(() => {
         async function checkVerified() {
@@ -419,6 +428,22 @@ function ChatPanel(props: propsIF) {
             // scrollToBottom();
         }
     }, [lastMessage]);
+
+    useEffect(() => {
+        async function checkUser() {
+            const data = await getID();
+            if (!data || data.status === 'Not OK') {
+                setIsVerified(false);
+            } else {
+                setIsVerified(data.verified);
+                setCurrentUser(data.userData._id);
+            }
+        }
+
+        if (isChatOpen) {
+            checkUser();
+        }
+    }, [isChatOpen, userAddress]);
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
@@ -851,16 +876,16 @@ function ChatPanel(props: propsIF) {
         </div>
     );
 
-    const closedHeader = (
+    const trollBoxBubble = (
         <div
             className={styles.closedChatHeader}
-            onClick={() => setIsChatOpen(true)}
+            onClick={() => setIsChatOpen(!isChatOpen)}
         >
             <LuMessageSquareText size={24} color='white' strokeWidth={1} />
         </div>
     );
 
-    const header = isChatOpen ? (
+    const header = (
         <div
             className={styles.chat_header}
             onClick={() => {
@@ -870,7 +895,7 @@ function ChatPanel(props: propsIF) {
         >
             <h2 className={styles.chat_title}>Trollbox</h2>
 
-            {isChatOpen && ALLOW_AUTH && (
+            {ALLOW_AUTH && (
                 <div
                     ref={verifyBtnRef}
                     className={`${styles.verify_button} ${
@@ -915,7 +940,7 @@ function ChatPanel(props: propsIF) {
             )}
 
             <section style={{ paddingRight: '10px' }}>
-                {isFullScreen || !isChatOpen ? (
+                {isFullScreen ? (
                     <></>
                 ) : (
                     // <<div
@@ -932,7 +957,7 @@ function ChatPanel(props: propsIF) {
                     // </div>>
                     <></>
                 )}
-                {isFullScreen || !isChatOpen ? (
+                {isFullScreen ? (
                     <></>
                 ) : (
                     <IoIosArrowDown
@@ -953,8 +978,6 @@ function ChatPanel(props: propsIF) {
                 )}
             </section>
         </div>
-    ) : (
-        closedHeader
     );
 
     let mentionIxdexPointer = 0;
@@ -1373,7 +1396,7 @@ function ChatPanel(props: propsIF) {
             </>
         );
 
-    return (
+    return isChatOpen ? (
         <div
             className={`${styles.main_container} ${isChatOpen ? styles.chat_open : styles.chat_closed}`}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1436,7 +1459,7 @@ function ChatPanel(props: propsIF) {
                     {isChatOpen && (
                         <div
                             id='chatReactionWrapper'
-                            className={`${styles.reaction_picker_wrapper} ${showPicker ? styles.active : ' '}`}
+                            className={`${styles.reaction_picker_wrapper} ${showPicker ? 'styles.active' : ' '}`}
                             ref={reactionsRef}
                             style={{ bottom: pickerBottomPos }}
                         >
@@ -1503,6 +1526,8 @@ function ChatPanel(props: propsIF) {
 
             <DomDebugger />
         </div>
+    ) : (
+        trollBoxBubble
     );
 }
 

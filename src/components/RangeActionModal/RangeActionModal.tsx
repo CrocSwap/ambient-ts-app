@@ -74,15 +74,15 @@ function RangeActionModal(props: propsIF) {
         isPositionInRange,
     } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
-    const { lastBlockNumber, gasPriceInGwei, nativeTokenUsdPrice } =
-        useContext(ChainDataContext);
-
     const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+        lastBlockNumber,
+        gasPriceInGwei,
+        nativeTokenUsdPrice,
+        analyticsPoolList,
+    } = useContext(ChainDataContext);
+
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
 
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
     const {
@@ -221,7 +221,6 @@ function RangeActionModal(props: propsIF) {
                     .then(async (data: PositionServerIF) => {
                         if (data && crocEnv && provider) {
                             // temporarily skip ENS fetch
-                            const skipENSFetch = true;
                             const forceOnchainLiqUpdate = true;
                             const position = await getPositionData(
                                 data,
@@ -229,11 +228,10 @@ function RangeActionModal(props: propsIF) {
                                 crocEnv,
                                 provider,
                                 chainId,
+                                analyticsPoolList,
                                 cachedFetchTokenPrice,
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
-                                cachedEnsResolve,
-                                skipENSFetch,
                                 forceOnchainLiqUpdate,
                             );
                             setPosLiqBaseDecimalCorrected(

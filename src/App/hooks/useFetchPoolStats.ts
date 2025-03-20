@@ -23,7 +23,6 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 const useFetchPoolStats = (
     pool: PoolIF,
     poolList: PoolIF[] | undefined,
-    spotPriceRetrieved: number | undefined,
     isTradePair = false,
     enableTotalSupply = false,
     didUserFlipDenom = false,
@@ -31,6 +30,7 @@ const useFetchPoolStats = (
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
+        isTradeRoute,
     } = useContext(AppStateContext);
 
     const {
@@ -40,7 +40,7 @@ const useFetchPoolStats = (
         cachedTokenDetails,
     } = useContext(CachedDataContext);
 
-    const { poolPriceNonDisplay, setPoolPriceNonDisplay, setLimitTick } =
+    const { setPoolPriceNonDisplay, setLimitTick } =
         useContext(TradeDataContext);
 
     const [localPoolPriceNonDisplay, setLocalPoolPriceNonDisplay] = useState<
@@ -94,9 +94,7 @@ const useFetchPoolStats = (
 
     const shouldInvertDisplay = !isBaseTokenMoneynessGreaterOrEqual;
 
-    const [isPoolInitialized, setIsPoolInitialized] = useState<
-        boolean | undefined
-    >();
+    const [isPoolInitialized, setIsPoolInitialized] = useState<boolean>();
 
     const baseTokenCharacter = poolPriceDisplay
         ? getUnicodeCharacter(pool.baseToken.symbol)
@@ -121,9 +119,20 @@ const useFetchPoolStats = (
           ? Math.floor(Date.now() / 60000) // 60 second interval if  idle
           : Math.floor(Date.now() / 10000); // 10 second interval if not idle
 
+    const analyticsServerShowsPoolInitialized =
+        activeTradePoolStats !== undefined &&
+        (activeTradePoolStats.lastPriceSwap !== undefined ||
+            activeTradePoolStats.quoteTvl !== undefined ||
+            activeTradePoolStats.baseTvl !== undefined);
+
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        if (isServerEnabled && crocEnv) {
+        if (
+            isServerEnabled &&
+            crocEnv &&
+            lastBlockNumber !== 0 &&
+            isTradeRoute
+        ) {
             (async () => {
                 if (
                     !crocEnv ||
@@ -131,18 +140,32 @@ const useFetchPoolStats = (
                 )
                     return;
 
+                if (analyticsServerShowsPoolInitialized) {
+                    setIsPoolInitialized(true);
+                }
+
+                const cachedSpotPrice: number | undefined = await Promise.race<
+                    number | undefined
+                >([
+                    cachedQuerySpotPrice(
+                        crocEnv,
+                        pool.base,
+                        pool.quote,
+                        chainId,
+                        poolPriceCacheTime,
+                    ),
+                    new Promise<number | undefined>((resolve) =>
+                        setTimeout(() => resolve(undefined), 2000),
+                    ), // 2-second timeout
+                ]);
+
                 const spotPrice =
-                    spotPriceRetrieved !== undefined
-                        ? spotPriceRetrieved
-                        : isActiveNetworkMonad && pool.lastPriceSwap
-                          ? pool.lastPriceSwap
-                          : await cachedQuerySpotPrice(
-                                crocEnv,
-                                pool.base,
-                                pool.quote,
-                                chainId,
-                                poolPriceCacheTime,
-                            );
+                    cachedSpotPrice !== undefined
+                        ? cachedSpotPrice
+                        : activeTradePoolStats
+                          ? activeTradePoolStats.lastPriceSwap
+                          : undefined;
+
                 if (spotPrice) {
                     setIsPoolInitialized(true);
                     setLocalPoolPriceNonDisplay([
@@ -150,11 +173,7 @@ const useFetchPoolStats = (
                         spotPrice,
                     ]);
 
-                    if (
-                        isTradePair &&
-                        spotPrice &&
-                        spotPrice !== poolPriceNonDisplay
-                    ) {
+                    if (isTradePair && spotPrice) {
                         setPoolPriceNonDisplay(spotPrice);
                     }
                     const displayPrice = toDisplayPrice(
@@ -177,21 +196,20 @@ const useFetchPoolStats = (
                     setPoolPriceDisplay(undefined);
                     setLocalPoolPriceNonDisplay(undefined);
                     setPoolPriceDisplayNum(undefined);
-                    setIsPoolInitialized(false);
+                    if (!analyticsServerShowsPoolInitialized) {
+                        setIsPoolInitialized(false);
+                    }
                 }
             })();
         }
     }, [
-        spotPriceRetrieved,
         isServerEnabled,
         chainId,
         crocEnv,
+        pool.base + pool.quote,
         lastBlockNumber !== 0,
-        poolPriceNonDisplay,
         poolPriceCacheTime,
-        pool.base,
-        pool.quote,
-        isTradePair,
+        isTradeRoute,
     ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
@@ -257,52 +275,61 @@ const useFetchPoolStats = (
 
     useEffect(() => {
         (async () => {
-            if (poolPriceDisplayNum) {
-                const baseTokenPrice =
+            let baseTokenPrice, quoteTokenPrice;
+            if (activeTradePoolStats?.baseUsdPrice) {
+                baseTokenPrice = activeTradePoolStats.baseUsdPrice;
+            } else {
+                baseTokenPrice =
                     (await cachedFetchTokenPrice(baseAddr, chainId))
                         ?.usdPrice || 0.0;
-                const quoteTokenPrice =
+            }
+            if (activeTradePoolStats?.quoteUsdPrice) {
+                quoteTokenPrice = activeTradePoolStats.quoteUsdPrice;
+            } else {
+                quoteTokenPrice =
                     (await cachedFetchTokenPrice(quoteAddr, chainId))
                         ?.usdPrice || 0.0;
+            }
 
-                if (baseTokenPrice) {
-                    setBasePrice(baseTokenPrice);
-                } else if (
-                    isETHorStakedEthToken(baseAddr, chainId) &&
-                    nativeTokenUsdPrice
-                ) {
-                    setBasePrice(nativeTokenUsdPrice);
-                } else if (poolPriceDisplayNum && quoteTokenPrice) {
-                    // calculation of estimated base price below may be backwards;
-                    // having a hard time finding an example of base missing a price
-                    const estimatedBasePrice =
-                        quoteTokenPrice / poolPriceDisplayNum;
-                    setBasePrice(estimatedBasePrice);
-                } else {
-                    setBasePrice(undefined);
-                }
-                if (quoteTokenPrice) {
-                    setQuotePrice(quoteTokenPrice);
-                } else if (
-                    isETHorStakedEthToken(quoteAddr, chainId) &&
-                    nativeTokenUsdPrice
-                ) {
-                    setQuotePrice(nativeTokenUsdPrice);
-                } else if (poolPriceDisplayNum && baseTokenPrice) {
-                    const estimatedQuotePrice =
-                        baseTokenPrice * poolPriceDisplayNum;
-                    setQuotePrice(estimatedQuotePrice);
-                } else {
-                    setQuotePrice(undefined);
-                }
+            if (baseTokenPrice) {
+                setBasePrice(baseTokenPrice);
+            } else if (
+                isETHorStakedEthToken(baseAddr, chainId) &&
+                nativeTokenUsdPrice
+            ) {
+                setBasePrice(nativeTokenUsdPrice);
+            } else if (poolPriceDisplayNum && quoteTokenPrice) {
+                // calculation of estimated base price below may be backwards;
+                // having a hard time finding an example of base missing a price
+                const estimatedBasePrice =
+                    quoteTokenPrice / poolPriceDisplayNum;
+                setBasePrice(estimatedBasePrice);
+            } else {
+                setBasePrice(undefined);
+            }
+            if (quoteTokenPrice) {
+                setQuotePrice(quoteTokenPrice);
+            } else if (
+                isETHorStakedEthToken(quoteAddr, chainId) &&
+                nativeTokenUsdPrice
+            ) {
+                setQuotePrice(nativeTokenUsdPrice);
+            } else if (poolPriceDisplayNum && baseTokenPrice) {
+                const estimatedQuotePrice =
+                    baseTokenPrice * poolPriceDisplayNum;
+                setQuotePrice(estimatedQuotePrice);
+            } else {
+                setQuotePrice(undefined);
             }
         })();
     }, [
         baseAddr,
         quoteAddr,
         chainId,
-        poolPriceDisplayNum,
+        activeTradePoolStats?.baseUsdPrice,
+        activeTradePoolStats?.quoteUsdPrice,
         nativeTokenUsdPrice === undefined,
+        poolPriceDisplayNum,
     ]);
 
     const [prevPoolPrice, setPrevPoolPrice] = useState<number | undefined>();
@@ -409,7 +436,7 @@ const useFetchPoolStats = (
                 setApr(aprString);
             }
 
-            if (isTradePair) {
+            if (isTradePair && isTradeRoute) {
                 try {
                     const ambientAprEst = await estimateFrom24HrAmbientApr(
                         pool.base,
@@ -489,7 +516,8 @@ const useFetchPoolStats = (
     });
 
     useEffect(() => {
-        if (isServerEnabled && lastBlockNumber !== 0) fetchPoolStats();
+        if (isServerEnabled && lastBlockNumber !== 0 && isTradeRoute)
+            fetchPoolStats();
     }, [
         isUserIdle
             ? Math.floor(Date.now() / 120000)
@@ -504,6 +532,7 @@ const useFetchPoolStats = (
         pool.base + pool.quote,
         localPoolPriceNonDisplay,
         didUserFlipDenom,
+        isTradeRoute,
     ]);
 
     return {
@@ -533,6 +562,7 @@ const useFetchPoolStats = (
         baseTvlDecimal,
         basePrice,
         quotePrice,
+        activeTradePoolStats,
     };
 };
 export default useFetchPoolStats;

@@ -69,6 +69,7 @@ export const monadTestnet: NetworkIF = {
     defaultPair: [MONAD_TESTNET_TOKENS.MON, MONAD_TESTNET_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     displayName: 'Monad Testnet',
     tokenPriceQueryAssetPlatform: 'monad',
     vaultsEnabled: false,

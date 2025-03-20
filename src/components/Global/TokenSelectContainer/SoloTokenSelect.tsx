@@ -14,7 +14,11 @@ import {
     removeWrappedNative,
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
-import { AppStateContext } from '../../../contexts';
+import {
+    AppStateContext,
+    ChainDataContext,
+    SidebarContext,
+} from '../../../contexts';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -46,6 +50,8 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const { cachedTokenDetails } = useContext(CachedDataContext);
     const { provider } = useContext(CrocEnvContext);
+    const { setIsTokenBalanceFetchManuallyTriggerered } =
+        useContext(ChainDataContext);
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
@@ -60,6 +66,19 @@ export const SoloTokenSelect = (props: propsIF) => {
         addRecentToken,
         getRecentTokens,
     } = useContext(TokenContext);
+
+    const { setIsPoolDropdownOpen, isPoolDropdownOpen } =
+        useContext(SidebarContext);
+
+    useEffect(() => {
+        if (isPoolDropdownOpen) {
+            setIsPoolDropdownOpen(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        setIsTokenBalanceFetchManuallyTriggerered(true);
+    }, []);
 
     const { tokenA, tokenB, setSoloToken } = useContext(TradeDataContext);
 

@@ -1,8 +1,7 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
 import { getPositionData, SpotPriceFn } from '../dataLayer/functions';
-import { PositionServerIF, TokenIF } from '../types';
-import { FetchAddrFn } from './fetchAddress';
+import { PoolIF, PositionServerIF, TokenIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 
@@ -20,10 +19,10 @@ interface argsIF {
     crocEnv: CrocEnv;
     GCGO_URL: string;
     provider: Provider;
+    analyticsPoolList?: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
-    cachedEnsResolve: FetchAddrFn;
 }
 
 export const fetchPoolPositions = (args: argsIF) => {
@@ -38,10 +37,10 @@ export const fetchPoolPositions = (args: argsIF) => {
         crocEnv,
         GCGO_URL,
         provider,
+        analyticsPoolList,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
-        cachedEnsResolve,
     } = args;
 
     const poolPositionStatesCacheEndpoint = GCGO_URL + '/pool_positions?';
@@ -82,10 +81,10 @@ export const fetchPoolPositions = (args: argsIF) => {
                         crocEnv,
                         provider,
                         chainId,
+                        analyticsPoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                        cachedEnsResolve,
                     );
                 }),
             ).then((updatedPositions) => {

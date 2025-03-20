@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import {
+    AppStateContext,
     ChainDataContext,
     CrocEnvContext,
     UserDataContext,
@@ -7,6 +8,7 @@ import {
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export function useTokenPairAllowance() {
+    const { isTradeRoute } = useContext(AppStateContext);
     const { tokenA, tokenB } = useContext(TradeDataContext);
     const { crocEnv } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
@@ -27,6 +29,7 @@ export function useTokenPairAllowance() {
     useEffect(() => {
         (async () => {
             if (
+                isTradeRoute &&
                 crocEnv &&
                 userAddress &&
                 tokenA.address &&
@@ -47,6 +50,7 @@ export function useTokenPairAllowance() {
             }
         })();
     }, [
+        isTradeRoute,
         crocEnv,
         tokenA.address + tokenA.chainId + userAddress,
         lastBlockNumber,
@@ -56,7 +60,7 @@ export function useTokenPairAllowance() {
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
         (async () => {
-            if (crocEnv && userAddress && tokenB.address) {
+            if (isTradeRoute && crocEnv && userAddress && tokenB.address) {
                 try {
                     const allowance = await crocEnv
                         .token(tokenB.address)
@@ -75,7 +79,7 @@ export function useTokenPairAllowance() {
         crocEnv,
         tokenB.address + tokenB.chainId + userAddress,
         lastBlockNumber,
-
+        isTradeRoute,
         recheckTokenBApproval,
     ]);
 

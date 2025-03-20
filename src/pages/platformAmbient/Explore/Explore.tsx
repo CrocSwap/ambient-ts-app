@@ -6,10 +6,9 @@ import { PoolIF } from '../../../ambient-utils/types';
 import DexTokens from '../../../components/Global/Explore/DexTokens/DexTokens';
 import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import { AppStateContext } from '../../../contexts';
+import { AppStateContext, ChainDataContext } from '../../../contexts';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ExploreContext } from '../../../contexts/ExploreContext';
-import { PoolContext } from '../../../contexts/PoolContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import styles from './Explore.module.css';
@@ -32,11 +31,11 @@ export default function Explore(props: ExploreIF) {
     const {
         activeNetwork: { chainId, displayName },
     } = useContext(AppStateContext);
-    const { analyticsPoolList } = useContext(PoolContext);
+    const { activePoolList } = useContext(ChainDataContext);
 
     const refreshPools = async () => {
         // make sure crocEnv exists and pool metadata is present
-        if (crocEnv && analyticsPoolList?.length) {
+        if (crocEnv && activePoolList?.length) {
             // clear text in DOM for time since last update
             pools.reset();
             // pause for a moment to allow loading indicator to appear

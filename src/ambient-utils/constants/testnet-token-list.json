@@ -245,7 +245,7 @@
         {
             "name": "Wrapped Monad",
             "address": "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701",
-            "symbol": "shMON",
+            "symbol": "WMON",
             "decimals": 18,
             "chainId": 10143,
             "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/I_t8rg_V_400x400.jpg/public"
@@ -272,7 +272,7 @@
             "symbol": "mamaBTC",
             "decimals": 8,
             "chainId": 10143,
-            "logoURI": "https://dark-purple-cephalopod.myfilebase.com/ipfs/QmQyRz36GsDdaQTXCT717PEyQmZBNqKDMhR2YoNQ2DkgaZ"
+            "logoURI": ""
         },
         {
             "name": "Wormhole Wrapped ETH",
@@ -281,6 +281,30 @@
             "decimals": 18,
             "chainId": 10143,
             "logoURI": "https://assets.coingecko.com/coins/images/22990/standard/ETH_wh_small.png"
+        },
+        {
+            "name": "DANOM",
+            "address": "0x43e52CBC0073Caa7c0cf6e64b576CE2D6FB14eB8",
+            "symbol": "NOM",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://testnet.danom.site/img/logo.svg"
+        },
+        {
+            "name": "Teeeed",
+            "address": "0x4C632c40C2DcD39C20ee7eCDd6F9743a3c7FFE6B",
+            "symbol": "TED",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://pbs.twimg.com/profile_images/1887928331066060801/_ahPl-Y4_400x400.jpg"
+        },
+        {
+            "name": "Bean Exchange",
+            "address": "0x268E4E24E0051EC27b3D27A95977E71cE6875a05",
+            "symbol": "BEAN",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://swap.bean.exchange/images/tokens/bean.png"
         }
     ]
 }

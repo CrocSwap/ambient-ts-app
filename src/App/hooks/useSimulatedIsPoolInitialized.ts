@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import { TradeDataContext } from '../../contexts';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { PoolContext } from '../../contexts/PoolContext';
 
@@ -8,6 +9,8 @@ export const useSimulatedIsPoolInitialized = () => {
         activeNetwork: { chainId },
         isUserOnline,
     } = useContext(AppStateContext);
+
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
     const poolContext = useContext(PoolContext);
     const [simulatedIsPoolInitialized, setSimulatedIsPoolInitialized] =
         useState<boolean>(true);
@@ -22,7 +25,7 @@ export const useSimulatedIsPoolInitialized = () => {
             // Clean up the timeout when the component unmounts
             return () => clearTimeout(timeoutId);
         }
-    }, [isUserOnline, poolContext.pool, chainId]);
+    }, [isUserOnline, baseToken.address + quoteToken.address, chainId]);
 
     return poolContext.isPoolInitialized === undefined
         ? simulatedIsPoolInitialized

@@ -1,3 +1,5 @@
+import { PoolIF } from './PoolIF';
+
 export interface PoolStatIF {
     baseLogoUri?: string;
     quoteLogoUri?: string;
@@ -41,6 +43,7 @@ export interface PoolStatIF {
     volumeTotalUsd?: number;
     baseFdvUsd?: number;
     quoteFdvUsd?: number;
+    activeTradePoolStats?: PoolIF | undefined;
 }
 
 export interface SinglePoolDataIF {

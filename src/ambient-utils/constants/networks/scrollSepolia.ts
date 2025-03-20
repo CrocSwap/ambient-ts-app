@@ -8,7 +8,7 @@ import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const PUBLIC_RPC_URL = 'https://sepolia-rpc.scroll.io';
-const SECONDARY_PUBLIC_RPC_URL = 'https://scroll-sepolia-rpc.publicnode.com';
+const SECONDARY_PUBLIC_RPC_URL = 'https://rpc.ankr.com/scroll_sepolia_testnet';
 
 const RESTRICTED_RPC_URL =
     import.meta.env.VITE_BASE_SEPOLIA_RPC_URL !== undefined
@@ -62,6 +62,7 @@ export const scrollSepolia: NetworkIF = {
     defaultPair: [SCROLL_SEPOLIA_TOKENS.ETH, SCROLL_SEPOLIA_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Scroll Testnet',
     tokenPriceQueryAssetPlatform: undefined,

@@ -93,6 +93,7 @@ export const swellMainnet: NetworkIF = {
     defaultPairFuta: [SWELL_TOKENS.ETH, SWELL_TOKENS.USDe],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Swell',
     tokenPriceQueryAssetPlatform: 'swell',

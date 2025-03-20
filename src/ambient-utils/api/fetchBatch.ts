@@ -77,8 +77,7 @@ class AnalyticsBatchRequestManager {
         const requests = AnalyticsBatchRequestManager.pendingRequests;
 
         try {
-            AnalyticsBatchRequestManager.sentBatches =
-                AnalyticsBatchRequestManager.sentBatches + 1;
+            AnalyticsBatchRequestManager.sentBatches += 1;
 
             const isPriceQuery =
                 queryObject.data.req[0].config_path === 'price';
@@ -104,26 +103,38 @@ class AnalyticsBatchRequestManager {
 
             const jsonResponse = await response.json();
             const innerResponse = jsonResponse.value.data;
+
             innerResponse.forEach((resp: any) => {
                 const req = requests[resp.req_id];
                 if (req && req.resolve) {
-                    // TODO: check for an error field with a successful response from the server
-                    req.timestamp = Date.now(); // Updating the timestamp
-                    req.resolve(resp.results); // Resolving the promise with the response
+                    req.timestamp = Date.now(); // Updating timestamp
+                    req.resolve(resp.results); // Resolving with the response
                     req.response = resp.results;
+                    req.retryCount = 0; // Reset retry count on success
                 }
             });
 
-            AnalyticsBatchRequestManager.parsedBatches =
-                AnalyticsBatchRequestManager.parsedBatches + 1;
+            AnalyticsBatchRequestManager.parsedBatches += 1;
         } catch (error) {
-            console.error('request failed for: ', nonces);
+            console.error('Request failed for:', nonces);
+
             nonces.forEach((nonce) => {
                 const req = requests[nonce];
-                if (req && !req.response && req.reject) {
-                    req.timestamp = Date.now(); // Updating the timestamp
-                    req.reject(error); // Rejecting the promise with the error
-                    req.expiry = 0; // Don't cache error
+                if (req) {
+                    req.retryCount = (req.retryCount || 0) + 1;
+
+                    if (req.retryCount >= 2) {
+                        console.error(
+                            `Request ${nonce} failed 2 times, removing from queue.`,
+                        );
+                        if (req.reject) {
+                            req.reject(error); // Rejecting after 3 failures
+                        }
+                        delete requests[nonce]; // Stop retrying
+                    } else {
+                        req.timestamp = Date.now(); // Update timestamp for retry
+                        req.expiry = 0; // Mark as expired
+                    }
                 }
             });
         }
@@ -170,6 +181,7 @@ class AnalyticsBatchRequestManager {
                 reject: null, // Store the reject function
                 response: null, // Store the response
                 expiry: expiry, // Default expiry in BATCH_ENS_CACHE_EXPIRY ms
+                retryCount: null, // Default expiry in BATCH_ENS_CACHE_EXPIRY ms
             };
             AnalyticsBatchRequestManager.pendingRequests[nonce].promise =
                 new Promise((resolve, reject) => {

@@ -1,10 +1,10 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 
-import { tickToPrice } from '@crocswap-libs/sdk';
+import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
-import { PoolContext } from '../../../../contexts/PoolContext';
+import { ChartContext } from '../../../../contexts';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import {
     renderCanvasArray,
@@ -12,7 +12,6 @@ import {
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
 import { createTriangle } from '../ChartUtils/triangle';
-import { ChartContext } from '../../../../contexts';
 
 interface propsIF {
     scaleData: scaleData | undefined;
@@ -53,8 +52,7 @@ export default function LimitLineChart(props: propsIF) {
 
     const { chartThemeColors } = useContext(ChartContext);
 
-    const { pool } = useContext(PoolContext);
-    const { limitTick } = useContext(TradeDataContext);
+    const { limitTick, baseToken, quoteToken } = useContext(TradeDataContext);
 
     const [limitLine, setLimitLine] = useState<any>();
     const [triangleLimit, setTriangleLimit] = useState<any>();
@@ -209,12 +207,13 @@ export default function LimitLineChart(props: propsIF) {
             isNaN(limitTick)
         )
             return;
-        const limitDisplayPrice = pool?.toDisplayPrice(tickToPrice(limitTick));
-        limitDisplayPrice?.then((limit) => {
-            setLimit(() => {
-                return isDenomBase ? limit : 1 / limit || 0;
-            });
-        });
+        const limitDisplayPrice = toDisplayPrice(
+            tickToPrice(limitTick),
+            baseToken.decimals,
+            quoteToken.decimals,
+            isDenomBase,
+        );
+        setLimit(limitDisplayPrice);
     };
 
     return (

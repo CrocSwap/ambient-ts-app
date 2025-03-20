@@ -15,7 +15,6 @@ import {
     fetchBlastUserXpData,
     fetchBlockNumber,
     fetchUserXpData,
-    IDexTokenBalances,
     RpcNodeStatus,
 } from '../ambient-utils/api';
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
@@ -34,6 +33,7 @@ import {
 import { tokens as AMBIENT_TOKEN_LIST } from '../ambient-utils/constants/ambient-token-list.json';
 import { getChainStats, getFormattedNumber } from '../ambient-utils/dataLayer';
 import { AllVaultsServerIF, PoolIF, TokenIF } from '../ambient-utils/types';
+import { usePoolList } from '../App/hooks/usePoolList';
 import { AppStateContext } from './AppStateContext';
 import { BrandContext } from './BrandContext';
 import { CachedDataContext } from './CachedDataContext';
@@ -79,15 +79,30 @@ export interface ChainDataContextIF {
     totalTvlString: string | undefined;
     totalVolumeString: string | undefined;
     totalFeesString: string | undefined;
+    analyticsPoolList: PoolIF[] | undefined;
+    setIsTokenBalanceFetchManuallyTriggerered: Dispatch<
+        SetStateAction<boolean>
+    >;
+    setIsGasPriceFetchManuallyTriggerered: Dispatch<SetStateAction<boolean>>;
+    isAnalyticsPoolListDefinedOrUnavailable: boolean;
+    activePoolList: PoolIF[] | undefined;
 }
 
 export const ChainDataContext = createContext({} as ChainDataContextIF);
 
 export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { chainId, evmRpcUrl, fallbackRpcUrl, GCGO_URL },
+        activeNetwork: {
+            chainId,
+            evmRpcUrl,
+            fallbackRpcUrl,
+            GCGO_URL,
+            isTestnet,
+        },
         isUserIdle,
         isUserOnline,
+        isTradeRoute,
+        isAccountRoute,
     } = useContext(AppStateContext);
     const {
         setTokenBalances,
@@ -106,6 +121,11 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         plumeProvider,
         isPrimaryRpcNodeInactive,
     } = useContext(CrocEnvContext);
+
+    const [
+        isAnalyticsPoolListDefinedOrUnavailable,
+        setIsAnalyticsPoolListDefinedOrUnavailable,
+    ] = useState(false);
 
     const {
         cachedFetchAmbientListWalletBalances,
@@ -128,6 +148,16 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
+
+    const [
+        isTokenBalanceFetchManuallyTriggerered,
+        setIsTokenBalanceFetchManuallyTriggerered,
+    ] = useState<boolean>(false);
+
+    const [
+        isGasPriceFetchManuallyTriggerered,
+        setIsGasPriceFetchManuallyTriggerered,
+    ] = useState<boolean>(false);
 
     const [rpcNodeStatus, setRpcNodeStatus] =
         useState<RpcNodeStatus>('unknown');
@@ -172,29 +202,40 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkL2 = !L1_NETWORKS.includes(chainId);
 
     const BLOCK_NUM_POLL_MS = isUserIdle || isActiveNetworkMonad ? 30000 : 5000; // poll for new block every 30 seconds when user is idle, every 5 seconds when user is active
-    const GAS_PRICE_POLL_MS =
-        isUserIdle || isActiveNetworkMonad ? 60000 : 10000; // poll for new gas price every 60 seconds when user is idle, every 10 seconds when user is active
 
     const poolStatsPollingCacheTime = Math.floor(
-        Date.now() / (isUserIdle ? 120000 : 30000),
-    ); // poll for new pool stats every 120 seconds when user is idle, every 30 seconds when user is active
-
-    const fetchGasPrice = async () => {
-        setGasPriceinGwei(
-            await supportedNetworks[chainId].getGasPriceInGwei(provider),
-        );
-    };
+        Date.now() / (isUserIdle || isTestnet ? 120000 : 30000),
+    ); // poll for new pool stats every 120 seconds when user is idle or on a testnet, every 30 seconds when user is active
 
     useEffect(() => {
-        setGasPriceinGwei(undefined);
-        fetchGasPrice();
-
-        const interval = setInterval(() => {
-            fetchGasPrice();
-        }, GAS_PRICE_POLL_MS);
-
-        return () => clearInterval(interval);
-    }, [chainId, blockPollingUrl, provider]);
+        (async () => {
+            if (isTradeRoute || isGasPriceFetchManuallyTriggerered) {
+                const network = await provider.getNetwork();
+                if (Number(network.chainId) !== parseInt(chainId)) {
+                    console.warn(
+                        `Provider is connected to chain ${network.chainId}, expected ${parseInt(chainId).toString()}`,
+                    );
+                    return;
+                }
+                setGasPriceinGwei(undefined);
+                const newGasPrice =
+                    await supportedNetworks[chainId].getGasPriceInGwei(
+                        provider,
+                    );
+                setGasPriceinGwei(newGasPrice);
+                if (isGasPriceFetchManuallyTriggerered) {
+                    setIsGasPriceFetchManuallyTriggerered(false);
+                }
+            }
+        })();
+    }, [
+        chainId,
+        blockPollingUrl,
+        provider,
+        poolStatsPollingCacheTime,
+        isTradeRoute,
+        isGasPriceFetchManuallyTriggerered,
+    ]);
 
     async function pollBlockNum(): Promise<void> {
         try {
@@ -227,7 +268,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     const [gcgoPoolList, setGcgoPoolList] = useState<PoolIF[] | undefined>();
 
-    async function updateAllPoolStats(): Promise<void> {
+    async function fetchGcgoPoolList(): Promise<void> {
         try {
             const gcgoPoolList: Promise<PoolIF[]> = cachedAllPoolStatsFetch(
                 chainId,
@@ -267,9 +308,33 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         }
     }
 
+    const analyticsPoolList: PoolIF[] | undefined = usePoolList(crocEnv);
+
     useEffect(() => {
-        if (chainId && GCGO_URL && isUserOnline) {
-            updateAllPoolStats();
+        if (analyticsPoolList) {
+            setIsAnalyticsPoolListDefinedOrUnavailable(true);
+            return; // Exit early to prevent setting a timeout
+        }
+
+        const timer = setTimeout(
+            () => setIsAnalyticsPoolListDefinedOrUnavailable(true),
+            2000,
+        ); // Flip after 2s
+
+        return () => clearTimeout(timer); // Cleanup if component unmounts early
+    }, [analyticsPoolList]);
+
+    const isAnalyticsPoolListUnavailable =
+        !analyticsPoolList && isAnalyticsPoolListDefinedOrUnavailable;
+
+    useEffect(() => {
+        if (
+            chainId &&
+            GCGO_URL &&
+            isUserOnline &&
+            isAnalyticsPoolListUnavailable
+        ) {
+            fetchGcgoPoolList();
         }
     }, [
         chainId,
@@ -277,7 +342,12 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         poolStatsPollingCacheTime,
         isUserOnline,
         tokens.getTokenByAddress,
+        isAnalyticsPoolListUnavailable,
     ]);
+
+    const activePoolList = useMemo(() => {
+        return analyticsPoolList ?? gcgoPoolList ?? undefined;
+    }, [gcgoPoolList, analyticsPoolList]);
 
     useEffect(() => {
         isPrimaryRpcNodeInactive.current = false;
@@ -405,7 +475,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isUserConnected,
         userAddress,
         chainId,
-        // everyFiveMinutes,
         GCGO_URL,
         isfetchNftTriggered,
     ]);
@@ -413,123 +482,115 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     useEffect(() => {
         (async () => {
             IS_LOCAL_ENV &&
-                console.debug('fetching native token and erc20 token balances');
+                console.debug('fetching native token and ERC20 token balances');
+
             if (
+                (isAccountRoute || isTokenBalanceFetchManuallyTriggerered) &&
                 crocEnv &&
-                isUserConnected &&
                 userAddress &&
-                chainId &&
-                everyFiveMinutes &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
                 try {
                     const combinedBalances: TokenIF[] = [];
 
-                    // fetch wallet balances for tokens in ambient token list
-                    const AmbientListWalletBalances: TokenIF[] | undefined =
-                        await cachedFetchAmbientListWalletBalances({
-                            address: userAddress,
-                            chain: chainId,
-                            crocEnv: crocEnv,
-                            _refreshTime: everyFiveMinutes,
-                        });
+                    // Run both API calls concurrently
+                    const [ambientListWalletBalances, dexBalancesFromCache] =
+                        await Promise.all([
+                            cachedFetchAmbientListWalletBalances({
+                                address: userAddress,
+                                chain: chainId,
+                                crocEnv: crocEnv,
+                                _refreshTime: everyFiveMinutes,
+                            }),
+                            cachedFetchDexBalances({
+                                address: userAddress,
+                                chain: chainId,
+                                crocEnv: crocEnv,
+                                GCGO_URL: GCGO_URL,
+                                _refreshTime: everyFiveMinutes,
+                            }),
+                        ]);
 
-                    combinedBalances.push(...AmbientListWalletBalances);
-
-                    // fetch exchange balances and wallet balances for tokens in user's exchange balances
-                    const dexBalancesFromCache = await cachedFetchDexBalances({
-                        address: userAddress,
-                        chain: chainId,
-                        crocEnv: crocEnv,
-                        GCGO_URL: GCGO_URL,
-                        _refreshTime: everyFiveMinutes,
-                    });
+                    if (ambientListWalletBalances) {
+                        combinedBalances.push(...ambientListWalletBalances);
+                    }
 
                     if (dexBalancesFromCache !== undefined) {
-                        await Promise.all(
-                            dexBalancesFromCache.map(
-                                async (tokenBalances: IDexTokenBalances) => {
-                                    const indexOfExistingToken = (
-                                        combinedBalances ?? []
-                                    ).findIndex(
-                                        (existingToken) =>
-                                            existingToken.address.toLowerCase() ===
-                                            tokenBalances.tokenAddress.toLowerCase(),
-                                    );
-                                    const newToken = await expandTokenBalances(
-                                        tokenBalances,
-                                        tokens.tokenUniv,
-                                        cachedTokenDetails,
-                                        crocEnv,
-                                        chainId,
-                                    );
-
-                                    if (indexOfExistingToken === -1) {
-                                        const updatedToken = {
-                                            ...newToken,
-                                        };
-                                        combinedBalances.push(updatedToken);
-                                    } else {
-                                        const existingToken =
-                                            combinedBalances[
-                                                indexOfExistingToken
-                                            ];
-
-                                        const updatedToken = {
-                                            ...existingToken,
-                                        };
-
-                                        updatedToken.dexBalance =
-                                            newToken.dexBalance;
-
-                                        combinedBalances[indexOfExistingToken] =
-                                            updatedToken;
-                                    }
-                                },
+                        // Run expandTokenBalances concurrently for all tokens
+                        const expandedTokenBalances = await Promise.all(
+                            dexBalancesFromCache.map((tokenBalances) =>
+                                expandTokenBalances(
+                                    tokenBalances,
+                                    tokens.tokenUniv,
+                                    cachedTokenDetails,
+                                    crocEnv,
+                                    chainId,
+                                ),
                             ),
                         );
+
+                        expandedTokenBalances.forEach((newToken, index) => {
+                            const tokenBalances = dexBalancesFromCache[index];
+                            const indexOfExistingToken =
+                                combinedBalances.findIndex(
+                                    (existingToken) =>
+                                        existingToken.address.toLowerCase() ===
+                                        tokenBalances.tokenAddress.toLowerCase(),
+                                );
+
+                            if (indexOfExistingToken === -1) {
+                                combinedBalances.push({ ...newToken });
+                            } else {
+                                combinedBalances[indexOfExistingToken] = {
+                                    ...combinedBalances[indexOfExistingToken],
+                                    dexBalance: newToken.dexBalance,
+                                };
+                            }
+                        });
                     }
 
                     const tokensWithLogos = combinedBalances
-                        .filter((t) => {
-                            // Then check if token is in exclusion list
-                            return !hiddenTokens.some(
-                                (excluded) =>
-                                    excluded.address.toLowerCase() ===
-                                        t.address.toLowerCase() &&
-                                    excluded.chainId === t.chainId,
-                            );
-                        })
+                        .filter(
+                            (t) =>
+                                !hiddenTokens.some(
+                                    (excluded) =>
+                                        excluded.address.toLowerCase() ===
+                                            t.address.toLowerCase() &&
+                                        excluded.chainId === t.chainId,
+                                ),
+                        )
                         .map((token) => {
                             const oldToken: TokenIF | undefined =
                                 tokens.getTokenByAddress(token.address);
-                            const newToken = { ...token };
-
-                            newToken.decimals =
-                                oldToken?.decimals || newToken?.decimals || 18;
-                            newToken.name =
-                                oldToken?.name || newToken.name || '';
-                            newToken.logoURI =
-                                oldToken?.logoURI || newToken.logoURI || '';
-                            newToken.symbol =
-                                oldToken?.symbol || newToken.symbol || '';
-                            return newToken;
+                            return {
+                                ...token,
+                                decimals:
+                                    oldToken?.decimals || token.decimals || 18,
+                                name: oldToken?.name || token.name || '',
+                                logoURI:
+                                    oldToken?.logoURI || token.logoURI || '',
+                                symbol: oldToken?.symbol || token.symbol || '',
+                            };
                         });
+
                     setTokenBalances(tokensWithLogos);
+                    if (isTokenBalanceFetchManuallyTriggerered) {
+                        setIsTokenBalanceFetchManuallyTriggerered(false);
+                    }
                 } catch (error) {
-                    // setTokenBalances(undefined);
                     console.error({ error });
                 }
             }
         })();
     }, [
-        crocEnv,
-        isUserConnected,
+        JSON.stringify(crocEnv),
         userAddress,
         chainId,
         everyFiveMinutes,
         GCGO_URL,
         sessionReceipts.length,
+        isAccountRoute,
+        isTokenBalanceFetchManuallyTriggerered,
     ]);
 
     const [nativeTokenUsdPrice, setNativeTokenUsdPrice] = useState<
@@ -647,8 +708,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             scrollCrocEnv !== undefined &&
             swellCrocEnv !== undefined &&
             blastCrocEnv !== undefined &&
-            plumeCrocEnv !== undefined &&
-            AMBIENT_TOKEN_LIST.length > 0
+            plumeCrocEnv !== undefined
         ) {
             let tvlTotalUsd = 0,
                 volumeTotalUsd = 0,
@@ -664,6 +724,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_ETHEREUM_URL,
                 cachedFetchTokenPrice,
                 10,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -708,6 +769,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_SCROLL_URL,
                 cachedFetchTokenPrice,
                 20,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -751,6 +813,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_SWELL_URL,
                 cachedFetchTokenPrice,
                 10,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -793,6 +856,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_BLAST_URL,
                 cachedFetchTokenPrice,
                 10,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -835,6 +899,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 GCGO_PLUME_URL,
                 cachedFetchTokenPrice,
                 10,
+                activePoolList,
                 AMBIENT_TOKEN_LIST,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -874,8 +939,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         showDexStats,
         mainnetCrocEnv !== undefined &&
             scrollCrocEnv !== undefined &&
-            blastCrocEnv !== undefined &&
-            AMBIENT_TOKEN_LIST.length > 0,
+            blastCrocEnv !== undefined,
     ]);
 
     const chainDataContext = {
@@ -904,6 +968,11 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         totalTvlString,
         totalVolumeString,
         totalFeesString,
+        analyticsPoolList,
+        setIsTokenBalanceFetchManuallyTriggerered,
+        setIsGasPriceFetchManuallyTriggerered,
+        isAnalyticsPoolListDefinedOrUnavailable,
+        activePoolList,
     };
 
     return (

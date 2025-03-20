@@ -83,6 +83,7 @@ export const plumeMainnet: NetworkIF = {
     defaultPairFuta: [PLUME_TOKENS.pETH, PLUME_TOKENS.pUSD],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Plume',
     tokenPriceQueryAssetPlatform: 'plume',

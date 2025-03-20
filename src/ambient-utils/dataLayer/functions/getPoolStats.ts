@@ -6,7 +6,12 @@ import {
     getUnicodeCharacter,
     isETHorStakedEthToken,
 } from '..';
-import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
+import {
+    FetchContractDetailsFn,
+    TokenPriceFn,
+    findKnownTokenDecimalsByAddress,
+    findKnownTokenPriceByAddress,
+} from '../../api';
 import {
     ZERO_ADDRESS,
     ethereumMainnet,
@@ -153,77 +158,73 @@ export async function expandPoolStats(
     enableTotalSupply?: boolean,
 ): Promise<PoolIF> {
     const provider = (await crocEnv.context).provider;
-
     const isActiveNetworkMonad = pool.chainId === '0x279f';
+    const DEFAULT_DECIMALS = 18;
+    const poolPriceCacheTime = Math.floor(Date.now() / 10000);
 
+    // Lookup token data in token list
+    const baseTokenListed = tokenList.find(
+        (t) => t.address.toLowerCase() === pool.base.toLowerCase(),
+    );
+    const quoteTokenListed = tokenList.find(
+        (t) => t.address.toLowerCase() === pool.quote.toLowerCase(),
+    );
+
+    // Extract already known values
     const baseUsdPrice =
         pool.baseUsdPrice ||
         (await cachedFetchTokenPrice(pool.base, pool.chainId))?.usdPrice;
-
     const quoteUsdPrice =
         pool.quoteUsdPrice ||
         (await cachedFetchTokenPrice(pool.quote, pool.chainId))?.usdPrice;
 
-    const baseTokenListed = tokenList.find(
-        (token) => token.address.toLowerCase() === pool.base.toLowerCase(),
-    );
-    const quoteTokenListed = tokenList.find(
-        (token) => token.address.toLowerCase() === pool.quote.toLowerCase(),
-    );
+    const baseTokenDecimals = baseTokenListed?.decimals ?? DEFAULT_DECIMALS;
+    const quoteTokenDecimals = quoteTokenListed?.decimals ?? DEFAULT_DECIMALS;
 
-    const baseTokenListedDecimals = baseTokenListed?.decimals;
-    const quoteTokenListedDecimals = quoteTokenListed?.decimals;
-
-    const baseTokenListedTotalSupply = baseTokenListed?.totalSupply;
-    const quoteTokenListedTotalSupply = quoteTokenListed?.totalSupply;
-
-    const DEFAULT_DECIMALS = 18;
+    // Fetch missing details only if necessary
+    const [baseTokenDetails, quoteTokenDetails] = await Promise.all([
+        baseTokenListed
+            ? null
+            : cachedTokenDetails(provider, pool.base, pool.chainId),
+        quoteTokenListed
+            ? null
+            : cachedTokenDetails(provider, pool.quote, pool.chainId),
+    ]);
 
     const baseDecimals =
-        (baseTokenListedDecimals ||
-            (await cachedTokenDetails(provider, pool.base, pool.chainId))
-                ?.decimals) ??
-        DEFAULT_DECIMALS;
-
+        baseTokenDecimals ?? baseTokenDetails?.decimals ?? DEFAULT_DECIMALS;
     const quoteDecimals =
-        (quoteTokenListedDecimals ||
-            (await cachedTokenDetails(provider, pool.quote, pool.chainId))
-                ?.decimals) ??
-        DEFAULT_DECIMALS;
+        quoteTokenDecimals ?? quoteTokenDetails?.decimals ?? DEFAULT_DECIMALS;
 
-    const baseTotalSupplyBigInt =
-        !enableTotalSupply || pool.base === ZERO_ADDRESS
-            ? undefined
-            : baseTokenListedTotalSupply ||
-              (await cachedTokenDetails(provider, pool.base, pool.chainId))
-                  ?.totalSupply;
-
-    const quoteTotalSupplyBigInt = !enableTotalSupply
-        ? undefined
-        : quoteTokenListedTotalSupply ||
-          (await cachedTokenDetails(provider, pool.quote, pool.chainId))
-              ?.totalSupply;
+    // Fetch total supply only if required and missing
+    const [baseTotalSupplyBigInt, quoteTotalSupplyBigInt] = await Promise.all([
+        enableTotalSupply && pool.base !== ZERO_ADDRESS
+            ? (baseTokenListed?.totalSupply ?? baseTokenDetails?.totalSupply)
+            : undefined,
+        enableTotalSupply
+            ? (quoteTokenListed?.totalSupply ?? quoteTokenDetails?.totalSupply)
+            : undefined,
+    ]);
 
     const baseTotalSupplyNum = baseTotalSupplyBigInt
         ? bigIntToFloat(baseTotalSupplyBigInt)
         : undefined;
-
     const quoteTotalSupplyNum = quoteTotalSupplyBigInt
         ? bigIntToFloat(quoteTotalSupplyBigInt)
         : undefined;
 
-    const getEthPrice = async () => {
-        const mainnetEthPrice = await cachedFetchTokenPrice(
-            MAINNET_TOKENS.ETH.address,
-            ethereumMainnet.chainId,
-        );
-        return mainnetEthPrice?.usdPrice;
-    };
+    // Fetch ETH price only if needed
+    const ethPricePromise = cachedFetchTokenPrice(
+        MAINNET_TOKENS.ETH.address,
+        ethereumMainnet.chainId,
+    );
+    const ethPrice =
+        isETHorStakedEthToken(pool.base, pool.chainId) ||
+        isETHorStakedEthToken(pool.quote, pool.chainId)
+            ? (await ethPricePromise)?.usdPrice
+            : undefined;
 
-    const lastPriceSwap = pool.lastPriceSwap || 0;
-
-    const poolPriceCacheTime = Math.floor(Date.now() / 10000);
-
+    // Get spot price, avoiding unnecessary calls
     const spotPrice = isActiveNetworkMonad
         ? pool.lastPriceSwap
         : await cachedQuerySpotPrice(
@@ -234,27 +235,28 @@ export async function expandPoolStats(
               poolPriceCacheTime,
           );
 
+    // Compute display price
     const displayPoolPriceInBase = toDisplayPrice(
-        spotPrice || lastPriceSwap,
+        spotPrice || pool.lastPriceSwap || 0,
         baseDecimals,
         quoteDecimals,
     );
 
-    const basePrice = baseUsdPrice
-        ? baseUsdPrice
-        : isETHorStakedEthToken(pool.base, pool.chainId)
-          ? (await getEthPrice()) || 0.0
-          : quoteUsdPrice && displayPoolPriceInBase
-            ? quoteUsdPrice / displayPoolPriceInBase
-            : 0.0;
-
-    const quotePrice = quoteUsdPrice
-        ? quoteUsdPrice
-        : isETHorStakedEthToken(pool.quote, pool.chainId)
-          ? (await getEthPrice()) || 0.0
-          : baseUsdPrice
-            ? baseUsdPrice * displayPoolPriceInBase
-            : 0.0;
+    // Compute base & quote prices efficiently
+    const basePrice =
+        baseUsdPrice ||
+        (isETHorStakedEthToken(pool.base, pool.chainId)
+            ? ethPrice || 0
+            : quoteUsdPrice && displayPoolPriceInBase
+              ? quoteUsdPrice / displayPoolPriceInBase
+              : 0);
+    const quotePrice =
+        quoteUsdPrice ||
+        (isETHorStakedEthToken(pool.quote, pool.chainId)
+            ? ethPrice || 0
+            : baseUsdPrice
+              ? baseUsdPrice * displayPoolPriceInBase
+              : 0);
 
     return decoratePoolStats(
         pool,
@@ -494,6 +496,7 @@ export async function getChainStats(
     GCGO_URL: string,
     cachedFetchTokenPrice: TokenPriceFn,
     tokenCount: number,
+    activePoolList: PoolIF[] | undefined,
     ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF | undefined>;
 
@@ -505,6 +508,7 @@ export async function getChainStats(
     GCGO_URL: string,
     cachedFetchTokenPrice: TokenPriceFn,
     tokenCount: number,
+    activePoolList: PoolIF[] | undefined,
     ambientTokenList?: TokenIF[],
 ): Promise<DexTokenAggServerIF[] | undefined>;
 
@@ -516,6 +520,7 @@ export async function getChainStats(
     GCGO_URL: string,
     cachedFetchTokenPrice: TokenPriceFn,
     tokenCount: number,
+    activePoolList: PoolIF[] | undefined,
     ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF | DexTokenAggServerIF[] | undefined> {
     const chainStatsFreshEndpoint = GCGO_URL + '/chain_stats?';
@@ -550,6 +555,7 @@ export async function getChainStats(
                     chainId,
                     crocEnv,
                     cachedFetchTokenPrice,
+                    activePoolList,
                     ambientTokenList,
                 );
             }
@@ -565,6 +571,7 @@ async function expandChainStats(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    activePoolList: PoolIF[] | undefined,
     ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF> {
     const subAggs = await Promise.all(
@@ -574,6 +581,7 @@ async function expandChainStats(
                 chainId,
                 crocEnv,
                 cachedFetchTokenPrice,
+                activePoolList,
                 ambientTokenList,
             ),
         ),
@@ -601,18 +609,45 @@ async function expandTokenStats(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    activePoolList: PoolIF[] | undefined,
     ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF> {
-    // check if tokenUniv includes the token's decimals value
+    // Try to get decimals from ambientTokenList or activePoolList
     const token = ambientTokenList?.find(
         (t) => t.address.toLowerCase() === stats.tokenAddr.toLowerCase(),
     );
-    const decimals = token?.decimals || crocEnv.token(stats.tokenAddr).decimals;
-    const usdPrice = cachedFetchTokenPrice(stats.tokenAddr, chainId).then(
-        (p) => p?.usdPrice || 0.0,
-    );
 
-    const mult = (await usdPrice) / Math.pow(10, await decimals);
+    const decimalsPromise = token?.decimals
+        ? Promise.resolve(token.decimals)
+        : activePoolList &&
+            findKnownTokenDecimalsByAddress(activePoolList, stats.tokenAddr)
+          ? Promise.resolve(
+                findKnownTokenDecimalsByAddress(
+                    activePoolList,
+                    stats.tokenAddr,
+                ),
+            )
+          : crocEnv.token(stats.tokenAddr).decimals;
+
+    // Try to get USD price from activePoolList first, then fallback to fetching
+    const usdPricePromise =
+        activePoolList &&
+        findKnownTokenPriceByAddress(activePoolList, stats.tokenAddr)
+            ? Promise.resolve(
+                  findKnownTokenPriceByAddress(activePoolList, stats.tokenAddr),
+              )
+            : cachedFetchTokenPrice(stats.tokenAddr, chainId).then(
+                  (p) => p?.usdPrice || 0.0,
+              );
+
+    // Await both promises in parallel
+    const [decimals, usdPrice] = await Promise.all([
+        decimalsPromise,
+        usdPricePromise,
+    ]);
+
+    // Calculate multiplier once
+    const mult = (usdPrice || 0) / Math.pow(10, decimals || 0);
     return {
         tvlTotalUsd: stats.dexTvl * mult,
         volumeTotalUsd: stats.dexVolume * mult,

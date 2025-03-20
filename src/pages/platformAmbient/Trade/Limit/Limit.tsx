@@ -3,6 +3,7 @@ import {
     priceHalfAboveTick,
     priceHalfBelowTick,
     tickToPrice,
+    toDisplayPrice,
     toDisplayQty,
 } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -72,7 +73,6 @@ export default function Limit() {
         isActiveNetworkPlume,
     } = useContext(ChainDataContext);
     const {
-        pool,
         isPoolInitialized,
         isTradeDollarizationEnabled,
         usdPriceInverse,
@@ -215,12 +215,9 @@ export default function Limit() {
 
     // TODO: is possible we can convert this to use the TradeTokenContext
     // However, unsure if the fact that baseToken comes from pool affects this
-    const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
 
-    const tokenABalance = isSellTokenBase
-        ? baseTokenBalance
-        : quoteTokenBalance;
-    const tokenADexBalance = isSellTokenBase
+    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
+    const tokenADexBalance = isTokenABase
         ? baseTokenDexBalance
         : quoteTokenDexBalance;
     const tokenASurplusMinusTokenARemainderNum =
@@ -260,17 +257,15 @@ export default function Limit() {
 
     // TODO: logic to determine start, middle, end display prices should be refactored into an ambient-utils function
     useEffect(() => {
-        if (!poolPriceNonDisplay) {
+        if (!poolPriceNonDisplay || currentPoolPriceTick === undefined) {
             // pool is uninitialized
             setStartDisplayPrice(undefined);
             setMiddleDisplayPrice(undefined);
             setEndDisplayPrice(undefined);
         } else if (limitTick === undefined && crocEnv) {
-            if (!pool) return;
-
             const defaultLimitOffsetPercentage = 1;
 
-            const pinnedTick: number = isSellTokenBase
+            const pinnedTick: number = isTokenABase
                 ? pinTickToTickLower(
                       currentPoolPriceTick - defaultLimitOffsetPercentage * 100,
                       gridSize,
@@ -283,185 +278,165 @@ export default function Limit() {
             setLimitTick(pinnedTick);
 
             const tickPrice = tickToPrice(pinnedTick);
-            const tickDispPrice = pool.toDisplayPrice(tickPrice);
+            const displayPriceWithDenom = toDisplayPrice(
+                tickPrice,
+                baseToken.decimals,
+                quoteToken.decimals,
+                isDenomBase,
+            );
+            setEndDisplayPrice(displayPriceWithDenom);
 
-            tickDispPrice.then((tp) => {
-                const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
-                setEndDisplayPrice(displayPriceWithDenom);
+            const dollarizedDisplayPrice = displayPriceWithDenom
+                ? isDenomBase
+                    ? quotePrice
+                        ? displayPriceWithDenom * quotePrice
+                        : undefined
+                    : basePrice
+                      ? displayPriceWithDenom * basePrice
+                      : undefined
+                : usdPriceInverse && displayPriceWithDenom
+                  ? usdPriceInverse * displayPriceWithDenom
+                  : undefined;
 
-                const dollarizedDisplayPrice = displayPriceWithDenom
-                    ? isDenomBase
-                        ? quotePrice
-                            ? displayPriceWithDenom * quotePrice
-                            : undefined
-                        : basePrice
-                          ? displayPriceWithDenom * basePrice
-                          : undefined
-                    : usdPriceInverse && displayPriceWithDenom
-                      ? usdPriceInverse * displayPriceWithDenom
-                      : undefined;
+            const limitRateTruncated = isTradeDollarizationEnabled
+                ? getFormattedNumber({
+                      value: dollarizedDisplayPrice,
+                      removeCommas: true,
+                      isInput: true,
+                      prefix: '$',
+                  })
+                : getFormattedNumber({
+                      value: displayPriceWithDenom,
+                      isInput: true,
+                      removeCommas: true,
+                  });
 
-                const limitRateTruncated = isTradeDollarizationEnabled
-                    ? getFormattedNumber({
-                          value: dollarizedDisplayPrice,
-                          removeCommas: true,
-                          isInput: true,
-                          prefix: '$',
-                      })
-                    : getFormattedNumber({
-                          value: displayPriceWithDenom,
-                          isInput: true,
-                          removeCommas: true,
-                      });
+            setDisplayPrice(limitRateTruncated);
+            setPreviousDisplayPrice(limitRateTruncated);
 
-                setDisplayPrice(limitRateTruncated);
-                setPreviousDisplayPrice(limitRateTruncated);
-            });
-
-            const priceHalfAbove = pool.toDisplayPrice(
+            const priceHalfAbove = toDisplayPrice(
                 priceHalfAboveTick(pinnedTick, gridSize),
+                baseToken.decimals,
+                quoteToken.decimals,
+                isDenomBase,
             );
-            const priceHalfBelow = pool.toDisplayPrice(
+            const priceHalfBelow = toDisplayPrice(
                 priceHalfBelowTick(pinnedTick, gridSize),
+                baseToken.decimals,
+                quoteToken.decimals,
+                isDenomBase,
             );
-            const priceFullTickAbove = pool.toDisplayPrice(
+            const priceFullTickAbove = toDisplayPrice(
                 tickToPrice(pinnedTick + gridSize),
+                baseToken.decimals,
+                quoteToken.decimals,
+                isDenomBase,
             );
-            const priceFullTickBelow = pool.toDisplayPrice(
+            const priceFullTickBelow = toDisplayPrice(
                 tickToPrice(pinnedTick - gridSize),
+                baseToken.decimals,
+                quoteToken.decimals,
+                isDenomBase,
             );
 
             if (isDenomBase) {
-                if (isSellTokenBase) {
-                    priceHalfAbove.then((priceHalfAbove) => {
-                        setMiddleDisplayPrice(priceHalfAbove);
-                    });
-                    priceFullTickAbove.then((priceFullTickAbove) => {
-                        setStartDisplayPrice(priceFullTickAbove);
-                    });
+                if (isTokenABase) {
+                    setMiddleDisplayPrice(priceHalfAbove);
+                    setStartDisplayPrice(priceFullTickAbove);
                 } else {
-                    priceHalfBelow.then((priceHalfBelow) => {
-                        setMiddleDisplayPrice(priceHalfBelow);
-                    });
-                    priceFullTickBelow.then((priceFullTickBelow) => {
-                        setStartDisplayPrice(priceFullTickBelow);
-                    });
+                    setMiddleDisplayPrice(priceHalfBelow);
+                    setStartDisplayPrice(priceFullTickBelow);
                 }
             } else {
-                if (isSellTokenBase) {
-                    priceHalfAbove.then((priceHalfAbove) => {
-                        setMiddleDisplayPrice(1 / priceHalfAbove);
-                    });
-                    priceFullTickAbove.then((priceFullTickAbove) => {
-                        setStartDisplayPrice(1 / priceFullTickAbove);
-                    });
+                if (isTokenABase) {
+                    setMiddleDisplayPrice(1 / priceHalfAbove);
+                    setStartDisplayPrice(1 / priceFullTickAbove);
                 } else {
-                    priceHalfBelow.then((priceHalfBelow) => {
-                        setMiddleDisplayPrice(1 / priceHalfBelow);
-                    });
-                    priceFullTickBelow.then((priceFullTickBelow) => {
-                        setStartDisplayPrice(1 / priceFullTickBelow);
-                    });
+                    setMiddleDisplayPrice(1 / priceHalfBelow);
+                    setStartDisplayPrice(1 / priceFullTickBelow);
                 }
             }
         } else if (limitTick !== undefined) {
-            if (!pool) return;
-
             const tickPrice = tickToPrice(limitTick);
 
-            const tickDispPrice = pool.toDisplayPrice(tickPrice);
+            const displayPriceWithDenom = toDisplayPrice(
+                tickPrice,
+                baseToken.decimals,
+                quoteToken.decimals,
+                isDenomBase,
+            );
 
-            tickDispPrice.then((tp) => {
-                const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
+            setEndDisplayPrice(displayPriceWithDenom);
 
-                setEndDisplayPrice(displayPriceWithDenom);
+            const dollarizedDisplayPrice = displayPriceWithDenom
+                ? isDenomBase
+                    ? quotePrice
+                        ? displayPriceWithDenom * quotePrice
+                        : undefined
+                    : basePrice
+                      ? displayPriceWithDenom * basePrice
+                      : undefined
+                : usdPriceInverse && displayPriceWithDenom
+                  ? usdPriceInverse * displayPriceWithDenom
+                  : undefined;
 
-                const dollarizedDisplayPrice = displayPriceWithDenom
-                    ? isDenomBase
-                        ? quotePrice
-                            ? displayPriceWithDenom * quotePrice
-                            : undefined
-                        : basePrice
-                          ? displayPriceWithDenom * basePrice
-                          : undefined
-                    : usdPriceInverse && displayPriceWithDenom
-                      ? usdPriceInverse * displayPriceWithDenom
-                      : undefined;
+            const limitRateTruncated = isTradeDollarizationEnabled
+                ? getFormattedNumber({
+                      value: dollarizedDisplayPrice,
+                      removeCommas: true,
+                      isInput: true,
+                      prefix: '$',
+                  })
+                : getFormattedNumber({
+                      value: displayPriceWithDenom,
+                      isInput: true,
+                      removeCommas: true,
+                  });
 
-                const limitRateTruncated = isTradeDollarizationEnabled
-                    ? getFormattedNumber({
-                          value: dollarizedDisplayPrice,
-                          removeCommas: true,
-                          isInput: true,
-                          prefix: '$',
-                      })
-                    : getFormattedNumber({
-                          value: displayPriceWithDenom,
-                          isInput: true,
-                          removeCommas: true,
-                      });
+            setDisplayPrice(limitRateTruncated);
+            setPreviousDisplayPrice(limitRateTruncated);
 
-                setDisplayPrice(limitRateTruncated);
-                setPreviousDisplayPrice(limitRateTruncated);
-            });
-
-            const priceHalfAbove = pool.toDisplayPrice(
+            const priceHalfAbove = toDisplayPrice(
                 priceHalfAboveTick(limitTick, gridSize),
+                baseToken.decimals,
+                quoteToken.decimals,
+                isDenomBase,
             );
-            const priceHalfBelow = pool.toDisplayPrice(
+            const priceHalfBelow = toDisplayPrice(
                 priceHalfBelowTick(limitTick, gridSize),
+                baseToken.decimals,
+                quoteToken.decimals,
+                isDenomBase,
             );
-            const priceFullTickAbove = pool.toDisplayPrice(
+            const priceFullTickAbove = toDisplayPrice(
                 tickToPrice(limitTick + gridSize),
+                baseToken.decimals,
+                quoteToken.decimals,
+                isDenomBase,
             );
-            const priceFullTickBelow = pool.toDisplayPrice(
+            const priceFullTickBelow = toDisplayPrice(
                 tickToPrice(limitTick - gridSize),
+                baseToken.decimals,
+                quoteToken.decimals,
+                isDenomBase,
             );
 
-            if (isDenomBase) {
-                priceHalfAbove.then((priceHalfAbove) => {
-                    if (isSellTokenBase) setMiddleDisplayPrice(priceHalfAbove);
-                });
-                priceFullTickAbove.then((priceFullTickAbove) => {
-                    if (isSellTokenBase)
-                        setStartDisplayPrice(priceFullTickAbove);
-                });
-                priceHalfBelow.then((priceHalfBelow) => {
-                    if (!isSellTokenBase) setMiddleDisplayPrice(priceHalfBelow);
-                });
-                priceFullTickBelow.then((priceFullTickBelow) => {
-                    if (!isSellTokenBase)
-                        setStartDisplayPrice(priceFullTickBelow);
-                });
-            } else {
-                priceHalfAbove.then((priceHalfAbove) => {
-                    if (isSellTokenBase)
-                        setMiddleDisplayPrice(1 / priceHalfAbove);
-                });
-                priceFullTickAbove.then((priceFullTickAbove) => {
-                    if (isSellTokenBase)
-                        setStartDisplayPrice(1 / priceFullTickAbove);
-                });
-                priceHalfBelow.then((priceHalfBelow) => {
-                    if (!isSellTokenBase)
-                        setMiddleDisplayPrice(1 / priceHalfBelow);
-                });
-                priceFullTickBelow.then((priceFullTickBelow) => {
-                    if (!isSellTokenBase)
-                        setStartDisplayPrice(1 / priceFullTickBelow);
-                });
-            }
+            if (isTokenABase) setMiddleDisplayPrice(priceHalfAbove);
+            if (isTokenABase) setStartDisplayPrice(priceFullTickAbove);
+            if (!isTokenABase) setMiddleDisplayPrice(priceHalfBelow);
+            if (!isTokenABase) setStartDisplayPrice(priceFullTickBelow);
 
             setPriceInputFieldBlurred(false);
         }
     }, [
         !!crocEnv,
-        pool,
+        baseToken.address + quoteToken.address,
         limitTick,
         isDenomBase,
         priceInputFieldBlurred,
-        isSellTokenBase,
+        isTokenABase,
         poolPriceNonDisplay,
+        currentPoolPriceTick === undefined,
         isTradeDollarizationEnabled,
         usdPriceInverse,
         basePrice,
@@ -543,7 +518,7 @@ export default function Limit() {
         isPoolInitialized,
         poolPriceNonDisplay,
         limitTick,
-        isSellTokenBase,
+        isTokenABase,
         isSellTokenNativeToken,
         tokenAQtyCoveredByWalletBalance,
         tokenABalance,
@@ -625,8 +600,7 @@ export default function Limit() {
     const updateLimitErrorMessage = () =>
         setLimitButtonErrorMessage(
             `Limit ${
-                (isSellTokenBase && !isDenomBase) ||
-                (!isSellTokenBase && isDenomBase)
+                (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase)
                     ? 'Above Maximum'
                     : 'Below Minimum'
             }  Price`,
@@ -653,8 +627,8 @@ export default function Limit() {
             baseAddress: baseToken.address,
             quoteAddress: quoteToken.address,
             poolIdx: poolIndex,
-            bidTick: isSellTokenBase ? limitTick : limitTick - gridSize,
-            askTick: isSellTokenBase ? limitTick + gridSize : limitTick,
+            bidTick: isTokenABase ? limitTick : limitTick - gridSize,
+            askTick: isTokenABase ? limitTick + gridSize : limitTick,
         });
 
         let tx;
@@ -667,9 +641,9 @@ export default function Limit() {
             );
             const liqBigInt = (
                 await pos.queryKnockoutLivePos(
-                    isSellTokenBase,
-                    isSellTokenBase ? limitTick : limitTick - gridSize,
-                    isSellTokenBase ? limitTick + gridSize : limitTick,
+                    isTokenABase,
+                    isTokenABase ? limitTick : limitTick - gridSize,
+                    isTokenABase ? limitTick + gridSize : limitTick,
                 )
             ).liq;
             try {
@@ -694,7 +668,7 @@ export default function Limit() {
                         sellTokenAddress: sellToken,
                         buyTokenAddress: buyToken,
                         type,
-                        limit: isSellTokenBase
+                        limit: isTokenABase
                             ? limitTick + gridSize
                             : limitTick - gridSize,
                         isWithdrawFromDexChecked,
@@ -733,7 +707,7 @@ export default function Limit() {
                                 sellTokenAddress: sellToken,
                                 buyTokenAddress: buyToken,
                                 type,
-                                limit: isSellTokenBase
+                                limit: isTokenABase
                                     ? limitTick - gridSize
                                     : limitTick + gridSize,
                                 isWithdrawFromDexChecked,
@@ -771,15 +745,13 @@ export default function Limit() {
                     poolIdx: poolIndex,
                     baseSymbol: baseToken.symbol,
                     quoteSymbol: quoteToken.symbol,
-                    lowTick: isSellTokenBase ? limitTick : limitTick - gridSize,
-                    highTick: isSellTokenBase
-                        ? limitTick + gridSize
-                        : limitTick,
-                    isBid: isSellTokenBase,
-                    initialTokenQty: isSellTokenBase
+                    lowTick: isTokenABase ? limitTick : limitTick - gridSize,
+                    highTick: isTokenABase ? limitTick + gridSize : limitTick,
+                    isBid: isTokenABase,
+                    initialTokenQty: isTokenABase
                         ? tokenAInputQtyNoExponentString
                         : tokenBInputQtyNoExponentString,
-                    secondaryTokenQty: isSellTokenBase
+                    secondaryTokenQty: isTokenABase
                         ? tokenBInputQtyNoExponentString
                         : tokenAInputQtyNoExponentString,
                     currentLiquidity: liqBigInt,
@@ -858,8 +830,8 @@ export default function Limit() {
             setLimitAllowed(false);
             setLimitButtonErrorMessage(
                 `Limit ${
-                    (isSellTokenBase && !isDenomBase) ||
-                    (!isSellTokenBase && isDenomBase)
+                    (isTokenABase && !isDenomBase) ||
+                    (!isTokenABase && isDenomBase)
                         ? 'Above Maximum'
                         : 'Below Minimum'
                 }  Price`,
@@ -1017,7 +989,7 @@ export default function Limit() {
                     displayPrice={displayPrice}
                     setDisplayPrice={setDisplayPrice}
                     setPreviousDisplayPrice={setPreviousDisplayPrice}
-                    isSellTokenBase={isSellTokenBase}
+                    isTokenABase={isTokenABase}
                     setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                     updateURL={updateURL}
                 />
@@ -1029,7 +1001,7 @@ export default function Limit() {
                     }
                     orderGasPriceInDollars={orderGasPriceInDollars}
                     liquidityFee={liquidityFee}
-                    isTokenABase={isSellTokenBase}
+                    isTokenABase={isTokenABase}
                     startDisplayPrice={startDisplayPrice}
                     middleDisplayPrice={middleDisplayPrice}
                     endDisplayPrice={endDisplayPrice}

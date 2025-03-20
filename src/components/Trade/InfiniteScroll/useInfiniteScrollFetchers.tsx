@@ -14,24 +14,22 @@ import { PositionIF } from '../../../ambient-utils/types/position';
 import {
     AppStateContext,
     CachedDataContext,
+    ChainDataContext,
     CrocEnvContext,
     TokenContext,
     TradeDataContext,
 } from '../../../contexts';
 
 const useInfiniteScrollFetchers = () => {
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
 
     const {
         activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
 
     const { crocEnv, provider } = useContext(CrocEnvContext);
+    const { activePoolList } = useContext(ChainDataContext);
 
     const {
         tokens: { tokenUniv: tokenList },
@@ -57,10 +55,10 @@ const useInfiniteScrollFetchers = () => {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
+                    activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
                 }).then((poolChangesJsonData) => {
                     if (poolChangesJsonData && poolChangesJsonData.length > 0) {
                         resolve(poolChangesJsonData as LimitOrderIF[]);
@@ -93,7 +91,6 @@ const useInfiniteScrollFetchers = () => {
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
                 }).then((poolChangesJsonData) => {
                     if (poolChangesJsonData && poolChangesJsonData.length > 0) {
                         resolve(poolChangesJsonData as PositionIF[]);
@@ -124,10 +121,11 @@ const useInfiniteScrollFetchers = () => {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
+                    activePoolList,
+
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
                 }).then((poolChangesJsonData) => {
                     if (poolChangesJsonData && poolChangesJsonData.length > 0) {
                         const newTxByPoolDataWithoutFills =
@@ -160,10 +158,10 @@ const useInfiniteScrollFetchers = () => {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
+                    activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
                 }).then((userChangesJsonData) => {
                     if (userChangesJsonData && userChangesJsonData.length > 0) {
                         const userTransactionsWithoutFills =
@@ -201,10 +199,10 @@ const useInfiniteScrollFetchers = () => {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
+                    activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
                 }).then((poolChangesJsonData) => {
                     if (poolChangesJsonData && poolChangesJsonData.length > 0) {
                         const poolUserTransactionsWithoutFills =

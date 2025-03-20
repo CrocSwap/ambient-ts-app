@@ -11,9 +11,46 @@ import {
     memoizePromiseFn,
     translateToken,
 } from '../dataLayer/functions';
+import { PoolIF } from '../types';
 import { fetchBatch } from './fetchBatch';
 
 const randomNum = Math.random();
+
+export function findKnownTokenPriceByAddress(
+    poolList: PoolIF[],
+    address: string,
+) {
+    const normalizedAddress = address.toLowerCase();
+
+    for (const pool of poolList) {
+        if (pool.baseToken.address.toLowerCase() === normalizedAddress) {
+            return pool.baseUsdPrice;
+        }
+        if (pool.quoteToken.address.toLowerCase() === normalizedAddress) {
+            return pool.quoteUsdPrice;
+        }
+    }
+
+    return undefined;
+}
+
+export function findKnownTokenDecimalsByAddress(
+    poolList: PoolIF[],
+    address: string,
+) {
+    const normalizedAddress = address.toLowerCase();
+
+    for (const pool of poolList) {
+        if (pool.baseToken.address.toLowerCase() === normalizedAddress) {
+            return pool.baseToken.decimals;
+        }
+        if (pool.quoteToken.address.toLowerCase() === normalizedAddress) {
+            return pool.quoteToken.decimals;
+        }
+    }
+
+    return undefined;
+}
 
 export const fetchTokenPrice = async (
     dispToken: string,
@@ -51,33 +88,47 @@ export const fetchTokenPrice = async (
                 token_address: ZeroAddress,
             };
 
-            const response = await fetchBatch<'price'>(body);
+            try {
+                const response = await fetchBatch<'price'>(body);
 
-            if ('error' in response) throw new Error(response.error);
-            if (response.value.source === '') {
-                throw new Error('no source available');
+                if ('error' in response) throw new Error(response.error);
+                if (response.value.source === '') {
+                    throw new Error('no source available');
+                }
+                if (response.value.usdPrice === Infinity) {
+                    throw new Error('USD value returned as Infinity');
+                }
+                return response.value;
+            } catch (error) {
+                return {
+                    usdPrice: 2000,
+                    usdPriceFormatted: 2000,
+                };
             }
-            if (response.value.usdPrice === Infinity) {
-                throw new Error('USD value returned as Infinity');
-            }
-            return response.value;
         } else if (isWbtcToken(dispToken)) {
-            const body = {
-                config_path: 'price',
-                asset_platform: 'ethereum',
-                token_address: MAINNET_TOKENS.WBTC.address,
-            };
+            try {
+                const body = {
+                    config_path: 'price',
+                    asset_platform: 'ethereum',
+                    token_address: MAINNET_TOKENS.WBTC.address,
+                };
 
-            const response = await fetchBatch<'price'>(body);
+                const response = await fetchBatch<'price'>(body);
 
-            if ('error' in response) throw new Error(response.error);
-            if (response.value.source === '') {
-                throw new Error('no source available');
+                if ('error' in response) throw new Error(response.error);
+                if (response.value.source === '') {
+                    throw new Error('no source available');
+                }
+                if (response.value.usdPrice === Infinity) {
+                    throw new Error('USD value returned as Infinity');
+                }
+                return response.value;
+            } catch (error) {
+                return {
+                    usdPrice: 86000,
+                    usdPriceFormatted: 86000,
+                };
             }
-            if (response.value.usdPrice === Infinity) {
-                throw new Error('USD value returned as Infinity');
-            }
-            return response.value;
         } else if (
             // if token is USD stablecoin, return $1
             isUsdStableToken(dispToken)
@@ -88,8 +139,8 @@ export const fetchTokenPrice = async (
             };
         } else if (chain === '0x279f' && address === ZeroAddress) {
             return {
-                usdPrice: 17,
-                usdPriceFormatted: 17,
+                usdPrice: 14,
+                usdPriceFormatted: 14,
             };
         }
 
