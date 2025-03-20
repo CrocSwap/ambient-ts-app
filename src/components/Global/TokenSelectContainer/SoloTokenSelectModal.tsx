@@ -13,7 +13,11 @@ import {
     removeWrappedNative,
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
-import { AppStateContext } from '../../../contexts';
+import {
+    AppStateContext,
+    ChainDataContext,
+    SidebarContext,
+} from '../../../contexts';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -53,6 +57,22 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
+
+    const { setIsTokenBalanceFetchManuallyTriggerered } =
+        useContext(ChainDataContext);
+
+    const { setIsPoolDropdownOpen, isPoolDropdownOpen } =
+        useContext(SidebarContext);
+
+    useEffect(() => {
+        if (isPoolDropdownOpen) {
+            setIsPoolDropdownOpen(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        setIsTokenBalanceFetchManuallyTriggerered(true);
+    }, []);
 
     const {
         tokens,

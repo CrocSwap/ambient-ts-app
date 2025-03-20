@@ -12,6 +12,7 @@ import {
 import { useLocation } from 'react-router-dom';
 
 import {
+    fromDisplayPrice,
     pinTickLower,
     pinTickUpper,
     priceHalfAboveTick,
@@ -269,8 +270,7 @@ export default function Chart(props: propsIF) {
         setCandleData,
         showFutaCandles,
     } = useContext(CandleContext);
-    const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
-        useContext(PoolContext);
+    const { poolPriceDisplay: poolPriceWithoutDenom } = useContext(PoolContext);
     const { advancedMode, setIsLinesSwitched } = useContext(RangeContext);
 
     const [isUpdatingShape, setIsUpdatingShape] = useState(false);
@@ -2096,7 +2096,11 @@ export default function Chart(props: propsIF) {
 
     // calculate range value for denom
     useEffect(() => {
-        if (!advancedMode && simpleRangeWidth === 100) {
+        if (
+            !advancedMode &&
+            simpleRangeWidth === 100 &&
+            currentPoolPriceTick !== undefined
+        ) {
             const lowTick = currentPoolPriceTick - simpleRangeWidth * 100;
             const highTick = currentPoolPriceTick + simpleRangeWidth * 100;
 
@@ -2244,50 +2248,50 @@ export default function Chart(props: propsIF) {
      * @param high  The high value for the calculation
      */
     const setLimitTickNearNoGoZone = (low: number, high: number) => {
-        const limitNonDisplay = denomInBase
-            ? pool?.fromDisplayPrice(parseFloat(low.toString()))
-            : pool?.fromDisplayPrice(1 / parseFloat(low.toString()));
+        const limitNonDisplay = fromDisplayPrice(
+            parseFloat(low.toString()),
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            denomInBase,
+        );
+        const pinnedTickLower: number = pinTickLower(limitNonDisplay, gridSize);
 
-        limitNonDisplay?.then((limit) => {
-            limit = limit !== 0 ? limit : 1;
-            const pinnedTick: number = pinTickLower(limit, gridSize);
+        const tickPriceLower = tickToPrice(
+            pinnedTickLower + (denomInBase ? 1 : -1) * gridSize * 2,
+        );
 
-            const tickPrice = tickToPrice(
-                pinnedTick + (denomInBase ? 1 : -1) * gridSize * 2,
-            );
+        const displayPriceWithDenomLower = toDisplayPrice(
+            tickPriceLower,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            denomInBase,
+        );
 
-            const tickDispPrice = pool?.toDisplayPrice(tickPrice);
+        setMinTickForLimit(displayPriceWithDenomLower);
 
-            if (tickDispPrice) {
-                tickDispPrice.then((tp) => {
-                    const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
+        const limitNonDisplayMax = fromDisplayPrice(
+            parseFloat(high.toString()),
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            denomInBase,
+        );
+        const pinnedTickUpper: number = pinTickUpper(
+            limitNonDisplayMax,
+            gridSize,
+        );
 
-                    setMinTickForLimit(displayPriceWithDenom);
-                });
-            }
-        });
+        const tickPriceUpper = tickToPrice(
+            pinnedTickUpper + (denomInBase ? -1 : 1) * gridSize * 2,
+        );
 
-        const limitNonDisplayMax = denomInBase
-            ? pool?.fromDisplayPrice(parseFloat(high.toString()))
-            : pool?.fromDisplayPrice(1 / parseFloat(high.toString()));
+        const displayPriceWithDenomUpper = toDisplayPrice(
+            tickPriceUpper,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            denomInBase,
+        );
 
-        limitNonDisplayMax?.then((limit) => {
-            limit = limit !== 0 ? limit : 1;
-            const pinnedTick: number = pinTickUpper(limit, gridSize);
-
-            const tickPrice = tickToPrice(
-                pinnedTick + (denomInBase ? -1 : 1) * gridSize * 2,
-            );
-
-            const tickDispPrice = pool?.toDisplayPrice(tickPrice);
-
-            if (tickDispPrice) {
-                tickDispPrice.then((tp) => {
-                    const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
-                    setMaxTickForLimit(displayPriceWithDenom);
-                });
-            }
-        });
+        setMaxTickForLimit(displayPriceWithDenomUpper);
     };
 
     // If the limit is set to no gozone, it will jump to the nearest tick
@@ -2324,58 +2328,50 @@ export default function Chart(props: propsIF) {
         // Get data for the No-Go Zone (minimum and maximum values)
         const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
 
-        const limitNonDisplay = denomInBase
-            ? pool?.fromDisplayPrice(newLimitValue)
-            : pool?.fromDisplayPrice(1 / newLimitValue);
-
+        const limitNonDisplay = fromDisplayPrice(
+            newLimitValue,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            denomInBase,
+        );
         // Check if the newLimitValue matches the No-Go Zone maximum or minimum
         const isNoGoneZoneMax = newLimitValue === noGoZoneMax;
         const isNoGoneZoneMin = newLimitValue === noGoZoneMin;
 
-        limitNonDisplay?.then((limit) => {
-            limit = limit !== 0 ? limit : 1;
-            let pinnedTick: number = isTokenABase
-                ? pinTickLower(limit, gridSize)
-                : pinTickUpper(limit, gridSize);
+        let pinnedTick: number = isTokenABase
+            ? pinTickLower(limitNonDisplay, gridSize)
+            : pinTickUpper(limitNonDisplay, gridSize);
 
-            // If it is equal to the minimum value of no go zone, value is rounded lower tick
-            if (isNoGoneZoneMin) {
-                pinnedTick = isDenomBase
-                    ? pinTickUpper(limit, gridSize)
-                    : pinTickLower(limit, gridSize);
-            }
+        // If it is equal to the minimum value of no go zone, value is rounded lower tick
+        if (isNoGoneZoneMin) {
+            pinnedTick = isDenomBase
+                ? pinTickUpper(limitNonDisplay, gridSize)
+                : pinTickLower(limitNonDisplay, gridSize);
+        }
 
-            // If it is equal to the max value of no go zone, value is rounded upper tick
-            if (isNoGoneZoneMax) {
-                pinnedTick = isDenomBase
-                    ? pinTickLower(limit, gridSize)
-                    : pinTickUpper(limit, gridSize);
-            }
+        // If it is equal to the max value of no go zone, value is rounded upper tick
+        if (isNoGoneZoneMax) {
+            pinnedTick = isDenomBase
+                ? pinTickLower(limitNonDisplay, gridSize)
+                : pinTickUpper(limitNonDisplay, gridSize);
+        }
 
-            const tickPrice = tickToPrice(pinnedTick);
+        const tickPrice = tickToPrice(pinnedTick);
 
-            const tickDispPrice = pool?.toDisplayPrice(tickPrice);
+        const displayPriceWithDenom = toDisplayPrice(
+            tickPrice,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            denomInBase,
+        );
+        newLimitValue = displayPriceWithDenom;
 
-            if (tickDispPrice) {
-                tickDispPrice.then((tp) => {
-                    const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
-
-                    newLimitValue = displayPriceWithDenom;
-
-                    // Update newLimitValue if it's outside the No-Go Zone
-                    if (
-                        !(
-                            newLimitValue > noGoZoneMin &&
-                            newLimitValue < noGoZoneMax
-                        )
-                    ) {
-                        setLimit(() => {
-                            return newLimitValue;
-                        });
-                    }
-                });
-            }
-        });
+        // Update newLimitValue if it's outside the No-Go Zone
+        if (!(newLimitValue > noGoZoneMin && newLimitValue < noGoZoneMax)) {
+            setLimit(() => {
+                return newLimitValue;
+            });
+        }
         return newLimitValue;
     }
 
@@ -2457,7 +2453,11 @@ export default function Chart(props: propsIF) {
                         rectCanvas,
                     );
 
-                    if (!cancelDrag && liquidityData) {
+                    if (
+                        !cancelDrag &&
+                        liquidityData &&
+                        currentPoolPriceTick !== undefined
+                    ) {
                         setIsLineDrag(true);
                         setCrosshairActive('none');
 
@@ -3245,7 +3245,7 @@ export default function Chart(props: propsIF) {
     ]);
 
     const onClickRange = async (event: PointerEvent) => {
-        if (scaleData && liquidityData) {
+        if (scaleData && liquidityData && currentPoolPriceTick !== undefined) {
             let newRangeValue: lineValue[];
 
             const low = ranges.filter(
@@ -4704,6 +4704,7 @@ export default function Chart(props: propsIF) {
     }, [chartPoolPrice, marketLine]);
 
     useEffect(() => {
+        if (currentPoolPriceTick === undefined) return;
         const noGoZoneBoundaries = noGoZone(
             currentPoolPriceTick,
             baseTokenDecimals,
@@ -4874,7 +4875,7 @@ export default function Chart(props: propsIF) {
     }
 
     function changeScaleRangeOrReposition(isTriggeredByZoom: boolean) {
-        if (scaleData && rescale) {
+        if (scaleData && rescale && currentPoolPriceTick !== undefined) {
             const min = minPrice;
             const max = maxPrice;
 
@@ -6428,51 +6429,53 @@ export default function Chart(props: propsIF) {
     ): void => {
         if (newLimitValue === undefined) return;
 
-        const limitNonDisplay = denomInBase
-            ? pool?.fromDisplayPrice(newLimitValue)
-            : pool?.fromDisplayPrice(1 / newLimitValue);
+        const limitNonDisplay = fromDisplayPrice(
+            newLimitValue,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            denomInBase,
+        );
+        const pinnedTick: number = isTokenABase
+            ? pinTickLower(limitNonDisplay, gridSize)
+            : pinTickUpper(limitNonDisplay, gridSize);
 
-        limitNonDisplay?.then((limit) => {
-            limit = limit !== 0 ? limit : 1;
+        setLimitTick(pinnedTick);
 
-            const pinnedTick: number = isTokenABase
-                ? pinTickLower(limit, gridSize)
-                : pinTickUpper(limit, gridSize);
+        // if user moves limit price to other side of the current price
+        // ... then redirect to new URL params (to reverse the token
+        // ... pair; else just update the `limitTick` value in the URL
+        reverseTokenForChart(limitPreviousData, newLimitValue)
+            ? (() => {
+                  setIsTokenAPrimary((isTokenAPrimary) => !isTokenAPrimary);
+                  linkGenLimit.redirect({
+                      chain: chainId,
+                      tokenA: tokenB.address,
+                      tokenB: tokenA.address,
+                      limitTick: pinnedTick,
+                  });
+              })()
+            : updateURL({ update: [['limitTick', pinnedTick]] });
 
-            setLimitTick(pinnedTick);
+        const tickPrice = tickToPrice(pinnedTick);
 
-            // if user moves limit price to other side of the current price
-            // ... then redirect to new URL params (to reverse the token
-            // ... pair; else just update the `limitTick` value in the URL
-            reverseTokenForChart(limitPreviousData, newLimitValue)
-                ? (() => {
-                      setIsTokenAPrimary((isTokenAPrimary) => !isTokenAPrimary);
-                      linkGenLimit.redirect({
-                          chain: chainId,
-                          tokenA: tokenB.address,
-                          tokenB: tokenA.address,
-                          limitTick: pinnedTick,
-                      });
-                  })()
-                : updateURL({ update: [['limitTick', pinnedTick]] });
-
-            const tickPrice = tickToPrice(pinnedTick);
-
-            const tickDispPrice = pool?.toDisplayPrice(tickPrice);
-            if (!tickDispPrice) {
-                setLimit(() => {
-                    return newLimitValue;
-                });
-            } else {
-                tickDispPrice.then((tp) => {
-                    const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
-                    newLimitValue = displayPriceWithDenom;
-                    setLimit(() => {
-                        return newLimitValue;
-                    });
-                });
-            }
-        });
+        const tickDispPrice = toDisplayPrice(
+            tickPrice,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
+        if (!tickDispPrice) {
+            setLimit(() => {
+                return newLimitValue;
+            });
+        } else {
+            const displayPriceWithDenom = denomInBase
+                ? 1 / tickDispPrice
+                : tickDispPrice;
+            newLimitValue = displayPriceWithDenom;
+            setLimit(() => {
+                return newLimitValue;
+            });
+        }
     };
 
     useEffect(() => {

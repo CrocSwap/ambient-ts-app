@@ -506,7 +506,8 @@ function TradeCandleStickChart(props: propsIF) {
             unparsedLiquidityData.curveState.quote ===
                 quoteTokenAddress.toLowerCase() &&
             unparsedLiquidityData.curveState.poolIdx === poolIndex &&
-            unparsedLiquidityData.curveState.chainId === chainId
+            unparsedLiquidityData.curveState.chainId === chainId &&
+            currentPoolPriceTick !== undefined
         ) {
             const liqAskData: LiquidityDataLocal[] = [];
             const liqBidData: LiquidityDataLocal[] = [];

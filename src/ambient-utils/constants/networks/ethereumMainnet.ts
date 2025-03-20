@@ -9,7 +9,7 @@ import { TopPool } from './TopPool';
 
 const RPC_URLS = {
     PUBLIC: 'https://eth.llamarpc.com',
-    SECONDARY_PUBLIC: 'https://1rpc.io/eth',
+    SECONDARY_PUBLIC: 'https://eth-mainnet.public.blastapi.io',
     RESTRICTED: import.meta.env.VITE_MAINNET_RPC_URL,
 };
 
@@ -88,6 +88,7 @@ export const ethereumMainnet: NetworkIF = {
     defaultPair: [MAINNET_TOKENS.ETH, MAINNET_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Ethereum',
     tokenPriceQueryAssetPlatform: 'ethereum',

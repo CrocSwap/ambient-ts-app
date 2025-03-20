@@ -94,9 +94,14 @@ async function addTokenBalances(
     crocEnv: CrocEnv,
     user: string,
 ): Promise<IDexTokenBalances> {
+    const [dexBalance, walletBalance] = await Promise.all([
+        crocEnv.token(tokenAddress.toLowerCase()).balance(user),
+        crocEnv.token(tokenAddress.toLowerCase()).wallet(user),
+    ]);
+
     return {
-        tokenAddress: tokenAddress,
-        dexBalance: await crocEnv.token(tokenAddress).balance(user),
-        walletBalance: await crocEnv.token(tokenAddress).wallet(user),
+        tokenAddress,
+        dexBalance,
+        walletBalance,
     };
 }

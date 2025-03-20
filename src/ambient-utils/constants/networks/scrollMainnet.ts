@@ -97,6 +97,7 @@ export const scrollMainnet: NetworkIF = {
     defaultPair: [SCROLL_TOKENS.ETH, SCROLL_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: 'Scroll',
     tokenPriceQueryAssetPlatform: 'scroll',

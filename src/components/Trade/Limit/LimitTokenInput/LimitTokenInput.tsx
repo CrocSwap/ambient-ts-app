@@ -6,7 +6,6 @@ import {
     truncateDecimals,
 } from '../../../../ambient-utils/dataLayer';
 import { AppStateContext } from '../../../../contexts';
-import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
@@ -54,7 +53,6 @@ function LimitTokenInput(props: propsIF) {
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const { pool } = useContext(PoolContext);
     const {
         baseToken: {
             balance: baseTokenBalance,
@@ -81,14 +79,11 @@ function LimitTokenInput(props: propsIF) {
         setLimitTick,
         primaryQuantity,
         setPrimaryQuantity,
+        isTokenABase,
     } = useContext(TradeDataContext);
 
-    const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
-
-    const tokenABalance = isSellTokenBase
-        ? baseTokenBalance
-        : quoteTokenBalance;
-    const tokenADexBalance = isSellTokenBase
+    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
+    const tokenADexBalance = isTokenABase
         ? baseTokenDexBalance
         : quoteTokenDexBalance;
 
@@ -139,22 +134,22 @@ function LimitTokenInput(props: propsIF) {
             setPrimaryQuantity(value);
 
             if (!isDenomBase) {
-                rawTokenBQty = isSellTokenBase
+                rawTokenBQty = isTokenABase
                     ? (1 / limitTickDisplayPrice) * inputNum
                     : limitTickDisplayPrice * inputNum;
             } else {
-                rawTokenBQty = !isSellTokenBase
+                rawTokenBQty = !isTokenABase
                     ? (1 / limitTickDisplayPrice) * inputNum
                     : limitTickDisplayPrice * inputNum;
             }
             handleLimitButtonMessage(inputBigNum);
         } else {
             if (!isDenomBase) {
-                rawTokenBQty = isSellTokenBase
+                rawTokenBQty = isTokenABase
                     ? (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity)
                     : limitTickDisplayPrice * parseFloat(primaryQuantity);
             } else {
-                rawTokenBQty = !isSellTokenBase
+                rawTokenBQty = !isTokenABase
                     ? (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity)
                     : limitTickDisplayPrice * parseFloat(primaryQuantity);
             }
@@ -214,11 +209,11 @@ function LimitTokenInput(props: propsIF) {
             }
 
             if (!isDenomBase) {
-                rawTokenAQty = isSellTokenBase
+                rawTokenAQty = isTokenABase
                     ? limitTickDisplayPrice * inputNum
                     : (1 / limitTickDisplayPrice) * inputNum;
             } else {
-                rawTokenAQty = !isSellTokenBase
+                rawTokenAQty = !isTokenABase
                     ? limitTickDisplayPrice * inputNum
                     : (1 / limitTickDisplayPrice) * inputNum;
             }
@@ -236,11 +231,11 @@ function LimitTokenInput(props: propsIF) {
                 return;
             }
             if (!isDenomBase) {
-                rawTokenAQty = isSellTokenBase
+                rawTokenAQty = isTokenABase
                     ? limitTickDisplayPrice * parseFloat(primaryQuantity)
                     : (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
             } else {
-                rawTokenAQty = !isSellTokenBase
+                rawTokenAQty = !isTokenABase
                     ? limitTickDisplayPrice * parseFloat(primaryQuantity)
                     : (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
             }

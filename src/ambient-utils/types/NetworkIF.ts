@@ -20,6 +20,7 @@ export interface NetworkIF {
     fallbackRpcUrl: string;
     poolIndex: number;
     gridSize: number;
+    isTestnet: boolean;
     defaultPair: TokenIF[];
     defaultPairFuta?: [TokenIF, TokenIF];
     topPools: TopPool[];

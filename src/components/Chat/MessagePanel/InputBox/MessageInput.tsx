@@ -854,19 +854,23 @@ export default function MessageInput(props: MessageInputProps) {
                                 <RiInformationLine title='Info' id='info' />
                             </span>
                             {isInfoPressed ? (
-                                <ul>
-                                    <h5>Keyboard Shortcuts</h5>
-                                    <hr></hr>
-                                    <li>Ctrl + Alt + C - opens/closes chat</li>
-                                    <li>Esc- closes chat</li>
-                                    <li>
-                                        Alt + X - opens emoji panel when chat is
-                                        open
-                                    </li>
-                                    <li>Alt+ Q - close emoji panel</li>
-                                    <li>Ctrl + M - opens info</li>
-                                    <li>Enter - sends message directly</li>
-                                </ul>
+                                <div style={{ marginLeft: '6px' }}>
+                                    <ul>
+                                        <h5>Keyboard Shortcuts</h5>
+                                        <hr></hr>
+                                        <li>
+                                            Ctrl + Alt + C - opens/closes chat
+                                        </li>
+                                        <li>Esc- closes chat</li>
+                                        <li>
+                                            Alt + X - opens emoji panel when
+                                            chat is open
+                                        </li>
+                                        <li>Alt+ Q - close emoji panel</li>
+                                        <li>Ctrl + M - opens info</li>
+                                        <li>Enter - sends message directly</li>
+                                    </ul>
+                                </div>
                             ) : (
                                 <Picker
                                     theme={Theme.DARK}

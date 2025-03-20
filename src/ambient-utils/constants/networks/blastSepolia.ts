@@ -63,6 +63,7 @@ export const blastSepolia: NetworkIF = {
     defaultPair: [BLAST_SEPOLIA_TOKENS.ETH, BLAST_SEPOLIA_TOKENS.USDB],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
+    isTestnet: chainSpecFromSDK.isTestNet,
     displayName: 'Blast Testnet',
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,
