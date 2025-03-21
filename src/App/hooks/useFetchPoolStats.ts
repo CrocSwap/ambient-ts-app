@@ -210,6 +210,7 @@ const useFetchPoolStats = (
         lastBlockNumber !== 0,
         poolPriceCacheTime,
         isTradeRoute,
+        analyticsServerShowsPoolInitialized,
     ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();

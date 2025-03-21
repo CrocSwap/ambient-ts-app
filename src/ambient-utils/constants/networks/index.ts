@@ -19,6 +19,7 @@ import { blastSepolia } from './blastSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
 import { ethereumSepolia } from './ethereumSepolia';
 import { monadTestnet } from './monadTestnet';
+import { plumeLegacy } from './plumeLegacy';
 import { plumeMainnet } from './plumeMainnet';
 import { plumeSepolia } from './plumeSepolia';
 import { scrollMainnet } from './scrollMainnet';
@@ -34,6 +35,7 @@ const networkDefinitions: NetworkIF[] = [
     scrollMainnet,
     blastMainnet,
     plumeMainnet,
+    plumeLegacy,
     swellMainnet,
     ethereumSepolia,
     plumeSepolia,
@@ -131,6 +133,7 @@ export {
     ethereumMainnet,
     ethereumSepolia,
     monadTestnet,
+    plumeLegacy,
     plumeMainnet,
     plumeSepolia,
     scrollMainnet,
