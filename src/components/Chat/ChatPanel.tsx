@@ -1,5 +1,12 @@
 import { EmojiClickData } from 'emoji-picker-react';
-import React, { memo, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+    memo,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from 'react-icons/io';
@@ -253,6 +260,7 @@ function ChatPanel(props: propsIF) {
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
     const focusedMessageRef = useRef<Message | undefined>();
     focusedMessageRef.current = focusedMessage;
+    const [showCustomEmojiPanel, setShowCustomEmojiPanel] = useState(false);
     const [showPicker, setShowPicker] = useState(false);
     const [pickerBottomPos, setPickerBottomPos] = useState(0);
 
@@ -270,28 +278,45 @@ function ChatPanel(props: propsIF) {
         setShowPicker(false);
     });
 
-    function closeOnEscapeKeyDown(e: KeyboardEvent) {
-        if (e.code === 'Escape') {
-            if (showPicker) {
+    const closeOnEscapeKeyDown = useCallback(
+        (e: KeyboardEvent) => {
+            console.log(
+                'closeOnEscapeKeyDown => ',
+                showCustomEmojiPanel,
+                showPicker,
+                isReplyButtonPressed,
+                isChatOpen,
+            );
+            if (e.code !== 'Escape') return;
+
+            // 1) If custom :keyword: panel is open, close it first
+            if (showCustomEmojiPanel) {
+                setShowCustomEmojiPanel(false);
+            }
+            // 2) Else if normal emoji panel is open, close it
+            else if (showPicker) {
                 setShowPicker(false);
-            } else {
-                if (isReplyButtonPressed) {
-                    setIsReplyButtonPressed(false);
-                    return;
-                }
+            }
+            // 3) Else if the reply is open, close the entire chat
+            //    (and also stop replying so next time chat is opened it's gone)
+            else if (isReplyButtonPressed) {
+                setIsChatOpen(false);
+                setIsReplyButtonPressed(false);
+            }
+            // 4) Otherwise, close the chat if it’s open
+            else {
                 setIsChatOpen(false);
             }
-        }
-    }
+        },
+        [showCustomEmojiPanel, showPicker, isReplyButtonPressed, setIsChatOpen],
+    );
 
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
-        document.body.addEventListener('keydown', openChatPanel);
         return () => {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
-            document.body.removeEventListener('keydown', openChatPanel);
         };
-    }, [isChatOpen]);
+    }, [closeOnEscapeKeyDown]);
 
     function openChatPanel(e: KeyboardEvent) {
         if (e.code === 'KeyC' && e.ctrlKey && e.altKey) {
@@ -876,16 +901,16 @@ function ChatPanel(props: propsIF) {
         </div>
     );
 
-    const trollBoxBubble = (
+    const closedHeader = (
         <div
             className={styles.closedChatHeader}
-            onClick={() => setIsChatOpen(!isChatOpen)}
+            onClick={() => setIsChatOpen(true)}
         >
             <LuMessageSquareText size={24} color='white' strokeWidth={1} />
         </div>
     );
 
-    const header = (
+    const header = isChatOpen ? (
         <div
             className={styles.chat_header}
             onClick={() => {
@@ -895,7 +920,7 @@ function ChatPanel(props: propsIF) {
         >
             <h2 className={styles.chat_title}>Trollbox</h2>
 
-            {ALLOW_AUTH && (
+            {isChatOpen && ALLOW_AUTH && (
                 <div
                     ref={verifyBtnRef}
                     className={`${styles.verify_button} ${
@@ -940,7 +965,7 @@ function ChatPanel(props: propsIF) {
             )}
 
             <section style={{ paddingRight: '10px' }}>
-                {isFullScreen ? (
+                {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
                     // <<div
@@ -957,7 +982,7 @@ function ChatPanel(props: propsIF) {
                     // </div>>
                     <></>
                 )}
-                {isFullScreen ? (
+                {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
                     <IoIosArrowDown
@@ -978,6 +1003,8 @@ function ChatPanel(props: propsIF) {
                 )}
             </section>
         </div>
+    ) : (
+        closedHeader
     );
 
     let mentionIxdexPointer = 0;
@@ -1251,6 +1278,10 @@ function ChatPanel(props: propsIF) {
             isMobile={isMobile}
             userMap={userMap}
             chainId={activeNetwork.chainId}
+            showCustomEmojiPanel={showCustomEmojiPanel}
+            setShowCustomEmojiPanel={setShowCustomEmojiPanel}
+            showPicker={showPicker}
+            setShowPicker={setShowPicker}
         />
     );
 
@@ -1396,7 +1427,7 @@ function ChatPanel(props: propsIF) {
             </>
         );
 
-    return isChatOpen ? (
+    return (
         <div
             className={`${styles.main_container} ${isChatOpen ? styles.chat_open : styles.chat_closed}`}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1459,7 +1490,7 @@ function ChatPanel(props: propsIF) {
                     {isChatOpen && (
                         <div
                             id='chatReactionWrapper'
-                            className={`${styles.reaction_picker_wrapper} ${showPicker ? 'styles.active' : ' '}`}
+                            className={`${styles.reaction_picker_wrapper} ${showPicker ? styles.active : ' '}`}
                             ref={reactionsRef}
                             style={{ bottom: pickerBottomPos }}
                         >
@@ -1526,8 +1557,6 @@ function ChatPanel(props: propsIF) {
 
             <DomDebugger />
         </div>
-    ) : (
-        trollBoxBubble
     );
 }
 

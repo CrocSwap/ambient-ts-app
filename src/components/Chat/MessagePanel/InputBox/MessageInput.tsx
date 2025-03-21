@@ -70,6 +70,10 @@ interface MessageInputProps {
     isChatOpen?: boolean;
     isMobile?: boolean;
     userMap?: Map<string, User>;
+    showCustomEmojiPanel: boolean;
+    setShowCustomEmojiPanel: (val: boolean) => void;
+    showPicker: boolean;
+    setShowPicker: (val: boolean) => void;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -94,6 +98,15 @@ export default function MessageInput(props: MessageInputProps) {
     const [inputLength, setInputLength] = useState(0);
     const [mentUser, setMentUser] = useState<User | null>(null);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+
+    const {
+        showCustomEmojiPanel,
+        setShowCustomEmojiPanel,
+        showPicker,
+        setShowPicker,
+        isReplyButtonPressed,
+        setIsReplyButtonPressed,
+    } = props;
 
     const roomId = props.room;
 
@@ -177,9 +190,9 @@ export default function MessageInput(props: MessageInputProps) {
 
     const handleEmojiPickerHideShow = () => {
         if (!isUserConnected) {
-            setShowEmojiPicker(false);
+            setShowPicker(!showPicker);
         } else {
-            setShowEmojiPicker(!showEmojiPicker);
+            setShowPicker(!showPicker);
         }
     };
 
@@ -565,7 +578,6 @@ export default function MessageInput(props: MessageInputProps) {
     const customEmojiPickerRef = useRef<HTMLDivElement>(null);
 
     const [filteredEmojis, setFilteredEmojis] = useState<JSX.Element[]>([]);
-    const [showCustomEmojiPanel, setShowCustomEmojiPanel] = useState(false);
     const [customEmojiPickerSelectedIndex, setCustomEmojiPickerSelectedIndex] =
         useState(0);
     const customEmojiPanelLimit = 20;
@@ -832,7 +844,7 @@ export default function MessageInput(props: MessageInputProps) {
                             </svg>
                         </div>
                     </div>
-                    {showEmojiPicker && (
+                    {showPicker && (
                         <div
                             className={styles.emojiPicker}
                             style={{ width: '100%' }}
@@ -885,15 +897,15 @@ export default function MessageInput(props: MessageInputProps) {
                             )}
                         </div>
                     )}
-
-                    <div
-                        ref={customEmojiPickerRef}
-                        id='chatCustomEmojiPicker'
-                        className={`${styles.custom_emoji_picker_wrapper} ${showCustomEmojiPanel ? styles.active : ' '}`}
-                    >
-                        {...filteredEmojis}
-                    </div>
-
+                    {showCustomEmojiPanel && (
+                        <div
+                            ref={customEmojiPickerRef}
+                            id='chatCustomEmojiPicker'
+                            className={`${styles.custom_emoji_picker_wrapper} ${showCustomEmojiPanel ? styles.active : ' '}`}
+                        >
+                            {...filteredEmojis}
+                        </div>
+                    )}
                     {props.isChatOpen && ALLOW_MENTIONS && mentionAutoComplete}
                 </div>
             )}
