@@ -621,7 +621,7 @@ export default function Chart(props: propsIF) {
     const unparsedCandleData = useMemo(() => {
         const updatedZeroCandles = updateZeroPriceCandles(
             unparsedData.candles,
-            poolPriceDisplay,
+            poolPriceWithoutDenom ? poolPriceWithoutDenom : 0,
         );
         const data = filterCandleWithTransaction(
             updatedZeroCandles,
