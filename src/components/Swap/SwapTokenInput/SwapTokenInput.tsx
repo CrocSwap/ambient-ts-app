@@ -447,11 +447,12 @@ function SwapTokenInput(props: propsIF) {
                 tokenAorB='A'
                 token={tokenA}
                 tokenInput={
-                    isTokenAPrimary ||
-                    isLiquidityInsufficient ||
-                    (!isTokenAPrimary && parseFloat(buyQtyString) > 0)
-                        ? sellQtyString
-                        : ''
+                    isLiquidityInsufficient && !isTokenAPrimary
+                        ? ''
+                        : isTokenAPrimary ||
+                            (!isTokenAPrimary && parseFloat(buyQtyString) > 0)
+                          ? sellQtyString
+                          : ''
                 }
                 tokenBalance={tokenABalance}
                 tokenDexBalance={tokenADexBalance}
@@ -482,11 +483,11 @@ function SwapTokenInput(props: propsIF) {
                 tokenAorB='B'
                 token={tokenB}
                 tokenInput={
-                    !isTokenAPrimary ||
-                    isLiquidityInsufficient ||
-                    parseFloat(sellQtyString) > 0
-                        ? buyQtyString
-                        : ''
+                    isLiquidityInsufficient && isTokenAPrimary
+                        ? ''
+                        : !isTokenAPrimary || parseFloat(sellQtyString) > 0
+                          ? buyQtyString
+                          : ''
                 }
                 tokenBalance={tokenBBalance}
                 tokenDexBalance={tokenBDexBalance}
