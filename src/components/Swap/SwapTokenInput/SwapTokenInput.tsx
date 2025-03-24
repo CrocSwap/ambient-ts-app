@@ -469,7 +469,11 @@ function SwapTokenInput(props: propsIF) {
                     setSellQtyString(formatTokenInput(val, tokenA, isMax));
                 }}
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
-                usdValue={usdValueTokenA}
+                usdValue={
+                    isLiquidityInsufficient && !isTokenAPrimary
+                        ? undefined
+                        : usdValueTokenA
+                }
             />
             <FlexContainer
                 fullWidth
@@ -506,8 +510,14 @@ function SwapTokenInput(props: propsIF) {
                     setBuyQtyString(formatTokenInput(val, tokenB, isMax));
                 }}
                 amountToReduceNativeTokenQty={0} // value not used for buy token
-                usdValue={usdValueTokenB}
-                percentDiffUsdValue={percentDiffUsdValue}
+                usdValue={
+                    isLiquidityInsufficient && isTokenAPrimary
+                        ? undefined
+                        : usdValueTokenB
+                }
+                percentDiffUsdValue={
+                    isLiquidityInsufficient ? undefined : percentDiffUsdValue
+                }
             />
         </FlexContainer>
     );
