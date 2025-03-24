@@ -26,6 +26,7 @@ import NEV from './NEV.webp';
 import NRWA from './NRWA.svg';
 import NTBILL from './NTBILL.svg';
 import NURI from './NURI.svg';
+import NUSDY from './NUSDY.svg';
 import NYIELD from './NYIELD.svg';
 import OHNO from './OHNO.png';
 import OLE from './OLE.svg';
@@ -101,6 +102,7 @@ export {
     NRWA,
     NTBILL,
     NURI,
+    NUSDY,
     NYIELD,
     OHNO,
     OLE,

@@ -793,14 +793,6 @@
             "decimals": 6,
             "chainId": 98866,
             "logoURI": ""
-        },
-        {
-            "name": "Nest Institutional Elixir Vault ",
-            "address": "0xD3BFd6E6187444170A1674c494E55171587b5641",
-            "symbol": "inELIXIR",
-            "decimals": 6,
-            "chainId": 98866,
-            "logoURI": ""
         }
     ]
 }
