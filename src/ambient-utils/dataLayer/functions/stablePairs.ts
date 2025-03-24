@@ -144,7 +144,6 @@ export const STABLE_USD_TOKENS = [
     PLUME_TOKENS.nYIELD,
     PLUME_TOKENS.nUSDY,
     PLUME_TOKENS.nELIXIR,
-    PLUME_TOKENS.inELIXIR,
     BLAST_TOKENS.USDPLUS,
     SCROLL_TOKENS.USDT,
     SCROLL_TOKENS.USDQ,
@@ -160,7 +159,7 @@ export const STABLE_USD_TOKENS = [
     BASE_SEPOLIA_TOKENS.USDT,
     MONAD_TESTNET_TOKENS.USDT,
 ]
-    .map((x) => x.address.toLowerCase())
+    .map((x) => x?.address.toLowerCase())
     .concat(USDC_TOKENS);
 
 export const BLAST_REWARD_TOKENS = [BLAST_TOKENS.BLAST.address].map((x) =>

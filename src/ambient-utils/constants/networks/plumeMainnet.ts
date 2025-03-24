@@ -36,7 +36,6 @@ const defaultTokenEntries = [
     ['nYIELD', '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8'],
     ['nUSDY', '0x7Fca0Df900A11Ae1d17338134a9e079a7EE87E31'],
     ['nELIXIR', '0xD3BFd6E6187444170A1674c494E55171587b5641'],
-    ['inELIXIR', '0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c'],
 ] as const;
 
 type PlumeTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;

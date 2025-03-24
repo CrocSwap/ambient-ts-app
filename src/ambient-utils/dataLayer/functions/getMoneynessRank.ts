@@ -43,7 +43,6 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         NYIELD: 75,
         NUSDY: 75,
         NELIXIR: 75,
-        INELIXIR: 75,
         FRAX: 70,
         WBTC: 60,
         SOLVBTC: 55,
