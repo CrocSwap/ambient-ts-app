@@ -81,7 +81,6 @@ export default function MessageInput(props: MessageInputProps) {
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
     const [message, setMessage] = useState('');
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
@@ -104,8 +103,6 @@ export default function MessageInput(props: MessageInputProps) {
         setShowCustomEmojiPanel,
         showPicker,
         setShowPicker,
-        isReplyButtonPressed,
-        setIsReplyButtonPressed,
     } = props;
 
     const roomId = props.room;
@@ -197,7 +194,7 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const dontShowEmojiPanel = () => {
-        setShowEmojiPicker(false);
+        setShowPicker(false);
     };
 
     const filterUsers = (queryStr: string): User[] => {
@@ -325,7 +322,7 @@ export default function MessageInput(props: MessageInputProps) {
         }
 
         if (showCustomEmojiPanel) {
-            if (handleKeyForCustomEmojiPicker(e)) {
+            if (zaAhandleKeyForCustomEmojiPicker(e)) {
                 e.preventDefault();
                 return;
             }
@@ -450,6 +447,13 @@ export default function MessageInput(props: MessageInputProps) {
                 });
             }
             setInputLength(e.target.value.length);
+        } else if (e.key === 'Escape') {
+            setMessage('');
+            if (props.isReplyButtonPressed) {
+                props.setIsReplyButtonPressed(false);
+                props.setSelectedMessageForReply(undefined);
+            }
+            return;
         } else {
             setInputLength(e.target.value.length);
         }
@@ -457,19 +461,19 @@ export default function MessageInput(props: MessageInputProps) {
 
     function openEmojiPanel(e: KeyboardEvent) {
         if (e.code === 'KeyX' && e.altKey) {
-            setShowEmojiPicker(true);
+            setShowPicker(true);
         }
     }
 
     function closeEmojiPanel(e: KeyboardEvent) {
         if (e.code === 'KeyQ' && e.altKey) {
-            setShowEmojiPicker(false);
+            setShowPicker(false);
         }
     }
 
     function openInfo(e: KeyboardEvent) {
         if (e.code === 'KeyM' && e.ctrlKey) {
-            setShowEmojiPicker(true);
+            setShowPicker(true);
             setIsInfoPressed(true);
         }
     }
@@ -677,7 +681,7 @@ export default function MessageInput(props: MessageInputProps) {
         setFilteredEmojis([...filteredElements]);
     };
 
-    const handleKeyForCustomEmojiPicker = (e: KeyboardEvent) => {
+    const zaAhandleKeyForCustomEmojiPicker = (e: KeyboardEvent) => {
         let shouldSkip = false;
         if (e.key === 'ArrowLeft' && customEmojiPickerSelectedIndex >= -1) {
             setCustomEmojiPickerSelectedIndex(
@@ -853,7 +857,7 @@ export default function MessageInput(props: MessageInputProps) {
                                 <RiCloseFill
                                     size={20}
                                     title='Close Emoji Picker'
-                                    onClick={() => setShowEmojiPicker(false)}
+                                    onClick={() => setShowPicker(false)}
                                     id='close emoji panel button'
                                     style={{ cursor: 'pointer' }}
                                 />
