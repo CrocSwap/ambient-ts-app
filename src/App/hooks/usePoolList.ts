@@ -30,7 +30,6 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] | undefined => {
         if (!crocEnv) {
             return undefined;
         }
-
         const pools: Promise<AnalyticsServerPoolIF[]> =
             cachedFetchPoolList(chainId);
         Promise.resolve<AnalyticsServerPoolIF[]>(pools)

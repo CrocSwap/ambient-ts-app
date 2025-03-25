@@ -253,9 +253,10 @@ export default function LimitRate(props: propsIF) {
     const handleLimitChange = async (value: string) => {
         if (parseFloat(value) === 0 || isNaN(parseFloat(value))) return;
         const limit = await fromDisplayPrice(
-            isDenomBase ? parseFloat(value) : 1 / parseFloat(value),
+            parseFloat(value),
             baseToken.decimals,
             quoteToken.decimals,
+            isDenomBase,
         );
 
         if (limit) {
@@ -303,6 +304,7 @@ export default function LimitRate(props: propsIF) {
     const handleOnChange = (input: string) => {
         if (!isValidLimitInputString(input)) return;
         setSelectedPreset(undefined);
+
         setDisplayPrice(input);
     };
 

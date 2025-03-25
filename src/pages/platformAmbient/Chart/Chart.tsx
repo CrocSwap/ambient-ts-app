@@ -621,7 +621,7 @@ export default function Chart(props: propsIF) {
     const unparsedCandleData = useMemo(() => {
         const updatedZeroCandles = updateZeroPriceCandles(
             unparsedData.candles,
-            poolPriceDisplay,
+            poolPriceWithoutDenom ? poolPriceWithoutDenom : 0,
         );
         const data = filterCandleWithTransaction(
             updatedZeroCandles,
@@ -6429,18 +6429,12 @@ export default function Chart(props: propsIF) {
     ): void => {
         if (newLimitValue === undefined) return;
 
-        const limitNonDisplay = denomInBase
-            ? fromDisplayPrice(
-                  newLimitValue,
-                  baseTokenDecimals,
-                  quoteTokenDecimals,
-              )
-            : fromDisplayPrice(
-                  1 / newLimitValue,
-                  baseTokenDecimals,
-                  quoteTokenDecimals,
-              );
-
+        const limitNonDisplay = fromDisplayPrice(
+            newLimitValue,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            denomInBase,
+        );
         const pinnedTick: number = isTokenABase
             ? pinTickLower(limitNonDisplay, gridSize)
             : pinTickUpper(limitNonDisplay, gridSize);
@@ -6475,8 +6469,8 @@ export default function Chart(props: propsIF) {
             });
         } else {
             const displayPriceWithDenom = denomInBase
-                ? tickDispPrice
-                : 1 / tickDispPrice;
+                ? 1 / tickDispPrice
+                : tickDispPrice;
             newLimitValue = displayPriceWithDenom;
             setLimit(() => {
                 return newLimitValue;

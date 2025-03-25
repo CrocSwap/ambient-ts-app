@@ -28,6 +28,12 @@ export const defaultBrandAssets: brandIF = {
             cobrandingLogo: swellLogo,
         },
         // plume mainnet
+        '0x18232': {
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
+            premiumColor: [],
+            cobrandingLogo: plumeLogo,
+        },
+        // plume mainnet
         '0x18231': {
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
