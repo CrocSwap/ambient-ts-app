@@ -26,6 +26,7 @@ import NEV from './NEV.webp';
 import NRWA from './NRWA.svg';
 import NTBILL from './NTBILL.svg';
 import NURI from './NURI.svg';
+import NUSDY from './NUSDY.svg';
 import NYIELD from './NYIELD.svg';
 import OHNO from './OHNO.png';
 import OLE from './OLE.svg';
@@ -35,6 +36,7 @@ import $PACM from './PACM.webp';
 import PANDA from './PANDA.jpg';
 import PEPE from './PEPE.png';
 import PETH from './PETH.svg';
+import PLUME from './PLUME.svg';
 import PUNKETH20 from './PUNKETH-20.jpeg';
 import PUSD from './PUSD.svg';
 import PXETH from './PXETH.png';
@@ -100,6 +102,7 @@ export {
     NRWA,
     NTBILL,
     NURI,
+    NUSDY,
     NYIELD,
     OHNO,
     OLE,
@@ -108,6 +111,7 @@ export {
     PANDA,
     PEPE,
     PETH,
+    PLUME,
     PUNKETH20,
     PUSD,
     PXETH,
