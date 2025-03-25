@@ -288,7 +288,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleScale.isShowLatestCandle,
     ]);
 
-    // Use refs to store previous base and quote values
+    // Use refs to store previous base and quote values in order to not duplicate candle fetching when pool changes
     const prevBaseRef = useRef<string | undefined>(
         userTransactionsByPool.changes.length > 0
             ? userTransactionsByPool.changes[0].base
@@ -315,6 +315,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         }
     }, [baseTokenAddress, quoteTokenAddress]);
 
+    // update latest candles when a new user transaction is indexed
     useEffect(() => {
         if (
             userTransactionsByPool.changes.length > 0 &&
