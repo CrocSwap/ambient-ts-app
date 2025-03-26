@@ -8,7 +8,13 @@ import {
     useRef,
     useState,
 } from 'react';
-import { PoolContext, TradeDataContext, TradeTokenContext } from '.';
+import {
+    GraphDataContext,
+    PoolContext,
+    ReceiptContext,
+    TradeDataContext,
+    TradeTokenContext,
+} from '.';
 import { fetchCandleSeriesHybrid } from '../ambient-utils/api';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
@@ -60,6 +66,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserOnline,
         isUserIdle,
     } = useContext(AppStateContext);
+
+    const { userTransactionsByPool } = useContext(GraphDataContext);
+    const { sessionReceipts } = useContext(ReceiptContext);
 
     const {
         chartSettings,
@@ -278,6 +287,60 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
         candleScale.isShowLatestCandle,
     ]);
+
+    // Use refs to store previous base and quote values in order to not duplicate candle fetching when pool changes
+    const prevBaseRef = useRef<string | undefined>(
+        userTransactionsByPool.changes.length > 0
+            ? userTransactionsByPool.changes[0].base
+            : undefined,
+    );
+    const prevQuoteRef = useRef<string | undefined>(
+        userTransactionsByPool.changes.length > 0
+            ? userTransactionsByPool.changes[0].quote
+            : undefined,
+    );
+
+    useEffect(() => {
+        if (
+            prevBaseRef.current === undefined ||
+            !userTransactionsByPool.changes.length
+        ) {
+            prevBaseRef.current = baseTokenAddress;
+        }
+        if (
+            prevQuoteRef.current === undefined ||
+            !userTransactionsByPool.changes.length
+        ) {
+            prevQuoteRef.current = quoteTokenAddress;
+        }
+    }, [baseTokenAddress, quoteTokenAddress]);
+
+    // update latest candles when a new user transaction is indexed
+    useEffect(() => {
+        if (
+            userTransactionsByPool.changes.length > 0 &&
+            sessionReceipts.length > 0
+        ) {
+            // Check if base or quote has changed
+            const hasBaseChanged =
+                prevBaseRef.current?.toLowerCase() !==
+                userTransactionsByPool.changes[0].base.toLowerCase();
+
+            const hasQuoteChanged =
+                prevQuoteRef.current?.toLowerCase() !==
+                userTransactionsByPool.changes[0].quote.toLowerCase();
+
+            if (!hasBaseChanged && !hasQuoteChanged) {
+                // delay 5 seconds
+                setTimeout(() => {
+                    fetchFirst200Candles();
+                }, 5000);
+            }
+            // Update refs with current values
+            prevBaseRef.current = userTransactionsByPool.changes[0].base;
+            prevQuoteRef.current = userTransactionsByPool.changes[0].quote;
+        }
+    }, [userTransactionsByPool.changes.length]);
 
     /**
      * only works if have not enough candle data on condensed mode

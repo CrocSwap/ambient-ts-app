@@ -8,7 +8,7 @@ import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
+    PUBLIC: 'https://rpc.plumenetwork.xyz',
     SECONDARY_PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
     RESTRICTED: import.meta.env.VITE_PLUME_RPC_URL,
 };
@@ -17,30 +17,32 @@ const PRIMARY_RPC_URL = RPC_URLS.RESTRICTED || RPC_URLS.PUBLIC;
 const FALLBACK_RPC_URL =
     PRIMARY_RPC_URL === RPC_URLS.PUBLIC ? RPC_URLS.PUBLIC : RPC_URLS.RESTRICTED;
 
-const chainIdHex = '0x18232';
+const chainIdHex = '0x18231';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
 const chainSpecForWalletConnector = {
     chainId: Number(chainIdHex),
-    name: 'Plume Mainnet',
-    currency: 'PLUME',
+    name: 'Plume (Legacy)',
+    currency: 'ETH',
     rpcUrl: RPC_URLS.PUBLIC,
-    explorerUrl: 'https://phoenix-explorer.plumenetwork.xyz/',
+    explorerUrl: 'https://explorer.plumenetwork.xyz/',
 };
 
 const defaultTokenEntries = [
-    ['PLUME', '0x0000000000000000000000000000000000000000'],
+    ['ETH', '0x0000000000000000000000000000000000000000'],
+    ['pETH', '0xD630fb6A07c9c723cf709d2DaA9B63325d0E0B73'],
     ['pUSD', '0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F'],
-    ['nRWA', '0x11a8d8694b656112d9a94285223772F4aAd269fc'],
-    ['nTBILL', '0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9'],
-    ['nYIELD', '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8'],
-    ['nUSDY', '0x7Fca0Df900A11Ae1d17338134a9e079a7EE87E31'],
-    ['nELIXIR', '0xD3BFd6E6187444170A1674c494E55171587b5641'],
+    ['USDC', '0x3938A812c54304fEffD266C7E2E70B48F9475aD6'],
+    ['USDT', '0xA849026cDA282eeeBC3C39Afcbe87a69424F16B4'],
+    ['NRWA', '0x81537d879ACc8a290a1846635a0cAA908f8ca3a6'],
+    ['NTBILL', '0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9'],
+    ['NYIELD', '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8'],
+    ['nELIXIR', '0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c'],
 ] as const;
 
 type PlumeTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
 
-export const PLUME_TOKENS: PlumeTokens = Object.fromEntries(
+export const PLUME_LEGACY_TOKENS: PlumeTokens = Object.fromEntries(
     defaultTokenEntries.map(([key, address]) => [
         key,
         findTokenByAddress(address, chainIdHex),
@@ -48,16 +50,16 @@ export const PLUME_TOKENS: PlumeTokens = Object.fromEntries(
 ) as PlumeTokens;
 
 const curentTopPoolsList: [keyof PlumeTokens, keyof PlumeTokens][] = [
-    ['PLUME', 'pUSD'],
-    ['PLUME', 'nRWA'],
-    ['PLUME', 'nTBILL'],
+    ['ETH', 'USDC'],
+    ['pETH', 'pUSD'],
+    ['pETH', 'ETH'],
 ];
 
 const topPools = curentTopPoolsList.map(
     ([tokenA, tokenB]) =>
         new TopPool(
-            PLUME_TOKENS[tokenA],
-            PLUME_TOKENS[tokenB],
+            PLUME_LEGACY_TOKENS[tokenA],
+            PLUME_LEGACY_TOKENS[tokenB],
             chainSpecFromSDK.poolIndex,
         ),
 );
@@ -70,20 +72,20 @@ const getGasPriceInGwei = async (provider?: Provider) => {
     );
 };
 
-export const plumeMainnet: NetworkIF = {
+export const plumeLegacy: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_PLUME_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector,
-    defaultPair: [PLUME_TOKENS.PLUME, PLUME_TOKENS.pUSD],
-    defaultPairFuta: [PLUME_TOKENS.PLUME, PLUME_TOKENS.pUSD],
+    defaultPair: [PLUME_LEGACY_TOKENS.pETH, PLUME_LEGACY_TOKENS.pUSD],
+    defaultPairFuta: [PLUME_LEGACY_TOKENS.pETH, PLUME_LEGACY_TOKENS.pUSD],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: 'Plume',
+    displayName: 'Plume (Legacy)',
     tokenPriceQueryAssetPlatform: 'plume',
     vaultsEnabled: false,
     tempestApiNetworkName: '',

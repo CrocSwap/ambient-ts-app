@@ -11,6 +11,7 @@ import { BLAST_SEPOLIA_TOKENS } from '../../constants/networks/blastSepolia';
 import { MAINNET_TOKENS } from '../../constants/networks/ethereumMainnet';
 import { SEPOLIA_TOKENS } from '../../constants/networks/ethereumSepolia';
 import { MONAD_TESTNET_TOKENS } from '../../constants/networks/monadTestnet';
+import { PLUME_LEGACY_TOKENS } from '../../constants/networks/plumeLegacy';
 import { PLUME_TOKENS } from '../../constants/networks/plumeMainnet';
 import { PLUME_SEPOLIA_TOKENS } from '../../constants/networks/plumeSepolia';
 import { SCROLL_TOKENS } from '../../constants/networks/scrollMainnet';
@@ -36,7 +37,9 @@ export function isUsdcToken(addr: string): boolean {
 }
 
 export function isPriorityStakedUSD(addr: string): boolean {
-    return PLUME_TOKENS.pUSD.address.toLowerCase() === addr.toLowerCase();
+    return (
+        PLUME_LEGACY_TOKENS.pUSD.address.toLowerCase() === addr.toLowerCase()
+    );
 }
 
 export function isBlastRewardToken(addr: string): boolean {
@@ -116,7 +119,7 @@ export function remapTokenIfWrappedNative(addr: string): string {
 export const USDC_TOKENS = [
     MAINNET_TOKENS.USDC,
     BLAST_TOKENS.USDB,
-    PLUME_TOKENS.USDC,
+    PLUME_LEGACY_TOKENS.USDC,
     SEPOLIA_TOKENS.USDC,
     BLAST_SEPOLIA_TOKENS.USDB,
     SCROLL_SEPOLIA_TOKENS.USDC,
@@ -129,11 +132,17 @@ export const USDC_TOKENS = [
 export const STABLE_USD_TOKENS = [
     MAINNET_TOKENS.DAI,
     MAINNET_TOKENS.USDT,
-    PLUME_TOKENS.NRWA,
+    PLUME_LEGACY_TOKENS.NRWA,
+    PLUME_LEGACY_TOKENS.pUSD,
+    PLUME_LEGACY_TOKENS.USDT,
+    PLUME_LEGACY_TOKENS.NTBILL,
+    PLUME_LEGACY_TOKENS.NYIELD,
+    PLUME_LEGACY_TOKENS.nELIXIR,
     PLUME_TOKENS.pUSD,
-    PLUME_TOKENS.USDT,
-    PLUME_TOKENS.NTBILL,
-    PLUME_TOKENS.NYIELD,
+    PLUME_TOKENS.nRWA,
+    PLUME_TOKENS.nTBILL,
+    PLUME_TOKENS.nYIELD,
+    PLUME_TOKENS.nUSDY,
     PLUME_TOKENS.nELIXIR,
     BLAST_TOKENS.USDPLUS,
     SCROLL_TOKENS.USDT,
@@ -150,7 +159,7 @@ export const STABLE_USD_TOKENS = [
     BASE_SEPOLIA_TOKENS.USDT,
     MONAD_TESTNET_TOKENS.USDT,
 ]
-    .map((x) => x.address.toLowerCase())
+    .map((x) => x?.address.toLowerCase())
     .concat(USDC_TOKENS);
 
 export const BLAST_REWARD_TOKENS = [BLAST_TOKENS.BLAST.address].map((x) =>
@@ -168,7 +177,7 @@ export const ETH_TOKENS = [
     MAINNET_TOKENS.ETH,
     SCROLL_TOKENS.ETH,
     BLAST_TOKENS.ETH,
-    PLUME_TOKENS.ETH,
+    PLUME_LEGACY_TOKENS.ETH,
     MONAD_TESTNET_TOKENS.ETH,
     SWELL_TOKENS.ETH,
     SEPOLIA_TOKENS.ETH,
@@ -197,7 +206,7 @@ export const STAKED_ETH_TOKENS = [
     BLAST_TOKENS.wrsETH,
     BLAST_TOKENS.ezETH,
     BLAST_TOKENS.weETH,
-    PLUME_TOKENS.pETH,
+    PLUME_LEGACY_TOKENS.pETH,
     SWELL_TOKENS.wstETH,
     SWELL_TOKENS.pzETH,
     SWELL_TOKENS.ezETH,
@@ -211,7 +220,7 @@ export const STAKED_ETH_TOKENS = [
 ].map((x) => x.address.toLowerCase());
 
 export const PRIORITY_ETH_EQUIVALENT_TOKENS = [
-    PLUME_TOKENS.pETH,
+    PLUME_LEGACY_TOKENS.pETH,
     MONAD_TESTNET_TOKENS.WETH,
     MONAD_TESTNET_TOKENS.ETH,
 ].map((x) => x.address.toLowerCase());
@@ -237,4 +246,5 @@ export const WRAPPED_NATIVE_TOKENS = [
     '0x4200000000000000000000000000000000000023', // Blast Sepolia
     '0xaA6210015fbf0855F0D9fDA3C415c1B12776Ae74', // Plume Sepolia
     '0x863d7abb9c62d8bc69ea9ebc3e3583057d533e6f', // Scroll Sepolia
+    '0xEa237441c92CAe6FC17Caaf9a7acB3f953be4bd1', // Plume Mainnet
 ].map((x) => x.toLowerCase());

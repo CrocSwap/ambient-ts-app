@@ -1,5 +1,12 @@
 import { EmojiClickData } from 'emoji-picker-react';
-import React, { memo, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+    memo,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from 'react-icons/io';
@@ -253,7 +260,9 @@ function ChatPanel(props: propsIF) {
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
     const focusedMessageRef = useRef<Message | undefined>();
     focusedMessageRef.current = focusedMessage;
+    const [showCustomEmojiPanel, setShowCustomEmojiPanel] = useState(false);
     const [showPicker, setShowPicker] = useState(false);
+    const [showReactionPicker, setShowReactionPicker] = useState(false);
     const [pickerBottomPos, setPickerBottomPos] = useState(0);
 
     const defaultEnsName = 'defaultValue';
@@ -267,37 +276,58 @@ function ChatPanel(props: propsIF) {
     lastScrollListenerRef.current = lastScrollListenerActive;
 
     useOnClickOutside(reactionsRef, () => {
-        setShowPicker(false);
+        setShowReactionPicker(false);
     });
 
-    function closeOnEscapeKeyDown(e: KeyboardEvent) {
-        if (e.code === 'Escape') {
-            if (showPicker) {
+    const closeOnEscapeKeyDown = useCallback(
+        (e: KeyboardEvent) => {
+            if (e.code !== 'Escape') return;
+
+            if (showCustomEmojiPanel) {
+                setIsChatOpen(false);
+                setShowCustomEmojiPanel(false);
+            } else if (showPicker) {
+                setIsChatOpen(false);
                 setShowPicker(false);
+            } else if (isReplyButtonPressed) {
+                setIsChatOpen(false);
+                setIsReplyButtonPressed(false);
+            } else if (showReactionPicker) {
+                setIsChatOpen(false);
+                setShowReactionPicker(false);
             } else {
-                if (isReplyButtonPressed) {
-                    setIsReplyButtonPressed(false);
-                    return;
-                }
                 setIsChatOpen(false);
             }
-        }
-    }
+        },
+        [
+            showCustomEmojiPanel,
+            showPicker,
+            isReplyButtonPressed,
+            isChatOpen,
+            showReactionPicker,
+        ],
+    );
 
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
-        document.body.addEventListener('keydown', openChatPanel);
         return () => {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
-            document.body.removeEventListener('keydown', openChatPanel);
         };
-    }, [isChatOpen]);
+    }, [closeOnEscapeKeyDown]);
 
     function openChatPanel(e: KeyboardEvent) {
         if (e.code === 'KeyC' && e.ctrlKey && e.altKey) {
             setIsChatOpen(!isChatOpen); // Toggle chat panel open/closed
         }
     }
+
+    useEffect(() => {
+        document.body.addEventListener('keydown', closeOnEscapeKeyDown);
+        document.body.addEventListener('keydown', openChatPanel);
+        return function cleanUp() {
+            document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
+        };
+    });
 
     async function mentionHoverListener(elementTop: number, walletID: string) {
         // CHAT_FEATURES_WBO -  Feature : User Summary
@@ -348,7 +378,7 @@ function ChatPanel(props: propsIF) {
             window.innerHeight - (e.clientY + (isMobile ? 50 : 0)),
         );
         setFocusedMessage(focusedMessage);
-        setShowPicker(true);
+        setShowReactionPicker(true);
     };
     const addReactionEmojiPickListener = (data: EmojiClickData | string) => {
         if (focusedMessageRef.current && currentUser) {
@@ -359,7 +389,7 @@ function ChatPanel(props: propsIF) {
                 reaction = data.emoji;
             }
             addReaction(focusedMessageRef.current._id, currentUser, reaction);
-            setShowPicker(false);
+            setShowReactionPicker(false);
         }
     };
 
@@ -389,16 +419,24 @@ function ChatPanel(props: propsIF) {
             clearInterval(notConnectedUserInterval);
         }
 
-        if (userAddress == undefined) {
-            if (isChatOpen == false) return;
+        if (userAddress === undefined) {
+            if (!isChatOpen) {
+                return;
+            }
+
+            if (page > 0) {
+                return;
+            }
+
             const interval = setInterval(() => {
                 fetchForNotConnectedUser();
             }, 10000);
+
             setNotConnectedUserInterval(interval);
         }
 
         return clearInterval(notConnectedUserInterval);
-    }, [userAddress, room, isChatOpen]);
+    }, [userAddress, room, isChatOpen, page]);
 
     useEffect(() => {
         if (
@@ -868,7 +906,7 @@ function ChatPanel(props: propsIF) {
     const reactionPicker = (
         <div
             id='chatReactionWrapper'
-            className={`${styles.reaction_picker_wrapper} ${showPicker ? styles.active : ' '}`}
+            className={`${styles.reaction_picker_wrapper} ${showReactionPicker ? styles.active : ' '}`}
             ref={reactionsRef}
             style={{ bottom: pickerBottomPos }}
         >
@@ -876,109 +914,118 @@ function ChatPanel(props: propsIF) {
         </div>
     );
 
-    const trollBoxBubble = (
+    const closedHeader = !isMobile ? (
         <div
             className={styles.closedChatHeader}
-            onClick={() => setIsChatOpen(!isChatOpen)}
+            onClick={() => setIsChatOpen(true)}
         >
             <LuMessageSquareText size={24} color='white' strokeWidth={1} />
         </div>
-    );
+    ) : null;
 
-    const header = (
-        <div
-            className={styles.chat_header}
-            onClick={() => {
-                setIsChatOpen(!isChatOpen);
-                // dismissSideBannerPopup && dismissSideBannerPopup();
-            }}
-        >
-            <h2 className={styles.chat_title}>Trollbox</h2>
+    const header =
+        isChatOpen && !isMobile ? (
+            <div
+                className={styles.chat_header}
+                onClick={() => {
+                    setIsChatOpen(!isChatOpen);
+                    // dismissSideBannerPopup && dismissSideBannerPopup();
+                }}
+            >
+                <h2 className={styles.chat_title}>Trollbox</h2>
 
-            {ALLOW_AUTH && (
-                <div
-                    ref={verifyBtnRef}
-                    className={`${styles.verify_button} ${
-                        isVerified && isUserConnected ? styles.verified : ''
-                    } ${!isWsConnected ? styles.not_connected : ''}`}
-                    onClick={(e) => verifyWallet(0, new Date(), e)}
-                >
-                    {isModerator &&
-                        isVerified &&
-                        userAddress &&
-                        isUserConnected && (
-                            <AiOutlineUser
-                                className={`${styles.verify_button_icon} ${styles.verify_button_mod_icon} ${
-                                    !isWsConnected ? styles.not_connected : ''
-                                }`}
-                                color='var(--other-green)'
-                                size={14}
-                            />
+                {isChatOpen && ALLOW_AUTH && (
+                    <div
+                        ref={verifyBtnRef}
+                        className={`${styles.verify_button} ${
+                            isVerified && isUserConnected ? styles.verified : ''
+                        } ${!isWsConnected ? styles.not_connected : ''}`}
+                        onClick={(e) => verifyWallet(0, new Date(), e)}
+                    >
+                        {isModerator &&
+                            isVerified &&
+                            userAddress &&
+                            isUserConnected && (
+                                <AiOutlineUser
+                                    className={`${styles.verify_button_icon} ${styles.verify_button_mod_icon} ${
+                                        !isWsConnected
+                                            ? styles.not_connected
+                                            : ''
+                                    }`}
+                                    color='var(--other-green)'
+                                    size={14}
+                                />
+                            )}
+                        {isVerified && userAddress && isUserConnected ? (
+                            <>
+                                <AiOutlineCheck
+                                    className={`${styles.verify_button_icon} ${
+                                        !isWsConnected
+                                            ? styles.not_connected
+                                            : ''
+                                    }`}
+                                    color='var(--other-green)'
+                                    size={10}
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <AiOutlineClose
+                                    className={`${styles.verify_button_icon} ${
+                                        !isWsConnected
+                                            ? styles.not_connected
+                                            : ''
+                                    }`}
+                                    size={10}
+                                />
+                                <span> Not Verified </span>
+                            </>
                         )}
-                    {isVerified && userAddress && isUserConnected ? (
-                        <>
-                            <AiOutlineCheck
-                                className={`${styles.verify_button_icon} ${
-                                    !isWsConnected ? styles.not_connected : ''
-                                }`}
-                                color='var(--other-green)'
-                                size={10}
-                            />
-                        </>
-                    ) : (
-                        <>
-                            <AiOutlineClose
-                                className={`${styles.verify_button_icon} ${
-                                    !isWsConnected ? styles.not_connected : ''
-                                }`}
-                                size={10}
-                            />
-                            <span> Not Verified </span>
-                        </>
-                    )}
-                </div>
-            )}
+                    </div>
+                )}
 
-            <section style={{ paddingRight: '10px' }}>
-                {isFullScreen ? (
-                    <></>
-                ) : (
-                    // <<div
-                    //     className={styles.open_full_button}
-                    //     onClick={() =>
-                    //         window.open('/chat/' + convertCurreny(room))
-                    //     }
-                    //     aria-label='Open chat in full screen'
-                    // >
-                    //     <img
-                    //         src={ExpandChatIcon}
-                    //         alt='Open chat in full screen'
-                    //     />
-                    // </div>>
-                    <></>
-                )}
-                {isFullScreen ? (
-                    <></>
-                ) : (
-                    <IoIosArrowDown
-                        size={22}
-                        onClick={() => handleCloseChatPanel()}
-                        role='button'
-                        tabIndex={0}
-                        aria-label='hide chat button'
-                    />
-                )}
-                {!isChatOpen && (
-                    <IoIosArrowUp
-                        size={22}
-                        role='button'
-                        tabIndex={0}
-                        aria-label='Open chat button'
-                    />
-                )}
-            </section>
-        </div>
-    );
+                <section style={{ paddingRight: '10px' }}>
+                    {isFullScreen || !isChatOpen ? (
+                        <></>
+                    ) : (
+                        // <<div
+                        //     className={styles.open_full_button}
+                        //     onClick={() =>
+                        //         window.open('/chat/' + convertCurreny(room))
+                        //     }
+                        //     aria-label='Open chat in full screen'
+                        // >
+                        //     <img
+                        //         src={ExpandChatIcon}
+                        //         alt='Open chat in full screen'
+                        //     />
+                        // </div>>
+                        <></>
+                    )}
+                    {isFullScreen || !isChatOpen ? (
+                        <></>
+                    ) : (
+                        <IoIosArrowDown
+                            size={22}
+                            onClick={() => handleCloseChatPanel()}
+                            role='button'
+                            tabIndex={0}
+                            aria-label='hide chat button'
+                        />
+                    )}
+                    {!isChatOpen && (
+                        <IoIosArrowUp
+                            size={22}
+                            role='button'
+                            tabIndex={0}
+                            aria-label='Open chat button'
+                        />
+                    )}
+                </section>
+            </div>
+        ) : (
+            closedHeader
+        );
 
     let mentionIxdexPointer = 0;
     const messageList = (
@@ -1251,6 +1298,10 @@ function ChatPanel(props: propsIF) {
             isMobile={isMobile}
             userMap={userMap}
             chainId={activeNetwork.chainId}
+            showCustomEmojiPanel={showCustomEmojiPanel}
+            setShowCustomEmojiPanel={setShowCustomEmojiPanel}
+            showPicker={showPicker}
+            setShowPicker={setShowPicker}
         />
     );
 
@@ -1396,9 +1447,9 @@ function ChatPanel(props: propsIF) {
             </>
         );
 
-    return isChatOpen ? (
+    return (
         <div
-            className={`${styles.main_container} ${isChatOpen ? styles.chat_open : styles.chat_closed}`}
+            className={`${styles.main_container} ${isChatOpen && !isMobile ? styles.chat_open : styles.chat_closed}`}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
@@ -1456,10 +1507,10 @@ function ChatPanel(props: propsIF) {
                     {showPopUp ? sendingLink : ''}
                     {chatNotification}
 
-                    {isChatOpen && (
+                    {isChatOpen && showReactionPicker && (
                         <div
                             id='chatReactionWrapper'
-                            className={`${styles.reaction_picker_wrapper} ${showPicker ? 'styles.active' : ' '}`}
+                            className={`${styles.reaction_picker_wrapper} ${showReactionPicker ? styles.active : ' '}`}
                             ref={reactionsRef}
                             style={{ bottom: pickerBottomPos }}
                         >
@@ -1526,8 +1577,6 @@ function ChatPanel(props: propsIF) {
 
             <DomDebugger />
         </div>
-    ) : (
-        trollBoxBubble
     );
 }
 

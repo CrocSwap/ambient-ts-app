@@ -70,6 +70,10 @@ interface MessageInputProps {
     isChatOpen?: boolean;
     isMobile?: boolean;
     userMap?: Map<string, User>;
+    showCustomEmojiPanel: boolean;
+    setShowCustomEmojiPanel: (val: boolean) => void;
+    showPicker: boolean;
+    setShowPicker: (val: boolean) => void;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -77,7 +81,6 @@ export default function MessageInput(props: MessageInputProps) {
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
     const [message, setMessage] = useState('');
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
@@ -94,6 +97,13 @@ export default function MessageInput(props: MessageInputProps) {
     const [inputLength, setInputLength] = useState(0);
     const [mentUser, setMentUser] = useState<User | null>(null);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+
+    const {
+        showCustomEmojiPanel,
+        setShowCustomEmojiPanel,
+        showPicker,
+        setShowPicker,
+    } = props;
 
     const roomId = props.room;
 
@@ -177,14 +187,14 @@ export default function MessageInput(props: MessageInputProps) {
 
     const handleEmojiPickerHideShow = () => {
         if (!isUserConnected) {
-            setShowEmojiPicker(false);
+            setShowPicker(!showPicker);
         } else {
-            setShowEmojiPicker(!showEmojiPicker);
+            setShowPicker(!showPicker);
         }
     };
 
     const dontShowEmojiPanel = () => {
-        setShowEmojiPicker(false);
+        setShowPicker(false);
     };
 
     const filterUsers = (queryStr: string): User[] => {
@@ -312,7 +322,7 @@ export default function MessageInput(props: MessageInputProps) {
         }
 
         if (showCustomEmojiPanel) {
-            if (handleKeyForCustomEmojiPicker(e)) {
+            if (zaAhandleKeyForCustomEmojiPicker(e)) {
                 e.preventDefault();
                 return;
             }
@@ -437,6 +447,13 @@ export default function MessageInput(props: MessageInputProps) {
                 });
             }
             setInputLength(e.target.value.length);
+        } else if (e.key === 'Escape') {
+            setMessage('');
+            if (props.isReplyButtonPressed) {
+                props.setIsReplyButtonPressed(false);
+                props.setSelectedMessageForReply(undefined);
+            }
+            return;
         } else {
             setInputLength(e.target.value.length);
         }
@@ -444,19 +461,19 @@ export default function MessageInput(props: MessageInputProps) {
 
     function openEmojiPanel(e: KeyboardEvent) {
         if (e.code === 'KeyX' && e.altKey) {
-            setShowEmojiPicker(true);
+            setShowPicker(true);
         }
     }
 
     function closeEmojiPanel(e: KeyboardEvent) {
         if (e.code === 'KeyQ' && e.altKey) {
-            setShowEmojiPicker(false);
+            setShowPicker(false);
         }
     }
 
     function openInfo(e: KeyboardEvent) {
         if (e.code === 'KeyM' && e.ctrlKey) {
-            setShowEmojiPicker(true);
+            setShowPicker(true);
             setIsInfoPressed(true);
         }
     }
@@ -565,7 +582,6 @@ export default function MessageInput(props: MessageInputProps) {
     const customEmojiPickerRef = useRef<HTMLDivElement>(null);
 
     const [filteredEmojis, setFilteredEmojis] = useState<JSX.Element[]>([]);
-    const [showCustomEmojiPanel, setShowCustomEmojiPanel] = useState(false);
     const [customEmojiPickerSelectedIndex, setCustomEmojiPickerSelectedIndex] =
         useState(0);
     const customEmojiPanelLimit = 20;
@@ -665,7 +681,7 @@ export default function MessageInput(props: MessageInputProps) {
         setFilteredEmojis([...filteredElements]);
     };
 
-    const handleKeyForCustomEmojiPicker = (e: KeyboardEvent) => {
+    const zaAhandleKeyForCustomEmojiPicker = (e: KeyboardEvent) => {
         let shouldSkip = false;
         if (e.key === 'ArrowLeft' && customEmojiPickerSelectedIndex >= -1) {
             setCustomEmojiPickerSelectedIndex(
@@ -832,7 +848,7 @@ export default function MessageInput(props: MessageInputProps) {
                             </svg>
                         </div>
                     </div>
-                    {showEmojiPicker && (
+                    {showPicker && (
                         <div
                             className={styles.emojiPicker}
                             style={{ width: '100%' }}
@@ -841,7 +857,7 @@ export default function MessageInput(props: MessageInputProps) {
                                 <RiCloseFill
                                     size={20}
                                     title='Close Emoji Picker'
-                                    onClick={() => setShowEmojiPicker(false)}
+                                    onClick={() => setShowPicker(false)}
                                     id='close emoji panel button'
                                     style={{ cursor: 'pointer' }}
                                 />
@@ -885,15 +901,15 @@ export default function MessageInput(props: MessageInputProps) {
                             )}
                         </div>
                     )}
-
-                    <div
-                        ref={customEmojiPickerRef}
-                        id='chatCustomEmojiPicker'
-                        className={`${styles.custom_emoji_picker_wrapper} ${showCustomEmojiPanel ? styles.active : ' '}`}
-                    >
-                        {...filteredEmojis}
-                    </div>
-
+                    {showCustomEmojiPanel && (
+                        <div
+                            ref={customEmojiPickerRef}
+                            id='chatCustomEmojiPicker'
+                            className={`${styles.custom_emoji_picker_wrapper} ${showCustomEmojiPanel ? styles.active : ' '}`}
+                        >
+                            {...filteredEmojis}
+                        </div>
+                    )}
                     {props.isChatOpen && ALLOW_MENTIONS && mentionAutoComplete}
                 </div>
             )}

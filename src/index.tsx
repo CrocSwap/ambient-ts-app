@@ -68,6 +68,7 @@ createAppKit({
         11155111: sepoliaLogo,
         98864: plumeSepoliaLogo,
         98865: plumeLogo,
+        98866: plumeLogo,
         1923: swellLogo,
         1924: swellSepoliaLogo,
         84532: baseSepoliaLogo,
