@@ -1,5 +1,6 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
@@ -27,12 +28,33 @@ const FALLBACK_RPC_URL =
 const chainIdHex = '0x18230';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
-const chainSpecForWalletConnector = {
-    chainId: Number(chainIdHex),
-    name: 'Plume Devnet',
-    currency: 'ETH',
-    rpcUrl: PUBLIC_RPC_URL,
-    explorerUrl: 'https://test-explorer.plumenetwork.xyz/',
+const chainSpecForAppKit: Chain = {
+    id: Number(chainIdHex),
+    rpcUrls: {
+        default: {
+            http: [PUBLIC_RPC_URL],
+        },
+    },
+    name: 'Plume Devnet (Legacy)',
+    nativeCurrency: {
+        name: 'Plume Sepolia Ether',
+        symbol: 'ETH',
+        decimals: 18,
+    },
+    blockExplorers: {
+        default: {
+            name: 'Blockscout',
+            url: 'https://test-explorer.plumenetwork.xyz',
+            apiUrl: 'https://test-explorer.plumenetwork.xyz/api',
+        },
+    },
+    contracts: {
+        multicall3: {
+            address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+            blockCreated: 481_948,
+        },
+    },
+    testnet: true,
 };
 
 const defaultTokenEntries = [
@@ -60,13 +82,13 @@ export const plumeSepolia: NetworkIF = {
     GCGO_URL: GCGO_TESTNET_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector: chainSpecForWalletConnector,
+    chainSpecForAppKit,
     defaultPair: [PLUME_SEPOLIA_TOKENS.ETH, PLUME_SEPOLIA_TOKENS.pUSD],
     defaultPairFuta: [PLUME_SEPOLIA_TOKENS.ETH, PLUME_SEPOLIA_TOKENS.pUSD],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
-    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    blockExplorer: chainSpecForAppKit.blockExplorers?.default.url || '',
     displayName: 'Plume Devnet',
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,

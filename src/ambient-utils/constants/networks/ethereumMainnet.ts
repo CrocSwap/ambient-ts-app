@@ -1,5 +1,6 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
@@ -22,12 +23,27 @@ const FALLBACK_RPC_URL =
 const chainIdHex = '0x1';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
-const chainSpecForWalletConnector = {
-    chainId: Number(chainIdHex),
+const chainSpecForAppKit: Chain = {
+    id: Number(chainIdHex),
+    rpcUrls: {
+        default: {
+            http: [RPC_URLS.PUBLIC],
+        },
+    },
     name: 'Ethereum',
-    currency: 'ETH',
-    rpcUrl: RPC_URLS.PUBLIC,
-    explorerUrl: 'https://etherscan.io/',
+    nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+    blockExplorers: {
+        default: {
+            name: 'Etherscan',
+            url: 'https://etherscan.io',
+            apiUrl: 'https://api.etherscan.io/api',
+        },
+    },
+    contracts: {
+        multicall3: {
+            address: '0xca11bde05977b3631167028862be2a173976ca11',
+        },
+    },
 };
 
 const defaultTokenEntries = [
@@ -84,12 +100,12 @@ export const ethereumMainnet: NetworkIF = {
     GCGO_URL: GCGO_ETHEREUM_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector,
+    chainSpecForAppKit,
     defaultPair: [MAINNET_TOKENS.ETH, MAINNET_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
-    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    blockExplorer: chainSpecForAppKit.blockExplorers?.default.url || '',
     displayName: 'Ethereum',
     tokenPriceQueryAssetPlatform: 'ethereum',
     vaultsEnabled: true,

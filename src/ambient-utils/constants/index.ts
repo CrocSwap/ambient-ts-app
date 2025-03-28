@@ -163,7 +163,7 @@ export const DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES =
 export const WALLETCONNECT_PROJECT_ID = import.meta.env
     .VITE_WALLETCONNECT_PROJECT_ID
     ? import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
-    : '4698477998162ad97b05880f2c03a82c';
+    : '37e833557d495d07825c0c6815ac9d93';
 
 export const CROCODILE_LABS_LINKS = [
     'https://twitter.com/',

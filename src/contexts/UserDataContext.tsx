@@ -1,8 +1,9 @@
 import {
+    useAppKitAccount,
+    useAppKitNetwork,
+    useAppKitProvider,
     useDisconnect,
-    useWeb3ModalAccount,
-    useWeb3ModalProvider,
-} from '@web3modal/ethers/react';
+} from '@reown/appkit/react';
 import React, {
     Dispatch,
     SetStateAction,
@@ -24,7 +25,7 @@ import { AppStateContext } from './AppStateContext';
 
 export interface UserDataContextIF {
     isUserConnected: boolean | undefined;
-    userAddress: `0x${string}` | undefined;
+    userAddress: string | undefined;
     walletChain: number | undefined;
     disconnectUser: () => void;
     ensName: string | null | undefined;
@@ -77,30 +78,23 @@ export const UserDataContextProvider = (props: {
     const [secondaryEnsFromContext, setSecondaryEnsInContext] =
         React.useState<string>('');
 
-    const {
-        address: userAddress,
-        isConnected: isUserConnected,
-        chainId: walletChain,
-    } = useWeb3ModalAccount();
+    const { address: userAddress, isConnected: isUserConnected } =
+        useAppKitAccount();
+
+    const { chainId: walletChain } = useAppKitNetwork();
 
     const { isUserOnline } = useContext(AppStateContext);
 
     const { disconnect } = useDisconnect();
-    const { walletProvider } = useWeb3ModalProvider();
+    const { walletProvider } = useAppKitProvider('eip155');
     async function disconnectUser(): Promise<void> {
         if (walletProvider) {
             try {
-                // TODO: Remove this after web3modal upgrade
-                await walletProvider.request({
-                    method: 'wallet_revokePermissions',
-                    // eslint-disable-next-line camelcase
-                    params: [{ eth_accounts: {} }],
-                });
+                await disconnect();
             } catch (error) {
                 console.error('disconnect error', { error });
             }
         }
-        await disconnect();
     }
 
     const isBlacklisted = userAddress ? checkBlacklist(userAddress) : false;
@@ -167,10 +161,16 @@ export const UserDataContextProvider = (props: {
         }
     };
 
+    const chainAsNumber: number | undefined = walletChain
+        ? typeof walletChain === 'string'
+            ? parseInt(walletChain)
+            : walletChain
+        : undefined;
+
     const userDataContext: UserDataContextIF = {
         isUserConnected,
         userAddress,
-        walletChain,
+        walletChain: chainAsNumber,
         disconnectUser,
         ensName,
         resolvedAddressFromContext,

@@ -1,7 +1,6 @@
 // import{ lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { motion } from 'framer-motion';
 import { useContext, useEffect, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
@@ -9,6 +8,8 @@ import { useSearchParams } from 'react-router-dom';
 import { brand, supportedNetworks } from '../../../../ambient-utils/constants';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 // import baseLogo from '../../../../assets/images/networks/Base_Network_Logo.svg';
+import { mainnet } from '@reown/appkit/networks';
+import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
 import baseSepoliaLogo from '../../../../assets/images/networks/base_sepolia_no_margin.webp';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_no_margin.webp';
@@ -35,6 +36,7 @@ import {
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import styles from './NetworkSelector.module.css';
+
 interface propsIF {
     customBR?: string;
 }
@@ -67,12 +69,12 @@ export default function NetworkSelector(props: propsIF) {
         useState('');
 
     const { closeBottomSheet } = useBottomSheet();
-    const { switchNetwork } = useSwitchNetwork();
     const smallScreen: boolean = useMediaQuery('(max-width: 600px)');
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const [searchParams, setSearchParams] = useSearchParams();
-    const { isConnected } = useWeb3ModalAccount();
+    const { isConnected } = useAppKitAccount();
+    const { switchNetwork } = useAppKitNetwork();
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
 
@@ -92,7 +94,7 @@ export default function NetworkSelector(props: propsIF) {
         setSelectedNetworkDisplayName(selectedNetwork.displayName);
         if (isConnected) {
             setCrocEnv(undefined);
-            await switchNetwork(parseInt(chn.chainId));
+            await switchNetwork(mainnet);
             if (chainParam || networkParam) {
                 // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();
@@ -107,8 +109,8 @@ export default function NetworkSelector(props: propsIF) {
     }
 
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
     // logic to consume chain param data from the URL
-    // runs once when the app initializes, again when web3modal finishes initializing
     useEffect(() => {
         // search for param in URL by key 'chain' or 'network'
         const chainParam: string | null =
@@ -122,9 +124,9 @@ export default function NetworkSelector(props: propsIF) {
             // yes → trigger machinery to switch the current network
             // no → no action except to clear the param from the URL
             if (supportedNetworks[targetChain] && targetChain !== chainId) {
-                // use web3modal if wallet is connected, otherwise use in-app toggle
+                // use AppKit if wallet is connected, otherwise use in-app toggle
                 if (isConnected) {
-                    switchNetwork(parseInt(targetChain));
+                    switchNetwork(mainnet);
                 } else {
                     if (!initialLoadComplete) {
                         setTimeout(() => {

@@ -9,9 +9,6 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import styles from './Home.module.css';
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
-    // hook from web3modal to switch connected wallet in extension
-    // hook from web3modal indicating if user is connected
-    // hook to consume and alter search params on the index page
 
     const { showDexStats } = useContext(BrandContext);
 

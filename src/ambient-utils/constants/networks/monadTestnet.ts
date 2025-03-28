@@ -1,5 +1,6 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
@@ -36,6 +37,33 @@ const chainSpecForWalletConnector = {
     explorerUrl: 'https://testnet.monadexplorer.com/',
 };
 
+const chainSpecForAppKit: Chain = {
+    id: Number(chainIdHex),
+    rpcUrls: {
+        default: {
+            http: [PUBLIC_RPC_URL],
+        },
+    },
+    name: 'Monad Testnet',
+    nativeCurrency: {
+        name: 'Testnet MON Token',
+        symbol: 'MON',
+        decimals: 18,
+    },
+    blockExplorers: {
+        default: {
+            name: 'Monad Testnet explorer',
+            url: 'https://testnet.monadexplorer.com',
+        },
+    },
+    contracts: {
+        multicall3: {
+            address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+        },
+    },
+    testnet: true,
+};
+
 const defaultTokenEntries = [
     ['MON', '0x0000000000000000000000000000000000000000'],
     ['USDC', '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea'],
@@ -65,7 +93,7 @@ export const monadTestnet: NetworkIF = {
     GCGO_URL: GCGO_TESTNET_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector: chainSpecForWalletConnector,
+    chainSpecForAppKit,
     defaultPair: [MONAD_TESTNET_TOKENS.MON, MONAD_TESTNET_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
@@ -81,7 +109,7 @@ export const monadTestnet: NetworkIF = {
             chainSpecFromSDK.poolIndex,
         ),
     ],
-    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    blockExplorer: chainSpecForAppKit.blockExplorers?.default.url || '',
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (

@@ -12,7 +12,7 @@ interface SimulateSwapParams {
 }
 export const getFauxRawTx = async (
     params: SimulateSwapParams,
-): Promise<`0x${string}` | undefined> => {
+): Promise<string | undefined> => {
     const {
         crocEnv,
         isQtySell,
@@ -53,7 +53,7 @@ export const calcL1Gas = async (
             if (raw) {
                 const scrollL1GasEstimate = await estimateScrollL1Gas(
                     params.crocEnv,
-                    raw,
+                    raw as `0x${string}`,
                 );
 
                 return scrollL1GasEstimate;

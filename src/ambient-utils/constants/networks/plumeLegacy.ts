@@ -1,5 +1,6 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
@@ -11,6 +12,7 @@ const RPC_URLS = {
     PUBLIC: 'https://rpc.plumenetwork.xyz',
     SECONDARY_PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
     RESTRICTED: import.meta.env.VITE_PLUME_RPC_URL,
+    WEBSOCKET: 'wss://rpc.plumenetwork.xyz',
 };
 
 const PRIMARY_RPC_URL = RPC_URLS.RESTRICTED || RPC_URLS.PUBLIC;
@@ -20,12 +22,27 @@ const FALLBACK_RPC_URL =
 const chainIdHex = '0x18231';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
-const chainSpecForWalletConnector = {
-    chainId: Number(chainIdHex),
+const chainSpecForAppKit: Chain = {
+    id: Number(chainIdHex),
+    rpcUrls: {
+        default: {
+            http: [RPC_URLS.PUBLIC],
+            webSocket: [RPC_URLS.WEBSOCKET],
+        },
+    },
     name: 'Plume (Legacy)',
-    currency: 'ETH',
-    rpcUrl: RPC_URLS.PUBLIC,
-    explorerUrl: 'https://explorer.plumenetwork.xyz/',
+    nativeCurrency: {
+        name: 'Plume Ether',
+        symbol: 'ETH',
+        decimals: 18,
+    },
+    blockExplorers: {
+        default: {
+            name: 'Blockscout',
+            url: 'https://explorer.plumenetwork.xyz',
+            apiUrl: 'https://explorer.plumenetwork.xyz/api',
+        },
+    },
 };
 
 const defaultTokenEntries = [
@@ -78,13 +95,13 @@ export const plumeLegacy: NetworkIF = {
     GCGO_URL: GCGO_PLUME_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector,
+    chainSpecForAppKit,
     defaultPair: [PLUME_LEGACY_TOKENS.pETH, PLUME_LEGACY_TOKENS.pUSD],
     defaultPairFuta: [PLUME_LEGACY_TOKENS.pETH, PLUME_LEGACY_TOKENS.pUSD],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
-    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    blockExplorer: chainSpecForAppKit.blockExplorers?.default.url || '',
     displayName: 'Plume (Legacy)',
     tokenPriceQueryAssetPlatform: 'plume',
     vaultsEnabled: false,
