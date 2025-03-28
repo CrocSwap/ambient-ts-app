@@ -1,5 +1,6 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
@@ -29,6 +30,26 @@ const chainSpecForWalletConnector = {
     currency: 'ETH',
     rpcUrl: RPC_URLS.PUBLIC,
     explorerUrl: 'https://blastscan.io/',
+};
+
+const chainSpecForAppKit: Chain = {
+    id: Number(chainIdHex),
+    rpcUrls: {
+        default: { http: [RPC_URLS.PUBLIC] },
+    },
+    name: 'Blast',
+    nativeCurrency: {
+        decimals: 18,
+        name: 'Ether',
+        symbol: 'ETH',
+    },
+    blockExplorers: {
+        default: {
+            name: 'Blastscan',
+            url: 'https://blastscan.io',
+            apiUrl: 'https://api.blastscan.io/api',
+        },
+    },
 };
 
 const defaultTokenEntries = [
@@ -83,6 +104,7 @@ export const blastMainnet: NetworkIF = {
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForWalletConnector: chainSpecForWalletConnector,
+    chainSpecForAppKit: chainSpecForAppKit,
     defaultPair: [BLAST_TOKENS.ETH, BLAST_TOKENS.USDB],
     blockExplorer: chainSpecForWalletConnector.explorerUrl,
     displayName: chainSpecForWalletConnector.name,

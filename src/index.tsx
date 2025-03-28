@@ -10,11 +10,13 @@ import './index.css';
 import {
     brand,
     GLOBAL_MODAL_PORTAL_ID,
+    supportedNetworks,
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
 // import baseLogo from './assets/images/networks/base_network_logo_with_margin.webp';
 import { EthersAdapter } from '@reown/appkit-adapter-ethers';
-import { AppKitNetwork, mainnet } from '@reown/appkit/networks';
+
+import { AppKitNetwork } from '@reown/appkit/networks';
 import { createAppKit } from '@reown/appkit/react';
 import baseSepoliaLogo from './assets/images/networks/base_sepolia.webp';
 import blastLogo from './assets/images/networks/blast_logo.png';
@@ -32,7 +34,12 @@ import ErrorBoundary from './components/Error/ErrorBoundary';
 import GlobalErrorFallback from './components/Error/GlobalErrorFallback';
 import { GlobalContexts } from './contexts/GlobalContexts';
 
-const networks = [mainnet] as [AppKitNetwork, ...AppKitNetwork[]];
+const appKitNetworks = Object.values(supportedNetworks).map(
+    ({ chainSpecForAppKit }) => {
+        if (!chainSpecForAppKit) throw new Error('Missing chainSpecForAppKit.');
+        return chainSpecForAppKit;
+    },
+) as [AppKitNetwork, ...AppKitNetwork[]];
 
 const metadata = {
     name: 'Ambient Finance',
@@ -51,14 +58,22 @@ let isBinance = false;
 // 4. Create a AppKit instance
 createAppKit({
     adapters: [new EthersAdapter()],
-    defaultNetwork: mainnet,
-    networks,
+    defaultNetwork: appKitNetworks[0],
+    networks: appKitNetworks,
     metadata,
     projectId: WALLETCONNECT_PROJECT_ID,
     features: {
+        email: false,
+        socials: false,
+        // socials: ['google', 'x', 'github', 'discord', 'apple'],
         analytics: false,
-        legalCheckbox: true,
+        legalCheckbox: false,
+        swaps: false,
+        onramp: false,
+        connectMethodsOrder: ['email', 'wallet'],
+        // connectMethodsOrder: ['email', 'social', 'wallet'],
     },
+    enableWalletGuide: false,
     chainImages: {
         1: ethLogo,
         81457: blastLogo,
