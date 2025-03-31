@@ -1,4 +1,3 @@
-import { mainnet } from '@reown/appkit/networks';
 import { useAppKitNetwork } from '@reown/appkit/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -156,7 +155,11 @@ export const useAppChain = (): {
                                 } else {
                                     setIgnoreFirst(false);
                                     if (chainInURLValidated && switchNetwork)
-                                        switchNetwork(mainnet);
+                                        switchNetwork(
+                                            supportedNetworks[
+                                                chainInURLValidated
+                                            ].chainSpecForAppKit,
+                                        );
                                     return;
                                 }
                             } else if (

@@ -8,7 +8,6 @@ import { useSearchParams } from 'react-router-dom';
 import { brand, supportedNetworks } from '../../../../ambient-utils/constants';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 // import baseLogo from '../../../../assets/images/networks/Base_Network_Logo.svg';
-import { mainnet } from '@reown/appkit/networks';
 import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
 import baseSepoliaLogo from '../../../../assets/images/networks/base_sepolia_no_margin.webp';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
@@ -94,7 +93,7 @@ export default function NetworkSelector(props: propsIF) {
         setSelectedNetworkDisplayName(selectedNetwork.displayName);
         if (isConnected) {
             setCrocEnv(undefined);
-            await switchNetwork(mainnet);
+            switchNetwork(supportedNetworks[chn.chainId].chainSpecForAppKit);
             if (chainParam || networkParam) {
                 // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();
@@ -120,13 +119,16 @@ export default function NetworkSelector(props: propsIF) {
             // get a canonical 0x hex string chain ID from URL param
             const targetChain: string =
                 lookupChainId(chainParam, 'string') ?? chainParam;
+
             // check if chain is supported and not the current chain in the app
             // yes → trigger machinery to switch the current network
             // no → no action except to clear the param from the URL
             if (supportedNetworks[targetChain] && targetChain !== chainId) {
                 // use AppKit if wallet is connected, otherwise use in-app toggle
                 if (isConnected) {
-                    switchNetwork(mainnet);
+                    switchNetwork(
+                        supportedNetworks[targetChain].chainSpecForAppKit,
+                    );
                 } else {
                     if (!initialLoadComplete) {
                         setTimeout(() => {

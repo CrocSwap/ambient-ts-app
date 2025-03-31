@@ -1,4 +1,3 @@
-import { mainnet } from '@reown/appkit/networks';
 import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
 import { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
@@ -16,7 +15,7 @@ export default function NoVaults() {
     const { switchNetwork } = useAppKitNetwork();
 
     async function changeNetwork(n: NetworkIF): Promise<void> {
-        isConnected ? switchNetwork(mainnet) : chooseNetwork(n);
+        isConnected ? switchNetwork(n.chainSpecForAppKit) : chooseNetwork(n);
     }
 
     if (!someSupportedNetworkIsVaultSupportedNetwork) {
