@@ -496,7 +496,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 userAddress &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
-                console.log('fetching');
                 try {
                     const combinedBalances: TokenIF[] = [];
 
