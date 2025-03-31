@@ -192,7 +192,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     }, [
         isUserOnline,
         JSON.stringify(activePoolList),
-        JSON.stringify(crocEnv),
+        crocEnv,
         activeNetwork.chainId,
         // intermediaryPoolData.length !== poolDataFilteredByActiveChain.length,
     ]);
