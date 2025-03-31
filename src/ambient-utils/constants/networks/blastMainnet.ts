@@ -24,14 +24,6 @@ const chainIdHex = '0x13e31';
 
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
-const chainSpecForWalletConnector = {
-    chainId: Number(chainIdHex),
-    name: 'Blast',
-    currency: 'ETH',
-    rpcUrl: RPC_URLS.PUBLIC,
-    explorerUrl: 'https://blastscan.io/',
-};
-
 const chainSpecForAppKit: Chain = {
     id: Number(chainIdHex),
     rpcUrls: {
@@ -103,11 +95,10 @@ export const blastMainnet: NetworkIF = {
     GCGO_URL: GCGO_BLAST_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector: chainSpecForWalletConnector,
     chainSpecForAppKit: chainSpecForAppKit,
     defaultPair: [BLAST_TOKENS.ETH, BLAST_TOKENS.USDB],
-    blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: chainSpecForWalletConnector.name,
+    blockExplorer: chainSpecForAppKit.blockExplorers?.default.url || '',
+    displayName: chainSpecForAppKit.name,
     tokenPriceQueryAssetPlatform: 'blast',
     vaultsEnabled: false,
     tempestApiNetworkName: '',

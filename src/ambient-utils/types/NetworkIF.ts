@@ -16,7 +16,6 @@ export interface ChainSpecForWeb3Modal {
 export interface NetworkIF {
     chainId: string;
     GCGO_URL: string;
-    chainSpecForWalletConnector?: ChainSpecForWeb3Modal;
     chainSpecForAppKit: Chain;
     evmRpcUrl: string;
     fallbackRpcUrl: string;
