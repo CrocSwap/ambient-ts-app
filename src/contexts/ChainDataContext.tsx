@@ -25,7 +25,6 @@ import {
     GCGO_SCROLL_URL,
     GCGO_SWELL_URL,
     hiddenTokens,
-    IS_LOCAL_ENV,
     supportedNetworks,
     vaultSupportedNetworkIds,
     ZERO_ADDRESS,
@@ -491,15 +490,13 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     useEffect(() => {
         (async () => {
-            IS_LOCAL_ENV &&
-                console.debug('fetching native token and ERC20 token balances');
-
             if (
                 (isAccountRoute || isTokenBalanceFetchManuallyTriggerered) &&
                 crocEnv &&
                 userAddress &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
+                console.log('fetching');
                 try {
                     const combinedBalances: TokenIF[] = [];
 
@@ -593,7 +590,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             }
         })();
     }, [
-        JSON.stringify(crocEnv),
+        crocEnv,
         userAddress,
         chainId,
         everyFiveMinutes,
