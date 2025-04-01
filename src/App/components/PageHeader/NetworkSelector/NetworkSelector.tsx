@@ -114,6 +114,7 @@ export default function NetworkSelector(props: propsIF) {
     useEffect(() => {
         if (!targetChainId) return;
 
+        // set a timeout to check if the chain switch in wallet was successful after 2 seconds
         const checkChainId = setTimeout(() => {
             console.log('chain switch delayed', { chainId, targetChainId });
             if (chainId !== targetChainId) {
@@ -121,7 +122,7 @@ export default function NetworkSelector(props: propsIF) {
                     supportedNetworks[targetChainId].chainSpecForAppKit,
                 );
             }
-        }, 1000);
+        }, 2000);
 
         return () => clearTimeout(checkChainId);
     }, [chainId, targetChainId]);

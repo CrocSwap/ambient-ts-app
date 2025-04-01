@@ -55,7 +55,7 @@ const metadata = {
 
 let isBinance = false;
 
-// 4. Create a AppKit instance
+// 4. Create an AppKit instance
 createAppKit({
     adapters: [new EthersAdapter()],
     defaultNetwork: appKitNetworks[0],
@@ -70,8 +70,7 @@ createAppKit({
         legalCheckbox: false,
         swaps: false,
         onramp: false,
-        connectMethodsOrder: ['email', 'wallet'],
-        // connectMethodsOrder: ['email', 'social', 'wallet'],
+        connectMethodsOrder: ['wallet'],
     },
     enableWalletGuide: false,
     chainImages: {
@@ -106,20 +105,6 @@ createAppKit({
     termsConditionsUrl: '/terms',
     privacyPolicyUrl: '/privacy',
 });
-
-// const defaultSupportedNetworkHexId = Object.keys(supportedNetworks)[0];
-
-// const defaultChainIdInteger = defaultSupportedNetworkHexId
-//     ? parseInt(defaultSupportedNetworkHexId)
-//     : 534352;
-
-// const ethersConfig = defaultConfig({
-//     metadata,
-//     defaultChainId: defaultChainIdInteger,
-//     enableEmail: false,
-//     rpcUrl: ' ',
-//     enableCoinbase: true,
-// });
 
 try {
     if (window.ethereum) {
