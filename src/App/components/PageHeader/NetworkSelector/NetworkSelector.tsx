@@ -115,7 +115,10 @@ export default function NetworkSelector(props: propsIF) {
         if (!targetChainId) return;
 
         const checkChainId = setInterval(() => {
-            console.log({ chainId, targetChainId });
+            console.log('re-attempting to switch networks every 3 seconds', {
+                chainId,
+                targetChainId,
+            });
             if (chainId !== targetChainId) {
                 switchNetwork(
                     supportedNetworks[targetChainId].chainSpecForAppKit,
@@ -123,7 +126,7 @@ export default function NetworkSelector(props: propsIF) {
             } else {
                 clearInterval(checkChainId);
             }
-        }, 2000);
+        }, 3000);
 
         return () => clearInterval(checkChainId);
     }, [chainId, targetChainId]);
