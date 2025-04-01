@@ -85,27 +85,46 @@ export default function NetworkSelector(props: propsIF) {
     const chainMap = new Map();
     chains.forEach((chain: ChainSpec) => chainMap.set(chain.chainId, chain));
 
+    const [targetChainId, setTargetChainId] = useState<string | undefined>();
+
     // click handler for network switching (does not handle Canto link)
     async function handleClick(chn: ChainSpec): Promise<void> {
         if (chn.chainId === chainId) return;
         setIsNetworkUpdateInProgress(true);
         const selectedNetwork = supportedNetworks[chn.chainId];
+        const targetChainId = chn.chainId;
+        setTargetChainId(targetChainId);
         setSelectedNetworkDisplayName(selectedNetwork.displayName);
+
         if (isConnected) {
             setCrocEnv(undefined);
-            switchNetwork(supportedNetworks[chn.chainId].chainSpecForAppKit);
+            switchNetwork(selectedNetwork.chainSpecForAppKit);
+
             if (chainParam || networkParam) {
-                // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();
             }
         } else {
             if (chainParam || networkParam) {
-                // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();
             }
             chooseNetwork(selectedNetwork);
         }
     }
+
+    useEffect(() => {
+        if (!targetChainId) return;
+
+        const checkChainId = setTimeout(() => {
+            console.log('chain switch delayed', { chainId, targetChainId });
+            if (chainId !== targetChainId) {
+                switchNetwork(
+                    supportedNetworks[targetChainId].chainSpecForAppKit,
+                );
+            }
+        }, 1000);
+
+        return () => clearTimeout(checkChainId);
+    }, [chainId, targetChainId]);
 
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
@@ -147,6 +166,7 @@ export default function NetworkSelector(props: propsIF) {
     useEffect(() => {
         // reset temporary update state when chain changes
         if (isNetworkUpdateInProgress) {
+            setTargetChainId(undefined);
             setIsNetworkUpdateInProgress(false);
             setSelectedNetworkDisplayName('');
         }
