@@ -110,21 +110,33 @@ export default function NetworkSelector(props: propsIF) {
             chooseNetwork(selectedNetwork);
         }
     }
-
     useEffect(() => {
         if (!targetChainId) return;
 
-        const checkChainId = setInterval(() => {
-            console.log('re-attempting to switch networks every 3 seconds', {
-                chainId,
-                targetChainId,
-            });
-            if (chainId !== targetChainId) {
+        let attemptCount = 0; // Initialize attempt counter
+
+        const checkChainId = setInterval(async () => {
+            console.log(
+                `Re-attempting to switch networks (Attempt ${attemptCount + 1}/2)`,
+                {
+                    chainId,
+                    targetChainId,
+                },
+            );
+
+            if (chainId !== targetChainId && attemptCount < 2) {
                 switchNetwork(
                     supportedNetworks[targetChainId].chainSpecForAppKit,
                 );
-            } else {
-                clearInterval(checkChainId);
+                attemptCount++; // Increment attempt counter
+            }
+
+            if (chainId === targetChainId || attemptCount >= 2) {
+                clearInterval(checkChainId); // Stop after 2 attempts or successful switch
+                setIsNetworkUpdateInProgress(false);
+                const selectedNetwork = supportedNetworks[chainId];
+                setTargetChainId(chainId);
+                setSelectedNetworkDisplayName(selectedNetwork.displayName);
             }
         }, 3000);
 
