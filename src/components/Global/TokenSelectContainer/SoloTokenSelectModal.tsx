@@ -17,6 +17,7 @@ import {
     AppStateContext,
     ChainDataContext,
     SidebarContext,
+    UserDataContext,
 } from '../../../contexts';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -51,6 +52,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         platform = 'ambient',
     } = props;
 
+    const { userAddress } = useContext(UserDataContext);
+
     const { cachedTokenDetails } = useContext(CachedDataContext);
     const { provider } = useContext(CrocEnvContext);
 
@@ -72,7 +75,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
 
     useEffect(() => {
         setIsTokenBalanceFetchManuallyTriggerered(true);
-    }, []);
+    }, [chainId, userAddress]);
 
     const {
         tokens,

@@ -77,7 +77,7 @@ export default function WalletDropdown(props: propsIF) {
 
     useEffect(() => {
         setIsTokenBalanceFetchManuallyTriggerered(true);
-    }, []);
+    }, [chainId, accountAddress]);
 
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF): JSX.Element {
         const { logoUri, symbol, address, amount, value } = props;

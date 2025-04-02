@@ -4,7 +4,7 @@ import Button from '../../../components/Form/Button';
 import Modal from '../../../components/Global/Modal/Modal';
 import styles from './GateWalletModal.module.css';
 
-import { useWeb3Modal } from '@web3modal/ethers/react';
+import { useAppKit } from '@reown/appkit/react';
 import { brand, VIEW_ONLY } from '../../../ambient-utils/constants';
 import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -17,7 +17,7 @@ export default function GateWalletModal() {
 
     const walletConnectionsAllowed = !VIEW_ONLY;
     const [recordAgreed, __, termUrls] = useTermsAgreed();
-    const { open: openW3Modal } = useWeb3Modal();
+    const { open: openW3Modal } = useAppKit();
     const isFuta = brand === 'futa';
 
     return walletConnectionsAllowed ? (

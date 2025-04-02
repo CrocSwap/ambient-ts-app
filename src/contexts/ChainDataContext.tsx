@@ -25,7 +25,6 @@ import {
     GCGO_SCROLL_URL,
     GCGO_SWELL_URL,
     hiddenTokens,
-    IS_LOCAL_ENV,
     supportedNetworks,
     vaultSupportedNetworkIds,
     ZERO_ADDRESS,
@@ -365,6 +364,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
+    const everyFiveSeconds = Math.floor(Date.now() / 5000);
 
     useEffect(() => {
         const nftLocalData = localStorage.getItem('user_nft_data');
@@ -491,9 +491,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     useEffect(() => {
         (async () => {
-            IS_LOCAL_ENV &&
-                console.debug('fetching native token and ERC20 token balances');
-
             if (
                 (isAccountRoute || isTokenBalanceFetchManuallyTriggerered) &&
                 crocEnv &&
@@ -510,14 +507,14 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                                 address: userAddress,
                                 chain: chainId,
                                 crocEnv: crocEnv,
-                                _refreshTime: everyFiveMinutes,
+                                _refreshTime: everyFiveSeconds,
                             }),
                             cachedFetchDexBalances({
                                 address: userAddress,
                                 chain: chainId,
                                 crocEnv: crocEnv,
                                 GCGO_URL: GCGO_URL,
-                                _refreshTime: everyFiveMinutes,
+                                _refreshTime: everyFiveSeconds,
                             }),
                         ]);
 
@@ -593,7 +590,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             }
         })();
     }, [
-        JSON.stringify(crocEnv),
+        crocEnv,
         userAddress,
         chainId,
         everyFiveMinutes,

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { Chain } from '@reown/appkit/networks';
 import { Provider, Signer } from 'ethers';
 import { TopPool } from '../constants/networks/TopPool';
 import { TokenIF } from './token/TokenIF';
@@ -15,7 +16,7 @@ export interface ChainSpecForWeb3Modal {
 export interface NetworkIF {
     chainId: string;
     GCGO_URL: string;
-    chainSpecForWalletConnector: ChainSpecForWeb3Modal;
+    chainSpecForAppKit: Chain;
     evmRpcUrl: string;
     fallbackRpcUrl: string;
     poolIndex: number;
