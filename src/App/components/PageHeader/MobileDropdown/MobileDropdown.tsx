@@ -46,6 +46,7 @@ interface navDataIF {
 export default function MobileDropdown() {
     const {
         snackbar: { open: openSnackbar },
+        activeNetwork: { chainId },
         // appHeaderDropdown,
     } = useContext(AppStateContext);
     const { userAddress, isUserConnected, disconnectUser, ensName } =
@@ -77,7 +78,7 @@ export default function MobileDropdown() {
 
     useEffect(() => {
         setIsTokenBalanceFetchManuallyTriggerered(true);
-    }, []);
+    }, [chainId, accountAddress]);
 
     const [_, copy] = useCopyToClipboard();
 

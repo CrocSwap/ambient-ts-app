@@ -18,6 +18,7 @@ import {
     AppStateContext,
     ChainDataContext,
     SidebarContext,
+    UserDataContext,
 } from '../../../contexts';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -52,6 +53,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     const { provider } = useContext(CrocEnvContext);
     const { setIsTokenBalanceFetchManuallyTriggerered } =
         useContext(ChainDataContext);
+    const { userAddress } = useContext(UserDataContext);
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
@@ -78,7 +80,7 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     useEffect(() => {
         setIsTokenBalanceFetchManuallyTriggerered(true);
-    }, []);
+    }, [chainId, userAddress]);
 
     const { tokenA, tokenB, setSoloToken } = useContext(TradeDataContext);
 

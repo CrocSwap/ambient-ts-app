@@ -1,5 +1,6 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
@@ -27,12 +28,29 @@ const FALLBACK_RPC_URL =
 const chainIdHex = '0x14a34';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
-const chainSpecForWalletConnector = {
-    chainId: Number(chainIdHex),
-    name: 'Base Testnet',
-    currency: 'ETH',
-    rpcUrl: PUBLIC_RPC_URL,
-    explorerUrl: 'https://swell-testnet-explorer.alt.technology/',
+const chainSpecForAppKit: Chain = {
+    id: Number(chainIdHex),
+    rpcUrls: {
+        default: {
+            http: [PUBLIC_RPC_URL],
+        },
+    },
+    name: 'Base Sepolia',
+    nativeCurrency: { name: 'Sepolia Ether', symbol: 'ETH', decimals: 18 },
+    blockExplorers: {
+        default: {
+            name: 'Basescan',
+            url: 'https://sepolia.basescan.org',
+            apiUrl: 'https://api-sepolia.basescan.org/api',
+        },
+    },
+    contracts: {
+        multicall3: {
+            address: '0xca11bde05977b3631167028862be2a173976ca11',
+            blockCreated: 1059647,
+        },
+    },
+    testnet: true,
 };
 
 const findTokenByAddress = (address: string): TokenIF =>
@@ -67,14 +85,14 @@ export const baseSepolia: NetworkIF = {
     GCGO_URL: GCGO_TESTNET_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector: chainSpecForWalletConnector,
+    chainSpecForAppKit,
     defaultPair: [BASE_SEPOLIA_TOKENS.ETH, BASE_SEPOLIA_TOKENS.USDC],
     defaultPairFuta: [BASE_SEPOLIA_TOKENS.ETH, BASE_SEPOLIA_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
-    blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: chainSpecForWalletConnector.name,
+    blockExplorer: chainSpecForAppKit.blockExplorers?.default.url || '',
+    displayName: 'Base Testnet',
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,
     tempestApiNetworkName: '',

@@ -660,7 +660,7 @@ export function usePoolMetadata() {
         isUserOnline,
         userAddress,
         contextMatchesParams,
-        JSON.stringify(crocEnv),
+        crocEnv,
         baseTokenAddress !== '' && quoteTokenAddress !== '',
         chainId,
         tokens.tokenUniv,

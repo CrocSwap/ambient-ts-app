@@ -1,4 +1,5 @@
-import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useAppKitProvider } from '@reown/appkit/react';
+import { ethers } from 'ethers';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import { brand } from '../../../../../ambient-utils/constants';
@@ -49,14 +50,14 @@ export default function TransactionSubmitted(props: PropsIF) {
 
     const logoURI = tokenBImage;
 
-    const { walletProvider } = useWeb3ModalProvider();
+    const { walletProvider } = useAppKitProvider('eip155');
     const handleAddToMetaMask = async () => {
         await addTokenToWallet(
             tokenBAddress,
             tokenBSymbol,
             tokenBDecimals,
             logoURI,
-            walletProvider,
+            walletProvider as ethers.Eip1193Provider,
         );
     };
 
