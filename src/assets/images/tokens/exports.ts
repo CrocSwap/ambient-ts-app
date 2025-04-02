@@ -21,6 +21,7 @@ import LINK from './LINK.svg';
 import MAMABTC from './MAMABTC.svg';
 import MIA from './MIA.png';
 import MKR from './MKR.png';
+import MON from './MON.svg';
 import NELIXIR from './NELIXIR.svg';
 import NEV from './NEV.webp';
 import NRWA from './NRWA.svg';
@@ -66,6 +67,7 @@ import WBTC from './WBTC.webp';
 import WEETH from './WEETH.svg';
 import WRSETH from './WRSETH.png';
 import WTT from './WTT.webp';
+import WWETH from './WWETH.webp';
 import XMON from './XMON.png';
 import YES from './YES.png';
 import YIELD from './YIELD.jpg';
@@ -97,6 +99,7 @@ export {
     MAMABTC,
     MIA,
     MKR,
+    MON,
     NELIXIR,
     NEV,
     NRWA,
@@ -141,6 +144,7 @@ export {
     WEETH,
     WRSETH,
     WTT,
+    WWETH,
     XMON,
     YES,
     YIELD,
