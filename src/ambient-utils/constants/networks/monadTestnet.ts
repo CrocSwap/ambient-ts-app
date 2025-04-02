@@ -9,7 +9,7 @@ import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const PUBLIC_RPC_URL = 'https://testnet-rpc.monad.xyz/';
-const SECONDARY_PUBLIC_RPC_URL = 'https://testnet-rpc.monad.xyz/';
+const SECONDARY_PUBLIC_RPC_URL = 'https://monad-testnet.drpc.org/';
 
 const RESTRICTED_RPC_URL =
     import.meta.env.VITE_MONAD_TESTNET_RPC_URL !== undefined
