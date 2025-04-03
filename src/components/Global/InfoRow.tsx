@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { FlexContainer } from '../../styled/Common';
-import TooltipComponent from './TooltipComponent/TooltipComponent';
+import Tooltip from './Tooltip/Tooltip';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface ItemRowPropsIF {
     title: string;
@@ -20,9 +21,17 @@ function InfoRow(props: ItemRowPropsIF) {
             color='text2'
             padding='4px'
         >
-            <FlexContainer flexDirection='row' alignItems='center' gap={4}>
+            <FlexContainer
+                flexDirection='row'
+                alignItems='center'
+                gap={4}
+                style={{ zIndex: 99 }}
+            >
                 <p>{title}</p>
-                <TooltipComponent title={explanation} placement={'right'} />
+
+                <Tooltip content={explanation} position='right'>
+                    <AiOutlineQuestionCircle size={13} />
+                </Tooltip>
             </FlexContainer>
             <div>{content}</div>
         </FlexContainer>
