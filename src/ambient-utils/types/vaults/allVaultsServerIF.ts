@@ -17,6 +17,8 @@ export interface AllVaultsServerIF {
     vaultDecimals: number;
     vaultShow: boolean;
     mainAsset: `0x${string}`;
+    performanceUnitTokenAddress: string;
+    rewardApr: string;
     aprUnitTokenAddress: string;
     aprShow: string;
     initTime: number;
