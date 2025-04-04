@@ -580,8 +580,11 @@ export default function rangeRowConstants(props: propsIF) {
     );
 
     const apyDisplay = (
-        <FlexContainer justifyContent='flex-end' data-label='apy'>
-            {' '}
+        <FlexContainer
+            justifyContent='flex-end'
+            data-label='apy'
+            style={{ paddingRight: '10px' }}
+        >
             <p className={apyClassname}>{apyString}</p>
         </FlexContainer>
     );
