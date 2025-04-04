@@ -50,7 +50,7 @@ import SINU from './SINU.webp';
 import SOL from './SOL.svg';
 import STONE from './STONE.png';
 import SUSDE from './SUSDE.svg';
-import SWELL from './SWELL.png';
+import SWELL from './SWELL.svg';
 import SWETH from './SWETH.svg';
 import SYN from './SYN.svg';
 import TBTC from './TBTC.svg';

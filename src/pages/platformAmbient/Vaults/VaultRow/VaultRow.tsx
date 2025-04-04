@@ -1,5 +1,5 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import {
     getFormattedNumber,
@@ -96,18 +96,18 @@ export default function VaultRow(props: propsIF) {
         needsFallbackQuery,
     ]);
 
-    const balDisplay = useMemo<string>(() => {
-        const rawValue = vault.balance ?? crocEnvBal;
-        const output: string =
-            rawValue && mainAsset && userAddress
-                ? getFormattedNumber({
-                      value: parseFloat(
-                          toDisplayQty(rawValue, mainAsset.decimals),
-                      ),
-                  })
-                : '...';
-        return output;
-    }, [vault.balance, crocEnvBal, mainAsset, userAddress]);
+    const rawValue = vault.balance ?? crocEnvBal;
+
+    const scaledQtyNum =
+        rawValue && mainAsset && userAddress
+            ? parseFloat(toDisplayQty(rawValue, mainAsset.decimals))
+            : 0;
+
+    const balDisplayString = scaledQtyNum
+        ? getFormattedNumber({
+              value: scaledQtyNum,
+          })
+        : '...';
 
     if (
         Number(chainId) !== Number(vault.chainId) ||
@@ -158,7 +158,7 @@ export default function VaultRow(props: propsIF) {
             style={{ flexShrink: 0 }}
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
-                {balDisplay}
+                {balDisplayString}
                 {!!(vault.balance ?? crocEnvBal) && !!userAddress && (
                     <>
                         <TokenIcon
@@ -222,7 +222,8 @@ export default function VaultRow(props: propsIF) {
                     crocEnvBal ||
                     undefined
                 }
-                mainAssetBalanceDisplayQty={balDisplay}
+                mainAssetScaledQtyNum={scaledQtyNum}
+                mainAssetBalanceDisplayString={balDisplayString}
                 onClose={handleModalClose}
                 strategy={strategy}
             />
