@@ -295,7 +295,13 @@ export default function PriceInfo(props: propsIF) {
                 {positionApy !== 0 ? (
                     <Apy
                         amount={positionApy}
-                        fs={showMobileVersion ? '22px' : '48px'}
+                        fs={
+                            showMobileVersion
+                                ? '22px'
+                                : positionApy && positionApy >= 1000
+                                  ? '36px'
+                                  : '42px'
+                        }
                         lh={showMobileVersion ? '' : '60px'}
                         center
                         showTitle
