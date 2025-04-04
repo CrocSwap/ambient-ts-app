@@ -18,10 +18,20 @@ export default function Apy(props: ApyProps) {
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
               }) + '%+'
-            : amount.toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              }) + '%'
+            : amount >= 10
+              ? amount.toLocaleString('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                }) + '%'
+              : amount >= 1
+                ? amount.toLocaleString('en-US', {
+                      minimumFractionDigits: 1,
+                      maximumFractionDigits: 1,
+                  }) + '%'
+                : amount.toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  }) + '%'
         : undefined;
 
     // const aprColor = styles.apr_green;
