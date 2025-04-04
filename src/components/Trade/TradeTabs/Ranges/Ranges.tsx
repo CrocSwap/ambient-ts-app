@@ -429,6 +429,7 @@ function Ranges(props: propsIF) {
             slug: 'value',
             sortable: true,
             alignRight: true,
+            leftPadding: tableView === 'small' ? 3 : 0,
         },
         {
             name: isAccountView ? '' : `${baseTokenSymbol}`,
@@ -459,7 +460,7 @@ function Ranges(props: propsIF) {
             slug: 'apr',
             sortable: true,
             alignRight: true,
-            rightPadding: 8,
+            rightPadding: tableView === 'small' ? 5 : 15,
         },
         {
             name: 'Status',
@@ -467,7 +468,7 @@ function Ranges(props: propsIF) {
             show: true,
             slug: 'status',
             sortable: true,
-            leftPadding: 8,
+            leftPadding: tableView === 'small' ? 10 : 0,
         },
 
         {
@@ -663,7 +664,11 @@ function Ranges(props: propsIF) {
                 {/* <div key={elIDRef.current} style={{  position: 'absolute', top: 0, right: 0, background: 'var(--dark1)', padding: '.5rem'}}> {moreDataAvailableRef.current ? 'true' : 'false'} | {elIDRef.current}</div> */}
 
                 <div
-                    style={{ flex: 1, overflow: 'auto' }}
+                    style={{
+                        flex: 1,
+                        overflow: 'auto',
+                        scrollbarGutter: 'stable',
+                    }}
                     className='custom_scroll_ambient'
                 >
                     {isLoading ? (

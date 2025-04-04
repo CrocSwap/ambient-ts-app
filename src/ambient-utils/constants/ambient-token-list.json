@@ -587,6 +587,14 @@
             "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/4b0af65ae04a5d71cceeb.svg"
         },
         {
+            "name": "Stargate USD₮0 (Bridged)",
+            "address": "0x102d758f688a4c1c5a80b116bd945d4455460282",
+            "symbol": "USD₮0",
+            "decimals": 6,
+            "chainId": 1923,
+            "logoURI": ""
+        },
+        {
             "name": "rswETH",
             "address": "0x18d33689AE5d02649a859A1CF16c9f0563975258",
             "symbol": "rswETH",

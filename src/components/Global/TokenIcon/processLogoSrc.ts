@@ -30,6 +30,8 @@ export default function processLogoSrc(args: argsIF): string {
 
     if (localLogoLookupSymbol === 'USD+') {
         localLogoLookupSymbol = 'USDPLUS';
+    } else if (localLogoLookupSymbol === 'USD₮0') {
+        localLogoLookupSymbol = 'USDT0';
     } else if (localLogoLookupSymbol === 'USDC.E') {
         localLogoLookupSymbol = 'USDC';
     } else if (localLogoLookupSymbol === 'PUNKETH-20') {
