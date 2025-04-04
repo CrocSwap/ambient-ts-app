@@ -568,7 +568,7 @@ function Orders(props: propsIF) {
             <div>{headerColumnsDisplay}</div>
 
             <div
-                style={{ flex: 1, overflow: 'auto' }}
+                style={{ flex: 1, overflow: 'auto', scrollbarGutter: 'stable' }}
                 className='custom_scroll_ambient'
             >
                 {isLoading ? (
