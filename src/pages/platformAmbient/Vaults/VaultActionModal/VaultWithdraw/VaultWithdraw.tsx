@@ -38,7 +38,8 @@ interface propsIF {
     mainAsset: TokenIF;
     vault: AllVaultsServerIF;
     balanceMainAsset: bigint | undefined;
-    mainAssetBalanceDisplayQty: string;
+    mainAssetScaledQtyNum: number;
+    mainAssetBalanceDisplayString: string;
     onClose: () => void;
     strategy: VaultStrategy;
 }
@@ -46,7 +47,8 @@ export default function VaultWithdraw(props: propsIF) {
     const {
         mainAsset,
         onClose,
-        mainAssetBalanceDisplayQty,
+        mainAssetScaledQtyNum,
+        mainAssetBalanceDisplayString,
         vault,
         balanceMainAsset,
         strategy,
@@ -185,7 +187,7 @@ export default function VaultWithdraw(props: propsIF) {
             <div className={styles.pooledContentContainer}>
                 Deposited {mainAsset.symbol}
                 <div className={styles.alignCenter}>
-                    {mainAssetBalanceDisplayQty}
+                    {mainAssetBalanceDisplayString}
                     <TokenIcon
                         token={mainAsset}
                         src={uriToHttp(mainAsset.logoURI)}
@@ -198,10 +200,7 @@ export default function VaultWithdraw(props: propsIF) {
                 {mainAsset.symbol} Removal Amount
                 <div className={styles.alignCenter}>
                     {getFormattedNumber({
-                        value:
-                            removalPercentage *
-                            0.01 *
-                            parseFloat(mainAssetBalanceDisplayQty),
+                        value: removalPercentage * 0.01 * mainAssetScaledQtyNum,
                     })}
                     <TokenIcon
                         token={mainAsset}
