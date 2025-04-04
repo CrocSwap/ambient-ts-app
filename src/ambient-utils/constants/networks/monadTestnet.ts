@@ -100,7 +100,9 @@ export const monadTestnet: NetworkIF = {
             chainSpecFromSDK.poolIndex,
         ),
     ],
-    blockExplorer: chainSpecForAppKit.blockExplorers?.default.url || '',
+    blockExplorer: (
+        chainSpecForAppKit.blockExplorers?.default.url || ''
+    ).replace(/\/?$/, '/'),
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (

@@ -101,7 +101,9 @@ export const plumeLegacy: NetworkIF = {
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
-    blockExplorer: chainSpecForAppKit.blockExplorers?.default.url || '',
+    blockExplorer: (
+        chainSpecForAppKit.blockExplorers?.default.url || ''
+    ).replace(/\/?$/, '/'),
     displayName: 'Plume (Legacy)',
     tokenPriceQueryAssetPlatform: 'plume',
     vaultsEnabled: false,
