@@ -8,7 +8,9 @@ export const getTranslatedSymbol = (tokenSymbol: string) =>
           ? 'USDC'
           : tokenSymbol?.toUpperCase() === 'SOLVBTC.B'
             ? 'SOLVBTC'
-            : tokenSymbol?.toUpperCase();
+            : tokenSymbol?.toUpperCase() === 'USD₮0'
+              ? 'USDT0'
+              : tokenSymbol?.toUpperCase();
 
 export const getMoneynessRank = (tokenSymbol: string): number => {
     /* 
@@ -33,6 +35,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         LUSD: 95,
         USDPLUS: 95,
         USDE: 95,
+        USDT0: 95,
         PUSD: 95,
         SUSDE: 90,
         DAI: 90,
