@@ -31,6 +31,7 @@ import NUSDY from './NUSDY.svg';
 import NYIELD from './NYIELD.svg';
 import OHNO from './OHNO.png';
 import OLE from './OLE.svg';
+import ONDO from './ONDO.svg';
 import ORBIT from './ORBIT.png';
 import PAC from './PAC.png';
 import $PACM from './PACM.webp';
@@ -110,6 +111,7 @@ export {
     NYIELD,
     OHNO,
     OLE,
+    ONDO,
     ORBIT,
     PAC,
     PANDA,
