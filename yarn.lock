@@ -4895,10 +4895,10 @@ mlly@^1.7.1, mlly@^1.7.2:
     pkg-types "^1.2.0"
     ufo "^1.5.4"
 
-modern-screenshot@^4.5.5:
-  version "4.5.5"
-  resolved "https://registry.yarnpkg.com/modern-screenshot/-/modern-screenshot-4.5.5.tgz#76346f1b1685aaf537f2d9d44d07de3c9aa6a5eb"
-  integrity sha512-k5AC0UjY8YccnKn53upeQMzgDdPYkDN/706ma3yPHCwOZi+AoL0NeMlLS3nQwA/s0xrM7s8WO+UWnx5YJNpQeA==
+modern-screenshot@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/modern-screenshot/-/modern-screenshot-4.6.0.tgz#9a658dcb4928a90a2033d9025871298cd90088aa"
+  integrity sha512-L7osQAWpJiWY1ST1elhLRSGD5i7og5uoICqiXs38whAjWtIayp3cBMJmyML4iyJcBhRfHOyciq1g1Ft5G0QvSg==
 
 moment@^2.30.1:
   version "2.30.1"
