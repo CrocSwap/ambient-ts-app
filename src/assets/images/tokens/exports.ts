@@ -31,10 +31,12 @@ import NUSDY from './NUSDY.svg';
 import NYIELD from './NYIELD.svg';
 import OHNO from './OHNO.png';
 import OLE from './OLE.svg';
+import ONDO from './ONDO.svg';
 import ORBIT from './ORBIT.png';
 import PAC from './PAC.png';
 import $PACM from './PACM.webp';
 import PANDA from './PANDA.jpg';
+import PENDLE from './PENDLE.svg';
 import PEPE from './PEPE.png';
 import PETH from './PETH.svg';
 import PLUME from './PLUME.svg';
@@ -48,12 +50,15 @@ import SCRIBES from './SCRIBES.png';
 import SCROLLY from './SCROLLY.webp';
 import SINU from './SINU.webp';
 import SOL from './SOL.svg';
+import STAYSTONE2 from './STAYSTONE2.png';
 import STONE from './STONE.png';
+import STONEQUEEN from './STONEQUEEN.png';
 import SUSDE from './SUSDE.svg';
 import SWELL from './SWELL.svg';
 import SWETH from './SWETH.svg';
 import SYN from './SYN.svg';
 import TBTC from './TBTC.svg';
+import TURPSTONE from './TURPSTONE.png';
 import UBTC from './UBTC.svg';
 import UNI from './UNI.webp';
 import UNIETH from './UNIETH.png';
@@ -110,9 +115,11 @@ export {
     NYIELD,
     OHNO,
     OLE,
+    ONDO,
     ORBIT,
     PAC,
     PANDA,
+    PENDLE,
     PEPE,
     PETH,
     PLUME,
@@ -126,12 +133,15 @@ export {
     SCROLLY,
     SINU,
     SOL,
+    STAYSTONE2,
     STONE,
+    STONEQUEEN,
     SUSDE,
     SWELL,
     SWETH,
     SYN,
     TBTC,
+    TURPSTONE,
     UBTC,
     UNI,
     UNIETH,

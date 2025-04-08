@@ -90,7 +90,8 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         <>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    {tokenAQuantity}
+                    {tokenAQuantity?.slice(0, 27 - tokenA.symbol.length) ||
+                        '0.000000'}
                 </Text>
                 <FlexContainer
                     alignItems='center'
@@ -117,7 +118,10 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             </FlexContainer>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    <span>{tokenBQuantity}</span>
+                    <span>
+                        {tokenBQuantity?.slice(0, 27 - tokenB.symbol.length) ||
+                            '0.000000'}
+                    </span>
                     {showWarning && (
                         <span
                             style={

@@ -30,11 +30,11 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
     const moneynessRank = {
         USDC: 100,
         USDB: 100,
+        USDE: 96,
         USDQ: 96,
         AXLUSDC: 95,
         LUSD: 95,
         USDPLUS: 95,
-        USDE: 95,
         USDT0: 95,
         PUSD: 95,
         SUSDE: 90,
