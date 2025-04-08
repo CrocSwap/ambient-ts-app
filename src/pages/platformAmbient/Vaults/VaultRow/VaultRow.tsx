@@ -65,38 +65,56 @@ export default function VaultRow(props: propsIF) {
 
     const strategy = vault.strategy as VaultStrategy;
 
-    async function getCrocEnvBalance(): Promise<void> {
-        if (
-            crocEnv &&
-            !vault.balanceAmount &&
-            userAddress &&
-            needsFallbackQuery
-        ) {
-            const tempestVault = crocEnv.tempestVault(
-                vault.address,
-                vault.mainAsset,
-                strategy,
-            );
-            setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
-        }
-    }
-
-    // useEffect to check if user has approved Tempest to sell token 1
+    // This runs when needsFallbackQuery is true (initial fallback balance fetch)
     useEffect(() => {
+        async function getCrocEnvBalance() {
+            if (crocEnv && !vault.balanceAmount && userAddress) {
+                const tempestVault = crocEnv.tempestVault(
+                    vault.address,
+                    vault.mainAsset,
+                    strategy,
+                );
+                setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
+            }
+        }
+
         if (needsFallbackQuery) {
             getCrocEnvBalance();
-        } else {
-            setCrocEnvBal(undefined);
         }
-    }, [
-        crocEnv,
-        vault,
-        userAddress,
-        sessionReceipts.length,
-        needsFallbackQuery,
-    ]);
+    }, [crocEnv, vault, userAddress, needsFallbackQuery]);
 
-    const rawValue = vault.balance ?? crocEnvBal;
+    // This keeps crocEnvBal in sync when sessionReceipts.length changes
+    useEffect(() => {
+        async function updateCrocEnvBal() {
+            if (crocEnv && userAddress) {
+                const tempestVault = crocEnv.tempestVault(
+                    vault.address,
+                    vault.mainAsset,
+                    strategy,
+                );
+                setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
+            }
+        }
+
+        if (
+            crocEnv &&
+            userAddress &&
+            ((sessionReceipts.length &&
+                sessionReceipts.some(
+                    (receipt) =>
+                        receipt.to?.toLowerCase() ===
+                        vault.address.toLowerCase(),
+                )) ||
+                vault.balanceAmount)
+        ) {
+            // wait for 1 seconds before updating balance to allow for receipt processing
+            setTimeout(() => {
+                updateCrocEnvBal();
+            }, 1000);
+        }
+    }, [sessionReceipts.length, crocEnv, userAddress]);
+
+    const rawValue = crocEnvBal ?? vault.balance;
 
     const scaledQtyNum =
         rawValue && mainAsset && userAddress
@@ -159,7 +177,7 @@ export default function VaultRow(props: propsIF) {
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                 {balDisplayString}
-                {!!(vault.balance ?? crocEnvBal) && !!userAddress && (
+                {!!(crocEnvBal ?? vault.balance) && !!userAddress && (
                     <>
                         <TokenIcon
                             token={mainAsset}
@@ -218,9 +236,11 @@ export default function VaultRow(props: propsIF) {
                 mainAsset={mainAsset}
                 vault={vault}
                 balanceMainAsset={
-                    (vault.balance && BigInt(vault.balance)) ||
-                    crocEnvBal ||
-                    undefined
+                    crocEnv !== undefined
+                        ? crocEnvBal
+                        : vault.balance !== undefined
+                          ? BigInt(vault.balance)
+                          : undefined
                 }
                 mainAssetScaledQtyNum={scaledQtyNum}
                 mainAssetBalanceDisplayString={balDisplayString}
