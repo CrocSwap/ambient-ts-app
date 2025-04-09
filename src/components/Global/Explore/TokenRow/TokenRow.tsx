@@ -2,14 +2,14 @@ import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../TokenIcon/TokenIcon';
 
 import { GrLineChart } from 'react-icons/gr';
-import { SinglePoolDataIF, TokenIF } from '../../../../ambient-utils/types';
+import { PoolIF, TokenIF } from '../../../../ambient-utils/types';
 import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useTokenStats';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './TokenRow.module.css';
 interface propsIF {
     token: dexTokenData;
     tokenMeta: TokenIF;
-    matchingPool: SinglePoolDataIF | undefined;
+    matchingPool: PoolIF | undefined;
     goToMarket: (tknA: string, tknB: string) => void;
 }
 

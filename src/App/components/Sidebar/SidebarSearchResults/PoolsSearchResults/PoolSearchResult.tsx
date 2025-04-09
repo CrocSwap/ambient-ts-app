@@ -1,28 +1,40 @@
 import { useContext } from 'react';
+import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../../../ambient-utils/types';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { Results } from '../../../../../styled/Components/Sidebar';
-import useFetchPoolStats from '../../../../hooks/useFetchPoolStats';
 
 interface propsIF {
     pool: PoolIF;
     handleClick: (baseAddr: string, quoteAddr: string) => void;
-    spotPrice: number | undefined;
 }
 
 export default function PoolSearchResult(props: propsIF) {
-    const { pool, handleClick, spotPrice } = props;
+    const { pool, handleClick } = props;
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
 
-    const poolData = useFetchPoolStats(pool, spotPrice);
-
     function handleClickFunction() {
-        handleClick(pool.base.address, pool.quote.address);
+        handleClick(pool.base, pool.quote);
         if (isPoolDropdownOpen) {
             setIsPoolDropdownOpen(false);
         }
     }
+
+    const volumeDisplayString: string = pool.volumeChange24h
+        ? getFormattedNumber({
+              value: pool.volumeChange24h,
+              prefix: '$',
+          })
+        : '';
+
+    const tvlDisplayString: string = pool.tvlTotalUsd
+        ? getFormattedNumber({
+              value: pool.tvlTotalUsd,
+              isTvl: true,
+              prefix: '$',
+          })
+        : '';
 
     return (
         <Results
@@ -35,17 +47,14 @@ export default function PoolSearchResult(props: propsIF) {
             onClick={handleClickFunction}
         >
             <p>
-                {pool.base.symbol ?? '--'} / {pool.quote.symbol ?? '--'}
+                {pool.baseToken.symbol ?? '--'} /{' '}
+                {pool.quoteToken.symbol ?? '--'}
             </p>
             <p style={{ textAlign: 'center' }}>
-                {`${
-                    poolData.poolVolume24h
-                        ? '$' + poolData.poolVolume24h
-                        : '...'
-                }`}
+                {`${volumeDisplayString ? volumeDisplayString : '...'}`}
             </p>
             <p style={{ textAlign: 'center' }}>
-                {`${poolData.poolTvl ? '$' + poolData.poolTvl : '...'}`}
+                {`${tvlDisplayString ? tvlDisplayString : '...'}`}
             </p>
         </Results>
     );

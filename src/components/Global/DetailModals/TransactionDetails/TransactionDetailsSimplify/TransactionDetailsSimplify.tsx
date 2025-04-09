@@ -7,10 +7,10 @@ import { TransactionIF } from '../../../../../ambient-utils/types';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import InfoRow from '../../../InfoRow';
 import styles from './TransactionDetailsSimplify.module.css';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;

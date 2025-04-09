@@ -15,6 +15,7 @@ import {
     LimitOrderServerIF,
 } from '../../../../../ambient-utils/types';
 import modalBackground from '../../../../../assets/images/backgrounds/background.png';
+import { ChainDataContext } from '../../../../../contexts';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
@@ -54,14 +55,11 @@ export default function OrderDetailsModal(props: propsIF) {
         activeNetwork,
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
+    const { analyticsPoolList } = useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -127,14 +125,14 @@ export default function OrderDetailsModal(props: propsIF) {
             fetch(
                 positionStatsCacheEndpoint +
                     new URLSearchParams({
-                        user: user,
+                        user: user.toLowerCase(),
                         bidTick: bidTick.toString(),
                         askTick: askTick.toString(),
                         isBid: isBid ? 'true' : 'false',
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
+                        base: baseTokenAddress.toLowerCase(),
+                        quote: quoteTokenAddress.toLowerCase(),
                         poolIdx: poolIndex.toString(),
-                        chainId: chainId,
+                        chainId: chainId.toLowerCase(),
                         pivotTime: pivotTime.toString(),
                         positionType: positionType,
                     }),
@@ -148,10 +146,10 @@ export default function OrderDetailsModal(props: propsIF) {
                         crocEnv,
                         provider,
                         chainId,
+                        analyticsPoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                        cachedEnsResolve,
                     );
                 })
                 .then((positionStats: LimitOrderIF) => {

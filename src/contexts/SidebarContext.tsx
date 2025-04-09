@@ -16,7 +16,9 @@ import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import { diffHashSig, getChainExplorer } from '../ambient-utils/dataLayer';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { AppStateContext } from './AppStateContext';
+import { PoolContext } from './PoolContext';
 import { ReceiptContext } from './ReceiptContext';
+import { TradeDataContext } from './TradeDataContext';
 
 export interface SidebarContextIF {
     recentPools: recentPoolsMethodsIF;
@@ -32,9 +34,13 @@ export const SidebarContext = createContext({} as SidebarContextIF);
 export const SidebarContextProvider = (props: { children: ReactNode }) => {
     // logic to open a snackbar notification
     const {
-        activeNetwork: { chainId },
+        activeNetwork: { chainId, poolIndex },
         snackbar: { open: openSnackbar, close: closeSnackbar },
     } = useContext(AppStateContext);
+
+    const { isPoolInitialized } = useContext(PoolContext);
+
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     // all receipts stored in the current user session (array of stringified JSONs)
     const { allReceipts, transactionsByType, setShowRedDot } =
@@ -130,6 +136,16 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
     }, [lastReceiptHash]);
 
     const [isPoolDropdownOpen, setIsPoolDropdownOpen] = useState(false);
+
+    useEffect(() => {
+        if (isPoolInitialized && isPoolDropdownOpen) {
+            recentPools.add(baseToken, quoteToken, chainId, poolIndex);
+        }
+    }, [
+        isPoolInitialized,
+        baseToken.address + quoteToken.address,
+        isPoolDropdownOpen,
+    ]);
 
     // data to return from this context
     const sidebarState = {

@@ -13,6 +13,7 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { BrandContext } from '../../../../../contexts/BrandContext';
 import { ChartContext } from '../../../../../contexts/ChartContext';
 import { ArrowContainer } from '../../../../../styled/Components/Chart';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
 import { actionKeyIF, actionStackIF } from '../../ChartUtils/useUndoRedo';
 import HoveredTooltip from './HoveredTooltip';
@@ -31,7 +32,6 @@ import {
     UndoButtonSvg,
     UndoRedoButtonActive,
 } from './ToolbarCss';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 /* interface ToolbarProps {
   
@@ -55,6 +55,9 @@ interface undoRedoButtonList {
 
 function ChartToolbar() {
     const mobileView = useMediaQuery('(max-width: 768px)');
+    const tabletView = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1200px)',
+    );
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const { platformName } = useContext(BrandContext);
@@ -314,7 +317,7 @@ function ChartToolbar() {
     };
 
     const handleOnMouseEnter = (description: string) => {
-        if (!mobileView) {
+        if (!mobileView && !tabletView) {
             setHoveredTool(() => description);
         }
     };
@@ -350,10 +353,7 @@ function ChartToolbar() {
                 <ScrollableDiv
                     ref={scrollContainerRef}
                     height={
-                        chartContainerOptions.height -
-                        (mobileView && smallScreen ? 20 : 0) -
-                        xAxisHeightPixel +
-                        'px'
+                        chartContainerOptions.height - xAxisHeightPixel + 'px'
                     }
                     isHover={hoveredTool !== undefined}
                 >

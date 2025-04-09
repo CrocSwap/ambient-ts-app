@@ -10,7 +10,6 @@ import {
     useState,
 } from 'react';
 import { getDefaultPairForChain } from '../ambient-utils/constants';
-import { MAINNET_TOKENS } from '../ambient-utils/constants/networks/ethereumMainnet';
 import {
     isBtcPair,
     isETHPair,
@@ -36,7 +35,7 @@ export interface TradeDataContextIF {
     primaryQuantity: string;
     limitTick: number | undefined;
     poolPriceNonDisplay: number;
-    currentPoolPriceTick: number;
+    currentPoolPriceTick: number | undefined;
     slippageTolerance: number;
 
     setTokenA: Dispatch<SetStateAction<TokenIF>>;
@@ -61,6 +60,8 @@ export interface TradeDataContextIF {
     setNoGoZoneBoundaries: Dispatch<SetStateAction<number[]>>;
     blackListedTimeParams: Map<string, Set<number>>;
     addToBlackList: (tokenPair: string, timeParam: number) => void;
+    activeTab: string;
+    setActiveTab: Dispatch<SetStateAction<string>>;
 }
 
 export const TradeDataContext = createContext({} as TradeDataContextIF);
@@ -84,8 +85,13 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     // Limit NoGoZone
     const [noGoZoneBoundaries, setNoGoZoneBoundaries] = useState([0, 0]);
 
+    const [activeTab, setActiveTab] = useState<string>(() => {
+        const savedTab = localStorage.getItem('activeTradeTabOnMobile');
+        return savedTab ? savedTab : 'Order';
+    });
+
     const tokensMatchingA =
-        savedTokenASymbol === 'ETH'
+        savedTokenASymbol === dfltTokenA.symbol
             ? [dfltTokenA]
             : tokens.getTokensByNameOrSymbol(
                   savedTokenASymbol || '',
@@ -93,7 +99,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
                   true,
               );
     const tokensMatchingB =
-        savedTokenBSymbol === 'ETH'
+        savedTokenBSymbol === dfltTokenA.symbol
             ? [dfltTokenA]
             : tokens.getTokensByNameOrSymbol(
                   savedTokenBSymbol || '',
@@ -189,7 +195,12 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
 
-    const [soloToken, setSoloToken] = useState<TokenIF>(MAINNET_TOKENS.ETH);
+    const defaultBaseToken = useMemo(
+        () => getDefaultPairForChain(chainId)[0],
+        [chainId],
+    );
+
+    const [soloToken, setSoloToken] = useState<TokenIF>(defaultBaseToken);
 
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         useState<boolean>(false);
@@ -228,7 +239,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     const currentPoolPriceTick = useMemo(
         () =>
             poolPriceNonDisplay === undefined || poolPriceNonDisplay === 0
-                ? 0
+                ? undefined
                 : Math.log(poolPriceNonDisplay) / Math.log(1.0001),
         [poolPriceNonDisplay],
     );
@@ -247,7 +258,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     ) => {
         const isPoolStable =
             isStablePair(baseAddress, quoteAddress) ||
-            isETHPair(baseAddress, quoteAddress) ||
+            isETHPair(baseAddress, quoteAddress, chainId) ||
             isBtcPair(baseAddress, quoteAddress);
         const defaultWidth = isPoolStable ? 0.5 : 10;
 
@@ -309,6 +320,8 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         setNoGoZoneBoundaries,
         blackListedTimeParams,
         addToBlackList,
+        activeTab,
+        setActiveTab,
     };
 
     return (

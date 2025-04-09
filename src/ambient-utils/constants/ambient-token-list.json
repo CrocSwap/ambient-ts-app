@@ -219,14 +219,6 @@
             "logoURI": "https://assets.coingecko.com/coins/images/35658/standard/logo_200.png"
         },
         {
-            "address": "0x569FcbDa292f1a69AB14e401bAD13Cc0E1DEC790",
-            "chainId": 81457,
-            "decimals": 18,
-            "name": "Hyper Thrust",
-            "symbol": "hyperTHRUST",
-            "logoURI": "https://app.hyperlock.finance/assets/hyperthrust-3dda8fba.png"
-        },
-        {
             "address": "0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C",
             "chainId": 81457,
             "decimals": 18,
@@ -595,6 +587,14 @@
             "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/4b0af65ae04a5d71cceeb.svg"
         },
         {
+            "name": "Stargate USD₮0 (Bridged)",
+            "address": "0x102d758f688a4c1c5a80b116bd945d4455460282",
+            "symbol": "USD₮0",
+            "decimals": 6,
+            "chainId": 1923,
+            "logoURI": ""
+        },
+        {
             "name": "rswETH",
             "address": "0x18d33689AE5d02649a859A1CF16c9f0563975258",
             "symbol": "rswETH",
@@ -659,6 +659,14 @@
             "logoURI": "https://mantlescan.xyz/token/images/ethena_32.png"
         },
         {
+            "name": "King Protocol",
+            "address": "0xc2606aade4bdd978a4fa5a6edb3b66657acee6f8",
+            "symbol": "KING",
+            "decimals": 18,
+            "chainId": 1923,
+            "logoURI": ""
+        },
+        {
             "name": "Native Ether",
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",
@@ -720,6 +728,78 @@
             "symbol": "nYIELD",
             "decimals": 6,
             "chainId": 98865,
+            "logoURI": ""
+        },
+        {
+            "name": "Nest Elixir Vault",
+            "address": "0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c",
+            "symbol": "nELIXIR",
+            "decimals": 6,
+            "chainId": 98865,
+            "logoURI": ""
+        },
+        {
+            "name": "Plume",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "PLUME",
+            "decimals": 18,
+            "chainId": 98866,
+            "logoURI": ""
+        },
+        {
+            "name": "Wrapped Plume",
+            "address": "0xEa237441c92CAe6FC17Caaf9a7acB3f953be4bd1",
+            "symbol": "WPLUME",
+            "decimals": 18,
+            "chainId": 98866,
+            "logoURI": ""
+        },
+        {
+            "name": "Plume USD",
+            "address": "0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F",
+            "symbol": "pUSD",
+            "decimals": 6,
+            "chainId": 98866,
+            "logoURI": ""
+        },
+        {
+            "name": "Nest RWA",
+            "address": "0x11a8d8694b656112d9a94285223772F4aAd269fc",
+            "symbol": "nRWA",
+            "decimals": 6,
+            "chainId": 98866,
+            "logoURI": ""
+        },
+        {
+            "name": "Nest Treasuries Vault",
+            "address": "0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9",
+            "symbol": "nTBILL",
+            "decimals": 6,
+            "chainId": 98866,
+            "logoURI": ""
+        },
+        {
+            "name": "Nest Yield Vault",
+            "address": "0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8",
+            "symbol": "nYIELD",
+            "decimals": 6,
+            "chainId": 98866,
+            "logoURI": ""
+        },
+        {
+            "name": "Nest USDY Vault",
+            "address": "0x7Fca0Df900A11Ae1d17338134a9e079a7EE87E31",
+            "symbol": "nUSDY",
+            "decimals": 6,
+            "chainId": 98866,
+            "logoURI": ""
+        },
+        {
+            "name": "Nest Elixir Vault",
+            "address": "0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c",
+            "symbol": "nELIXIR",
+            "decimals": 6,
+            "chainId": 98866,
             "logoURI": ""
         }
     ]

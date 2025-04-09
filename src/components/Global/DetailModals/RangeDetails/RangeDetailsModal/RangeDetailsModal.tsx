@@ -89,14 +89,10 @@ function RangeDetailsModal(props: propsIF) {
         activeNetwork: { GCGO_URL, chainId, poolIndex },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
 
-    const { lastBlockNumber, isActiveNetworkBlast } =
+    const { lastBlockNumber, isActiveNetworkBlast, analyticsPoolList } =
         useContext(ChainDataContext);
 
     const detailsRef = useRef(null);
@@ -373,13 +369,13 @@ function RangeDetailsModal(props: propsIF) {
             fetch(
                 positionStatsCacheEndpoint +
                     new URLSearchParams({
-                        user: user,
+                        user: user.toLowerCase(),
                         bidTick: bidTick.toString(),
                         askTick: askTick.toString(),
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
+                        base: baseTokenAddress.toLowerCase(),
+                        quote: quoteTokenAddress.toLowerCase(),
                         poolIdx: poolIndex.toString(),
-                        chainId: chainId,
+                        chainId: chainId.toLowerCase(),
                         positionType: position.positionType,
                     }),
             )
@@ -390,7 +386,6 @@ function RangeDetailsModal(props: propsIF) {
                     }
                     setServerPositionId(json?.data?.positionId);
                     // temporarily skip ENS fetch
-                    const skipENSFetch = true;
                     const forceOnchainLiqUpdate = userMatchesConnectedAccount;
                     const positionPayload = json?.data as PositionServerIF;
                     const positionStats = await getPositionData(
@@ -399,11 +394,10 @@ function RangeDetailsModal(props: propsIF) {
                         crocEnv,
                         provider,
                         chainId,
+                        analyticsPoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                        cachedEnsResolve,
-                        skipENSFetch,
                         forceOnchainLiqUpdate,
                     );
 

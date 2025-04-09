@@ -146,8 +146,8 @@ export default function Room(props: propsIF) {
                 newRoomList.push({
                     name: getRoomNameFromPool(pool),
                     shownName: getRoomNameFromPool(pool) + ' ❤️',
-                    base: pool.base.symbol,
-                    quote: pool.quote.symbol,
+                    base: pool.baseToken.symbol,
+                    quote: pool.quoteToken.symbol,
                     isFavourite: true,
                 });
             }
@@ -168,9 +168,6 @@ export default function Room(props: propsIF) {
                 baseToken.symbol,
                 quoteToken.symbol,
             );
-            currentPoolRoomObj.shownName =
-                getRoomNameFromBaseQuote(baseToken.symbol, quoteToken.symbol) +
-                ' 📈';
             newRoomList.push(currentPoolRoomObj);
         }
 
@@ -185,12 +182,21 @@ export default function Room(props: propsIF) {
             if (!newRoomList.some((e) => e.name == getRoomNameFromPool(pool))) {
                 newRoomList.push({
                     name: getRoomNameFromPool(pool),
-                    shownName: getRoomNameFromPool(pool) + ' 🏊',
-                    base: pool.base.symbol,
-                    quote: pool.quote.symbol,
+                    shownName: getRoomNameFromPool(pool),
+                    base: pool.baseToken.symbol,
+                    quote: pool.quoteToken.symbol,
                 });
             }
             i++;
+        }
+
+        if (newRoomList.length === 1) {
+            newRoomList.push({
+                name: baseToken.symbol + ' / ' + quoteToken.symbol,
+                shownName: baseToken.symbol + ' / ' + quoteToken.symbol,
+                base: baseToken.symbol,
+                quote: quoteToken.symbol,
+            });
         }
 
         setRoomList(newRoomList);
@@ -323,6 +329,7 @@ export default function Room(props: propsIF) {
         setShowCurrentPoolButton(false);
         setIsActive(false);
         setIsCurrentPool(true);
+        setIsHovering(false);
     }
 
     function handleNotiDot(key: string) {
@@ -368,7 +375,7 @@ export default function Room(props: propsIF) {
                                     : styles.current_pool_text
                             }
                         >
-                            Current Pool
+                            Go to Current Pool
                         </div>
                     </div>
                 ) : (
@@ -393,7 +400,7 @@ export default function Room(props: propsIF) {
                                     className={styles.dropdown_item}
                                     key={i}
                                     data-value={pool.name}
-                                    data-icon='glyphicon glyphicon-eye-open'
+                                    // data-icon='glyphicon glyphicon-eye-open'
                                     onClick={(event: any) =>
                                         handleRoomClick(event, pool.name)
                                     }

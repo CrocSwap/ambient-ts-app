@@ -15,6 +15,7 @@ import {
     getPositionData,
     printDomToImage,
 } from '../../../../ambient-utils/dataLayer';
+import { ChainDataContext } from '../../../../contexts';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
@@ -42,12 +43,10 @@ function TransactionDetailsModal(props: propsIF) {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+    const { analyticsPoolList } = useContext(ChainDataContext);
+
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
 
     const { crocEnv, provider } = useContext(CrocEnvContext);
 
@@ -65,13 +64,13 @@ function TransactionDetailsModal(props: propsIF) {
         fetch(
             positionStatsCacheEndpoint +
                 new URLSearchParams({
-                    user: tx.user,
+                    user: tx.user.toLowerCase(),
                     bidTick: tx.bidTick.toString(),
                     askTick: tx.askTick.toString(),
-                    base: tx.base,
-                    quote: tx.quote,
+                    base: tx.base.toLowerCase(),
+                    quote: tx.quote.toLowerCase(),
                     poolIdx: tx.poolIdx.toString(),
-                    chainId: chainId,
+                    chainId: chainId.toLowerCase(),
                     positionType: tx.positionType,
                 }),
         )
@@ -81,7 +80,6 @@ function TransactionDetailsModal(props: propsIF) {
                     return;
                 }
                 // temporarily skip ENS fetch
-                const skipENSFetch = true;
                 const forceOnchainLiqUpdate = false;
 
                 const positionPayload = json?.data as PositionServerIF;
@@ -91,11 +89,10 @@ function TransactionDetailsModal(props: propsIF) {
                     crocEnv,
                     provider,
                     chainId,
+                    analyticsPoolList,
                     cachedFetchTokenPrice,
                     cachedQuerySpotPrice,
                     cachedTokenDetails,
-                    cachedEnsResolve,
-                    skipENSFetch,
                     forceOnchainLiqUpdate,
                 );
 

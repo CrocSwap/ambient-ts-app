@@ -1,6 +1,6 @@
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { isWrappedNativeToken } from '../../../../ambient-utils/dataLayer';
-import { SinglePoolDataIF } from '../../../../ambient-utils/types';
+import { PoolIF } from '../../../../ambient-utils/types';
 import { ChainDataContext } from '../../../../contexts';
 import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useTokenStats';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
@@ -51,7 +51,7 @@ function DexTokens(props: propsIF) {
         handleToggle,
     } = props;
 
-    const { allPoolStats } = useContext(ChainDataContext);
+    const { activePoolList } = useContext(ChainDataContext);
 
     const isPWA = useIsPWA();
 
@@ -174,10 +174,10 @@ function DexTokens(props: propsIF) {
 
                 {sortedTokens.data.length
                     ? sortedTokens.data.map((token: dexTokenData) => {
-                          const matchingPool: SinglePoolDataIF | undefined = (
-                              allPoolStats || []
+                          const matchingPool: PoolIF | undefined = (
+                              activePoolList || []
                           ).find(
-                              (p: SinglePoolDataIF) =>
+                              (p: PoolIF) =>
                                   (p.base.toLowerCase() ===
                                       token.tokenAddr.toLowerCase() &&
                                       !isWrappedNativeToken(p.quote)) ||

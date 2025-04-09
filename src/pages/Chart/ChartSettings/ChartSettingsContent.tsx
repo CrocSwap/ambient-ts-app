@@ -1,12 +1,14 @@
 import * as d3 from 'd3';
 import { MouseEvent, useContext, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
+import Divider from '../../../components/Global/Divider/Divider';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { ChartContext, ChartThemeIF } from '../../../contexts/ChartContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../../platformAmbient/Chart/ChartUtils/chartConstants';
 import {
     chartItemStates,
@@ -44,8 +46,6 @@ import {
     StyledCheckbox,
     StyledSelectbox,
 } from './ChartSettingsCss';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import Divider from '../../../components/Global/Divider/Divider';
 
 interface ContextMenuContentIF {
     chartThemeColors: ChartThemeIF;
@@ -68,6 +68,7 @@ interface ContextMenuContentIF {
     setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
     isMobile: boolean;
     isSettingsClosing: boolean;
+    showLatest: boolean | undefined;
 }
 
 export default function ChartSettingsContent(props: ContextMenuContentIF) {
@@ -87,6 +88,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         setIsSaving,
         isMobile,
         isSettingsClosing,
+        showLatest,
     } = props;
 
     const {
@@ -98,7 +100,6 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         setShowVolume,
         showSwap,
         setShowSwap,
-        showLatest,
         setLatest,
         rescale,
         setRescale,
@@ -118,6 +119,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
         setColorChangeTrigger,
         setContextmenu,
         chartSettings,
+        getColorFromLocalStorageOrDefault,
+        chartSettingsRef,
     } = useContext(ChartContext);
 
     const {
@@ -235,33 +238,58 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             );
 
             const oldColorData = {
-                upCandleBodyColor: d3.color(
-                    parsedContextData.chartColors.upCandleBodyColor,
-                ) as d3.RGBColor,
-                upCandleBorderColor: d3.color(
-                    parsedContextData.chartColors.upCandleBorderColor,
-                ) as d3.RGBColor,
-                downCandleBodyColor: d3.color(
-                    parsedContextData.chartColors.downCandleBodyColor,
-                ) as d3.RGBColor,
-                downCandleBorderColor: d3.color(
-                    parsedContextData.chartColors.downCandleBorderColor,
-                ) as d3.RGBColor,
-                selectedDateFillColor: d3.color(
-                    parsedContextData.chartColors.selectedDateFillColor,
-                ) as d3.RGBColor,
-                selectedDateStrokeColor: d3.color(
-                    parsedContextData.chartColors.selectedDateStrokeColor,
-                ) as d3.RGBColor,
-                liqAskColor: d3.color(
-                    parsedContextData.chartColors.liqAskColor,
-                ) as d3.RGBColor,
-                liqBidColor: d3.color(
-                    parsedContextData.chartColors.liqBidColor,
-                ) as d3.RGBColor,
-                drawngShapeDefaultColor: d3.color(
-                    parsedContextData.chartColors.drawngShapeDefaultColor,
-                ) as d3.RGBColor,
+                upCandleBodyColor:
+                    (d3.color(
+                        parsedContextData.chartColors.upCandleBodyColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('upCandleBodyColor'),
+                upCandleBorderColor:
+                    (d3.color(
+                        parsedContextData.chartColors.upCandleBorderColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('upCandleBorderColor'),
+                downCandleBodyColor:
+                    (d3.color(
+                        parsedContextData.chartColors.downCandleBodyColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('downCandleBodyColor'),
+                downCandleBorderColor:
+                    (d3.color(
+                        parsedContextData.chartColors.downCandleBorderColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('downCandleBorderColor'),
+                selectedDateFillColor:
+                    (d3.color(
+                        parsedContextData.chartColors.selectedDateFillColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('selectedDateFillColor'),
+                selectedDateStrokeColor:
+                    (d3.color(
+                        parsedContextData.chartColors.selectedDateStrokeColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault(
+                        'selectedDateStrokeColor',
+                    ),
+                liqAskColor:
+                    (d3.color(
+                        parsedContextData.chartColors.liqAskColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('liqAskColor'),
+                liqBidColor:
+                    (d3.color(
+                        parsedContextData.chartColors.liqBidColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('liqBidColor'),
+                orderSellColor:
+                    (d3.color(
+                        parsedContextData.chartColors.orderSellColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('orderSellColor'),
+                orderBuyColor:
+                    (d3.color(
+                        parsedContextData.chartColors.orderBuyColor,
+                    ) as d3.RGBColor) ??
+                    getColorFromLocalStorageOrDefault('orderBuyColor'),
             };
 
             Object.assign(chartThemeColors, oldColorData);
@@ -298,6 +326,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 liqBidColor: chartThemeColors.liqBidColor.toString(),
                 selectedDateStrokeColor:
                     chartThemeColors.selectedDateStrokeColor.toString(),
+                orderSellColor: chartThemeColors.orderSellColor.toString(),
+                orderBuyColor: chartThemeColors.orderBuyColor.toString(),
             },
             isTradeDollarizationEnabled: isTradeDollarizationEnabled,
             showVolume: showVolume,
@@ -386,6 +416,14 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
             upColor: 'liqAskColor',
             exclude: ['futa'],
         },
+        {
+            selection: 'Order History',
+            actionHandler: 'order',
+            action: handleCandleColorPicker,
+            downColor: 'orderSellColor',
+            upColor: 'orderBuyColor',
+            exclude: [''],
+        },
     ];
 
     const resetAndRescaleMobileDisplay = (
@@ -458,7 +496,7 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
     );
 
     return (
-        <>
+        <div ref={chartSettingsRef}>
             <>
                 {isMobile && extendedOptions}
 
@@ -569,6 +607,8 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                 <ColorPickerContainer>
                     {colorPickerContent.map(
                         (item, index) =>
+                            (item.actionHandler !== 'order' ||
+                                isUserConnected) &&
                             !item.exclude.includes(platformName) && (
                                 <ColorList key={index}>
                                     <ContextMenuContextText>
@@ -836,6 +876,6 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
                     </ActionButtonContainer>
                 </ContextMenuFooter>
             )}
-        </>
+        </div>
     );
 }

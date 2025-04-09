@@ -18,19 +18,14 @@ import { CandleDataIF } from '../../../../ambient-utils/types';
 import DollarizationModalControl from '../../../../components/Global/DollarizationModalControl/DollarizationModalControl';
 import Modal from '../../../../components/Global/Modal/Modal';
 import Spinner from '../../../../components/Global/Spinner/Spinner';
-import TutorialOverlay from '../../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { CandleContext, PoolContext } from '../../../../contexts';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
-import { FlexContainer } from '../../../../styled/Common';
 import { MainContainer } from '../../../../styled/Components/Chart';
-import { TutorialButton } from '../../../../styled/Components/Tutorial';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { updatesIF } from '../../../../utils/hooks/useUrlParams';
-import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
 import { ColorObjIF } from '../../../Chart/ChartSettings/ChartSettings';
 import ChartSettingsContent from '../../../Chart/ChartSettings/ChartSettingsContent';
 import TradeCandleStickChart from './TradeCandleStickChart';
@@ -95,9 +90,6 @@ function TradeCharts(props: propsIF) {
         useContext(PoolContext);
 
     const {
-        tutorial: { isActive: isTutorialActive },
-    } = useContext(AppStateContext);
-    const {
         chartSettings,
         isFullScreen: isChartFullScreen,
         setIsFullScreen: setIsChartFullScreen,
@@ -122,6 +114,8 @@ function TradeCharts(props: propsIF) {
     );
 
     const isFuta = ['futa'].includes(platformName);
+    const tabletViewForFuta =
+        isFuta && useMediaQuery('(min-width: 768px) and (max-width: 1440px)');
 
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');
@@ -167,10 +161,10 @@ function TradeCharts(props: propsIF) {
         orderHistoryState?.isSwapOrderHistoryEnabled ?? true,
     );
     const [showLiquidity, setShowLiquidity] = useState(
-        false, // orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
+        orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
     );
     const [showHistorical, setShowHistorical] = useState(
-        false, // orderHistoryState?.isHistoricalOrderHistoryEnabled ?? false,
+        orderHistoryState?.isHistoricalOrderHistoryEnabled ?? false,
     );
 
     const chartItemStates = useMemo(() => {
@@ -184,6 +178,7 @@ function TradeCharts(props: propsIF) {
             liqMode: chartSettings.poolOverlay.overlay,
             showSwap,
             setShowSwap,
+            setShowHistorical,
             showLiquidity,
             showHistorical,
             showLatest,
@@ -215,6 +210,12 @@ function TradeCharts(props: propsIF) {
             setShowHistorical(false);
         } else {
             setShowSwap(orderHistoryState?.isSwapOrderHistoryEnabled ?? true);
+            setShowHistorical(
+                orderHistoryState?.isHistoricalOrderHistoryEnabled ?? false,
+            );
+            setShowLiquidity(
+                orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
+            );
         }
     }, [isUserConnected]);
 
@@ -463,6 +464,7 @@ function TradeCharts(props: propsIF) {
                 setIsSaving={setIsSaving}
                 isMobile={true}
                 isSettingsClosing={isSettingsClosing}
+                showLatest={showLatest}
             />
         </section>
     );
@@ -500,15 +502,13 @@ function TradeCharts(props: propsIF) {
                 </Modal>
             )}
         </>
-    ) : tabletView ? (
+    ) : tabletView || tabletViewForFuta ? (
         timeFrameContentTablet
     ) : (
         timeFrameContentDesktop
     );
 
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
-
-    const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     return (
         <>
@@ -526,20 +526,6 @@ function TradeCharts(props: propsIF) {
                 }}
                 ref={chartCanvasRef}
             >
-                {isTutorialActive && (
-                    <FlexContainer
-                        fullWidth
-                        justifyContent='flex-end'
-                        alignItems='flex-end'
-                        padding='0 8px'
-                    >
-                        <TutorialButton
-                            onClick={() => setIsTutorialEnabled(true)}
-                        >
-                            Tutorial Mode
-                        </TutorialButton>
-                    </FlexContainer>
-                )}
                 {isChartFullScreen && <TradeChartsHeader />}
                 {timeFrameContent}
                 <div
@@ -563,13 +549,9 @@ function TradeCharts(props: propsIF) {
                         setShowLatest={setShowLatest}
                         updateURL={updateURL}
                         openMobileSettingsModal={openMobileSettingsModal}
+                        isMobileSettingsModalOpen={isMobileSettingsModalOpen}
                     />
                 </div>
-                <TutorialOverlay
-                    isTutorialEnabled={isTutorialEnabled}
-                    setIsTutorialEnabled={setIsTutorialEnabled}
-                    steps={tradeChartTutorialSteps}
-                />
             </MainContainer>
         </>
     );

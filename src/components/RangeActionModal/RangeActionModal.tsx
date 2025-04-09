@@ -61,8 +61,7 @@ function RangeActionModal(props: propsIF) {
         activeNetwork: { GCGO_URL, chainId, poolIndex },
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
-    const { crocEnv, provider, ethMainnetUsdPrice } =
-        useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
         isAmbient,
@@ -75,14 +74,15 @@ function RangeActionModal(props: propsIF) {
         isPositionInRange,
     } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
-    const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
-
     const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
+        lastBlockNumber,
+        gasPriceInGwei,
+        nativeTokenUsdPrice,
+        analyticsPoolList,
+    } = useContext(ChainDataContext);
+
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
 
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
     const {
@@ -137,12 +137,12 @@ function RangeActionModal(props: propsIF) {
             : GAS_DROPS_ESTIMATE_RANGE_HARVEST;
 
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageGasUnitsForRemovalTxInGasDrops *
                 NUM_GWEI_IN_WEI *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setRemovalGasPriceinDollars(
                 getFormattedNumber({
@@ -151,7 +151,7 @@ function RangeActionModal(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     const [currentLiquidity, setCurrentLiquidity] = useState<
         bigint | undefined
@@ -202,10 +202,10 @@ function RangeActionModal(props: propsIF) {
                 fetch(
                     positionStatsCacheEndpoint +
                         new URLSearchParams({
-                            chainId: position.chainId,
-                            user: position.user,
-                            base: position.base,
-                            quote: position.quote,
+                            chainId: position.chainId.toLowerCase(),
+                            user: position.user.toLowerCase(),
+                            base: position.base.toLowerCase(),
+                            quote: position.quote.toLowerCase(),
                             poolIdx: position.poolIdx.toString(),
                             bidTick: position.bidTick
                                 ? position.bidTick.toString()
@@ -221,7 +221,6 @@ function RangeActionModal(props: propsIF) {
                     .then(async (data: PositionServerIF) => {
                         if (data && crocEnv && provider) {
                             // temporarily skip ENS fetch
-                            const skipENSFetch = true;
                             const forceOnchainLiqUpdate = true;
                             const position = await getPositionData(
                                 data,
@@ -229,11 +228,10 @@ function RangeActionModal(props: propsIF) {
                                 crocEnv,
                                 provider,
                                 chainId,
+                                analyticsPoolList,
                                 cachedFetchTokenPrice,
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
-                                cachedEnsResolve,
-                                skipENSFetch,
                                 forceOnchainLiqUpdate,
                             );
                             setPosLiqBaseDecimalCorrected(
@@ -373,6 +371,7 @@ function RangeActionModal(props: propsIF) {
                     lowTick: position.bidTick,
                     highTick: position.askTick,
                     gridSize: lookupChain(position.chainId).gridSize,
+                    currentLiquidity: currentLiquidity,
                 },
             });
             addPositionUpdate({
@@ -448,6 +447,7 @@ function RangeActionModal(props: propsIF) {
                             lowTick: position.bidTick,
                             highTick: position.askTick,
                             gridSize: lookupChain(position.chainId).gridSize,
+                            currentLiquidity: currentLiquidity,
                         },
                     });
                     addPositionUpdate({

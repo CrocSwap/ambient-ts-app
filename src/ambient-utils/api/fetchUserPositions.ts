@@ -2,11 +2,9 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
 import {
-    FetchAddrFn,
     FetchContractDetailsFn,
     TokenPriceFn,
     fetchContractDetails,
-    fetchEnsAddress,
     fetchTokenPrice,
 } from '../api';
 import {
@@ -19,6 +17,7 @@ import {
 import {
     LimitOrderIF,
     LimitOrderServerIF,
+    PoolIF,
     PositionIF,
     PositionServerIF,
     RecordType,
@@ -33,10 +32,11 @@ interface RecordRequestIF {
     tokenUniv?: TokenIF[];
     crocEnv?: CrocEnv;
     provider?: Provider;
+    isTestnet: boolean;
+    activePoolList?: PoolIF[] | undefined;
     cachedFetchTokenPrice?: TokenPriceFn;
     cachedQuerySpotPrice?: SpotPriceFn;
     cachedTokenDetails?: FetchContractDetailsFn;
-    cachedEnsResolve?: FetchAddrFn;
 }
 
 const fetchUserPositions = async ({
@@ -60,8 +60,8 @@ const fetchUserPositions = async ({
     const res = await fetch(
         selectedEndpoint +
             new URLSearchParams({
-                user: user,
-                chainId: chainId,
+                user: user.toLowerCase(),
+                chainId: chainId.toLowerCase(),
             }),
     );
     return res;
@@ -74,10 +74,11 @@ const decorateUserPositions = async ({
     crocEnv,
     provider,
     chainId,
+    isTestnet,
+    activePoolList,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
-    cachedEnsResolve,
 }: {
     recordType: RecordType;
     userPositions: PositionIF[] | LimitOrderIF[];
@@ -85,15 +86,15 @@ const decorateUserPositions = async ({
     crocEnv: CrocEnv;
     provider: Provider;
     chainId: string;
+    isTestnet: boolean;
+    activePoolList?: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
-    cachedEnsResolve: FetchAddrFn;
 }) => {
-    const skipENSFetch = true;
-    const forceOnchainLiqUpdate = userPositions.length < 30; // temporary solution to fix batch RPC call failure when user has a lot of positions
+    const forceOnchainLiqUpdate = userPositions.length < 30 && !isTestnet; // temporary solution to fix batch RPC call failure when user has a lot of positions
     if (recordType == RecordType.LimitOrder) {
-        return await Promise.all(
+        const results = await Promise.allSettled(
             (userPositions as LimitOrderServerIF[]).map(
                 (position: LimitOrderServerIF) => {
                     return getLimitOrderData(
@@ -102,24 +103,25 @@ const decorateUserPositions = async ({
                         crocEnv,
                         provider,
                         chainId,
+                        activePoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                        cachedEnsResolve,
                     );
                 },
             ),
-        ).then((updatedLimitOrderStates) => {
-            if (updatedLimitOrderStates.length > 0) {
-                const filteredData = filterLimitArray(updatedLimitOrderStates);
-                return filteredData;
-            } else {
-                return [];
-            }
-        });
+        );
+        // Filter out failed results and return only successful ones
+        const fulfilledResults = results
+            .filter(
+                (result): result is PromiseFulfilledResult<LimitOrderIF> =>
+                    result.status === 'fulfilled',
+            )
+            .map((result) => result.value);
+
+        return results.length > 0 ? filterLimitArray(fulfilledResults) : [];
     } else {
-        // default to 'PositionIF'
-        return await Promise.all(
+        const results = await Promise.allSettled(
             (userPositions as PositionServerIF[]).map(
                 async (position: PositionServerIF) => {
                     return getPositionData(
@@ -128,16 +130,23 @@ const decorateUserPositions = async ({
                         crocEnv,
                         provider,
                         chainId,
+                        activePoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                        cachedEnsResolve,
-                        skipENSFetch,
                         forceOnchainLiqUpdate,
                     );
                 },
             ),
         );
+
+        // Filter out failed results and return only successful ones
+        return results
+            .filter(
+                (result): result is PromiseFulfilledResult<PositionIF> =>
+                    result.status === 'fulfilled',
+            )
+            .map((result) => result.value);
     }
 };
 
@@ -149,10 +158,11 @@ const fetchDecorated = async ({
     tokenUniv,
     crocEnv,
     provider,
+    activePoolList,
+    isTestnet,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
-    cachedEnsResolve,
 }: RecordRequestIF): Promise<PositionIF[] | LimitOrderIF[]> => {
     const response = await fetchUserPositions({
         recordType,
@@ -169,7 +179,6 @@ const fetchDecorated = async ({
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
-        cachedEnsResolve,
     };
     for (const [key, value] of Object.entries(fieldsToCheck)) {
         if (value === undefined || value === null) {
@@ -186,10 +195,11 @@ const fetchDecorated = async ({
             crocEnv: crocEnv!,
             provider: provider!,
             chainId: chainId,
+            activePoolList,
+            isTestnet,
             cachedFetchTokenPrice: cachedFetchTokenPrice!,
             cachedQuerySpotPrice: cachedQuerySpotPrice!,
             cachedTokenDetails: cachedTokenDetails!,
-            cachedEnsResolve: cachedEnsResolve!,
         });
         return updatedPositions;
     }
@@ -204,10 +214,11 @@ const fetchSimpleDecorated = async ({
     provider,
     tokenUniv,
     crocEnv,
+    activePoolList,
+    isTestnet,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
-    cachedEnsResolve,
 }: RecordRequestIF) => {
     cachedFetchTokenPrice =
         cachedFetchTokenPrice || (fetchTokenPrice as TokenPriceFn);
@@ -215,7 +226,6 @@ const fetchSimpleDecorated = async ({
         cachedQuerySpotPrice || (querySpotPrice as SpotPriceFn);
     cachedTokenDetails =
         cachedTokenDetails || (fetchContractDetails as FetchContractDetailsFn);
-    cachedEnsResolve = cachedEnsResolve || (fetchEnsAddress as FetchAddrFn);
 
     return await fetchDecorated({
         // Query:
@@ -228,12 +238,12 @@ const fetchSimpleDecorated = async ({
         provider: provider,
         tokenUniv: tokenUniv,
         crocEnv: crocEnv,
-
+        activePoolList,
+        isTestnet,
         // Data Sources
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
-        cachedEnsResolve,
     });
 };
 

@@ -16,8 +16,7 @@
     padding: 1px 4px;
     gap: 10px;
 
-    width: 95px;
-    height: 26px;
+   
 
     /* Dark/Tertiary */
     background: var(--dark3);
@@ -29,8 +28,7 @@
 }
 
 .bgsalmon {
-    width: 58px;
-    height: 13px;
+    
 
     font-family: 'Lexend Deca';
     font-style: normal;
@@ -54,8 +52,7 @@
 }
 
 .current_pool_text {
-    width: 58px;
-    height: 13px;
+   
 
     font-family: 'Lexend Deca';
     font-style: normal;

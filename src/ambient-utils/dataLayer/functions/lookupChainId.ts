@@ -45,6 +45,11 @@ export function lookupChainId(
             chainIdHex = '0x783';
             break;
         case 'plume':
+        case '98866':
+        case '0x18232':
+            chainIdHex = '0x18232';
+            break;
+        case 'plumeLegacy':
         case '98865':
         case '0x18231':
             chainIdHex = '0x18231';
@@ -83,6 +88,11 @@ export function lookupChainId(
         case '84532':
         case '0x14a34':
             chainIdHex = '0x14a34';
+            break;
+        case 'monadtestnet':
+        case '10143':
+        case '0x279f':
+            chainIdHex = '0x279f';
             break;
     }
     // output variable

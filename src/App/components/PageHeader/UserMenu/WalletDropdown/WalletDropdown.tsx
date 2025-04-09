@@ -52,7 +52,8 @@ export default function WalletDropdown(props: propsIF) {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const { nativeTokenUsdPrice } = useContext(ChainDataContext);
+    const { nativeTokenUsdPrice, setIsTokenBalanceFetchManuallyTriggerered } =
+        useContext(ChainDataContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
     const { tokens } = useContext(TokenContext);
@@ -73,6 +74,10 @@ export default function WalletDropdown(props: propsIF) {
 
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext(CachedDataContext);
+
+    useEffect(() => {
+        setIsTokenBalanceFetchManuallyTriggerered(true);
+    }, [chainId, accountAddress]);
 
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF): JSX.Element {
         const { logoUri, symbol, address, amount, value } = props;
@@ -213,17 +218,17 @@ export default function WalletDropdown(props: propsIF) {
               })
             : undefined;
 
-    const ethMainnetUsdValue =
+    const nativeTokenUsdValue =
         nativeTokenUsdPrice !== undefined &&
         nativeCombinedBalanceDisplayNum !== undefined
             ? nativeTokenUsdPrice * nativeCombinedBalanceDisplayNum
             : undefined;
 
     const nativeTokenMainnetUsdValueTruncated =
-        ethMainnetUsdValue !== undefined
-            ? ethMainnetUsdValue
+        nativeTokenUsdValue !== undefined
+            ? nativeTokenUsdValue
                 ? getFormattedNumber({
-                      value: ethMainnetUsdValue,
+                      value: nativeTokenUsdValue,
                       isUSD: true,
                   })
                 : '$0.00'

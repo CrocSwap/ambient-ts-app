@@ -1,6 +1,7 @@
-import { useWeb3Modal } from '@web3modal/ethers/react';
+import { useAppKit } from '@reown/appkit/react';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { useIdleTimer } from 'react-idle-timer';
+import { useLocation } from 'react-router';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     CHAT_ENABLED,
@@ -28,7 +29,6 @@ export interface AppStateContextIF {
     };
     globalPopup: globalPopupMethodsIF;
     snackbar: snackbarMethodsIF;
-    tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
     chat: {
         isOpen: boolean;
         setIsOpen: (val: boolean) => void;
@@ -51,6 +51,9 @@ export interface AppStateContextIF {
         contentHeight: number;
         viewportHeight: number;
     };
+    isTradeRoute: boolean;
+    isAccountRoute: boolean;
+    isHomeRoute: boolean;
 }
 
 export const AppStateContext = createContext({} as AppStateContextIF);
@@ -60,7 +63,6 @@ export const AppStateContextProvider = (props: {
 }) => {
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
     const [isAppHeaderDropdown, setIsAppHeaderDropdown] = useState(false);
-    const [isTutorialMode, setIsTutorialMode] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
@@ -72,6 +74,22 @@ export const AppStateContextProvider = (props: {
     const NAVBAR_HEIGHT = 56;
     const FOOTER_HEIGHT = 56;
     const TOTAL_FIXED_HEIGHT = NAVBAR_HEIGHT + FOOTER_HEIGHT;
+
+    const pathNoLeadingSlash = useLocation().pathname?.slice(1);
+    const isTradeRoute =
+        pathNoLeadingSlash.includes('trade') ||
+        pathNoLeadingSlash.includes('swap') ||
+        pathNoLeadingSlash.includes('initpool') ||
+        pathNoLeadingSlash.includes('vaults');
+
+    const isAddressEns = pathNoLeadingSlash?.includes('.eth');
+    const isAddressHex =
+        pathNoLeadingSlash?.startsWith('0x') ||
+        pathNoLeadingSlash?.startsWith('account/0x');
+    const isAccountRoute =
+        isAddressEns || isAddressHex || pathNoLeadingSlash?.includes('account');
+
+    const isHomeRoute = pathNoLeadingSlash === '';
 
     const [dimensions, setDimensions] = useState({
         contentHeight: window.innerHeight - TOTAL_FIXED_HEIGHT,
@@ -135,7 +153,7 @@ export const AppStateContextProvider = (props: {
         useModal();
 
     const [_, hasAgreedTerms] = useTermsAgreed();
-    const { open: openW3Modal } = useWeb3Modal();
+    const { open: openW3Modal } = useAppKit();
 
     const onIdle = () => {
         setIsUserIdle(true);
@@ -265,10 +283,6 @@ export const AppStateContextProvider = (props: {
             },
             globalPopup,
             snackbar,
-            tutorial: {
-                isActive: isTutorialMode,
-                setIsActive: setIsTutorialMode,
-            },
             chat: {
                 isOpen: isChatOpen,
                 setIsOpen: setIsChatOpen,
@@ -290,6 +304,9 @@ export const AppStateContextProvider = (props: {
             },
             activeNetwork,
             chooseNetwork,
+            isTradeRoute,
+            isAccountRoute,
+            isHomeRoute,
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -303,7 +320,6 @@ export const AppStateContextProvider = (props: {
             isUserIdle,
             areSubscriptionsEnabled,
             isAppOverlayActive,
-            isTutorialMode,
             isGateWalletModalOpen,
             openGateWalletModal,
             closeGateWalletModal,
@@ -313,6 +329,9 @@ export const AppStateContextProvider = (props: {
             dimensions.viewportHeight,
             activeNetwork,
             chooseNetwork,
+            isTradeRoute,
+            isAccountRoute,
+            isHomeRoute,
         ],
     );
 

@@ -1,4 +1,4 @@
-import ambientLogo from '../../../../assets/images/logos/logo_mark.svg';
+import ambientLogo from '../../../../assets/images/logos/ambient_logo_mark.svg';
 import styles from './WalletButton.module.css';
 
 interface WalletButtonPropsIF {

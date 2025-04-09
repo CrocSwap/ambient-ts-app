@@ -13,7 +13,12 @@ import {
     removeWrappedNative,
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
-import { AppStateContext } from '../../../contexts';
+import {
+    AppStateContext,
+    ChainDataContext,
+    SidebarContext,
+    UserDataContext,
+} from '../../../contexts';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -47,12 +52,30 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         platform = 'ambient',
     } = props;
 
+    const { userAddress } = useContext(UserDataContext);
+
     const { cachedTokenDetails } = useContext(CachedDataContext);
     const { provider } = useContext(CrocEnvContext);
 
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
+
+    const { setIsTokenBalanceFetchManuallyTriggerered } =
+        useContext(ChainDataContext);
+
+    const { setIsPoolDropdownOpen, isPoolDropdownOpen } =
+        useContext(SidebarContext);
+
+    useEffect(() => {
+        if (isPoolDropdownOpen) {
+            setIsPoolDropdownOpen(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        setIsTokenBalanceFetchManuallyTriggerered(true);
+    }, [chainId, userAddress]);
 
     const {
         tokens,
@@ -253,7 +276,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
-    const WETH_WARNING = ' Ambient uses Native Ether (ETH) to lower gas costs.';
+    const WETH_WARNING =
+        ' Ambient uses non-wrapped native tokens to lower gas costs.';
 
     // control whether the `<input>` has DOM focus by default
     const INPUT_HAS_AUTOFOCUS = false;
@@ -353,7 +377,11 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                                 }
                                             }}
                                         >
-                                            I understand, use WETH
+                                            {`I understand, use ${
+                                                tokens.getTokenByAddress(
+                                                    validatedInput,
+                                                )?.symbol
+                                            }`}
                                         </button>
                                     }
                                 />

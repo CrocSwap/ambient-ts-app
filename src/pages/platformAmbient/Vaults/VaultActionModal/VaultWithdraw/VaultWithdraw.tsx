@@ -38,7 +38,8 @@ interface propsIF {
     mainAsset: TokenIF;
     vault: AllVaultsServerIF;
     balanceMainAsset: bigint | undefined;
-    mainAssetBalanceDisplayQty: string;
+    mainAssetScaledQtyNum: number;
+    mainAssetBalanceDisplayString: string;
     onClose: () => void;
     strategy: VaultStrategy;
 }
@@ -46,16 +47,17 @@ export default function VaultWithdraw(props: propsIF) {
     const {
         mainAsset,
         onClose,
-        mainAssetBalanceDisplayQty,
+        mainAssetScaledQtyNum,
+        mainAssetBalanceDisplayString,
         vault,
         balanceMainAsset,
         strategy,
     } = props;
     const [showSubmitted, setShowSubmitted] = useState(false);
     const [removalPercentage, setRemovalPercentage] = useState(100);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { ethMainnetUsdPrice, crocEnv, provider } =
-        useContext(CrocEnvContext);
+    const { gasPriceInGwei, nativeTokenUsdPrice } =
+        useContext(ChainDataContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
     const {
         activeNetwork: { chainId },
@@ -185,7 +187,7 @@ export default function VaultWithdraw(props: propsIF) {
             <div className={styles.pooledContentContainer}>
                 Deposited {mainAsset.symbol}
                 <div className={styles.alignCenter}>
-                    {mainAssetBalanceDisplayQty}
+                    {mainAssetBalanceDisplayString}
                     <TokenIcon
                         token={mainAsset}
                         src={uriToHttp(mainAsset.logoURI)}
@@ -198,10 +200,7 @@ export default function VaultWithdraw(props: propsIF) {
                 {mainAsset.symbol} Removal Amount
                 <div className={styles.alignCenter}>
                     {getFormattedNumber({
-                        value:
-                            removalPercentage *
-                            0.01 *
-                            parseFloat(mainAssetBalanceDisplayQty),
+                        value: removalPercentage * 0.01 * mainAssetScaledQtyNum,
                     })}
                     <TokenIcon
                         token={mainAsset}
@@ -214,10 +213,13 @@ export default function VaultWithdraw(props: propsIF) {
         </section>
     );
 
-    const minSlippageNum = 0.5;
-    const maxSlippageNum = 100;
+    const DEFAULT_SLIPPAGE_TOLERANCE = 1;
+    const MIN_SLIPPAGE_TOLERANCE = 0.5;
+    const MAX_SLIPPAGE_TOLERANCE = 100;
 
-    const [slippageTolerance, setSlippageTolerance] = useState(minSlippageNum);
+    const [slippageTolerance, setSlippageTolerance] = useState(
+        DEFAULT_SLIPPAGE_TOLERANCE,
+    );
     const [tempSlippage, setTempSlippage] = useState<string>(
         slippageTolerance.toString(),
     );
@@ -232,8 +234,8 @@ export default function VaultWithdraw(props: propsIF) {
         const numericValue = parseFloat(value);
         if (
             !isNaN(numericValue) &&
-            numericValue >= minSlippageNum &&
-            numericValue <= maxSlippageNum
+            numericValue >= MIN_SLIPPAGE_TOLERANCE &&
+            numericValue <= MAX_SLIPPAGE_TOLERANCE
         ) {
             setSlippageTolerance(numericValue);
             setTempSlippage(value);
@@ -242,7 +244,7 @@ export default function VaultWithdraw(props: propsIF) {
             return true;
         } else {
             setErrorMessage(
-                `Please enter a value between ${minSlippageNum} and ${maxSlippageNum}`,
+                `Please enter a value between ${MIN_SLIPPAGE_TOLERANCE} and ${MAX_SLIPPAGE_TOLERANCE}`,
             );
             setBorderColor(true);
             return false;
@@ -265,11 +267,11 @@ export default function VaultWithdraw(props: propsIF) {
 
     // calculate price of gas for vault withdrawal
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 Number(NUM_GWEI_IN_WEI) *
-                ethMainnetUsdPrice *
+                nativeTokenUsdPrice *
                 Number(GAS_DROPS_ESTIMATE_VAULT_WITHDRAWAL);
 
             setWithdrawGasPriceinDollars(
@@ -279,7 +281,7 @@ export default function VaultWithdraw(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     const submittedButtonTitle = (
         <div className={styles.loading}>
@@ -365,12 +367,12 @@ export default function VaultWithdraw(props: propsIF) {
                                     step='0.1'
                                     value={tempSlippage}
                                     autoComplete='off'
-                                    placeholder={minSlippageNum.toString()}
+                                    placeholder={MIN_SLIPPAGE_TOLERANCE.toString()}
                                     aria-label='Enter Slippage Tolerance'
                                     disabled={!editSlippageTolerance}
                                     ref={inputRefSlip}
-                                    min={minSlippageNum}
-                                    max={maxSlippageNum}
+                                    min={MIN_SLIPPAGE_TOLERANCE}
+                                    max={MAX_SLIPPAGE_TOLERANCE}
                                 />
                                 <p>%</p>
                                 <MdEdit
@@ -409,6 +411,7 @@ export default function VaultWithdraw(props: propsIF) {
                     }
                     disabled={
                         showSubmitted ||
+                        !balanceMainAsset ||
                         balanceMainAsset === 0n ||
                         errorMessage !== ''
                     }

@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 
 import Button from '../../Form/Button';
 
+import { HIDE_TOKEN_VALUES } from '../../../ambient-utils/constants';
 import {
     getFormattedNumber,
     uriToHttp,
@@ -72,7 +73,10 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         useState<boolean>(false);
 
     const showWarning =
-        percentDiffUsdValue !== undefined && percentDiffUsdValue < -10;
+        percentDiffUsdValue !== undefined &&
+        percentDiffUsdValue < -10 &&
+        !HIDE_TOKEN_VALUES &&
+        tokenA.chainId !== parseInt('0x279f'); // monad testnet;
 
     const formattedUsdDifference =
         percentDiffUsdValue !== undefined
@@ -86,7 +90,8 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         <>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    {tokenAQuantity}
+                    {tokenAQuantity?.slice(0, 27 - tokenA.symbol.length) ||
+                        '0.000000'}
                 </Text>
                 <FlexContainer
                     alignItems='center'
@@ -113,7 +118,10 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             </FlexContainer>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    <span>{tokenBQuantity}</span>
+                    <span>
+                        {tokenBQuantity?.slice(0, 27 - tokenB.symbol.length) ||
+                            '0.000000'}
+                    </span>
                     {showWarning && (
                         <span
                             style={

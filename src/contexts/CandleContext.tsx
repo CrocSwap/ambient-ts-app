@@ -8,6 +8,13 @@ import {
     useRef,
     useState,
 } from 'react';
+import {
+    GraphDataContext,
+    PoolContext,
+    ReceiptContext,
+    TradeDataContext,
+    TradeTokenContext,
+} from '.';
 import { fetchCandleSeriesHybrid } from '../ambient-utils/api';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
@@ -26,7 +33,6 @@ import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
-import { TradeTokenContext } from './TradeTokenContext';
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
     setCandleData: Dispatch<
@@ -61,23 +67,30 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserIdle,
     } = useContext(AppStateContext);
 
+    const { userTransactionsByPool } = useContext(GraphDataContext);
+    const { sessionReceipts } = useContext(ReceiptContext);
+
     const {
         chartSettings,
         isEnabled: isChartEnabled,
         isCandleDataNull,
         setIsCandleDataNull,
     } = useContext(ChartContext);
+
+    const { isChartVisible } = useContext(TradeTokenContext);
     const {
         activeNetwork: { chainId, poolIndex, GCGO_URL },
     } = useContext(AppStateContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
-    const {
-        baseToken: { address: baseTokenAddress },
-        quoteToken: { address: quoteTokenAddress },
-    } = useContext(TradeTokenContext);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext(CachedDataContext);
+
+    const { poolData } = useContext(PoolContext);
+
+    const baseTokenAddress = baseToken.address;
+    const quoteTokenAddress = quoteToken.address;
 
     const baseTokenAddressRef = useRef(baseTokenAddress);
     const quoteTokenAddressRef = useRef(quoteTokenAddress);
@@ -207,6 +220,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     useEffect(() => {
         (async () => {
             if (
+                isChartVisible &&
                 crocEnv &&
                 isUserOnline &&
                 (await crocEnv.context).chain.chainId === chainId &&
@@ -223,6 +237,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             }
         })();
     }, [
+        isChartVisible,
         isManualCandleFetchRequested,
         isChartEnabled,
         isUserOnline,
@@ -234,13 +249,26 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         quoteTokenAddressRef.current === quoteTokenAddress.toLowerCase(),
     ]);
 
+    const fetchFirst200Candles = () => {
+        fetchCandlesByNumDurations(200, 0);
+    };
+
+    /**
+     * only works if candles pilling up on the right
+     */
+    useEffect(() => {
+        if (candleDomains.isResetRequest) {
+            fetchFirst200Candles();
+        }
+    }, [candleDomains.isResetRequest]);
+
     useEffect(() => {
         if (
             isChartEnabled &&
             isUserOnline &&
             candleScale.isShowLatestCandle &&
             isChartOpen &&
-            location.pathname.includes('/trade')
+            isChartVisible
         ) {
             if (
                 candleData &&
@@ -248,8 +276,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 candleTimeLocal &&
                 !isCandleDataNull
             ) {
-                const nowTime = Math.floor(Date.now() / 1000);
-                fetchCandlesByNumDurations(200, nowTime);
+                fetchFirst200Candles();
             }
         }
     }, [
@@ -260,6 +287,60 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
         candleScale.isShowLatestCandle,
     ]);
+
+    // Use refs to store previous base and quote values in order to not duplicate candle fetching when pool changes
+    const prevBaseRef = useRef<string | undefined>(
+        userTransactionsByPool.changes.length > 0
+            ? userTransactionsByPool.changes[0].base
+            : undefined,
+    );
+    const prevQuoteRef = useRef<string | undefined>(
+        userTransactionsByPool.changes.length > 0
+            ? userTransactionsByPool.changes[0].quote
+            : undefined,
+    );
+
+    useEffect(() => {
+        if (
+            prevBaseRef.current === undefined ||
+            !userTransactionsByPool.changes.length
+        ) {
+            prevBaseRef.current = baseTokenAddress;
+        }
+        if (
+            prevQuoteRef.current === undefined ||
+            !userTransactionsByPool.changes.length
+        ) {
+            prevQuoteRef.current = quoteTokenAddress;
+        }
+    }, [baseTokenAddress, quoteTokenAddress]);
+
+    // update latest candles when a new user transaction is indexed
+    useEffect(() => {
+        if (
+            userTransactionsByPool.changes.length > 0 &&
+            sessionReceipts.length > 0
+        ) {
+            // Check if base or quote has changed
+            const hasBaseChanged =
+                prevBaseRef.current?.toLowerCase() !==
+                userTransactionsByPool.changes[0].base.toLowerCase();
+
+            const hasQuoteChanged =
+                prevQuoteRef.current?.toLowerCase() !==
+                userTransactionsByPool.changes[0].quote.toLowerCase();
+
+            if (!hasBaseChanged && !hasQuoteChanged) {
+                // delay 5 seconds
+                setTimeout(() => {
+                    fetchFirst200Candles();
+                }, 5000);
+            }
+            // Update refs with current values
+            prevBaseRef.current = userTransactionsByPool.changes[0].base;
+            prevQuoteRef.current = userTransactionsByPool.changes[0].quote;
+        }
+    }, [userTransactionsByPool.changes.length]);
 
     /**
      * only works if have not enough candle data on condensed mode
@@ -310,7 +391,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             crocEnv
         ) {
             const candleTime = candleScale.isShowLatestCandle
-                ? Math.floor(Date.now() / 1000)
+                ? 0
                 : candleScale.lastCandleDate || 0;
 
             const nCandles = Math.min(Math.max(candleScale?.nCandles), 2999);
@@ -330,13 +411,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 poolIndex,
                 GCGO_URL,
                 candleTimeLocal || defaultCandleDuration,
-                baseTokenAddress,
-                quoteTokenAddress,
+                baseToken,
+                quoteToken,
                 candleTime,
                 nCandles,
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
+                poolData,
             )
                 .then((candles) => {
                     if (
@@ -427,13 +509,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             poolIndex,
             GCGO_URL,
             candleTimeLocal,
-            baseTokenAddress,
-            quoteTokenAddress,
+            baseToken,
+            quoteToken,
             minTimeMemo ? minTimeMemo : 0,
             numDurations,
             crocEnv,
             cachedFetchTokenPrice,
             cachedQuerySpotPrice,
+            poolData,
         )
             .then((incrCandles) => {
                 if (incrCandles && candleData) {
@@ -442,8 +525,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         incrCandles.candles.length === 0 ||
                         incrCandles.candles.length < numDurations - 1
                     ) {
+                        const tempCandleData =
+                            incrCandles.candles.length === 0
+                                ? candleData.candles
+                                : incrCandles.candles;
                         const minDate = Math.min(
-                            ...incrCandles.candles.map((i) => i.time),
+                            ...tempCandleData.map((i) => i.time),
                         );
                         minDate && setTimeOfEndCandle(minDate * 1000);
                     }
@@ -474,6 +561,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
                     setCandleData(newSeries);
                 }
+            })
+            .then(() => {
+                setCandleDomains((prev: CandleDomainIF) => {
+                    return {
+                        ...prev,
+                        isResetRequest: false,
+                    };
+                });
             })
             .catch((e) => {
                 console.error(e);

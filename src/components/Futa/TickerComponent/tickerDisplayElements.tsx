@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext, useRef } from 'react';
+import { Dispatch, SetStateAction, useContext, useEffect, useRef } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import { supportedNetworks } from '../../../ambient-utils/constants';
@@ -27,6 +27,7 @@ import { CurrencySelector } from '../../Form/CurrencySelector';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import TooltipLabel from '../TooltipLabel/TooltipLabel';
 import FutaDivider2 from '../Divider/FutaDivider2';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 // Props interface
 export interface PropsIF {
@@ -89,6 +90,10 @@ export const tickerDisplayElements = (props: PropsIF) => {
     const { showComments, setShowComments, watchlists } =
         useContext(AuctionsContext);
 
+    useEffect(() => {
+        if (showComments) setShowComments(false);
+    }, [tickerFromParams]);
+
     const currentMarketCapUsdFormatted =
         filledMarketCapUsdValue !== undefined
             ? getFormattedNumber({
@@ -107,6 +112,8 @@ export const tickerDisplayElements = (props: PropsIF) => {
         : '-';
 
     const SECTION_HEADER_FONT_SIZE = '18px';
+    const isMobile =
+        useMediaQuery('mobilePortrait') || useMediaQuery('mobileLandscape');
 
     // Status data
     const statusData = [
@@ -376,7 +383,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
     // Ticker display component
     const tickerDisplay = (
         <div className={styles.tickerContainer}>
-            {!isAuctionPage && <Divider count={2} />}
+            {!isAuctionPage && !isMobile && <Divider count={2} />}
             <div className={styles.tickerNameContainer}>
                 <h2>{!placeholderTicker ? tickerFromParams : '-'}</h2>
                 {!placeholderTicker && (

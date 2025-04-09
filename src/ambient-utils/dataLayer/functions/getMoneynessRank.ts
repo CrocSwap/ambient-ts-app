@@ -1,4 +1,5 @@
 import ambientTokenList from '../../constants/ambient-token-list.json';
+import testnetTokenList from '../../constants/testnet-token-list.json';
 
 export const getTranslatedSymbol = (tokenSymbol: string) =>
     tokenSymbol?.toUpperCase() === 'USD+'
@@ -7,7 +8,9 @@ export const getTranslatedSymbol = (tokenSymbol: string) =>
           ? 'USDC'
           : tokenSymbol?.toUpperCase() === 'SOLVBTC.B'
             ? 'SOLVBTC'
-            : tokenSymbol?.toUpperCase();
+            : tokenSymbol?.toUpperCase() === 'USD₮0'
+              ? 'USDT0'
+              : tokenSymbol?.toUpperCase();
 
 export const getMoneynessRank = (tokenSymbol: string): number => {
     /* 
@@ -27,16 +30,22 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
     const moneynessRank = {
         USDC: 100,
         USDB: 100,
+        USDE: 96,
         USDQ: 96,
         AXLUSDC: 95,
         LUSD: 95,
         USDPLUS: 95,
-        USDE: 95,
+        USDT0: 95,
         PUSD: 95,
         SUSDE: 90,
         DAI: 90,
         USDT: 80,
+        MON: 77,
         NRWA: 75,
+        NTBILL: 75,
+        NYIELD: 75,
+        NUSDY: 75,
+        NELIXIR: 75,
         FRAX: 70,
         WBTC: 60,
         SOLVBTC: 55,
@@ -46,6 +55,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         UBTC: 55,
         SWELL: 52,
         ETH: 50,
+        WETH: 49,
         WEETH: 48,
         WSTETH: 45,
         WRSETH: 45,
@@ -66,10 +76,16 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
     return rank;
 };
 
-export const getMoneynessRankByAddr = (tokenAddress: string): number => {
+export const getMoneynessRankByAddr = (
+    tokenAddress: string,
+    chainId: string,
+): number => {
     let moneynessRank = 0;
-    ambientTokenList.tokens.forEach((token) => {
-        if (token.address.toLowerCase() === tokenAddress.toLowerCase()) {
+    ambientTokenList.tokens.concat(testnetTokenList.tokens).forEach((token) => {
+        if (
+            token.address.toLowerCase() === tokenAddress.toLowerCase() &&
+            token.chainId === Number(chainId)
+        ) {
             const translatedSymbol = getTranslatedSymbol(token.symbol);
 
             moneynessRank = getMoneynessRank(translatedSymbol);

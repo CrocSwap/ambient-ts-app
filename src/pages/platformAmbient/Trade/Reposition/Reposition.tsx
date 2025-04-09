@@ -50,22 +50,22 @@ function Reposition() {
     const { params } = useParams();
 
     const { activeNetwork } = useContext(AppStateContext);
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
-    const { crocEnv, provider, ethMainnetUsdPrice } =
-        useContext(CrocEnvContext);
+    const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
 
     const {
         activeNetwork: { blockExplorer, chainId },
     } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
-    const { gasPriceInGwei, lastBlockNumber, isActiveNetworkL2 } =
-        useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        nativeTokenUsdPrice,
+        lastBlockNumber,
+        isActiveNetworkL2,
+        analyticsPoolList,
+    } = useContext(ChainDataContext);
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
@@ -356,6 +356,9 @@ function Reposition() {
                         originalLowTick: position.bidTick,
                         originalHighTick: position.askTick,
                         isBid: position.positionLiqQuote === 0,
+                        initialTokenQty: position.positionLiqBaseTruncated,
+                        secondaryTokenQty: position.positionLiqQuoteTruncated,
+                        prevPositionHash: posHash,
                     },
                 });
                 addPositionUpdate({
@@ -459,13 +462,13 @@ function Reposition() {
             ? fetch(
                   positionStatsCacheEndpoint +
                       new URLSearchParams({
-                          user: position.user,
+                          user: position.user.toLowerCase(),
                           bidTick: position.bidTick.toString(),
                           askTick: position.askTick.toString(),
-                          base: position.base,
-                          quote: position.quote,
+                          base: position.base.toLowerCase(),
+                          quote: position.quote.toLowerCase(),
                           poolIdx: poolIndex.toString(),
-                          chainId: position.chainId,
+                          chainId: position.chainId.toLowerCase(),
                           positionType: position.positionType,
                       }),
               )
@@ -477,18 +480,16 @@ function Reposition() {
                           return;
                       }
                       // temporarily skip ENS fetch
-                      const skipENSFetch = true;
                       const positionStats = await getPositionData(
                           json.data as PositionServerIF,
                           tokens.tokenUniv,
                           crocEnv,
                           provider,
                           position.chainId,
+                          analyticsPoolList,
                           cachedFetchTokenPrice,
                           cachedQuerySpotPrice,
                           cachedTokenDetails,
-                          cachedEnsResolve,
-                          skipENSFetch,
                       );
                       const liqBaseNum =
                           positionStats.positionLiqBaseDecimalCorrected;
@@ -740,12 +741,12 @@ function Reposition() {
     const [extraL1GasFeePool] = useState(isActiveNetworkL2 ? 0.01 : 0);
 
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 GAS_DROPS_ESTIMATE_REPOSITION *
                 NUM_GWEI_IN_WEI *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setRangeGasPriceinDollars(
                 getFormattedNumber({
@@ -754,7 +755,7 @@ function Reposition() {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, extraL1GasFeePool]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice, extraL1GasFeePool]);
 
     // navigate the user to the redirect URL path if locationHook.state has no data
     // ... this value will be truthy if the user arrived here by clicking a link

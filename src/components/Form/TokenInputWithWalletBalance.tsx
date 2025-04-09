@@ -1,6 +1,7 @@
 import { fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
 import { memo } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
+import { brand, HIDE_TOKEN_VALUES } from '../../ambient-utils/constants';
 import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
@@ -11,7 +12,6 @@ import {
 import { formatTokenInput, stringToBigInt } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
-import { brand } from '../../ambient-utils/constants';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -186,7 +186,9 @@ function TokenInputWithWalletBalance(props: propsIF) {
                     impactCalculationPending ||
                     !usdValueForDom ||
                     disabledContent ||
-                    !isPoolInitialized
+                    !isPoolInitialized ||
+                    HIDE_TOKEN_VALUES ||
+                    token.chainId === parseInt('0x279f') // monad testnet
                         ? ''
                         : usdValueForDom
                 }

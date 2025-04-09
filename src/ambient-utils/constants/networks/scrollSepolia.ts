@@ -1,5 +1,6 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
@@ -7,32 +8,43 @@ import { NetworkIF } from '../../types/NetworkIF';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-const PUBLIC_RPC_URL = 'https://sepolia-rpc.scroll.io';
-const SECONDARY_PUBLIC_RPC_URL = 'https://scroll-sepolia-rpc.publicnode.com';
-
-const RESTRICTED_RPC_URL =
-    import.meta.env.VITE_BASE_SEPOLIA_RPC_URL !== undefined
-        ? import.meta.env.VITE_BASE_SEPOLIA_RPC_URL
-        : undefined;
-
-const PRIMARY_RPC_URL = RESTRICTED_RPC_URL
-    ? RESTRICTED_RPC_URL
-    : PUBLIC_RPC_URL;
-
+const RPC_URLS = {
+    PUBLIC: 'https://sepolia-rpc.scroll.io',
+    SECONDARY_PUBLIC: 'https://rpc.ankr.com/scroll_sepolia_testnet',
+    RESTRICTED: import.meta.env.VITE_SCROLL_SEPOLIA_RPC_URL,
+};
+const PRIMARY_RPC_URL = RPC_URLS.RESTRICTED || RPC_URLS.PUBLIC;
 const FALLBACK_RPC_URL =
-    PRIMARY_RPC_URL === PUBLIC_RPC_URL
-        ? SECONDARY_PUBLIC_RPC_URL
-        : PUBLIC_RPC_URL;
+    PRIMARY_RPC_URL === RPC_URLS.PUBLIC
+        ? RPC_URLS.SECONDARY_PUBLIC
+        : RPC_URLS.PUBLIC;
 
 const chainIdHex = '0x8274f';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
-const chainSpecForWalletConnector = {
-    chainId: Number(chainIdHex),
-    name: 'Scroll Sepolia Testnet',
-    currency: 'ETH',
-    rpcUrl: PUBLIC_RPC_URL,
-    explorerUrl: 'https://sepolia.scrollscan.dev/',
+const chainSpecForAppKit: Chain = {
+    id: Number(chainIdHex),
+    rpcUrls: {
+        default: {
+            http: [RPC_URLS.PUBLIC],
+        },
+    },
+    name: 'Scroll Sepolia',
+    nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+    blockExplorers: {
+        default: {
+            name: 'Scrollscan',
+            url: 'https://sepolia.scrollscan.com',
+            apiUrl: 'https://api-sepolia.scrollscan.com/api',
+        },
+    },
+    contracts: {
+        multicall3: {
+            address: '0xca11bde05977b3631167028862be2a173976ca11',
+            blockCreated: 9473,
+        },
+    },
+    testnet: true,
 };
 
 const defaultTokenEntries = [
@@ -58,11 +70,14 @@ export const scrollSepolia: NetworkIF = {
     GCGO_URL: GCGO_TESTNET_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector: chainSpecForWalletConnector,
+    chainSpecForAppKit,
     defaultPair: [SCROLL_SEPOLIA_TOKENS.ETH, SCROLL_SEPOLIA_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
-    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    isTestnet: chainSpecFromSDK.isTestNet,
+    blockExplorer: (
+        chainSpecForAppKit.blockExplorers?.default.url || ''
+    ).replace(/\/?$/, '/'),
     displayName: 'Scroll Testnet',
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,

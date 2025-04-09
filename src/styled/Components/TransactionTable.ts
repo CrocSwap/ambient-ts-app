@@ -175,7 +175,7 @@ export const RangeRow = styled(Row)<{
                         minmax(80px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
                         minmax(86px, 1fr) minmax(44px, 1fr) minmax(25px, 1fr) minmax(100px, 1fr)`
                       : ` grid-template-columns:
-                         minmax(80px, 1fr) minmax(80px, 1fr) minmax(110px, 1fr) minmax(125px, 1fr)
+                         minmax(80px, 1fr) minmax(80px, 1fr) minmax(110px, 1fr)
                         minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
                         minmax(100px, 1fr) minmax(60px, 1fr) minmax(60px, 1fr) minmax(107px, 2fr)`
                 : !leaderboard
@@ -242,7 +242,7 @@ export const RangeRow = styled(Row)<{
 `;
 
 export const RowItem = styled(FlexContainer)<{
-    type?: 'add' | 'claim' | 'harvest' | 'remove' | 'buy' | 'sell';
+    type?: 'add' | 'claim' | 'fill' | 'harvest' | 'remove' | 'buy' | 'sell';
     hover?: boolean;
 }>`
     ${({ hover, type }) => `

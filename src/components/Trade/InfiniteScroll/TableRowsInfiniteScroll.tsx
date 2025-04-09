@@ -18,12 +18,11 @@ import {
     ScrollToTopButtonMobile,
 } from '../../../styled/Components/TransactionTable';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
-import TableRows from './TableRows';
+import TableRows from '../TradeTabs/TableRows';
+import { LimitSortType } from '../TradeTabs/useSortedLimits';
+import { RangeSortType } from '../TradeTabs/useSortedPositions';
+import { TxSortType } from '../TradeTabs/useSortedTxs';
 import styles from './TableRowsInfiniteScroll.module.css';
-import { LimitSortType } from './useSortedLimits';
-import { RangeSortType } from './useSortedPositions';
-import { TxSortType } from './useSortedTxs';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -92,6 +91,28 @@ function TableRowsInfiniteScroll({
         return /iPad|iPhone|iPod/.test(userAgent);
     };
 
+    const debugMode = false;
+
+    // // added to debug infinite scroll on monadTestnet link
+    // // can be removed after detecting issue
+    // const [debugMode, setDebugMode] = useState(false);
+    // const debugModeRef = useRef<boolean>();
+    // debugModeRef.current = debugMode;
+
+    // const [shortcutAdded, setShortcutAdded] = useState(false);
+
+    // useEffect(() => {
+    //     document.addEventListener('keydown', (e) => {
+    //         if (
+    //             (e.shiftKey && e.altKey && e.key === 'j') ||
+    //             (e.shiftKey && e.altKey && e.key === 'J')
+    //         ) {
+    //             setDebugMode(!debugModeRef.current);
+    //         }
+    //     });
+    //     setShortcutAdded(true);
+    // }, [shortcutAdded == false]);
+
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
     const wrapperID = tableKey ? tableKey : '';
@@ -99,7 +120,6 @@ function TableRowsInfiniteScroll({
     const txSpanSelectorForScrollMethod = `#infinite_scroll_wrapper_${wrapperID} div[data-label='hidden-id'] > span`;
     const txSpanSelectorForBindMethod = 'div[data-label="hidden-id"]';
 
-    const debugMode = false;
     const markRows = false;
     const [manualMode, setManualMode] = useState(false);
     const manualModeRef = useRef<boolean>();
@@ -396,11 +416,8 @@ function TableRowsInfiniteScroll({
     };
 
     useEffect(() => {
-        domDebug('sortBy', sortBy);
         scrollToTop();
     }, [sortBy, showAllData]);
-
-    domDebug('moreDataAvailable', moreDataAvailableRef.current);
 
     const doIphoneFix = () => {
         if (isIOS()) {
@@ -678,9 +695,6 @@ function TableRowsInfiniteScroll({
     };
 
     useEffect(() => {
-        domDebug('moreDataLoading', moreDataLoading);
-        domDebug('page', pagesVisible[0]);
-
         const observer = new IntersectionObserver(
             (entries) => {
                 const entry = entries[0];
@@ -747,11 +761,6 @@ function TableRowsInfiniteScroll({
     useEffect(() => {
         doScroll();
     }, [pagesVisible[0]]);
-
-    useEffect(() => {
-        domDebug('lastSeen', lastSeenTxIDRef.current);
-        domDebug('firstSeen', firstSeenTxIDRef.current);
-    }, [lastSeenTxID, firstSeenTxID]);
 
     return (
         <>

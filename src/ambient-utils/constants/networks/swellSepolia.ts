@@ -1,5 +1,6 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
@@ -27,12 +28,21 @@ const FALLBACK_RPC_URL =
 const chainIdHex = '0x784';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
-const chainSpecForWalletConnector = {
-    chainId: Number(chainIdHex),
+const chainSpecForAppKit: Chain = {
+    id: Number(chainIdHex),
+    rpcUrls: {
+        default: {
+            http: [PUBLIC_RPC_URL],
+        },
+    },
     name: 'Swellchain Testnet',
-    currency: 'ETH',
-    rpcUrl: PUBLIC_RPC_URL,
-    explorerUrl: 'https://swell-testnet-explorer.alt.technology/',
+    nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+    blockExplorers: {
+        default: {
+            name: 'Swell Testnet Explorer',
+            url: 'https://swell-testnet-explorer.alt.technology',
+        },
+    },
 };
 
 const defaultTokenEntries = [
@@ -60,12 +70,15 @@ export const swellSepolia: NetworkIF = {
     GCGO_URL: GCGO_TESTNET_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector: chainSpecForWalletConnector,
+    chainSpecForAppKit,
     defaultPair: [SWELL_SEPOLIA_TOKENS.ETH, SWELL_SEPOLIA_TOKENS.USDC],
     defaultPairFuta: [SWELL_SEPOLIA_TOKENS.ETH, SWELL_SEPOLIA_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
-    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    isTestnet: chainSpecFromSDK.isTestNet,
+    blockExplorer: (
+        chainSpecForAppKit.blockExplorers?.default.url || ''
+    ).replace(/\/?$/, '/'),
     displayName: 'Swell Testnet',
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,

@@ -8,9 +8,9 @@ import {
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
-import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
+import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
-import { PositionIF, PositionServerIF, TokenIF } from '../../types';
+import { PoolIF, PositionIF, PositionServerIF, TokenIF } from '../../types';
 import { getFormattedNumber } from './getFormattedNumber';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
 import { getPositionHash } from './getPositionHash';
@@ -22,11 +22,10 @@ export const getPositionData = async (
     crocEnv: CrocEnv,
     provider: Provider,
     chainId: string,
+    analyticsPoolList: PoolIF[] | undefined,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
-    cachedEnsResolve: FetchAddrFn,
-    skipENSFetch?: boolean,
     forceOnchainLiqUpdate?: boolean,
 ): Promise<PositionIF> => {
     if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
@@ -42,17 +41,30 @@ export const getPositionData = async (
     const quoteTokenAddress =
         position.quote.length === 40 ? '0x' + position.quote : position.quote;
 
-    // Fire off network queries async simultaneous up-front
-    const poolPriceNonDisplay = await cachedQuerySpotPrice(
-        crocEnv,
-        baseTokenAddress,
-        quoteTokenAddress,
-        chainId,
-        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+    const poolOnAnalyticsPoolList = analyticsPoolList?.find(
+        (poolListEntry: PoolIF) =>
+            poolListEntry.base.toLowerCase() ===
+                baseTokenAddress.toLowerCase() &&
+            poolListEntry.quote.toLowerCase() ===
+                quoteTokenAddress.toLowerCase(),
     );
 
-    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
+    const poolPriceNonDisplay = poolOnAnalyticsPoolList?.lastPriceSwap
+        ? poolOnAnalyticsPoolList.lastPriceSwap
+        : await cachedQuerySpotPrice(
+              crocEnv,
+              baseTokenAddress,
+              quoteTokenAddress,
+              chainId,
+              Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+          );
+
+    const basePrice = poolOnAnalyticsPoolList?.baseUsdPrice
+        ? poolOnAnalyticsPoolList.baseUsdPrice
+        : (await cachedFetchTokenPrice(baseTokenAddress, chainId))?.usdPrice;
+    const quotePrice = poolOnAnalyticsPoolList?.quoteUsdPrice
+        ? poolOnAnalyticsPoolList.quoteUsdPrice
+        : (await cachedFetchTokenPrice(quoteTokenAddress, chainId))?.usdPrice;
 
     const baseTokenName = tokensOnChain.find(
         (token) =>
@@ -100,10 +112,6 @@ export const getPositionData = async (
         : ((await cachedTokenDetails(provider, position.quote, chainId))
               ?.decimals ?? DEFAULT_DECIMALS);
 
-    newPosition.ensResolution = skipENSFetch
-        ? ''
-        : ((await cachedEnsResolve(newPosition.user)) ?? '');
-
     const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
     newPosition.poolPriceInTicks = poolPriceInTicks;
 
@@ -138,16 +146,13 @@ export const getPositionData = async (
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
 
-    const basePrice = await basePricePromise;
-    const quotePrice = await quotePricePromise;
-
     newPosition.isBaseTokenMoneynessGreaterOrEqual =
-        getMoneynessRankByAddr(baseTokenAddress) -
-            getMoneynessRankByAddr(quoteTokenAddress) >=
+        getMoneynessRankByAddr(baseTokenAddress, position.chainId) -
+            getMoneynessRankByAddr(quoteTokenAddress, position.chainId) >=
         0;
 
-    newPosition.baseUsdPrice = basePrice?.usdPrice;
-    newPosition.quoteUsdPrice = quotePrice?.usdPrice;
+    newPosition.baseUsdPrice = basePrice;
+    newPosition.quoteUsdPrice = quotePrice;
 
     const posHash = getPositionHash(undefined, {
         isPositionTypeAmbient: position.positionType === 'ambient',
@@ -264,23 +269,19 @@ export const getPositionData = async (
                 position.quote,
                 position.user,
             );
-            const positionRewards = await pos.queryRewards(
-                position.bidTick,
-                position.askTick,
-            );
+
+            const [positionRewards, rangePos] = await Promise.all([
+                pos.queryRewards(position.bidTick, position.askTick),
+                pos.queryRangePos(position.bidTick, position.askTick),
+            ]);
+
             newPosition.feesLiqBase = bigIntToFloat(
                 positionRewards.baseRewards,
             );
             newPosition.feesLiqQuote = bigIntToFloat(
                 positionRewards.quoteRewards,
             );
-
-            const liqBigNum = (
-                await pos.queryRangePos(position.bidTick, position.askTick)
-            ).liq;
-            const liqNum = bigIntToFloat(liqBigNum);
-
-            newPosition.positionLiq = liqNum;
+            newPosition.positionLiq = bigIntToFloat(rangePos.liq);
         } else {
             newPosition.positionLiq = position.concLiq;
 
@@ -340,10 +341,10 @@ export const getPositionData = async (
 
     if (quotePrice && basePrice) {
         newPosition.totalValueUSD =
-            quotePrice.usdPrice *
+            quotePrice *
                 (newPosition.positionLiqQuoteDecimalCorrected +
                     (newPosition.feesLiqQuoteDecimalCorrected || 0)) +
-            basePrice.usdPrice *
+            basePrice *
                 (newPosition.positionLiqBaseDecimalCorrected +
                     (newPosition.feesLiqBaseDecimalCorrected || 0));
         if (
@@ -351,32 +352,32 @@ export const getPositionData = async (
             newPosition.feesLiqBaseDecimalCorrected
         )
             newPosition.feesValueUSD =
-                quotePrice.usdPrice * newPosition.feesLiqQuoteDecimalCorrected +
-                basePrice.usdPrice * newPosition.feesLiqBaseDecimalCorrected;
+                quotePrice * newPosition.feesLiqQuoteDecimalCorrected +
+                basePrice * newPosition.feesLiqBaseDecimalCorrected;
     } else if (basePrice) {
-        const quotePrice = basePrice.usdPrice * poolPrice;
+        const quotePrice = basePrice * poolPrice;
         newPosition.totalValueUSD =
             quotePrice *
                 (newPosition.positionLiqQuoteDecimalCorrected +
                     (newPosition.feesLiqQuoteDecimalCorrected || 0)) +
-            basePrice.usdPrice *
+            basePrice *
                 (newPosition.positionLiqBaseDecimalCorrected +
                     (newPosition.feesLiqBaseDecimalCorrected || 0));
         if (newPosition.feesLiqBaseDecimalCorrected)
             newPosition.feesValueUSD =
-                basePrice.usdPrice * newPosition.feesLiqBaseDecimalCorrected;
+                basePrice * newPosition.feesLiqBaseDecimalCorrected;
     } else if (quotePrice) {
-        const basePrice = quotePrice.usdPrice / poolPrice;
+        const basePrice = quotePrice / poolPrice;
         newPosition.totalValueUSD =
             basePrice *
                 (newPosition.positionLiqBaseDecimalCorrected +
                     (newPosition.feesLiqBaseDecimalCorrected || 0)) +
-            quotePrice.usdPrice *
+            quotePrice *
                 (newPosition.positionLiqQuoteDecimalCorrected +
                     (newPosition.feesLiqQuoteDecimalCorrected || 0));
         if (newPosition.feesLiqQuoteDecimalCorrected)
             newPosition.feesValueUSD =
-                quotePrice.usdPrice * newPosition.feesLiqQuoteDecimalCorrected;
+                quotePrice * newPosition.feesLiqQuoteDecimalCorrected;
     } else {
         newPosition.totalValueUSD = 0.0;
         newPosition.feesValueUSD = 0.0;

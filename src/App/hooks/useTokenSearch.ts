@@ -2,6 +2,8 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { tokenListURIs, ZERO_ADDRESS } from '../../ambient-utils/constants';
 import {
     isBlastRewardToken,
+    isPriorityEthEquivalent,
+    isPriorityStakedUSD,
     isUsdcToken,
     isUSDQtoken,
     removeWrappedNative,
@@ -129,14 +131,14 @@ export const useTokenSearch = (
             };
             // array of ambient and uniswap tokens, no dupes
             const baseTokenList: TokenIF[] =
-                chainId === '0x1'
+                chainId === '0x1' // ethereum mainnet
                     ? patchLists(
                           tokens.getTokensFromList(tokenListURIs.ambient),
                           tokens.getTokensFromList(
                               tokenListURIs.ethereumCoingecko,
                           ),
                       )
-                    : chainId === '0x82750'
+                    : chainId === '0x82750' // scroll mainnet
                       ? patchLists(
                             tokens.getTokensFromList(tokenListURIs.ambient),
                             // tokens.getTokensFromList(tokenListURIs.scrollTech),
@@ -144,23 +146,17 @@ export const useTokenSearch = (
                                 tokenListURIs.scrollCoingecko,
                             ),
                         )
-                      : chainId === '0x13e31'
+                      : chainId === '0x13e31' // blast mainnet
                         ? patchLists(
                               tokens.getTokensFromList(tokenListURIs.ambient),
                               tokens.getTokensFromList(
                                   tokenListURIs.blastCoingecko,
                               ),
                           )
-                        : chainId === '0xaa36a7'
-                          ? patchLists(
-                                tokens.getTokensFromList(tokenListURIs.ambient),
-                                tokens.getTokensFromList(tokenListURIs.testnet),
-                                // , tokens.getTokensFromList(tokenListURIs.futa),
-                            )
-                          : patchLists(
-                                tokens.getTokensFromList(tokenListURIs.ambient),
-                                tokens.getTokensFromList(tokenListURIs.testnet),
-                            );
+                        : patchLists(
+                              tokens.getTokensFromList(tokenListURIs.ambient),
+                              tokens.getTokensFromList(tokenListURIs.testnet),
+                          );
 
             // ERC-20 tokens from connected wallet subject to universe verification
             const verifiedWalletTokens: TokenIF[] = walletTokens.filter(
@@ -235,8 +231,12 @@ export const useTokenSearch = (
                     // canonical token addresses to assign probability
                     if (tknAddress === ZERO_ADDRESS) {
                         priority = 100;
+                    } else if (isPriorityEthEquivalent(tknAddress)) {
+                        priority = 95;
                     } else if (isUsdcToken(tknAddress)) {
                         priority = 90;
+                    } else if (isPriorityStakedUSD(tknAddress)) {
+                        priority = 89;
                     } else if (isBlastRewardToken(tknAddress)) {
                         priority = 85;
                     } else if (isUSDQtoken(tknAddress)) {

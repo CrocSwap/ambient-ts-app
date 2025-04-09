@@ -4,7 +4,6 @@ import {
     KeyboardEvent,
     useContext,
     useEffect,
-    useRef,
     useState,
 } from 'react';
 import { AiOutlineFire } from 'react-icons/ai';
@@ -20,7 +19,6 @@ import {
     useSidebarSearch,
 } from '../../../App/hooks/useSidebarSearch';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -31,13 +29,12 @@ import {
     SearchContainer,
     SearchInput,
 } from '../../../styled/Components/Sidebar';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import FavoritePools from '../Sidebar/FavoritePools';
 import RecentPools from '../Sidebar/RecentPools';
 import TopPools from '../Sidebar/TopPools';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import styles from './DropdownSearch.module.css';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface optionItem {
     id: number;
@@ -49,7 +46,6 @@ const DropdownSearch = () => {
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
@@ -61,10 +57,6 @@ const DropdownSearch = () => {
         ? [baseToken, quoteToken]
         : [quoteToken, baseToken];
     const smallScrenView = useMediaQuery('(max-width: 968px)');
-
-    const searchDropdownItemRef = useRef<HTMLDivElement>(null);
-    const clickOutsideHandler = () => setIsPoolDropdownOpen(false);
-    useOnClickOutside(searchDropdownItemRef, clickOutsideHandler);
 
     const searchInputElementId = 'sidebar_search_input';
     const focusInput = (): void => {
@@ -165,17 +157,17 @@ const DropdownSearch = () => {
         {
             id: 1,
             name: 'Top Pools',
-            data: <TopPools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
+            data: <TopPools />,
         },
         {
             id: 2,
             name: 'Favorites',
-            data: <FavoritePools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
+            data: <FavoritePools />,
         },
         {
             id: 3,
             name: 'Recent Pairs',
-            data: <RecentPools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
+            data: <RecentPools />,
         },
     ];
 
@@ -241,11 +233,7 @@ const DropdownSearch = () => {
 
     return (
         <AnimatePresence>
-            <FlexContainer
-                gap={8}
-                className={styles.main_container}
-                ref={searchDropdownItemRef}
-            >
+            <FlexContainer gap={8} className={styles.main_container}>
                 <HeaderButtons
                     id='token_pair_in_chart_header'
                     aria-label='toggle dropdown.'

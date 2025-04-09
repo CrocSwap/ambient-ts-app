@@ -61,7 +61,12 @@ function TradeModuleHeader(props: propsIF) {
         return (
             <>
                 <div className={styles.mobile_container}>
-                    <div style={{ width: '100%' }}>
+                    <div
+                        style={{
+                            width: '100%',
+                            padding: isFuta ? '8px 0' : '',
+                        }}
+                    >
                         <TradeLinks
                             chainId={chainId}
                             tokenA={baseToken}
@@ -77,6 +82,7 @@ function TradeModuleHeader(props: propsIF) {
                         tabIndex={0}
                         aria-label='Settings button'
                         className={styles.icon_container}
+                        style={{ height: isFuta ? '31px' : '' }}
                     >
                         {smallScreen ? (
                             <LuSettings size={20} />

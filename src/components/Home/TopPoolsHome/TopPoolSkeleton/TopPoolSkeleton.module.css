@@ -1,0 +1,90 @@
+.container {
+    width: 270px;
+    height: 120px;
+    border-radius: var(--border-radius);
+    background: var(--dark2);
+    padding: 8px;
+    z-index: 1;
+    cursor: normal;
+    position: relative;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.topContainer,
+.bottomContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.topLeftContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+.topLeftContainer span {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--dark1);
+}
+.topRightContainer {
+    width: 108px;
+    height: 22px;
+    background: var(--dark1);
+}
+
+.bottomLeftContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.bottomLeftContainer span {
+    width: 127px;
+    height: 30px;
+    background: var(--dark1);
+}
+
+.bottomContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.bottomRightContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.bottomRightContainer span {
+    width: 87px;
+    height: 28px;
+    background: var(--dark1);
+}
+/* SKELETON */
+@keyframes shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+.container span,
+.topRightContainer {
+    background: linear-gradient(
+        to right,
+        var(--dark1) 0%,
+        var(--dark3) 20%,
+        var(--dark1) 40%,
+        var(--dark1) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite ease-in-out;
+}

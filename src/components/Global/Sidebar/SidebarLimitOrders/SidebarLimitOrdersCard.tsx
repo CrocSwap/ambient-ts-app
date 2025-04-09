@@ -19,8 +19,14 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
     const { tokens } = useContext(TokenContext);
     const { isTradeDollarizationEnabled } = useContext(PoolContext);
 
-    const baseTokenMoneyness = getMoneynessRankByAddr(order.base);
-    const quoteTokenMoneyness = getMoneynessRankByAddr(order.quote);
+    const baseTokenMoneyness = getMoneynessRankByAddr(
+        order.base,
+        order.chainId,
+    );
+    const quoteTokenMoneyness = getMoneynessRankByAddr(
+        order.quote,
+        order.chainId,
+    );
 
     const isDenomBase = baseTokenMoneyness < quoteTokenMoneyness;
 

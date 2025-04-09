@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { LuRefreshCcw, LuSearch } from 'react-icons/lu';
 import { hiddenTokens } from '../../../ambient-utils/constants';
@@ -6,10 +6,9 @@ import { PoolIF } from '../../../ambient-utils/types';
 import DexTokens from '../../../components/Global/Explore/DexTokens/DexTokens';
 import TopPools from '../../../components/Global/Explore/TopPools/TopPools';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import { AppStateContext } from '../../../contexts';
+import { AppStateContext, ChainDataContext } from '../../../contexts';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ExploreContext } from '../../../contexts/ExploreContext';
-import { PoolContext } from '../../../contexts/PoolContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import styles from './Explore.module.css';
@@ -32,31 +31,17 @@ export default function Explore(props: ExploreIF) {
     const {
         activeNetwork: { chainId, displayName },
     } = useContext(AppStateContext);
-    const { poolList } = useContext(PoolContext);
+    const { activePoolList } = useContext(ChainDataContext);
 
-    const getAllPoolData = async (): Promise<void> => {
-        if (crocEnv && poolList.length) {
-            pools.getAllPools(poolList, crocEnv, chainId);
-        }
-    };
-
-    // trigger process to fetch and format token data when page loads with
-    // ... gatekeeping to prevent re-fetch if data is already loaded
-    useEffect(() => {
-        if (crocEnv !== undefined && topTokensOnchain.data.length === 0) {
-            topTokensOnchain.update();
-        }
-    }, [crocEnv !== undefined]);
-
-    const refreshPools = async (): Promise<void> => {
+    const refreshPools = async () => {
         // make sure crocEnv exists and pool metadata is present
-        if (crocEnv && poolList.length) {
+        if (crocEnv && activePoolList?.length) {
             // clear text in DOM for time since last update
             pools.reset();
-            // pause for a moment to allow spinner to appear
-            await new Promise((resolve) => setTimeout(resolve, 100));
+            // pause for a moment to allow loading indicator to appear
+            await new Promise((resolve) => setTimeout(resolve, 300));
             // use metadata to get expanded pool data
-            getAllPoolData();
+            await pools.processPoolListForActiveChain();
         }
     };
 
@@ -107,10 +92,18 @@ export default function Explore(props: ExploreIF) {
             ? pools.all.filter((pool: PoolIF) => {
                   const lowerCaseQuery = searchQueryPool.toLowerCase();
                   return (
-                      pool.base.name.toLowerCase().includes(lowerCaseQuery) ||
-                      pool.base.symbol.toLowerCase().includes(lowerCaseQuery) ||
-                      pool.quote.name.toLowerCase().includes(lowerCaseQuery) ||
-                      pool.quote.symbol.toLowerCase().includes(lowerCaseQuery)
+                      pool.baseToken.name
+                          .toLowerCase()
+                          .includes(lowerCaseQuery) ||
+                      pool.baseToken.symbol
+                          .toLowerCase()
+                          .includes(lowerCaseQuery) ||
+                      pool.quoteToken.name
+                          .toLowerCase()
+                          .includes(lowerCaseQuery) ||
+                      pool.quoteToken.symbol
+                          .toLowerCase()
+                          .includes(lowerCaseQuery)
                   );
               })
             : pools.all;
@@ -194,7 +187,6 @@ export default function Explore(props: ExploreIF) {
             {inputContainer}
             {view === 'pools' && (
                 <DefaultTooltip
-                    interactive
                     title={
                         isExploreDollarizationEnabled
                             ? 'Switch to prices in native currency'
@@ -228,7 +220,6 @@ export default function Explore(props: ExploreIF) {
                 </DefaultTooltip>
             )}
             <DefaultTooltip
-                interactive
                 title={
                     view === 'pools'
                         ? 'Refresh Top Pools'

@@ -1,8 +1,13 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
-import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
+import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
-import { TokenIF, TransactionIF, TransactionServerIF } from '../../types';
+import {
+    PoolIF,
+    TokenIF,
+    TransactionIF,
+    TransactionServerIF,
+} from '../../types';
 import { SpotPriceFn } from './querySpotPrice';
 
 export const getTransactionData = async (
@@ -11,33 +16,40 @@ export const getTransactionData = async (
     crocEnv: CrocEnv,
     provider: Provider,
     chainId: string,
+    analyticsPoolList: PoolIF[] | undefined,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
-    cachedEnsResolve: FetchAddrFn,
-    skipENSFetch?: boolean,
 ): Promise<TransactionIF> => {
     const newTx = { ...tx } as TransactionIF;
-
     const baseTokenAddress = tx.base.length === 40 ? '0x' + tx.base : tx.base;
     const quoteTokenAddress =
         tx.quote.length === 40 ? '0x' + tx.quote : tx.quote;
 
-    // Fire off network queries async simultaneous up-front
-    const poolPriceNonDisplay = cachedQuerySpotPrice(
-        crocEnv,
-        baseTokenAddress,
-        quoteTokenAddress,
-        chainId,
-        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+    const poolOnAnalyticsPoolList = analyticsPoolList?.find(
+        (poolListEntry: PoolIF) =>
+            poolListEntry.base.toLowerCase() ===
+                baseTokenAddress.toLowerCase() &&
+            poolListEntry.quote.toLowerCase() ===
+                quoteTokenAddress.toLowerCase(),
     );
 
-    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
+    const poolPriceNonDisplay = poolOnAnalyticsPoolList?.lastPriceSwap
+        ? poolOnAnalyticsPoolList.lastPriceSwap
+        : await cachedQuerySpotPrice(
+              crocEnv,
+              baseTokenAddress,
+              quoteTokenAddress,
+              chainId,
+              Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+          );
 
-    newTx.ensResolution = skipENSFetch
-        ? ''
-        : ((await cachedEnsResolve(tx.user)) ?? '');
+    const basePrice = poolOnAnalyticsPoolList?.baseUsdPrice
+        ? poolOnAnalyticsPoolList.baseUsdPrice
+        : (await cachedFetchTokenPrice(baseTokenAddress, chainId))?.usdPrice;
+    const quotePrice = poolOnAnalyticsPoolList?.quoteUsdPrice
+        ? poolOnAnalyticsPoolList.quoteUsdPrice
+        : (await cachedFetchTokenPrice(quoteTokenAddress, chainId))?.usdPrice;
 
     const baseTokenName = tokenList.find(
         (token) =>
@@ -164,10 +176,8 @@ export const getTransactionData = async (
     );
     newTx.swapInvPriceDecimalCorrected = 1 / newTx.swapPriceDecimalCorrected;
 
-    const basePrice = await basePricePromise;
-    const quotePrice = await quotePricePromise;
     const poolPrice = toDisplayPrice(
-        await poolPriceNonDisplay,
+        poolPriceNonDisplay,
         baseTokenDecimals,
         quoteTokenDecimals,
     );
@@ -176,18 +186,18 @@ export const getTransactionData = async (
 
     if (quotePrice && basePrice) {
         newTx.totalValueUSD =
-            basePrice.usdPrice * Math.abs(newTx.baseFlowDecimalCorrected) +
-            quotePrice.usdPrice * Math.abs(newTx.quoteFlowDecimalCorrected);
+            basePrice * Math.abs(newTx.baseFlowDecimalCorrected) +
+            quotePrice * Math.abs(newTx.quoteFlowDecimalCorrected);
     } else if (basePrice) {
-        const quotePrice = basePrice.usdPrice * poolPrice;
+        const quotePrice = basePrice * poolPrice;
         newTx.totalValueUSD =
             quotePrice * Math.abs(newTx.quoteFlowDecimalCorrected) +
-            basePrice.usdPrice * Math.abs(newTx.baseFlowDecimalCorrected);
+            basePrice * Math.abs(newTx.baseFlowDecimalCorrected);
     } else if (quotePrice) {
-        const basePrice = quotePrice.usdPrice / poolPrice;
+        const basePrice = quotePrice / poolPrice;
         newTx.totalValueUSD =
             basePrice * Math.abs(newTx.baseFlowDecimalCorrected) +
-            quotePrice.usdPrice * Math.abs(newTx.quoteFlowDecimalCorrected);
+            quotePrice * Math.abs(newTx.quoteFlowDecimalCorrected);
     } else {
         newTx.totalValueUSD = 0.0;
     }

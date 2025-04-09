@@ -1,4 +1,3 @@
-import { CrocPoolView } from '@crocswap-libs/sdk';
 import {
     createContext,
     Dispatch,
@@ -6,7 +5,6 @@ import {
     SetStateAction,
     useContext,
     useEffect,
-    useMemo,
     useState,
 } from 'react';
 import { ZERO_ADDRESS } from '../ambient-utils/constants';
@@ -20,17 +18,14 @@ import {
 } from '../ambient-utils/dataLayer';
 import { PoolIF, PoolStatIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
-import { usePoolList } from '../App/hooks/usePoolList';
 import { AppStateContext } from './AppStateContext';
-import { CrocEnvContext } from './CrocEnvContext';
+import { ChainDataContext } from './ChainDataContext';
 import { TradeDataContext } from './TradeDataContext';
 
 export interface PoolContextIF {
-    poolList: PoolIF[];
-    pool: CrocPoolView | undefined;
     isPoolInitialized: boolean | undefined;
     poolPriceDisplay: number | undefined;
-    isPoolPriceChangePositive: boolean;
+    isPoolPriceChangePositive: boolean | undefined;
     poolPriceChangePercent: string | undefined;
     dailyVol: number | undefined;
     poolData: PoolStatIF;
@@ -48,30 +43,25 @@ export const PoolContext = createContext({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { GCGO_URL, chainId, poolIndex },
+        activeNetwork: { chainId, poolIndex },
     } = useContext(AppStateContext);
-    const { crocEnv } = useContext(CrocEnvContext);
+    const { activePoolList } = useContext(ChainDataContext);
 
     const { baseToken, quoteToken, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
 
-    const poolList: PoolIF[] = usePoolList(GCGO_URL, crocEnv);
-
-    const pool = useMemo(
-        () => crocEnv?.pool(baseToken.address, quoteToken.address),
-        [crocEnv, baseToken.address, quoteToken.address],
-    );
-
     const poolArg: PoolIF = {
-        base: baseToken,
-        quote: quoteToken,
+        baseToken,
+        quoteToken,
+        base: baseToken.address,
+        quote: quoteToken.address,
         chainId: chainId,
         poolIdx: poolIndex,
     };
 
     const poolData = useFetchPoolStats(
         poolArg,
-        undefined,
+        activePoolList,
         true,
         true,
         didUserFlipDenom,
@@ -133,14 +123,15 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
             baseToken.address,
             quoteToken.address,
         );
-        const isPairEthPair = isETHPair(baseToken.address, quoteToken.address);
+        const isPairEthPair = isETHPair(
+            baseToken.address,
+            quoteToken.address,
+            chainId,
+        );
         const isPoolBtcPair = isBtcPair(baseToken.address, quoteToken.address);
 
         const excludeFromUsdConversion =
-            isDefaultDenomTokenExcludedFromUsdConversion(
-                baseToken.address,
-                quoteToken.address,
-            );
+            isDefaultDenomTokenExcludedFromUsdConversion(baseToken, quoteToken);
 
         const isPairEthWbtc =
             baseToken.address === ZERO_ADDRESS &&
@@ -165,8 +156,6 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     }, [baseToken.address, quoteToken.address, usdPrice !== undefined]);
 
     const poolContext: PoolContextIF = {
-        poolList,
-        pool,
         isPoolInitialized,
         poolPriceDisplay,
         isPoolPriceChangePositive,

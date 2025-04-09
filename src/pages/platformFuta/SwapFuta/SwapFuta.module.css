@@ -47,20 +47,20 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
-    gap: 1rem;
+    gap: 8px;
 }
 
 .mobile_container {
     max-width: 600px;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 8px;
 }
 
 .mobile_tabs_container {
-    padding: 0 1rem;
     display: grid;
     align-items: center;
     gap: 8px;
+    padding: 8px 0;
 }
 
 .mobile_tabs_container button {
@@ -70,38 +70,47 @@
     border: 1px solid transparent;
     color: var(--text2);
     padding: 2px 0;
-    border-radius: 25px;
-    font-size: 12px;
+    color: var(--base-text1, #aacfd1);
+    text-align: center;
+
+    /* Mono 18 */
+    font-family: 'Fira Mono';
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.36px;
+    text-transform: uppercase;
 }
 
 .activeTab {
-    border: 1px solid var(--accent1);
-    color: var(--accent1);
+    color: var(--dark1);
+    background: var(--accent1);
 }
 
-.label{
+.label {
     font-size: var(--body-size);
-    color: #5C6F72;
+    color: #5c6f72;
     text-transform: uppercase;
     padding: 0 8px;
 }
 
 @media (min-width: 768px) {
-
-
-.chartSection{
-    border: 2px solid var(--borders, #5C6F72);
-    padding: 0 8px;
-}
+    .chartSection {
+        border: 2px solid var(--borders, #5c6f72);
+        padding: 0 8px;
+    }
 }
 @media (min-width: 1280px) {
-    .mainSection{
+    .mainSection {
         display: grid;
         grid-template-columns: auto 390px;
     }
-
 }
-@media (max-width: 600px) {
+@media (max-width: 599px) {
+    /* .chart_mobile_container{
+        padding: 0 8px
+    }
     .mainSection {
         display: flex;
         flex-direction: column;
@@ -110,6 +119,43 @@
 
     .chartSection {
         height: 130px;
+    } */
+
+    .mobile_container,
+    .chart_mobile_container {
+        overflow: hidden !important;
+        height: calc(100svh - 56px) !important;
+        padding: 0 8px;
+    }
+
+    .chart_mobile_container .activeTabDataContainer {
+        width: calc(100% + 16px);
+        margin-left: -8px;
+    }
+
+    .breadcrumbMobileTabs {
+        flex-shrink: 0; /* Prevent shrinking */
+        width: 100%;
+        background-color: var(
+            --dark1
+        ); /* Or whatever your background color is */
+        z-index: 1; /* Ensure it stays on top */
+    }
+
+    .activeTabDataContainer {
+        flex: 1; /* Take remaining space */
+        overflow-y: auto; /* Enable vertical scrolling */
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+        position: relative;
+        height: auto; /* Let flex control the height */
+    }
+}
+
+@media (min-width: 600px) and (max-width: 1024px) {
+    .mobile_container,
+    .chart_mobile_container {
+        overflow: hidden !important;
+        height: calc(100svh) !important;
     }
 }
 

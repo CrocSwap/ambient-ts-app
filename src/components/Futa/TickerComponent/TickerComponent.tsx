@@ -1,6 +1,6 @@
 import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
@@ -189,6 +189,8 @@ const useAuctionStates = () => {
 export default function TickerComponent(props: PropsIF) {
     const { isAuctionPage, placeholderTicker } = props;
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
+    const navigate = useNavigate();
+
     const {
         freshAuctionStatusData,
         getFreshAuctionData,
@@ -249,6 +251,13 @@ export default function TickerComponent(props: PropsIF) {
     };
 
     const { ticker: tickerFromParams } = useParams();
+
+    const tickerExists =
+        !tickerFromParams ||
+        !globalAuctionList ||
+        globalAuctionList.data?.some(
+            (item) => item.ticker === tickerFromParams,
+        );
 
     useEffect(() => {
         if (!tickerFromParams) return;
@@ -670,22 +679,31 @@ export default function TickerComponent(props: PropsIF) {
         });
     }
 
-    const bidButton = (
+    const bidButton = !tickerExists ? (
+        <button
+            className={`${styles.bidButton} ${desktopScreen ? styles.bidButtonDesktop : ''}`}
+            onClick={() => navigate(`/create?ticker=${tickerFromParams}`)}
+        >
+            Create Ticker
+        </button>
+    ) : (
         <button
             className={`${styles.bidButton} ${
                 isButtonDisabled ? styles.bidButtonDisabled : ''
             } ${desktopScreen ? styles.bidButtonDesktop : ''}`}
-            onClick={() =>
-                isAllocationAvailableToClaim
-                    ? sendClaimTransaction()
-                    : isNativeTokenAvailableToReturn
-                      ? sendReturnTransaction()
-                      : showTradeButton
-                        ? goToSwap()
-                        : !isUserConnected
-                          ? openWalletModal()
-                          : sendBidTransaction()
-            }
+            onClick={() => {
+                if (isAllocationAvailableToClaim) {
+                    sendClaimTransaction();
+                } else if (isNativeTokenAvailableToReturn) {
+                    sendReturnTransaction();
+                } else if (showTradeButton) {
+                    goToSwap();
+                } else if (!isUserConnected) {
+                    openWalletModal();
+                } else {
+                    sendBidTransaction();
+                }
+            }}
             disabled={isButtonDisabled}
         >
             {buttonLabel}
@@ -828,9 +846,20 @@ export default function TickerComponent(props: PropsIF) {
             <div className={styles.flexColumn}>
                 {showComments && <Comments />}
             </div>
+            {!tickerExists && (
+                <div className={styles.noTickerContent}>
+                    This ticker doesn’t exist yet. Would you like to create it?
+                </div>
+            )}
 
             {!showComments && (
-                <>
+                <div
+                    className={
+                        tickerExists
+                            ? styles.inputContainer
+                            : styles.inputContainerBlurred
+                    }
+                >
                     {openedBidDisplay}
                     {yourBidDisplay}
                     <div className={styles.flexColumn}>
@@ -838,7 +867,7 @@ export default function TickerComponent(props: PropsIF) {
                         {bidSizeDisplay}
                         {extraInfoDisplay}
                     </div>
-                </>
+                </div>
             )}
         </div>
     );
@@ -846,6 +875,7 @@ export default function TickerComponent(props: PropsIF) {
     return (
         <div className={styles.container}>
             {isAuctionCompleted ? completedDisplay : unCompletedDisplay}
+            {/* <NoTicker/> */}
             {!showComments && bidButton}
         </div>
     );

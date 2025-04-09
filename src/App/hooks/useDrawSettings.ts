@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { diffHashSig } from '../../ambient-utils/dataLayer';
 import { ChartThemeIF } from '../../contexts/ChartContext';
 import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/platformAmbient/Chart/ChartUtils/chartConstants';
@@ -8,16 +8,17 @@ import {
     fibDefaultLevels,
     fibonacciDefaultDash,
 } from '../../pages/platformAmbient/Chart/ChartUtils/drawConstants';
+import { getCssVariable } from '../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
+import { BrandContext } from '../../contexts/BrandContext';
 
 export const useDrawSettings = (chartThemeColors: ChartThemeIF | undefined) => {
-    const drawnShapeDefaultColor =
-        chartThemeColors && chartThemeColors.drawngShapeDefaultColor
-            ? chartThemeColors.drawngShapeDefaultColor.toString()
-            : '#7371fc';
+    const { skin } = useContext(BrandContext);
 
-    const d3BackgroundColor = chartThemeColors
-        ? chartThemeColors.drawngShapeDefaultColor
-        : undefined;
+    const drawnShapeDefaultColor = chartThemeColors
+        ? chartThemeColors.accent1.toString()
+        : getCssVariable(skin.active, '--accent1').toString();
+
+    const d3BackgroundColor = chartThemeColors?.accent1.copy();
 
     if (d3BackgroundColor) d3BackgroundColor.opacity = 0.15;
 

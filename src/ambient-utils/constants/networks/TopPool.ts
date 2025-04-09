@@ -5,8 +5,10 @@ import { PoolIF, TokenIF } from '../../types';
 
 export class TopPool implements PoolIF {
     name: string;
-    base: TokenIF;
-    quote: TokenIF;
+    base: string;
+    quote: string;
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
     chainId: string;
     poolIdx: number;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
@@ -18,9 +20,10 @@ export class TopPool implements PoolIF {
             0;
 
         this.name = `${baseToken.symbol} / ${quoteToken.symbol}`;
-
-        this.base = baseToken;
-        this.quote = quoteToken;
+        this.base = baseToken.address;
+        this.quote = quoteToken.address;
+        this.baseToken = baseToken;
+        this.quoteToken = quoteToken;
         this.chainId =
             baseToken.chainId === quoteToken.chainId
                 ? chainNumToString(baseToken.chainId)

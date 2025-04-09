@@ -1,6 +1,8 @@
 import { AnimateSharedLayout, motion } from 'framer-motion';
-import { memo, useContext, useEffect, useState } from 'react';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { Link, useLocation } from 'react-router-dom';
+import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
 import {
     chainNumToString,
     checkEoaHexAddress,
@@ -8,17 +10,17 @@ import {
     someSupportedNetworkIsVaultSupportedNetwork,
     trimString,
 } from '../../../ambient-utils/dataLayer';
-import logo from '../../../assets/images/logos/logo_mark.svg';
+import logo from '../../../assets/images/logos/ambient_logo_mark.svg';
 import Button from '../../../components/Form/Button';
+import TutorialOverlayUrlBased from '../../../components/Global/TutorialOverlay/TutorialOverlayUrlBased';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
-import { BrandContext } from '../../../contexts';
+import { BrandContext, ChainDataContext } from '../../../contexts';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
@@ -37,17 +39,16 @@ import UserMenu from './UserMenu/UserMenu';
 
 const PageHeader = function () {
     const {
-        activeNetwork: { chainId, poolIndex: poolId },
         walletModal: { open: openWalletModal },
         appHeaderDropdown,
     } = useContext(AppStateContext);
     const { headerImage } = useContext(BrandContext);
-    const { crocEnv, setCrocEnv } = useContext(CrocEnvContext);
+    const { setCrocEnv } = useContext(CrocEnvContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
+    const { isActiveNetworkMonad } = useContext(ChainDataContext);
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
-    const { recentPools } = useContext(SidebarContext);
     const { setShowAllData, activeTradeTab } = useContext(TradeTableContext);
     const {
         baseToken: {
@@ -109,20 +110,6 @@ const PageHeader = function () {
         useContext(TradeDataContext);
     const baseSymbol = baseToken.symbol;
     const quoteSymbol = quoteToken.symbol;
-    const baseAddressInRtk = baseToken.address;
-    const quoteAddressInRtk = quoteToken.address;
-
-    useEffect(() => {
-        if (baseAddressInRtk && quoteAddressInRtk && crocEnv) {
-            const promise = crocEnv
-                .pool(baseToken.address, quoteToken.address)
-                .isInit();
-            Promise.resolve(promise).then((poolExists: boolean) => {
-                poolExists &&
-                    recentPools.add(baseToken, quoteToken, chainId, poolId);
-            });
-        }
-    }, [baseAddressInRtk, quoteAddressInRtk, crocEnv]);
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -312,7 +299,8 @@ const PageHeader = function () {
         {
             title: 'Points',
             destination: '/account/points',
-            shouldDisplay: !!isUserConnected && desktopScreen,
+            shouldDisplay:
+                !!isUserConnected && desktopScreen && !isActiveNetworkMonad,
         },
     ];
 
@@ -405,6 +393,10 @@ const PageHeader = function () {
         };
     }, []);
 
+    // ------------------  TUTORIAL FUNCTIONALITY
+    const [replayTutorial, setReplayTutorial] = useState(false);
+    const tutorialBtnRef = useRef<HTMLDivElement>(null);
+
     return (
         <>
             <header
@@ -463,6 +455,16 @@ const PageHeader = function () {
                                 overflow='visible'
                             >
                                 <NetworkSelector />
+                                {!DISABLE_ALL_TUTOS && (
+                                    <div
+                                        className={styles.tutorialBtn}
+                                        ref={tutorialBtnRef}
+                                        onClick={() => setReplayTutorial(true)}
+                                    >
+                                        {' '}
+                                        <AiOutlineQuestionCircle /> Help
+                                    </div>
+                                )}
                                 {!isUserConnected && connectWalletButton}
                                 <UserMenu {...userMenuProps} />
                             </FlexContainer>
@@ -470,6 +472,13 @@ const PageHeader = function () {
                     )}
                 </div>
             </header>
+            {!DISABLE_ALL_TUTOS && (
+                <TutorialOverlayUrlBased
+                    replayTutorial={replayTutorial}
+                    setReplayTutorial={setReplayTutorial}
+                    tutorialBtnRef={tutorialBtnRef}
+                />
+            )}
         </>
     );
 };

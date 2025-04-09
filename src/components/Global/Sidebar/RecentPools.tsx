@@ -1,7 +1,13 @@
-import { memo, useContext, useEffect, useState } from 'react';
-import { PoolQueryFn } from '../../../ambient-utils/dataLayer';
-import { AppStateContext } from '../../../contexts';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
+import { expandPoolStats } from '../../../ambient-utils/dataLayer';
+import { PoolIF } from '../../../ambient-utils/types';
+import {
+    AppStateContext,
+    CachedDataContext,
+    CrocEnvContext,
+    ExploreContext,
+    TokenContext,
+} from '../../../contexts';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { FlexContainer } from '../../../styled/Common';
 import {
@@ -10,50 +16,67 @@ import {
 } from '../../../styled/Components/Sidebar';
 import PoolsListItem from './PoolsListItem';
 
-interface propsIF {
-    cachedQuerySpotPrice: PoolQueryFn;
-}
-
-function RecentPools(props: propsIF) {
-    const { cachedQuerySpotPrice } = props;
-
+function RecentPools() {
     const { recentPools } = useContext(SidebarContext);
+
+    const { tokens } = useContext(TokenContext);
+
+    const { cachedFetchTokenPrice, cachedTokenDetails, cachedQuerySpotPrice } =
+        useContext(CachedDataContext);
     const { crocEnv } = useContext(CrocEnvContext);
+
+    const {
+        pools: { all: explorePools },
+    } = useContext(ExploreContext);
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
+    const [expandedPoolData, setExpandedPoolData] = useState<PoolIF[]>([]);
 
-    const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
+    const fiveRecentPools = useMemo(() => recentPools.get(5), [recentPools]);
+
     useEffect(() => {
-        if (!crocEnv) return;
+        if (!fiveRecentPools.length || !crocEnv) return;
 
-        const fetchSpotPrices = async () => {
-            if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
-                return;
-            const spotPricePromises = recentPools.get(5).map((pool) =>
-                cachedQuerySpotPrice(
+        const expandedPoolDataOnCurrentChain = recentPools
+            .get(5)
+            .filter((pool) => {
+                return pool.chainId === chainId;
+            })
+            .map((pool: PoolIF) => {
+                const poolDataFromExplore = explorePools.find(
+                    (explorePool) =>
+                        explorePool.poolIdx === pool.poolIdx &&
+                        explorePool.chainId === pool.chainId &&
+                        explorePool.baseToken.address ===
+                            pool.baseToken.address &&
+                        explorePool.quoteToken.address ===
+                            pool.quoteToken.address,
+                );
+                if (poolDataFromExplore) return poolDataFromExplore;
+                return expandPoolStats(
+                    pool,
                     crocEnv,
-                    pool.base.address,
-                    pool.quote.address,
-                    chainId,
-                    poolPriceCacheTime,
-                ).catch((error) => {
-                    console.error(
-                        `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
-                        error,
-                    );
-                    return undefined; // Handle the case where fetching spot price fails
-                }),
-            );
+                    cachedFetchTokenPrice,
+                    cachedTokenDetails,
+                    cachedQuerySpotPrice,
+                    tokens.tokenUniv,
+                );
+            });
 
-            const results = await Promise.all(spotPricePromises);
-            setSpotPrices(results);
-        };
-
-        fetchSpotPrices();
-    }, [recentPools, crocEnv, chainId, poolPriceCacheTime]);
+        Promise.all(expandedPoolDataOnCurrentChain)
+            .then((results: Array<PoolIF>) => {
+                // setIsFetchError(false);
+                if (results.length) {
+                    setExpandedPoolData(results);
+                }
+            })
+            .catch((err) => {
+                // setIsFetchError(true);
+                console.warn(err);
+            });
+    }, [fiveRecentPools, crocEnv === undefined, explorePools]);
 
     return (
         <FlexContainer
@@ -71,12 +94,8 @@ function RecentPools(props: propsIF) {
             </ItemHeaderContainer>
 
             <ItemsContainer>
-                {recentPools.get(5).map((pool, idx) => (
-                    <PoolsListItem
-                        pool={pool}
-                        key={idx}
-                        spotPrice={spotPrices[idx]} // Pass the corresponding spot price
-                    />
+                {expandedPoolData.map((pool, idx) => (
+                    <PoolsListItem pool={pool} key={idx} />
                 ))}
             </ItemsContainer>
         </FlexContainer>

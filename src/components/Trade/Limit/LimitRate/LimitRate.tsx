@@ -1,4 +1,8 @@
-import { pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
+import {
+    fromDisplayPrice,
+    pinTickLower,
+    pinTickUpper,
+} from '@crocswap-libs/sdk';
 import {
     ChangeEvent,
     Dispatch,
@@ -40,7 +44,7 @@ interface propsIF {
     displayPrice: string;
     setDisplayPrice: Dispatch<SetStateAction<string>>;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
-    isSellTokenBase: boolean;
+    isTokenABase: boolean;
     disable?: boolean;
     updateURL: (changes: updatesIF) => void;
 }
@@ -49,7 +53,7 @@ export default function LimitRate(props: propsIF) {
     const {
         displayPrice,
         setDisplayPrice,
-        isSellTokenBase,
+        isTokenABase,
         setPriceInputFieldBlurred,
         disable,
         updateURL,
@@ -60,7 +64,7 @@ export default function LimitRate(props: propsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { crocEnv } = useContext(CrocEnvContext);
-    const { pool, usdPriceInverse, isTradeDollarizationEnabled, poolData } =
+    const { usdPriceInverse, isTradeDollarizationEnabled, poolData } =
         useContext(PoolContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
@@ -75,6 +79,8 @@ export default function LimitRate(props: propsIF) {
         tokenB,
         isTokenABase: isBid,
         currentPoolPriceTick,
+        baseToken,
+        quoteToken,
     } = useContext(TradeDataContext);
 
     const { basePrice, quotePrice, poolPriceDisplay } = poolData;
@@ -128,7 +134,7 @@ export default function LimitRate(props: propsIF) {
 
     const willLimitFail = async (testLimitTick: number) => {
         try {
-            if (!crocEnv) return;
+            if (!crocEnv) return true;
 
             const testOrder = isTokenAPrimary
                 ? crocEnv.sell(tokenA.address, 0)
@@ -146,31 +152,46 @@ export default function LimitRate(props: propsIF) {
             }
         } catch (error) {
             console.error(error);
+            return true;
         }
     };
 
     useEffect(() => {
         (async () => {
             if (currentPoolPriceTick !== undefined) {
-                let newTopOfBookLimit = isSellTokenBase
+                let newTopOfBookLimit = isTokenABase
                     ? pinTickToTickLower(currentPoolPriceTick, gridSize) -
                       gridSize
                     : pinTickToTickUpper(currentPoolPriceTick, gridSize) +
                       gridSize;
-                const willFail = await willLimitFail(newTopOfBookLimit);
-                if (willFail) {
-                    newTopOfBookLimit = isSellTokenBase
-                        ? newTopOfBookLimit - gridSize
-                        : newTopOfBookLimit + gridSize;
+
+                let attempts = 0;
+                let willFail = true;
+
+                // Retry logic: Check up to 3 times if the limit will fail
+                while (willFail && attempts < 3) {
+                    willFail = await willLimitFail(newTopOfBookLimit);
+                    // console.log({
+                    //     willFail,
+                    //     newTopOfBookLimit,
+                    //     currentPoolPriceTick,
+                    //     isTokenABase,
+                    //     gridSize,
+                    // });
+
+                    if (willFail) {
+                        newTopOfBookLimit = isTokenABase
+                            ? newTopOfBookLimit - gridSize
+                            : newTopOfBookLimit + gridSize;
+                    }
+
+                    attempts++;
                 }
+
                 setTopOfBookTickValue(newTopOfBookLimit);
-                if (selectedPreset === 0) {
-                    setLimitTick(topOfBookTickValue);
-                    updateURL({ update: [['limitTick', newTopOfBookLimit]] });
-                    setPriceInputFieldBlurred(true);
-                }
+
                 setOnePercentTickValue(
-                    isSellTokenBase
+                    isTokenABase
                         ? pinTickToTickLower(
                               currentPoolPriceTick - 1 * 100,
                               gridSize,
@@ -180,8 +201,9 @@ export default function LimitRate(props: propsIF) {
                               gridSize,
                           ),
                 );
+
                 setFivePercentTickValue(
-                    isSellTokenBase
+                    isTokenABase
                         ? pinTickToTickLower(
                               currentPoolPriceTick - 5 * 100,
                               gridSize,
@@ -191,8 +213,9 @@ export default function LimitRate(props: propsIF) {
                               gridSize,
                           ),
                 );
+
                 setTenPercentTickValue(
-                    isSellTokenBase
+                    isTokenABase
                         ? pinTickToTickLower(
                               currentPoolPriceTick - 10 * 100,
                               gridSize,
@@ -204,13 +227,21 @@ export default function LimitRate(props: propsIF) {
                 );
             }
         })();
-    }, [currentPoolPriceTick, isSellTokenBase, gridSize, selectedPreset]);
+    }, [currentPoolPriceTick, isTokenABase, gridSize]);
+
+    useEffect(() => {
+        if (selectedPreset === 0 && topOfBookTickValue !== undefined) {
+            setLimitTick(topOfBookTickValue);
+            updateURL({ update: [['limitTick', topOfBookTickValue]] });
+            setPriceInputFieldBlurred(true);
+        }
+    }, [selectedPreset, topOfBookTickValue]);
 
     const updateLimitWithButton = (percent: number) => {
         if (!currentPoolPriceTick) return;
         const lowTick = currentPoolPriceTick - percent * 100;
         const highTick = currentPoolPriceTick + percent * 100;
-        const pinnedTick: number = isSellTokenBase
+        const pinnedTick: number = isTokenABase
             ? pinTickToTickLower(lowTick, gridSize)
             : pinTickToTickUpper(highTick, gridSize);
 
@@ -220,45 +251,46 @@ export default function LimitRate(props: propsIF) {
     };
 
     const handleLimitChange = async (value: string) => {
-        if (pool) {
-            if (parseFloat(value) === 0 || isNaN(parseFloat(value))) return;
-            const limit = await pool.fromDisplayPrice(
-                isDenomBase ? parseFloat(value) : 1 / parseFloat(value),
-            );
+        if (parseFloat(value) === 0 || isNaN(parseFloat(value))) return;
+        const limit = await fromDisplayPrice(
+            parseFloat(value),
+            baseToken.decimals,
+            quoteToken.decimals,
+            isDenomBase,
+        );
 
-            if (limit) {
-                const pinnedTick: number = isSellTokenBase
-                    ? pinTickLower(limit, gridSize)
-                    : pinTickUpper(limit, gridSize);
-                setLimitTick(pinnedTick);
+        if (limit) {
+            const pinnedTick: number = isTokenABase
+                ? pinTickLower(limit, gridSize)
+                : pinTickUpper(limit, gridSize);
+            setLimitTick(pinnedTick);
 
-                const newLimitNum = parseFloat(value);
+            const newLimitNum = parseFloat(value);
 
-                const currentPoolPriceNum = poolPriceDisplay
-                    ? isDenomBase
-                        ? 1 / poolPriceDisplay
-                        : poolPriceDisplay
-                    : undefined;
+            const currentPoolPriceNum = poolPriceDisplay
+                ? isDenomBase
+                    ? 1 / poolPriceDisplay
+                    : poolPriceDisplay
+                : undefined;
 
-                const newLimitBelowCurrentPoolPrice = currentPoolPriceNum
-                    ? newLimitNum < currentPoolPriceNum
-                    : false;
-                const shouldReverse =
-                    side === 'sell'
-                        ? newLimitBelowCurrentPoolPrice
-                        : !newLimitBelowCurrentPoolPrice;
+            const newLimitBelowCurrentPoolPrice = currentPoolPriceNum
+                ? newLimitNum < currentPoolPriceNum
+                : false;
+            const shouldReverse =
+                side === 'sell'
+                    ? newLimitBelowCurrentPoolPrice
+                    : !newLimitBelowCurrentPoolPrice;
 
-                if (shouldReverse) {
-                    setIsTokenAPrimary((isTokenAPrimary) => !isTokenAPrimary);
-                    linkGenLimit.redirect({
-                        chain: chainId,
-                        tokenA: tokenB.address,
-                        tokenB: tokenA.address,
-                        limitTick: pinnedTick,
-                    });
-                } else {
-                    updateURL({ update: [['limitTick', pinnedTick]] });
-                }
+            if (shouldReverse) {
+                setIsTokenAPrimary((isTokenAPrimary) => !isTokenAPrimary);
+                linkGenLimit.redirect({
+                    chain: chainId,
+                    tokenA: tokenB.address,
+                    tokenB: tokenA.address,
+                    limitTick: pinnedTick,
+                });
+            } else {
+                updateURL({ update: [['limitTick', pinnedTick]] });
             }
         }
     };
@@ -272,6 +304,7 @@ export default function LimitRate(props: propsIF) {
     const handleOnChange = (input: string) => {
         if (!isValidLimitInputString(input)) return;
         setSelectedPreset(undefined);
+
         setDisplayPrice(input);
     };
 

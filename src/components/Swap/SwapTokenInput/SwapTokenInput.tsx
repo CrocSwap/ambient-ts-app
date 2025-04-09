@@ -176,13 +176,14 @@ function SwapTokenInput(props: propsIF) {
     ): Promise<number | undefined> {
         if (
             !isUserOnline ||
+            !isPoolInitialized ||
+            !crocEnv ||
             isNaN(parseFloat(input)) ||
-            parseFloat(input) <= 0 ||
-            !crocEnv
+            parseFloat(input) <= 0
         ) {
             setIsLiquidityInsufficient(false);
 
-            return undefined;
+            return;
         }
         const impact = await calcImpact(
             sellToken,
@@ -192,15 +193,14 @@ function SwapTokenInput(props: propsIF) {
             slippageTolerancePercentage / 100,
             input,
         );
-        if (impact === undefined) {
-            setLastImpactQuery(undefined);
-        } else {
-            setLastImpactQuery({
-                input,
-                isInputSell: sellToken,
-                impact,
-            });
-        }
+        if (impact === undefined) return;
+
+        setLastImpactQuery({
+            input,
+            isInputSell: sellToken,
+            impact,
+        });
+
         if (sellToken) {
             const estimatedBuyBigInt = impact?.buyQty
                 ? stringToBigInt(impact.buyQty, tokenB.decimals)
@@ -301,7 +301,10 @@ function SwapTokenInput(props: propsIF) {
         setSellQtyString(value);
         setPrimaryQuantity(value);
         setLastInput(value);
-        lastQuery.current = { isAutoUpdate: false, inputValue: value };
+        lastQuery.current = {
+            isAutoUpdate: false,
+            inputValue: value.startsWith('.') ? '0' + value : value,
+        };
 
         setIsTokenAPrimary(true);
     };
@@ -311,7 +314,10 @@ function SwapTokenInput(props: propsIF) {
         setBuyQtyString(value);
         setPrimaryQuantity(value);
         setLastInput(value);
-        lastQuery.current = { isAutoUpdate: false, inputValue: value };
+        lastQuery.current = {
+            isAutoUpdate: false,
+            inputValue: value.startsWith('.') ? '0' + value : value,
+        };
 
         setIsTokenAPrimary(false);
     };
@@ -401,7 +407,7 @@ function SwapTokenInput(props: propsIF) {
                 await refreshTokenData();
             }
         })();
-    }, [crocEnv, chainId, isUserOnline]);
+    }, [crocEnv, chainId, isUserOnline, isPoolInitialized]);
 
     useEffect(() => {
         if (isTokenAPrimary) {
@@ -441,11 +447,12 @@ function SwapTokenInput(props: propsIF) {
                 tokenAorB='A'
                 token={tokenA}
                 tokenInput={
-                    isTokenAPrimary ||
-                    isLiquidityInsufficient ||
-                    (!isTokenAPrimary && parseFloat(buyQtyString) > 0)
-                        ? sellQtyString
-                        : ''
+                    isLiquidityInsufficient && !isTokenAPrimary
+                        ? ''
+                        : isTokenAPrimary ||
+                            (!isTokenAPrimary && parseFloat(buyQtyString) > 0)
+                          ? sellQtyString
+                          : ''
                 }
                 tokenBalance={tokenABalance}
                 tokenDexBalance={tokenADexBalance}
@@ -462,7 +469,11 @@ function SwapTokenInput(props: propsIF) {
                     setSellQtyString(formatTokenInput(val, tokenA, isMax));
                 }}
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
-                usdValue={usdValueTokenA}
+                usdValue={
+                    isLiquidityInsufficient && !isTokenAPrimary
+                        ? undefined
+                        : usdValueTokenA
+                }
             />
             <FlexContainer
                 fullWidth
@@ -476,11 +487,11 @@ function SwapTokenInput(props: propsIF) {
                 tokenAorB='B'
                 token={tokenB}
                 tokenInput={
-                    !isTokenAPrimary ||
-                    isLiquidityInsufficient ||
-                    parseFloat(sellQtyString) > 0
-                        ? buyQtyString
-                        : ''
+                    isLiquidityInsufficient && isTokenAPrimary
+                        ? ''
+                        : !isTokenAPrimary || parseFloat(sellQtyString) > 0
+                          ? buyQtyString
+                          : ''
                 }
                 tokenBalance={tokenBBalance}
                 tokenDexBalance={tokenBDexBalance}
@@ -499,8 +510,14 @@ function SwapTokenInput(props: propsIF) {
                     setBuyQtyString(formatTokenInput(val, tokenB, isMax));
                 }}
                 amountToReduceNativeTokenQty={0} // value not used for buy token
-                usdValue={usdValueTokenB}
-                percentDiffUsdValue={percentDiffUsdValue}
+                usdValue={
+                    isLiquidityInsufficient && isTokenAPrimary
+                        ? undefined
+                        : usdValueTokenB
+                }
+                percentDiffUsdValue={
+                    isLiquidityInsufficient ? undefined : percentDiffUsdValue
+                }
             />
         </FlexContainer>
     );

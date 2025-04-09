@@ -177,6 +177,158 @@
             "decimals": 6,
             "chainId": 98865,
             "logoURI": ""
+        },
+        {
+            "name": "Monad",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "MON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/MON.png/public"
+        },
+        {
+            "name": "USD Coin",
+            "address": "0xf817257fed379853cDe0fa4F97AB987181B1E5Ea",
+            "symbol": "USDC",
+            "decimals": 6,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/usdc.png/public"
+        },
+        {
+            "name": "Tether USD",
+            "address": "0x88b8E2161DEDC77EF4ab7585569D2415a1C1055D",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/images.png/public"
+        },
+        {
+            "name": "Wrapped BTC",
+            "address": "0xcf5a6076cfa32686c0Df13aBaDa2b40dec133F1d",
+            "symbol": "WBTC",
+            "decimals": 8,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/wbtc.png/public"
+        },
+        {
+            "name": "Wrapped ETH",
+            "address": "0xB5a30b0FDc5EA94A52fDc42e3E9760Cb8449Fb37",
+            "symbol": "WETH",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/weth.jpg/public"
+        },
+        {
+            "name": "ETH",
+            "address": "0x836047a99e11F376522B447bffb6e3495Dd0637c",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://static.optimism.io/data/ETH/logo.svg"
+        },
+        {
+            "name": "ShMonad",
+            "address": "0x3a98250f98dd388c211206983453837c8365bdc1",
+            "symbol": "shMON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://i.imghippo.com/files/Osf1224Egs.png"
+        },
+        {
+            "name": "Molandak",
+            "address": "0x0f0bdebf0f83cd1ee3974779bcb7315f9808c714",
+            "symbol": "DAK",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/tWwhAahBw7afBzFUrX5mYQ/27759359-9374-4995-341c-b2636a432800/public"
+        },
+        {
+            "name": "Wrapped Monad",
+            "address": "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701",
+            "symbol": "WMON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/I_t8rg_V_400x400.jpg/public"
+        },
+        {
+            "name": "Moyaki",
+            "address": "0xfe140e1dCe99Be9F4F15d657CD9b7BF622270C50",
+            "symbol": "YAKI",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/tWwhAahBw7afBzFUrX5mYQ/6679b698-a845-412b-504b-23463a3e1900/public"
+        },
+        {
+            "name": "Chog",
+            "address": "0xE0590015A873bF326bd645c3E1266d4db41C4E6B",
+            "symbol": "CHOG",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/tWwhAahBw7afBzFUrX5mYQ/5d1206c2-042c-4edc-9f8b-dcef2e9e8f00/public"
+        },
+        {
+            "name": "Mama BTC",
+            "address": "0x3B428Df09c3508D884C30266Ac1577f099313CF6",
+            "symbol": "mamaBTC",
+            "decimals": 8,
+            "chainId": 10143,
+            "logoURI": ""
+        },
+        {
+            "name": "Wormhole Wrapped ETH",
+            "address": "0xA296f47E8Ff895Ed7A092b4a9498bb13C46ac768",
+            "symbol": "wWETH",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://assets.coingecko.com/coins/images/22990/standard/ETH_wh_small.png"
+        },
+        {
+            "name": "DANOM",
+            "address": "0x43e52CBC0073Caa7c0cf6e64b576CE2D6FB14eB8",
+            "symbol": "NOM",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://testnet.danom.site/img/logo.svg"
+        },
+        {
+            "name": "Teeeed",
+            "address": "0x4C632c40C2DcD39C20ee7eCDd6F9743a3c7FFE6B",
+            "symbol": "TED",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://pbs.twimg.com/profile_images/1887928331066060801/_ahPl-Y4_400x400.jpg"
+        },
+        {
+            "name": "Bean Exchange",
+            "address": "0x268E4E24E0051EC27b3D27A95977E71cE6875a05",
+            "symbol": "BEAN",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://pbs.twimg.com/profile_images/1875029488180080640/vVqXpCvW_400x400.jpg"
+        },
+        {
+            "name": "Hedgemony",
+            "address": "0x04a9d9D4AEa93F512A4c7b71993915004325ed38",
+            "symbol": "HEDGE",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://www.hedgemony.xyz/token_icon.png"
+        },
+        {
+            "name": "Wrapped SOL",
+            "address": "0x5387C85A4965769f6B0Df430638a1388493486F1",
+            "symbol": "WSOL",
+            "decimals": 9,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/sol.png/public"
+        },
+        {
+            "name": "Staked Monad",
+            "address": "0x199c0Da6F291a897302300AAAe4F20d139162916",
+            "symbol": "stMON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://alpha.caddy.finance/assets/caddyIcon-CjmClsUW.png"
         }
     ]
 }

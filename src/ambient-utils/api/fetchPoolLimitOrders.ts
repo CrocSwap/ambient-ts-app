@@ -1,8 +1,7 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
 import { getLimitOrderData, SpotPriceFn } from '../dataLayer/functions';
-import { LimitOrderServerIF, TokenIF } from '../types';
-import { FetchAddrFn } from './fetchAddress';
+import { LimitOrderServerIF, PoolIF, TokenIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 
@@ -20,10 +19,10 @@ interface argsIF {
     crocEnv: CrocEnv;
     GCGO_URL: string;
     provider: Provider;
+    activePoolList: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
-    cachedEnsResolve: FetchAddrFn;
 }
 
 export const fetchPoolLimitOrders = (args: argsIF) => {
@@ -38,10 +37,10 @@ export const fetchPoolLimitOrders = (args: argsIF) => {
         crocEnv,
         GCGO_URL,
         provider,
+        activePoolList,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
-        cachedEnsResolve,
     } = args;
 
     const poolLimitOrderStatesCacheEndpoint = GCGO_URL + '/pool_limit_orders?';
@@ -53,7 +52,7 @@ export const fetchPoolLimitOrders = (args: argsIF) => {
                       base: base.toLowerCase(),
                       quote: quote.toLowerCase(),
                       poolIdx: poolIdx.toString(),
-                      chainId: chainId,
+                      chainId: chainId.toLowerCase(),
                       n: n ? n.toString() : '',
                       timeBefore: timeBefore.toString(),
                   })
@@ -62,7 +61,7 @@ export const fetchPoolLimitOrders = (args: argsIF) => {
                       base: base.toLowerCase(),
                       quote: quote.toLowerCase(),
                       poolIdx: poolIdx.toString(),
-                      chainId: chainId,
+                      chainId: chainId.toLowerCase(),
                       n: n ? n.toString() : '',
                   }),
     )
@@ -82,10 +81,10 @@ export const fetchPoolLimitOrders = (args: argsIF) => {
                         crocEnv,
                         provider,
                         chainId,
+                        activePoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                        cachedEnsResolve,
                     );
                 }),
             ).then((updatedLimitOrders) => {

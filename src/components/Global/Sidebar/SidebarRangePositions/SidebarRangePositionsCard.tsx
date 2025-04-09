@@ -20,8 +20,14 @@ export default function SidebarRangePositionsCard(props: propsIF) {
     const { position, handleClick } = props;
     const { isTradeDollarizationEnabled } = useContext(PoolContext);
 
-    const baseTokenMoneyness = getMoneynessRankByAddr(position.base);
-    const quoteTokenMoneyness = getMoneynessRankByAddr(position.quote);
+    const baseTokenMoneyness = getMoneynessRankByAddr(
+        position.base,
+        position.chainId,
+    );
+    const quoteTokenMoneyness = getMoneynessRankByAddr(
+        position.quote,
+        position.chainId,
+    );
 
     const isDenomBase = baseTokenMoneyness < quoteTokenMoneyness;
 

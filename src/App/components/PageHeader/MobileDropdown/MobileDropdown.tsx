@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { openInNewTab, trimString } from '../../../../ambient-utils/dataLayer';
 import {
     AppStateContext,
@@ -46,6 +46,7 @@ interface navDataIF {
 export default function MobileDropdown() {
     const {
         snackbar: { open: openSnackbar },
+        activeNetwork: { chainId },
         // appHeaderDropdown,
     } = useContext(AppStateContext);
     const { userAddress, isUserConnected, disconnectUser, ensName } =
@@ -54,7 +55,8 @@ export default function MobileDropdown() {
         isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
     const accountAddressFull =
         isUserConnected && userAddress ? userAddress : '';
-    const { connectedUserXp } = useContext(ChainDataContext);
+    const { connectedUserXp, setIsTokenBalanceFetchManuallyTriggerered } =
+        useContext(ChainDataContext);
 
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
@@ -73,6 +75,10 @@ export default function MobileDropdown() {
     } = useContext(TradeTokenContext);
 
     const { setCrocEnv } = useContext(CrocEnvContext);
+
+    useEffect(() => {
+        setIsTokenBalanceFetchManuallyTriggerered(true);
+    }, [chainId, accountAddress]);
 
     const [_, copy] = useCopyToClipboard();
 

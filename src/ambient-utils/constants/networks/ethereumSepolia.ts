@@ -1,5 +1,6 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
@@ -7,7 +8,7 @@ import { NetworkIF } from '../../types/NetworkIF';
 import { GCGO_TESTNET_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
-const PUBLIC_RPC_URL = 'https://ethereum-sepolia-rpc.publicnode.com';
+const PUBLIC_RPC_URL = 'hhttps://eth-sepolia.public.blastapi.io';
 const SECONDARY_PUBLIC_RPC_URL = 'https://1rpc.io/sepolia';
 
 const RESTRICTED_RPC_URL =
@@ -27,12 +28,29 @@ const FALLBACK_RPC_URL =
 const chainIdHex = '0xaa36a7';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
-const chainSpecForWalletConnector = {
-    chainId: Number(chainIdHex),
+const chainSpecForAppKit: Chain = {
+    id: Number(chainIdHex),
+    rpcUrls: {
+        default: {
+            http: [PUBLIC_RPC_URL],
+        },
+    },
     name: 'Sepolia',
-    currency: 'ETH',
-    rpcUrl: PUBLIC_RPC_URL,
-    explorerUrl: 'https://sepolia.etherscan.io/',
+    nativeCurrency: { name: 'Sepolia Ether', symbol: 'ETH', decimals: 18 },
+    blockExplorers: {
+        default: {
+            name: 'Etherscan',
+            url: 'https://sepolia.etherscan.io',
+            apiUrl: 'https://api-sepolia.etherscan.io/api',
+        },
+    },
+    contracts: {
+        multicall3: {
+            address: '0xca11bde05977b3631167028862be2a173976ca11',
+            blockCreated: 751532,
+        },
+    },
+    testnet: true,
 };
 
 const defaultTokenEntries = [
@@ -60,12 +78,15 @@ export const ethereumSepolia: NetworkIF = {
     GCGO_URL: GCGO_TESTNET_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector: chainSpecForWalletConnector,
+    chainSpecForAppKit,
     defaultPair: [SEPOLIA_TOKENS.ETH, SEPOLIA_TOKENS.USDC],
     defaultPairFuta: [SEPOLIA_TOKENS.ETH, SEPOLIA_TOKENS.WBTC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
-    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    isTestnet: chainSpecFromSDK.isTestNet,
+    blockExplorer: (
+        chainSpecForAppKit.blockExplorers?.default.url || ''
+    ).replace(/\/?$/, '/'),
     displayName: 'Sepolia',
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,

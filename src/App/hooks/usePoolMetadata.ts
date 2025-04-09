@@ -1,8 +1,11 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation } from 'react-router';
 import {
+    expandLiquidityData,
     fetchPoolLiquidity,
     fetchPoolRecentChanges,
+    LiquidityCurveServerIF,
 } from '../../ambient-utils/api';
 import { fetchPoolLimitOrders } from '../../ambient-utils/api/fetchPoolLimitOrders';
 import {
@@ -14,9 +17,9 @@ import {
 import {
     LimitOrderIF,
     LimitOrderServerIF,
+    PoolIF,
     PositionIF,
     PositionServerIF,
-    SinglePoolDataIF,
     TransactionIF,
     TransactionServerIF,
 } from '../../ambient-utils/types';
@@ -33,11 +36,12 @@ import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import useMediaQuery from '../../utils/hooks/useMediaQuery';
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata() {
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
-    const { allPoolStats, blockPollingUrl } = useContext(ChainDataContext);
+
     const { tokens } = useContext(TokenContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const { sessionReceipts } = useContext(ReceiptContext);
@@ -45,7 +49,8 @@ export function usePoolMetadata() {
     const {
         isUserIdle,
         isUserOnline,
-        activeNetwork: { chainId, poolIndex, GCGO_URL },
+        activeNetwork: { chainId, poolIndex, GCGO_URL, isTestnet },
+        isTradeRoute,
     } = useContext(AppStateContext);
     const {
         setAdvancedLowTick,
@@ -66,11 +71,14 @@ export function usePoolMetadata() {
         limitOrdersByPool,
     } = useContext(GraphDataContext);
 
+    const { blockPollingUrl, activePoolList } = useContext(ChainDataContext);
+
     const {
         tokenA,
         tokenB,
         defaultRangeWidthForActivePool,
         currentPoolPriceTick,
+        activeTab,
     } = useContext(TradeDataContext);
 
     const {
@@ -78,10 +86,24 @@ export function usePoolMetadata() {
         cachedQuerySpotTick,
         cachedFetchTokenPrice,
         cachedTokenDetails,
-        cachedEnsResolve,
     } = useContext(CachedDataContext);
 
-    const { pathname } = location;
+    const pathname = useLocation().pathname;
+
+    const isMobile = useMediaQuery('(max-width: 500px)');
+
+    const [isChartOpenOnMobile, setIsChartOpenOnMobile] = useState(false);
+
+    useEffect(() => {
+        if (isMobile && activeTab === 'Chart') {
+            setIsChartOpenOnMobile(true);
+        } else {
+            setIsChartOpenOnMobile(false);
+        }
+    }, [isMobile && activeTab]);
+
+    const isChartVisible =
+        isChartOpenOnMobile || (!isMobile && pathname.includes('/trade'));
 
     const ticksInParams =
         pathname.includes('lowTick') && pathname.includes('highTick');
@@ -118,13 +140,6 @@ export function usePoolMetadata() {
 
     const quoteTokenAddress = useMemo(
         () => sortBaseQuoteTokens(tokenA.address, tokenB.address)[1],
-        [tokenA, tokenB],
-    );
-
-    const isTokenABase = useMemo(
-        () =>
-            tokenA.address ===
-            sortBaseQuoteTokens(tokenA.address, tokenB.address)[0],
         [tokenA, tokenB],
     );
 
@@ -276,8 +291,8 @@ export function usePoolMetadata() {
     }, [newRangesByPoolData, baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
-        const currentPoolData = allPoolStats?.find(
-            (poolStat: SinglePoolDataIF) =>
+        const currentPoolData = activePoolList?.find(
+            (poolStat: PoolIF) =>
                 poolStat.base.toLowerCase() ===
                     baseTokenAddress.toLowerCase() &&
                 poolStat.quote.toLowerCase() ===
@@ -288,7 +303,7 @@ export function usePoolMetadata() {
                 ? currentPoolData.feeRate
                 : undefined,
         );
-    }, [allPoolStats, baseTokenAddress, quoteTokenAddress]);
+    }, [activePoolList, baseTokenAddress, quoteTokenAddress]);
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
@@ -300,7 +315,9 @@ export function usePoolMetadata() {
                 provider &&
                 baseTokenAddress !== '' &&
                 quoteTokenAddress !== '' &&
-                (await crocEnv.context).chain.chainId === chainId
+                (await crocEnv.context).chain.chainId === chainId &&
+                isTradeRoute &&
+                activePoolList
             ) {
                 // retrieve pool_positions
                 const allPositionsCacheEndpoint = GCGO_URL + '/pool_positions?';
@@ -310,7 +327,7 @@ export function usePoolMetadata() {
                             base: baseTokenAddress.toLowerCase(),
                             quote: quoteTokenAddress.toLowerCase(),
                             poolIdx: poolIndex.toString(),
-                            chainId: chainId,
+                            chainId: chainId.toLowerCase(),
                             // n: '100',
                             n: '200',
                         }),
@@ -318,7 +335,6 @@ export function usePoolMetadata() {
                     .then((response) => response.json())
                     .then((json) => {
                         const poolPositions = json.data;
-                        const skipENSFetch = true;
                         if (poolPositions) {
                             Promise.all(
                                 poolPositions.map(
@@ -329,11 +345,10 @@ export function usePoolMetadata() {
                                             crocEnv,
                                             provider,
                                             chainId,
+                                            activePoolList,
                                             cachedFetchTokenPrice,
                                             cachedQuerySpotPrice,
                                             cachedTokenDetails,
-                                            cachedEnsResolve,
-                                            skipENSFetch,
                                         );
                                     },
                                 ),
@@ -382,17 +397,21 @@ export function usePoolMetadata() {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
+                    activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((poolChangesJsonData) => {
                         if (
                             poolChangesJsonData &&
                             poolChangesJsonData.length > 0
                         ) {
-                            setNewTxByPoolData(poolChangesJsonData);
+                            const newTxByPoolDataWithoutFills =
+                                poolChangesJsonData.filter(
+                                    (tx) => tx.changeType !== 'cross',
+                                );
+                            setNewTxByPoolData(newTxByPoolDataWithoutFills);
                         } else {
                             setNewTxByPoolData(undefined);
                             setTransactionsByPool({
@@ -417,10 +436,10 @@ export function usePoolMetadata() {
                     crocEnv: crocEnv,
                     GCGO_URL: GCGO_URL,
                     provider: provider,
+                    activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((updatedLimitOrderStates) => {
                         if (
@@ -450,21 +469,25 @@ export function usePoolMetadata() {
                     fetch(
                         userPoolTransactionsCacheEndpoint +
                             new URLSearchParams({
-                                user: userAddress,
+                                user: userAddress.toLowerCase(),
                                 base: baseTokenAddress.toLowerCase(),
                                 quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: poolIndex.toString(),
-                                chainId: chainId,
-                                n: '100',
+                                chainId: chainId.toLowerCase(),
+                                n: '200',
                             }),
                     )
                         .then((response) => response.json())
                         .then((json) => {
-                            const userPoolTransactions = json.data;
-                            const skipENSFetch = true;
+                            const userPoolTransactions =
+                                json.data as TransactionIF[];
                             if (userPoolTransactions) {
+                                const userPoolTransactionsWithoutFills =
+                                    userPoolTransactions.filter(
+                                        (tx) => tx.changeType !== 'cross',
+                                    );
                                 Promise.all(
-                                    userPoolTransactions.map(
+                                    userPoolTransactionsWithoutFills.map(
                                         (position: TransactionServerIF) => {
                                             return getTransactionData(
                                                 position,
@@ -472,11 +495,10 @@ export function usePoolMetadata() {
                                                 crocEnv,
                                                 provider,
                                                 chainId,
+                                                activePoolList,
                                                 cachedFetchTokenPrice,
                                                 cachedQuerySpotPrice,
                                                 cachedTokenDetails,
-                                                cachedEnsResolve,
-                                                skipENSFetch,
                                             );
                                         },
                                     ),
@@ -510,21 +532,20 @@ export function usePoolMetadata() {
                     // retrieve user_pool_positions
                     const userPoolPositionsCacheEndpoint =
                         GCGO_URL + '/user_pool_positions?';
-                    const forceOnchainLiqUpdate = true;
+                    const forceOnchainLiqUpdate = !isTestnet;
                     fetch(
                         userPoolPositionsCacheEndpoint +
                             new URLSearchParams({
-                                user: userAddress,
+                                user: userAddress.toLowerCase(),
                                 base: baseTokenAddress.toLowerCase(),
                                 quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: poolIndex.toString(),
-                                chainId: chainId,
+                                chainId: chainId.toLowerCase(),
                             }),
                     )
                         .then((response) => response.json())
                         .then((json) => {
                             const userPoolPositions = json.data;
-                            const skipENSFetch = true;
 
                             if (userPoolPositions) {
                                 Promise.all(
@@ -536,11 +557,10 @@ export function usePoolMetadata() {
                                                 crocEnv,
                                                 provider,
                                                 chainId,
+                                                activePoolList,
                                                 cachedFetchTokenPrice,
                                                 cachedQuerySpotPrice,
                                                 cachedTokenDetails,
-                                                cachedEnsResolve,
-                                                skipENSFetch,
                                                 forceOnchainLiqUpdate,
                                             );
                                         },
@@ -578,11 +598,11 @@ export function usePoolMetadata() {
                     fetch(
                         userPoolLimitOrdersCacheEndpoint +
                             new URLSearchParams({
-                                user: userAddress,
+                                user: userAddress.toLowerCase(),
                                 base: baseTokenAddress.toLowerCase(),
                                 quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: poolIndex.toString(),
-                                chainId: chainId,
+                                chainId: chainId.toLowerCase(),
                             }),
                     )
                         .then((response) => response?.json())
@@ -598,10 +618,10 @@ export function usePoolMetadata() {
                                                 crocEnv,
                                                 provider,
                                                 chainId,
+                                                activePoolList,
                                                 cachedFetchTokenPrice,
                                                 cachedQuerySpotPrice,
                                                 cachedTokenDetails,
-                                                cachedEnsResolve,
                                             );
                                         },
                                     ),
@@ -650,80 +670,185 @@ export function usePoolMetadata() {
         provider,
         sessionReceipts.length,
         blockPollingUrl,
+        isTradeRoute,
+        activePoolList,
     ]);
 
-    const totalPositionLiq = useMemo(
-        () =>
-            positionsByPool.positions.reduce((sum, position) => {
-                return sum + position.positionLiq;
-            }, 0) +
-            limitOrdersByPool.limitOrders.reduce((sum, order) => {
-                return sum + order.positionLiq;
-            }, 0),
-        [positionsByPool, limitOrdersByPool],
-    );
+    const totalPositionUsdValue = useMemo(() => {
+        if (
+            !positionsByPool?.dataReceived &&
+            !limitOrdersByPool?.dataReceived
+        ) {
+            return 0;
+        }
+
+        const positionsSum =
+            positionsByPool?.dataReceived &&
+            Array.isArray(positionsByPool.positions)
+                ? positionsByPool.positions.reduce(
+                      (sum, position) => sum + (position.totalValueUSD || 0),
+                      0,
+                  )
+                : 0;
+
+        const limitOrdersSum =
+            limitOrdersByPool?.dataReceived &&
+            Array.isArray(limitOrdersByPool.limitOrders)
+                ? limitOrdersByPool.limitOrders.reduce(
+                      (sum, order) => sum + (order.totalValueUSD || 0),
+                      0,
+                  )
+                : 0;
+
+        return positionsSum + limitOrdersSum;
+    }, [positionsByPool, limitOrdersByPool]);
+
+    const [rawLiqData, setRawLiqData] = useState<
+        | {
+              rawCurveData: LiquidityCurveServerIF;
+              request: {
+                  baseAddress: string;
+                  quoteAddress: string;
+                  chainId: string;
+                  poolIndex: number;
+              };
+          }
+        | undefined
+    >();
+
+    const prevTotalPositionUsdValue = useRef(0);
+    const totalPositionUsdValueForUpdateTrigger = useRef(0);
+
+    useEffect(() => {
+        const change =
+            Math.abs(
+                totalPositionUsdValue - prevTotalPositionUsdValue.current,
+            ) / totalPositionUsdValue;
+
+        if (change < 0.01) return; // Skip effect if change is less than 1%
+
+        totalPositionUsdValueForUpdateTrigger.current =
+            prevTotalPositionUsdValue.current === 0 ? 0 : totalPositionUsdValue;
+        prevTotalPositionUsdValue.current = totalPositionUsdValue;
+    }, [totalPositionUsdValue]);
+
+    const [crocEnvChainMatches, setCrocEnvChainMatches] =
+        useState<boolean>(false);
+
+    useEffect(() => {
+        (async () => {
+            if (crocEnv) {
+                setCrocEnvChainMatches(
+                    (await crocEnv.context).chain.chainId === chainId,
+                );
+            } else {
+                setCrocEnvChainMatches(false);
+            }
+        })();
+    }, [crocEnv, chainId]);
+
+    const [tokenChainMatches, setTokenChainMatches] = useState<boolean>(false);
+
+    useEffect(() => {
+        (async () => {
+            if (tokenA && tokenB && chainId) {
+                setTokenChainMatches(
+                    tokenA.chainId === parseInt(chainId) &&
+                        tokenB.chainId === parseInt(chainId),
+                );
+            } else {
+                setCrocEnvChainMatches(false);
+            }
+        })();
+    }, [tokenA, tokenB, chainId]);
 
     useEffect(() => {
         (async () => {
             if (
                 baseTokenAddress &&
                 quoteTokenAddress &&
-                baseTokenDecimals &&
-                quoteTokenDecimals &&
                 crocEnv &&
-                currentPoolPriceTick &&
-                totalPositionLiq &&
                 GCGO_URL &&
-                Math.abs(currentPoolPriceTick) !== Infinity &&
-                (await crocEnv.context).chain.chainId === chainId
+                crocEnvChainMatches &&
+                tokenChainMatches &&
+                isChartVisible &&
+                contextMatchesParams
             ) {
-                // Reset existing liquidity data until the fetch completes, because it's a new pool
                 const request = {
                     baseAddress: baseTokenAddress.toLowerCase(),
                     quoteAddress: quoteTokenAddress.toLowerCase(),
                     chainId: chainId,
                     poolIndex: poolIndex,
+                    currentTVL: totalPositionUsdValueForUpdateTrigger.current,
                 };
-
-                fetchPoolLiquidity(
-                    chainId,
-                    baseTokenAddress.toLowerCase(),
-                    baseTokenDecimals,
-                    quoteTokenAddress.toLowerCase(),
-                    quoteTokenDecimals,
-                    poolIndex,
-                    crocEnv,
-                    GCGO_URL,
-                    cachedFetchTokenPrice,
-                    cachedQuerySpotTick,
-                    currentPoolPriceTick,
-                )
-                    .then((liqCurve) => {
-                        if (liqCurve) {
-                            setLiquidity(liqCurve, request);
-                        }
-                    })
-                    .catch(console.error);
+                if (
+                    JSON.stringify(request) !==
+                    JSON.stringify(rawLiqData?.request)
+                ) {
+                    fetchPoolLiquidity(
+                        chainId,
+                        baseTokenAddress.toLowerCase(),
+                        quoteTokenAddress.toLowerCase(),
+                        poolIndex,
+                        GCGO_URL,
+                    )
+                        .then((rawCurveData) => {
+                            if (rawCurveData) {
+                                setRawLiqData({ rawCurveData, request });
+                            }
+                        })
+                        .catch(console.error);
+                }
             }
         })();
     }, [
-        currentPoolPriceTick,
-        totalPositionLiq,
-        crocEnv,
+        crocEnvChainMatches,
+        tokenChainMatches,
         chainId,
         baseTokenAddress,
         quoteTokenAddress,
-        baseTokenDecimals,
-        quoteTokenDecimals,
         poolIndex,
         GCGO_URL,
+        totalPositionUsdValueForUpdateTrigger.current,
+        isChartVisible,
+        contextMatchesParams,
     ]);
+
+    useEffect(() => {
+        (async () => {
+            if (
+                rawLiqData &&
+                crocEnv &&
+                (await crocEnv.context).chain.chainId === chainId
+            ) {
+                const { rawCurveData, request } = rawLiqData;
+
+                const expandedLiqData = await expandLiquidityData(
+                    rawCurveData,
+                    request.baseAddress,
+                    baseTokenDecimals,
+                    request.quoteAddress,
+                    quoteTokenDecimals,
+                    request.poolIndex,
+                    chainId,
+                    crocEnv,
+                    cachedFetchTokenPrice,
+                    cachedQuerySpotTick,
+                    currentPoolPriceTick,
+                );
+                if (expandedLiqData) {
+                    setLiquidity(expandedLiqData, request);
+                }
+            }
+        })();
+    }, [rawLiqData, crocEnv, chainId, currentPoolPriceTick]);
+
     return {
         contextMatchesParams,
         baseTokenAddress,
         quoteTokenAddress,
         baseTokenDecimals, // Token contract decimals
         quoteTokenDecimals, // Token contract decimals
-        isTokenABase, // True if the base token is the first token in the panel (e.g. sell token on swap)
+        isChartVisible,
     };
 }

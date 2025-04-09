@@ -3,19 +3,22 @@
 // NOTE: Definition of what constitutes a "stable pair" is arbitrary and just based
 //       on the devs discretion. Users should not assume that true/false implies
 
-import { getMoneynessRankByAddr } from '.';
+import { getMoneynessRank } from '.';
 import { ZERO_ADDRESS } from '../../constants';
 import { BASE_SEPOLIA_TOKENS } from '../../constants/networks/baseSepolia';
 import { BLAST_TOKENS } from '../../constants/networks/blastMainnet';
 import { BLAST_SEPOLIA_TOKENS } from '../../constants/networks/blastSepolia';
 import { MAINNET_TOKENS } from '../../constants/networks/ethereumMainnet';
 import { SEPOLIA_TOKENS } from '../../constants/networks/ethereumSepolia';
+import { MONAD_TESTNET_TOKENS } from '../../constants/networks/monadTestnet';
+import { PLUME_LEGACY_TOKENS } from '../../constants/networks/plumeLegacy';
 import { PLUME_TOKENS } from '../../constants/networks/plumeMainnet';
 import { PLUME_SEPOLIA_TOKENS } from '../../constants/networks/plumeSepolia';
 import { SCROLL_TOKENS } from '../../constants/networks/scrollMainnet';
 import { SCROLL_SEPOLIA_TOKENS } from '../../constants/networks/scrollSepolia';
 import { SWELL_TOKENS } from '../../constants/networks/swellMainnet';
 import { SWELL_SEPOLIA_TOKENS } from '../../constants/networks/swellSepolia';
+import { TokenIF } from '../../types';
 
 //       any sort of specific guaranteed relation between the tokens.
 export function isStablePair(addr1: string, addr2: string): boolean {
@@ -33,6 +36,12 @@ export function isUsdcToken(addr: string): boolean {
     return USDC_TOKENS.includes(addr.toLowerCase());
 }
 
+export function isPriorityStakedUSD(addr: string): boolean {
+    return (
+        PLUME_LEGACY_TOKENS.pUSD.address.toLowerCase() === addr.toLowerCase()
+    );
+}
+
 export function isBlastRewardToken(addr: string): boolean {
     return BLAST_REWARD_TOKENS.includes(addr.toLowerCase());
 }
@@ -41,9 +50,17 @@ export function isUSDQtoken(addr: string): boolean {
     return SCROLL_TOKENS.USDQ.address.toLowerCase() === addr.toLowerCase();
 }
 
-export function isETHorStakedEthToken(addr: string): boolean {
+export function isPriorityEthEquivalent(addr: string): boolean {
+    return PRIORITY_ETH_EQUIVALENT_TOKENS.includes(addr.toLowerCase());
+}
+
+export function isETHorStakedEthToken(addr: string, chainId: string): boolean {
     return (
-        addr === ZERO_ADDRESS || STAKED_ETH_TOKENS.includes(addr.toLowerCase())
+        ETH_TOKENS.some(
+            ({ address, chainId: chainIdNum }) =>
+                address.toLowerCase() === addr.toLowerCase() &&
+                chainIdNum === parseInt(chainId),
+        ) || STAKED_ETH_TOKENS.includes(addr.toLowerCase())
     );
 }
 
@@ -51,8 +68,15 @@ export function isWbtcOrStakedBTCToken(addr: string): boolean {
     return isWbtcToken(addr) || STAKED_BTC_TOKENS.includes(addr.toLowerCase());
 }
 
-export function isETHPair(addr1: string, addr2: string): boolean {
-    return isETHorStakedEthToken(addr1) && isETHorStakedEthToken(addr2);
+export function isETHPair(
+    addr1: string,
+    addr2: string,
+    chainId: string,
+): boolean {
+    return (
+        isETHorStakedEthToken(addr1, chainId) &&
+        isETHorStakedEthToken(addr2, chainId)
+    );
 }
 
 export function isBtcPair(addr1: string, addr2: string): boolean {
@@ -65,17 +89,17 @@ export function isWbtcToken(addr: string): boolean {
 
 // added so rswETH / SWELL would be denominated in SWELL by default
 export function isDefaultDenomTokenExcludedFromUsdConversion(
-    baseToken: string,
-    quoteToken: string,
+    baseToken: TokenIF,
+    quoteToken: TokenIF,
 ): boolean {
     const isBaseTokenMoneynessGreaterOrEqual =
-        getMoneynessRankByAddr(baseToken) -
-            getMoneynessRankByAddr(quoteToken) >=
+        getMoneynessRank(baseToken.symbol) -
+            getMoneynessRank(quoteToken.symbol) >=
         0;
     return USD_EXCLUDED_TOKENS.includes(
         isBaseTokenMoneynessGreaterOrEqual
-            ? baseToken.toLowerCase()
-            : quoteToken.toLowerCase(),
+            ? baseToken.address.toLowerCase()
+            : quoteToken.address.toLowerCase(),
     );
 }
 
@@ -95,23 +119,31 @@ export function remapTokenIfWrappedNative(addr: string): string {
 export const USDC_TOKENS = [
     MAINNET_TOKENS.USDC,
     BLAST_TOKENS.USDB,
-    PLUME_TOKENS.USDC,
+    PLUME_LEGACY_TOKENS.USDC,
     SEPOLIA_TOKENS.USDC,
     BLAST_SEPOLIA_TOKENS.USDB,
     SCROLL_SEPOLIA_TOKENS.USDC,
     SCROLL_TOKENS.USDC,
     SWELL_SEPOLIA_TOKENS.USDC,
     BASE_SEPOLIA_TOKENS.USDC,
+    MONAD_TESTNET_TOKENS.USDC,
 ].map((x) => x.address.toLowerCase());
 
 export const STABLE_USD_TOKENS = [
     MAINNET_TOKENS.DAI,
     MAINNET_TOKENS.USDT,
-    PLUME_TOKENS.NRWA,
+    PLUME_LEGACY_TOKENS.NRWA,
+    PLUME_LEGACY_TOKENS.pUSD,
+    PLUME_LEGACY_TOKENS.USDT,
+    PLUME_LEGACY_TOKENS.NTBILL,
+    PLUME_LEGACY_TOKENS.NYIELD,
+    PLUME_LEGACY_TOKENS.nELIXIR,
     PLUME_TOKENS.pUSD,
-    PLUME_TOKENS.USDT,
-    PLUME_TOKENS.NTBILL,
-    PLUME_TOKENS.NYIELD,
+    PLUME_TOKENS.nRWA,
+    PLUME_TOKENS.nTBILL,
+    PLUME_TOKENS.nYIELD,
+    PLUME_TOKENS.nUSDY,
+    PLUME_TOKENS.nELIXIR,
     BLAST_TOKENS.USDPLUS,
     SCROLL_TOKENS.USDT,
     SCROLL_TOKENS.USDQ,
@@ -122,11 +154,13 @@ export const STABLE_USD_TOKENS = [
     PLUME_SEPOLIA_TOKENS.pUSD,
     PLUME_SEPOLIA_TOKENS.NEV,
     SWELL_SEPOLIA_TOKENS.USDT,
-    SWELL_TOKENS.USDE,
+    SWELL_TOKENS.USDe,
+    SWELL_TOKENS.USDT0,
     SWELL_TOKENS.SUSDe,
     BASE_SEPOLIA_TOKENS.USDT,
+    MONAD_TESTNET_TOKENS.USDT,
 ]
-    .map((x) => x.address.toLowerCase())
+    .map((x) => x?.address.toLowerCase())
     .concat(USDC_TOKENS);
 
 export const BLAST_REWARD_TOKENS = [BLAST_TOKENS.BLAST.address].map((x) =>
@@ -137,12 +171,28 @@ export const WBTC_TOKENS = [
     MAINNET_TOKENS.WBTC,
     SCROLL_TOKENS.WBTC,
     SEPOLIA_TOKENS.WBTC,
+    MONAD_TESTNET_TOKENS.WBTC,
 ].map((x) => x.address.toLowerCase());
 
+export const ETH_TOKENS = [
+    MAINNET_TOKENS.ETH,
+    SCROLL_TOKENS.ETH,
+    BLAST_TOKENS.ETH,
+    PLUME_LEGACY_TOKENS.ETH,
+    MONAD_TESTNET_TOKENS.ETH,
+    SWELL_TOKENS.ETH,
+    SEPOLIA_TOKENS.ETH,
+    SWELL_SEPOLIA_TOKENS.ETH,
+    PLUME_SEPOLIA_TOKENS.ETH,
+    SCROLL_SEPOLIA_TOKENS.ETH,
+    BLAST_SEPOLIA_TOKENS.ETH,
+    BASE_SEPOLIA_TOKENS.ETH,
+];
+
 export const STAKED_ETH_TOKENS = [
-    MAINNET_TOKENS.SWETH,
-    MAINNET_TOKENS.RSETH,
-    MAINNET_TOKENS.RSWETH,
+    MAINNET_TOKENS.swETH,
+    MAINNET_TOKENS.rsETH,
+    MAINNET_TOKENS.rswETH,
     MAINNET_TOKENS.STONE,
     SCROLL_TOKENS.wstETH,
     SCROLL_TOKENS.wrsETH,
@@ -157,7 +207,7 @@ export const STAKED_ETH_TOKENS = [
     BLAST_TOKENS.wrsETH,
     BLAST_TOKENS.ezETH,
     BLAST_TOKENS.weETH,
-    PLUME_TOKENS.pETH,
+    PLUME_LEGACY_TOKENS.pETH,
     SWELL_TOKENS.wstETH,
     SWELL_TOKENS.pzETH,
     SWELL_TOKENS.ezETH,
@@ -165,6 +215,15 @@ export const STAKED_ETH_TOKENS = [
     SWELL_TOKENS.rsETH,
     SWELL_TOKENS.swETH,
     SWELL_TOKENS.rswETH,
+    MONAD_TESTNET_TOKENS.ETH,
+    MONAD_TESTNET_TOKENS.WETH,
+    MONAD_TESTNET_TOKENS.WWETH,
+].map((x) => x.address.toLowerCase());
+
+export const PRIORITY_ETH_EQUIVALENT_TOKENS = [
+    PLUME_LEGACY_TOKENS.pETH,
+    MONAD_TESTNET_TOKENS.WETH,
+    MONAD_TESTNET_TOKENS.ETH,
 ].map((x) => x.address.toLowerCase());
 
 export const USD_EXCLUDED_TOKENS = [
@@ -174,8 +233,8 @@ export const USD_EXCLUDED_TOKENS = [
 
 export const STAKED_BTC_TOKENS = [
     SCROLL_TOKENS.SolvBTC,
-    MAINNET_TOKENS.TBTC,
-    SWELL_TOKENS.UBTC,
+    MAINNET_TOKENS.tBTC,
+    SWELL_TOKENS.uBTC,
     SWELL_TOKENS.swBTC,
     SWELL_TOKENS.stBTC,
 ].map((x) => x.address.toLowerCase());
@@ -188,4 +247,5 @@ export const WRAPPED_NATIVE_TOKENS = [
     '0x4200000000000000000000000000000000000023', // Blast Sepolia
     '0xaA6210015fbf0855F0D9fDA3C415c1B12776Ae74', // Plume Sepolia
     '0x863d7abb9c62d8bc69ea9ebc3e3583057d533e6f', // Scroll Sepolia
+    '0xEa237441c92CAe6FC17Caaf9a7acB3f953be4bd1', // Plume Mainnet
 ].map((x) => x.toLowerCase());

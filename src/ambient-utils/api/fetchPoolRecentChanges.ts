@@ -1,8 +1,7 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
 import { getTransactionData, SpotPriceFn } from '../dataLayer/functions';
-import { TokenIF, TransactionServerIF } from '../types';
-import { FetchAddrFn } from './fetchAddress';
+import { PoolIF, TokenIF, TransactionServerIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 
@@ -20,10 +19,10 @@ interface argsIF {
     crocEnv: CrocEnv;
     GCGO_URL: string;
     provider: Provider;
+    activePoolList: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
-    cachedEnsResolve: FetchAddrFn;
 }
 
 export const fetchPoolRecentChanges = (args: argsIF) => {
@@ -40,10 +39,10 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         crocEnv,
         GCGO_URL,
         provider,
+        activePoolList,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
-        cachedEnsResolve,
     } = args;
 
     const poolRecentChangesCacheEndpoint = GCGO_URL + '/pool_txs?';
@@ -55,7 +54,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                       base: base.toLowerCase(),
                       quote: quote.toLowerCase(),
                       poolIdx: poolIdx.toString(),
-                      chainId: chainId,
+                      chainId: chainId.toLowerCase(),
                       n: n ? n.toString() : '',
                       period: period.toString(),
                       time: time.toString(),
@@ -66,7 +65,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                     base: base.toLowerCase(),
                     quote: quote.toLowerCase(),
                     poolIdx: poolIdx.toString(),
-                    chainId: chainId,
+                    chainId: chainId.toLowerCase(),
                     n: n ? n.toString() : '',
                     timeBefore: timeBefore.toString(),
                 })
@@ -75,7 +74,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                     base: base.toLowerCase(),
                     quote: quote.toLowerCase(),
                     poolIdx: poolIdx.toString(),
-                    chainId: chainId,
+                    chainId: chainId.toLowerCase(),
                     n: n ? n.toString() : '',
                     // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                     // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
@@ -89,7 +88,6 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                 return [];
             }
 
-            const skipENSFetch = true;
             return Promise.all(
                 poolTransactions.map((tx: TransactionServerIF) => {
                     return getTransactionData(
@@ -98,11 +96,10 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                         crocEnv,
                         provider,
                         chainId,
+                        activePoolList,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                        cachedEnsResolve,
-                        skipENSFetch,
                     );
                 }),
             ).then((updatedTransactions) => {

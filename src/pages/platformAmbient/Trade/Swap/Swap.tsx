@@ -38,6 +38,7 @@ import {
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET,
     GAS_DROPS_ESTIMATE_SWAP_NATIVE,
     GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX,
+    HIDE_TOKEN_VALUES,
     L1_GAS_CALC_ENABLED,
     NUM_GWEI_IN_ETH,
     NUM_GWEI_IN_WEI,
@@ -55,7 +56,6 @@ import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { useUrlParams } from '../../../../utils/hooks/useUrlParams';
-import { swapTutorialSteps } from '../../../../utils/tutorial/Swap';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -63,24 +63,23 @@ interface propsIF {
 
 function Swap(props: propsIF) {
     const { isOnTradeRoute } = props;
-    const { crocEnv, ethMainnetUsdPrice, provider } =
-        useContext(CrocEnvContext);
+    const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
         activeNetwork: { chainId, poolIndex },
         isUserOnline,
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
-    const { gasPriceInGwei, isActiveNetworkL2, isActiveNetworkPlume } =
-        useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        nativeTokenUsdPrice,
+        isActiveNetworkL2,
+        isActiveNetworkPlume,
+    } = useContext(ChainDataContext);
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
-    const {
-        tokenAAllowance,
-        tokenABalance,
-        tokenADexBalance,
-        isTokenABase: isSellTokenBase,
-    } = useContext(TradeTokenContext);
+    const { tokenAAllowance, tokenABalance, tokenADexBalance } =
+        useContext(TradeTokenContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
@@ -198,7 +197,7 @@ function Swap(props: propsIF) {
         parseFloat(priceImpact?.buyQty || '0') /
         parseFloat(priceImpact?.sellQty || '1');
     const isPriceInverted =
-        (isDenomBase && !isSellTokenBase) || (!isDenomBase && isSellTokenBase);
+        (isDenomBase && !isTokenABase) || (!isDenomBase && isTokenABase);
     const effectivePriceWithDenom = effectivePrice
         ? isPriceInverted
             ? 1 / effectivePrice
@@ -450,7 +449,7 @@ function Swap(props: propsIF) {
 
     // calculate price of gas for swap
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const averageSwapCostInGasDrops = isSellTokenNativeToken
                 ? GAS_DROPS_ESTIMATE_SWAP_NATIVE
                 : isWithdrawFromDexChecked
@@ -487,7 +486,7 @@ function Swap(props: propsIF) {
                 gasPriceInGwei *
                 averageSwapCostInGasDrops *
                 NUM_GWEI_IN_WEI *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setSwapGasPriceinDollars(
                 getFormattedNumber({
@@ -498,7 +497,7 @@ function Swap(props: propsIF) {
         }
     }, [
         gasPriceInGwei,
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
         isSellTokenNativeToken,
         isWithdrawFromDexChecked,
         isTokenADexSurplusSufficient,
@@ -529,8 +528,8 @@ function Swap(props: propsIF) {
                   })
                 : undefined;
 
-            const costOfEthInCents = BigInt(
-                Math.floor((ethMainnetUsdPrice || 0) * 100),
+            const costOfNativeTokenInCents = BigInt(
+                Math.floor((nativeTokenUsdPrice || 0) * 100),
             );
             const l1GasInGwei =
                 l1Gas && l1Gas != BigInt(0)
@@ -540,7 +539,8 @@ function Swap(props: propsIF) {
                 setL1GasFeeSwapInGwei(bigIntToFloat(l1GasInGwei) || 0);
 
             const l1GasCents = l1GasInGwei
-                ? (l1GasInGwei * costOfEthInCents) / BigInt(NUM_GWEI_IN_ETH)
+                ? (l1GasInGwei * costOfNativeTokenInCents) /
+                  BigInt(NUM_GWEI_IN_ETH)
                 : undefined;
 
             const l1GasDollarsNum =
@@ -561,7 +561,7 @@ function Swap(props: propsIF) {
         slippageTolerancePercentage,
         isWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
         L1_GAS_CALC_ENABLED,
     ]);
 
@@ -626,7 +626,7 @@ function Swap(props: propsIF) {
                         poolIdx: poolIndex,
                         baseSymbol: baseToken.symbol,
                         quoteSymbol: quoteToken.symbol,
-                        isBid: isSellTokenBase,
+                        isBid: isTokenABase,
                     },
                 });
             }
@@ -761,7 +761,9 @@ function Swap(props: propsIF) {
         usdValueTokenA &&
         usdValueTokenB &&
         buyQtyBigInt > 0n &&
-        sellQtyBigInt > 0n
+        sellQtyBigInt > 0n &&
+        !HIDE_TOKEN_VALUES &&
+        tokenA.chainId !== parseInt('0x279f') // monad testnet
             ? ((usdValueTokenB * parseFloat(buyQtyNoExponentString) -
                   usdValueTokenA * parseFloat(sellQtyNoExponentString)) /
                   (usdValueTokenA * parseFloat(sellQtyNoExponentString))) *
@@ -780,7 +782,9 @@ function Swap(props: propsIF) {
     );
 
     const showUsdDiffWarning = usdDiffGreaterThanThreshold
-        ? usdDiffGreaterThanThresholdDebounced
+        ? usdDiffGreaterThanThresholdDebounced &&
+          !HIDE_TOKEN_VALUES &&
+          tokenA.chainId !== parseInt('0x279f') // monad testnet
         : false;
 
     const showWarning = showPriceImpactWarning || showUsdDiffWarning;
@@ -882,13 +886,14 @@ function Swap(props: propsIF) {
                             slippageTolerancePercentage
                         }
                         effectivePrice={effectivePrice}
-                        isSellTokenBase={isSellTokenBase}
+                        isTokenABase={isTokenABase}
                         sellQtyString={sellQtyNoExponentString}
                         buyQtyString={buyQtyNoExponentString}
                         isTokenAPrimary={isTokenAPrimary}
                         priceImpactWarning={priceImpactWarning}
                         isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                         percentDiffUsdValue={percentDiffUsdValue}
+                        crocEnv={crocEnv}
                     />
                 ) : (
                     <></>
@@ -976,7 +981,6 @@ function Swap(props: propsIF) {
                     </>
                 ) : undefined
             }
-            tutorialSteps={swapTutorialSteps}
         />
     );
 }

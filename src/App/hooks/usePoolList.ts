@@ -1,63 +1,74 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
-import { fetchPoolList } from '../../ambient-utils/api';
-import { GCServerPoolIF, PoolIF, TokenIF } from '../../ambient-utils/types';
-import { AppStateContext } from '../../contexts';
+import {
+    AnalyticsServerPoolIF,
+    PoolIF,
+    TokenIF,
+} from '../../ambient-utils/types';
+import { AppStateContext, CachedDataContext } from '../../contexts';
 import { TokenContext } from '../../contexts/TokenContext';
 
-export const usePoolList = (GCGO_URL: string, crocEnv?: CrocEnv): PoolIF[] => {
-    const {
-        activeNetwork: { poolIndex },
-    } = useContext(AppStateContext);
+export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] | undefined => {
     const {
         tokens: { verify, getTokenByAddress, tokenUniv },
     } = useContext(TokenContext);
 
-    const [poolList, setPoolList] = useState<PoolIF[]>([]);
+    const {
+        isUserIdle,
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+
+    const { cachedFetchPoolList } = useContext(CachedDataContext);
+
+    const [poolList, setPoolList] = useState<PoolIF[] | undefined>();
+
+    const poolListRefreshTime = isUserIdle
+        ? Math.floor(Date.now() / 120000) // 2 minute interval if  idle
+        : Math.floor(Date.now() / 30000); // 30 second interval if not idle
 
     useEffect(() => {
         if (!crocEnv) {
             return undefined;
         }
+        const pools: Promise<AnalyticsServerPoolIF[]> =
+            cachedFetchPoolList(chainId);
+        Promise.resolve<AnalyticsServerPoolIF[]>(pools)
+            .then((res: AnalyticsServerPoolIF[]) => {
+                return res
+                    .filter(
+                        (result: AnalyticsServerPoolIF) =>
+                            verify(result.base) && verify(result.quote),
+                    )
+                    .map((result: AnalyticsServerPoolIF) => {
+                        const baseToken: TokenIF | undefined =
+                            getTokenByAddress(result.base);
+                        const quoteToken: TokenIF | undefined =
+                            getTokenByAddress(result.quote);
+                        if (baseToken && quoteToken) {
+                            return {
+                                ...result, // Spreads all properties of result
+                                baseToken, // Overwrite base with the mapped token
+                                quoteToken, // Overwrite quote with the mapped token
+                            };
+                        } else {
+                            return null;
+                        }
+                    })
 
-        const pools: Promise<GCServerPoolIF[]> = fetchPoolList(
-            crocEnv,
-            GCGO_URL,
-        );
-        Promise.resolve<GCServerPoolIF[]>(pools)
-            .then((res: GCServerPoolIF[]) => {
-                return (
-                    res
-                        .filter(
-                            (result: GCServerPoolIF) =>
-                                verify(result.base) && verify(result.quote),
-                        )
-                        // temporary filter until gcgo filters on poolIdx
-                        .filter((pool) => pool.poolIdx === poolIndex)
-                        .map((result: GCServerPoolIF) => {
-                            const baseToken: TokenIF | undefined =
-                                getTokenByAddress(result.base);
-                            const quoteToken: TokenIF | undefined =
-                                getTokenByAddress(result.quote);
-                            if (baseToken && quoteToken) {
-                                return {
-                                    base: baseToken,
-                                    quote: quoteToken,
-                                    chainId: result.chainId,
-                                    poolIdx: result.poolIdx,
-                                };
-                            } else {
-                                return null;
-                            }
-                        })
-                        .filter(
-                            (pool: PoolIF | null) => pool !== null,
-                        ) as PoolIF[]
-                );
+                    .filter((pool: PoolIF | null) => pool !== null) as PoolIF[];
             })
-            .then((pools) => setPoolList(pools))
+            .then((pools) => {
+                setPoolList(pools);
+            })
             .catch((err) => console.error(err));
-    }, [crocEnv, tokenUniv]);
+    }, [
+        crocEnv === undefined,
+        chainId,
+        JSON.stringify(tokenUniv),
+        getTokenByAddress,
+        verify,
+        poolListRefreshTime,
+    ]);
 
     return poolList;
 };

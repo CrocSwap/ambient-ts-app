@@ -8,9 +8,9 @@ import {
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
-import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
+import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
-import { LimitOrderIF, LimitOrderServerIF, TokenIF } from '../../types';
+import { LimitOrderIF, LimitOrderServerIF, PoolIF, TokenIF } from '../../types';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
 import { getPositionHash } from './getPositionHash';
 import { SpotPriceFn } from './querySpotPrice';
@@ -21,10 +21,10 @@ export const getLimitOrderData = async (
     crocEnv: CrocEnv,
     provider: Provider,
     chainId: string,
+    analyticsPoolList: PoolIF[] | undefined,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
-    cachedEnsResolve: FetchAddrFn,
 ): Promise<LimitOrderIF> => {
     if (!provider) throw Error('Can not proceed without an assigned provider');
     if (!crocEnv || (await crocEnv.context).chain.chainId !== chainId)
@@ -34,19 +34,30 @@ export const getLimitOrderData = async (
     const baseTokenAddress = order.base;
     const quoteTokenAddress = order.quote;
 
-    // Fire off network queries async simultaneous up-front
-    const poolPriceNonDisplay = cachedQuerySpotPrice(
-        crocEnv,
-        baseTokenAddress,
-        quoteTokenAddress,
-        chainId,
-        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+    const poolOnAnalyticsPoolList = analyticsPoolList?.find(
+        (poolListEntry: PoolIF) =>
+            poolListEntry.base.toLowerCase() ===
+                baseTokenAddress.toLowerCase() &&
+            poolListEntry.quote.toLowerCase() ===
+                quoteTokenAddress.toLowerCase(),
     );
 
-    newOrder.ensResolution = (await cachedEnsResolve(order.user)) ?? '';
+    const poolPriceNonDisplay = poolOnAnalyticsPoolList?.lastPriceSwap
+        ? poolOnAnalyticsPoolList.lastPriceSwap
+        : await cachedQuerySpotPrice(
+              crocEnv,
+              baseTokenAddress,
+              quoteTokenAddress,
+              chainId,
+              Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+          );
 
-    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
+    const basePrice = poolOnAnalyticsPoolList?.baseUsdPrice
+        ? poolOnAnalyticsPoolList.baseUsdPrice
+        : (await cachedFetchTokenPrice(baseTokenAddress, chainId))?.usdPrice;
+    const quotePrice = poolOnAnalyticsPoolList?.quoteUsdPrice
+        ? poolOnAnalyticsPoolList.quoteUsdPrice
+        : (await cachedFetchTokenPrice(quoteTokenAddress, chainId))?.usdPrice;
 
     const posHash = getPositionHash(undefined, {
         isPositionTypeAmbient: false,
@@ -273,10 +284,8 @@ export const getLimitOrderData = async (
     newOrder.claimableLiqQuoteDecimalCorrected =
         newOrder.claimableLiqQuote / Math.pow(10, quoteTokenDecimals);
 
-    const basePrice = await basePricePromise;
-    const quotePrice = await quotePricePromise;
     const poolPrice = toDisplayPrice(
-        await poolPriceNonDisplay,
+        poolPriceNonDisplay,
         baseTokenDecimals,
         quoteTokenDecimals,
     );
@@ -294,12 +303,12 @@ export const getLimitOrderData = async (
     newOrder.invLimitPriceDecimalCorrected =
         1 / newOrder.limitPriceDecimalCorrected;
 
-    newOrder.baseUsdPrice = basePrice?.usdPrice;
-    newOrder.quoteUsdPrice = quotePrice?.usdPrice;
+    newOrder.baseUsdPrice = basePrice;
+    newOrder.quoteUsdPrice = quotePrice;
 
     newOrder.isBaseTokenMoneynessGreaterOrEqual =
-        getMoneynessRankByAddr(baseTokenAddress) -
-            getMoneynessRankByAddr(quoteTokenAddress) >=
+        getMoneynessRankByAddr(baseTokenAddress, chainId) -
+            getMoneynessRankByAddr(quoteTokenAddress, chainId) >=
         0;
 
     const totalBaseLiq =
@@ -311,16 +320,15 @@ export const getLimitOrderData = async (
 
     if (quotePrice && basePrice) {
         newOrder.totalValueUSD =
-            quotePrice.usdPrice * totalQuoteLiq +
-            basePrice.usdPrice * totalBaseLiq;
+            quotePrice * totalQuoteLiq + basePrice * totalBaseLiq;
     } else if (basePrice) {
-        const quotePrice = basePrice.usdPrice * poolPrice;
+        const quotePrice = basePrice * poolPrice;
         newOrder.totalValueUSD =
-            quotePrice * totalQuoteLiq + basePrice.usdPrice * totalBaseLiq;
+            quotePrice * totalQuoteLiq + basePrice * totalBaseLiq;
     } else if (quotePrice) {
-        const basePrice = quotePrice.usdPrice / poolPrice;
+        const basePrice = quotePrice / poolPrice;
         newOrder.totalValueUSD =
-            basePrice * totalBaseLiq + quotePrice.usdPrice * totalQuoteLiq;
+            basePrice * totalBaseLiq + quotePrice * totalQuoteLiq;
     } else {
         newOrder.totalValueUSD = 0.0;
     }

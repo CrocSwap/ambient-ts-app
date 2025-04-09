@@ -10,7 +10,6 @@
     cursor: pointer;
     text-align: center;
     background: transparent;
-    text-transform: capitalize;
     border-radius: var(--border-radius);
     transition: var(--transition);
     border: 1px solid var(--accent1);
@@ -63,6 +62,7 @@
     border: none;
     text-transform: uppercase !important;
     border-radius: 0;
+    font-size: 24px;
 }
 
 .isFuta:hover,
@@ -73,7 +73,7 @@
 
 .isFutaDisabled {
     pointer-events: none;
-    background: var(--dark4);
+    background: var(--dark3);
     border: none;
-    color: var(--text2);
+    color: var(--text3);
 }

@@ -25,11 +25,43 @@
     font-size: .9rem;
 }   
 
+.ambi{
+    background-color: var(--dark1);
+    color: var(--text1);
+    
+    border-radius: 1rem;
+    box-shadow: 0 10px 10px 0px rgba(0, 0, 0, 0.2);
+    border: none;
+    padding: 1rem 2rem;
+}
+
+.ambi .tuto_help_modal_content{
+    color: var(--text2);
+}
+
 .tuto_help_modal_header{
-    margin-bottom: 1rem ;
+    margin-bottom: 1rem;
     text-align: center;
     font-size: 1.4rem;
+    position: relative;
 }
+
+.tuto_help_modal_dismiss{
+    transition: all .2s ease-in-out;
+    position: absolute;
+    right: .2rem;
+    top: -.3rem;
+    padding: .3rem;
+    cursor: pointer;
+    opacity: .5;
+    font-size: 1.4rem;
+}
+
+.tuto_help_modal_dismiss:hover{
+    opacity: 1;
+}
+
+
 
 
 .tuto_help_modal_footer{
@@ -62,6 +94,16 @@
     color: var(--accent1);
 }
 
+
+.ambi .help_modal_btn{
+    color: var(--text1);
+    border-radius: .5rem;
+    border: none;
+}
+
+.ambi .help_modal_btn.secondary{
+    color: var(--text2);
+}
 
 
 @media only screen and (max-width: 600px) {

@@ -1,6 +1,7 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { motion } from 'framer-motion';
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     CURRENT_AUCTION_VERSION,
     GAS_DROPS_ESTIMATE_AUCTION_CREATE,
@@ -25,17 +26,18 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import styles from './Create.module.css';
 import CreateInput from './CreateInput';
-
 export default function Create() {
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
     const navigate = useNavigate();
 
     const { isUserConnected } = useContext(UserDataContext);
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
-    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { gasPriceInGwei, nativeTokenUsdPrice, lastBlockNumber } =
+        useContext(ChainDataContext);
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
+    const [searchParams] = useSearchParams();
 
     const { tickerInput, setTickerInput } = useContext(AuctionsContext);
 
@@ -84,11 +86,11 @@ export default function Create() {
 
     // calculate price of gas for exchange balance deposit
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 NUM_GWEI_IN_WEI *
-                ethMainnetUsdPrice *
+                nativeTokenUsdPrice *
                 GAS_DROPS_ESTIMATE_AUCTION_CREATE;
 
             setAuctionCreateGasPriceinDollars(
@@ -98,7 +100,19 @@ export default function Create() {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
+
+    useEffect(() => {
+        const tickerParam = searchParams.get('ticker');
+        if (tickerParam) {
+            // Use the same validation logic as handleChange
+            const sanitized = tickerParam.trim();
+            if (checkTickerPattern(sanitized)) {
+                setIsValidationInProgress(true);
+                setTickerInput(sanitized.toUpperCase());
+            }
+        }
+    }, [searchParams]);
 
     const extraInfoData = [
         {
@@ -218,15 +232,24 @@ export default function Create() {
 
     return (
         <section className={styles.mainContainer}>
-            <div className={styles.create_token}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6 }}
+                className={styles.create_token}
+            >
                 {createHeader}
 
                 <CreateInput
                     tickerInput={tickerInput}
                     handleChange={handleChange}
+                    isValidated={isValidated}
+                    isValidationInProgress={isValidationInProgress}
                 />
+
                 {footerDisplay}
-            </div>
+            </motion.div>
 
             {getActionTrigger('create_auction_input_trigger', () => {
                 setTickerInput('MY TOKEN');

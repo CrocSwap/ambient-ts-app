@@ -79,7 +79,7 @@ interface SentMessageProps {
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
     isSubscriptionsEnabled: boolean;
-    address: `0x${string}` | undefined;
+    address: string | undefined;
     isChatOpen: boolean;
     isDeleted: boolean;
     deletedMessageText: string;
@@ -821,7 +821,8 @@ function SentMessagePanel(props: SentMessageProps) {
                                         {/* {myJazzicon} */}
                                         {!BASIC_CHAT_MODE &&
                                             props.message &&
-                                            props.message.chainId && (
+                                            props.message.chainId &&
+                                            props.room === 'Admins' && (
                                                 <img
                                                     className={`${styles.chain_logo} ${isChainNameTestnet(lookupChain(props.message.chainId).displayName) ? styles.testnet : ' '} `}
                                                     src={
@@ -920,7 +921,6 @@ function SentMessagePanel(props: SentMessageProps) {
                                             props.isCurrentUser && (
                                                 <>
                                                     <DefaultTooltip
-                                                        interactive
                                                         title={
                                                             'Verify this message'
                                                         }

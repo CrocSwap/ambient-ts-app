@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useAppKitProvider } from '@reown/appkit/react';
 import { ethers } from 'ethers';
 import {
     ReactNode,
@@ -10,8 +10,6 @@ import {
     useState,
 } from 'react';
 import {
-    PRICE_WINDOW_GRANULARITY,
-    ZERO_ADDRESS,
     blastMainnet,
     ethereumMainnet,
     getDefaultPairForChain,
@@ -32,7 +30,6 @@ import {
     useLinkGen,
 } from '../utils/hooks/useLinkGen';
 import { AppStateContext } from './AppStateContext';
-import { CachedDataContext } from './CachedDataContext';
 import { TokenContext } from './TokenContext';
 import { UserDataContext } from './UserDataContext';
 
@@ -47,7 +44,6 @@ export interface CrocEnvContextIF {
     crocEnv: CrocEnv | undefined;
     setCrocEnv: (val: CrocEnv | undefined) => void;
     topPools: PoolIF[];
-    ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplateIF;
     provider: BatchedJsonRpcProvider;
     mainnetProvider: BatchedJsonRpcProvider | undefined;
@@ -96,7 +92,6 @@ const plumeProvider = new BatchedJsonRpcProvider(
 );
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         activeNetwork: { chainId, evmRpcUrl, fallbackRpcUrl },
         isUserOnline,
@@ -109,14 +104,11 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         : fallbackRpcUrl;
 
     const { userAddress } = useContext(UserDataContext);
-    const { walletProvider } = useWeb3ModalProvider();
+    const { walletProvider } = useAppKitProvider('eip155');
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
     const { tokens } = useContext(TokenContext);
 
     const topPools: PoolIF[] = useTopPools(chainId);
-    const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
-        number | undefined
-    >();
 
     // hooks to generate default URL paths
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
@@ -132,7 +124,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         const savedTokenBSymbol: string | null = localStorage.getItem('tokenB');
 
         const tokensMatchingA: TokenIF[] =
-            savedTokenASymbol === 'ETH' || savedTokenASymbol === 'PETH'
+            savedTokenASymbol === dfltTokenA.symbol
                 ? [dfltTokenA]
                 : tokens.getTokensByNameOrSymbol(
                       savedTokenASymbol || '',
@@ -140,7 +132,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                       true,
                   );
         const tokensMatchingB: TokenIF[] =
-            savedTokenBSymbol === 'ETH' || savedTokenBSymbol === 'PETH'
+            savedTokenBSymbol === dfltTokenA.symbol
                 ? [dfltTokenA]
                 : tokens.getTokensByNameOrSymbol(
                       savedTokenBSymbol || '',
@@ -242,7 +234,9 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             if (!isUserOnline) return;
             let signer = undefined;
             if (walletProvider) {
-                const w3provider = new ethers.BrowserProvider(walletProvider);
+                const w3provider = new ethers.BrowserProvider(
+                    walletProvider as ethers.Eip1193Provider,
+                );
                 signer = await w3provider.getSigner();
             }
             if (!provider && !signer) {
@@ -258,23 +252,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         })();
     }, [isUserOnline, provider, walletProvider, userAddress, activeNetworkRPC]);
 
-    const fetchMainnetEthPrice = async () => {
-        const mainnetEthPrice = (
-            await cachedFetchTokenPrice(ZERO_ADDRESS, '0x1')
-        )?.usdPrice;
-        setEthMainnetUsdPrice(mainnetEthPrice);
-    };
-
-    useEffect(() => {
-        fetchMainnetEthPrice();
-
-        const interval = setInterval(() => {
-            fetchMainnetEthPrice();
-        }, PRICE_WINDOW_GRANULARITY);
-
-        return () => clearInterval(interval);
-    }, []);
-
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainId));
     }, [chainId]);
@@ -284,7 +261,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         crocEnv,
         setCrocEnv,
         topPools,
-        ethMainnetUsdPrice,
         defaultUrlParams,
         provider,
         mainnetProvider,

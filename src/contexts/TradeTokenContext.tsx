@@ -13,6 +13,7 @@ import { ZERO_ADDRESS } from '../ambient-utils/constants';
 import { AppStateContext } from './AppStateContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
+import { ReceiptContext } from './ReceiptContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
 import { TradeDataContext } from './TradeDataContext';
 import { UserDataContext } from './UserDataContext';
@@ -46,6 +47,7 @@ export interface TradeTokenContextIF {
     setRecheckTokenBApproval: (val: boolean) => void;
     isTokenABase: boolean;
     contextMatchesParams: boolean;
+    isChartVisible: boolean;
 }
 
 export const TradeTokenContext = createContext({} as TradeTokenContextIF);
@@ -53,15 +55,18 @@ export const TradeTokenContext = createContext({} as TradeTokenContextIF);
 export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
     const {
         isUserIdle,
-        activeNetwork: { chainId },
+        activeNetwork: { chainId, isTestnet },
+        isTradeRoute,
     } = useContext(AppStateContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { setTokenBalance } = useContext(TokenBalanceContext);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
-    const { tokenA, tokenB, baseToken, quoteToken } =
+    const { tokenA, tokenB, baseToken, quoteToken, isTokenABase } =
         useContext(TradeDataContext);
+
+    const { sessionReceipts } = useContext(ReceiptContext);
     const {
         tokenAAllowance,
         tokenBAllowance,
@@ -74,8 +79,8 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         quoteTokenAddress,
         baseTokenDecimals,
         quoteTokenDecimals,
-        isTokenABase,
         contextMatchesParams,
+        isChartVisible,
     } = usePoolMetadata();
 
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
@@ -153,12 +158,15 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         setRecheckTokenBApproval,
         isTokenABase,
         contextMatchesParams,
+        isChartVisible,
     };
 
-    // useEffect to update selected token balances
+    const blockTrigger = isTestnet ? 0 : lastBlockNumber;
+
     useEffect(() => {
         (async () => {
             if (
+                isTradeRoute &&
                 !isUserIdle &&
                 crocEnv &&
                 userAddress &&
@@ -169,75 +177,78 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
                 quoteTokenDecimals &&
                 (await crocEnv.context).chain.chainId === chainId
             ) {
-                crocEnv
-                    .token(baseToken.address)
-                    .wallet(userAddress)
-                    .then((bal: bigint) => {
-                        const displayBalance = toDisplayQty(
-                            bal,
-                            baseTokenDecimals,
-                        );
-                        if (displayBalance !== baseTokenBalance) {
-                            setBaseTokenBalance(displayBalance);
+                try {
+                    const baseTokenInstance = crocEnv.token(baseToken.address);
+                    const quoteTokenInstance = crocEnv.token(
+                        quoteToken.address,
+                    );
 
-                            setTokenBalance({
-                                tokenAddress: baseToken.address,
-                                walletBalance: bal.toString(),
-                            });
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(baseToken.address)
-                    .balance(userAddress)
-                    .then((bal: bigint) => {
-                        const displayBalance = toDisplayQty(
-                            bal,
-                            baseTokenDecimals,
-                        );
-                        if (displayBalance !== baseTokenDexBalance) {
-                            setBaseTokenDexBalance(displayBalance);
-                            setTokenBalance({
-                                tokenAddress: baseToken.address,
-                                dexBalance: bal.toString(),
-                            });
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(quoteToken.address)
-                    .wallet(userAddress)
-                    .then((bal: bigint) => {
-                        const displayBalance = toDisplayQty(
-                            bal,
-                            quoteTokenDecimals,
-                        );
-                        if (displayBalance !== quoteTokenBalance) {
-                            setQuoteTokenBalance(displayBalance);
-                            setTokenBalance({
-                                tokenAddress: quoteToken.address,
-                                walletBalance: bal.toString(),
-                            });
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(quoteToken.address)
-                    .balance(userAddress)
-                    .then((bal: bigint) => {
-                        const displayBalance = toDisplayQty(
-                            bal,
-                            quoteTokenDecimals,
-                        );
-                        if (displayBalance !== quoteTokenDexBalance) {
-                            setQuoteTokenDexBalance(displayBalance);
-                            setTokenBalance({
-                                tokenAddress: quoteToken.address,
-                                dexBalance: bal.toString(),
-                            });
-                        }
-                    })
-                    .catch(console.error);
+                    // Fetch all balances concurrently
+                    const [
+                        baseWalletBalance,
+                        baseDexBalance,
+                        quoteWalletBalance,
+                        quoteDexBalance,
+                    ] = await Promise.all([
+                        baseTokenInstance.wallet(userAddress),
+                        baseTokenInstance.balance(userAddress),
+                        quoteTokenInstance.wallet(userAddress),
+                        quoteTokenInstance.balance(userAddress),
+                    ]);
+
+                    // Convert balances to display format
+                    const newBaseWalletBalance = toDisplayQty(
+                        baseWalletBalance,
+                        baseTokenDecimals,
+                    );
+                    const newBaseDexBalance = toDisplayQty(
+                        baseDexBalance,
+                        baseTokenDecimals,
+                    );
+                    const newQuoteWalletBalance = toDisplayQty(
+                        quoteWalletBalance,
+                        quoteTokenDecimals,
+                    );
+                    const newQuoteDexBalance = toDisplayQty(
+                        quoteDexBalance,
+                        quoteTokenDecimals,
+                    );
+
+                    // Update state only if values changed
+                    if (newBaseWalletBalance !== baseTokenBalance) {
+                        setBaseTokenBalance(newBaseWalletBalance);
+                        setTokenBalance({
+                            tokenAddress: baseToken.address,
+                            walletBalance: baseWalletBalance.toString(),
+                        });
+                    }
+
+                    if (newBaseDexBalance !== baseTokenDexBalance) {
+                        setBaseTokenDexBalance(newBaseDexBalance);
+                        setTokenBalance({
+                            tokenAddress: baseToken.address,
+                            dexBalance: baseDexBalance.toString(),
+                        });
+                    }
+
+                    if (newQuoteWalletBalance !== quoteTokenBalance) {
+                        setQuoteTokenBalance(newQuoteWalletBalance);
+                        setTokenBalance({
+                            tokenAddress: quoteToken.address,
+                            walletBalance: quoteWalletBalance.toString(),
+                        });
+                    }
+
+                    if (newQuoteDexBalance !== quoteTokenDexBalance) {
+                        setQuoteTokenDexBalance(newQuoteDexBalance);
+                        setTokenBalance({
+                            tokenAddress: quoteToken.address,
+                            dexBalance: quoteDexBalance.toString(),
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching balances:', error);
+                }
             }
         })();
     }, [
@@ -248,9 +259,11 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         userAddress,
         baseToken.address,
         quoteToken.address,
-        lastBlockNumber,
         baseTokenDecimals,
         quoteTokenDecimals,
+        isTradeRoute,
+        blockTrigger,
+        sessionReceipts.length,
     ]);
 
     return (

@@ -1,19 +1,16 @@
 import {
     getFormattedNumber,
-    getUnicodeCharacter,
     uriToHttp,
 } from '../../../../ambient-utils/dataLayer';
-import { TokenIF } from '../../../../ambient-utils/types';
-import { PoolDataIF } from '../../../../contexts/ExploreContext';
+import { PoolIF, TokenIF } from '../../../../ambient-utils/types';
 import TokenIcon from '../../TokenIcon/TokenIcon';
 
-import { useMemo } from 'react';
 import { GrLineChart } from 'react-icons/gr';
 import { FlexContainer } from '../../../../styled/Common';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './PoolRow.module.css';
 interface propsIF {
-    pool: PoolDataIF;
+    pool: PoolIF;
     goToMarket: (tknA: string, tknB: string) => void;
     isExploreDollarizationEnabled: boolean;
 }
@@ -25,24 +22,9 @@ export default function PoolRow(props: propsIF) {
     // const [isHovered, setIsHovered] = useState(false);
 
     const [firstToken, secondToken]: [TokenIF, TokenIF] =
-        pool.moneyness.base < pool.moneyness.quote
-            ? [pool.base, pool.quote]
-            : [pool.quote, pool.base];
-
-    const baseTokenCharacter = pool.base.symbol
-        ? getUnicodeCharacter(pool.base.symbol)
-        : '';
-    const quoteTokenCharacter = pool.quote.symbol
-        ? getUnicodeCharacter(pool.quote.symbol)
-        : '';
-
-    const characterToDisplay = useMemo(
-        () =>
-            pool.moneyness.base < pool.moneyness.quote
-                ? quoteTokenCharacter
-                : baseTokenCharacter,
-        [pool],
-    );
+        pool.isBaseTokenMoneynessGreaterOrEqual
+            ? [pool.quoteToken, pool.baseToken]
+            : [pool.baseToken, pool.quoteToken];
 
     const desktopView = useMediaQuery('(min-width: 768px)');
 
@@ -73,7 +55,7 @@ export default function PoolRow(props: propsIF) {
 
     const splitPoolDisplay = (
         <>
-            {pool?.base?.symbol + ' /'} <br /> {pool?.quote?.symbol}
+            {pool?.baseToken?.symbol + ' /'} <br /> {pool?.quoteToken?.symbol}
         </>
     );
 
@@ -89,33 +71,56 @@ export default function PoolRow(props: propsIF) {
                       })
                     : '...'
                 : pool.displayPrice
-                  ? characterToDisplay + pool.displayPrice
+                  ? pool.displayPriceString
                   : '...'}
         </p>
     );
 
-    const poolVolumeDisplay = <p>{pool.volumeStr || '...'}</p>;
+    const volumeDisplayString: string = pool.volumeChange24h
+        ? getFormattedNumber({
+              value: pool.volumeChange24h,
+              prefix: '$',
+          })
+        : '';
+
+    const poolVolumeDisplay = <p>{volumeDisplayString || '...'}</p>;
 
     const aprDisplay = <p>{aprString}</p>;
 
-    const tvlDisplay = <p>{!pool.tvl || pool.tvl < 0 ? '...' : pool.tvlStr}</p>;
+    const tvlDisplayString: string = pool.tvlTotalUsd
+        ? getFormattedNumber({
+              value: pool.tvlTotalUsd,
+              isTvl: true,
+              prefix: '$',
+          })
+        : '';
+
+    const tvlDisplay = (
+        <p>
+            {!pool.tvlTotalUsd || pool.tvlTotalUsd < 0
+                ? '...'
+                : tvlDisplayString}
+        </p>
+    );
 
     const priceChangeDisplay = (
         <p
             style={{
                 color:
-                    pool.priceChangeStr.includes('No') || !pool.priceChangeStr
+                    !pool.priceChangePercentString ||
+                    pool.priceChangePercentString.includes('No')
                         ? 'var(--text1)'
-                        : pool.priceChangeStr.startsWith('-')
+                        : pool.priceChangePercentString.startsWith('-')
                           ? 'var(--negative)'
                           : 'var(--positive)',
             }}
         >
-            {!pool.priceChangeStr || pool.priceChangeStr.includes('NaN')
+            {!pool.priceChangePercentString ||
+            pool.priceChangePercentString.includes('NaN')
                 ? '...'
-                : !desktopView && pool.priceChangeStr.includes('No')
+                : !desktopView && pool.priceChangePercentString.includes('No')
                   ? 'None'
-                  : pool.priceChangeStr}
+                  : pool.priceChangePercentString}
         </p>
     );
 
@@ -123,7 +128,7 @@ export default function PoolRow(props: propsIF) {
         <div
             className={styles.tradeIcon}
             onClick={(event: React.MouseEvent) => {
-                goToMarket(pool.base.address, pool.quote.address);
+                goToMarket(pool.base, pool.quote);
                 event?.stopPropagation();
             }}
         >
@@ -179,7 +184,7 @@ export default function PoolRow(props: propsIF) {
         <div
             className={styles.gridContainer}
             onClick={(event: React.MouseEvent) => {
-                goToMarket(pool.base.address, pool.quote.address);
+                goToMarket(pool.base, pool.quote);
                 event?.stopPropagation();
             }}
         >

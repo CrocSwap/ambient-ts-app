@@ -35,7 +35,6 @@ import { RangeContext } from '../../../../contexts/RangeContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import { rangeTutorialSteps } from '../../../../utils/tutorial/Range';
 
 import {
     estimateBalancedRangeAprFromPoolApr,
@@ -60,14 +59,18 @@ export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
 
 function Range() {
-    const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const {
         activeNetwork: { chainId, gridSize },
     } = useContext(AppStateContext);
 
-    const { gasPriceInGwei, isActiveNetworkPlume, isActiveNetworkL2 } =
-        useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        nativeTokenUsdPrice,
+        isActiveNetworkPlume,
+        isActiveNetworkL2,
+    } = useContext(ChainDataContext);
     const {
         poolPriceDisplay,
         dailyVol,
@@ -240,11 +243,13 @@ function Range() {
 
     const shouldResetAdvancedLowTick =
         !ticksInParams &&
+        currentPoolPriceTick !== undefined &&
         (advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
 
     const shouldResetAdvancedHighTick =
         !ticksInParams &&
+        currentPoolPriceTick !== undefined &&
         (advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
 
@@ -279,19 +284,21 @@ function Range() {
     const isAdd = useMemo(
         () =>
             userPositions.length > 0 &&
-            userPositions.some((position: PositionIF) => {
-                if (isAmbient && position.positionType === 'ambient') {
-                    return true;
-                } else if (
-                    !isAmbient &&
-                    defaultLowTick === position.bidTick &&
-                    defaultHighTick === position.askTick
-                ) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }),
+            userPositions
+                .filter((position) => position.positionLiq !== 0)
+                .some((position: PositionIF) => {
+                    if (isAmbient && position.positionType === 'ambient') {
+                        return true;
+                    } else if (
+                        !isAmbient &&
+                        defaultLowTick === position.bidTick &&
+                        defaultHighTick === position.askTick
+                    ) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }),
         [userPositions, isAmbient, defaultLowTick, defaultHighTick],
     );
 
@@ -339,8 +346,10 @@ function Range() {
         tokenAInputQtyNoExponentString !== '' ||
         tokenBInputQtyNoExponentString !== '';
 
-    const rangeSpanAboveCurrentPrice = defaultHighTick - currentPoolPriceTick;
-    const rangeSpanBelowCurrentPrice = currentPoolPriceTick - defaultLowTick;
+    const rangeSpanAboveCurrentPrice =
+        defaultHighTick - (currentPoolPriceTick || 0);
+    const rangeSpanBelowCurrentPrice =
+        (currentPoolPriceTick || 0) - defaultLowTick;
     const isOutOfRange = !advancedMode
         ? false
         : rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
@@ -526,7 +535,11 @@ function Range() {
             setIsAmbient(false);
         } else {
             setIsAmbient(false);
-            if (Math.abs(currentPoolPriceTick) === Infinity) return;
+            if (
+                currentPoolPriceTick === undefined ||
+                Math.abs(currentPoolPriceTick) === Infinity
+            )
+                return;
             const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
             const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
@@ -624,9 +637,10 @@ function Range() {
             setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             const highTickDiff =
-                pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick;
+                pinnedDisplayPrices.pinnedHighTick -
+                (currentPoolPriceTick || 0);
             const lowTickDiff =
-                pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick;
+                pinnedDisplayPrices.pinnedLowTick - (currentPoolPriceTick || 0);
 
             const highGeometricDifferencePercentage =
                 Math.abs(highTickDiff) < 200
@@ -737,14 +751,15 @@ function Range() {
             const highGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
                     (pinnedDisplayPrices.pinnedHighTick -
-                        currentPoolPriceTick) /
+                        (currentPoolPriceTick || 0)) /
                         100,
                     0,
                 ),
             );
             const lowGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
-                    (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) /
+                    (pinnedDisplayPrices.pinnedLowTick -
+                        (currentPoolPriceTick || 0)) /
                         100,
                     0,
                 ),
@@ -825,14 +840,15 @@ function Range() {
             const highGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
                     (pinnedDisplayPrices.pinnedHighTick -
-                        currentPoolPriceTick) /
+                        (currentPoolPriceTick || 0)) /
                         100,
                     0,
                 ),
             );
             const lowGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
-                    (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) /
+                    (pinnedDisplayPrices.pinnedLowTick -
+                        (currentPoolPriceTick || 0)) /
                         100,
                     0,
                 ),
@@ -887,7 +903,7 @@ function Range() {
     }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const costOfMainnetPoolInETH =
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
@@ -916,7 +932,7 @@ function Range() {
                 gasPriceInGwei *
                 GAS_DROPS_ESTIMATE_POOL *
                 NUM_GWEI_IN_WEI *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setRangeGasPriceinDollars(
                 getFormattedNumber({
@@ -927,7 +943,7 @@ function Range() {
         }
     }, [
         gasPriceInGwei,
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
         l1GasFeePoolInGwei,
         extraL1GasFeePool,
     ]);
@@ -1334,7 +1350,6 @@ function Range() {
                     />
                 ) : undefined
             }
-            tutorialSteps={rangeTutorialSteps}
         />
     );
 }

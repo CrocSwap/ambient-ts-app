@@ -1,4 +1,3 @@
-import { Step } from 'intro.js-react';
 export interface LikeDislikePayload {
     userId: string | undefined;
     actionType: number;
@@ -61,17 +60,7 @@ export interface TutorialStepExternalComponent {
     placement?: 'nav-end' | 'nav-before' | 'nav-after';
 }
 
-export interface TutorialIF {
-    lsKey: string;
-    steps: Step[];
-    showDefault?: boolean;
-    externalComponents?: Map<string, TutorialStepExternalComponent>;
-    helpModal?: {
-        title?: string;
-        content: JSX.Element;
-    };
-}
-
+// this interface inherited from Step interface which located in former intro.js dependency
 export interface TutorialStepIF {
     element?: string | HTMLElement | Element;
     intro: string | React.ReactNode;
@@ -84,6 +73,18 @@ export interface TutorialStepIF {
     actionOnComplete?: string;
     component?: JSX.Element;
     navigate?: { label: string; path: string };
+}
+
+export interface TutorialIF {
+    lsKey: string;
+    steps: TutorialStepIF[];
+    showDefault?: boolean;
+    externalComponents?: Map<string, TutorialStepExternalComponent>;
+    noHelpModal?: boolean;
+    helpModal?: {
+        title?: string;
+        content: JSX.Element;
+    };
 }
 
 export interface PageDataCountIF {

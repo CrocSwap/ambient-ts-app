@@ -52,12 +52,13 @@ export const L1_GAS_CALC_ENABLED =
         ? import.meta.env.VITE_L1_GAS_CALC_ENABLED.toLowerCase() === 'true'
         : false;
 
-export const VIEW_ONLY =
-    (import.meta.env.VITE_VIEW_ONLY !== undefined
-        ? import.meta.env.VITE_VIEW_ONLY.toLowerCase() === 'true'
-        : false) ||
-    window.location.hostname.startsWith('us.') ||
-    window.location.hostname.split('.')[0].endsWith('-us');
+export const VIEW_ONLY = false;
+// export const VIEW_ONLY =
+//     (import.meta.env.VITE_VIEW_ONLY !== undefined
+//         ? import.meta.env.VITE_VIEW_ONLY.toLowerCase() === 'true'
+//         : false) ||
+//     window.location.hostname.startsWith('us.') ||
+//     window.location.hostname.split('.')[0].endsWith('-us');
 
 export const DISABLE_WORKAROUNDS =
     import.meta.env.VITE_DISABLE_WORKAROUNDS !== undefined
@@ -77,6 +78,11 @@ export const ALCHEMY_API_KEY =
 export const DISABLE_INIT_SETTINGS =
     import.meta.env.VITE_DISABLE_INIT_SETTINGS !== undefined
         ? import.meta.env.VITE_DISABLE_INIT_SETTINGS.toLowerCase() === 'true'
+        : false;
+
+export const HIDE_TOKEN_VALUES =
+    import.meta.env.VITE_HIDE_TOKEN_VALUES !== undefined
+        ? import.meta.env.VITE_HIDE_TOKEN_VALUES.toLowerCase() === 'true'
         : false;
 
 export const SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
@@ -157,7 +163,7 @@ export const DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES =
 export const WALLETCONNECT_PROJECT_ID = import.meta.env
     .VITE_WALLETCONNECT_PROJECT_ID
     ? import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
-    : '4698477998162ad97b05880f2c03a82c';
+    : '37e833557d495d07825c0c6815ac9d93';
 
 export const CROCODILE_LABS_LINKS = [
     'https://twitter.com/',
@@ -170,5 +176,11 @@ export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
 
 export const CURRENT_AUCTION_VERSION = 1;
 
+// using to disable tutos which showing by default
+// controlled with a toggle on settings in ui
 export const SHOW_TUTOS_DEFAULT =
     import.meta.env.VITE_SHOW_TUTOS_DEFAULT || 'true';
+
+// using for disabling all tutorials and to hide help button on ui
+export const DISABLE_ALL_TUTOS =
+    import.meta.env.VITE_DISABLE_ALL_TUTOS || false;
