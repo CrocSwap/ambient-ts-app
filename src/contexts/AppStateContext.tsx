@@ -1,7 +1,6 @@
 import { useAppKit } from '@reown/appkit/react';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { useIdleTimer } from 'react-idle-timer';
-import { useLocation } from 'react-router';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     CHAT_ENABLED,
@@ -75,7 +74,7 @@ export const AppStateContextProvider = (props: {
     const FOOTER_HEIGHT = 56;
     const TOTAL_FIXED_HEIGHT = NAVBAR_HEIGHT + FOOTER_HEIGHT;
 
-    const pathNoLeadingSlash = useLocation().pathname?.slice(1);
+    const pathNoLeadingSlash = window.location.pathname?.slice(1);
     const isTradeRoute =
         pathNoLeadingSlash.includes('trade') ||
         pathNoLeadingSlash.includes('swap') ||

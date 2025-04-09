@@ -1,6 +1,5 @@
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router';
 import {
     FetchContractDetailsFn,
     findKnownTokenPriceByAddress,
@@ -56,7 +55,7 @@ export const useTokenStats = (
 ): useTokenStatsIF => {
     const [dexTokens, setDexTokens] = useState<dexTokenData[]>([]);
     const { activeNetwork } = useContext(AppStateContext);
-    const pathname = useLocation().pathname;
+    const pathname = window.location.pathname;
     const userIsOnExplorePage = pathname.includes('/explore');
 
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);

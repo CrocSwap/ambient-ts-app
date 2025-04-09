@@ -35,12 +35,12 @@
         "web-vitals": "^2.1.0"
     },
     "scripts": {
-        "ambi": "yarn start --force",
-        "start": "yarn install && vite",
+        "ambi": "pnpm start --force",
+        "start": "pnpm install && vite",
         "start-only": "vite",
-        "force": "yarn start --force",
-        "futa": "yarn start --force --mode futa --port 3001",
-        "plume": "yarn start --force --mode plume --port 3001",
+        "force": "pnpm start --force",
+        "futa": "pnpm start --force --mode futa --port 3001",
+        "plume": "pnpm start --force --mode plume --port 3001",
         "build": "tsc && vite build",
         "preview": "vite preview",
         "dev": "vite --host",
@@ -48,7 +48,7 @@
         "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
         "prepare": "husky",
         "postbuild": "node generateManifest.js",
-        "test-serve": "yarn build && npx serve build"
+        "test-serve": "pnpm build && npx serve build"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx,json}": [
@@ -85,9 +85,8 @@
         "prettier": "^3.4.2",
         "rollup-plugin-visualizer": "^5.12.0",
         "superagent": "^10.0.0",
-        "typescript": "^5.8.2",
-        "vite": "^6.2.5",
-        "vite-plugin-checker": "^0.9.1",
-        "vitest": "^3.0.9"
+        "typescript": "^5.7.3",
+        "vite": "^6.0.3",
+        "vitest": "^3.0.4"
     }
 }
