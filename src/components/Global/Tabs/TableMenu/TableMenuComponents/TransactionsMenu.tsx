@@ -75,6 +75,7 @@ export default function TransactionsMenu(props: propsIF) {
         isTokenAPrimary,
         setIsTokenAPrimary,
         setShouldSwapDirectionReverse,
+        setActiveTab,
     } = useContext(TradeDataContext);
     const menuItemRef = useRef<HTMLDivElement>(null);
 
@@ -85,6 +86,7 @@ export default function TransactionsMenu(props: propsIF) {
 
     const handleCopyClick = () => {
         setActiveMobileComponent('trade');
+        setActiveTab('Order');
         if (tx.entityType === 'swap') {
             handlePulseAnimation('swap');
         } else if (tx.entityType === 'limitOrder') {

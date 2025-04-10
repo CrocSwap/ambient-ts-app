@@ -125,7 +125,7 @@ export const txRowConstants = (props: propsIF) => {
         setAdvancedMode,
     } = useContext(RangeContext);
 
-    const { tokenA, setShouldSwapDirectionReverse } =
+    const { tokenA, setShouldSwapDirectionReverse, setActiveTab } =
         useContext(TradeDataContext);
     const baseToken: TokenIF | undefined = tokens.getTokenByAddress(tx.base);
     const quoteToken: TokenIF | undefined = tokens.getTokenByAddress(tx.quote);
@@ -360,6 +360,7 @@ export const txRowConstants = (props: propsIF) => {
 
     const handleCopyClick = () => {
         if (tx.entityType === 'liqchange') {
+            setActiveTab('Order');
             setActiveMobileComponent('trade');
 
             setRangeTicksCopied(true);
