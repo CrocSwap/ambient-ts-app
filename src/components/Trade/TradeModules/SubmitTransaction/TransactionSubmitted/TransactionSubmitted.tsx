@@ -1,9 +1,11 @@
 import { useAppKitProvider } from '@reown/appkit/react';
 import { ethers } from 'ethers';
+import { useContext } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import { brand } from '../../../../../ambient-utils/constants';
 import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import Button from '../../../../Form/Button';
 import addTokenToWallet from './addTokenToWallet';
 import styles from './TransactionSubmitted.module.css';
@@ -48,6 +50,12 @@ export default function TransactionSubmitted(props: PropsIF) {
     const txUrlOnBlockExplorer = `${blockExplorer}tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
     const isFuta = brand === 'futa';
+
+    const {
+        activeNetwork: {
+            chainSpecForAppKit: { nativeCurrency },
+        },
+    } = useContext(AppStateContext);
 
     const { walletProvider } = useAppKitProvider('eip155');
     const handleAddToMetaMask = async () => {
@@ -163,7 +171,8 @@ export default function TransactionSubmitted(props: PropsIF) {
                 }`}
             >
                 {txUrlOnBlockExplorer && etherscanButton}
-                {importTokenSymbol === 'ETH' ||
+                {importTokenSymbol.toLowerCase() ===
+                    nativeCurrency.symbol.toLowerCase() ||
                 currentLocation === '/trade/pool'
                     ? null
                     : addToMetaMaskButton}
