@@ -329,6 +329,22 @@
             "decimals": 18,
             "chainId": 10143,
             "logoURI": "https://alpha.caddy.finance/assets/caddyIcon-CjmClsUW.png"
+        },
+        {
+            "name": "aPriori Monad LST",
+            "address": "0xb2f82D0f38dc453D596Ad40A37799446Cc89274A",
+            "symbol": "aprMON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://pbs.twimg.com/profile_images/1821177411796410369/GtzmUXok_400x400.jpg"
+        },
+        {
+            "name": "StakedMonad",
+            "address": "0x07AabD925866E8353407E67C1D157836f7Ad923e",
+            "symbol": "sMON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://kintsu-logos.s3.us-east-1.amazonaws.com/sMON.svg"
         }
     ]
 }
