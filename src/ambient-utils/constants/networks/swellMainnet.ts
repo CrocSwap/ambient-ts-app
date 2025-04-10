@@ -63,6 +63,7 @@ const defaultTokenEntries = [
     ['swBTC', '0x1cf7b5f266A0F39d6f9408B90340E3E71dF8BF7B'],
     ['stBTC', '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3'],
     ['KING', '0xc2606aade4bdd978a4fa5a6edb3b66657acee6f8'],
+    ['USDT0', '0x102d758f688a4c1c5a80b116bd945d4455460282'],
 ] as const;
 
 type SwellTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
@@ -110,7 +111,9 @@ export const swellMainnet: NetworkIF = {
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
-    blockExplorer: chainSpecForAppKit.blockExplorers?.default.url || '',
+    blockExplorer: (
+        chainSpecForAppKit.blockExplorers?.default.url || ''
+    ).replace(/\/?$/, '/'),
     displayName: 'Swell',
     tokenPriceQueryAssetPlatform: 'swell',
     vaultsEnabled: true,

@@ -99,7 +99,9 @@ export const plumeMainnet: NetworkIF = {
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
-    blockExplorer: chainSpecForAppKit.blockExplorers?.default.url || '',
+    blockExplorer: (
+        chainSpecForAppKit.blockExplorers?.default.url || ''
+    ).replace(/\/?$/, '/'),
     displayName: 'Plume',
     tokenPriceQueryAssetPlatform: 'plume',
     vaultsEnabled: false,

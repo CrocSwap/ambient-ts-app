@@ -97,7 +97,9 @@ export const blastMainnet: NetworkIF = {
     fallbackRpcUrl: FALLBACK_RPC_URL,
     chainSpecForAppKit: chainSpecForAppKit,
     defaultPair: [BLAST_TOKENS.ETH, BLAST_TOKENS.USDB],
-    blockExplorer: chainSpecForAppKit.blockExplorers?.default.url || '',
+    blockExplorer: (
+        chainSpecForAppKit.blockExplorers?.default.url || ''
+    ).replace(/\/?$/, '/'),
     displayName: chainSpecForAppKit.name,
     tokenPriceQueryAssetPlatform: 'blast',
     vaultsEnabled: false,

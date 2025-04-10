@@ -9,7 +9,6 @@ import {
 } from '../../../../../ambient-utils/types';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
@@ -45,7 +44,6 @@ function RangeDetailsSimplify(props: propsIF) {
         },
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
-    const { crocEnv } = useContext(CrocEnvContext);
     const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
     const {
@@ -78,7 +76,7 @@ function RangeDetailsSimplify(props: propsIF) {
         quoteDisplay,
         elapsedTimeString,
         elapsedTimeSinceFirstMintString,
-    } = useProcessRange(position, crocEnv, userAddress, isAccountView);
+    } = useProcessRange(position, userAddress, isAccountView);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
