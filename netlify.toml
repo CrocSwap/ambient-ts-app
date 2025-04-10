@@ -44,10 +44,6 @@
   path = "/*"
   function = "country-block"
 
-[[edge_functions]]
-  path = "/*"
-  function = "country-redirect"
-
 [build]
   command = "npm run build && cp src/ambient-utils/constants/ambient-token-list.json src/ambient-utils/constants/testnet-token-list.json build/"
   publish = "build"

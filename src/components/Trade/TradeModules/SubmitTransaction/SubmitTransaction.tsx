@@ -39,6 +39,10 @@ interface propsIF {
     sendTransaction: () => Promise<void>;
     transactionPendingDisplayString: string;
     disableSubmitAgain?: boolean;
+    importTokenSymbol?: string;
+    importTokenAddress?: string;
+    importTokenDecimals?: number;
+    importTokenImage?: string;
 }
 export default function SubmitTransaction(props: propsIF) {
     const {
@@ -49,6 +53,10 @@ export default function SubmitTransaction(props: propsIF) {
         sendTransaction,
         transactionPendingDisplayString,
         disableSubmitAgain,
+        importTokenSymbol,
+        importTokenAddress,
+        importTokenDecimals,
+        importTokenImage,
     } = props;
 
     const { pendingTransactions, sessionReceipts } = useContext(ReceiptContext);
@@ -107,14 +115,29 @@ export default function SubmitTransaction(props: propsIF) {
         }
     }, [sessionReceipts, newTransactionHash]);
 
+    const importTokenSymbolOrTokenB = importTokenSymbol
+        ? importTokenSymbol
+        : tokenB.symbol;
+    const importTokenAddressOrTokenB = importTokenAddress
+        ? importTokenAddress
+        : tokenB.address;
+    const importTokenDecimalsOrTokenB = importTokenDecimals
+        ? importTokenDecimals
+        : tokenB.decimals;
+    const importTokenImageOrTokenB = importTokenSymbol
+        ? importTokenImage
+            ? uriToHttp(importTokenImage)
+            : ''
+        : uriToHttp(tokenB.logoURI);
+
     const transactionSubmitted = (
         <TransactionSubmitted
             type={type}
             hash={newTransactionHash}
-            tokenBSymbol={tokenB.symbol}
-            tokenBAddress={tokenB.address}
-            tokenBDecimals={tokenB.decimals}
-            tokenBImage={uriToHttp(tokenB.logoURI)}
+            importTokenSymbol={importTokenSymbolOrTokenB}
+            importTokenAddress={importTokenAddressOrTokenB}
+            importTokenDecimals={importTokenDecimalsOrTokenB}
+            importTokenImage={importTokenImageOrTokenB}
             chainId={tokenB.chainId}
             isConfirmed={isTransactionConfirmed}
             isTransactionFailed={isTransactionFailed}

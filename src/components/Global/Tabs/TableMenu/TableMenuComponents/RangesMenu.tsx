@@ -74,6 +74,8 @@ function RangesMenu(props: propsIF) {
     const { handlePulseAnimation, setActiveMobileComponent } =
         useContext(TradeTableContext);
 
+    const { setActiveTab } = useContext(TradeDataContext);
+
     const { isAmbient } = rangeDetailsProps;
 
     const openDetailsModal = () => {
@@ -118,6 +120,7 @@ function RangesMenu(props: propsIF) {
 
     const handleCopyClick = () => {
         setActiveMobileComponent('trade');
+        setActiveTab('Order');
 
         setRangeTicksCopied(true);
         handlePulseAnimation('range');
@@ -158,6 +161,7 @@ function RangesMenu(props: propsIF) {
             })}
             onClick={() => {
                 setActiveMobileComponent('trade');
+                setActiveTab('Order');
                 setSimpleRangeWidth(
                     getDefaultRangeWidthForTokenPair(
                         position.chainId,

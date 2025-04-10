@@ -1,4 +1,3 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
 import moment from 'moment';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import {
@@ -17,7 +16,6 @@ import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessRange = (
     position: PositionIF,
-    crocEnv: CrocEnv | undefined,
     account = '',
     isAccountView?: boolean,
 ) => {
