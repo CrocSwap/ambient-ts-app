@@ -12,7 +12,6 @@ import {
     RangeModalAction,
 } from '../../../../../ambient-utils/types';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
@@ -51,7 +50,6 @@ function RangesRow(props: propsIF) {
     } = useContext(AppStateContext);
     const { showAllData: showAllDataSelection, currentPositionActive } =
         useContext(TradeTableContext);
-    const { crocEnv } = useContext(CrocEnvContext);
 
     const { currentRangeInReposition, currentRangeInAdd } =
         useContext(RangeContext);
@@ -92,7 +90,7 @@ function RangesRow(props: propsIF) {
         quoteTokenAddress,
         lowDisplayPriceInUsd,
         highDisplayPriceInUsd,
-    } = useProcessRange(position, crocEnv, userAddress, isAccountView);
+    } = useProcessRange(position, userAddress, isAccountView);
 
     const rangeDetailsProps = {
         isPositionInRange: isPositionInRange,
