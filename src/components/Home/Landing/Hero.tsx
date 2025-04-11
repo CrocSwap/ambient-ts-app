@@ -22,7 +22,11 @@ export default function Hero() {
         >
             <div className={styles.hero_content}>
                 <div className={styles.hero_items}>
-                    <span className={styles.ambient_logo}>ambient</span>
+                    <span
+                        className={`${styles.ambient_logo} ${cobrandingLogo ? '' : styles.ambient_only}`}
+                    >
+                        ambient
+                    </span>
 
                     {cobrandingLogo && (
                         <>

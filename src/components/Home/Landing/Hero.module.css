@@ -5,7 +5,7 @@
     width: 100%;
     height: 100%; 
     position: relative;
-    z-index: 10;
+    
 }
 
 .hero_content {
@@ -94,4 +94,13 @@
         ),
         url('/src/assets/images/home/home_wallpaper.webp') no-repeat;
     background-size: cover;
+}
+
+.ambient_only{
+    font-size: 9rem;
+}
+@media (max-width: 1200px) {
+    .ambient_only{
+        font-size: 7rem;
+    }
 }
