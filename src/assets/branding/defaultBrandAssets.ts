@@ -28,6 +28,12 @@ export const defaultBrandAssets: brandIF = {
             cobrandingLogo: swellLogo,
         },
         // plume mainnet
+        '0x18232': {
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
+            premiumColor: [],
+            cobrandingLogo: plumeLogo,
+        },
+        // plume legacy
         '0x18231': {
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
@@ -49,12 +55,6 @@ export const defaultBrandAssets: brandIF = {
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             cobrandingLogo: monadLogo,
-        },
-        // plume sepolia
-        '0x18230': {
-            color: ['purple_dark', 'purple_light', 'futa_dark'],
-            premiumColor: [],
-            cobrandingLogo: plumeLogo,
         },
         // scroll sepolia
         '0x8274f': {

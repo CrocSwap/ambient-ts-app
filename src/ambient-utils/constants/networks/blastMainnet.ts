@@ -1,5 +1,6 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
@@ -23,12 +24,24 @@ const chainIdHex = '0x13e31';
 
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
-const chainSpecForWalletConnector = {
-    chainId: Number(chainIdHex),
+const chainSpecForAppKit: Chain = {
+    id: Number(chainIdHex),
+    rpcUrls: {
+        default: { http: [RPC_URLS.PUBLIC] },
+    },
     name: 'Blast',
-    currency: 'ETH',
-    rpcUrl: RPC_URLS.PUBLIC,
-    explorerUrl: 'https://blastscan.io/',
+    nativeCurrency: {
+        decimals: 18,
+        name: 'Ether',
+        symbol: 'ETH',
+    },
+    blockExplorers: {
+        default: {
+            name: 'Blastscan',
+            url: 'https://blastscan.io',
+            apiUrl: 'https://api.blastscan.io/api',
+        },
+    },
 };
 
 const defaultTokenEntries = [
@@ -82,10 +95,12 @@ export const blastMainnet: NetworkIF = {
     GCGO_URL: GCGO_BLAST_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector: chainSpecForWalletConnector,
+    chainSpecForAppKit: chainSpecForAppKit,
     defaultPair: [BLAST_TOKENS.ETH, BLAST_TOKENS.USDB],
-    blockExplorer: chainSpecForWalletConnector.explorerUrl,
-    displayName: chainSpecForWalletConnector.name,
+    blockExplorer: (
+        chainSpecForAppKit.blockExplorers?.default.url || ''
+    ).replace(/\/?$/, '/'),
+    displayName: chainSpecForAppKit.name,
     tokenPriceQueryAssetPlatform: 'blast',
     vaultsEnabled: false,
     tempestApiNetworkName: '',

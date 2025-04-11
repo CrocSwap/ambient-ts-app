@@ -1,4 +1,3 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
 import moment from 'moment';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import {
@@ -17,7 +16,6 @@ import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessRange = (
     position: PositionIF,
-    crocEnv: CrocEnv | undefined,
     account = '',
     isAccountView?: boolean,
 ) => {
@@ -52,16 +50,27 @@ export const useProcessRange = (
     const baseTokenLogo = position.baseTokenLogoURI;
 
     const apy = position.apy ?? undefined;
+
     const apyString = apy
         ? apy >= 1000
             ? apy.toLocaleString('en-US', {
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
               }) + '%+'
-            : apy.toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              }) + '%'
+            : apy >= 10
+              ? apy.toLocaleString('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                }) + '%'
+              : apy >= 1
+                ? apy.toLocaleString('en-US', {
+                      minimumFractionDigits: 1,
+                      maximumFractionDigits: 1,
+                  }) + '%'
+                : apy.toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  }) + '%'
         : undefined;
 
     const apyClassname = apy > 0 ? 'apy_positive' : 'apy_negative';

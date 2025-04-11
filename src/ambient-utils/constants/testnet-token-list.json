@@ -304,7 +304,47 @@
             "symbol": "BEAN",
             "decimals": 18,
             "chainId": 10143,
-            "logoURI": "https://swap.bean.exchange/images/tokens/bean.png"
+            "logoURI": "https://pbs.twimg.com/profile_images/1875029488180080640/vVqXpCvW_400x400.jpg"
+        },
+        {
+            "name": "Hedgemony",
+            "address": "0x04a9d9D4AEa93F512A4c7b71993915004325ed38",
+            "symbol": "HEDGE",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://www.hedgemony.xyz/token_icon.png"
+        },
+        {
+            "name": "Wrapped SOL",
+            "address": "0x5387C85A4965769f6B0Df430638a1388493486F1",
+            "symbol": "WSOL",
+            "decimals": 9,
+            "chainId": 10143,
+            "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/sol.png/public"
+        },
+        {
+            "name": "Staked Monad",
+            "address": "0x199c0Da6F291a897302300AAAe4F20d139162916",
+            "symbol": "stMON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://alpha.caddy.finance/assets/caddyIcon-CjmClsUW.png"
+        },
+        {
+            "name": "aPriori Monad LST",
+            "address": "0xb2f82D0f38dc453D596Ad40A37799446Cc89274A",
+            "symbol": "aprMON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://pbs.twimg.com/profile_images/1821177411796410369/GtzmUXok_400x400.jpg"
+        },
+        {
+            "name": "StakedMonad",
+            "address": "0x07AabD925866E8353407E67C1D157836f7Ad923e",
+            "symbol": "sMON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://kintsu-logos.s3.us-east-1.amazonaws.com/sMON.svg"
         }
     ]
 }

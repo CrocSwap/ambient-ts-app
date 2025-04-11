@@ -1,7 +1,6 @@
 // import{ lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { motion } from 'framer-motion';
 import { useContext, useEffect, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
@@ -9,6 +8,7 @@ import { useSearchParams } from 'react-router-dom';
 import { brand, supportedNetworks } from '../../../../ambient-utils/constants';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 // import baseLogo from '../../../../assets/images/networks/Base_Network_Logo.svg';
+import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
 import baseSepoliaLogo from '../../../../assets/images/networks/base_sepolia_no_margin.webp';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_no_margin.webp';
@@ -35,6 +35,7 @@ import {
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import styles from './NetworkSelector.module.css';
+
 interface propsIF {
     customBR?: string;
 }
@@ -67,12 +68,12 @@ export default function NetworkSelector(props: propsIF) {
         useState('');
 
     const { closeBottomSheet } = useBottomSheet();
-    const { switchNetwork } = useSwitchNetwork();
     const smallScreen: boolean = useMediaQuery('(max-width: 600px)');
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const [searchParams, setSearchParams] = useSearchParams();
-    const { isConnected } = useWeb3ModalAccount();
+    const { isConnected } = useAppKitAccount();
+    const { switchNetwork } = useAppKitNetwork();
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
 
@@ -84,31 +85,67 @@ export default function NetworkSelector(props: propsIF) {
     const chainMap = new Map();
     chains.forEach((chain: ChainSpec) => chainMap.set(chain.chainId, chain));
 
+    const [targetChainId, setTargetChainId] = useState<string | undefined>();
+
     // click handler for network switching (does not handle Canto link)
     async function handleClick(chn: ChainSpec): Promise<void> {
         if (chn.chainId === chainId) return;
         setIsNetworkUpdateInProgress(true);
         const selectedNetwork = supportedNetworks[chn.chainId];
+        const targetChainId = chn.chainId;
+        setTargetChainId(targetChainId);
         setSelectedNetworkDisplayName(selectedNetwork.displayName);
+
         if (isConnected) {
             setCrocEnv(undefined);
-            await switchNetwork(parseInt(chn.chainId));
+            switchNetwork(selectedNetwork.chainSpecForAppKit);
+
             if (chainParam || networkParam) {
-                // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();
             }
         } else {
             if (chainParam || networkParam) {
-                // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();
             }
             chooseNetwork(selectedNetwork);
         }
     }
+    useEffect(() => {
+        if (!targetChainId) return;
+
+        let attemptCount = 0; // Initialize attempt counter
+
+        const checkChainId = setInterval(async () => {
+            console.log(
+                `Re-attempting to switch networks (Attempt ${attemptCount + 1}/2)`,
+                {
+                    chainId,
+                    targetChainId,
+                },
+            );
+
+            if (chainId !== targetChainId && attemptCount < 2) {
+                switchNetwork(
+                    supportedNetworks[targetChainId].chainSpecForAppKit,
+                );
+                attemptCount++; // Increment attempt counter
+            }
+
+            if (chainId === targetChainId || attemptCount >= 2) {
+                clearInterval(checkChainId); // Stop after 2 attempts or successful switch
+                setIsNetworkUpdateInProgress(false);
+                const selectedNetwork = supportedNetworks[chainId];
+                setTargetChainId(chainId);
+                setSelectedNetworkDisplayName(selectedNetwork.displayName);
+            }
+        }, 3000);
+
+        return () => clearInterval(checkChainId);
+    }, [chainId, targetChainId]);
 
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
     // logic to consume chain param data from the URL
-    // runs once when the app initializes, again when web3modal finishes initializing
     useEffect(() => {
         // search for param in URL by key 'chain' or 'network'
         const chainParam: string | null =
@@ -118,13 +155,16 @@ export default function NetworkSelector(props: propsIF) {
             // get a canonical 0x hex string chain ID from URL param
             const targetChain: string =
                 lookupChainId(chainParam, 'string') ?? chainParam;
+
             // check if chain is supported and not the current chain in the app
             // yes → trigger machinery to switch the current network
             // no → no action except to clear the param from the URL
             if (supportedNetworks[targetChain] && targetChain !== chainId) {
-                // use web3modal if wallet is connected, otherwise use in-app toggle
+                // use AppKit if wallet is connected, otherwise use in-app toggle
                 if (isConnected) {
-                    switchNetwork(parseInt(targetChain));
+                    switchNetwork(
+                        supportedNetworks[targetChain].chainSpecForAppKit,
+                    );
                 } else {
                     if (!initialLoadComplete) {
                         setTimeout(() => {
@@ -143,6 +183,7 @@ export default function NetworkSelector(props: propsIF) {
     useEffect(() => {
         // reset temporary update state when chain changes
         if (isNetworkUpdateInProgress) {
+            setTargetChainId(undefined);
             setIsNetworkUpdateInProgress(false);
             setSelectedNetworkDisplayName('');
         }
@@ -184,8 +225,19 @@ export default function NetworkSelector(props: propsIF) {
         },
         {
             id: 'plume_network_selector',
-            chainId: '0x18231',
+            chainId: '0x18232',
             name: 'Plume',
+            logo: plumeLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: false,
+            link: '',
+            condition: chainMap.has('0x18232'),
+        },
+        {
+            id: 'plume_legacy_network_selector',
+            chainId: '0x18231',
+            name: 'Plume (Legacy)',
             logo: plumeLogo,
             custom: 0,
             isExternal: false,

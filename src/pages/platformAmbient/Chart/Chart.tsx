@@ -621,7 +621,7 @@ export default function Chart(props: propsIF) {
     const unparsedCandleData = useMemo(() => {
         const updatedZeroCandles = updateZeroPriceCandles(
             unparsedData.candles,
-            poolPriceDisplay,
+            poolPriceWithoutDenom ? poolPriceWithoutDenom : 0,
         );
         const data = filterCandleWithTransaction(
             updatedZeroCandles,
@@ -1083,54 +1083,20 @@ export default function Chart(props: propsIF) {
                                     limit.totalValueUSD >
                                     nearestSwap[1].totalValueUSD
                                         ? limit
-                                        : nearestSwap[1];
+                                        : nearestSwap[1].order;
 
-                                const mergedmergeIds: Array<{
-                                    hash: string;
-                                    type: string;
-                                }> = nearestSwap[1].mergedIds;
+                                const selectedLimitAndNearestLimitMergeIds =
+                                    mergedIds.concat(nearestSwap[1].mergedIds);
 
-                                const mergedMintedInTick = processLimitOrder(
-                                    nearestSwap[1],
-                                );
-
-                                mergedMintedInTick?.forEach((mint) => {
-                                    const isIn = mergedmergeIds.find(
-                                        (id) => id.hash === mint.txHash,
-                                    );
-
-                                    if (isIn === undefined) {
-                                        mergedmergeIds.push({
-                                            hash: mint.txHash,
-                                            type: mint.entityType,
-                                        });
-                                    }
-                                });
-
-                                nearestSwap[1] = order;
-
+                                nearestSwap[1].order = order;
                                 nearestSwap[1].mergedIds =
-                                    mergedIds.concat(mergedmergeIds);
+                                    selectedLimitAndNearestLimitMergeIds;
 
                                 nearestSwap[1].totalValueUSD +=
-                                    order.totalValueUSD;
+                                    limit.totalValueUSD;
 
-                                const limitMergedTokenFlowDecimalCorrected =
-                                    nearestSwap[1].isBid
-                                        ? denomInBase
-                                            ? nearestSwap[1]
-                                                  .originalPositionLiqBaseDecimalCorrected
-                                            : nearestSwap[1]
-                                                  .expectedPositionLiqQuoteDecimalCorrected
-                                        : denomInBase
-                                          ? nearestSwap[1]
-                                                .expectedPositionLiqBaseDecimalCorrected
-                                          : nearestSwap[1]
-                                                .originalPositionLiqQuoteDecimalCorrected;
-
-                                nearestSwap[1].tokenFlowDecimalCorrected =
-                                    tokenFlowDecimalCorrected +
-                                    limitMergedTokenFlowDecimalCorrected;
+                                nearestSwap[1].tokenFlowDecimalCorrected +=
+                                    tokenFlowDecimalCorrected;
                             } else {
                                 selectedArray.push({
                                     order: limit,
@@ -6429,18 +6395,12 @@ export default function Chart(props: propsIF) {
     ): void => {
         if (newLimitValue === undefined) return;
 
-        const limitNonDisplay = denomInBase
-            ? fromDisplayPrice(
-                  newLimitValue,
-                  baseTokenDecimals,
-                  quoteTokenDecimals,
-              )
-            : fromDisplayPrice(
-                  1 / newLimitValue,
-                  baseTokenDecimals,
-                  quoteTokenDecimals,
-              );
-
+        const limitNonDisplay = fromDisplayPrice(
+            newLimitValue,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            denomInBase,
+        );
         const pinnedTick: number = isTokenABase
             ? pinTickLower(limitNonDisplay, gridSize)
             : pinTickUpper(limitNonDisplay, gridSize);
@@ -6475,8 +6435,8 @@ export default function Chart(props: propsIF) {
             });
         } else {
             const displayPriceWithDenom = denomInBase
-                ? tickDispPrice
-                : 1 / tickDispPrice;
+                ? 1 / tickDispPrice
+                : tickDispPrice;
             newLimitValue = displayPriceWithDenom;
             setLimit(() => {
                 return newLimitValue;

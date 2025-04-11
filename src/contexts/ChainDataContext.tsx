@@ -25,7 +25,6 @@ import {
     GCGO_SCROLL_URL,
     GCGO_SWELL_URL,
     hiddenTokens,
-    IS_LOCAL_ENV,
     supportedNetworks,
     vaultSupportedNetworkIds,
     ZERO_ADDRESS,
@@ -167,7 +166,9 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(chainId);
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);
-    const isActiveNetworkPlume = ['0x18230', '0x18231'].includes(chainId);
+    const isActiveNetworkPlume = ['0x18230', '0x18231', '0x18232'].includes(
+        chainId,
+    );
     const isActiveNetworkSwell = ['0x783', '0x784'].includes(chainId);
     const isActiveNetworkBase = ['0x14a34'].includes(chainId);
     const isActiveNetworkMonad = ['0x279f'].includes(chainId);
@@ -279,25 +280,29 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
             Promise.resolve<PoolIF[]>(gcgoPoolList)
                 .then((res: PoolIF[]) => {
-                    return res
-                        .map((result: PoolIF) => {
-                            const baseToken: TokenIF | undefined =
-                                tokens.getTokenByAddress(result.base);
-                            const quoteToken: TokenIF | undefined =
-                                tokens.getTokenByAddress(result.quote);
-                            if (baseToken && quoteToken) {
-                                return {
-                                    ...result, // Spreads all properties of result
-                                    baseToken, // Overwrite base with the mapped token
-                                    quoteToken, // Overwrite quote with the mapped token
-                                };
-                            } else {
-                                return null;
-                            }
-                        })
-                        .filter(
-                            (pool: PoolIF | null) => pool !== null,
-                        ) as PoolIF[];
+                    if (res) {
+                        return res
+                            .map((result: PoolIF) => {
+                                const baseToken: TokenIF | undefined =
+                                    tokens.getTokenByAddress(result.base);
+                                const quoteToken: TokenIF | undefined =
+                                    tokens.getTokenByAddress(result.quote);
+                                if (baseToken && quoteToken) {
+                                    return {
+                                        ...result, // Spreads all properties of result
+                                        baseToken, // Overwrite base with the mapped token
+                                        quoteToken, // Overwrite quote with the mapped token
+                                    };
+                                } else {
+                                    return null;
+                                }
+                            })
+                            .filter(
+                                (pool: PoolIF | null) => pool !== null,
+                            ) as PoolIF[];
+                    } else {
+                        setGcgoPoolList([]);
+                    }
                 })
                 .then((pools) => {
                     setGcgoPoolList(pools);
@@ -359,6 +364,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
+    const everyFiveSeconds = Math.floor(Date.now() / 5000);
 
     useEffect(() => {
         const nftLocalData = localStorage.getItem('user_nft_data');
@@ -485,9 +491,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     useEffect(() => {
         (async () => {
-            IS_LOCAL_ENV &&
-                console.debug('fetching native token and ERC20 token balances');
-
             if (
                 (isAccountRoute || isTokenBalanceFetchManuallyTriggerered) &&
                 crocEnv &&
@@ -504,14 +507,14 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                                 address: userAddress,
                                 chain: chainId,
                                 crocEnv: crocEnv,
-                                _refreshTime: everyFiveMinutes,
+                                _refreshTime: everyFiveSeconds,
                             }),
                             cachedFetchDexBalances({
                                 address: userAddress,
                                 chain: chainId,
                                 crocEnv: crocEnv,
                                 GCGO_URL: GCGO_URL,
-                                _refreshTime: everyFiveMinutes,
+                                _refreshTime: everyFiveSeconds,
                             }),
                         ]);
 
@@ -587,7 +590,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             }
         })();
     }, [
-        JSON.stringify(crocEnv),
+        crocEnv,
         userAddress,
         chainId,
         everyFiveMinutes,
@@ -898,7 +901,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
             getChainStats(
                 'cumulative',
-                '0x18231',
+                '0x18232',
                 plumeCrocEnv,
                 GCGO_PLUME_URL,
                 cachedFetchTokenPrice,

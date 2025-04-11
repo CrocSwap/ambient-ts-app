@@ -99,7 +99,7 @@ export default function rangeRowConstants(props: propsIF) {
     } = props;
 
     const { isTradeDollarizationEnabled } = useContext(PoolContext);
-    const { tokenA } = useContext(TradeDataContext);
+    const { tokenA, setActiveTab } = useContext(TradeDataContext);
     const { handlePulseAnimation, setActiveMobileComponent } =
         useContext(TradeTableContext);
     const {
@@ -295,6 +295,7 @@ export default function rangeRowConstants(props: propsIF) {
     };
 
     const handleCopyClick = () => {
+        setActiveTab('Order');
         setActiveMobileComponent('trade');
 
         setRangeTicksCopied(true);
@@ -580,8 +581,11 @@ export default function rangeRowConstants(props: propsIF) {
     );
 
     const apyDisplay = (
-        <FlexContainer justifyContent='flex-end' data-label='apy'>
-            {' '}
+        <FlexContainer
+            justifyContent='flex-end'
+            data-label='apy'
+            style={{ paddingRight: '10px' }}
+        >
             <p className={apyClassname}>{apyString}</p>
         </FlexContainer>
     );

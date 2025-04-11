@@ -1,5 +1,6 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
@@ -27,12 +28,32 @@ const FALLBACK_RPC_URL =
 const chainIdHex = '0xa0c71fd';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
-const chainSpecForWalletConnector = {
-    chainId: Number(chainIdHex),
-    name: 'Blast Sepolia Testnet',
-    currency: 'ETH',
-    rpcUrl: 'https://sepolia.blast.io/',
-    explorerUrl: 'https://testnet.blastscan.io/',
+const chainSpecForAppKit: Chain = {
+    id: Number(chainIdHex),
+    rpcUrls: {
+        default: {
+            http: [PUBLIC_RPC_URL],
+        },
+    },
+    name: 'Blast Sepolia',
+    nativeCurrency: {
+        name: 'Ether',
+        symbol: 'ETH',
+        decimals: 18,
+    },
+    blockExplorers: {
+        default: {
+            name: 'Blastscan',
+            url: 'https://sepolia.blastscan.io',
+            apiUrl: 'https://api-sepolia.blastscan.io/api',
+        },
+    },
+    contracts: {
+        multicall3: {
+            address: '0xca11bde05977b3631167028862be2a173976ca11',
+        },
+    },
+    testnet: true,
 };
 
 const defaultTokenEntries = [
@@ -59,7 +80,7 @@ export const blastSepolia: NetworkIF = {
     GCGO_URL: GCGO_TESTNET_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector: chainSpecForWalletConnector,
+    chainSpecForAppKit,
     defaultPair: [BLAST_SEPOLIA_TOKENS.ETH, BLAST_SEPOLIA_TOKENS.USDB],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
@@ -75,7 +96,9 @@ export const blastSepolia: NetworkIF = {
             chainSpecFromSDK.poolIndex,
         ),
     ],
-    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    blockExplorer: (
+        chainSpecForAppKit.blockExplorers?.default.url || ''
+    ).replace(/\/?$/, '/'),
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (

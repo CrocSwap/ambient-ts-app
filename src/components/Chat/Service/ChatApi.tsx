@@ -1,4 +1,3 @@
-import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 import { ethers } from 'ethers';
 import { useContext } from 'react';
 import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
@@ -21,15 +20,19 @@ import {
     setLS,
 } from '../ChatUtils';
 
+import { useAppKitProvider } from '@reown/appkit/react';
+
 const host = CHAT_BACKEND_URL;
 
 const useChatApi = () => {
     const { userAddress } = useContext(UserDataContext);
-    const { walletProvider } = useWeb3ModalProvider();
+    const { walletProvider } = useAppKitProvider('eip155');
 
     const getSigner = async () => {
         if (walletProvider) {
-            const w3provider = new ethers.BrowserProvider(walletProvider);
+            const w3provider = new ethers.BrowserProvider(
+                walletProvider as ethers.Eip1193Provider,
+            );
             return await w3provider.getSigner();
         }
         return null;

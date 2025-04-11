@@ -1,5 +1,6 @@
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
@@ -8,7 +9,7 @@ import { GCGO_SCROLL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://scroll-mainnet.public.blastapi.io',
+    PUBLIC: 'https://rpc.ankr.com/scroll',
     SECONDARY_PUBLIC: 'https://rpc.scroll.io',
     RESTRICTED: import.meta.env.VITE_SCROLL_RPC_URL,
 };
@@ -21,12 +22,22 @@ const FALLBACK_RPC_URL =
 const chainIdHex = '0x82750';
 const chainSpecFromSDK = lookupChain(chainIdHex);
 
-const chainSpecForWalletConnector = {
-    chainId: Number(chainIdHex),
+const chainSpecForAppKit: Chain = {
+    id: Number(chainIdHex),
+    rpcUrls: {
+        default: {
+            http: [RPC_URLS.PUBLIC],
+        },
+    },
     name: 'Scroll',
-    currency: 'ETH',
-    rpcUrl: RPC_URLS.PUBLIC,
-    explorerUrl: 'https://scrollscan.com/',
+    nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+    blockExplorers: {
+        default: {
+            name: 'Scrollscan',
+            url: 'https://scrollscan.com',
+            apiUrl: 'https://api.scrollscan.com/api',
+        },
+    },
 };
 
 const defaultTokenEntries = [
@@ -93,12 +104,14 @@ export const scrollMainnet: NetworkIF = {
     GCGO_URL: GCGO_SCROLL_URL,
     evmRpcUrl: PRIMARY_RPC_URL,
     fallbackRpcUrl: FALLBACK_RPC_URL,
-    chainSpecForWalletConnector,
+    chainSpecForAppKit,
     defaultPair: [SCROLL_TOKENS.ETH, SCROLL_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
-    blockExplorer: chainSpecForWalletConnector.explorerUrl,
+    blockExplorer: (
+        chainSpecForAppKit.blockExplorers?.default.url || ''
+    ).replace(/\/?$/, '/'),
     displayName: 'Scroll',
     tokenPriceQueryAssetPlatform: 'scroll',
     vaultsEnabled: true,

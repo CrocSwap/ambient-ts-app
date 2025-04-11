@@ -673,6 +673,7 @@ function Transactions(props: propsIF) {
                     flex: 1,
                     overflow: 'auto',
                     transition: 'all .1s ease-in-out',
+                    scrollbarGutter: 'stable',
                 }}
                 className='custom_scroll_ambient'
             >

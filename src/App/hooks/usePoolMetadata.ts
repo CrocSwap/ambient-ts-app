@@ -660,7 +660,7 @@ export function usePoolMetadata() {
         isUserOnline,
         userAddress,
         contextMatchesParams,
-        JSON.stringify(crocEnv),
+        crocEnv,
         baseTokenAddress !== '' && quoteTokenAddress !== '',
         chainId,
         tokens.tokenUniv,
@@ -674,18 +674,34 @@ export function usePoolMetadata() {
         activePoolList,
     ]);
 
-    const totalPositionUsdValue = useMemo(
-        () =>
-            positionsByPool.dataReceived && limitOrdersByPool.dataReceived
-                ? positionsByPool.positions.reduce((sum, position) => {
-                      return sum + position.totalValueUSD;
-                  }, 0) +
-                  limitOrdersByPool.limitOrders.reduce((sum, order) => {
-                      return sum + order.totalValueUSD;
-                  }, 0)
-                : 0,
-        [positionsByPool, limitOrdersByPool],
-    );
+    const totalPositionUsdValue = useMemo(() => {
+        if (
+            !positionsByPool?.dataReceived &&
+            !limitOrdersByPool?.dataReceived
+        ) {
+            return 0;
+        }
+
+        const positionsSum =
+            positionsByPool?.dataReceived &&
+            Array.isArray(positionsByPool.positions)
+                ? positionsByPool.positions.reduce(
+                      (sum, position) => sum + (position.totalValueUSD || 0),
+                      0,
+                  )
+                : 0;
+
+        const limitOrdersSum =
+            limitOrdersByPool?.dataReceived &&
+            Array.isArray(limitOrdersByPool.limitOrders)
+                ? limitOrdersByPool.limitOrders.reduce(
+                      (sum, order) => sum + (order.totalValueUSD || 0),
+                      0,
+                  )
+                : 0;
+
+        return positionsSum + limitOrdersSum;
+    }, [positionsByPool, limitOrdersByPool]);
 
     const [rawLiqData, setRawLiqData] = useState<
         | {

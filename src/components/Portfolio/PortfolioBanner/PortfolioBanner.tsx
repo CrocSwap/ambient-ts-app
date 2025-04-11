@@ -38,7 +38,7 @@ interface propsIF {
     NFTData: NftListByChain[] | undefined;
     NFTFetchSettings: NftFetchSettingsIF;
     setNFTFetchSettings: Dispatch<SetStateAction<NftFetchSettingsIF>>;
-    userAddress: `0x${string}` | undefined;
+    userAddress: string | undefined;
 }
 
 export default function PortfolioBanner(props: propsIF) {

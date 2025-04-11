@@ -1,4 +1,4 @@
-import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
     baseSepolia,
@@ -7,6 +7,7 @@ import {
     ethereumMainnet,
     ethereumSepolia,
     monadTestnet,
+    plumeLegacy,
     plumeMainnet,
     plumeSepolia,
     scrollMainnet,
@@ -29,8 +30,9 @@ export const useAppChain = (): {
     chooseNetwork: (network: NetworkIF) => void;
 } => {
     // metadata on chain authenticated in connected wallet
-    const { chainId: walletChainId } = useWeb3ModalAccount();
-    const { switchNetwork } = useSwitchNetwork();
+    const { chainId, switchNetwork } = useAppKitNetwork();
+    const { isConnected } = useAppKitAccount();
+
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
@@ -64,14 +66,21 @@ export const useAppChain = (): {
         return output;
     }
 
+    const isWalletConnectionUnfinished = useRef<boolean>(true);
+
     // fn to get a chain ID from the connected wallet
     // returns `null` if no wallet or if network fails validation
     function getChainFromWallet(): string | null {
         let output: string | null = null;
-        if (walletChainId) {
-            const chainAsString: string = chainNumToString(walletChainId);
+        if (chainId && isConnected) {
+            const chainAsString: string =
+                typeof chainId === 'string'
+                    ? chainId
+                    : chainNumToString(chainId);
             const isValid: boolean = validateChainId(chainAsString);
             if (isValid) output = chainAsString;
+        } else {
+            isWalletConnectionUnfinished.current = true;
         }
         return output;
     }
@@ -87,7 +96,7 @@ export const useAppChain = (): {
 
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
-        if (walletChainId) {
+        if (chainId) {
             // chain ID from wallet (current live value, not memoized in the app)
             const incomingChainFromWallet: string | null = getChainFromWallet();
             // if a wallet is connected, evaluate action to take
@@ -151,9 +160,11 @@ export const useAppChain = (): {
                                     );
                                 } else {
                                     setIgnoreFirst(false);
-                                    if (chainInURLValidated)
+                                    if (chainInURLValidated && switchNetwork)
                                         switchNetwork(
-                                            parseInt(chainInURLValidated),
+                                            supportedNetworks[
+                                                chainInURLValidated
+                                            ].chainSpecForAppKit,
                                         );
                                     return;
                                 }
@@ -173,48 +184,80 @@ export const useAppChain = (): {
                         }
                         // wallet authenticated, different chain in active app
                         if (activeNetwork.chainId != incomingChainFromWallet) {
-                            let nextNetwork: NetworkIF | undefined;
-                            if (incomingChainFromWallet === '0x1') {
-                                nextNetwork = ethereumMainnet;
-                            } else if (incomingChainFromWallet === '0x13e31') {
-                                nextNetwork = blastMainnet;
-                            } else if (incomingChainFromWallet === '0x18231') {
-                                nextNetwork = plumeMainnet;
-                            } else if (incomingChainFromWallet === '0x783') {
-                                nextNetwork = swellMainnet;
-                            } else if (incomingChainFromWallet === '0xaa36a7') {
-                                nextNetwork = ethereumSepolia;
-                            } else if (
-                                incomingChainFromWallet === '0xa0c71fd'
-                            ) {
-                                nextNetwork = blastSepolia;
-                            } else if (incomingChainFromWallet === '0x82750') {
-                                nextNetwork = scrollMainnet;
-                            } else if (incomingChainFromWallet === '0x8274f') {
-                                nextNetwork = scrollSepolia;
-                            } else if (incomingChainFromWallet === '0x18230') {
-                                nextNetwork = plumeSepolia;
-                            } else if (incomingChainFromWallet === '0x784') {
-                                nextNetwork = swellSepolia;
-                            } else if (incomingChainFromWallet === '0x279f') {
-                                nextNetwork = monadTestnet;
-                            } else if (incomingChainFromWallet === '0x14a34') {
-                                nextNetwork = baseSepolia;
-                            }
-                            if (nextNetwork) {
-                                setActiveNetwork(nextNetwork);
-                            } else {
-                                console.warn(
-                                    'Chain ID from authenticated wallet not recognized. App will stay on the current chain. Current chain is: ',
-                                    activeNetwork,
+                            if (isWalletConnectionUnfinished.current) {
+                                switchNetwork(
+                                    supportedNetworks[activeNetwork.chainId]
+                                        .chainSpecForAppKit,
                                 );
+                                isWalletConnectionUnfinished.current = false;
+                            } else {
+                                let nextNetwork: NetworkIF | undefined;
+                                if (incomingChainFromWallet === '0x1') {
+                                    nextNetwork = ethereumMainnet;
+                                } else if (
+                                    incomingChainFromWallet === '0x13e31'
+                                ) {
+                                    nextNetwork = blastMainnet;
+                                } else if (
+                                    incomingChainFromWallet === '0x18232'
+                                ) {
+                                    nextNetwork = plumeMainnet;
+                                } else if (
+                                    incomingChainFromWallet === '0x18231'
+                                ) {
+                                    nextNetwork = plumeLegacy;
+                                } else if (
+                                    incomingChainFromWallet === '0x783'
+                                ) {
+                                    nextNetwork = swellMainnet;
+                                } else if (
+                                    incomingChainFromWallet === '0xaa36a7'
+                                ) {
+                                    nextNetwork = ethereumSepolia;
+                                } else if (
+                                    incomingChainFromWallet === '0xa0c71fd'
+                                ) {
+                                    nextNetwork = blastSepolia;
+                                } else if (
+                                    incomingChainFromWallet === '0x82750'
+                                ) {
+                                    nextNetwork = scrollMainnet;
+                                } else if (
+                                    incomingChainFromWallet === '0x8274f'
+                                ) {
+                                    nextNetwork = scrollSepolia;
+                                } else if (
+                                    incomingChainFromWallet === '0x18230'
+                                ) {
+                                    nextNetwork = plumeSepolia;
+                                } else if (
+                                    incomingChainFromWallet === '0x784'
+                                ) {
+                                    nextNetwork = swellSepolia;
+                                } else if (
+                                    incomingChainFromWallet === '0x279f'
+                                ) {
+                                    nextNetwork = monadTestnet;
+                                } else if (
+                                    incomingChainFromWallet === '0x14a34'
+                                ) {
+                                    nextNetwork = baseSepolia;
+                                }
+                                if (nextNetwork) {
+                                    setActiveNetwork(nextNetwork);
+                                } else {
+                                    console.warn(
+                                        'Chain ID from authenticated wallet not recognized. App will stay on the current chain. Current chain is: ',
+                                        activeNetwork,
+                                    );
+                                }
+                                // update state with new validated wallet network
+                                chainInWalletValidated.current =
+                                    incomingChainFromWallet;
                             }
                         } else {
                             setIgnoreFirst(false);
                         }
-                        // update state with new validated wallet network
-                        chainInWalletValidated.current =
-                            incomingChainFromWallet;
                     }
                 }
             } else {
@@ -222,7 +265,7 @@ export const useAppChain = (): {
                 chainInWalletValidated.current = incomingChainFromWallet;
             }
         }
-    }, [walletChainId, chainInWalletValidated.current]);
+    }, [chainId, chainInWalletValidated.current, isConnected]);
 
     const defaultChain = getDefaultChainId();
 

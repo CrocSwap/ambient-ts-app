@@ -1,8 +1,11 @@
-import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useAppKitProvider } from '@reown/appkit/react';
+import { ethers } from 'ethers';
+import { useContext } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import { brand } from '../../../../../ambient-utils/constants';
 import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import Button from '../../../../Form/Button';
 import addTokenToWallet from './addTokenToWallet';
 import styles from './TransactionSubmitted.module.css';
@@ -18,28 +21,29 @@ interface PropsIF {
         | 'Claim'
         | 'Reset';
     hash: string;
-    tokenBAddress: string;
-    tokenBSymbol: string;
-    tokenBDecimals: number;
-    tokenBImage: string;
+
     chainId: string | number;
     isConfirmed: boolean;
     isTransactionFailed: boolean;
     noAnimation?: boolean;
+    importTokenSymbol: string;
+    importTokenAddress: string;
+    importTokenDecimals: number;
+    importTokenImage: string;
 }
 
 export default function TransactionSubmitted(props: PropsIF) {
     const {
         type,
         hash,
-        tokenBAddress,
-        tokenBSymbol,
-        tokenBDecimals,
-        tokenBImage,
         noAnimation,
         chainId,
         isConfirmed,
         isTransactionFailed,
+        importTokenSymbol,
+        importTokenAddress,
+        importTokenDecimals,
+        importTokenImage,
     } = props;
 
     const blockExplorer = getChainExplorer(chainId);
@@ -47,16 +51,20 @@ export default function TransactionSubmitted(props: PropsIF) {
     const currentLocation = useLocation()?.pathname;
     const isFuta = brand === 'futa';
 
-    const logoURI = tokenBImage;
+    const {
+        activeNetwork: {
+            chainSpecForAppKit: { nativeCurrency },
+        },
+    } = useContext(AppStateContext);
 
-    const { walletProvider } = useWeb3ModalProvider();
+    const { walletProvider } = useAppKitProvider('eip155');
     const handleAddToMetaMask = async () => {
         await addTokenToWallet(
-            tokenBAddress,
-            tokenBSymbol,
-            tokenBDecimals,
-            logoURI,
-            walletProvider,
+            importTokenAddress,
+            importTokenSymbol,
+            importTokenDecimals,
+            importTokenImage,
+            walletProvider as ethers.Eip1193Provider,
         );
     };
 
@@ -64,7 +72,7 @@ export default function TransactionSubmitted(props: PropsIF) {
         <Button
             idForDOM='import_token_B_into_wallet_button'
             flat
-            title={`import ${tokenBSymbol} into Connected Wallet`}
+            title={`Import ${importTokenSymbol} into Connected Wallet`}
             action={handleAddToMetaMask}
             disabled={false}
         />
@@ -163,7 +171,9 @@ export default function TransactionSubmitted(props: PropsIF) {
                 }`}
             >
                 {txUrlOnBlockExplorer && etherscanButton}
-                {tokenBSymbol === 'ETH' || currentLocation === '/trade/pool'
+                {importTokenSymbol.toLowerCase() ===
+                    nativeCurrency.symbol.toLowerCase() ||
+                currentLocation === '/trade/pool'
                     ? null
                     : addToMetaMaskButton}
             </div>

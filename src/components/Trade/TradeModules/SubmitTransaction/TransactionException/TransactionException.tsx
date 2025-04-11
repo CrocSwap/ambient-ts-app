@@ -1,4 +1,5 @@
-import { useSwitchNetwork } from '@web3modal/ethers/react';
+import { mainnet } from '@reown/appkit/networks';
+import { useAppKitNetwork } from '@reown/appkit/react';
 import { useContext, useEffect } from 'react';
 import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
@@ -20,6 +21,7 @@ export default function TransactionException(props: propsIF) {
     } = useContext(AppStateContext);
     const { txError } = props;
     const txErrorMessage = parseErrorMessage(txError);
+    const { switchNetwork } = useAppKitNetwork();
     let txErrorCopyable: string;
     try {
         txErrorCopyable = JSON.stringify(txError);
@@ -31,9 +33,9 @@ export default function TransactionException(props: propsIF) {
     }
     const rangeModuleActive = location.pathname.includes('/trade/pool');
     const { tokenA, tokenB, isTokenAPrimary } = useContext(TradeDataContext);
-    const {
-        activeNetwork: { chainId },
-    } = useContext(AppStateContext);
+    // const {
+    //     activeNetwork: { chainId },
+    // } = useContext(AppStateContext);
     useEffect(() => {
         if (txError.reason === 'sending a transaction requires a signer') {
             location.reload();
@@ -42,7 +44,7 @@ export default function TransactionException(props: propsIF) {
             (txError.code === 'NETWORK_ERROR' && txError.event === 'changed')
         ) {
             console.log('caught network changed error, switching');
-            useSwitchNetwork().switchNetwork(Number(chainId));
+            switchNetwork(mainnet);
         }
     }, [txError]);
 

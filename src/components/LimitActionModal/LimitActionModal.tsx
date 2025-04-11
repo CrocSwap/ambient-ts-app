@@ -471,6 +471,15 @@ export default function LimitActionModal(props: propsIF) {
                   networkFee,
               };
 
+    const [quoteTokenLogoMemo, setQuoteTokenLogoMemo] =
+        useState(quoteTokenLogo);
+
+    useEffect(() => {
+        if (quoteTokenLogo && quoteTokenLogo !== quoteTokenLogoMemo) {
+            setQuoteTokenLogoMemo(quoteTokenLogo);
+        }
+    }, [quoteTokenLogo]);
+
     return showSettings ? (
         <LimitActionSettings
             showSettings={showSettings}
@@ -508,6 +517,10 @@ export default function LimitActionModal(props: propsIF) {
                                 'Submitting transaction...'
                             }
                             disableSubmitAgain
+                            importTokenSymbol={quoteTokenSymbol}
+                            importTokenAddress={quoteTokenAddress}
+                            importTokenDecimals={limitOrder.quoteDecimals}
+                            importTokenImage={quoteTokenLogoMemo}
                         />
                     ) : (
                         <Button
