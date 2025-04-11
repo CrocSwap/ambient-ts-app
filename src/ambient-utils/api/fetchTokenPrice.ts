@@ -59,15 +59,10 @@ export const fetchTokenPrice = async (
 ) => {
     const address = translateToken(dispToken, chain);
     const assetPlatform = allNetworks[chain]?.tokenPriceQueryAssetPlatform;
-    if (chain === '0x18232' && address === ZeroAddress) {
+    if (chain === '0x18231' && address === ZeroAddress) {
         return {
-            usdPrice: 0.2,
-            usdPriceFormatted: 0.2,
-        };
-    } else if (chain === '0x18231' && address === ZeroAddress) {
-        return {
-            usdPrice: 2000,
-            usdPriceFormatted: 2000,
+            usdPrice: 1500,
+            usdPriceFormatted: 1500,
         };
     } else
         try {

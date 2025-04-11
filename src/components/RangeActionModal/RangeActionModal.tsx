@@ -67,12 +67,12 @@ function RangeActionModal(props: propsIF) {
         isAmbient,
         baseTokenAddress,
         quoteTokenAddress,
-        baseTokenLogo: baseTokenLogoURI,
-        quoteTokenLogo: quoteTokenLogoURI,
+        baseTokenLogo,
+        quoteTokenLogo,
         baseTokenSymbol,
         quoteTokenSymbol,
         isPositionInRange,
-    } = useProcessRange(position, crocEnv, userAddress, isAccountView);
+    } = useProcessRange(position, userAddress, isAccountView);
 
     const {
         lastBlockNumber,
@@ -564,6 +564,15 @@ function RangeActionModal(props: propsIF) {
         quoteHarvestNum,
     ]);
 
+    const [quoteTokenLogoMemo, setQuoteTokenLogoMemo] =
+        useState(quoteTokenLogo);
+
+    useEffect(() => {
+        if (quoteTokenLogo && quoteTokenLogo !== quoteTokenLogoMemo) {
+            setQuoteTokenLogoMemo(quoteTokenLogo);
+        }
+    }, [quoteTokenLogo]);
+
     const buttonToDisplay = (
         <div className={styles.button_container}>
             {showSettings ? (
@@ -597,6 +606,10 @@ function RangeActionModal(props: propsIF) {
                         'Submitting transaction...'
                     }
                     disableSubmitAgain
+                    importTokenSymbol={quoteTokenSymbol}
+                    importTokenAddress={quoteTokenAddress}
+                    importTokenDecimals={position.quoteDecimals}
+                    importTokenImage={quoteTokenLogoMemo}
                 />
             ) : (
                 <Button
@@ -646,8 +659,8 @@ function RangeActionModal(props: propsIF) {
                     isAmbient={isAmbient}
                     baseTokenSymbol={baseTokenSymbol}
                     quoteTokenSymbol={quoteTokenSymbol}
-                    baseTokenLogoURI={baseTokenLogoURI}
-                    quoteTokenLogoURI={quoteTokenLogoURI}
+                    baseTokenLogoURI={baseTokenLogo}
+                    quoteTokenLogoURI={quoteTokenLogoMemo}
                     showSettings={showSettings}
                     setShowSettings={setShowSettings}
                     baseTokenAddress={baseTokenAddress}
@@ -668,8 +681,8 @@ function RangeActionModal(props: propsIF) {
                             quoteTokenAddress={quoteTokenAddress}
                             baseTokenSymbol={baseTokenSymbol}
                             quoteTokenSymbol={quoteTokenSymbol}
-                            baseTokenLogoURI={baseTokenLogoURI}
-                            quoteTokenLogoURI={quoteTokenLogoURI}
+                            baseTokenLogoURI={baseTokenLogo}
+                            quoteTokenLogoURI={quoteTokenLogoMemo}
                             posLiqBaseDecimalCorrected={
                                 posLiqBaseDecimalCorrected
                             }
@@ -695,8 +708,8 @@ function RangeActionModal(props: propsIF) {
                             quoteTokenAddress={quoteTokenAddress}
                             baseTokenSymbol={baseTokenSymbol}
                             quoteTokenSymbol={quoteTokenSymbol}
-                            baseTokenLogoURI={baseTokenLogoURI}
-                            quoteTokenLogoURI={quoteTokenLogoURI}
+                            baseTokenLogoURI={baseTokenLogo}
+                            quoteTokenLogoURI={quoteTokenLogoMemo}
                             baseHarvestNum={memoBaseHarvestNum}
                             quoteHarvestNum={memoQuoteHarvestNum}
                             fiatHarvestVal={usdRemovalValue}
