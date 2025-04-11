@@ -3,9 +3,8 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 100%; 
+    height: 100%;
     position: relative;
-    
 }
 
 .hero_content {
@@ -17,18 +16,18 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    gap: clamp(30px, 5vh, 50px); 
+    gap: clamp(30px, 5vh, 50px);
 }
 
 .hero_items {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(12px, 2vw, 24px); 
+    gap: clamp(12px, 2vw, 24px);
 }
 
 .ambient_logo {
-    font-size: clamp(40px, 6vw, 80px); 
+    font-size: clamp(40px, 6vw, 80px);
     font-style: normal;
     font-weight: 300;
     line-height: 1;
@@ -46,17 +45,16 @@
 
 .separator {
     font-weight: 400;
-    color: var(--text2);
-    font-size: clamp(30px, 4.5vw, 60px); 
+    color: var(--text1);
+    font-size: clamp(30px, 4.5vw, 60px);
     line-height: 1;
 }
 
 .cobranding_logo {
-    height: clamp(35px, 5vw, 70px); 
+    height: clamp(35px, 5vw, 70px);
     width: auto;
     display: block;
 }
-
 
 .button_container {
     width: 100%;
@@ -76,7 +74,8 @@
             rgba(0, 0, 0, 0) 0%,
             var(--dark1) 100%
         ),
-        url('/src/assets/images/home/home_wallpaper.webp') no-repeat center center;
+        url('/src/assets/images/home/home_wallpaper.webp') no-repeat center
+            center;
     background-size: cover;
 }
 
@@ -96,11 +95,11 @@
     background-size: cover;
 }
 
-.ambient_only{
+.ambient_only {
     font-size: 9rem;
 }
 @media (max-width: 1200px) {
-    .ambient_only{
+    .ambient_only {
         font-size: 7rem;
     }
 }
