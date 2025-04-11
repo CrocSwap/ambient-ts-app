@@ -276,6 +276,7 @@ function ChatPanel(props: propsIF) {
     lastScrollListenerRef.current = lastScrollListenerActive;
 
     useOnClickOutside(reactionsRef, () => {
+        console.log('tetiklendi');
         setShowReactionPicker(false);
     });
 
@@ -307,6 +308,21 @@ function ChatPanel(props: propsIF) {
             showReactionPicker,
         ],
     );
+
+    useEffect(() => {
+        async function checkUser() {
+            const data = await getID();
+            if (!data || data.status === 'Not OK') {
+                // ...
+            } else {
+                setCurrentUser(data.userData._id);
+            }
+        }
+
+        if (isChatOpen) {
+            checkUser();
+        }
+    }, [isChatOpen, userAddress]);
 
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
@@ -374,11 +390,13 @@ function ChatPanel(props: propsIF) {
         e: React.MouseEvent<HTMLDivElement>,
         focusedMessage?: Message,
     ) => {
+        console.log('addReactionListener');
         setPickerBottomPos(
             window.innerHeight - (e.clientY + (isMobile ? 50 : 0)),
         );
         setFocusedMessage(focusedMessage);
         setShowReactionPicker(true);
+        console.log('setShowReactionPicker: ');
     };
     const addReactionEmojiPickListener = (data: EmojiClickData | string) => {
         if (focusedMessageRef.current && currentUser) {
@@ -911,6 +929,7 @@ function ChatPanel(props: propsIF) {
             style={{ bottom: pickerBottomPos }}
         >
             {getEmojiPack(reactionCodes, addReactionEmojiPickListener, 30)}
+            {showReactionPicker.toString()}
         </div>
     );
 

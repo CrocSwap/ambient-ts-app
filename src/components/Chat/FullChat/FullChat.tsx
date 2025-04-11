@@ -847,6 +847,7 @@ function FullChat(props: FullChatPropsIF) {
                     {readableRoomName}
                 </header>{' '}
                 {channelsDropdown} */}
+                {props.isChatOpen && props.showPicker && props.reactionPicker}
 
                 <Room
                     selectedRoom={props.room}

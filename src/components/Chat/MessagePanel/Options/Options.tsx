@@ -153,12 +153,30 @@ export default function Options(props: propsIF) {
             placement={props.tooltipTop ? 'top' : 'bottom'}
             enterDelay={100}
             leaveDelay={0}
-            onClick={(e) => props.addReactionListener(e, props.message)}
         >
             <p
+                role='button'
                 data-label='id'
+                aria-label='Add reaction'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
                 tabIndex={0}
+                onClick={(e) => props.addReactionListener(e, props.message)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        props.addReactionListener(e as any, props.message);
+                    }
+                }}
+                onTouchStart={(e) => {
+                    const mouseEvent = {
+                        ...e,
+                        button: 0,
+                        buttons: 1,
+                        clientX: e.touches[0].clientX,
+                        clientY: e.touches[0].clientY,
+                        target: e.target,
+                    };
+                    props.addReactionListener(mouseEvent as any, props.message);
+                }}
             >
                 {addReaction}
             </p>

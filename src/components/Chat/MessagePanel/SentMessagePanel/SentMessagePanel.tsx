@@ -305,21 +305,11 @@ function SentMessagePanel(props: SentMessageProps) {
         if (!hasFound) {
             setHasUserReacted(false);
         }
-    }, [props.message]);
-
-    useEffect(() => {
-        const processed = processReactionsV2();
-        let hasFound = false;
-        processed.map((e) => {
-            if (isUserIncluded(e)) {
-                setHasUserReacted(true);
-                hasFound = true;
-            }
-        });
-        if (!hasFound) {
-            setHasUserReacted(false);
-        }
-    }, []);
+    }, [
+        props.message, // mesaj değiştiğinde
+        props.message.reactions, // reaksiyon listesi değiştiğinde
+        props.currentUser,
+    ]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
