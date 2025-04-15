@@ -305,11 +305,7 @@ function SentMessagePanel(props: SentMessageProps) {
         if (!hasFound) {
             setHasUserReacted(false);
         }
-    }, [
-        props.message, // mesaj değiştiğinde
-        props.message.reactions, // reaksiyon listesi değiştiğinde
-        props.currentUser,
-    ]);
+    }, [props.message, props.message.reactions, props.currentUser]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);

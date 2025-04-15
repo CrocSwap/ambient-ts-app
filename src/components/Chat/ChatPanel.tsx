@@ -321,7 +321,7 @@ function ChatPanel(props: propsIF) {
         async function checkUser() {
             const data = await getID();
             if (!data || data.status === 'Not OK') {
-                // ...
+                // do nothing
             } else {
                 setCurrentUser(data.userData._id);
             }
