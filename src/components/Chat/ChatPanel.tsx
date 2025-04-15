@@ -89,6 +89,7 @@ function ChatPanel(props: propsIF) {
         setCurrentUserID,
     } = useContext(UserDataContext);
     const [ensName, setEnsName] = useState('');
+    const [isVerifying, setIsVerifying] = useState<boolean>(false);
     const [isVerified, setIsVerified] = useState(false);
     const [currentUser, setCurrentUser] = useState<string | undefined>(
         undefined,
@@ -426,14 +427,32 @@ function ChatPanel(props: propsIF) {
     }, []);
 
     useEffect(() => {
-        async function checkVerified() {
-            const data = await isUserVerified();
-            if (!data) return setIsVerified(false);
-            setIsVerified(data.verified);
+        async function checkUserAndVerification() {
+            if (!isChatOpen || !userAddress) {
+                setIsVerifying(false);
+                return;
+            }
+            setIsVerifying(true);
+
+            try {
+                const userDataResponse = await getID();
+                if (!userDataResponse || userDataResponse.status === 'Not OK') {
+                    setIsVerified(false);
+                } else {
+                    setCurrentUser(userDataResponse.userData._id);
+                    const verifiedResponse = await isUserVerified();
+                    setIsVerified(
+                        verifiedResponse ? verifiedResponse.verified : false,
+                    );
+                }
+            } catch (error) {
+                setIsVerified(false);
+            }
+            setIsVerifying(false);
         }
 
-        checkVerified();
-    }, [isChatOpen == true]);
+        checkUserAndVerification();
+    }, [isChatOpen, userAddress]);
 
     useEffect(() => {
         if (room == undefined) {
@@ -491,22 +510,6 @@ function ChatPanel(props: propsIF) {
             // scrollToBottom();
         }
     }, [lastMessage]);
-
-    useEffect(() => {
-        async function checkUser() {
-            const data = await getID();
-            if (!data || data.status === 'Not OK') {
-                setIsVerified(false);
-            } else {
-                setIsVerified(data.verified);
-                setCurrentUser(data.userData._id);
-            }
-        }
-
-        if (isChatOpen) {
-            checkUser();
-        }
-    }, [isChatOpen, userAddress]);
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
