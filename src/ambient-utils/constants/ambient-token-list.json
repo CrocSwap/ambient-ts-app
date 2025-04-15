@@ -739,68 +739,84 @@
             "logoURI": ""
         },
         {
-            "name": "Plume",
-            "address": "0x0000000000000000000000000000000000000000",
+            "name": "PLUME",
             "symbol": "PLUME",
             "decimals": 18,
             "chainId": 98866,
-            "logoURI": ""
-        },
-        {
-            "name": "Wrapped Plume",
-            "address": "0xEa237441c92CAe6FC17Caaf9a7acB3f953be4bd1",
-            "symbol": "WPLUME",
-            "decimals": 18,
-            "chainId": 98866,
-            "logoURI": ""
+            "address": "0x0000000000000000000000000000000000000000",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/plume/plume-token.svg"
         },
         {
             "name": "Plume USD",
-            "address": "0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F",
             "symbol": "pUSD",
             "decimals": 6,
             "chainId": 98866,
-            "logoURI": ""
+            "address": "0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/pUSD/pUSD-token.svg"
         },
         {
-            "name": "Nest RWA",
-            "address": "0x11a8d8694b656112d9a94285223772F4aAd269fc",
+            "name": "Plume ETH",
+            "symbol": "pETH",
+            "decimals": 18,
+            "chainId": 98866,
+            "address": "0x39d1F90eF89C52dDA276194E9a832b484ee45574",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/pETH/pETH-token.svg"
+        },
+        {
+            "name": "Bridged USDC (Stargate)",
+            "symbol": "USDC.e",
+            "decimals": 6,
+            "chainId": 98866,
+            "address": "0x78adD880A697070c1e765Ac44D65323a0DcCE913",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/general/usdc-token.svg"
+        },
+        {
+            "name": "Bridged USDT (Stargate)",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 98866,
+            "address": "0xda6087E69C51E7D31b6DBAD276a3c44703DFdCAd",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/general/usdt-token.svg"
+        },
+        {
+            "name": "Wrapped Ether (Stargate)",
+            "symbol": "WETH",
+            "decimals": 18,
+            "chainId": 98866,
+            "address": "0xca59cA09E5602fAe8B629DeE83FfA819741f14be",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/general/ether-token.svg"
+        },
+        {
+            "name": "Nest RWA Vault",
             "symbol": "nRWA",
             "decimals": 6,
             "chainId": 98866,
-            "logoURI": ""
+            "address": "0x593cCcA4c4bf58b7526a4C164cEEf4003C6388db",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/nest/nRWA/nRWA-token.svg"
         },
         {
             "name": "Nest Treasuries Vault",
-            "address": "0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9",
             "symbol": "nTBILL",
             "decimals": 6,
             "chainId": 98866,
-            "logoURI": ""
+            "address": "0xe72fe64840f4ef80e3ec73a1c749491b5c938cb9",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/nest/nTBILL/nTBILL-token.svg"
         },
         {
-            "name": "Nest Yield Vault",
-            "address": "0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8",
-            "symbol": "nYIELD",
-            "decimals": 6,
-            "chainId": 98866,
-            "logoURI": ""
-        },
-        {
-            "name": "Nest USDY Vault",
-            "address": "0x7Fca0Df900A11Ae1d17338134a9e079a7EE87E31",
-            "symbol": "nUSDY",
-            "decimals": 6,
-            "chainId": 98866,
-            "logoURI": ""
-        },
-        {
-            "name": "Nest Elixir Vault",
-            "address": "0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c",
+            "name": "Nest Institutional Core",
             "symbol": "nELIXIR",
             "decimals": 6,
             "chainId": 98866,
-            "logoURI": ""
+            "address": "0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/nest/nELIXIR/nELIXIR-token.svg"
+        },
+        {
+            "name": "Nest Basis",
+            "symbol": "nBASIS",
+            "decimals": 6,
+            "chainId": 98866,
+            "address": "0x11113Ff3a60C2450F4b22515cB760417259eE94B",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/nest/nBASIS/nBASIS-token.svg"
         }
     ]
 }

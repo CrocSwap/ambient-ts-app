@@ -1098,10 +1098,14 @@ export default function InitPool() {
     };
 
     const sendTransaction = isMintLiqEnabled
-        ? async () => {
-              sendInit(initialPriceInBaseDenom, sendRangePosition);
-          }
-        : () => {
+        ? !isTxCompletedInit
+            ? async () => {
+                  sendInit(initialPriceInBaseDenom, sendRangePosition);
+              }
+            : async () => {
+                  sendRangePosition();
+              }
+        : async () => {
               sendInit(initialPriceInBaseDenom);
           };
 
