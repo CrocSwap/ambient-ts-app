@@ -109,7 +109,7 @@ export default function InitButton(props: PropsIF) {
                         ? isTokenAPrimary
                             ? tokenAQtyForApproval
                             : // add 1% buffer to avoid rounding errors
-                              (tokenAQtyCoveredByWalletBalance * 101n) / 100n
+                              (tokenAQtyForApproval * 101n) / 100n
                         : tokenABalance
                           ? fromDisplayQty(tokenABalance, tokenA.decimals)
                           : undefined,
@@ -138,7 +138,7 @@ export default function InitButton(props: PropsIF) {
                         ? !isTokenAPrimary
                             ? tokenBQtyForApproval
                             : // add 1% buffer to avoid rounding errors
-                              (tokenBQtyCoveredByWalletBalance * 101n) / 100n
+                              (tokenBQtyForApproval * 101n) / 100n
                         : tokenBBalance
                           ? fromDisplayQty(tokenBBalance, tokenB.decimals)
                           : undefined,
