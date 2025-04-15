@@ -272,12 +272,20 @@ function ChatPanel(props: propsIF) {
     const [lastScrolledMessage, setLastScrolledMessage] = useState('');
     const [lastScrollListenerActive, setLastScrollListenerActive] =
         useState(false);
+    const [pickerReady, setPickerReady] = useState(false);
     const lastScrollListenerRef = useRef<boolean>();
     lastScrollListenerRef.current = lastScrollListenerActive;
 
+    useEffect(() => {
+        if (showReactionPicker) {
+            const id = requestAnimationFrame(() => setPickerReady(true));
+            return () => cancelAnimationFrame(id);
+        }
+        setPickerReady(false);
+    }, [showReactionPicker]);
+
     useOnClickOutside(reactionsRef, () => {
-        console.log('tetiklendi');
-        setShowReactionPicker(false);
+        if (pickerReady) setShowReactionPicker(false);
     });
 
     const closeOnEscapeKeyDown = useCallback(
@@ -390,13 +398,12 @@ function ChatPanel(props: propsIF) {
         e: React.MouseEvent<HTMLDivElement>,
         focusedMessage?: Message,
     ) => {
-        console.log('addReactionListener');
+        e.stopPropagation();
         setPickerBottomPos(
             window.innerHeight - (e.clientY + (isMobile ? 50 : 0)),
         );
         setFocusedMessage(focusedMessage);
         setShowReactionPicker(true);
-        console.log('setShowReactionPicker: ');
     };
     const addReactionEmojiPickListener = (data: EmojiClickData | string) => {
         if (focusedMessageRef.current && currentUser) {
@@ -927,9 +934,9 @@ function ChatPanel(props: propsIF) {
             className={`${styles.reaction_picker_wrapper} ${showReactionPicker ? styles.active : ' '}`}
             ref={reactionsRef}
             style={{ bottom: pickerBottomPos }}
+            onClick={(e) => e.stopPropagation()}
         >
             {getEmojiPack(reactionCodes, addReactionEmojiPickListener, 30)}
-            {showReactionPicker.toString()}
         </div>
     );
 
@@ -1461,6 +1468,7 @@ function ChatPanel(props: propsIF) {
                     }
                     setSelectedMessageForReply={setSelectedMessageForReply}
                     setIsReplyButtonPressed={setIsReplyButtonPressed}
+                    showReactionPicker={showReactionPicker}
                     reactionPicker={reactionPicker}
                 />
             </>
