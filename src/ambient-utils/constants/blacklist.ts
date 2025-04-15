@@ -292,6 +292,21 @@ export const hiddenTokens = [
         address: '0xfefd8bcb0034a2b0e3cc22e2f5a59279fae67128',
         chainId: 84532,
     },
+    {
+        // old nRWA on Plume Mainnet
+        address: '0x11a8d8694b656112d9a94285223772F4aAd269fc',
+        chainId: 98866,
+    },
+    {
+        // nUSDY on Plume Mainnet
+        address: '0x7Fca0Df900A11Ae1d17338134a9e079a7EE87E31',
+        chainId: 98866,
+    },
+    {
+        // nYIELD on Plume Mainnet
+        address: '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8',
+        chainId: 98866,
+    },
 ];
 
 const embargoedTokens = [
