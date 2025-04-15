@@ -15,7 +15,6 @@ import {
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
@@ -58,9 +57,6 @@ function Ranges(props: propsIF) {
         setHideEmptyPositionsOnAccount,
     } = useContext(TradeTableContext);
 
-    const {
-        sidebar: { isOpen: isSidebarOpen },
-    } = useContext(SidebarContext);
     const { setCurrentRangeInReposition } = useContext(RangeContext);
 
     const {
@@ -274,10 +270,7 @@ function Ranges(props: propsIF) {
     const tableView =
         isSmallScreen ||
         isTabletScreen ||
-        (isAccountView &&
-            connectedAccountActive &&
-            !isLargeScreenAccount &&
-            isSidebarOpen)
+        (isAccountView && connectedAccountActive && !isLargeScreenAccount)
             ? 'small'
             : !isSmallScreen && !isLargeScreen
               ? 'medium'
@@ -315,7 +308,10 @@ function Ranges(props: propsIF) {
                             !hideEmptyPositionsOnAccount,
                         );
                     }}
-                    style={{ width: '100%' }}
+                    style={{
+                        width: '100%',
+                        marginRight: tableView === 'small' ? '100px' : '10px',
+                    }}
                 >
                     <p>Hide Empty Positions</p>
 

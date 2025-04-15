@@ -15,6 +15,7 @@ import {
 } from '../ambient-utils/constants';
 import { expandPoolStats } from '../ambient-utils/dataLayer';
 import { PoolIF } from '../ambient-utils/types';
+import checkPoolForWETH from '../App/functions/checkPoolForWETH';
 import {
     useTokenStats,
     useTokenStatsIF,
@@ -159,6 +160,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         () =>
             poolDataFilteredByActiveChain.filter(
                 (pool) =>
+                    !checkPoolForWETH(pool) &&
                     !excludedTokenAddressesLowercase.includes(
                         pool.base.toLowerCase(),
                     ) &&
