@@ -763,33 +763,17 @@
             "logoURI": ""
         },
         {
-            "name": "Nest RWA",
-            "address": "0x11a8d8694b656112d9a94285223772F4aAd269fc",
-            "symbol": "nRWA",
-            "decimals": 6,
+            "name": "Plume ETH",
+            "symbol": "pETH",
+            "decimals": 18,
             "chainId": 98866,
-            "logoURI": ""
+            "address": "0x39d1F90eF89C52dDA276194E9a832b484ee45574",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/pETH/pETH-token.svg"
         },
         {
             "name": "Nest Treasuries Vault",
             "address": "0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9",
             "symbol": "nTBILL",
-            "decimals": 6,
-            "chainId": 98866,
-            "logoURI": ""
-        },
-        {
-            "name": "Nest Yield Vault",
-            "address": "0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8",
-            "symbol": "nYIELD",
-            "decimals": 6,
-            "chainId": 98866,
-            "logoURI": ""
-        },
-        {
-            "name": "Nest USDY Vault",
-            "address": "0x7Fca0Df900A11Ae1d17338134a9e079a7EE87E31",
-            "symbol": "nUSDY",
             "decimals": 6,
             "chainId": 98866,
             "logoURI": ""
@@ -801,6 +785,30 @@
             "decimals": 6,
             "chainId": 98866,
             "logoURI": ""
+        },
+        {
+            "name": "Bridged USDC (Stargate)",
+            "symbol": "USDC.e",
+            "decimals": 6,
+            "chainId": 98866,
+            "address": "0x78adD880A697070c1e765Ac44D65323a0DcCE913",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/general/usdc-token.svg"
+        },
+        {
+            "name": "Bridged USDT (Stargate)",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 98866,
+            "address": "0xda6087E69C51E7D31b6DBAD276a3c44703DFdCAd",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/general/usdt-token.svg"
+        },
+        {
+            "name": "Wrapped Ether (Stargate)",
+            "symbol": "WETH",
+            "decimals": 18,
+            "chainId": 98866,
+            "address": "0xca59cA09E5602fAe8B629DeE83FfA819741f14be",
+            "logoURI": "https://assets.plumenetwork.xyz/images/logos/general/ether-token.svg"
         }
     ]
 }
