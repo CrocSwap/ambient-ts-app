@@ -292,10 +292,7 @@ const useChatApi = () => {
             return new Promise((resolve, reject) => {
                 const message =
                     verificationText + 'Wallet address:\n' + userAddress;
-                console.log(
-                    'İmzalanacak mesaj: ',
-                    message.substring(0, message.indexOf('Wallet address:')),
-                );
+
                 // signer.signMessage(message)
                 signer
                     .signMessage(
@@ -342,7 +339,6 @@ const useChatApi = () => {
                 },
             );
             const data = await response.json();
-            console.log(data);
             return data;
         }
     }
