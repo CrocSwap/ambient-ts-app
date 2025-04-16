@@ -23,6 +23,7 @@ import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitT
 import TradeModuleHeader from '../../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../../components/Trade/TradeModules/TradeModuleSkeleton';
 
+import { ethers } from 'ethers';
 import {
     DISABLE_WORKAROUNDS,
     GAS_DROPS_ESTIMATE_LIMIT_FROM_DEX,
@@ -1098,12 +1099,13 @@ export default function Limit() {
                                           (tokenAQtyCoveredByWalletBalance *
                                               101n) /
                                           100n
-                                    : tokenABalance
-                                      ? fromDisplayQty(
-                                            tokenABalance,
-                                            tokenA.decimals,
-                                        )
-                                      : undefined,
+                                    : ethers.MaxUint256,
+                                // tokenABalance
+                                //   ? fromDisplayQty(
+                                //         tokenABalance,
+                                //         tokenA.decimals,
+                                //     )
+                                //   : undefined,
                             );
                         }}
                         flat={true}

@@ -1,4 +1,4 @@
-import { fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
     Dispatch,
     SetStateAction,
@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { TokenIF } from '../../../../ambient-utils/types';
 
+import { ethers } from 'ethers';
 import { FaGasPump } from 'react-icons/fa';
 import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
@@ -329,12 +330,13 @@ export default function Deposit(props: propsIF) {
             setRecheckTokenAllowance,
             isActiveNetworkPlume
                 ? BigInt(depositQtyNonDisplay)
-                : tokenWalletBalanceDisplay
-                  ? fromDisplayQty(
-                        tokenWalletBalanceDisplay,
-                        selectedToken.decimals,
-                    )
-                  : undefined,
+                : ethers.MaxUint256,
+            // tokenWalletBalanceDisplay
+            //   ? fromDisplayQty(
+            //         tokenWalletBalanceDisplay,
+            //         selectedToken.decimals,
+            //     )
+            //   : undefined,
         );
     };
 

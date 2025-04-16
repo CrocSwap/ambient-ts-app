@@ -1,4 +1,5 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
+import { ethers } from 'ethers';
 import {
     ChangeEvent,
     useContext,
@@ -436,11 +437,10 @@ export default function VaultDeposit(props: Props) {
                     secondaryAsset,
                     strategy,
                     undefined,
-                    isActiveNetworkPlume
-                        ? depositBigint
-                        : mainAssetBalanceBigint
-                          ? mainAssetBalanceBigint
-                          : undefined,
+                    isActiveNetworkPlume ? depositBigint : ethers.MaxUint256,
+                    // mainAssetBalanceBigint
+                    //   ? mainAssetBalanceBigint
+                    //   : undefined,
                 );
             }}
             flat={true}

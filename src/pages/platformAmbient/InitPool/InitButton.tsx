@@ -1,4 +1,5 @@
 import { fromDisplayQty } from '@crocswap-libs/sdk';
+import { ethers } from 'ethers';
 import { useContext, useMemo } from 'react';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { TokenIF } from '../../../ambient-utils/types';
@@ -110,9 +111,10 @@ export default function InitButton(props: PropsIF) {
                             ? tokenAQtyForApproval
                             : // add 1% buffer to avoid rounding errors
                               (tokenAQtyForApproval * 101n) / 100n
-                        : tokenABalance
-                          ? fromDisplayQty(tokenABalance, tokenA.decimals)
-                          : undefined,
+                        : ethers.MaxUint256,
+                    // tokenABalance
+                    //   ? fromDisplayQty(tokenABalance, tokenA.decimals)
+                    //   : undefined,
                 );
             }}
             flat={true}
@@ -139,9 +141,10 @@ export default function InitButton(props: PropsIF) {
                             ? tokenBQtyForApproval
                             : // add 1% buffer to avoid rounding errors
                               (tokenBQtyForApproval * 101n) / 100n
-                        : tokenBBalance
-                          ? fromDisplayQty(tokenBBalance, tokenB.decimals)
-                          : undefined,
+                        : ethers.MaxUint256,
+                    //  tokenBBalance
+                    //   ? fromDisplayQty(tokenBBalance, tokenB.decimals)
+                    //   : undefined,
                 );
             }}
             flat={true}

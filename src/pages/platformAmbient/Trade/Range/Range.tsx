@@ -36,6 +36,7 @@ import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
+import { ethers } from 'ethers';
 import {
     estimateBalancedRangeAprFromPoolApr,
     estimateUnbalancedRangeAprFromPoolApr,
@@ -1303,12 +1304,13 @@ function Range() {
                                           (tokenAQtyCoveredByWalletBalance *
                                               101n) /
                                           100n
-                                    : tokenABalance
-                                      ? fromDisplayQty(
-                                            tokenABalance,
-                                            tokenA.decimals,
-                                        )
-                                      : undefined,
+                                    : ethers.MaxUint256,
+                                //  tokenABalance
+                                //   ? fromDisplayQty(
+                                //         tokenABalance,
+                                //         tokenA.decimals,
+                                //     )
+                                //   : undefined,
                             );
                         }}
                         flat={true}
@@ -1338,12 +1340,13 @@ function Range() {
                                           (tokenBQtyCoveredByWalletBalance *
                                               101n) /
                                           100n
-                                    : tokenBBalance
-                                      ? fromDisplayQty(
-                                            tokenBBalance,
-                                            tokenB.decimals,
-                                        )
-                                      : undefined,
+                                    : ethers.MaxUint256,
+                                //  tokenBBalance
+                                //   ? fromDisplayQty(
+                                //         tokenBBalance,
+                                //         tokenB.decimals,
+                                //     )
+                                //   : undefined,
                             );
                         }}
                         flat={true}

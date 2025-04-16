@@ -32,6 +32,7 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { FlexContainer } from '../../../../styled/Common';
 import { WarningContainer } from '../../../../styled/Components/TradeModules';
 
+import { ethers } from 'ethers';
 import {
     GAS_DROPS_ESTIMATE_SWAP_FROM_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX,
@@ -74,6 +75,7 @@ function Swap(props: propsIF) {
         nativeTokenUsdPrice,
         isActiveNetworkL2,
         isActiveNetworkPlume,
+        isActiveNetworkMainnet,
     } = useContext(ChainDataContext);
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
@@ -958,12 +960,13 @@ function Swap(props: propsIF) {
                                           (tokenAQtyCoveredByWalletBalance *
                                               101n) /
                                           100n
-                                    : tokenABalance
-                                      ? fromDisplayQty(
-                                            tokenABalance,
-                                            tokenA.decimals,
-                                        )
-                                      : undefined,
+                                    : ethers.MaxUint256,
+                                //   tokenABalance
+                                //   ? fromDisplayQty(
+                                //         tokenABalance,
+                                //         tokenA.decimals,
+                                //     )
+                                //   : undefined,
                             );
                         }}
                         flat
