@@ -32,6 +32,7 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { FlexContainer } from '../../../../styled/Common';
 import { WarningContainer } from '../../../../styled/Components/TradeModules';
 
+import { ethers } from 'ethers';
 import {
     GAS_DROPS_ESTIMATE_SWAP_FROM_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX,
@@ -47,6 +48,7 @@ import {
     SWAP_BUFFER_MULTIPLIER_MAINNET,
     ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
+import { MAINNET_TOKENS } from '../../../../ambient-utils/constants/networks/ethereumMainnet';
 import { useApprove } from '../../../../App/functions/approve';
 import { calcL1Gas } from '../../../../App/functions/calcL1Gas';
 import useDebounce from '../../../../App/hooks/useDebounce';
@@ -74,6 +76,7 @@ function Swap(props: propsIF) {
         nativeTokenUsdPrice,
         isActiveNetworkL2,
         isActiveNetworkPlume,
+        isActiveNetworkMainnet,
     } = useContext(ChainDataContext);
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
@@ -248,6 +251,7 @@ function Swap(props: propsIF) {
         sellQtyNoExponentString,
         tokenASurplusMinusTokenARemainderNum,
         isWithdrawFromDexChecked,
+        tokenA.decimals,
     ]);
 
     const isTokenAWalletBalanceSufficient =
@@ -258,6 +262,15 @@ function Swap(props: propsIF) {
         tokenAAllowance === undefined
             ? true
             : tokenAAllowance >= tokenAQtyCoveredByWalletBalance;
+
+    const isUsdtResetRequired = useMemo(() => {
+        return (
+            tokenA.address.toLowerCase() ===
+                MAINNET_TOKENS.USDT.address.toLowerCase() &&
+            !!tokenAAllowance &&
+            tokenAAllowance < tokenAQtyCoveredByWalletBalance
+        );
+    }, [tokenA.address, tokenAAllowance, tokenAQtyCoveredByWalletBalance]);
 
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = useMemo(() => {
@@ -942,8 +955,12 @@ function Swap(props: propsIF) {
                         style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
-                                ? `Approve ${tokenA.symbol}`
-                                : `${tokenA.symbol} Approval Pending`
+                                ? isUsdtResetRequired
+                                    ? 'Reset USDT Approval (Step 1/2)'
+                                    : `Approve ${tokenA.symbol}`
+                                : isUsdtResetRequired
+                                  ? 'USDT Approval Reset Pending...'
+                                  : `${tokenA.symbol} Approval Pending...`
                         }
                         disabled={isApprovalPending}
                         action={async () => {
@@ -951,19 +968,22 @@ function Swap(props: propsIF) {
                                 tokenA.address,
                                 tokenA.symbol,
                                 undefined,
-                                isActiveNetworkPlume
-                                    ? isTokenAPrimary
-                                        ? tokenAQtyCoveredByWalletBalance
-                                        : // add 1% buffer to avoid rounding errors
-                                          (tokenAQtyCoveredByWalletBalance *
-                                              101n) /
-                                          100n
-                                    : tokenABalance
-                                      ? fromDisplayQty(
-                                            tokenABalance,
-                                            tokenA.decimals,
-                                        )
-                                      : undefined,
+                                isUsdtResetRequired
+                                    ? 0n
+                                    : isActiveNetworkPlume
+                                      ? isTokenAPrimary
+                                          ? tokenAQtyCoveredByWalletBalance
+                                          : // add 1% buffer to avoid rounding errors
+                                            (tokenAQtyCoveredByWalletBalance *
+                                                101n) /
+                                            100n
+                                      : ethers.MaxUint256,
+                                //   tokenABalance
+                                //   ? fromDisplayQty(
+                                //         tokenABalance,
+                                //         tokenA.decimals,
+                                //     )
+                                //   : undefined,
                             );
                         }}
                         flat
