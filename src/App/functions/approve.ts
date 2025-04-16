@@ -40,9 +40,7 @@ export function useApprove() {
         if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
-            const tx = await crocEnv
-                .token(tokenAddress)
-                .approve(tokenQuantity || undefined);
+            const tx = await crocEnv.token(tokenAddress).approve(tokenQuantity);
             if (tx) addPendingTx(tx?.hash);
             if (tx?.hash)
                 addTransactionByType({

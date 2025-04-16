@@ -1,6 +1,8 @@
 import { fromDisplayQty } from '@crocswap-libs/sdk';
+import { ethers } from 'ethers';
 import { useContext, useMemo } from 'react';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
+import { MAINNET_TOKENS } from '../../../ambient-utils/constants/networks/ethereumMainnet';
 import { TokenIF } from '../../../ambient-utils/types';
 import { useApprove } from '../../../App/functions/approve';
 import Button from '../../../components/Form/Button';
@@ -42,6 +44,8 @@ interface PropsIF {
     isTokenAPrimary: boolean;
     tokenABalance: string;
     tokenBBalance: string;
+    tokenAAllowance: bigint | undefined;
+    tokenBAllowance: bigint | undefined;
 }
 export default function InitButton(props: PropsIF) {
     const {
@@ -75,8 +79,8 @@ export default function InitButton(props: PropsIF) {
         tokenAQtyCoveredByWalletBalance,
         tokenBQtyCoveredByWalletBalance,
         isTokenAPrimary,
-        tokenABalance,
-        tokenBBalance,
+        tokenAAllowance,
+        tokenBAllowance,
     } = props;
 
     const { isActiveNetworkPlume } = useContext(ChainDataContext);
@@ -90,14 +94,36 @@ export default function InitButton(props: PropsIF) {
           fromDisplayQty('0.1', tokenB.decimals)
         : fromDisplayQty('0.1', tokenB.decimals);
 
+    const isUsdtResetRequiredTokenA = useMemo(() => {
+        return (
+            tokenA.address.toLowerCase() ===
+                MAINNET_TOKENS.USDT.address.toLowerCase() &&
+            !!tokenAAllowance &&
+            tokenAAllowance < tokenAQtyCoveredByWalletBalance
+        );
+    }, [tokenA.address, tokenAAllowance, tokenAQtyCoveredByWalletBalance]);
+
+    const isUsdtResetRequiredTokenB = useMemo(() => {
+        return (
+            tokenB.address.toLowerCase() ===
+                MAINNET_TOKENS.USDT.address.toLowerCase() &&
+            !!tokenBAllowance &&
+            tokenBAllowance < tokenBQtyCoveredByWalletBalance
+        );
+    }, [tokenB.address, tokenBAllowance, tokenBQtyCoveredByWalletBalance]);
+
     const tokenAApprovalButton = (
         <Button
             idForDOM='approve_token_A_button'
             style={{ textTransform: 'none' }}
             title={
                 !isApprovalPending
-                    ? `Approve ${tokenA.symbol}`
-                    : `${tokenA.symbol} Approval Pending`
+                    ? isUsdtResetRequiredTokenA
+                        ? 'Reset USDT Approval (Step 1/2)'
+                        : `Approve ${tokenA.symbol}`
+                    : isUsdtResetRequiredTokenA
+                      ? 'USDT Approval Reset Pending...'
+                      : `${tokenA.symbol} Approval Pending...`
             }
             disabled={isApprovalPending}
             action={async () => {
@@ -105,14 +131,17 @@ export default function InitButton(props: PropsIF) {
                     tokenA.address,
                     tokenA.symbol,
                     undefined,
-                    isActiveNetworkPlume
-                        ? isTokenAPrimary
-                            ? tokenAQtyForApproval
-                            : // add 1% buffer to avoid rounding errors
-                              (tokenAQtyCoveredByWalletBalance * 101n) / 100n
-                        : tokenABalance
-                          ? fromDisplayQty(tokenABalance, tokenA.decimals)
-                          : undefined,
+                    isUsdtResetRequiredTokenA
+                        ? 0n
+                        : isActiveNetworkPlume
+                          ? isTokenAPrimary
+                              ? tokenAQtyForApproval
+                              : // add 1% buffer to avoid rounding errors
+                                (tokenAQtyForApproval * 101n) / 100n
+                          : ethers.MaxUint256,
+                    // tokenABalance
+                    //   ? fromDisplayQty(tokenABalance, tokenA.decimals)
+                    //   : undefined,
                 );
             }}
             flat={true}
@@ -125,8 +154,12 @@ export default function InitButton(props: PropsIF) {
             style={{ textTransform: 'none' }}
             title={
                 !isApprovalPending
-                    ? `Approve ${tokenB.symbol}`
-                    : `${tokenB.symbol} Approval Pending`
+                    ? isUsdtResetRequiredTokenB
+                        ? 'Reset USDT Approval (Step 1/2)'
+                        : `Approve ${tokenB.symbol}`
+                    : isUsdtResetRequiredTokenB
+                      ? 'USDT Approval Reset Pending...'
+                      : `${tokenB.symbol} Approval Pending...`
             }
             disabled={isApprovalPending}
             action={async () => {
@@ -134,14 +167,17 @@ export default function InitButton(props: PropsIF) {
                     tokenB.address,
                     tokenB.symbol,
                     undefined,
-                    isActiveNetworkPlume
-                        ? !isTokenAPrimary
-                            ? tokenBQtyForApproval
-                            : // add 1% buffer to avoid rounding errors
-                              (tokenBQtyCoveredByWalletBalance * 101n) / 100n
-                        : tokenBBalance
-                          ? fromDisplayQty(tokenBBalance, tokenB.decimals)
-                          : undefined,
+                    isUsdtResetRequiredTokenB
+                        ? 0n
+                        : isActiveNetworkPlume
+                          ? !isTokenAPrimary
+                              ? tokenBQtyForApproval
+                              : // add 1% buffer to avoid rounding errors
+                                (tokenBQtyForApproval * 101n) / 100n
+                          : ethers.MaxUint256,
+                    //  tokenBBalance
+                    //   ? fromDisplayQty(tokenBBalance, tokenB.decimals)
+                    //   : undefined,
                 );
             }}
             flat={true}
