@@ -1141,6 +1141,8 @@ export default function InitPool() {
         isTokenAPrimary,
         tokenABalance,
         tokenBBalance,
+        tokenAAllowance,
+        tokenBAllowance,
     };
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
