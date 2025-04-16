@@ -137,13 +137,6 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const checkRegex = props.message.message.match(REGEX_EMOJI);
 
-    // if(checkRegex){
-    //     console.log(props.message.message);
-    //     console.log(props.message.message.length);
-    //     console.log('regex len', checkRegex.length);
-    //     console.log('....................');
-    // }
-
     const onlyEmoji =
         !REGEX_NOT_EMOJI.test(props.message.message) &&
         checkRegex != null &&
