@@ -25,6 +25,7 @@ import {
     GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
     NUM_GWEI_IN_WEI,
 } from '../../../../ambient-utils/constants/';
+import { MAINNET_TOKENS } from '../../../../ambient-utils/constants/networks/ethereumMainnet';
 import {
     getFormattedNumber,
     waitForTransaction,
@@ -172,6 +173,16 @@ export default function Deposit(props: propsIF) {
         [tokenAllowance, isDepositQtyValid, depositQtyNonDisplay],
     );
 
+    const isUsdtResetRequired = useMemo(() => {
+        return (
+            selectedToken.address.toLowerCase() ===
+                MAINNET_TOKENS.USDT.address.toLowerCase() &&
+            !!tokenAllowance &&
+            depositQtyNonDisplay &&
+            tokenAllowance < BigInt(depositQtyNonDisplay)
+        );
+    }, [selectedToken.address, tokenAllowance, depositQtyNonDisplay]);
+
     const isWalletBalanceSufficientToCoverGas = useMemo(() => {
         if (selectedToken.address !== ZERO_ADDRESS || !depositQtyNonDisplay) {
             return true;
@@ -219,7 +230,11 @@ export default function Deposit(props: propsIF) {
         } else if (isApprovalPending) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
-            setButtonMessage(`${selectedToken.symbol} Approval Pending`);
+            setButtonMessage(
+                isUsdtResetRequired
+                    ? 'USDT Approval Reset Pending...'
+                    : `${selectedToken.symbol} Approval Pending...`,
+            );
         } else if (!isWalletBalanceSufficientToCoverDeposit) {
             console.log('setting button to disabled');
             setIsButtonDisabled(true);
@@ -236,7 +251,11 @@ export default function Deposit(props: propsIF) {
         } else if (!isTokenAllowanceSufficient) {
             setIsButtonDisabled(false);
             setIsCurrencyFieldDisabled(false);
-            setButtonMessage(`Approve ${selectedToken.symbol}`);
+            setButtonMessage(
+                isUsdtResetRequired
+                    ? 'Reset USDT Approval (Step 1/2)'
+                    : `Approve ${selectedToken.symbol}`,
+            );
         } else if (isDepositQtyValid) {
             setIsButtonDisabled(false);
             setIsCurrencyFieldDisabled(false);
@@ -328,9 +347,11 @@ export default function Deposit(props: propsIF) {
             selectedToken.address,
             selectedToken.symbol,
             setRecheckTokenAllowance,
-            isActiveNetworkPlume
-                ? BigInt(depositQtyNonDisplay)
-                : ethers.MaxUint256,
+            isUsdtResetRequired
+                ? 0n
+                : isActiveNetworkPlume
+                  ? BigInt(depositQtyNonDisplay)
+                  : ethers.MaxUint256,
             // tokenWalletBalanceDisplay
             //   ? fromDisplayQty(
             //         tokenWalletBalanceDisplay,

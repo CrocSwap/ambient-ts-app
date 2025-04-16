@@ -427,7 +427,7 @@ export default function VaultDeposit(props: Props) {
             title={
                 !isApprovalPending
                     ? `Approve ${mainAsset.symbol} / ${secondaryAsset.symbol}`
-                    : `${mainAsset.symbol} / ${secondaryAsset.symbol} Approval Pending`
+                    : `${mainAsset.symbol} / ${secondaryAsset.symbol} Approval Pending...`
             }
             disabled={isApprovalPending}
             action={async () => {
