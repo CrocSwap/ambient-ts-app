@@ -251,6 +251,7 @@ function Swap(props: propsIF) {
         sellQtyNoExponentString,
         tokenASurplusMinusTokenARemainderNum,
         isWithdrawFromDexChecked,
+        tokenA.decimals,
     ]);
 
     const isTokenAWalletBalanceSufficient =
