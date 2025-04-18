@@ -17,6 +17,7 @@ import {
 import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 // import{ CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
+import { ZERO_ADDRESS } from '../../ambient-utils/constants';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
@@ -57,7 +58,7 @@ const useFetchPoolStats = (
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const { isActiveNetworkMonad, lastBlockNumber, nativeTokenUsdPrice } =
+    const { isActiveNetworkMonad, lastBlockNumber } =
         useContext(ChainDataContext);
     // useMemo to filter allPoolStats for the current pool
     const activeTradePoolStats = useMemo(
@@ -136,7 +137,8 @@ const useFetchPoolStats = (
             (async () => {
                 if (
                     !crocEnv ||
-                    (await crocEnv.context).chain.chainId !== chainId
+                    (await crocEnv.context).chain.chainId !== pool.chainId ||
+                    pool.chainId !== chainId
                 )
                     return;
 
@@ -151,7 +153,7 @@ const useFetchPoolStats = (
                         crocEnv,
                         pool.base,
                         pool.quote,
-                        chainId,
+                        pool.chainId,
                         poolPriceCacheTime,
                     ),
                     new Promise<number | undefined>((resolve) =>
@@ -206,7 +208,7 @@ const useFetchPoolStats = (
         isServerEnabled,
         chainId,
         crocEnv,
-        pool.base + pool.quote,
+        pool.base + pool.quote + pool.chainId,
         lastBlockNumber !== 0,
         poolPriceCacheTime,
         isTradeRoute,
@@ -242,10 +244,14 @@ const useFetchPoolStats = (
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
-    const [baseAddr, quoteAddr] = [pool?.base, pool?.quote];
+    const [basePrice, setBasePrice] = useState<number | undefined>();
+    const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     // Reset pool metric states that require asynchronous updates when pool changes
     const resetPoolStats = () => {
+        setBasePrice(undefined);
+        setQuotePrice(undefined);
+        setPoolPriceDisplayNum(undefined);
         setPoolVolume(undefined);
         setPoolVolume24h(undefined);
         setPoolTvl(undefined);
@@ -259,7 +265,6 @@ const useFetchPoolStats = (
         setBaseTvlUsd(undefined);
         setPoolPriceChangePercent(undefined);
         setIsPoolPriceChangePositive(undefined);
-        setPoolPriceDisplayNum(undefined);
         setPoolFees24h(undefined);
         setApr(undefined);
         if (!location.pathname.includes('limitTick')) {
@@ -269,67 +274,125 @@ const useFetchPoolStats = (
 
     useEffect(() => {
         resetPoolStats();
-    }, [baseAddr + quoteAddr]);
+    }, [pool.base + pool.quote + pool.chainId]);
 
-    const [basePrice, setBasePrice] = useState<number | undefined>();
-    const [quotePrice, setQuotePrice] = useState<number | undefined>();
+    const [intermediateBasePrice, setIntermediateBasePrice] = useState<
+        { price: number; address: string; chainId: string } | undefined
+    >();
+
+    const [intermediateQuotePrice, setIntermediateQuotePrice] = useState<
+        { price: number; address: string; chainId: string } | undefined
+    >();
+
+    useEffect(() => {
+        if (
+            intermediateBasePrice &&
+            intermediateBasePrice.address === pool.base &&
+            intermediateBasePrice.chainId === pool.chainId
+        ) {
+            setBasePrice(intermediateBasePrice.price);
+        }
+        if (
+            intermediateQuotePrice &&
+            intermediateQuotePrice.address === pool.quote &&
+            intermediateQuotePrice.chainId === pool.chainId
+        ) {
+            setQuotePrice(intermediateQuotePrice.price);
+        }
+    }, [intermediateBasePrice, intermediateQuotePrice, pool]);
+
+    const activeTradePoolStatsMatchesPool =
+        activeTradePoolStats?.base === pool.base &&
+        activeTradePoolStats?.quote === pool.quote &&
+        activeTradePoolStats?.chainId === pool.chainId;
 
     useEffect(() => {
         (async () => {
             let baseTokenPrice, quoteTokenPrice;
-            if (activeTradePoolStats?.baseUsdPrice) {
+
+            if (
+                activeTradePoolStatsMatchesPool &&
+                activeTradePoolStats?.baseUsdPrice
+            ) {
                 baseTokenPrice = activeTradePoolStats.baseUsdPrice;
             } else {
                 baseTokenPrice =
-                    (await cachedFetchTokenPrice(baseAddr, chainId))
+                    (await cachedFetchTokenPrice(pool.base, pool.chainId))
                         ?.usdPrice || 0.0;
             }
-            if (activeTradePoolStats?.quoteUsdPrice) {
+            if (
+                activeTradePoolStatsMatchesPool &&
+                activeTradePoolStats?.quoteUsdPrice
+            ) {
                 quoteTokenPrice = activeTradePoolStats.quoteUsdPrice;
             } else {
                 quoteTokenPrice =
-                    (await cachedFetchTokenPrice(quoteAddr, chainId))
+                    (await cachedFetchTokenPrice(pool.quote, pool.chainId))
                         ?.usdPrice || 0.0;
             }
-
             if (baseTokenPrice) {
-                setBasePrice(baseTokenPrice);
-            } else if (
-                isETHorStakedEthToken(baseAddr, chainId) &&
-                nativeTokenUsdPrice
-            ) {
-                setBasePrice(nativeTokenUsdPrice);
+                setIntermediateBasePrice({
+                    price: baseTokenPrice,
+                    address: pool.base,
+                    chainId: pool.chainId,
+                });
+            } else if (isETHorStakedEthToken(pool.base, pool.chainId)) {
+                const fetchedBaseTokenPrice = (
+                    await cachedFetchTokenPrice(ZERO_ADDRESS, chainId)
+                )?.usdPrice;
+                setIntermediateBasePrice({
+                    price: fetchedBaseTokenPrice || 1,
+                    address: pool.base,
+                    chainId: pool.chainId,
+                });
             } else if (poolPriceDisplayNum && quoteTokenPrice) {
                 // calculation of estimated base price below may be backwards;
                 // having a hard time finding an example of base missing a price
                 const estimatedBasePrice =
                     quoteTokenPrice / poolPriceDisplayNum;
-                setBasePrice(estimatedBasePrice);
+                setIntermediateBasePrice({
+                    price: estimatedBasePrice,
+                    address: pool.base,
+                    chainId: pool.chainId,
+                });
             } else {
-                setBasePrice(undefined);
+                setIntermediateBasePrice(undefined);
             }
             if (quoteTokenPrice) {
-                setQuotePrice(quoteTokenPrice);
-            } else if (
-                isETHorStakedEthToken(quoteAddr, chainId) &&
-                nativeTokenUsdPrice
-            ) {
-                setQuotePrice(nativeTokenUsdPrice);
+                setIntermediateQuotePrice({
+                    price: quoteTokenPrice,
+                    address: pool.quote,
+                    chainId: pool.chainId,
+                });
+            } else if (isETHorStakedEthToken(pool.quote, pool.chainId)) {
+                const fetchedTokenPrice =
+                    (await cachedFetchTokenPrice(ZERO_ADDRESS, chainId))
+                        ?.usdPrice || 1;
+
+                setIntermediateQuotePrice({
+                    price: fetchedTokenPrice,
+                    address: pool.quote,
+                    chainId: pool.chainId,
+                });
             } else if (poolPriceDisplayNum && baseTokenPrice) {
                 const estimatedQuotePrice =
                     baseTokenPrice * poolPriceDisplayNum;
-                setQuotePrice(estimatedQuotePrice);
+                setIntermediateQuotePrice({
+                    price: estimatedQuotePrice,
+                    address: pool.quote,
+                    chainId: pool.chainId,
+                });
             } else {
-                setQuotePrice(undefined);
+                setIntermediateQuotePrice(undefined);
             }
         })();
     }, [
-        baseAddr,
-        quoteAddr,
-        chainId,
+        pool.base,
+        pool.quote,
+        pool.chainId,
+        activeTradePoolStatsMatchesPool,
         activeTradePoolStats?.baseUsdPrice,
         activeTradePoolStats?.quoteUsdPrice,
-        nativeTokenUsdPrice === undefined,
         poolPriceDisplayNum,
     ]);
 
@@ -511,9 +574,9 @@ const useFetchPoolStats = (
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const poolLink = linkGenMarket.getFullURL({
-        chain: chainId,
-        tokenA: baseAddr,
-        tokenB: quoteAddr,
+        chain: pool.chainId,
+        tokenA: pool.base,
+        tokenB: pool.quote,
     });
 
     useEffect(() => {
