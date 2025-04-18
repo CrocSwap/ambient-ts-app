@@ -71,9 +71,8 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         STONE: 40,
         UNIETH: 40,
         MON: 39,
-        WMON: 39,
-        PLUME: 38,
-        PEPE: 0,
+        PLUME: 39,
+        WMON: 38,
     };
     const translatedSymbol = getTranslatedSymbol(tokenSymbol);
     const rank =
