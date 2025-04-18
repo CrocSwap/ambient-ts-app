@@ -32,8 +32,13 @@ function SwapExtraInfo(props: propsIF) {
 
     const isFuta = brand === 'futa';
 
-    const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
-        useContext(PoolContext);
+    const {
+        poolPriceDisplay,
+        isTradeDollarizationEnabled,
+        usdPrice,
+        basePrice,
+        quotePrice,
+    } = useContext(PoolContext);
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
@@ -63,8 +68,18 @@ function SwapExtraInfo(props: propsIF) {
         : '…';
 
     const finalPriceWithDenom = !isDenomBase
-        ? 1 / (priceImpact?.finalPrice || 1)
-        : priceImpact?.finalPrice || 1;
+        ? 1 /
+          ((priceImpact?.finalPrice || 1) /
+              (isTradeDollarizationEnabled && basePrice ? basePrice : 1))
+        : (priceImpact?.finalPrice || 1) *
+          (isTradeDollarizationEnabled && quotePrice ? quotePrice : 1);
+
+    const effectiveConversionRateInUsdOrToken = effectivePriceWithDenom
+        ? isTradeDollarizationEnabled
+            ? effectivePriceWithDenom *
+              (isDenomBase ? quotePrice || 1 : basePrice || 1)
+            : effectivePriceWithDenom
+        : 1;
 
     const finalPriceString = getFormattedNumber({ value: finalPriceWithDenom });
 
@@ -100,11 +115,11 @@ function SwapExtraInfo(props: propsIF) {
                 priceImpactNum !== undefined
                     ? isDenomBase
                         ? `${getFormattedNumber({
-                              value: effectivePriceWithDenom,
-                          })} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                              value: effectiveConversionRateInUsdOrToken,
+                          })} ${isTradeDollarizationEnabled ? 'USD' : quoteTokenSymbol} per ${baseTokenSymbol}`
                         : `${getFormattedNumber({
-                              value: effectivePriceWithDenom,
-                          })} ${baseTokenSymbol} per ${quoteTokenSymbol}`
+                              value: effectiveConversionRateInUsdOrToken,
+                          })} ${isTradeDollarizationEnabled ? 'USD' : baseTokenSymbol} per ${quoteTokenSymbol}`
                     : '...',
             placement: 'bottom',
         },
@@ -114,8 +129,8 @@ function SwapExtraInfo(props: propsIF) {
             data:
                 priceImpactNum !== undefined
                     ? isDenomBase
-                        ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                        : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`
+                        ? `${finalPriceString} ${isTradeDollarizationEnabled ? 'USD' : quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `${finalPriceString} ${isTradeDollarizationEnabled ? 'USD' : baseTokenSymbol} per ${quoteTokenSymbol}`
                     : '...',
             placement: 'bottom',
         },

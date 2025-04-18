@@ -37,6 +37,8 @@ export interface PoolContextIF {
     fdvOfDenomTokenDisplay: string | undefined;
     baseTokenFdvDisplay: string | undefined;
     quoteTokenFdvDisplay: string | undefined;
+    basePrice: number | undefined;
+    quotePrice: number | undefined;
 }
 
 export const PoolContext = createContext({} as PoolContextIF);
@@ -170,6 +172,8 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
         isTradeDollarizationEnabled,
         isDefaultTradeDollarization,
         setIsTradeDollarizationEnabled,
+        basePrice,
+        quotePrice,
     };
 
     return (
