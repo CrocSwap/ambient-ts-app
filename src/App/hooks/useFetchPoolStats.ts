@@ -273,27 +273,39 @@ const useFetchPoolStats = (
     const [basePrice, setBasePrice] = useState<number | undefined>();
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
+    const activeTradePoolStatsMatchesPool =
+        activeTradePoolStats?.base === pool.base &&
+        activeTradePoolStats?.quote === pool.quote &&
+        activeTradePoolStats?.chainId === pool.chainId;
+
     useEffect(() => {
         (async () => {
             let baseTokenPrice, quoteTokenPrice;
-            if (activeTradePoolStats?.baseUsdPrice) {
+
+            if (
+                activeTradePoolStatsMatchesPool &&
+                activeTradePoolStats?.baseUsdPrice
+            ) {
                 baseTokenPrice = activeTradePoolStats.baseUsdPrice;
             } else {
                 baseTokenPrice =
                     (await cachedFetchTokenPrice(pool.base, pool.chainId))
                         ?.usdPrice || 0.0;
             }
-            if (activeTradePoolStats?.quoteUsdPrice) {
+            if (
+                activeTradePoolStatsMatchesPool &&
+                activeTradePoolStats?.quoteUsdPrice
+            ) {
                 quoteTokenPrice = activeTradePoolStats.quoteUsdPrice;
             } else {
                 quoteTokenPrice =
                     (await cachedFetchTokenPrice(pool.quote, pool.chainId))
                         ?.usdPrice || 0.0;
             }
-
             if (baseTokenPrice) {
                 setBasePrice(baseTokenPrice);
             } else if (
+                activeTradePoolStatsMatchesPool &&
                 isETHorStakedEthToken(pool.base, pool.chainId) &&
                 nativeTokenUsdPrice
             ) {
@@ -323,7 +335,8 @@ const useFetchPoolStats = (
             }
         })();
     }, [
-        pool.base + pool.quote + pool.chainId,
+        activeTradePoolStatsMatchesPool,
+        pool,
         activeTradePoolStats?.baseUsdPrice,
         activeTradePoolStats?.quoteUsdPrice,
         nativeTokenUsdPrice,
