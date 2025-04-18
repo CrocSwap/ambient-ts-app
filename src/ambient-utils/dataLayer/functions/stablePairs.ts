@@ -215,6 +215,7 @@ export const STAKED_ETH_TOKENS = [
     MONAD_TESTNET_TOKENS.WETH,
     MONAD_TESTNET_TOKENS.WWETH,
     PLUME_TOKENS.WETH,
+    PLUME_TOKENS.pETH,
 ].map((x) => x.address.toLowerCase());
 
 export const PRIORITY_ETH_EQUIVALENT_TOKENS = [
