@@ -45,6 +45,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         NTBILL: 75,
         NYIELD: 75,
         NUSDY: 75,
+        NBASIS: 75,
         NELIXIR: 75,
         FRAX: 70,
         WBTC: 60,
@@ -57,6 +58,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         ETH: 50,
         WETH: 49,
         WEETH: 48,
+        PETH: 48,
         WSTETH: 45,
         WRSETH: 45,
         RSWETH: 45,
@@ -68,6 +70,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         PXETH: 45,
         STONE: 40,
         UNIETH: 40,
+        PLUME: 40,
         PEPE: 0,
     };
     const translatedSymbol = getTranslatedSymbol(tokenSymbol);
