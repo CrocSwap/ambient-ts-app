@@ -1,4 +1,4 @@
-import { memo, useRef, useState, useEffect } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
@@ -98,7 +98,7 @@ function TooltipComponent(props: TooltipComponentProps) {
 
     // For default tooltip style
     return (
-        <div ref={containerRef} style={{ zIndex: 9999 }}>
+        <div ref={containerRef}>
             {open && props.usePopups && isMobile && mobilePopup}
             <DefaultTooltip
                 title={props.title}
