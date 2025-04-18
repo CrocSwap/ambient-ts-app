@@ -110,4 +110,5 @@ export const plumeLegacy: NetworkIF = {
     tempestApiNetworkName: '',
     topPools,
     getGasPriceInGwei,
+    indexerTimeout: 2000,
 };
