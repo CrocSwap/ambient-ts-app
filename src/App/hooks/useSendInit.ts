@@ -68,8 +68,11 @@ export function useSendInit(
                     if (receipt) {
                         addReceipt(receipt);
                         removePendingTx(receipt.hash);
-                        if (cb) cb();
                         setIsTxCompletedInit(true);
+                        if (cb) {
+                            // wait for 1 second to avoid race condition
+                            setTimeout(cb, 1000);
+                        }
                     }
                 }
             } catch (error) {
