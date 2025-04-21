@@ -2,9 +2,9 @@ import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     getFormattedNumber,
-    isBtcPair,
     isDefaultDenomTokenExcludedFromUsdConversion,
-    isETHPair,
+    isPairBtcTokens,
+    isPairEthTokens,
     isUsdStableToken,
     isWbtcOrStakedBTCToken,
     uriToHttp,
@@ -49,8 +49,8 @@ export default function PoolCard(props: propsIF) {
             pool.quoteToken,
         );
 
-    const isEthStakedEthPair = isETHPair(pool.base, pool.quote, chainId);
-    const isPoolBtcPair = isBtcPair(pool.base, pool.quote);
+    const isEthStakedEthPair = isPairEthTokens(pool.base, pool.quote, chainId);
+    const isPoolBtcPair = isPairBtcTokens(pool.base, pool.quote);
 
     const usdPrice = !pool.isBaseTokenMoneynessGreaterOrEqual
         ? (pool.quoteUsdPrice || 0) * (pool.displayPrice || 0)
