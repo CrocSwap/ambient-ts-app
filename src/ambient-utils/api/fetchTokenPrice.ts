@@ -144,8 +144,8 @@ export const fetchTokenPrice = async (
                 };
             } else if (chain === '0x279f' && address === ZeroAddress) {
                 return {
-                    usdPrice: 14,
-                    usdPriceFormatted: 14,
+                    usdPrice: 8.4,
+                    usdPriceFormatted: 8.4,
                 };
             }
 
