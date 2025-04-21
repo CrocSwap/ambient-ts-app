@@ -5,8 +5,6 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
 import {
-    isBtcPair,
-    isETHPair,
     isStablePair,
     truncateDecimals,
 } from '../../../ambient-utils/dataLayer';
@@ -41,10 +39,11 @@ function RangeWidth(props: propsIF) {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
-    const shouldDisplaySub5PercentWidths =
-        isStablePair(tokenA.address, tokenB.address) ||
-        isETHPair(tokenA.address, tokenB.address, chainId) ||
-        isBtcPair(tokenA.address, tokenB.address);
+    const shouldDisplaySub5PercentWidths = isStablePair(
+        tokenA.address,
+        tokenB.address,
+        chainId,
+    );
 
     // values to generate balanced mode preset buttons
     // const balancedPresets: number[] = [5, 10, 25, 50, 100];

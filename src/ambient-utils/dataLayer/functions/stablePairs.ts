@@ -20,18 +20,6 @@ import { SWELL_TOKENS } from '../../constants/networks/swellMainnet';
 import { SWELL_SEPOLIA_TOKENS } from '../../constants/networks/swellSepolia';
 import { TokenIF } from '../../types';
 
-//       any sort of specific guaranteed relation between the tokens.
-export function isStablePair(addr1: string, addr2: string): boolean {
-    return isUsdStableToken(addr1) && isUsdStableToken(addr2);
-}
-
-// @return true if the token represents a USD-based stablecoin
-// NOTE: Decision of whether a token counts as stable or not is arbitrary and just at the
-//       discretion of the app authors
-export function isUsdStableToken(addr: string): boolean {
-    return STABLE_USD_TOKENS.includes(addr.toLowerCase());
-}
-
 export function isUsdcToken(addr: string): boolean {
     return USDC_TOKENS.includes(addr.toLowerCase());
 }
@@ -62,11 +50,7 @@ export function isETHorStakedEthToken(addr: string, chainId: string): boolean {
     );
 }
 
-export function isWbtcOrStakedBTCToken(addr: string): boolean {
-    return isWbtcToken(addr) || STAKED_BTC_TOKENS.includes(addr.toLowerCase());
-}
-
-export function isETHPair(
+export function isPairEthTokens(
     addr1: string,
     addr2: string,
     chainId: string,
@@ -77,8 +61,35 @@ export function isETHPair(
     );
 }
 
-export function isBtcPair(addr1: string, addr2: string): boolean {
+export function isWbtcOrStakedBTCToken(addr: string): boolean {
+    return isWbtcToken(addr) || STAKED_BTC_TOKENS.includes(addr.toLowerCase());
+}
+
+// @return true if the token represents a USD-based stablecoin
+// NOTE: Decision of whether a token counts as stable or not is arbitrary and just at the
+//       discretion of the app authors
+export function isUsdStableToken(addr: string): boolean {
+    return STABLE_USD_TOKENS.includes(addr.toLowerCase());
+}
+
+export function isPairUsdStableTokens(addr1: string, addr2: string): boolean {
+    return isUsdStableToken(addr1) && isUsdStableToken(addr2);
+}
+
+export function isPairBtcTokens(addr1: string, addr2: string): boolean {
     return isWbtcOrStakedBTCToken(addr1) && isWbtcOrStakedBTCToken(addr2);
+}
+
+export function isStablePair(
+    addr1: string,
+    addr2: string,
+    chainId: string,
+): boolean {
+    return (
+        isPairUsdStableTokens(addr1, addr2) ||
+        isPairEthTokens(addr1, addr2, chainId) ||
+        isPairBtcTokens(addr1, addr2)
+    );
 }
 
 export function isWbtcToken(addr: string): boolean {
@@ -183,6 +194,10 @@ export const ETH_TOKENS = [
     SCROLL_SEPOLIA_TOKENS.ETH,
     BLAST_SEPOLIA_TOKENS.ETH,
     BASE_SEPOLIA_TOKENS.ETH,
+    MONAD_TESTNET_TOKENS.ETH,
+    MONAD_TESTNET_TOKENS.WETH,
+    MONAD_TESTNET_TOKENS.WWETH,
+    PLUME_TOKENS.WETH,
 ];
 
 export const STAKED_ETH_TOKENS = [
@@ -211,10 +226,6 @@ export const STAKED_ETH_TOKENS = [
     SWELL_TOKENS.rsETH,
     SWELL_TOKENS.swETH,
     SWELL_TOKENS.rswETH,
-    MONAD_TESTNET_TOKENS.ETH,
-    MONAD_TESTNET_TOKENS.WETH,
-    MONAD_TESTNET_TOKENS.WWETH,
-    PLUME_TOKENS.WETH,
     PLUME_TOKENS.pETH,
 ].map((x) => x.address.toLowerCase());
 

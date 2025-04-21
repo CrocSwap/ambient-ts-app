@@ -284,6 +284,7 @@ function RangeActionModal(props: propsIF) {
     const isPairStable: boolean = isStablePair(
         baseTokenAddress,
         quoteTokenAddress,
+        chainId,
     );
 
     const persistedSlippage: number = isPairStable

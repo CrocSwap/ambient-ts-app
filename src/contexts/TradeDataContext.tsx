@@ -10,12 +10,7 @@ import {
     useState,
 } from 'react';
 import { getDefaultPairForChain } from '../ambient-utils/constants';
-import {
-    isBtcPair,
-    isETHPair,
-    isStablePair,
-    translateTokenSymbol,
-} from '../ambient-utils/dataLayer';
+import { isStablePair, translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { TokenIF } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
 import { TokenContext } from './TokenContext';
@@ -256,10 +251,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         baseAddress: string,
         quoteAddress: string,
     ) => {
-        const isPoolStable =
-            isStablePair(baseAddress, quoteAddress) ||
-            isETHPair(baseAddress, quoteAddress, chainId) ||
-            isBtcPair(baseAddress, quoteAddress);
+        const isPoolStable = isStablePair(baseAddress, quoteAddress, chainId);
         const defaultWidth = isPoolStable ? 0.5 : 10;
 
         return defaultWidth;
