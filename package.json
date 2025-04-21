@@ -71,7 +71,7 @@
         "@types/react-color": "^3.0.12",
         "@vitejs/plugin-react": "^4.3.4",
         "adm-zip": "^0.5.10",
-        "dotenv": "^16.4.7",
+        "dotenv": "^16.5.0",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^10.1.2",
         "eslint-import-resolver-typescript": "^4.2.5",
