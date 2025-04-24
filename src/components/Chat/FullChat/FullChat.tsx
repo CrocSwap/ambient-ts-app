@@ -99,6 +99,7 @@ interface FullChatPropsIF {
     setMessageForNotificationBubble: Dispatch<
         SetStateAction<Message | undefined>
     >;
+    showReactionPicker: boolean;
     reactionPicker: JSX.Element;
 }
 
@@ -917,7 +918,9 @@ function FullChat(props: FullChatPropsIF) {
                 }}
             />
             {props.rndShowPreviousMessages()}
-            {props.isChatOpen && props.showPicker && props.reactionPicker}
+            {props.isChatOpen &&
+                props.showReactionPicker &&
+                props.reactionPicker}
         </div>
     );
 }

@@ -137,13 +137,6 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const checkRegex = props.message.message.match(REGEX_EMOJI);
 
-    // if(checkRegex){
-    //     console.log(props.message.message);
-    //     console.log(props.message.message.length);
-    //     console.log('regex len', checkRegex.length);
-    //     console.log('....................');
-    // }
-
     const onlyEmoji =
         !REGEX_NOT_EMOJI.test(props.message.message) &&
         checkRegex != null &&
@@ -305,11 +298,7 @@ function SentMessagePanel(props: SentMessageProps) {
         if (!hasFound) {
             setHasUserReacted(false);
         }
-    }, [
-        props.message, // mesaj değiştiğinde
-        props.message.reactions, // reaksiyon listesi değiştiğinde
-        props.currentUser,
-    ]);
+    }, [props.message, props.message.reactions, props.currentUser]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);

@@ -14,6 +14,7 @@ import {
     RiArrowDownDoubleLine,
     RiArrowDownSLine,
     RiArrowUpDoubleLine,
+    RiCloseCircleFill,
 } from 'react-icons/ri';
 import { trimString } from '../../ambient-utils/dataLayer';
 import { PoolIF } from '../../ambient-utils/types';
@@ -89,6 +90,7 @@ function ChatPanel(props: propsIF) {
         setCurrentUserID,
     } = useContext(UserDataContext);
     const [ensName, setEnsName] = useState('');
+    const [isVerifying, setIsVerifying] = useState<boolean>(false);
     const [isVerified, setIsVerified] = useState(false);
     const [currentUser, setCurrentUser] = useState<string | undefined>(
         undefined,
@@ -272,12 +274,20 @@ function ChatPanel(props: propsIF) {
     const [lastScrolledMessage, setLastScrolledMessage] = useState('');
     const [lastScrollListenerActive, setLastScrollListenerActive] =
         useState(false);
+    const [pickerReady, setPickerReady] = useState(false);
     const lastScrollListenerRef = useRef<boolean>();
     lastScrollListenerRef.current = lastScrollListenerActive;
 
+    useEffect(() => {
+        if (showReactionPicker) {
+            const id = requestAnimationFrame(() => setPickerReady(true));
+            return () => cancelAnimationFrame(id);
+        }
+        setPickerReady(false);
+    }, [showReactionPicker]);
+
     useOnClickOutside(reactionsRef, () => {
-        console.log('tetiklendi');
-        setShowReactionPicker(false);
+        if (pickerReady) setShowReactionPicker(false);
     });
 
     const closeOnEscapeKeyDown = useCallback(
@@ -313,7 +323,7 @@ function ChatPanel(props: propsIF) {
         async function checkUser() {
             const data = await getID();
             if (!data || data.status === 'Not OK') {
-                // ...
+                // do nothing
             } else {
                 setCurrentUser(data.userData._id);
             }
@@ -390,13 +400,12 @@ function ChatPanel(props: propsIF) {
         e: React.MouseEvent<HTMLDivElement>,
         focusedMessage?: Message,
     ) => {
-        console.log('addReactionListener');
+        e.stopPropagation();
         setPickerBottomPos(
             window.innerHeight - (e.clientY + (isMobile ? 50 : 0)),
         );
         setFocusedMessage(focusedMessage);
         setShowReactionPicker(true);
-        console.log('setShowReactionPicker: ');
     };
     const addReactionEmojiPickListener = (data: EmojiClickData | string) => {
         if (focusedMessageRef.current && currentUser) {
@@ -419,14 +428,32 @@ function ChatPanel(props: propsIF) {
     }, []);
 
     useEffect(() => {
-        async function checkVerified() {
-            const data = await isUserVerified();
-            if (!data) return setIsVerified(false);
-            setIsVerified(data.verified);
+        async function checkUserAndVerification() {
+            if (!isChatOpen || !userAddress) {
+                setIsVerifying(false);
+                return;
+            }
+            setIsVerifying(true);
+
+            try {
+                const userDataResponse = await getID();
+                if (!userDataResponse || userDataResponse.status === 'Not OK') {
+                    setIsVerified(false);
+                } else {
+                    setCurrentUser(userDataResponse.userData._id);
+                    const verifiedResponse = await isUserVerified();
+                    setIsVerified(
+                        verifiedResponse ? verifiedResponse.verified : false,
+                    );
+                }
+            } catch (error) {
+                setIsVerified(false);
+            }
+            setIsVerifying(false);
         }
 
-        checkVerified();
-    }, [isChatOpen == true]);
+        checkUserAndVerification();
+    }, [isChatOpen, userAddress]);
 
     useEffect(() => {
         if (room == undefined) {
@@ -484,22 +511,6 @@ function ChatPanel(props: propsIF) {
             // scrollToBottom();
         }
     }, [lastMessage]);
-
-    useEffect(() => {
-        async function checkUser() {
-            const data = await getID();
-            if (!data || data.status === 'Not OK') {
-                setIsVerified(false);
-            } else {
-                setIsVerified(data.verified);
-                setCurrentUser(data.userData._id);
-            }
-        }
-
-        if (isChatOpen) {
-            checkUser();
-        }
-    }, [isChatOpen, userAddress]);
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
@@ -927,9 +938,13 @@ function ChatPanel(props: propsIF) {
             className={`${styles.reaction_picker_wrapper} ${showReactionPicker ? styles.active : ' '}`}
             ref={reactionsRef}
             style={{ bottom: pickerBottomPos }}
+            onClick={(e) => e.stopPropagation()}
         >
             {getEmojiPack(reactionCodes, addReactionEmojiPickListener, 30)}
-            {showReactionPicker.toString()}
+            <RiCloseCircleFill
+                onClick={() => setShowReactionPicker(false)}
+                className={styles.reaction_picker_close_button}
+            />
         </div>
     );
 
@@ -1461,6 +1476,7 @@ function ChatPanel(props: propsIF) {
                     }
                     setSelectedMessageForReply={setSelectedMessageForReply}
                     setIsReplyButtonPressed={setIsReplyButtonPressed}
+                    showReactionPicker={showReactionPicker}
                     reactionPicker={reactionPicker}
                 />
             </>
@@ -1538,6 +1554,10 @@ function ChatPanel(props: propsIF) {
                                 addReactionEmojiPickListener,
                                 30,
                             )}
+                            <RiCloseCircleFill
+                                onClick={() => setShowReactionPicker(false)}
+                                className={styles.reaction_picker_close_button}
+                            />
                         </div>
                     )}
                     {messageInput}

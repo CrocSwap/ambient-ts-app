@@ -5,7 +5,9 @@ import {
 import { PoolIF, TokenIF } from '../../../../ambient-utils/types';
 import TokenIcon from '../../TokenIcon/TokenIcon';
 
+import { useContext } from 'react';
 import { GrLineChart } from 'react-icons/gr';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './PoolRow.module.css';
@@ -18,6 +20,8 @@ interface propsIF {
 0;
 export default function PoolRow(props: propsIF) {
     const { pool, goToMarket, isExploreDollarizationEnabled } = props;
+
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
     // const [isHovered, setIsHovered] = useState(false);
 
@@ -124,11 +128,22 @@ export default function PoolRow(props: propsIF) {
         </p>
     );
 
+    const goToMarketPreservingTradeOrder = () => {
+        const shouldReverse =
+            tokenA.address.toLowerCase() === pool.quote.toLowerCase() ||
+            tokenB.address.toLowerCase() === pool.base.toLowerCase();
+
+        goToMarket(
+            shouldReverse ? pool.quote : pool.base,
+            shouldReverse ? pool.base : pool.quote,
+        );
+    };
+
     const buttonDisplay = (
         <div
             className={styles.tradeIcon}
             onClick={(event: React.MouseEvent) => {
-                goToMarket(pool.base, pool.quote);
+                goToMarketPreservingTradeOrder();
                 event?.stopPropagation();
             }}
         >
@@ -184,7 +199,7 @@ export default function PoolRow(props: propsIF) {
         <div
             className={styles.gridContainer}
             onClick={(event: React.MouseEvent) => {
-                goToMarket(pool.base, pool.quote);
+                goToMarketPreservingTradeOrder();
                 event?.stopPropagation();
             }}
         >

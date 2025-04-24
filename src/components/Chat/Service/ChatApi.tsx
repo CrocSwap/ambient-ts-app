@@ -292,6 +292,7 @@ const useChatApi = () => {
             return new Promise((resolve, reject) => {
                 const message =
                     verificationText + 'Wallet address:\n' + userAddress;
+
                 // signer.signMessage(message)
                 signer
                     .signMessage(

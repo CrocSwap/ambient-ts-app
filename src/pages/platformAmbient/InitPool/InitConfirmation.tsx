@@ -235,7 +235,8 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                 setActiveStep={setActiveStep}
                 isError={isError}
                 errorDisplay={
-                    isError && (
+                    isError &&
+                    activeStep !== steps.length && (
                         <Text
                             fontWeight='300'
                             fontSize='body'
@@ -259,7 +260,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                     )
                 }
             />
-            {isError && (
+            {isError && activeStep !== steps.length && (
                 <Button
                     idForDOM='retry_pool_initialization_button'
                     title='Try Again'

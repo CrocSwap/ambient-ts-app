@@ -36,6 +36,7 @@ import { TokenContext } from '../../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
+import { ethers } from 'ethers';
 import {
     estimateBalancedRangeAprFromPoolApr,
     estimateUnbalancedRangeAprFromPoolApr,
@@ -48,6 +49,7 @@ import {
     RANGE_BUFFER_MULTIPLIER_L2,
     RANGE_BUFFER_MULTIPLIER_MAINNET,
 } from '../../../../ambient-utils/constants';
+import { MAINNET_TOKENS } from '../../../../ambient-utils/constants/networks/ethereumMainnet';
 import { useApprove } from '../../../../App/functions/approve';
 import { useHandleRangeButtonMessage } from '../../../../App/hooks/useHandleRangeButtonMessage';
 import { AppStateContext } from '../../../../contexts';
@@ -221,6 +223,7 @@ function Range() {
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
         tokenB.address,
+        chainId,
     )
         ? mintSlippage.stable
         : mintSlippage.volatile;
@@ -485,6 +488,24 @@ function Range() {
         tokenBAllowance === undefined
             ? true
             : tokenBAllowance >= tokenBQtyCoveredByWalletBalance;
+
+    const isUsdtResetRequiredTokenA = useMemo(() => {
+        return (
+            tokenA.address.toLowerCase() ===
+                MAINNET_TOKENS.USDT.address.toLowerCase() &&
+            !!tokenAAllowance &&
+            tokenAAllowance < tokenAQtyCoveredByWalletBalance
+        );
+    }, [tokenA.address, tokenAAllowance, tokenAQtyCoveredByWalletBalance]);
+
+    const isUsdtResetRequiredTokenB = useMemo(() => {
+        return (
+            tokenB.address.toLowerCase() ===
+                MAINNET_TOKENS.USDT.address.toLowerCase() &&
+            !!tokenBAllowance &&
+            tokenBAllowance < tokenBQtyCoveredByWalletBalance
+        );
+    }, [tokenB.address, tokenBAllowance, tokenBQtyCoveredByWalletBalance]);
 
     // values if either token needs to be confirmed before transacting
 
@@ -1287,8 +1308,12 @@ function Range() {
                         style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
-                                ? `Approve ${tokenA.symbol}`
-                                : `${tokenA.symbol} Approval Pending`
+                                ? isUsdtResetRequiredTokenA
+                                    ? 'Reset USDT Approval (Step 1/2)'
+                                    : `Approve ${tokenA.symbol}`
+                                : isUsdtResetRequiredTokenA
+                                  ? 'USDT Approval Reset Pending...'
+                                  : `${tokenA.symbol} Approval Pending...`
                         }
                         disabled={isApprovalPending}
                         action={async () => {
@@ -1296,19 +1321,22 @@ function Range() {
                                 tokenA.address,
                                 tokenA.symbol,
                                 undefined,
-                                isActiveNetworkPlume
-                                    ? isTokenAPrimary
-                                        ? tokenAQtyCoveredByWalletBalance
-                                        : // add 1% buffer to avoid rounding errors
-                                          (tokenAQtyCoveredByWalletBalance *
-                                              101n) /
-                                          100n
-                                    : tokenABalance
-                                      ? fromDisplayQty(
-                                            tokenABalance,
-                                            tokenA.decimals,
-                                        )
-                                      : undefined,
+                                isUsdtResetRequiredTokenA
+                                    ? 0n
+                                    : isActiveNetworkPlume
+                                      ? isTokenAPrimary
+                                          ? tokenAQtyCoveredByWalletBalance
+                                          : // add 1% buffer to avoid rounding errors
+                                            (tokenAQtyCoveredByWalletBalance *
+                                                101n) /
+                                            100n
+                                      : ethers.MaxUint256,
+                                //  tokenABalance
+                                //   ? fromDisplayQty(
+                                //         tokenABalance,
+                                //         tokenA.decimals,
+                                //     )
+                                //   : undefined,
                             );
                         }}
                         flat={true}
@@ -1322,8 +1350,12 @@ function Range() {
                         style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
-                                ? `Approve ${tokenB.symbol}`
-                                : `${tokenB.symbol} Approval Pending`
+                                ? isUsdtResetRequiredTokenB
+                                    ? 'Reset USDT Approval (Step 1/2)'
+                                    : `Approve ${tokenB.symbol}`
+                                : isUsdtResetRequiredTokenB
+                                  ? 'USDT Approval Reset Pending...'
+                                  : `${tokenB.symbol} Approval Pending...`
                         }
                         disabled={isApprovalPending}
                         action={async () => {
@@ -1331,19 +1363,22 @@ function Range() {
                                 tokenB.address,
                                 tokenB.symbol,
                                 undefined,
-                                isActiveNetworkPlume
-                                    ? !isTokenAPrimary
-                                        ? tokenBQtyCoveredByWalletBalance
-                                        : // add 1% buffer to avoid rounding errors
-                                          (tokenBQtyCoveredByWalletBalance *
-                                              101n) /
-                                          100n
-                                    : tokenBBalance
-                                      ? fromDisplayQty(
-                                            tokenBBalance,
-                                            tokenB.decimals,
-                                        )
-                                      : undefined,
+                                isUsdtResetRequiredTokenB
+                                    ? 0n
+                                    : isActiveNetworkPlume
+                                      ? !isTokenAPrimary
+                                          ? tokenBQtyCoveredByWalletBalance
+                                          : // add 1% buffer to avoid rounding errors
+                                            (tokenBQtyCoveredByWalletBalance *
+                                                101n) /
+                                            100n
+                                      : ethers.MaxUint256,
+                                //  tokenBBalance
+                                //   ? fromDisplayQty(
+                                //         tokenBBalance,
+                                //         tokenB.decimals,
+                                //     )
+                                //   : undefined,
                             );
                         }}
                         flat={true}

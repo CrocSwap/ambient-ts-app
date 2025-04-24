@@ -1,19 +1,19 @@
 {
     "name": "ambient-ts-app",
-    "version": "3.4.6",
+    "version": "3.4.12",
     "private": true,
     "type": "module",
     "dependencies": {
-        "@crocswap-libs/sdk": "^2.0.10",
+        "@crocswap-libs/sdk": "^2.0.11",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
         "@mui/material": "^6.4.3",
-        "@reown/appkit": "^1.7.1",
-        "@reown/appkit-adapter-ethers": "^1.7.1",
+        "@reown/appkit": "^1.7.3",
+        "@reown/appkit-adapter-ethers": "^1.7.3",
         "d3": "^7.4.4",
         "d3fc": "^15.2.4",
-        "emoji-picker-react": "^4.11.1",
+        "emoji-picker-react": "^4.12.2",
         "ethers": "^6.13.5",
         "framer-motion": "4.1.17",
         "modern-screenshot": "^4.6.0",
@@ -73,7 +73,7 @@
         "adm-zip": "^0.5.10",
         "dotenv": "^16.4.7",
         "eslint": "^7.32.0",
-        "eslint-config-prettier": "^10.0.1",
+        "eslint-config-prettier": "^10.1.2",
         "eslint-import-resolver-typescript": "^4.2.5",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-prettier": "^4.0.0",
@@ -86,8 +86,8 @@
         "rollup-plugin-visualizer": "^5.12.0",
         "superagent": "^10.0.0",
         "typescript": "^5.8.2",
-        "vite": "^6.2.5",
+        "vite": "^6.2.6",
         "vite-plugin-checker": "^0.9.1",
-        "vitest": "^3.0.9"
+        "vitest": "^3.1.1"
     }
 }

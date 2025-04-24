@@ -23,6 +23,7 @@ import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitT
 import TradeModuleHeader from '../../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../../components/Trade/TradeModules/TradeModuleSkeleton';
 
+import { ethers } from 'ethers';
 import {
     DISABLE_WORKAROUNDS,
     GAS_DROPS_ESTIMATE_LIMIT_FROM_DEX,
@@ -35,6 +36,7 @@ import {
     NUM_GWEI_IN_WEI,
     ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
+import { MAINNET_TOKENS } from '../../../../ambient-utils/constants/networks/ethereumMainnet';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import {
     pinTickToTickLower,
@@ -237,6 +239,15 @@ export default function Limit() {
         tokenAAllowance === undefined
             ? true
             : tokenAAllowance >= tokenAQtyCoveredByWalletBalance;
+
+    const isUsdtResetRequired = useMemo(() => {
+        return (
+            tokenA.address.toLowerCase() ===
+                MAINNET_TOKENS.USDT.address.toLowerCase() &&
+            !!tokenAAllowance &&
+            tokenAAllowance < tokenAQtyCoveredByWalletBalance
+        );
+    }, [tokenA.address, tokenAAllowance, tokenAQtyCoveredByWalletBalance]);
 
     const isTokenAWalletBalanceSufficient =
         fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=
@@ -1082,8 +1093,12 @@ export default function Limit() {
                         style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
-                                ? `Approve ${tokenA.symbol}`
-                                : `${tokenA.symbol} Approval Pending`
+                                ? isUsdtResetRequired
+                                    ? 'Reset USDT Approval (Step 1/2)'
+                                    : `Approve ${tokenA.symbol}`
+                                : isUsdtResetRequired
+                                  ? 'USDT Approval Reset Pending...'
+                                  : `${tokenA.symbol} Approval Pending...`
                         }
                         disabled={isApprovalPending}
                         action={async () => {
@@ -1091,19 +1106,22 @@ export default function Limit() {
                                 tokenA.address,
                                 tokenA.symbol,
                                 undefined,
-                                isActiveNetworkPlume
-                                    ? isTokenAPrimary
-                                        ? tokenAQtyCoveredByWalletBalance
-                                        : // add 1% buffer to avoid rounding errors
-                                          (tokenAQtyCoveredByWalletBalance *
-                                              101n) /
-                                          100n
-                                    : tokenABalance
-                                      ? fromDisplayQty(
-                                            tokenABalance,
-                                            tokenA.decimals,
-                                        )
-                                      : undefined,
+                                isUsdtResetRequired
+                                    ? 0n
+                                    : isActiveNetworkPlume
+                                      ? isTokenAPrimary
+                                          ? tokenAQtyCoveredByWalletBalance
+                                          : // add 1% buffer to avoid rounding errors
+                                            (tokenAQtyCoveredByWalletBalance *
+                                                101n) /
+                                            100n
+                                      : ethers.MaxUint256,
+                                // tokenABalance
+                                //   ? fromDisplayQty(
+                                //         tokenABalance,
+                                //         tokenA.decimals,
+                                //     )
+                                //   : undefined,
                             );
                         }}
                         flat={true}

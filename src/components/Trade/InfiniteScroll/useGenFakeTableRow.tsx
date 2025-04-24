@@ -41,12 +41,16 @@ const useGenFakeTableRow = () => {
         useContext(CachedDataContext);
 
     const {
-        activeNetwork: { chainId, poolIndex },
+        activeNetwork: { chainId, poolIndex, indexerTimeout },
     } = useContext(AppStateContext);
 
     const getDelayTime = () => {
         // can be used to test if indexed data overrides pendings correctly
         const factor = 1;
+
+        if (indexerTimeout) {
+            return indexerTimeout * factor;
+        }
 
         switch (chainId) {
             case '0x1': // eth-mainnet

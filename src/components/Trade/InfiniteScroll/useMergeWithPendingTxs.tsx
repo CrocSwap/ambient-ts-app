@@ -23,6 +23,7 @@ const useMergeWithPendingTxs = (props: propsIF) => {
         recentlyUpdatedPositions,
         prevPositionHashes,
         handleIndexedPosition,
+        pendingRecentlyUpdatedPositions,
     } = useContext(GraphDataContext);
 
     const { removePendingTxIfs } = useContext(ReceiptContext);
@@ -106,6 +107,23 @@ const useMergeWithPendingTxs = (props: propsIF) => {
                 (e) => !recentlyUpdatedHashes.has(e.positionHash),
             );
 
+            // placeholder list check with infinitescroll data
+            pendingRecentlyUpdatedPositions.forEach((e) => {
+                const matchingOrder = (data as LimitOrderIF[]).find(
+                    (order) => order.positionHash === e.positionHash,
+                );
+                if (matchingOrder) {
+                    if (
+                        matchingOrder.liqRefreshTime &&
+                        matchingOrder.liqRefreshTime > e.timestamp / 1000
+                    ) {
+                        removePendingTxIfs(e.positionHash);
+                        handleIndexedPosition(e.positionHash);
+                        return;
+                    }
+                }
+            });
+
             return [
                 ...recentlyUpdatedToShow.reverse(),
                 ...clearedData,
@@ -114,6 +132,23 @@ const useMergeWithPendingTxs = (props: propsIF) => {
             clearedData = (data as PositionIF[]).filter(
                 (e) => !recentlyUpdatedHashes.has(e.positionId),
             );
+
+            // placeholder list check with infinitescroll data
+            pendingRecentlyUpdatedPositions.forEach((e) => {
+                const matchingPosition = (data as PositionIF[]).find(
+                    (position) => position.positionId === e.positionHash,
+                );
+                if (matchingPosition) {
+                    if (
+                        matchingPosition.liqRefreshTime &&
+                        matchingPosition.liqRefreshTime > e.timestamp / 1000
+                    ) {
+                        removePendingTxIfs(e.positionHash);
+                        handleIndexedPosition(e.positionHash);
+                        return;
+                    }
+                }
+            });
 
             return [
                 ...recentlyUpdatedToShow.reverse(),
