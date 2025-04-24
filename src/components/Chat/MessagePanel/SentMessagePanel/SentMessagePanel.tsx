@@ -877,6 +877,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                             onClick={goToProfilePage}
                                         >
                                             {showName &&
+                                                !props.isCurrentUser &&
                                                 getShownName(props.message)}
                                         </span>
                                         {showAvatar &&
