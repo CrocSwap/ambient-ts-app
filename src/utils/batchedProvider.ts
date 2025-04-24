@@ -104,6 +104,7 @@ type CachedResponse = {
 };
 
 export class BatchedJsonRpcProvider extends JsonRpcProvider {
+    url: string;
     multicall: Multicall;
     payloads: Array<Payload>;
     drainTimer: null | Timer;
@@ -121,8 +122,10 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         foreverContractMethods: string[];
         excludeContractMethods: string[];
     };
-    constructor(url: string, network?: number, options?: any) {
+    GETGatewayClosed: boolean;
+    constructor(url: string, network: number, options?: any) {
         super(url, network, options);
+        this.url = url;
         this.multicall = new Multicall(this);
         this.payloads = [];
         this.drainTimer = null;
@@ -145,6 +148,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
             ], // ERC20 methods: decimals, name, symbol, totalSupply
             excludeContractMethods: ['0x4a6c44bf'], // calcImpact
         };
+        this.GETGatewayClosed = false;
     }
 
     async send(method: string, params: any[]): Promise<any> {
@@ -170,20 +174,30 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
             ) {
                 return super.send(method, params);
             }
-            return this.scheduleForBatch(
-                callParams,
-                this.pickTTL(method, params),
-            );
+
+            const cached = this.getFromCache('eth_call', callParams);
+            if (cached) return cached;
+
+            const ttlMsec = this.pickTTL(method, params);
+            if (this.canSendAsGet('eth_call', callParams)) {
+                try {
+                    const response = await this.sendAsGet(
+                        'eth_call',
+                        callParams,
+                    );
+                    this.saveInCache('eth_call', callParams, response, ttlMsec);
+                    return response;
+                } catch (_) {
+                    // It should be always up, so don't keep retrying if it's broken
+                    this.GETGatewayClosed = true;
+                }
+            }
+            return this.scheduleForBatch(callParams, ttlMsec);
         }
     }
 
     scheduleForBatch(call: EthCallWithBlockTag, ttlMsec: number): Promise<any> {
         return new Promise((resolve, reject) => {
-            const cached = this.getFromCache('eth_call', call);
-            if (cached) {
-                resolve(cached);
-                return;
-            }
             const payload: JsonRpcPayload = {
                 id: this.nextId++,
                 method: 'eth_call',
@@ -221,9 +235,99 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
     ): Promise<any> {
         const cachedResponse = this.getFromCache(method, params);
         if (cachedResponse) return cachedResponse;
+        if (this.canSendAsGet(method, params)) {
+            try {
+                const response = await this.sendAsGet(method, params);
+                this.saveInCache(method, params, response, ttlMsec);
+                return response;
+            } catch (err) {
+                // It should be always up, so don't keep retrying if it's broken
+                console.warn(
+                    'GET gateway is down, will not retry',
+                    method,
+                    params,
+                    err,
+                );
+                this.GETGatewayClosed = true;
+            }
+        }
         const response = await super.send(method, params);
         this.saveInCache(method, params, response, ttlMsec);
         return response;
+    }
+
+    async sendAsGet(method: string, params: any[]): Promise<any> {
+        const url = new URL(this.url);
+        url.searchParams.append('method', method);
+        // Add params to the URL for methods that need it
+        switch (method) {
+            case 'eth_call':
+                const callParams = params as EthCallWithBlockTag;
+                url.searchParams.append('to', callParams[0].to);
+                url.searchParams.append('data', callParams[0].data);
+                if (callParams[1] != 'latest')
+                    url.searchParams.append('block', callParams[1]);
+                break;
+            case 'eth_getBlockByNumber':
+                url.searchParams.append('block', params[0]);
+                url.searchParams.append('full', params[1] ? 'true' : 'false');
+                break;
+        }
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok)
+            throw new Error(
+                `HTTP error! status: ${response.status} ${response.statusText}`,
+            );
+        const data = await response.json();
+        if (data.error !== undefined)
+            throw new Error(
+                `Error in GET response: ${data.error.message} ${data.error.code}`,
+            );
+        return data.result;
+    }
+
+    canSendAsGet(method: string, params: any[]): boolean {
+        if (
+            !(
+                this.url.includes('ambindexer.net') ||
+                this.url.includes('127.0.0.1') ||
+                this.url.includes('localhost')
+            ) ||
+            this.GETGatewayClosed
+        )
+            return false;
+
+        if (
+            [
+                'eth_blockNumber',
+                'eth_getBlockByNumber',
+                'eth_gasPrice',
+                'eth_maxPriorityFeePerGas',
+                'eth_accounts',
+                'eth_chainId',
+            ].includes(method)
+        )
+            return true;
+
+        if (method == 'eth_call') {
+            const callParams = params as EthCallWithBlockTag;
+            if (callParams[1] != 'latest') return false;
+            if (
+                [
+                    '0x313ce567',
+                    '0x06fdde03',
+                    '0x95d89b41',
+                    '0x18160ddd',
+                ].includes(callParams[0].data.slice(0, 10))
+            )
+                return true;
+        }
+        return false;
     }
 
     getFromCache(method: string, params: any[]): any | undefined {
