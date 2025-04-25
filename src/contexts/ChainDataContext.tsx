@@ -5,6 +5,7 @@ import {
     Dispatch,
     ReactNode,
     SetStateAction,
+    useCallback,
     useContext,
     useEffect,
     useMemo,
@@ -238,7 +239,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isGasPriceFetchManuallyTriggerered,
     ]);
 
-    async function pollBlockNum(): Promise<void> {
+    const pollBlockNum = useCallback(async () => {
         try {
             const lastBlockNumber = await fetchBlockNumber(provider);
             if (lastBlockNumber > 0) {
@@ -252,7 +253,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             setRpcNodeStatus('inactive');
             isPrimaryRpcNodeInactive.current = true;
         }
-    }
+    }, [provider]);
 
     useEffect(() => {
         if (!isUserOnline) return;
@@ -265,7 +266,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
         // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(interval);
-    }, [isUserOnline, chainId, BLOCK_NUM_POLL_MS, blockPollingUrl]);
+    }, [isUserOnline, chainId, BLOCK_NUM_POLL_MS, provider]);
 
     const [gcgoPoolList, setGcgoPoolList] = useState<PoolIF[] | undefined>();
 
