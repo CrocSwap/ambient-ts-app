@@ -4,6 +4,7 @@ import { isStablePair } from '../../../ambient-utils/dataLayer';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { FlexContainer, Text } from '../../../styled/Common';
@@ -33,10 +34,13 @@ interface propsIF {
 export default function TransactionSettingsModal(props: propsIF) {
     const { module, slippage, dexBalSwap, onClose, bypassConfirm } = props;
     const { tokenA, tokenB } = useContext(TradeDataContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
 
-    const isPairStable = isStablePair(tokenA.address, tokenB.address);
+    const isPairStable = isStablePair(tokenA.address, tokenB.address, chainId);
 
     const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
         event.code === 'Enter' && updateSettings();
