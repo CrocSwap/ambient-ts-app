@@ -240,7 +240,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     async function pollBlockNum(): Promise<void> {
         try {
-            const lastBlockNumber = await fetchBlockNumber(blockPollingUrl);
+            const lastBlockNumber = await fetchBlockNumber(provider);
             if (lastBlockNumber > 0) {
                 setLastBlockNumber(lastBlockNumber);
                 setRpcNodeStatus('active');
