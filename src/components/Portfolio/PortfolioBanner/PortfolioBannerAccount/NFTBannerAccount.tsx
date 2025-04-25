@@ -88,6 +88,10 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
     const isMobile = useMediaQuery('(max-width: 800px)');
 
+    const isTablet = useMediaQuery(
+        '(min-width: 768px) and (max-width: 1024px)',
+    );
+
     const [nftContractName, setNftContractName] = useState<
         { name: string; address: string }[]
     >([]);
@@ -358,7 +362,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
     const defaultAvatar = (walletID: string, nftData: NftDataIF) => {
         return (
-            <NFTImgContainer isMobile={isMobile}>
+            <NFTImgContainer isMobile={isMobile} isTablet={isTablet}>
                 <SelectedJazzIcon
                     selected={
                         isSelectThumbnail
@@ -629,7 +633,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
             </div>
 
             {!isLoading ? (
-                <ScrollableContainer isMobile={isMobile}>
+                <ScrollableContainer isMobile={isMobile} isTablet={isTablet}>
                     <NFTDisplay
                         template={
                             isSelectThumbnail && nftThumbnailCount
@@ -645,6 +649,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                           item.thumbnailUrl)) && (
                                       <NFTImgContainer
                                           isMobile={isMobile}
+                                          isTablet={isTablet}
                                           key={index}
                                           id='continer'
                                       >

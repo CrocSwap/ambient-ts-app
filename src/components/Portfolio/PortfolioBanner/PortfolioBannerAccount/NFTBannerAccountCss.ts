@@ -72,6 +72,7 @@ const NFTDisplay = styled.div<{
 
 const NFTImgContainer = styled.div<{
     isMobile?: boolean;
+    isTablet?: boolean;
 }>`
     position: relative;
     display: flex;
@@ -359,6 +360,7 @@ const SaveButton = styled.div<{ isActive: number }>`
 
 const ScrollableContainer = styled.div<{
     isMobile?: boolean;
+    isTablet?: boolean;
 }>`
     position: relative;
     flex-grow: 1;
