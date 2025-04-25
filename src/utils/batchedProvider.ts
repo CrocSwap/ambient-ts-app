@@ -113,14 +113,16 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         batchMaxCount: number;
         batchMaxSizeBytes: number;
         batchStallTimeMs: number;
+        excludeContractMethods: string[];
     };
     cachedCalls: Map<string, CachedResponse>;
     cacheOptions: {
         ethCallTtlMsec: number;
         otherCallTtlMsec: number;
+        fastCallTtlMsec: number;
         foreverMethods: string[];
         foreverContractMethods: string[];
-        excludeContractMethods: string[];
+        fastContractMethods: string[]; // These methods are cached for `fastCallTtlMsec`
     };
     GETGatewayClosed: boolean;
     constructor(url: string, network: number, options?: any) {
@@ -134,11 +136,13 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
             batchMaxCount: 40,
             batchMaxSizeBytes: 1000000,
             batchStallTimeMs: 50,
+            excludeContractMethods: ['0x4a6c44bf'], // calcImpact
         };
         this.cachedCalls = new Map();
         this.cacheOptions = {
             ethCallTtlMsec: 3000,
             otherCallTtlMsec: 3000,
+            fastCallTtlMsec: 1000,
             foreverMethods: ['eth_chainId', 'eth_accounts'],
             foreverContractMethods: [
                 '0x313ce567',
@@ -146,7 +150,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                 '0x95d89b41',
                 '0x18160ddd',
             ], // ERC20 methods: decimals, name, symbol, totalSupply
-            excludeContractMethods: ['0x4a6c44bf'], // calcImpact
+            fastContractMethods: ['0x4a6c44bf'], // calcImpact
         };
         this.GETGatewayClosed = false;
     }
@@ -155,10 +159,14 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         if (!this.multicall.initialized) {
             this.multicall.initialize();
         }
+
         if (
             method == 'eth_chainId' ||
             method == 'eth_accounts' ||
             method != 'eth_call' ||
+            this.batchOptions.excludeContractMethods.some((m) =>
+                params[0].data.startsWith(m),
+            ) ||
             !this.multicall.ready
         ) {
             return this.sendCached(
@@ -360,11 +368,11 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
             return 999999999;
         } else if (method == 'eth_call') {
             if (
-                this.cacheOptions.excludeContractMethods.some((m) =>
+                this.cacheOptions.fastContractMethods.some((m) =>
                     params[0].data.startsWith(m),
                 )
             ) {
-                return 0;
+                return this.cacheOptions.fastCallTtlMsec;
             } else if (
                 this.cacheOptions.foreverContractMethods.some((m) =>
                     params[0].data.startsWith(m),
