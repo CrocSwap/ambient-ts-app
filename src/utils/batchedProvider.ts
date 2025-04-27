@@ -266,11 +266,13 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
 
     async sendAsGet(method: string, params: any[]): Promise<any> {
         const url = new URL(this.url);
-        url.searchParams.append('method', method);
         // Add params to the URL for methods that need it
+        url.pathname += url.pathname.endsWith('/') ? '' : '/';
+        let path = `get/${method}`;
         switch (method) {
             case 'eth_call':
                 const callParams = params as EthCallWithBlockTag;
+                path = `call/${callParams[0].data.slice(0, 10)}`;
                 url.searchParams.append('to', callParams[0].to);
                 url.searchParams.append('data', callParams[0].data);
                 if (callParams[1] != 'latest')
@@ -281,6 +283,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                 url.searchParams.append('full', params[1] ? 'true' : 'false');
                 break;
         }
+        url.pathname += path;
         const response = await fetch(url, {
             method: 'GET',
             headers: {
@@ -327,10 +330,13 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
             if (callParams[1] != 'latest') return false;
             if (
                 [
-                    '0x313ce567',
-                    '0x06fdde03',
-                    '0x95d89b41',
-                    '0x18160ddd',
+                    '0x313ce567', // decimals
+                    '0x06fdde03', // name
+                    '0x95d89b41', // symbol
+                    '0x18160ddd', // totalSupply
+                    '0xf8c7efa7', // queryPrice
+                    '0x8e56c1c1', // queryCurve
+                    '0xdc91a6ad', // queryCurveTick
                 ].includes(callParams[0].data.slice(0, 10))
             )
                 return true;
