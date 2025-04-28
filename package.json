@@ -31,7 +31,7 @@
         "react-router-dom": "^6.27.0",
         "react-transition-group": "^4.4.2",
         "react-use-websocket": "^4.13.0",
-        "styled-components": "^6.1.15",
+        "styled-components": "^6.1.17",
         "web-vitals": "^2.1.0"
     },
     "scripts": {
