@@ -154,6 +154,7 @@
     outline: none;
 }
 
+.input_text_mobile,
 .input_text {
     width: 212px;
     height: 22px;
@@ -162,7 +163,6 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: var(--body-size);
     line-height: var(--body-lh);
     display: flex;
     align-items: center;
@@ -179,6 +179,14 @@
     order: 0;
     flex-grow: 1;
 }
+.input_text {
+    font-size: var(--body-size);
+}
+
+.input_text_mobile {
+    font-size: 16px;
+}
+
 .send_message_button {
     margin-bottom: -3px;
 }

@@ -774,7 +774,9 @@ export default function MessageInput(props: MessageInputProps) {
                             className={
                                 !isUserConnected
                                     ? styles.input_text_not_allowed
-                                    : styles.input_text
+                                    : props.isMobile
+                                      ? styles.input_text_mobile
+                                      : styles.input_text
                             }
                             onKeyDown={_handleKeyDown}
                             onInput={handleInputChange}
