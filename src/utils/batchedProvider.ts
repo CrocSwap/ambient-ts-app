@@ -286,9 +286,6 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         url.pathname += path;
         const response = await fetch(url, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
         });
         if (!response.ok)
             throw new Error(
