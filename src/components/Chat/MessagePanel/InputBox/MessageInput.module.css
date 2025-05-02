@@ -181,6 +181,7 @@
 }
 .send_message_button {
     margin-bottom: -3px;
+    
 }
 
 .not_LoggedIn_send_message_button {
@@ -388,12 +389,17 @@ section[class^='emoji-scroll-wrapper'] {
 
     .send_message_button,
     .not_LoggedIn_send_message_button {
-        box-shadow: 0px 0px 20px 0px rgba(115, 113, 252, 1);
-        background: var(--accent1);
+       
         padding: 0.2rem;
         border-radius: 0.4rem;
         margin-left: 0.5rem;
         margin-top: -0.2rem;
+        -webkit-tap-highlight-color: transparent;
+        transition: 
+        box-shadow 0.2s ease, 
+        background-color 0.2s ease;
+      touch-action: manipulation;
+        
     }
 
     .not_LoggedIn_send_message_button {
@@ -401,6 +407,14 @@ section[class^='emoji-scroll-wrapper'] {
         background: #4a6081;
         cursor: not-allowed !important;
     }
+
+   
+      .send_message_button:active {
+        box-shadow: 0 0 20px 0 rgba(115, 113, 252, 1);
+        background-color: var(--accent1);
+      }
+
+    
 
     .send_message_button svg,
     .not_LoggedIn_send_message_button svg {
