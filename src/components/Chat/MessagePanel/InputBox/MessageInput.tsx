@@ -784,11 +784,6 @@ export default function MessageInput(props: MessageInputProps) {
                             onClick={handleInputClick}
                             onDoubleClick={handleInputDoubleClick}
                             autoComplete={'off'}
-                            // tabIndex={-1}
-                            // autoFocus={
-                            //     (props.appPage && !props.isMobile) ||
-                            //     props.isReplyButtonPressed
-                            // }
                             ref={inputRef}
                         />
                         {inputLength >= 100 && (
