@@ -24,7 +24,6 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 const useFetchPoolStats = (
     pool: PoolIF,
     poolList: PoolIF[] | undefined,
-    isTradePair = false,
     enableTotalSupply = false,
     didUserFlipDenom = false,
 ): PoolStatIF => {
@@ -43,6 +42,21 @@ const useFetchPoolStats = (
 
     const { setPoolPriceNonDisplay, setLimitTick } =
         useContext(TradeDataContext);
+
+    const [intermediatePoolPrice, setIntermediatePoolPrice] = useState<
+        | {
+              price: number | undefined;
+              baseAddress: string;
+              quoteAddress: string;
+              chainId: string;
+          }
+        | undefined
+    >();
+
+    const [
+        intermediatePoolPriceNotActivePool,
+        setIntermediatePoolPriceNotActivePool,
+    ] = useState<boolean>(false);
 
     const [localPoolPriceNonDisplay, setLocalPoolPriceNonDisplay] = useState<
         [string, number] | undefined
@@ -112,13 +126,10 @@ const useFetchPoolStats = (
         ? pool?.quoteToken.logoURI
         : pool?.baseToken.logoURI;
 
-    const poolPriceCacheTime = isTradePair
-        ? isUserIdle || isActiveNetworkMonad
+    const poolPriceCacheTime =
+        isUserIdle || isActiveNetworkMonad
             ? Math.floor(Date.now() / 30000) // 30 second interval if  idle
-            : Math.floor(Date.now() / 5000) // 5 second cache for trade pair
-        : isUserIdle || isActiveNetworkMonad
-          ? Math.floor(Date.now() / 60000) // 60 second interval if  idle
-          : Math.floor(Date.now() / 10000); // 10 second interval if not idle
+            : Math.floor(Date.now() / 5000); // 5 second cache for trade pair
 
     const analyticsServerShowsPoolInitialized =
         activeTradePoolStats !== undefined &&
@@ -139,27 +150,40 @@ const useFetchPoolStats = (
                     !crocEnv ||
                     (await crocEnv.context).chain.chainId !== pool.chainId ||
                     pool.chainId !== chainId
-                )
+                ) {
                     return;
+                }
 
                 if (analyticsServerShowsPoolInitialized) {
                     setIsPoolInitialized(true);
                 }
 
-                const cachedSpotPrice: number | undefined = await Promise.race<
+                async function getSpotPriceWithImmediateRetry(): Promise<
                     number | undefined
-                >([
-                    cachedQuerySpotPrice(
-                        crocEnv,
-                        pool.base,
-                        pool.quote,
-                        pool.chainId,
-                        poolPriceCacheTime,
-                    ),
-                    new Promise<number | undefined>((resolve) =>
-                        setTimeout(() => resolve(undefined), 2000),
-                    ), // 2-second timeout
-                ]);
+                > {
+                    while (true && crocEnv) {
+                        const result = await Promise.race([
+                            cachedQuerySpotPrice(
+                                crocEnv,
+                                pool.base,
+                                pool.quote,
+                                pool.chainId,
+                                poolPriceCacheTime,
+                            ),
+                            new Promise<number | undefined>((resolve) =>
+                                setTimeout(() => {
+                                    resolve(undefined);
+                                }, 5000),
+                            ),
+                        ]);
+                        if (result !== undefined) return result; // Success, return value
+                        // If result is undefined, loop continues and retries immediately
+                        await new Promise((res) => setTimeout(res, 1000)); // Added delay
+                    }
+                }
+
+                const cachedSpotPrice: number | undefined =
+                    await getSpotPriceWithImmediateRetry();
 
                 const spotPrice =
                     cachedSpotPrice !== undefined
@@ -168,39 +192,13 @@ const useFetchPoolStats = (
                           ? activeTradePoolStats.lastPriceSwap
                           : undefined;
 
-                if (spotPrice) {
-                    setIsPoolInitialized(true);
-                    setLocalPoolPriceNonDisplay([
-                        pool.base + pool.quote,
-                        spotPrice,
-                    ]);
-
-                    if (isTradePair && spotPrice) {
-                        setPoolPriceNonDisplay(spotPrice);
-                    }
-                    const displayPrice = toDisplayPrice(
-                        spotPrice,
-                        pool.baseToken.decimals,
-                        pool.quoteToken.decimals,
-                    );
-
-                    setPoolPriceDisplayNum(displayPrice);
-
-                    const displayPriceWithInversion = shouldInvertDisplay
-                        ? 1 / displayPrice
-                        : displayPrice;
-
-                    const displayPriceWithFormatting = getFormattedNumber({
-                        value: displayPriceWithInversion,
+                if (spotPrice !== intermediatePoolPrice?.price) {
+                    setIntermediatePoolPrice({
+                        price: spotPrice,
+                        baseAddress: pool.base,
+                        quoteAddress: pool.quote,
+                        chainId: pool.chainId,
                     });
-                    setPoolPriceDisplay(displayPriceWithFormatting);
-                } else {
-                    setPoolPriceDisplay(undefined);
-                    setLocalPoolPriceNonDisplay(undefined);
-                    setPoolPriceDisplayNum(undefined);
-                    if (!analyticsServerShowsPoolInitialized) {
-                        setIsPoolInitialized(false);
-                    }
                 }
             })();
         }
@@ -208,11 +206,14 @@ const useFetchPoolStats = (
         isServerEnabled,
         chainId,
         crocEnv,
-        pool.base + pool.quote + pool.chainId,
+        pool.base,
+        pool.quote,
+        pool.chainId,
         lastBlockNumber !== 0,
         poolPriceCacheTime,
         isTradeRoute,
         analyticsServerShowsPoolInitialized,
+        intermediatePoolPriceNotActivePool,
     ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
@@ -267,6 +268,8 @@ const useFetchPoolStats = (
         setIsPoolPriceChangePositive(undefined);
         setPoolFees24h(undefined);
         setApr(undefined);
+        setIntermediatePoolPriceNotActivePool(false);
+        setIntermediatePoolPrice(undefined);
         if (!location.pathname.includes('limitTick')) {
             setLimitTick(undefined);
         }
@@ -287,19 +290,70 @@ const useFetchPoolStats = (
     useEffect(() => {
         if (
             intermediateBasePrice &&
-            intermediateBasePrice.address === pool.base &&
+            intermediateBasePrice.address.toLowerCase() ===
+                pool.base.toLowerCase() &&
             intermediateBasePrice.chainId === pool.chainId
         ) {
             setBasePrice(intermediateBasePrice.price);
         }
         if (
             intermediateQuotePrice &&
-            intermediateQuotePrice.address === pool.quote &&
+            intermediateQuotePrice.address.toLowerCase() ===
+                pool.quote.toLowerCase() &&
             intermediateQuotePrice.chainId === pool.chainId
         ) {
             setQuotePrice(intermediateQuotePrice.price);
         }
-    }, [intermediateBasePrice, intermediateQuotePrice, pool]);
+        if (
+            intermediatePoolPrice?.baseAddress.toLowerCase() ===
+                pool.base.toLowerCase() &&
+            intermediatePoolPrice?.quoteAddress.toLowerCase() ===
+                pool.quote.toLowerCase() &&
+            intermediatePoolPrice?.chainId === pool.chainId
+        ) {
+            setIntermediatePoolPriceNotActivePool(false);
+            if (intermediatePoolPrice.price) {
+                setIsPoolInitialized(true);
+                setLocalPoolPriceNonDisplay([
+                    pool.base + pool.quote,
+                    intermediatePoolPrice.price,
+                ]);
+
+                const displayPrice = toDisplayPrice(
+                    intermediatePoolPrice.price,
+                    pool.baseToken.decimals,
+                    pool.quoteToken.decimals,
+                );
+                setPoolPriceDisplayNum(displayPrice);
+
+                const displayPriceWithInversion = shouldInvertDisplay
+                    ? 1 / displayPrice
+                    : displayPrice;
+
+                const displayPriceWithFormatting = getFormattedNumber({
+                    value: displayPriceWithInversion,
+                });
+                setPoolPriceDisplay(displayPriceWithFormatting);
+                setPoolPriceNonDisplay(intermediatePoolPrice.price);
+            } else {
+                setPoolPriceDisplay(undefined);
+                setLocalPoolPriceNonDisplay(undefined);
+                setPoolPriceDisplayNum(undefined);
+                if (!analyticsServerShowsPoolInitialized) {
+                    setIsPoolInitialized(false);
+                }
+            }
+        } else if (intermediatePoolPrice?.price !== undefined) {
+            setIntermediatePoolPriceNotActivePool(true);
+        }
+    }, [
+        intermediateBasePrice,
+        intermediateQuotePrice,
+        intermediatePoolPrice,
+        pool.base,
+        pool.quote,
+        pool.chainId,
+    ]);
 
     const activeTradePoolStatsMatchesPool =
         activeTradePoolStats?.base === pool.base &&
@@ -405,9 +459,8 @@ const useFetchPoolStats = (
             shouldInvertDisplay !== undefined &&
             crocEnv &&
             provider &&
-            (!isTradePair ||
-                (localPoolPriceNonDisplay !== undefined &&
-                    localPoolPriceNonDisplay[0] === pool.base + pool.quote))
+            localPoolPriceNonDisplay !== undefined &&
+            localPoolPriceNonDisplay[0] === pool.base + pool.quote
         ) {
             const lastPriceSwap = activeTradePoolStats?.lastPriceSwap;
 
@@ -500,7 +553,7 @@ const useFetchPoolStats = (
                 setApr(aprString);
             }
 
-            if (isTradePair && isTradeRoute) {
+            if (isTradeRoute) {
                 try {
                     const ambientAprEst = await estimateFrom24HrAmbientApr(
                         pool.base,
