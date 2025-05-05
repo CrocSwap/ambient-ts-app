@@ -63,7 +63,6 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
         poolArg,
         activePoolList,
         true,
-        true,
         didUserFlipDenom,
     );
 
