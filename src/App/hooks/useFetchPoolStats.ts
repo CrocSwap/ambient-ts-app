@@ -40,7 +40,7 @@ const useFetchPoolStats = (
         cachedTokenDetails,
     } = useContext(CachedDataContext);
 
-    const { setPoolPriceNonDisplay, setLimitTick } =
+    const { setPoolPriceNonDisplay, setLimitTick, contextMatchesParams } =
         useContext(TradeDataContext);
 
     const [intermediatePoolPrice, setIntermediatePoolPrice] = useState<
@@ -143,7 +143,8 @@ const useFetchPoolStats = (
             isServerEnabled &&
             crocEnv &&
             lastBlockNumber !== 0 &&
-            isTradeRoute
+            isTradeRoute &&
+            contextMatchesParams
         ) {
             (async () => {
                 if (
@@ -214,6 +215,7 @@ const useFetchPoolStats = (
         isTradeRoute,
         analyticsServerShowsPoolInitialized,
         intermediatePoolPriceNotActivePool,
+        contextMatchesParams,
     ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
