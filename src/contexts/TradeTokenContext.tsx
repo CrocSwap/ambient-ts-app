@@ -63,8 +63,14 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { setTokenBalance } = useContext(TokenBalanceContext);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
-    const { tokenA, tokenB, baseToken, quoteToken, isTokenABase } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        baseToken,
+        quoteToken,
+        isTokenABase,
+        contextMatchesParams,
+    } = useContext(TradeDataContext);
 
     const { sessionReceipts } = useContext(ReceiptContext);
     const {
@@ -79,7 +85,6 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         quoteTokenAddress,
         baseTokenDecimals,
         quoteTokenDecimals,
-        contextMatchesParams,
         isChartVisible,
     } = usePoolMetadata();
 

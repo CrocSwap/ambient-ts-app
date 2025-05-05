@@ -902,29 +902,35 @@ function ChatPanel(props: propsIF) {
     const verifyWallet = async (
         verificationType: ChatVerificationTypes,
         verificationDate: Date,
-        // eslint-disable-next-line
         e?: React.MouseEvent<HTMLDivElement>,
     ) => {
         if (e) e.stopPropagation();
 
-        if (isUserConnected == false) {
+        if (!isUserConnected) {
             activateToastr('Please connect your wallet first.', 'warning');
             return;
         }
 
         if (isVerified) return;
 
-        verifyWalletService(verificationDate).then(async () => {
-            if (verificationType == ChatVerificationTypes.VerifyMessages) {
+        try {
+            await verifyWalletService(verificationDate);
+
+            if (verificationType === ChatVerificationTypes.VerifyMessages) {
                 activateToastr('Your wallet and messages verified!', 'success');
                 setShowVerifyOldMessagesPanel(false);
                 await updateUnverifiedMessages(verificationDate, new Date());
             } else {
                 activateToastr('Your wallet is verified!', 'success');
+                await updateUnverifiedMessages(new Date(0), new Date());
             }
+
             updateUserCache();
             setIsVerified(true);
-        });
+        } catch (error) {
+            console.error('Error during verification:', error);
+            activateToastr('Verification failed. Please try again.', 'error');
+        }
     };
 
     const resetReplyState = () => {
