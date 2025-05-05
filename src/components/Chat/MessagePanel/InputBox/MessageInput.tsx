@@ -77,6 +77,7 @@ interface MessageInputProps {
 }
 
 export default function MessageInput(props: MessageInputProps) {
+    const sendBtnRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
@@ -785,11 +786,6 @@ export default function MessageInput(props: MessageInputProps) {
                             onClick={handleInputClick}
                             onDoubleClick={handleInputDoubleClick}
                             autoComplete={'off'}
-                            // tabIndex={-1}
-                            // autoFocus={
-                            //     (props.appPage && !props.isMobile) ||
-                            //     props.isReplyButtonPressed
-                            // }
                             ref={inputRef}
                         />
                         {inputLength >= 100 && (
@@ -819,12 +815,26 @@ export default function MessageInput(props: MessageInputProps) {
                         />
                         {}
                         <div
+                            ref={sendBtnRef}
                             className={
                                 isUserConnected
                                     ? styles.send_message_button
                                     : styles.not_LoggedIn_send_message_button
                             }
                             onClick={() => handleSendMessageButton()}
+                            onTouchStart={() =>
+                                sendBtnRef.current?.classList.add(styles.active)
+                            }
+                            onTouchEnd={() =>
+                                sendBtnRef.current?.classList.remove(
+                                    styles.active,
+                                )
+                            }
+                            onTouchCancel={() =>
+                                sendBtnRef.current?.classList.remove(
+                                    styles.active,
+                                )
+                            }
                         >
                             <svg
                                 width='16'
