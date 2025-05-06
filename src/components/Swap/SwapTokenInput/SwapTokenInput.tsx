@@ -193,7 +193,15 @@ function SwapTokenInput(props: propsIF) {
             slippageTolerancePercentage / 100,
             input,
         );
-        if (impact === undefined) return;
+        if (impact === undefined) {
+            setIsLiquidityInsufficient(true);
+            setSwapAllowed(false);
+            setIsBuyLoading(false);
+            setIsSellLoading(false);
+            return;
+        }
+
+        setIsLiquidityInsufficient(false);
 
         setLastImpactQuery({
             input,
