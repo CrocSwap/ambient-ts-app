@@ -10,7 +10,7 @@ import { TopPool } from './TopPool';
 
 const RPC_URLS = {
     PUBLIC: 'https://rpc.plumenetwork.xyz',
-    SECONDARY_PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
+    SECONDARY_PUBLIC: 'https://rpc.plumenetwork.xyz',
     RESTRICTED: import.meta.env.VITE_PLUME_RPC_URL,
     WEBSOCKET: 'wss://rpc.plumenetwork.xyz',
 };

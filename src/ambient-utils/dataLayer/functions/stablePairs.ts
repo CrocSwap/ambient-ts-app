@@ -13,7 +13,6 @@ import { SEPOLIA_TOKENS } from '../../constants/networks/ethereumSepolia';
 import { MONAD_TESTNET_TOKENS } from '../../constants/networks/monadTestnet';
 import { PLUME_LEGACY_TOKENS } from '../../constants/networks/plumeLegacy';
 import { PLUME_TOKENS } from '../../constants/networks/plumeMainnet';
-import { PLUME_SEPOLIA_TOKENS } from '../../constants/networks/plumeSepolia';
 import { SCROLL_TOKENS } from '../../constants/networks/scrollMainnet';
 import { SCROLL_SEPOLIA_TOKENS } from '../../constants/networks/scrollSepolia';
 import { SWELL_TOKENS } from '../../constants/networks/swellMainnet';
@@ -151,8 +150,6 @@ export const STABLE_USD_TOKENS = [
     SCROLL_TOKENS.axlUSDC,
     SCROLL_TOKENS.USDE,
     SCROLL_TOKENS.SUSDe,
-    PLUME_SEPOLIA_TOKENS.pUSD,
-    PLUME_SEPOLIA_TOKENS.NEV,
     SWELL_SEPOLIA_TOKENS.USDT,
     SWELL_TOKENS.USDe,
     SWELL_TOKENS.USDT0,
@@ -190,7 +187,6 @@ export const ETH_TOKENS = [
     SWELL_TOKENS.ETH,
     SEPOLIA_TOKENS.ETH,
     SWELL_SEPOLIA_TOKENS.ETH,
-    PLUME_SEPOLIA_TOKENS.ETH,
     SCROLL_SEPOLIA_TOKENS.ETH,
     BLAST_SEPOLIA_TOKENS.ETH,
     BASE_SEPOLIA_TOKENS.ETH,
