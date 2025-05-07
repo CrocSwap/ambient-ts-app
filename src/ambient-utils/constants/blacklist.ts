@@ -381,6 +381,11 @@ export const hiddenTokens = [
         address: '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8',
         chainId: 98866,
     },
+    {
+        // old USDQ on Scroll
+        address: '0x6f2a1a886dbf8e36c4fa9f25a517861a930fbf3a',
+        chainId: 534352,
+    },
 ];
 
 const embargoedTokens = [
