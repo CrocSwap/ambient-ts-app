@@ -17,7 +17,6 @@ import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
 import sepoliaLogo from '../../../../assets/images/networks/ethereum_sepolia_no_margin.webp';
 import monadLogo from '../../../../assets/images/networks/monad_logo_small.svg';
 import plumeLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
-import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_no_margin.webp';
 import scrollLogo from '../../../../assets/images/networks/scroll_logo_no_margin.webp';
 import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_no_margin.webp';
 import swellLogo from '../../../../assets/images/networks/swell_logo_no_margin.webp';
@@ -310,17 +309,6 @@ export default function NetworkSelector(props: propsIF) {
             testnet: true,
             link: '',
             condition: chainMap.has('0x784'),
-        },
-        {
-            id: 'plume_sepolia_network_selector',
-            chainId: '0x18230',
-            name: 'Plume',
-            logo: plumeSepoliaLogo,
-            custom: 2,
-            isExternal: false,
-            testnet: true,
-            link: '',
-            condition: chainMap.has('0x18230'),
         },
         {
             id: 'blast_sepolia_network_selector',

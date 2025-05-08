@@ -12,6 +12,7 @@ import { TokenBalanceContext } from './TokenBalanceContext';
 export interface TokenContextIF {
     tokens: tokenMethodsIF;
     outputTokens: TokenIF[];
+    ackTokens: TokenIF[];
     rawInput: string;
     validatedInput: string;
     setInput: (val: string) => void;
@@ -46,6 +47,7 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
 
     const tokenContext = {
         tokens,
+        ackTokens: tokens.ackTokens,
         outputTokens,
         rawInput,
         validatedInput,
