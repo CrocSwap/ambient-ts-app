@@ -498,7 +498,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             ) {
                 try {
                     const combinedBalances: TokenIF[] = [];
-
                     // Run both API calls concurrently
                     const [ambientListWalletBalances, dexBalancesFromCache] =
                         await Promise.all([
@@ -585,7 +584,12 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                         setIsTokenBalanceFetchManuallyTriggerered(false);
                     }
                 } catch (error) {
-                    console.error({ error });
+                    if (error instanceof Error) {
+                        console.error(error.message); // Prints the error message
+                        console.error(error.stack); // Prints the stack trace
+                    } else {
+                        console.error('Unknown error', error);
+                    }
                 }
             }
         })();

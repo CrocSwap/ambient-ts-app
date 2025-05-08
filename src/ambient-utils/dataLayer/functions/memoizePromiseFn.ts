@@ -1,5 +1,6 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
+import { serializeBigInt } from './serializeBigInt';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function memoizePromiseFn(fn: any) {
@@ -12,7 +13,7 @@ export function memoizePromiseFn(fn: any) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (...args: any[]) => {
-        const key = JSON.stringify(args);
+        const key = serializeBigInt(args);
 
         if (cache.has(key)) {
             return cache.get(key);
