@@ -270,8 +270,6 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         isTradeRoute,
         blockTrigger,
         sessionReceipts.length,
-        tokenBalances === undefined,
-        isTokenBalanceFetchManuallyTriggerered,
     ]);
 
     return (
