@@ -6,7 +6,6 @@ export { defaultBrandAssets } from './defaultBrandAssets';
 export { futaBrandAssets } from './futaBrandAssets';
 export { monadTestnetBrandAssets } from './monadTestnetBrandAssets';
 export { plumeBrandAssets } from './plumeBrandAssets';
-export { plumeSepoliaBrandAssets } from './plumeSepoliaBrandAssets';
 export { scrollBrandAssets } from './scrollBrandAssets';
 export { swellBrandAssets } from './swellBrandAssets';
 export { swellSepoliaBrandAssets } from './swellSepoliaBrandAssets';

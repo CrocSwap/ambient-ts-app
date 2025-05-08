@@ -744,7 +744,7 @@
             "decimals": 18,
             "chainId": 98866,
             "address": "0x0000000000000000000000000000000000000000",
-            "logoURI": "https://assets.plumenetwork.xyz/images/logos/plume/plume-token.svg"
+            "logoURI": "https://assets.plume.org/images/logos/plume/plume-token.svg"
         },
         {
             "name": "Plume USD",
@@ -752,7 +752,7 @@
             "decimals": 6,
             "chainId": 98866,
             "address": "0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F",
-            "logoURI": "https://assets.plumenetwork.xyz/images/logos/pUSD/pUSD-token.svg"
+            "logoURI": "https://assets.plume.org/images/logos/pUSD/pUSD-token.svg"
         },
         {
             "name": "Plume ETH",
@@ -760,7 +760,7 @@
             "decimals": 18,
             "chainId": 98866,
             "address": "0x39d1F90eF89C52dDA276194E9a832b484ee45574",
-            "logoURI": "https://assets.plumenetwork.xyz/images/logos/pETH/pETH-token.svg"
+            "logoURI": "https://assets.plume.org/images/logos/pETH/pETH-token.svg"
         },
         {
             "name": "Bridged USDC (Stargate)",
@@ -768,7 +768,7 @@
             "decimals": 6,
             "chainId": 98866,
             "address": "0x78adD880A697070c1e765Ac44D65323a0DcCE913",
-            "logoURI": "https://assets.plumenetwork.xyz/images/logos/general/usdc-token.svg"
+            "logoURI": "https://assets.plume.org/images/logos/general/usdc-token.svg"
         },
         {
             "name": "Bridged USDT (Stargate)",
@@ -776,7 +776,7 @@
             "decimals": 6,
             "chainId": 98866,
             "address": "0xda6087E69C51E7D31b6DBAD276a3c44703DFdCAd",
-            "logoURI": "https://assets.plumenetwork.xyz/images/logos/general/usdt-token.svg"
+            "logoURI": "https://assets.plume.org/images/logos/general/usdt-token.svg"
         },
         {
             "name": "Wrapped Ether (Stargate)",
@@ -784,15 +784,15 @@
             "decimals": 18,
             "chainId": 98866,
             "address": "0xca59cA09E5602fAe8B629DeE83FfA819741f14be",
-            "logoURI": "https://assets.plumenetwork.xyz/images/logos/general/ether-token.svg"
+            "logoURI": "https://assets.plume.org/images/logos/general/ether-token.svg"
         },
         {
-            "name": "Nest RWA Vault",
-            "symbol": "nRWA",
+            "name": "Nest ALPHA Vault",
+            "symbol": "nALPHA",
             "decimals": 6,
             "chainId": 98866,
             "address": "0x593cCcA4c4bf58b7526a4C164cEEf4003C6388db",
-            "logoURI": "https://assets.plumenetwork.xyz/images/logos/nest/nRWA/nRWA-token.svg"
+            "logoURI": "https://assets.plume.org/images/logos/nest/nALPHA/nALPHA-token.svg"
         },
         {
             "name": "Nest Treasuries Vault",
@@ -800,7 +800,7 @@
             "decimals": 6,
             "chainId": 98866,
             "address": "0xe72fe64840f4ef80e3ec73a1c749491b5c938cb9",
-            "logoURI": "https://assets.plumenetwork.xyz/images/logos/nest/nTBILL/nTBILL-token.svg"
+            "logoURI": "https://assets.plume.org/images/logos/nest/nTBILL/nTBILL-token.svg"
         },
         {
             "name": "Nest Institutional Core",
@@ -808,7 +808,7 @@
             "decimals": 6,
             "chainId": 98866,
             "address": "0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c",
-            "logoURI": "https://assets.plumenetwork.xyz/images/logos/nest/nELIXIR/nELIXIR-token.svg"
+            "logoURI": "https://assets.plume.org/images/logos/nest/nELIXIR/nELIXIR-token.svg"
         },
         {
             "name": "Nest Basis",
@@ -816,7 +816,7 @@
             "decimals": 6,
             "chainId": 98866,
             "address": "0x11113Ff3a60C2450F4b22515cB760417259eE94B",
-            "logoURI": "https://assets.plumenetwork.xyz/images/logos/nest/nBASIS/nBASIS-token.svg"
+            "logoURI": "https://assets.plume.org/images/logos/nest/nBASIS/nBASIS-token.svg"
         }
     ]
 }

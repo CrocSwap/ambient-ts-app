@@ -358,14 +358,15 @@ const useFetchPoolStats = (
     ]);
 
     const activeTradePoolStatsMatchesPool =
-        activeTradePoolStats?.base === pool.base &&
-        activeTradePoolStats?.quote === pool.quote &&
-        activeTradePoolStats?.chainId === pool.chainId;
+        activeTradePoolStats?.base.toLowerCase() === pool.base.toLowerCase() &&
+        activeTradePoolStats?.quote.toLowerCase() ===
+            pool.quote.toLowerCase() &&
+        activeTradePoolStats?.chainId.toLowerCase() ===
+            pool.chainId.toLowerCase();
 
     useEffect(() => {
         (async () => {
             let baseTokenPrice, quoteTokenPrice;
-
             if (
                 activeTradePoolStatsMatchesPool &&
                 activeTradePoolStats?.baseUsdPrice

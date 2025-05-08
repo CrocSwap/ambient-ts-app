@@ -9,7 +9,6 @@ import {
     monadTestnet,
     plumeLegacy,
     plumeMainnet,
-    plumeSepolia,
     scrollMainnet,
     scrollSepolia,
     supportedNetworks,
@@ -226,10 +225,6 @@ export const useAppChain = (): {
                                     incomingChainFromWallet === '0x8274f'
                                 ) {
                                     nextNetwork = scrollSepolia;
-                                } else if (
-                                    incomingChainFromWallet === '0x18230'
-                                ) {
-                                    nextNetwork = plumeSepolia;
                                 } else if (
                                     incomingChainFromWallet === '0x784'
                                 ) {
