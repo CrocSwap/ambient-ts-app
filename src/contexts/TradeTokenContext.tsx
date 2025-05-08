@@ -222,35 +222,35 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
                     // Update state only if values changed
                     if (newBaseWalletBalance !== baseTokenBalance) {
                         setBaseTokenBalance(newBaseWalletBalance);
-                        setTokenBalance({
-                            tokenAddress: baseToken.address,
-                            walletBalance: baseWalletBalance.toString(),
-                        });
                     }
+                    setTokenBalance({
+                        tokenAddress: baseToken.address,
+                        walletBalance: baseWalletBalance.toString(),
+                    });
 
                     if (newBaseDexBalance !== baseTokenDexBalance) {
                         setBaseTokenDexBalance(newBaseDexBalance);
-                        setTokenBalance({
-                            tokenAddress: baseToken.address,
-                            dexBalance: baseDexBalance.toString(),
-                        });
                     }
+                    setTokenBalance({
+                        tokenAddress: baseToken.address,
+                        dexBalance: baseDexBalance.toString(),
+                    });
 
                     if (newQuoteWalletBalance !== quoteTokenBalance) {
                         setQuoteTokenBalance(newQuoteWalletBalance);
-                        setTokenBalance({
-                            tokenAddress: quoteToken.address,
-                            walletBalance: quoteWalletBalance.toString(),
-                        });
                     }
+                    setTokenBalance({
+                        tokenAddress: quoteToken.address,
+                        walletBalance: quoteWalletBalance.toString(),
+                    });
 
                     if (newQuoteDexBalance !== quoteTokenDexBalance) {
                         setQuoteTokenDexBalance(newQuoteDexBalance);
-                        setTokenBalance({
-                            tokenAddress: quoteToken.address,
-                            dexBalance: quoteDexBalance.toString(),
-                        });
                     }
+                    setTokenBalance({
+                        tokenAddress: quoteToken.address,
+                        dexBalance: quoteDexBalance.toString(),
+                    });
                 } catch (error) {
                     console.error('Error fetching balances:', error);
                 }

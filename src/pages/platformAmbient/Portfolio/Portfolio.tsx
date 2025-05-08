@@ -286,6 +286,7 @@ function Portfolio(props: propsIF) {
                             address: resolvedAddress,
                             chain: chainId,
                             crocEnv: crocEnv,
+                            ackTokens: tokens.ackTokens,
                             _refreshTime: everyFiveMinutes,
                         });
 
