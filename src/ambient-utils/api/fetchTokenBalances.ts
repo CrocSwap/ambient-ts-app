@@ -21,6 +21,7 @@ export interface IAmbientListBalanceQueryProps {
     address: string;
     chain: string;
     crocEnv: CrocEnv | undefined;
+    ackTokens: TokenIF[];
     _refreshTime: number;
 }
 
@@ -35,12 +36,13 @@ export interface IDexBalanceQueryProps {
 export const fetchAmbientListWalletBalances = async (
     props: IAmbientListBalanceQueryProps,
 ): Promise<TokenIF[] | undefined> => {
-    const { address, crocEnv } = props;
+    const { address, crocEnv, ackTokens } = props;
 
     if (!crocEnv) return;
 
     const ambientTokensOnActiveChain = ambientTokenList.tokens
         .concat(testnetTokenList.tokens)
+        .concat(ackTokens)
         .filter((token: any) => token.chainId === parseInt(props.chain));
 
     const balancePromises = ambientTokensOnActiveChain.map(async (token) => {
