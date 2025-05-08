@@ -149,15 +149,17 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     );
 
     const tokenBExplorerLink = (needConfirmTokenB || tokenBIsExcludedToken) && (
-        <a
+        <AcknowledgeLink
             href={blockExplorer + 'token/' + tokenB.address}
             rel={'noopener noreferrer'}
             target='_blank'
             aria-label={`approve ${tokenB.symbol}`}
         >
             {tokenB.symbol || tokenB.name} <FiExternalLink />
-        </a>
+        </AcknowledgeLink>
     );
+
+    const ackTokenNeeded = needConfirmTokenA || needConfirmTokenB;
 
     return (
         <>
@@ -189,14 +191,13 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     {isUserConnected === undefined ||
                     !areDefaultTokensUpdatedForChain ? null : isUserConnected ===
                       true ? (
-                        approveButton ? (
+                        approveButton && !ackTokenNeeded ? (
                             approveButton
                         ) : (
                             <>
                                 {!bypassConfirm ? button : bypassConfirm}
                                 {ackTokenMessage &&
                                     areDefaultTokensUpdatedForChain && (
-                                        // NO
                                         <AcknowledgeText
                                             fontSize='body'
                                             dangerouslySetInnerHTML={{
@@ -225,8 +226,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             flat
                         />
                     )}
-                    {!isUserConnected &&
-                    (tokenAIsExcludedToken || tokenBIsExcludedToken) ? (
+                    {!isUserConnected && ackTokenNeeded ? (
                         <AcknowledgeText
                             fontSize='body'
                             dangerouslySetInnerHTML={{
@@ -234,8 +234,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             }}
                         ></AcknowledgeText>
                     ) : null}
-                    {!isUserConnected &&
-                    (tokenAIsExcludedToken || tokenBIsExcludedToken) ? (
+                    {!isUserConnected && ackTokenNeeded ? (
                         <GridContainer numCols={2} gap={16} margin='4px 0'>
                             {tokenAExplorerLink}
                             {tokenBExplorerLink}
