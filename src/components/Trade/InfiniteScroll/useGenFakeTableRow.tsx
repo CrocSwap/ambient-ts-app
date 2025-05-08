@@ -57,7 +57,6 @@ const useGenFakeTableRow = () => {
             case '0xaa36a7': // eth-sepolia
                 return 5000 * factor;
             case '0x18231': // plume-mainnet
-            case '0x18230': // plume-sepolia
                 return 1000 * factor;
             default:
                 return 2000 * factor;
