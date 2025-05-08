@@ -508,6 +508,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                                 address: userAddress,
                                 chain: chainId,
                                 crocEnv: crocEnv,
+                                ackTokens: tokens.ackTokens,
                                 _refreshTime: everyFiveSeconds,
                             }),
                             cachedFetchDexBalances({
