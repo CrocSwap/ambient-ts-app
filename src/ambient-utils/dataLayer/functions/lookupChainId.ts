@@ -49,7 +49,7 @@ export function lookupChainId(
         case '0x18232':
             chainIdHex = '0x18232';
             break;
-        case 'plumeLegacy':
+        case 'plumelegacy':
         case '98865':
         case '0x18231':
             chainIdHex = '0x18231';
