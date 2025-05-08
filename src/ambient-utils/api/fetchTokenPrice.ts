@@ -14,8 +14,6 @@ import {
 import { PoolIF } from '../types';
 import { fetchBatch } from './fetchBatch';
 
-const randomNum = Math.random();
-
 export function findKnownTokenPriceByAddress(
     poolList: PoolIF[],
     address: string,
@@ -169,7 +167,6 @@ export type TokenPriceFn = (
     chain: string,
 ) => Promise<TokenPriceFnReturn>;
 
-// TODO: remove this after moving over to fetchBatch
 export function memoizeTokenPrice(): TokenPriceFn {
     const memoFn = memoizePromiseFn(fetchTokenPrice);
     return (address: string, chain: string) =>
