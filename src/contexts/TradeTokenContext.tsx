@@ -60,9 +60,8 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
     } = useContext(AppStateContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
-    const { lastBlockNumber, isTokenBalanceFetchManuallyTriggerered } =
-        useContext(ChainDataContext);
-    const { setTokenBalance, tokenBalances } = useContext(TokenBalanceContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { setTokenBalance } = useContext(TokenBalanceContext);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const {
         tokenA,

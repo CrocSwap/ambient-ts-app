@@ -79,7 +79,6 @@ export interface ChainDataContextIF {
     totalVolumeString: string | undefined;
     totalFeesString: string | undefined;
     analyticsPoolList: PoolIF[] | undefined;
-    isTokenBalanceFetchManuallyTriggerered: boolean;
     setIsTokenBalanceFetchManuallyTriggerered: Dispatch<
         SetStateAction<boolean>
     >;
@@ -978,7 +977,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         totalVolumeString,
         totalFeesString,
         analyticsPoolList,
-        isTokenBalanceFetchManuallyTriggerered,
         setIsTokenBalanceFetchManuallyTriggerered,
         setIsGasPriceFetchManuallyTriggerered,
         isAnalyticsPoolListDefinedOrUnavailable,
