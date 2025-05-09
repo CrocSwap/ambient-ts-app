@@ -9,11 +9,6 @@ export const plumeBrandAssets: brandIF = {
             premiumColor: [],
             cobrandingLogo: plumeLogo,
         },
-        '0x18231': {
-            color: ['purple_dark', 'purple_light', 'futa_dark'],
-            premiumColor: [],
-            cobrandingLogo: plumeLogo,
-        },
     },
     platformName: 'plume',
     fontSet: 'ambient',
