@@ -124,7 +124,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         foreverContractMethods: string[];
         fastContractMethods: string[]; // These methods are cached for `fastCallTtlMsec`
     };
-    GETGatewayClosed: boolean;
+    GETGatewayClosedAt: number;
     constructor(url: string, network: number, options?: any) {
         super(url, network, options);
         this.url = url;
@@ -152,7 +152,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
             ], // ERC20 methods: decimals, name, symbol, totalSupply
             fastContractMethods: ['0x4a6c44bf'], // calcImpact
         };
-        this.GETGatewayClosed = false;
+        this.GETGatewayClosedAt = 0;
     }
 
     async send(method: string, params: any[]): Promise<any> {
@@ -195,9 +195,19 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                     );
                     this.saveInCache('eth_call', callParams, response, ttlMsec);
                     return response;
-                } catch (_) {
-                    // It should be always up, so don't keep retrying if it's broken
-                    this.GETGatewayClosed = true;
+                } catch (err) {
+                    // 400 status means that the request is incorrect (which happens sometimes) and
+                    // the gateway isn't down. So it's fine to retry it as a regular call, but the
+                    // gateway should only be considered closed if there's a different error.
+                    if (err.message.indexOf(' status: 400 ') == -1) {
+                        console.warn(
+                            'GET gateway is down, will not retry',
+                            method,
+                            params,
+                            err,
+                        );
+                        this.GETGatewayClosedAt = Date.now();
+                    }
                 }
             }
             return this.scheduleForBatch(callParams, ttlMsec);
@@ -249,14 +259,15 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                 this.saveInCache(method, params, response, ttlMsec);
                 return response;
             } catch (err) {
-                // It should be always up, so don't keep retrying if it's broken
-                console.warn(
-                    'GET gateway is down, will not retry',
-                    method,
-                    params,
-                    err,
-                );
-                this.GETGatewayClosed = true;
+                if (err.message.indexOf(' status: 400 ') == -1) {
+                    console.warn(
+                        'GET gateway is down, will not retry',
+                        method,
+                        params,
+                        err,
+                    );
+                    this.GETGatewayClosedAt = Date.now();
+                }
             }
         }
         const response = await super.send(method, params);
@@ -286,6 +297,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         url.pathname += path;
         const response = await fetch(url, {
             method: 'GET',
+            signal: AbortSignal.timeout(5000),
         });
         if (!response.ok)
             throw new Error(
@@ -306,7 +318,8 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                 this.url.includes('127.0.0.1') ||
                 this.url.includes('localhost')
             ) ||
-            this.GETGatewayClosed
+            // Retry GET gateway every 5 minutes
+            Date.now() - this.GETGatewayClosedAt < 300_000
         )
             return false;
 
