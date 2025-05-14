@@ -66,6 +66,7 @@ import USDPLUS from './USD+.png';
 import USDB from './USDB.png';
 import USDC from './USDC.svg';
 import USDE from './USDe-Black.svg';
+import USDK from './USDK.png';
 import USDQ from './USDQ.svg';
 import USDT from './USDT.svg';
 import USDT0 from './USDT0.svg';
@@ -148,6 +149,7 @@ export {
     USDB,
     USDC,
     USDE,
+    USDK,
     USDPLUS,
     USDQ,
     USDT,
