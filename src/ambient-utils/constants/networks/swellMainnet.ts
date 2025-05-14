@@ -120,6 +120,6 @@ export const swellMainnet: NetworkIF = {
     vaultsEnabled: true,
     tempestApiNetworkName: 'swell',
     topPools,
-    priorityPool: [SWELL_TOKENS['KING'], SWELL_TOKENS['ETH']],
+    // priorityPool: [SWELL_TOKENS['KING'], SWELL_TOKENS['ETH']],
     getGasPriceInGwei,
 };
