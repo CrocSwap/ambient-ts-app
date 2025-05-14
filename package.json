@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "3.5.3",
+    "version": "3.5.4",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -9,8 +9,8 @@
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
         "@mui/material": "^6.4.3",
-        "@reown/appkit": "^1.7.3",
-        "@reown/appkit-adapter-ethers": "^1.7.3",
+        "@reown/appkit": "^1.7.4",
+        "@reown/appkit-adapter-ethers": "^1.7.4",
         "d3": "^7.4.4",
         "d3fc": "^15.2.4",
         "emoji-picker-react": "^4.12.2",
@@ -31,7 +31,7 @@
         "react-router-dom": "^6.27.0",
         "react-transition-group": "^4.4.2",
         "react-use-websocket": "^4.13.0",
-        "styled-components": "^6.1.17",
+        "styled-components": "^6.1.18",
         "web-vitals": "^2.1.0"
     },
     "scripts": {
@@ -74,7 +74,7 @@
         "dotenv": "^16.5.0",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^10.1.2",
-        "eslint-import-resolver-typescript": "^4.2.5",
+        "eslint-import-resolver-typescript": "^4.3.4",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-prettier": "^4.0.0",
         "eslint-plugin-react": "^7.37.3",
@@ -87,7 +87,7 @@
         "superagent": "^10.0.0",
         "typescript": "^5.8.2",
         "vite": "^6.3.5",
-        "vite-plugin-checker": "^0.9.2",
+        "vite-plugin-checker": "^0.9.3",
         "vitest": "^3.1.3"
     }
 }
