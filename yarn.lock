@@ -288,10 +288,10 @@
     eventemitter3 "^5.0.1"
     preact "^10.24.2"
 
-"@crocswap-libs/sdk@^2.0.12":
-  version "2.0.12"
-  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-2.0.12.tgz#1c98434c9668b502d461506907ec5fe68763d80e"
-  integrity sha512-PHH9BwPJKIzRY2nX+Lb4WWrLXKmpXK9/kRE6DZylNU1qWVQi3zgQIPXtwKSPGczhpgWy0jfVBR/IJPV/A2FmVQ==
+"@crocswap-libs/sdk@^2.0.13":
+  version "2.0.13"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-2.0.13.tgz#b5c4869f6b80e79ddbafc007854e7cd7ffdea646"
+  integrity sha512-WFA+t3U/XnxqSa70pA13BeBcCMKwV4u5EJxsx4WHgYZK8fekRwHAWo0K6LiYWkkXNeqMB/8GrXYRUD14Y1PnsA==
   dependencies:
     ethers "^6.13.5"
 
