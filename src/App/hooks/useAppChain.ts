@@ -95,9 +95,7 @@ export const useAppChain = (): {
     );
 
     // memoized and validated chain ID from the connected wallet
-    const chainInWalletValidated = useRef<string | undefined>(
-        getChainFromWallet(),
-    );
+    const chainInWalletValidated = useRef<string | null>(getChainFromWallet());
 
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
