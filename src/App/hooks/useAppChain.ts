@@ -19,6 +19,7 @@ import {
     chainNumToString,
     checkEoaHexAddress,
     getDefaultChainId,
+    lookupChainId,
     validateChainId,
 } from '../../ambient-utils/dataLayer';
 import { NetworkIF } from '../../ambient-utils/types';
@@ -41,9 +42,9 @@ export const useAppChain = (): {
     const CHAIN_LS_KEY = 'CHAIN_ID';
 
     // fn to get a chain ID param from the current URL string
-    // returns `null` if chain ID is not found or fails validation
+    // returns `undefined` if chain ID is not found or fails validation
     // due to where this code is instantiated we can't use param tools
-    function getChainFromURL(): string | null {
+    function getChainFromURL(): string | undefined {
         const { pathname } = window.location;
         let rawURL = pathname;
         let templateURL = '';
@@ -58,9 +59,12 @@ export const useAppChain = (): {
                 templateURL += character;
             }
         }
-        let output: string | null = templateURL.length ? templateURL : null;
+        let output: string | undefined =
+            templateURL.length && lookupChainId(templateURL, 'string')
+                ? lookupChainId(templateURL, 'string')
+                : undefined;
         if (typeof output === 'string' && !validateChainId(output)) {
-            output = null;
+            output = undefined;
         }
         return output;
     }
@@ -85,13 +89,15 @@ export const useAppChain = (): {
     }
 
     // memoized and validated chain ID from the URL
-    const chainInURLValidated: string | null = useMemo(
+    const chainInURLValidated: string | undefined = useMemo(
         () => getChainFromURL(),
         [window.location.pathname],
     );
 
     // memoized and validated chain ID from the connected wallet
-    const chainInWalletValidated = useRef<string | null>(getChainFromWallet());
+    const chainInWalletValidated = useRef<string | undefined>(
+        getChainFromWallet(),
+    );
 
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
