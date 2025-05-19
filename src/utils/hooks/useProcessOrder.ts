@@ -1,6 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import {
-    getChainExplorer,
     getElapsedTime,
     getFormattedNumber,
     getMoneynessRank,
@@ -20,6 +19,7 @@ import {
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { getAddress } from 'ethers';
 import moment from 'moment';
+import { getBlockExplorerUrl } from '../../ambient-utils/dataLayer/functions/chains';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
@@ -36,7 +36,7 @@ export const useProcessOrder = (
     const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
-    const blockExplorer = getChainExplorer(limitOrder.chainId);
+    const blockExplorer = getBlockExplorerUrl(limitOrder.chainId);
 
     const selectedBaseToken = baseToken.address.toLowerCase();
     const selectedQuoteToken = quoteToken.address.toLowerCase();

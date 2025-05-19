@@ -20,8 +20,13 @@ export function getDefaultPairForChain(chainId: string) {
         supportedNetworks[chainId].defaultPair[1],
     ];
 }
+
+export function getBlockExplorerUrl(chainId: string): string {
+    return supportedNetworks[chainId].blockExplorer;
+}
+
 // Given a chain ID returns the relevant block explorer URL
-export function getChainExplorer(chainId: string | number): string {
+export function getBlockExplorerFromSDK(chainId: string | number): string {
     try {
         const explorer = lookupChain(chainId).blockExplorer;
         if (explorer) {
