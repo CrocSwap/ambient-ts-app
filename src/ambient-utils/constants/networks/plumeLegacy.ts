@@ -39,8 +39,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Blockscout',
-            url: 'https://explorer.plumenetwork.xyz',
-            apiUrl: 'https://explorer.plumenetwork.xyz/api',
+            url: 'https://explorer.plumenetwork.xyz/',
+            apiUrl: 'https://explorer.plumenetwork.xyz/api/',
         },
     },
 };

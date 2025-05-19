@@ -44,7 +44,7 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Monad Testnet explorer',
-            url: 'https://testnet.monadexplorer.com',
+            url: 'https://testnet.monadexplorer.com/',
         },
     },
     contracts: {

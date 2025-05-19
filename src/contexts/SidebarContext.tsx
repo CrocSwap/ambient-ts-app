@@ -1,7 +1,7 @@
 import { TransactionReceipt } from 'ethers';
 import {
-    ReactNode,
     createContext,
+    ReactNode,
     useContext,
     useEffect,
     useMemo,
@@ -12,8 +12,7 @@ import {
     useRecentPools,
 } from '../App/hooks/useRecentPools';
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
-import { IS_LOCAL_ENV } from '../ambient-utils/constants';
-import { diffHashSig, getChainExplorer } from '../ambient-utils/dataLayer';
+import { diffHashSig, getBlockExplorerUrl } from '../ambient-utils/dataLayer';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { AppStateContext } from './AppStateContext';
 import { PoolContext } from './PoolContext';
@@ -101,8 +100,8 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
         (e) => e.txHash === lastReceipt?.hash,
     )?.chainId;
     const blockExplorer = lastReceiptChainId
-        ? getChainExplorer(lastReceiptChainId)
-        : getChainExplorer(chainId);
+        ? getBlockExplorerUrl(lastReceiptChainId)
+        : getBlockExplorerUrl(chainId);
 
     const snackBarContentDisplay = (
         <div className='flexColumn'>
@@ -127,7 +126,6 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
     );
     useEffect(() => {
         if (lastReceiptHash) {
-            IS_LOCAL_ENV && console.debug('new receipt to display');
             openSnackbar(
                 snackBarContentDisplay,
                 isLastReceiptSuccess ? 'info' : 'warning',

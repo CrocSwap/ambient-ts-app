@@ -34,8 +34,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Scrollscan',
-            url: 'https://sepolia.scrollscan.com',
-            apiUrl: 'https://api-sepolia.scrollscan.com/api',
+            url: 'https://sepolia.scrollscan.com/',
+            apiUrl: 'https://api-sepolia.scrollscan.com/api/',
         },
     },
     contracts: {

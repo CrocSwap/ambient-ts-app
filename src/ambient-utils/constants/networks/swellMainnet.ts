@@ -34,8 +34,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Swell Explorer',
-            url: 'https://swellchainscan.io',
-            apiUrl: 'https://api.swellchainscan.io',
+            url: 'https://swellchainscan.io/',
+            apiUrl: 'https://api.swellchainscan.io/',
         },
     },
     contracts: {

@@ -40,7 +40,7 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Swell Testnet Explorer',
-            url: 'https://swell-testnet-explorer.alt.technology',
+            url: 'https://swell-testnet-explorer.alt.technology/',
         },
     },
 };
