@@ -40,8 +40,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Etherscan',
-            url: 'https://sepolia.etherscan.io',
-            apiUrl: 'https://api-sepolia.etherscan.io/api',
+            url: 'https://sepolia.etherscan.io/',
+            apiUrl: 'https://api-sepolia.etherscan.io/api/',
         },
     },
     contracts: {

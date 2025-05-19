@@ -34,8 +34,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Scrollscan',
-            url: 'https://scrollscan.com',
-            apiUrl: 'https://api.scrollscan.com/api',
+            url: 'https://scrollscan.com/',
+            apiUrl: 'https://api.scrollscan.com/api/',
         },
     },
 };

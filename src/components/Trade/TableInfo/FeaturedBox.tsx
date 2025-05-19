@@ -1,8 +1,8 @@
+import { ZeroAddress } from 'ethers';
 import React, { useContext } from 'react';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import {
-    getChainExplorer,
+    getBlockExplorerUrl,
     trimString,
     uriToHttp,
 } from '../../../ambient-utils/dataLayer';
@@ -39,7 +39,7 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
             chainSpec: { addrs },
         },
     } = useContext(AppStateContext);
-    const blockExplorer = getChainExplorer(chainId);
+    const blockExplorer = getBlockExplorerUrl(chainId);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -91,7 +91,7 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                     >
                         <a
                             href={
-                                token.address === ZERO_ADDRESS
+                                token.address === ZeroAddress
                                     ? `${blockExplorer}address/${addrs.dex}`
                                     : `${blockExplorer}token/${token.address}`
                             }
