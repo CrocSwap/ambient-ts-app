@@ -29,8 +29,6 @@ import scrollLogo from './assets/images/networks/scroll_logo.webp';
 import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia.webp';
 import swellLogo from './assets/images/networks/swell_logo.webp';
 import swellSepoliaLogo from './assets/images/networks/swell_sepolia.webp';
-import ErrorBoundary from './components/Error/ErrorBoundary';
-import GlobalErrorFallback from './components/Error/GlobalErrorFallback';
 import { GlobalContexts } from './contexts/GlobalContexts';
 
 const appKitNetworks = Object.values(supportedNetworks).map(
@@ -123,9 +121,9 @@ root.render(
                 <StyleSheetManager
                     shouldForwardProp={(propName) => isValidProp(propName)}
                 >
-                    <ErrorBoundary fallback={GlobalErrorFallback}>
-                        <App />
-                    </ErrorBoundary>
+                    {/* <ErrorBoundary fallback={GlobalErrorFallback}> */}
+                    <App />
+                    {/* </ErrorBoundary> */}
                 </StyleSheetManager>
 
                 <div id={GLOBAL_MODAL_PORTAL_ID} />
