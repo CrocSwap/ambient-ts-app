@@ -56,35 +56,35 @@ export interface CrocEnvContextIF {
 
 export const CrocEnvContext = createContext({} as CrocEnvContextIF);
 const mainnetProvider = new BatchedJsonRpcProvider(
-    ethereumMainnet.fallbackRpcUrl,
+    ethereumMainnet.evmRpcUrl,
     parseInt(ethereumMainnet.chainId),
     {
         staticNetwork: true,
     },
 );
 const scrollProvider = new BatchedJsonRpcProvider(
-    scrollMainnet.fallbackRpcUrl,
+    scrollMainnet.evmRpcUrl,
     parseInt(scrollMainnet.chainId),
     {
         staticNetwork: true,
     },
 );
 const swellProvider = new BatchedJsonRpcProvider(
-    swellMainnet.fallbackRpcUrl,
+    swellMainnet.evmRpcUrl,
     parseInt(swellMainnet.chainId),
     {
         staticNetwork: true,
     },
 );
 const blastProvider = new BatchedJsonRpcProvider(
-    blastMainnet.fallbackRpcUrl,
+    blastMainnet.evmRpcUrl,
     parseInt(blastMainnet.chainId),
     {
         staticNetwork: true,
     },
 );
 const plumeProvider = new BatchedJsonRpcProvider(
-    plumeMainnet.fallbackRpcUrl,
+    plumeMainnet.evmRpcUrl,
     parseInt(plumeMainnet.chainId),
     {
         staticNetwork: true,

@@ -40,8 +40,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Basescan',
-            url: 'https://sepolia.basescan.org',
-            apiUrl: 'https://api-sepolia.basescan.org/api',
+            url: 'https://sepolia.basescan.org/',
+            apiUrl: 'https://api-sepolia.basescan.org/api/',
         },
     },
     contracts: {

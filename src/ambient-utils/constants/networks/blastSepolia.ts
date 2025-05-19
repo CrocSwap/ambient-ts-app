@@ -44,8 +44,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Blastscan',
-            url: 'https://sepolia.blastscan.io',
-            apiUrl: 'https://api-sepolia.blastscan.io/api',
+            url: 'https://sepolia.blastscan.io/',
+            apiUrl: 'https://api-sepolia.blastscan.io/api/',
         },
     },
     contracts: {

@@ -38,8 +38,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Blastscan',
-            url: 'https://blastscan.io',
-            apiUrl: 'https://api.blastscan.io/api',
+            url: 'https://blastscan.io/',
+            apiUrl: 'https://api.blastscan.io/api/',
         },
     },
 };

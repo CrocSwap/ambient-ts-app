@@ -35,8 +35,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Etherscan',
-            url: 'https://etherscan.io',
-            apiUrl: 'https://api.etherscan.io/api',
+            url: 'https://etherscan.io/',
+            apiUrl: 'https://api.etherscan.io/api/',
         },
     },
     contracts: {
