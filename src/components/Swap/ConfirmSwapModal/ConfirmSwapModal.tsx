@@ -78,7 +78,6 @@ export default function ConfirmSwapModal(props: propsIF) {
         }
     }, [newSwapTransactionHash, sellQtyString, buyQtyString, effectivePrice]);
 
-    // calculate the percentage change in pool price since the confirm modal was opened
     const [initialEffectivePrice, setInitialEffectivePrice] = useState<
         number | undefined
     >(effectivePrice);
@@ -90,6 +89,11 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const priceChangePercentage = useMemo(() => {
         if (!memoEffectivePrice || !initialEffectivePrice) return;
+
+        // calculate the percentage change in pool price since the confirm modal was opened
+        // effectivePrice is the qty of buyToken user should receive per 1 sellToken
+        // changePercentage is positive when the qty of buyToken per sellToken decreases
+        // user must acknowledge price change > 0.01% to proceed with swap
 
         const changePercentage =
             ((initialEffectivePrice - memoEffectivePrice) /
