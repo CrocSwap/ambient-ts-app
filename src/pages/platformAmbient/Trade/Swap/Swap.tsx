@@ -908,6 +908,7 @@ function Swap(props: propsIF) {
                         isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                         percentDiffUsdValue={percentDiffUsdValue}
                         crocEnv={crocEnv}
+                        priceImpact={priceImpact}
                     />
                 ) : (
                     <></>
