@@ -30,19 +30,16 @@ import tempestLogoColor from './tempestLogoColor.svg';
 interface propsIF {
     idForDOM: string;
     vault: VaultIF;
-    needsFallbackQuery: boolean;
 }
 
 export default function VaultRow(props: propsIF) {
-    const { idForDOM, vault, needsFallbackQuery } = props;
+    const { idForDOM, vault } = props;
 
     const [isOpen, openModal, closeModal] = useModal();
     const [type, setType] = useState<'Deposit' | 'Withdraw'>('Deposit');
 
     const { tokens } = useContext(TokenContext);
-    const { crocEnv } = useContext(CrocEnvContext);
     const { isUserConnected, userAddress } = useContext(UserDataContext);
-    const { sessionReceipts } = useContext(ReceiptContext);
     const { closeBottomSheet } = useBottomSheet();
 
     // const userAddress = '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc'
@@ -61,64 +58,11 @@ export default function VaultRow(props: propsIF) {
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
     const showPhoneVersion = useMediaQuery('(max-width: 500px)');
 
-    const [crocEnvBal, setCrocEnvBal] = useState<bigint>();
-
     const strategy = vault.strategy as VaultStrategy;
 
-    // This runs when needsFallbackQuery is true (initial fallback balance fetch)
-    useEffect(() => {
-        async function getCrocEnvBalance() {
-            if (crocEnv && !vault.balanceAmount && userAddress) {
-                const tempestVault = crocEnv.tempestVault(
-                    vault.address,
-                    vault.mainAsset,
-                    strategy,
-                );
-                setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
-            }
-        }
-
-        if (needsFallbackQuery) {
-            getCrocEnvBalance();
-        }
-    }, [crocEnv, vault, userAddress, needsFallbackQuery]);
-
-    // This keeps crocEnvBal in sync when sessionReceipts.length changes
-    useEffect(() => {
-        async function updateCrocEnvBal() {
-            if (crocEnv && userAddress) {
-                const tempestVault = crocEnv.tempestVault(
-                    vault.address,
-                    vault.mainAsset,
-                    strategy,
-                );
-                setCrocEnvBal(await tempestVault.balanceToken1(userAddress));
-            }
-        }
-
-        if (
-            crocEnv &&
-            userAddress &&
-            ((sessionReceipts.length &&
-                sessionReceipts.some(
-                    (receipt) =>
-                        receipt.to?.toLowerCase() ===
-                        vault.address.toLowerCase(),
-                )) ||
-                vault.balanceAmount)
-        ) {
-            // wait for 1 seconds before updating balance to allow for receipt processing
-            setTimeout(() => {
-                updateCrocEnvBal();
-            }, 1000);
-        }
-    }, [sessionReceipts.length, crocEnv, userAddress]);
-
-    const rawValue = crocEnvBal ?? vault.balance;
-
     const scaledQtyNum =
-        rawValue && mainAsset && userAddress
-            ? parseFloat(toDisplayQty(rawValue, mainAsset.decimals))
+        vault.balance && mainAsset && userAddress
+            ? parseFloat(toDisplayQty(vault.balance, mainAsset.decimals))
             : 0;
 
     const balDisplayString = scaledQtyNum
@@ -177,7 +121,7 @@ export default function VaultRow(props: propsIF) {
         >
             <FlexContainer flexDirection='row' alignItems='center' gap={4}>
                 {balDisplayString}
-                {!!(crocEnvBal ?? vault.balance) && !!userAddress && (
+                {!!vault.balance && !!userAddress && (
                     <>
                         <TokenIcon
                             token={mainAsset}
@@ -235,13 +179,7 @@ export default function VaultRow(props: propsIF) {
             <VaultWithdraw
                 mainAsset={mainAsset}
                 vault={vault}
-                balanceMainAsset={
-                    crocEnv !== undefined
-                        ? crocEnvBal
-                        : vault.balance !== undefined
-                          ? BigInt(vault.balance)
-                          : undefined
-                }
+                balanceMainAsset={BigInt(vault.balance || '0')}
                 mainAssetScaledQtyNum={scaledQtyNum}
                 mainAssetBalanceDisplayString={balDisplayString}
                 onClose={handleModalClose}
@@ -304,15 +242,14 @@ export default function VaultRow(props: propsIF) {
                                 Deposit
                             </button>
 
-                            {isUserConnected &&
-                                !!(vault.balance || crocEnvBal) && (
-                                    <button
-                                        className={styles.actionButton}
-                                        onClick={handleOpenWithdrawModal}
-                                    >
-                                        Withdraw
-                                    </button>
-                                )}
+                            {isUserConnected && !!vault.balance && (
+                                <button
+                                    className={styles.actionButton}
+                                    onClick={handleOpenWithdrawModal}
+                                >
+                                    Withdraw
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

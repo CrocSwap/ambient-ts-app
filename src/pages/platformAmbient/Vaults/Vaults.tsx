@@ -9,6 +9,7 @@ import TokenRowSkeleton from '../../../components/Global/Explore/TokenRow/TokenR
 import {
     AppStateContext,
     ChainDataContext,
+    CrocEnvContext,
     ReceiptContext,
     UserDataContext,
 } from '../../../contexts';
@@ -16,6 +17,7 @@ import { fallbackVaultsList } from './fallbackVaultsList';
 import { Vault } from './Vault';
 import VaultRow from './VaultRow/VaultRow';
 import styles from './Vaults.module.css';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 function Vaults() {
     // !important:  once we have mock data, change the type on this
@@ -29,9 +31,14 @@ function Vaults() {
     const { sessionReceipts } = useContext(ReceiptContext);
 
     const { allVaultsData, setAllVaultsData } = useContext(ChainDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { userAddress, isUserConnected, userVaultData, setUserVaultData } =
         useContext(UserDataContext);
+
+    const [receiptRefreshTimeouts, setReceiptRefreshTimeouts] = useState<
+        NodeJS.Timeout[]
+    >([]);
 
     const vaultHeader = (
         <div className={styles.vaultHeader}>
@@ -92,50 +99,58 @@ function Vaults() {
         } catch (error) {
             console.error('Error fetching vault data:', error);
             setAllVaultsData(undefined);
-            setServerErrorReceived(true);
         }
     }
 
-    const [serverErrorReceived, setServerErrorReceived] =
-        useState<boolean>(false);
-
     // logic to get user vault data
     async function getUserVaultData(): Promise<void> {
-        // endpoint to query
-        // const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc`;
-        const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=${userAddress}`;
-        // fn to fetch data from endpoint and send to local state
-        const fetchData = async () => {
-            try {
-                const response = await fetch(endpoint);
-                const { data } = await response.json();
-                setUserVaultData(data ?? undefined);
-                setServerErrorReceived(false);
-            } catch (error) {
-                console.log({ error });
-                setUserVaultData(undefined);
-                setServerErrorReceived(true);
-                return;
+        if (userAddress && chainId && crocEnv && allVaultsData) {
+            let calls: Map<AllVaultsServerIF, Promise<bigint>> = new Map();
+            for (const vaultSpec of allVaultsData || []) {
+                if (parseInt(vaultSpec.chainId) != parseInt(chainId)) continue;
+                let vault = crocEnv.tempestVault(
+                    vaultSpec.address,
+                    vaultSpec.mainAsset,
+                    vaultSpec.strategy,
+                );
+                calls.set(vaultSpec, vault.balanceToken1(userAddress));
             }
-        };
+            await Promise.all(calls.values());
+            const chainUserVaults: UserVaultsServerIF[] = [];
+            for (const [vaultSpec, balanceInt] of calls.entries()) {
+                if ((await balanceInt) == 0n) continue;
+                const balance = (await balanceInt).toString();
+                const balanceAmount = toDisplayQty(
+                    await balanceInt,
+                    vaultSpec.token1Decimals,
+                );
+                chainUserVaults.push({
+                    chainId: vaultSpec.chainId,
+                    vaultAddress: vaultSpec.address,
+                    walletAddress: userAddress as `0x${string}`,
+                    balance,
+                    balanceAmount,
+                    balanceUsd: '',
+                });
+            }
 
-        const timeout = new Promise<void>((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, 2000);
-        });
-
-        await Promise.race([fetchData(), timeout]);
+            setUserVaultData(chainUserVaults);
+        }
     }
 
     useEffect(() => {
-        if (userAddress && chainId) {
+        // clear user vault data when the user changes
+        setUserVaultData(undefined);
+    }, [userAddress]);
+
+    useEffect(() => {
+        if (userAddress && chainId && allVaultsData && crocEnv) {
             getUserVaultData();
             const period = isUserIdle ? 600000 : 60000; // 10 minutes while idle, 1 minute while active
             const interval = setInterval(getUserVaultData, period);
             return () => clearInterval(interval);
         }
-    }, [chainId, userAddress, isUserIdle]);
+    }, [chainId, userAddress, isUserIdle, allVaultsData, crocEnv]);
 
     // logic to fetch vault data from API
     useEffect(() => {
@@ -153,16 +168,29 @@ function Vaults() {
         if (sessionReceipts.length === 0) return;
         getUserVaultData();
         // and repeat after a delay
-        setTimeout(() => {
+        const t1 = setTimeout(() => {
             getUserVaultData();
         }, 5000);
-        setTimeout(() => {
+        const t2 = setTimeout(() => {
             getUserVaultData();
         }, 15000);
-        setTimeout(() => {
+        const t3 = setTimeout(() => {
             getUserVaultData();
         }, 30000);
+
+        setReceiptRefreshTimeouts([t1, t2, t3]);
+
+        // clear the timeouts when this component dismounts
+        return () => {
+            receiptRefreshTimeouts.forEach((timeout) => clearTimeout(timeout));
+        };
     }, [sessionReceipts.length]);
+
+    useEffect(() => {
+        // clear the timeouts when the user or chain changes
+        receiptRefreshTimeouts.forEach((timeout) => clearTimeout(timeout));
+        setReceiptRefreshTimeouts([]);
+    }, [userAddress, chainId]);
 
     const tempItems = [1, 2, 3, 4, 5];
 
@@ -228,9 +256,6 @@ function Vaults() {
                                                               vault.chainId,
                                                   ),
                                               )
-                                          }
-                                          needsFallbackQuery={
-                                              serverErrorReceived
                                           }
                                       />
                                   );

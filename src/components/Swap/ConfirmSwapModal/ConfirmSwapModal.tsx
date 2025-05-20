@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 
-import { CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
+import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { TokenPairIF } from '../../../ambient-utils/types';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
@@ -29,6 +29,7 @@ interface propsIF {
     isSaveAsDexSurplusChecked: boolean;
     percentDiffUsdValue: number | undefined;
     crocEnv: CrocEnv | undefined;
+    priceImpact: CrocImpact | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -53,6 +54,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSaveAsDexSurplusChecked,
         percentDiffUsdValue,
         crocEnv,
+        priceImpact,
     } = props;
 
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -61,17 +63,6 @@ export default function ConfirmSwapModal(props: propsIF) {
     const buyTokenData = tokenPair.dataTokenB;
 
     const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
-
-    const [baselineBlockNumber, setBaselineBlockNumber] =
-        useState<number>(lastBlockNumber);
-
-    const [baselineBuyTokenPrice, setBaselineBuyTokenPrice] = useState<
-        number | undefined
-    >();
-
-    const [currentBuyTokenPrice, setCurrentBuyTokenPrice] = useState<
-        number | undefined
-    >();
 
     const [isWaitingForPriceChangeAckt, setIsWaitingForPriceChangeAckt] =
         useState<boolean>(false);
@@ -83,19 +74,6 @@ export default function ConfirmSwapModal(props: propsIF) {
         number | undefined
     >();
 
-    const [poolView, setPoolView] = useState<CrocPoolView | undefined>();
-
-    useEffect(() => {
-        if (tokenPair) {
-            setPoolView(
-                crocEnv?.pool(
-                    tokenPair.dataTokenA.address,
-                    tokenPair.dataTokenB.address,
-                ),
-            );
-        }
-    }, [tokenPair.dataTokenA.address, tokenPair.dataTokenB.address]);
-
     useEffect(() => {
         if (newSwapTransactionHash === '') {
             setMemoTokenAQty(sellQtyString);
@@ -104,55 +82,25 @@ export default function ConfirmSwapModal(props: propsIF) {
         }
     }, [newSwapTransactionHash, sellQtyString, buyQtyString, effectivePrice]);
 
-    const setBaselinePriceAsync = async () => {
-        if (!poolView) return;
-        const newBaselinePrice =
-            await poolView.displayPrice(baselineBlockNumber);
-        const baselineBuyTokenPrice = isTokenABase
-            ? 1 / newBaselinePrice
-            : newBaselinePrice;
-        setBaselineBuyTokenPrice(baselineBuyTokenPrice);
-    };
-
-    const setCurrentPriceAsync = async () => {
-        if (!poolView) return;
-        const currentBasePrice = await poolView.displayPrice(lastBlockNumber);
-        const currentBuyTokenPrice = isTokenABase
-            ? 1 / currentBasePrice
-            : currentBasePrice;
-        setCurrentBuyTokenPrice(currentBuyTokenPrice);
-    };
+    // calculate the percentage change in pool price since the confirm modal was opened
+    const [initialPriceImpact, setInitialPriceImpact] = useState<
+        CrocImpact | undefined
+    >(priceImpact);
 
     useEffect(() => {
-        if (poolView) {
-            const fetchPrices = async () => {
-                await Promise.allSettled([
-                    setBaselinePriceAsync(),
-                    setCurrentPriceAsync(),
-                ]);
-            };
-
-            fetchPrices();
-        }
-    }, [!!poolView]);
-
-    useEffect(() => {
-        if (!isWaitingForPriceChangeAckt) setBaselinePriceAsync();
+        if (!isWaitingForPriceChangeAckt) setInitialPriceImpact(priceImpact);
     }, [isWaitingForPriceChangeAckt]);
 
-    useEffect(() => {
-        if (lastBlockNumber > baselineBlockNumber) {
-            setCurrentPriceAsync();
-        }
-    }, [lastBlockNumber, baselineBlockNumber]);
+    const priceChangePercentage = useMemo(() => {
+        if (!priceImpact || !initialPriceImpact) return;
 
-    const buyTokenPriceChangePercentage = useMemo(() => {
-        if (!currentBuyTokenPrice || !baselineBuyTokenPrice) return;
+        const initialPriceInBase = initialPriceImpact.finalPrice;
+        const newPriceInBase = priceImpact.finalPrice;
 
-        const changePercentage =
-            ((currentBuyTokenPrice - baselineBuyTokenPrice) /
-                baselineBuyTokenPrice) *
-            100;
+        const changePercentage = isTokenABase
+            ? ((initialPriceInBase - newPriceInBase) / initialPriceInBase) * 100
+            : ((newPriceInBase - initialPriceInBase) / initialPriceInBase) *
+              100;
 
         if (changePercentage >= 0.01) {
             setIsWaitingForPriceChangeAckt(true);
@@ -161,10 +109,10 @@ export default function ConfirmSwapModal(props: propsIF) {
         }
 
         return changePercentage;
-    }, [currentBuyTokenPrice, baselineBuyTokenPrice]);
+    }, [priceImpact, initialPriceImpact, isTokenABase]);
 
-    const buyTokenPriceChangeString = buyTokenPriceChangePercentage
-        ? buyTokenPriceChangePercentage.toLocaleString('en-US', {
+    const buyTokenPriceChangeString = priceChangePercentage
+        ? priceChangePercentage.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
@@ -188,7 +136,6 @@ export default function ConfirmSwapModal(props: propsIF) {
             button={
                 <button
                     onClick={() => {
-                        setBaselineBlockNumber(lastBlockNumber);
                         setIsWaitingForPriceChangeAckt(false);
                     }}
                 >

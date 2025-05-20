@@ -2,6 +2,7 @@ import {
     AllVaultsServerIF,
     UserVaultsServerIF,
     VaultIF,
+    VaultStrategy,
 } from '../../../ambient-utils/types';
 
 export class Vault implements VaultIF {
@@ -14,7 +15,7 @@ export class Vault implements VaultIF {
     feeRecipientAddress: string;
     chainId: string;
     address: `0x${string}`;
-    strategy: string;
+    strategy: VaultStrategy;
     token0Address: `0x${string}`;
     token1Address: `0x${string}`;
     token0Decimals: number;

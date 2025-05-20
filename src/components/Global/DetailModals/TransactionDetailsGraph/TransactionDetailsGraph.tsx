@@ -1425,9 +1425,11 @@ export default function TransactionDetailsGraph(
                                 if (diff > 10) {
                                     verticalLineData.push({
                                         name:
-                                            tx.positionLiq === 0
-                                                ? ' Remove Liq.'
-                                                : ' Update Liq.',
+                                            diff < 30
+                                                ? ''
+                                                : tx.positionLiq === 0
+                                                  ? ' Remove Liq.'
+                                                  : ' Update Liq.',
                                         value: tx.latestUpdateTime * 1000,
                                     });
                                 }
