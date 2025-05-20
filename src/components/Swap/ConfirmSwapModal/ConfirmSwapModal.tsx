@@ -1,9 +1,7 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { TokenPairIF } from '../../../ambient-utils/types';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
@@ -28,8 +26,6 @@ interface propsIF {
     priceImpactWarning: JSX.Element | undefined;
     isSaveAsDexSurplusChecked: boolean;
     percentDiffUsdValue: number | undefined;
-    crocEnv: CrocEnv | undefined;
-    priceImpact: CrocImpact | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -53,11 +49,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         priceImpactWarning,
         isSaveAsDexSurplusChecked,
         percentDiffUsdValue,
-        crocEnv,
-        priceImpact,
     } = props;
-
-    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const sellTokenData = tokenPair.dataTokenA;
     const buyTokenData = tokenPair.dataTokenB;
@@ -68,11 +60,15 @@ export default function ConfirmSwapModal(props: propsIF) {
         useState<boolean>(false);
 
     // logic to prevent swap quantities updating during/after swap completion
-    const [memoTokenAQty, setMemoTokenAQty] = useState<string | undefined>();
-    const [memoTokenBQty, setMemoTokenBQty] = useState<string | undefined>();
+    const [memoTokenAQty, setMemoTokenAQty] = useState<string | undefined>(
+        sellQtyString,
+    );
+    const [memoTokenBQty, setMemoTokenBQty] = useState<string | undefined>(
+        buyQtyString,
+    );
     const [memoEffectivePrice, setMemoEffectivePrice] = useState<
         number | undefined
-    >();
+    >(effectivePrice);
 
     useEffect(() => {
         if (newSwapTransactionHash === '') {
@@ -82,25 +78,27 @@ export default function ConfirmSwapModal(props: propsIF) {
         }
     }, [newSwapTransactionHash, sellQtyString, buyQtyString, effectivePrice]);
 
-    // calculate the percentage change in pool price since the confirm modal was opened
-    const [initialPriceImpact, setInitialPriceImpact] = useState<
-        CrocImpact | undefined
-    >(priceImpact);
+    const [initialEffectivePrice, setInitialEffectivePrice] = useState<
+        number | undefined
+    >(effectivePrice);
 
     useEffect(() => {
-        if (!isWaitingForPriceChangeAckt) setInitialPriceImpact(priceImpact);
+        if (!isWaitingForPriceChangeAckt)
+            setInitialEffectivePrice(effectivePrice);
     }, [isWaitingForPriceChangeAckt]);
 
     const priceChangePercentage = useMemo(() => {
-        if (!priceImpact || !initialPriceImpact) return;
+        if (!memoEffectivePrice || !initialEffectivePrice) return;
 
-        const initialPriceInBase = initialPriceImpact.finalPrice;
-        const newPriceInBase = priceImpact.finalPrice;
+        // calculate the percentage change in pool price since the confirm modal was opened
+        // effectivePrice is the qty of buyToken user should receive per 1 sellToken
+        // changePercentage is positive when the qty of buyToken per sellToken decreases
+        // user must acknowledge price change > 0.01% to proceed with swap
 
-        const changePercentage = isTokenABase
-            ? ((initialPriceInBase - newPriceInBase) / initialPriceInBase) * 100
-            : ((newPriceInBase - initialPriceInBase) / initialPriceInBase) *
-              100;
+        const changePercentage =
+            ((initialEffectivePrice - memoEffectivePrice) /
+                initialEffectivePrice) *
+            100;
 
         if (changePercentage >= 0.01) {
             setIsWaitingForPriceChangeAckt(true);
@@ -109,7 +107,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         }
 
         return changePercentage;
-    }, [priceImpact, initialPriceImpact, isTokenABase]);
+    }, [memoEffectivePrice, initialEffectivePrice]);
 
     const buyTokenPriceChangeString = priceChangePercentage
         ? priceChangePercentage.toLocaleString('en-US', {
