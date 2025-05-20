@@ -73,7 +73,7 @@
         "adm-zip": "^0.5.10",
         "dotenv": "^16.5.0",
         "eslint": "^7.32.0",
-        "eslint-config-prettier": "^10.1.2",
+        "eslint-config-prettier": "^10.1.5",
         "eslint-import-resolver-typescript": "^4.3.4",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-prettier": "^4.0.0",
