@@ -907,8 +907,6 @@ function Swap(props: propsIF) {
                         priceImpactWarning={priceImpactWarning}
                         isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                         percentDiffUsdValue={percentDiffUsdValue}
-                        crocEnv={crocEnv}
-                        priceImpact={priceImpact}
                     />
                 ) : (
                     <></>
