@@ -25,7 +25,6 @@ import ethLogo from './assets/images/networks/ethereum_logo.svg';
 import sepoliaLogo from './assets/images/networks/ethereum_sepolia.webp';
 import monadLogo from './assets/images/networks/monad_logo_small_with_margin.png';
 import plumeLogo from './assets/images/networks/plume_mainnet_logo_small.webp';
-import plumeSepoliaLogo from './assets/images/networks/plume_sepolia.webp';
 import scrollLogo from './assets/images/networks/scroll_logo.webp';
 import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia.webp';
 import swellLogo from './assets/images/networks/swell_logo.webp';
@@ -80,7 +79,6 @@ createAppKit({
         534351: scrollSepoliaLogo,
         534352: scrollLogo,
         11155111: sepoliaLogo,
-        98864: plumeSepoliaLogo,
         98865: plumeLogo,
         98866: plumeLogo,
         1923: swellLogo,

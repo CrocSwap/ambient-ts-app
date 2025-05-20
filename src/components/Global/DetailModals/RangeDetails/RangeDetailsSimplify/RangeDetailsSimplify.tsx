@@ -110,17 +110,17 @@ function RangeDetailsSimplify(props: propsIF) {
 
     function handleOpenBaseAddress() {
         if (tokenAAddressLowerCase && blockExplorer) {
-            const adressUrl =
+            const blockExplorerUrl =
                 tokenAAddressLowerCase === ZERO_ADDRESS
                     ? `${blockExplorer}address/${addrs.dex}`
                     : `${blockExplorer}token/${tokenAAddressLowerCase}`;
-            window.open(adressUrl);
+            window.open(blockExplorerUrl);
         }
     }
     function handleOpenQuoteAddress() {
         if (tokenBAddressLowerCase && blockExplorer) {
-            const adressUrl = `${blockExplorer}token/${tokenBAddressLowerCase}`;
-            window.open(adressUrl);
+            const blockExplorerUrl = `${blockExplorer}token/${tokenBAddressLowerCase}`;
+            window.open(blockExplorerUrl);
         }
     }
 

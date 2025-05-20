@@ -9,10 +9,10 @@ import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
-    SECONDARY_PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
+    PUBLIC: 'https://rpc.plume.org',
+    SECONDARY_PUBLIC: 'https://rpc.plume.org',
     RESTRICTED: import.meta.env.VITE_PLUME_RPC_URL,
-    WEBSOCKET: 'wss://phoenix-rpc.plumenetwork.xyz',
+    WEBSOCKET: 'wss://rpc.plume.org',
 };
 
 const PRIMARY_RPC_URL = RPC_URLS.RESTRICTED || RPC_URLS.PUBLIC;
@@ -39,8 +39,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Blockscout',
-            url: 'https://phoenix-explorer.plumenetwork.xyz',
-            apiUrl: 'https://phoenix-explorer.plumenetwork.xyz/api',
+            url: 'https://explorer.plume.org/',
+            apiUrl: 'https://explorer.plume.org/api/',
         },
     },
 };

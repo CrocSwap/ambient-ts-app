@@ -8,9 +8,9 @@ import { linkGenMethodsIF, pageNames, useLinkGen } from './useLinkGen';
 // import{ getDefaultPairForChain } from '../../ambient-utils/constants';
 import { ZERO_ADDRESS } from '../../ambient-utils/constants';
 import {
+    lookupChainId,
     remapTokenIfWrappedNative,
     validateAddress,
-    validateChain,
 } from '../../ambient-utils/dataLayer';
 import { getTopPairedTokenAddress } from '../../ambient-utils/dataLayer/functions/getTopPairedTokenAddress';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
@@ -131,7 +131,11 @@ export const useUrlParams = (
                 urlParamMap.get('token') || urlParamMap.get('tokenB') || '',
             );
 
-            const chainToUse = urlParamMap.get('chain') || dfltChainId;
+            const chainToUse =
+                lookupChainId(
+                    urlParamMap.get('chain') || dfltChainId,
+                    'string',
+                ) || dfltChainId;
 
             Promise.resolve(
                 getTopPairedTokenAddress(
@@ -165,7 +169,7 @@ export const useUrlParams = (
         function validateParam(p: [validParamsType, string]): void {
             const [key, val] = p;
             if (key === 'chain') {
-                validateChain(val) || redirectUser();
+                lookupChainId(val, 'string') || redirectUser();
             } else if (key === 'tokenA' || key === 'tokenB') {
                 validateAddress(val) || redirectUser();
             }
@@ -296,7 +300,11 @@ export const useUrlParams = (
         };
 
         try {
-            const chainToUse = urlParamMap.get('chain') || dfltChainId;
+            const chainToUse =
+                lookupChainId(
+                    urlParamMap.get('chain') || dfltChainId,
+                    'string',
+                ) || dfltChainId;
 
             const tokenA = urlParamMap.get('tokenA');
             const tokenB = urlParamMap.get('tokenB');

@@ -7,12 +7,10 @@ import {
     useEffect,
     useState,
 } from 'react';
-import { ZERO_ADDRESS } from '../ambient-utils/constants';
 import {
     getFormattedNumber,
-    isBtcPair,
     isDefaultDenomTokenExcludedFromUsdConversion,
-    isETHPair,
+    isETHorStakedEthToken,
     isStablePair,
     isWbtcOrStakedBTCToken,
 } from '../ambient-utils/dataLayer';
@@ -37,6 +35,8 @@ export interface PoolContextIF {
     fdvOfDenomTokenDisplay: string | undefined;
     baseTokenFdvDisplay: string | undefined;
     quoteTokenFdvDisplay: string | undefined;
+    basePrice: number | undefined;
+    quotePrice: number | undefined;
 }
 
 export const PoolContext = createContext({} as PoolContextIF);
@@ -62,7 +62,6 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
     const poolData = useFetchPoolStats(
         poolArg,
         activePoolList,
-        true,
         true,
         didUserFlipDenom,
     );
@@ -122,30 +121,18 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
         const isPairStablePair = isStablePair(
             baseToken.address,
             quoteToken.address,
-        );
-        const isPairEthPair = isETHPair(
-            baseToken.address,
-            quoteToken.address,
             chainId,
         );
-        const isPoolBtcPair = isBtcPair(baseToken.address, quoteToken.address);
-
         const excludeFromUsdConversion =
             isDefaultDenomTokenExcludedFromUsdConversion(baseToken, quoteToken);
 
         const isPairEthWbtc =
-            baseToken.address === ZERO_ADDRESS &&
+            isETHorStakedEthToken(baseToken.address, chainId) &&
             isWbtcOrStakedBTCToken(quoteToken.address);
 
         if (
             usdPrice !== undefined &&
-            !(
-                isPairStablePair ||
-                isPairEthPair ||
-                isPoolBtcPair ||
-                isPairEthWbtc ||
-                excludeFromUsdConversion
-            )
+            !(isPairStablePair || isPairEthWbtc || excludeFromUsdConversion)
         ) {
             setDefaultTradeDollarization(true);
             setIsTradeDollarizationEnabled(true);
@@ -170,6 +157,8 @@ export const PoolContextProvider = (props: { children: ReactNode }) => {
         isTradeDollarizationEnabled,
         isDefaultTradeDollarization,
         setIsTradeDollarizationEnabled,
+        basePrice,
+        quotePrice,
     };
 
     return (

@@ -345,6 +345,14 @@
             "decimals": 18,
             "chainId": 10143,
             "logoURI": "https://kintsu-logos.s3.us-east-1.amazonaws.com/sMON.svg"
+        },
+        {
+            "name": "gMON",
+            "address": "0xaeef2f6b429cb59c9b2d7bb2141ada993e8571c3",
+            "symbol": "gMON",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://www.magmastaking.xyz/gMON.png"
         }
     ]
 }

@@ -41,19 +41,22 @@ const useGenFakeTableRow = () => {
         useContext(CachedDataContext);
 
     const {
-        activeNetwork: { chainId, poolIndex },
+        activeNetwork: { chainId, poolIndex, indexerTimeout },
     } = useContext(AppStateContext);
 
     const getDelayTime = () => {
         // can be used to test if indexed data overrides pendings correctly
         const factor = 1;
 
+        if (indexerTimeout) {
+            return indexerTimeout * factor;
+        }
+
         switch (chainId) {
             case '0x1': // eth-mainnet
             case '0xaa36a7': // eth-sepolia
                 return 5000 * factor;
             case '0x18231': // plume-mainnet
-            case '0x18230': // plume-sepolia
                 return 1000 * factor;
             default:
                 return 2000 * factor;

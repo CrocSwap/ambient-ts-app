@@ -112,7 +112,7 @@ function Reposition() {
     const posHash = getPositionHash(position);
 
     const slippageTolerancePercentage = position
-        ? isStablePair(position.base, position.quote)
+        ? isStablePair(position.base, position.quote, chainId)
             ? repoSlippage.stable
             : repoSlippage.volatile
         : 0;

@@ -5,7 +5,7 @@ import { MdErrorOutline } from 'react-icons/md';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { VscClose } from 'react-icons/vsc';
 import {
-    getChainExplorer,
+    getBlockExplorerUrl,
     trimString,
 } from '../../../../ambient-utils/dataLayer';
 import { AppStateContext } from '../../../../contexts';
@@ -32,11 +32,11 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const { cachedFetchBlockTime } = useContext(CachedDataContext);
     const { removeReceipt } = useContext(ReceiptContext);
 
-    const blockExplorer = getChainExplorer(chainId ?? currentChainId);
-    const EtherscanTx = `${blockExplorer}tx/${hash}`;
+    const blockExplorer = getBlockExplorerUrl(chainId ?? currentChainId);
+    const txUrl = `${blockExplorer}tx/${hash}`;
 
-    const handleNavigateEtherscan = () => {
-        window.open(EtherscanTx, '_blank');
+    const handleNavigateTxUrl = () => {
+        window.open(txUrl, '_blank');
     };
 
     const pending = <Spinner size={30} bg={'var(--dark2)'} weight={2} />;
@@ -45,7 +45,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
         <IoMdCheckmarkCircleOutline
             size={30}
             color='var(--accent1)'
-            onClick={handleNavigateEtherscan}
+            onClick={handleNavigateTxUrl}
         />
     );
 
@@ -135,7 +135,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     return (
         <div className={styles.nContainer}>
             <a
-                href={EtherscanTx}
+                href={txUrl}
                 className={styles.leftSide}
                 target='_blank'
                 rel='noreferrer'
@@ -169,7 +169,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                     />
                 </button>
                 <a
-                    href={EtherscanTx}
+                    href={txUrl}
                     className={styles.action}
                     target='_blank'
                     rel='noreferrer'

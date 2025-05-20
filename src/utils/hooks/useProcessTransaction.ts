@@ -9,13 +9,13 @@ import { getAddress } from 'ethers';
 import moment from 'moment';
 import { useContext, useEffect, useState } from 'react';
 import {
-    getChainExplorer,
     getElapsedTime,
     getFormattedNumber,
     getMoneynessRank,
     getUnicodeCharacter,
     trimString,
 } from '../../ambient-utils/dataLayer';
+import { getBlockExplorerUrl } from '../../ambient-utils/dataLayer/functions/chains';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 import { TransactionIF } from '../../ambient-utils/types';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
@@ -32,7 +32,7 @@ export const useProcessTransaction = (
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
     const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const blockExplorer = getChainExplorer(tx.chainId);
+    const blockExplorer = getBlockExplorerUrl(tx.chainId);
 
     const txHash = tx.txHash;
 

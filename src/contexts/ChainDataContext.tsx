@@ -166,9 +166,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(chainId);
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);
-    const isActiveNetworkPlume = ['0x18230', '0x18231', '0x18232'].includes(
-        chainId,
-    );
+    const isActiveNetworkPlume = ['0x18231', '0x18232'].includes(chainId);
     const isActiveNetworkSwell = ['0x783', '0x784'].includes(chainId);
     const isActiveNetworkBase = ['0x14a34'].includes(chainId);
     const isActiveNetworkMonad = ['0x279f'].includes(chainId);
@@ -499,7 +497,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             ) {
                 try {
                     const combinedBalances: TokenIF[] = [];
-
                     // Run both API calls concurrently
                     const [ambientListWalletBalances, dexBalancesFromCache] =
                         await Promise.all([
@@ -507,6 +504,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                                 address: userAddress,
                                 chain: chainId,
                                 crocEnv: crocEnv,
+                                ackTokens: tokens.ackTokens,
                                 _refreshTime: everyFiveSeconds,
                             }),
                             cachedFetchDexBalances({
@@ -585,7 +583,12 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                         setIsTokenBalanceFetchManuallyTriggerered(false);
                     }
                 } catch (error) {
-                    console.error({ error });
+                    if (error instanceof Error) {
+                        console.error(error.message); // Prints the error message
+                        console.error(error.stack); // Prints the stack trace
+                    } else {
+                        console.error('Unknown error', error);
+                    }
                 }
             }
         })();

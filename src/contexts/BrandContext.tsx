@@ -10,7 +10,6 @@ import {
     futaBrandAssets,
     monadTestnetBrandAssets,
     plumeBrandAssets,
-    plumeSepoliaBrandAssets,
     scrollBrandAssets,
     swellBrandAssets,
     swellSepoliaBrandAssets,
@@ -90,8 +89,6 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return ambientProductionBrandAssets;
             case 'ambientTestnet':
                 return ambientTestnetBrandAssets;
-            case 'plumeSepolia':
-                return plumeSepoliaBrandAssets;
             case 'swellSepolia':
                 return swellSepoliaBrandAssets;
             case 'monadTestnet':

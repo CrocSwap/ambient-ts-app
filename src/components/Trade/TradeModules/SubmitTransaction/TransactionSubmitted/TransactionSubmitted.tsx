@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import { brand } from '../../../../../ambient-utils/constants';
-import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
+import { getBlockExplorerUrl } from '../../../../../ambient-utils/dataLayer';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import Button from '../../../../Form/Button';
 import addTokenToWallet from './addTokenToWallet';
@@ -37,7 +37,6 @@ export default function TransactionSubmitted(props: PropsIF) {
         type,
         hash,
         noAnimation,
-        chainId,
         isConfirmed,
         isTransactionFailed,
         importTokenSymbol,
@@ -46,16 +45,17 @@ export default function TransactionSubmitted(props: PropsIF) {
         importTokenImage,
     } = props;
 
-    const blockExplorer = getChainExplorer(chainId);
-    const txUrlOnBlockExplorer = `${blockExplorer}tx/${hash}`;
-    const currentLocation = useLocation()?.pathname;
-    const isFuta = brand === 'futa';
-
     const {
         activeNetwork: {
             chainSpecForAppKit: { nativeCurrency },
+            chainId,
         },
     } = useContext(AppStateContext);
+
+    const blockExplorer = getBlockExplorerUrl(chainId);
+    const txUrlOnBlockExplorer = `${blockExplorer}tx/${hash}`;
+    const currentLocation = useLocation()?.pathname;
+    const isFuta = brand === 'futa';
 
     const { walletProvider } = useAppKitProvider('eip155');
     const handleAddToMetaMask = async () => {

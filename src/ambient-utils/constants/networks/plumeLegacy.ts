@@ -10,7 +10,7 @@ import { TopPool } from './TopPool';
 
 const RPC_URLS = {
     PUBLIC: 'https://rpc.plumenetwork.xyz',
-    SECONDARY_PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
+    SECONDARY_PUBLIC: 'https://rpc.plumenetwork.xyz',
     RESTRICTED: import.meta.env.VITE_PLUME_RPC_URL,
     WEBSOCKET: 'wss://rpc.plumenetwork.xyz',
 };
@@ -39,8 +39,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Blockscout',
-            url: 'https://explorer.plumenetwork.xyz',
-            apiUrl: 'https://explorer.plumenetwork.xyz/api',
+            url: 'https://explorer.plumenetwork.xyz/',
+            apiUrl: 'https://explorer.plumenetwork.xyz/api/',
         },
     },
 };
@@ -110,4 +110,5 @@ export const plumeLegacy: NetworkIF = {
     tempestApiNetworkName: '',
     topPools,
     getGasPriceInGwei,
+    indexerTimeout: 2000,
 };
