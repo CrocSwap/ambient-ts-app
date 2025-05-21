@@ -353,6 +353,14 @@
             "decimals": 18,
             "chainId": 10143,
             "logoURI": "https://www.magmastaking.xyz/gMON.png"
+        },
+        {
+            "name": "Enjoyoors gigaETH",
+            "address": "0x8589a0dd9ecd77b7d70ff76147dce366bf31254e",
+            "symbol": "gigaETH",
+            "decimals": 18,
+            "chainId": 10143,
+            "logoURI": "https://content.enjoyoors.xyz/tokens/monad-0x8589a0dD9eCD77B7D70Ff76147dcE366bF31254E.png"
         }
     ]
 }
