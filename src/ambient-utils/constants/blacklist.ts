@@ -386,6 +386,31 @@ export const hiddenTokens = [
         address: '0x6f2a1a886dbf8e36c4fa9f25a517861a930fbf3a',
         chainId: 534352,
     },
+    {
+        // nELIXIR on Plume
+        address: '0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c',
+        chainId: 98866,
+    },
+    {
+        // nINSTO on Plume
+        address: '0xbfc5770631641719cd1cf809d8325b146aed19de',
+        chainId: 98866,
+    },
+    {
+        // nPAYFI on Plume
+        address: '0xb52b090837a035f93a84487e5a7d3719c32aa8a9',
+        chainId: 98866,
+    },
+    {
+        // nETF on Plume
+        address: '0xdeA736937d464d288eC80138bcd1a2E109A200e3',
+        chainId: 98866,
+    },
+    {
+        // nBTC on Plume
+        address: '0x02cdb5ccc97d5dc7ed2747831b516669eb635706',
+        chainId: 98866,
+    },
 ];
 
 const embargoedTokens = [
