@@ -825,6 +825,14 @@
             "chainId": 98866,
             "address": "0x11113Ff3a60C2450F4b22515cB760417259eE94B",
             "logoURI": "https://assets.plume.org/images/logos/nest/nBASIS/nBASIS-token.svg"
+        },
+        {
+            "name": "Nest Credit Vault",
+            "symbol": "nCREDIT",
+            "decimals": 6,
+            "chainId": 98866,
+            "address": "0xa5f78b2a0ab85429d2dfbf8b60abc70f4cec066c",
+            "logoURI": "https://assets.plume.org/images/logos/nest/nCREDIT/nCREDIT-token.svg"
         }
     ]
 }
