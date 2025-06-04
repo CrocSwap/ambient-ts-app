@@ -111,9 +111,12 @@ function Range() {
         baseToken: { decimals: baseTokenDecimals },
         quoteToken: { decimals: quoteTokenDecimals },
     } = useContext(TradeTokenContext);
-    const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
-        UserPreferenceContext,
-    );
+    const {
+        mintSlippage,
+        dexBalRange,
+        bypassConfirmRange,
+        fastLaneProtection,
+    } = useContext(UserPreferenceContext);
     const { positionsByUser, liquidityFee } = useContext(GraphDataContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
@@ -1148,6 +1151,7 @@ function Range() {
                 <TradeModuleHeader
                     slippage={mintSlippage}
                     bypassConfirm={bypassConfirmRange}
+                    fastLaneProtection={fastLaneProtection}
                     settingsTitle='Pool'
                 />
             }

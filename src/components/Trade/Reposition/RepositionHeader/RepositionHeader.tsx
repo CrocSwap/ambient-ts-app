@@ -26,7 +26,7 @@ function RepositionHeader(props: propsIF) {
         setCurrentRangeInReposition,
         setAdvancedMode,
     } = useContext(RangeContext);
-    const { bypassConfirmRepo, repoSlippage } = useContext(
+    const { bypassConfirmRepo, repoSlippage, fastLaneProtection } = useContext(
         UserPreferenceContext,
     );
     const { defaultRangeWidthForActivePool } = useContext(TradeDataContext);
@@ -65,6 +65,7 @@ function RepositionHeader(props: propsIF) {
                     module='Reposition'
                     slippage={repoSlippage}
                     bypassConfirm={bypassConfirmRepo}
+                    fastLaneProtection={fastLaneProtection}
                     onClose={closeModal}
                 />
             )}

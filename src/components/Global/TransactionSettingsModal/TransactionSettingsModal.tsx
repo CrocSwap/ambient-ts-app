@@ -3,6 +3,7 @@ import { FiAlertTriangle } from 'react-icons/fi';
 import { isStablePair } from '../../../ambient-utils/dataLayer';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { FastLaneProtectionIF } from '../../../App/hooks/useFastLaneProtection';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -14,6 +15,7 @@ import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationMo
 import DollarizationModalControl from '../DollarizationModalControl/DollarizationModalControl';
 import Modal from '../Modal/Modal';
 import SendToDexBalControl from '../SendToDexBalControl/SendToDexBalControl';
+import FastLaneProtectionControl from '../FastLaneProtectionControl/FastLaneProtectionControl';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 
 export type TransactionModuleType =
@@ -28,11 +30,19 @@ interface propsIF {
     slippage: SlippageMethodsIF;
     dexBalSwap?: dexBalanceMethodsIF;
     bypassConfirm: skipConfirmIF;
+    fastLaneProtection: FastLaneProtectionIF;
     onClose: () => void;
 }
 
 export default function TransactionSettingsModal(props: propsIF) {
-    const { module, slippage, dexBalSwap, onClose, bypassConfirm } = props;
+    const {
+        module,
+        slippage,
+        dexBalSwap,
+        onClose,
+        bypassConfirm,
+        fastLaneProtection,
+    } = props;
     const { tokenA, tokenB } = useContext(TradeDataContext);
     const {
         activeNetwork: { chainId },
@@ -67,6 +77,11 @@ export default function TransactionSettingsModal(props: propsIF) {
     const [currentDollarizationMode, setCurrentDollarizationMode] =
         useState<boolean>(isTradeDollarizationEnabled);
 
+    const persistedFastLane = fastLaneProtection.isEnabled;
+    const [currentFastLane, setCurrentFastLane] = useState<boolean>(
+        persistedFastLane,
+    );
+
     const updateSettings = (): void => {
         isPairStable
             ? slippage.updateStable(currentSlippage)
@@ -78,6 +93,9 @@ export default function TransactionSettingsModal(props: propsIF) {
                 : dexBalSwap.outputToDexBal.disable()
             : undefined;
         setIsTradeDollarizationEnabled(currentDollarizationMode);
+        currentFastLane
+            ? fastLaneProtection.enable()
+            : fastLaneProtection.disable();
         onClose();
     };
 
@@ -135,6 +153,12 @@ export default function TransactionSettingsModal(props: propsIF) {
                             displayInSettings={true}
                         />
                     )}
+
+                    <FastLaneProtectionControl
+                        tempEnableFastLane={currentFastLane}
+                        setTempEnableFastLane={setCurrentFastLane}
+                        displayInSettings={true}
+                    />
 
                     <ConfirmationModalControl
                         tempBypassConfirm={currentSkipConfirm}
