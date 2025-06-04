@@ -34,15 +34,18 @@ export const getTransactionData = async (
                 quoteTokenAddress.toLowerCase(),
     );
 
-    const poolPriceNonDisplay = poolOnAnalyticsPoolList?.lastPriceSwap
-        ? poolOnAnalyticsPoolList.lastPriceSwap
-        : await cachedQuerySpotPrice(
-              crocEnv,
-              baseTokenAddress,
-              quoteTokenAddress,
-              chainId,
-              Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-          );
+    const isLowRPCMode = chainId === '0x279f'; // monad testnet
+
+    const poolPriceNonDisplay =
+        isLowRPCMode && poolOnAnalyticsPoolList?.lastPriceSwap
+            ? poolOnAnalyticsPoolList.lastPriceSwap
+            : await cachedQuerySpotPrice(
+                  crocEnv,
+                  baseTokenAddress,
+                  quoteTokenAddress,
+                  chainId,
+                  Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+              );
 
     const basePrice = poolOnAnalyticsPoolList?.baseUsdPrice
         ? poolOnAnalyticsPoolList.baseUsdPrice
