@@ -107,7 +107,7 @@ export const plumeMainnet: NetworkIF = {
     displayName: 'Plume',
     tokenPriceQueryAssetPlatform: 'plume',
     vaultsEnabled: true,
-    tempestApiNetworkName: '',
+    tempestApiNetworkName: 'plume',
     topPools,
     getGasPriceInGwei,
 };
