@@ -106,7 +106,7 @@ export const plumeMainnet: NetworkIF = {
     ).replace(/\/?$/, '/'),
     displayName: 'Plume',
     tokenPriceQueryAssetPlatform: 'plume',
-    vaultsEnabled: false,
+    vaultsEnabled: true,
     tempestApiNetworkName: '',
     topPools,
     getGasPriceInGwei,
