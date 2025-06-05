@@ -30,7 +30,7 @@ const chainSpecForAppKit: Chain = {
             webSocket: [RPC_URLS.WEBSOCKET],
         },
     },
-    name: 'Plume',
+    name: 'Plume Mainnet',
     nativeCurrency: {
         name: 'Plume',
         symbol: 'PLUME',
