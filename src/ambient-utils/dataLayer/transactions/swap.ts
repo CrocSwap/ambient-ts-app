@@ -8,6 +8,8 @@ import {
 } from '../../constants';
 import { Signer } from 'ethers';
 
+type Hex = `0x${string}`;
+
 interface PerformSwapParams {
     crocEnv: CrocEnv;
     isQtySell: boolean;
@@ -102,22 +104,23 @@ export async function performFastLaneSwap(params: {
         surplusFlags,
     );
 
-    const valueSell = plan.qtyInBase ? swapQty.toString() : slipQty.toString();
+    const valueSell: Hex = plan.qtyInBase
+        ? `0x${swapQty.toString(16)}`
+        : `0x${slipQty.toString(16)}`;
     const maxFeePerGas = (await context.provider.getFeeData()).maxFeePerGas;
-    const maxFeePerGasHex = maxFeePerGas
-        ? '0x' + maxFeePerGas.toString(16)
-        : '0xC1B710800';
-    const value =
+    const maxFeePerGasHex: Hex = `0x${maxFeePerGas?.toString(16)}`;
+    const value: Hex =
         sellTokenAddress === '0x0000000000000000000000000000000000000000'
             ? valueSell
             : '0x0';
+
     const payload = {
         jsonrpc: '2.0',
         method: 'atlas_sendUnsignedTransaction',
         params: [
             {
                 transaction: {
-                    chainId: parseInt(context.chain.chainId),
+                    chainId: context.chain.chainId,
                     from: actorAddress,
                     to: dexAddress,
                     value: value,
@@ -137,6 +140,15 @@ export async function performFastLaneSwap(params: {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
     });
+
+    if (!response.ok) {
+        const errorBody = await response.text();
+        console.error('Auctioneer error response:', errorBody);
+        throw new Error(
+            `Auctioneer request failed with status ${response.status}: ${errorBody}`,
+        );
+    }
+
     const result = await response.json();
     if (!result || !result.result) {
         throw new Error('Failed to get transaction response from Atlas');
