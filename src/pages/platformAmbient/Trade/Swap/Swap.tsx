@@ -411,9 +411,7 @@ function Swap(props: propsIF) {
             ) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage(
-                    `${
-                        tokenA.address === ZERO_ADDRESS ? 'ETH ' : ''
-                    } Wallet Balance Insufficient to Cover Gas`,
+                    `${tokenA.symbol} Wallet Balance Insufficient to Cover Gas`,
                 );
             } else {
                 setSwapAllowed(true);

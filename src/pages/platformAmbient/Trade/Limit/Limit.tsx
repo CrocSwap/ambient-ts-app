@@ -878,9 +878,7 @@ export default function Limit() {
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
-                        `${
-                            tokenA.address === ZERO_ADDRESS ? 'ETH ' : ''
-                        } Wallet Balance Insufficient to Cover Gas`,
+                        `${tokenA.symbol} Wallet Balance Insufficient to Cover Gas`,
                     );
                 } else {
                     setLimitAllowed(true);
@@ -905,9 +903,7 @@ export default function Limit() {
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
-                        `${
-                            tokenA.address === ZERO_ADDRESS ? 'ETH ' : ''
-                        } Wallet Balance Insufficient to Cover Gas`,
+                        `${tokenA.symbol} Wallet Balance Insufficient to Cover Gas`,
                     );
                 } else {
                     setLimitAllowed(true);
