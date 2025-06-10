@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import { ATLAS_ROUTER } from '../../ambient-utils/constants';
 import {
     AppStateContext,
     ChainDataContext,
@@ -6,7 +7,6 @@ import {
     UserDataContext,
 } from '../../contexts';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { ATLAS_ROUTER, monadTestnet } from '../../ambient-utils/constants';
 import { useFastLaneProtection } from './useFastLaneProtection';
 
 export function useTokenPairAllowance() {
@@ -118,5 +118,6 @@ export function useTokenPairAllowance() {
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
+        fastLaneProtection,
     };
 }

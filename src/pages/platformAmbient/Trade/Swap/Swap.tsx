@@ -35,6 +35,7 @@ import { WarningContainer } from '../../../../styled/Components/TradeModules';
 
 import { ethers } from 'ethers';
 import {
+    ATLAS_ROUTER,
     GAS_DROPS_ESTIMATE_SWAP_FROM_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET,
@@ -48,8 +49,6 @@ import {
     SWAP_BUFFER_MULTIPLIER_L2,
     SWAP_BUFFER_MULTIPLIER_MAINNET,
     ZERO_ADDRESS,
-    ATLAS_ROUTER,
-    monadTestnet,
 } from '../../../../ambient-utils/constants';
 import { MAINNET_TOKENS } from '../../../../ambient-utils/constants/networks/ethereumMainnet';
 import { useApprove } from '../../../../App/functions/approve';
@@ -84,10 +83,15 @@ function Swap(props: propsIF) {
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
-    const { tokenAAllowance, tokenABalance, tokenADexBalance } =
-        useContext(TradeTokenContext);
-    const { swapSlippage, dexBalSwap, bypassConfirmSwap, fastLaneProtection } =
-        useContext(UserPreferenceContext);
+    const {
+        tokenAAllowance,
+        tokenABalance,
+        tokenADexBalance,
+        fastLaneProtection,
+    } = useContext(TradeTokenContext);
+    const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
+        UserPreferenceContext,
+    );
     const {
         addPendingTx,
         addReceipt,
