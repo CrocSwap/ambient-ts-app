@@ -5,7 +5,7 @@ import ambientLogo from '../../assets/images/icons/ambient_icon.png';
 import walletEnabledIcon from '../../assets/images/icons/wallet-enabled.svg';
 import walletIcon from '../../assets/images/icons/wallet.svg';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { FlexContainer } from '../../styled/Common';
 import { MaxButton } from '../../styled/Components/Portfolio';
 import IconWithTooltip from '../Global/IconWithTooltip/IconWithTooltip';
@@ -41,7 +41,7 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
-    const { fastLaneProtection } = useContext(UserPreferenceContext);
+    const { fastLaneProtection } = useContext(TradeTokenContext);
 
     // const walletEnabledIcon = (
     //     <svg
