@@ -622,16 +622,18 @@ function Range() {
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     useEffect(() => {
-        setIsWithdrawTokenAFromDexChecked(
-            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
-        );
-    }, [tokenADexBalance]);
-
-    useEffect(() => {
-        setIsWithdrawTokenBFromDexChecked(
-            fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0,
-        );
-    }, [tokenBDexBalance]);
+        if (fastLaneProtection?.isEnabled) {
+            setIsWithdrawTokenAFromDexChecked(false);
+            setIsWithdrawTokenBFromDexChecked(false);
+        } else {
+            setIsWithdrawTokenAFromDexChecked(
+                fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
+            );
+            setIsWithdrawTokenBFromDexChecked(
+                fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0n,
+            );
+        }
+    }, [tokenADexBalance, tokenBDexBalance, fastLaneProtection?.isEnabled]);
 
     useEffect(() => {
         if (advancedMode) {
@@ -1014,6 +1016,11 @@ function Range() {
     };
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (fastLaneProtection?.isEnabled) {
+            // Show tooltip message
+            return;
+        }
+
         if (tokenAorB === 'A') {
             setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked);
         } else {

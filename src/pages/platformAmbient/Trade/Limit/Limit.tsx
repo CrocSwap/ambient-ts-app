@@ -102,8 +102,12 @@ export default function Limit() {
         updateTransactionHash,
         pendingTransactions,
     } = useContext(ReceiptContext);
-    const { mintSlippage, dexBalLimit, bypassConfirmLimit, fastLaneProtection } =
-        useContext(UserPreferenceContext);
+    const {
+        mintSlippage,
+        dexBalLimit,
+        bypassConfirmLimit,
+        fastLaneProtection,
+    } = useContext(UserPreferenceContext);
     const { basePrice, quotePrice } = poolData;
 
     const [isOpen, openModal, closeModal] = useModal();
@@ -538,10 +542,14 @@ export default function Limit() {
     ]);
 
     useEffect(() => {
-        setIsWithdrawFromDexChecked(
-            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
-        );
-    }, [tokenADexBalance]);
+        if (fastLaneProtection?.isEnabled) {
+            setIsWithdrawFromDexChecked(false);
+        } else {
+            setIsWithdrawFromDexChecked(
+                fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
+            );
+        }
+    }, [tokenADexBalance, fastLaneProtection?.isEnabled]);
 
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 10000 : 0,
@@ -924,6 +932,11 @@ export default function Limit() {
     const { approve, isApprovalPending } = useApprove();
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (fastLaneProtection?.isEnabled) {
+            // Show tooltip message
+            return;
+        }
+
         if (tokenAorB === 'A') {
             setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked);
         } else {

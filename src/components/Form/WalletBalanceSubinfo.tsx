@@ -5,6 +5,7 @@ import ambientLogo from '../../assets/images/icons/ambient_icon.png';
 import walletEnabledIcon from '../../assets/images/icons/wallet-enabled.svg';
 import walletIcon from '../../assets/images/icons/wallet.svg';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { FlexContainer } from '../../styled/Common';
 import { MaxButton } from '../../styled/Components/Portfolio';
 import IconWithTooltip from '../Global/IconWithTooltip/IconWithTooltip';
@@ -40,6 +41,7 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+    const { fastLaneProtection } = useContext(UserPreferenceContext);
 
     // const walletEnabledIcon = (
     //     <svg
@@ -87,11 +89,13 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
     const exchangeWithTooltip =
         isWithdraw || isDexSelected ? (
             <IconWithTooltip
-                title={`${
-                    isWithdraw
-                        ? 'Use Wallet and Exchange Balance'
-                        : 'Send to Exchange Balance'
-                }`}
+                title={
+                    fastLaneProtection?.isEnabled
+                        ? 'Exchange Balance disabled with MEV Protection'
+                        : isWithdraw
+                          ? 'Use Wallet and Exchange Balance'
+                          : 'Send to Exchange Balance'
+                }
                 placement='right'
             >
                 <div
@@ -101,6 +105,7 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                             ? 'grayscale(100%)'
                             : 'contrast(1) brightness(1) saturate(1)',
                         cursor: isWithdraw ? 'pointer' : 'default',
+                        opacity: fastLaneProtection?.isEnabled ? 0.5 : 1,
                     }}
                     onClick={onToggleDex}
                 >

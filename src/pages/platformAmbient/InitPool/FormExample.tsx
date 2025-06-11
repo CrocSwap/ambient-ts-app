@@ -1,5 +1,6 @@
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo, useState, useEffect } from 'react';
 import { IoIosCheckmarkCircle } from 'react-icons/io';
+import { fromDisplayQty } from '@crocswap-libs/sdk';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
@@ -11,13 +12,18 @@ import Toggle from '../../../components/Form/Toggle';
 import TokenInputQuantity from '../../../components/Form/TokenInputQuantity';
 import styles from '../../../components/Home/Landing/BackgroundImages.module.css';
 import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { TradeDataContext, TradeTokenContext } from '../../../contexts';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { Container, FlexContainer, Text } from '../../../styled/Common';
 import FormFooter from './FormFooterExample';
 
 export default function ExampleForm() {
-    const { dexBalRange } = useContext(UserPreferenceContext);
+    const { dexBalRange, fastLaneProtection } = useContext(
+        UserPreferenceContext,
+    );
+    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { tokenADexBalance, tokenBDexBalance } =
+        useContext(TradeTokenContext);
 
     // eslint-disable-next-line
     const [baseCollateral, setBaseCollateral] = useState<string>('');
@@ -76,8 +82,6 @@ export default function ExampleForm() {
     const [minPrice, setMinPrice] = useState(10);
     const [maxPrice, setMaxPrice] = useState(100);
 
-    const { tokenA } = useContext(TradeDataContext);
-
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
@@ -118,6 +122,20 @@ export default function ExampleForm() {
         setMaxPrice: setMaxPrice,
         setMinPrice: setMinPrice,
     };
+
+    useEffect(() => {
+        if (fastLaneProtection?.isEnabled) {
+            setIsWithdrawTokenAFromDexChecked(false);
+            setIsWithdrawTokenBFromDexChecked(false);
+        } else {
+            setIsWithdrawTokenAFromDexChecked(
+                fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
+            );
+            setIsWithdrawTokenBFromDexChecked(
+                fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0n,
+            );
+        }
+    }, [tokenADexBalance, tokenBDexBalance, fastLaneProtection?.isEnabled]);
 
     const LeftSide = useMemo(() => {
         return (
