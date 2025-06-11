@@ -110,13 +110,11 @@ function Range() {
         isTokenABase,
         baseToken: { decimals: baseTokenDecimals },
         quoteToken: { decimals: quoteTokenDecimals },
-    } = useContext(TradeTokenContext);
-    const {
-        mintSlippage,
-        dexBalRange,
-        bypassConfirmRange,
         fastLaneProtection,
-    } = useContext(UserPreferenceContext);
+    } = useContext(TradeTokenContext);
+    const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
+        UserPreferenceContext,
+    );
     const { positionsByUser, liquidityFee } = useContext(GraphDataContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 

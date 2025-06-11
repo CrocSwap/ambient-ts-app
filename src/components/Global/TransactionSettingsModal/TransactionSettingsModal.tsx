@@ -2,8 +2,8 @@ import { KeyboardEvent, useContext, useState } from 'react';
 import { FiAlertTriangle } from 'react-icons/fi';
 import { isStablePair } from '../../../ambient-utils/dataLayer';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
-import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { FastLaneProtectionIF } from '../../../App/hooks/useFastLaneProtection';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -13,9 +13,9 @@ import { SettingsContainer } from '../../../styled/Components/TradeModules';
 import Button from '../../Form/Button';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
 import DollarizationModalControl from '../DollarizationModalControl/DollarizationModalControl';
+import FastLaneProtectionControl from '../FastLaneProtectionControl/FastLaneProtectionControl';
 import Modal from '../Modal/Modal';
 import SendToDexBalControl from '../SendToDexBalControl/SendToDexBalControl';
-import FastLaneProtectionControl from '../FastLaneProtectionControl/FastLaneProtectionControl';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 
 export type TransactionModuleType =
@@ -78,9 +78,8 @@ export default function TransactionSettingsModal(props: propsIF) {
         useState<boolean>(isTradeDollarizationEnabled);
 
     const persistedFastLane = fastLaneProtection.isEnabled;
-    const [currentFastLane, setCurrentFastLane] = useState<boolean>(
-        persistedFastLane,
-    );
+    const [currentFastLane, setCurrentFastLane] =
+        useState<boolean>(persistedFastLane);
 
     const updateSettings = (): void => {
         isPairStable

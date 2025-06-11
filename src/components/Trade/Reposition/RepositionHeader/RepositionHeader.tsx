@@ -7,6 +7,7 @@ import TransactionSettingsModal from '../../../Global/TransactionSettingsModal/T
 
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { useModal } from '../../../Global/Modal/useModal';
 import styles from './RepositionHeader.module.css';
@@ -26,9 +27,10 @@ function RepositionHeader(props: propsIF) {
         setCurrentRangeInReposition,
         setAdvancedMode,
     } = useContext(RangeContext);
-    const { bypassConfirmRepo, repoSlippage, fastLaneProtection } = useContext(
+    const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
+    const { fastLaneProtection } = useContext(TradeTokenContext);
     const { defaultRangeWidthForActivePool } = useContext(TradeDataContext);
 
     const [isOpen, openModal, closeModal] = useModal();
