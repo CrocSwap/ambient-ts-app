@@ -153,11 +153,13 @@ export default function TransactionSettingsModal(props: propsIF) {
                         />
                     )}
 
-                    <FastLaneProtectionControl
-                        tempEnableFastLane={currentFastLane}
-                        setTempEnableFastLane={setCurrentFastLane}
-                        displayInSettings={true}
-                    />
+                    {fastLaneProtection.isChainAccepted(chainId) && (
+                        <FastLaneProtectionControl
+                            tempEnableFastLane={currentFastLane}
+                            setTempEnableFastLane={setCurrentFastLane}
+                            displayInSettings={true}
+                        />
+                    )}
 
                     <ConfirmationModalControl
                         tempBypassConfirm={currentSkipConfirm}
