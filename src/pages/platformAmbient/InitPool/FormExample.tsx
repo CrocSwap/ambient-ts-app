@@ -18,9 +18,7 @@ import { Container, FlexContainer, Text } from '../../../styled/Common';
 import FormFooter from './FormFooterExample';
 
 export default function ExampleForm() {
-    const { dexBalRange, fastLaneProtection } = useContext(
-        UserPreferenceContext,
-    );
+    const { dexBalRange } = useContext(UserPreferenceContext);
     const { tokenA, tokenB } = useContext(TradeDataContext);
     const { tokenADexBalance, tokenBDexBalance } =
         useContext(TradeTokenContext);
@@ -124,18 +122,13 @@ export default function ExampleForm() {
     };
 
     useEffect(() => {
-        if (fastLaneProtection?.isEnabled) {
-            setIsWithdrawTokenAFromDexChecked(false);
-            setIsWithdrawTokenBFromDexChecked(false);
-        } else {
-            setIsWithdrawTokenAFromDexChecked(
-                fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
-            );
-            setIsWithdrawTokenBFromDexChecked(
-                fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0n,
-            );
-        }
-    }, [tokenADexBalance, tokenBDexBalance, fastLaneProtection?.isEnabled]);
+        setIsWithdrawTokenAFromDexChecked(
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
+        );
+        setIsWithdrawTokenBFromDexChecked(
+            fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0n,
+        );
+    }, [tokenADexBalance, tokenBDexBalance]);
 
     const LeftSide = useMemo(() => {
         return (

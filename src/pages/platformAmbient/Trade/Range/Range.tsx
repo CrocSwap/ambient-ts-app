@@ -110,7 +110,6 @@ function Range() {
         isTokenABase,
         baseToken: { decimals: baseTokenDecimals },
         quoteToken: { decimals: quoteTokenDecimals },
-        fastLaneProtection,
     } = useContext(TradeTokenContext);
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
@@ -620,18 +619,13 @@ function Range() {
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     useEffect(() => {
-        if (fastLaneProtection?.isEnabled) {
-            setIsWithdrawTokenAFromDexChecked(false);
-            setIsWithdrawTokenBFromDexChecked(false);
-        } else {
-            setIsWithdrawTokenAFromDexChecked(
-                fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
-            );
-            setIsWithdrawTokenBFromDexChecked(
-                fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0n,
-            );
-        }
-    }, [tokenADexBalance, tokenBDexBalance, fastLaneProtection?.isEnabled]);
+        setIsWithdrawTokenAFromDexChecked(
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
+        );
+        setIsWithdrawTokenBFromDexChecked(
+            fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0n,
+        );
+    }, [tokenADexBalance, tokenBDexBalance]);
 
     useEffect(() => {
         if (advancedMode) {
@@ -1014,11 +1008,6 @@ function Range() {
     };
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
-        if (fastLaneProtection?.isEnabled) {
-            // Show tooltip message
-            return;
-        }
-
         if (tokenAorB === 'A') {
             setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked);
         } else {
@@ -1156,7 +1145,6 @@ function Range() {
                 <TradeModuleHeader
                     slippage={mintSlippage}
                     bypassConfirm={bypassConfirmRange}
-                    fastLaneProtection={fastLaneProtection}
                     settingsTitle='Pool'
                 />
             }

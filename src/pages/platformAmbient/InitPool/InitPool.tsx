@@ -128,21 +128,14 @@ export default function InitPool() {
         isTokenAPrimary,
     } = useContext(TradeDataContext);
 
-    const { fastLaneProtection } = useContext(UserPreferenceContext);
-
     useEffect(() => {
-        if (fastLaneProtection?.isEnabled) {
-            setIsWithdrawTokenAFromDexChecked(false);
-            setIsWithdrawTokenBFromDexChecked(false);
-        } else {
-            setIsWithdrawTokenAFromDexChecked(
-                fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
-            );
-            setIsWithdrawTokenBFromDexChecked(
-                fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0n,
-            );
-        }
-    }, [tokenADexBalance, tokenBDexBalance, fastLaneProtection?.isEnabled]);
+        setIsWithdrawTokenAFromDexChecked(
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
+        );
+        setIsWithdrawTokenBFromDexChecked(
+            fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0n,
+        );
+    }, [tokenADexBalance, tokenBDexBalance]);
 
     const { urlParamMap } = useUrlParams(tokens, chainId, provider);
 
@@ -1467,11 +1460,6 @@ export default function InitPool() {
     );
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
-        if (fastLaneProtection?.isEnabled) {
-            // Show tooltip message
-            return;
-        }
-
         if (tokenAorB === 'A') {
             setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked);
         } else {
