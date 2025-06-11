@@ -23,6 +23,7 @@ interface PropsIF {
     availableBalance?: bigint;
     onMaxButtonClick?: () => void;
     percentDiffUsdValue: number | undefined;
+    isSwap?: boolean;
 }
 export default function WalletBalanceSubinfo(props: PropsIF) {
     const {
@@ -36,6 +37,7 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
         isDexSelected,
         onToggleDex,
         onMaxButtonClick,
+        isSwap,
     } = props;
 
     const {
@@ -90,7 +92,7 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
         isWithdraw || isDexSelected ? (
             <IconWithTooltip
                 title={
-                    fastLaneProtection?.isEnabled
+                    fastLaneProtection?.isEnabled && isSwap
                         ? 'Exchange Balance disabled with MEV Protection'
                         : isWithdraw
                           ? 'Use Wallet and Exchange Balance'
