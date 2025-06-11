@@ -132,10 +132,11 @@ export default function InitPool() {
         setIsWithdrawTokenAFromDexChecked(
             fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
         );
-        setIsWithdrawTokenBFromDexChecked(
-            fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0n,
-        );
-    }, [tokenADexBalance, tokenBDexBalance]);
+    }, [tokenADexBalance]);
+
+    useEffect(() => {
+        setIsWithdrawTokenBFromDexChecked(parseFloat(tokenBDexBalance) > 0);
+    }, [tokenBDexBalance]);
 
     const { urlParamMap } = useUrlParams(tokens, chainId, provider);
 

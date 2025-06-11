@@ -620,12 +620,15 @@ function Range() {
 
     useEffect(() => {
         setIsWithdrawTokenAFromDexChecked(
-            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
         );
+    }, [tokenADexBalance]);
+
+    useEffect(() => {
         setIsWithdrawTokenBFromDexChecked(
-            fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0n,
+            fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0,
         );
-    }, [tokenADexBalance, tokenBDexBalance]);
+    }, [tokenBDexBalance]);
 
     useEffect(() => {
         if (advancedMode) {
