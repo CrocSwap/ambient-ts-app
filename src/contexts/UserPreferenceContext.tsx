@@ -6,6 +6,10 @@ import {
 import { favePoolsMethodsIF, useFavePools } from '../App/hooks/useFavePools';
 import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
+import {
+    useFastLaneProtection,
+    FastLaneProtectionIF,
+} from '../App/hooks/useFastLaneProtection';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import { getMoneynessRankByAddr } from '../ambient-utils/dataLayer';
 import { AppStateContext } from './AppStateContext';
@@ -24,6 +28,7 @@ export interface UserPreferenceContextIF {
     bypassConfirmLimit: skipConfirmIF;
     bypassConfirmRange: skipConfirmIF;
     bypassConfirmRepo: skipConfirmIF;
+    fastLaneProtection: FastLaneProtectionIF;
     cssDebug: {
         cache: (k: string, v: string) => void;
         check: (k: string) => string | undefined;
@@ -112,6 +117,7 @@ export const UserPreferenceContextProvider = (props: {
         bypassConfirmLimit: useSkipConfirm('limit'),
         bypassConfirmRange: useSkipConfirm('range'),
         bypassConfirmRepo: useSkipConfirm('repo'),
+        fastLaneProtection: useFastLaneProtection(),
         cssDebug: {
             cache: cacheCSSProperty,
             check: checkCSSPropertyCache,
