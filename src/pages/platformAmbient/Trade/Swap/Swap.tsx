@@ -706,7 +706,10 @@ function Swap(props: propsIF) {
     const { approve, isApprovalPending } = useApprove();
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
-        if (fastLaneProtection?.isEnabled) {
+        if (
+            fastLaneProtection?.isEnabled &&
+            fastLaneProtection.isChainAccepted(chainId)
+        ) {
             // Show tooltip message
             return;
         }

@@ -34,16 +34,17 @@ export const useFastLaneProtection = (): FastLaneProtectionIF => {
     };
 
     const result = useMemo(() => {
+        const isSupported = isChainAccepted(chainId);
         return {
             isEnabled: enabled,
             enable: () => {
-                if (isChainAccepted(chainId)) {
+                if (isSupported) {
                     setEnabled(true);
                 }
             },
             disable: () => setEnabled(false),
             toggle: () => {
-                if (isChainAccepted(chainId)) {
+                if (isSupported) {
                     setEnabled((prev) => !prev);
                 }
             },
