@@ -44,6 +44,9 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { fastLaneProtection } = useContext(TradeTokenContext);
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
 
     // const walletEnabledIcon = (
     //     <svg
@@ -92,7 +95,9 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
         isWithdraw || isDexSelected ? (
             <IconWithTooltip
                 title={
-                    fastLaneProtection?.isEnabled && isSwap
+                    fastLaneProtection?.isEnabled &&
+                    isSwap &&
+                    fastLaneProtection.isChainAccepted(chainId)
                         ? 'Exchange Balance disabled with MEV Protection'
                         : isWithdraw
                           ? 'Use Wallet and Exchange Balance'
