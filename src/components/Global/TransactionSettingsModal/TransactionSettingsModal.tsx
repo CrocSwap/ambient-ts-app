@@ -155,7 +155,7 @@ export default function TransactionSettingsModal(props: propsIF) {
                         />
                     )}
 
-                    {fastLaneProtection?.isChainAccepted(chainId) && (
+                    {fastLaneProtection && (
                         <FastLaneProtectionControl
                             tempEnableFastLane={currentFastLane}
                             setTempEnableFastLane={setCurrentFastLane}
