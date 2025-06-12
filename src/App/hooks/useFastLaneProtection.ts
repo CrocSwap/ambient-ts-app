@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { monadTestnet } from '../../ambient-utils/constants/networks/monadTestnet';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { useContext } from 'react';
 
 export interface FastLaneProtectionIF {
     isEnabled: boolean;
@@ -17,7 +16,6 @@ export const useFastLaneProtection = (): FastLaneProtectionIF => {
     const {
         activeNetwork: { chainId },
     } = useContext(AppStateContext);
-
     const [enabled, setEnabled] = useState<boolean>(() => {
         const stored = localStorage.getItem(LS_KEY);
         return stored ? JSON.parse(stored) : false;
@@ -36,22 +34,21 @@ export const useFastLaneProtection = (): FastLaneProtectionIF => {
     };
 
     const result = useMemo(() => {
-        const isSupported = isChainAccepted(chainId);
         return {
-            isEnabled: isSupported ? enabled : false,
+            isEnabled: enabled,
             enable: () => {
-                if (isSupported) {
+                if (isChainAccepted(chainId)) {
                     setEnabled(true);
                 }
             },
             disable: () => setEnabled(false),
             toggle: () => {
-                if (isSupported) {
+                if (isChainAccepted(chainId)) {
                     setEnabled((prev) => !prev);
                 }
             },
             isChainAccepted,
         };
-    }, [enabled, chainId]);
+    }, [enabled]);
     return result;
 };
