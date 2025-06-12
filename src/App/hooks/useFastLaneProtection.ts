@@ -13,9 +13,9 @@ export interface FastLaneProtectionIF {
 export const useFastLaneProtection = (): FastLaneProtectionIF => {
     const LS_KEY = 'fastlane_protection';
     const ACCEPTED_NETWORKS = [monadTestnet];
-    const {
-        activeNetwork: { chainId },
-    } = useContext(AppStateContext);
+    // const {
+    //     activeNetwork: { chainId },
+    // } = useContext(AppStateContext);
     const [enabled, setEnabled] = useState<boolean>(() => {
         const stored = localStorage.getItem(LS_KEY);
         return stored ? JSON.parse(stored) : false;
@@ -34,20 +34,20 @@ export const useFastLaneProtection = (): FastLaneProtectionIF => {
     };
 
     const result = useMemo(() => {
-        const isSupported = isChainAccepted(chainId);
+        // const isSupported = isChainAccepted(chainId);
         return {
             isEnabled: enabled,
-            enable: () => {
-                if (isSupported) {
-                    setEnabled(true);
-                }
-            },
+            enable: () => setEnabled(true),
+            //     if (isSupported) {
+            //         setEnabled(true);
+            //     }
+            // },
             disable: () => setEnabled(false),
-            toggle: () => {
-                if (isSupported) {
-                    setEnabled((prev) => !prev);
-                }
-            },
+            toggle: () => setEnabled((prev) => !prev),
+            //     if (isSupported) {
+            //         setEnabled((prev) => !prev);
+            //     }
+            // },
             isChainAccepted,
         };
     }, [enabled]);

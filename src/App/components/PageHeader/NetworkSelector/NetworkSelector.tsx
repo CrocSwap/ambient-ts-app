@@ -98,12 +98,16 @@ export default function NetworkSelector(props: propsIF) {
         setSelectedNetworkDisplayName(selectedNetwork.displayName);
 
         if (isConnected) {
-            // Disable fast lane protection if switching away from Monad testnet
+            // Disable fastlane protection if switching away from accepted chains
             if (
                 fastLaneProtection.isEnabled &&
                 !fastLaneProtection.isChainAccepted(targetChainId)
             ) {
                 fastLaneProtection.disable();
+            }
+
+            if (fastLaneProtection.isChainAccepted(targetChainId)) {
+                fastLaneProtection.toggle();
             }
 
             setCrocEnv(undefined);
