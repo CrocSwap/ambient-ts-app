@@ -30,7 +30,7 @@ interface propsIF {
     slippage: SlippageMethodsIF;
     dexBalSwap?: dexBalanceMethodsIF;
     bypassConfirm: skipConfirmIF;
-    fastLaneProtection: FastLaneProtectionIF;
+    fastLaneProtection?: FastLaneProtectionIF;
     onClose: () => void;
 }
 
@@ -77,7 +77,7 @@ export default function TransactionSettingsModal(props: propsIF) {
     const [currentDollarizationMode, setCurrentDollarizationMode] =
         useState<boolean>(isTradeDollarizationEnabled);
 
-    const persistedFastLane = fastLaneProtection.isEnabled;
+    const persistedFastLane = fastLaneProtection?.isEnabled ?? false;
     const [currentFastLane, setCurrentFastLane] =
         useState<boolean>(persistedFastLane);
 
@@ -92,9 +92,11 @@ export default function TransactionSettingsModal(props: propsIF) {
                 : dexBalSwap.outputToDexBal.disable()
             : undefined;
         setIsTradeDollarizationEnabled(currentDollarizationMode);
-        currentFastLane
-            ? fastLaneProtection.enable()
-            : fastLaneProtection.disable();
+        if (fastLaneProtection) {
+            currentFastLane
+                ? fastLaneProtection.enable()
+                : fastLaneProtection.disable();
+        }
         onClose();
     };
 
@@ -153,7 +155,7 @@ export default function TransactionSettingsModal(props: propsIF) {
                         />
                     )}
 
-                    {fastLaneProtection.isChainAccepted(chainId) && (
+                    {fastLaneProtection?.isChainAccepted(chainId) && (
                         <FastLaneProtectionControl
                             tempEnableFastLane={currentFastLane}
                             setTempEnableFastLane={setCurrentFastLane}

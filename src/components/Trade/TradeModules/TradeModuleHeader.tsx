@@ -105,7 +105,7 @@ function TradeModuleHeader(props: propsIF) {
                         slippage={slippage}
                         dexBalSwap={dexBalSwap}
                         bypassConfirm={bypassConfirm}
-                        fastLaneProtection={fastLaneProtection!}
+                        fastLaneProtection={fastLaneProtection}
                         onClose={closeSettingsModal}
                     />
                 )}
@@ -177,7 +177,7 @@ function TradeModuleHeader(props: propsIF) {
                     slippage={slippage}
                     dexBalSwap={dexBalSwap}
                     bypassConfirm={bypassConfirm}
-                    fastLaneProtection={fastLaneProtection!}
+                    fastLaneProtection={fastLaneProtection}
                     onClose={closeSettingsModal}
                 />
             )}
