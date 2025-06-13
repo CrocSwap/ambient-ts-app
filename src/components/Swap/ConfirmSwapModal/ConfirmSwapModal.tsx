@@ -26,6 +26,7 @@ interface propsIF {
     priceImpactWarning: JSX.Element | undefined;
     isSaveAsDexSurplusChecked: boolean;
     percentDiffUsdValue: number | undefined;
+    isMevProtectionEnabled: boolean | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -49,6 +50,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         priceImpactWarning,
         isSaveAsDexSurplusChecked,
         percentDiffUsdValue,
+        isMevProtectionEnabled,
     } = props;
 
     const sellTokenData = tokenPair.dataTokenA;
@@ -185,6 +187,19 @@ export default function ConfirmSwapModal(props: propsIF) {
                     </Text>
                 </FlexContainer>
             }
+            {isMevProtectionEnabled !== undefined && (
+                <FlexContainer
+                    justifyContent='space-between'
+                    alignItems='center'
+                >
+                    <Text fontSize='body' color='text2'>
+                        MEV-Protection
+                    </Text>
+                    <Text fontSize='body' color='text2'>
+                        {isMevProtectionEnabled ? 'Enabled' : 'Disabled'}
+                    </Text>
+                </FlexContainer>
+            )}
             <FlexContainer justifyContent='space-between' alignItems='center'>
                 <Text fontSize='body' color='text2'>
                     Effective Conversion Rate

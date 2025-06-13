@@ -947,6 +947,11 @@ function Swap(props: propsIF) {
                         isTokenAPrimary={isTokenAPrimary}
                         priceImpactWarning={priceImpactWarning}
                         isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                        isMevProtectionEnabled={
+                            fastLaneProtection.isChainAccepted(chainId)
+                                ? fastLaneProtection?.isEnabled
+                                : undefined
+                        }
                         percentDiffUsdValue={percentDiffUsdValue}
                     />
                 ) : (
