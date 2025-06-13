@@ -39,6 +39,7 @@ interface propsIF {
     isInitPage?: boolean | undefined;
     tokenDecimals?: number;
     percentDiffUsdValue?: number;
+    isSwap?: boolean;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -67,6 +68,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isInitPage,
         usdValue,
         percentDiffUsdValue,
+        isSwap,
     } = props;
 
     const isFuta = brand === 'futa';
@@ -207,6 +209,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 onMaxButtonClick={
                     !hideWalletMaxButton ? handleMaxButtonClick : undefined
                 }
+                isSwap={isSwap}
             />
         </>
     );

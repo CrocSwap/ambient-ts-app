@@ -184,3 +184,14 @@ export const SHOW_TUTOS_DEFAULT =
 // using for disabling all tutorials and to hide help button on ui
 export const DISABLE_ALL_TUTOS =
     import.meta.env.VITE_DISABLE_ALL_TUTOS || false;
+
+export const ATLAS_ROUTER = '0x9958Ab9f64EF51194C5378a336D2A0b0A620D31c';
+export const ATLAS_AUCTIONEER_ENDPOINT =
+    import.meta.env.VITE_ATLAS_AUCTIONEER_ENDPOINT ||
+    'https://auctioneer-fra.fastlane-labs.xyz';
+export const ATLAS_REFUND_RECIPIENT =
+    import.meta.env.VITE_ATLAS_REFUND_RECIPIENT ||
+    '0x0000000000000000000000000000000000000000';
+export const ATLAS_REFUND_PERCENT = import.meta.env.VITE_ATLAS_REFUND_PERCENT
+    ? import.meta.env.VITE_ATLAS_REFUND_PERCENT
+    : '0x0';

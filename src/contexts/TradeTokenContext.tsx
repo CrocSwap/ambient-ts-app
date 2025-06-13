@@ -7,6 +7,7 @@ import {
     useMemo,
     useState,
 } from 'react';
+import { FastLaneProtectionIF } from '../App/hooks/useFastLaneProtection';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
 import { ZERO_ADDRESS } from '../ambient-utils/constants';
@@ -48,6 +49,7 @@ export interface TradeTokenContextIF {
     isTokenABase: boolean;
     contextMatchesParams: boolean;
     isChartVisible: boolean;
+    fastLaneProtection: FastLaneProtectionIF;
 }
 
 export const TradeTokenContext = createContext({} as TradeTokenContextIF);
@@ -78,6 +80,7 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
+        fastLaneProtection,
     } = useTokenPairAllowance();
 
     const {
@@ -164,6 +167,7 @@ export const TradeTokenContextProvider = (props: { children: ReactNode }) => {
         isTokenABase,
         contextMatchesParams,
         isChartVisible,
+        fastLaneProtection,
     };
 
     const blockTrigger = isTestnet ? 0 : lastBlockNumber;

@@ -10,6 +10,7 @@ import {
     getFormattedNumber,
     getPriceImpactString,
     isStablePair,
+    performFastLaneSwap,
     performSwap,
     waitForTransaction,
 } from '../../../../ambient-utils/dataLayer';
@@ -34,6 +35,7 @@ import { WarningContainer } from '../../../../styled/Components/TradeModules';
 
 import { ethers } from 'ethers';
 import {
+    ATLAS_ROUTER,
     GAS_DROPS_ESTIMATE_SWAP_FROM_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET,
@@ -81,8 +83,12 @@ function Swap(props: propsIF) {
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
-    const { tokenAAllowance, tokenABalance, tokenADexBalance } =
-        useContext(TradeTokenContext);
+    const {
+        tokenAAllowance,
+        tokenABalance,
+        tokenADexBalance,
+        fastLaneProtection,
+    } = useContext(TradeTokenContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
@@ -578,10 +584,24 @@ function Swap(props: propsIF) {
     ]);
 
     useEffect(() => {
-        setIsWithdrawFromDexChecked(
-            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
-        );
-    }, [tokenADexBalance]);
+        if (
+            fastLaneProtection?.isEnabled &&
+            fastLaneProtection.isChainAccepted(chainId)
+        ) {
+            setIsWithdrawFromDexChecked(false);
+            dexBalSwap?.outputToDexBal.disable();
+        } else {
+            setIsWithdrawFromDexChecked(
+                fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
+            );
+            setIsSaveAsDexSurplusChecked(dexBalSwap?.outputToDexBal.isEnabled);
+        }
+    }, [
+        tokenADexBalance,
+        fastLaneProtection?.isEnabled,
+        dexBalSwap?.outputToDexBal.isEnabled,
+        fastLaneProtection.isChainAccepted(chainId),
+    ]);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
@@ -605,17 +625,31 @@ function Swap(props: propsIF) {
         try {
             const sellTokenAddress = tokenA.address;
             const buyTokenAddress = tokenB.address;
+            const acceptedChainId = fastLaneProtection?.isChainAccepted(
+                (await crocEnv.context).chain.chainId,
+            );
 
-            tx = await performSwap({
-                crocEnv,
-                isQtySell,
-                qty,
-                buyTokenAddress,
-                sellTokenAddress,
-                slippageTolerancePercentage,
-                isWithdrawFromDexChecked,
-                isSaveAsDexSurplusChecked,
-            });
+            tx = await (fastLaneProtection.isEnabled && acceptedChainId
+                ? performFastLaneSwap({
+                      crocEnv,
+                      isQtySell,
+                      qty,
+                      buyTokenAddress,
+                      sellTokenAddress,
+                      slippageTolerancePercentage,
+                      isWithdrawFromDexChecked,
+                      isSaveAsDexSurplusChecked,
+                  })
+                : performSwap({
+                      crocEnv,
+                      isQtySell,
+                      qty,
+                      buyTokenAddress,
+                      sellTokenAddress,
+                      slippageTolerancePercentage,
+                      isWithdrawFromDexChecked,
+                      isSaveAsDexSurplusChecked,
+                  }));
             activeTxHash.current = tx?.hash;
             setNewSwapTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
@@ -682,6 +716,14 @@ function Swap(props: propsIF) {
     const { approve, isApprovalPending } = useApprove();
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (
+            fastLaneProtection?.isEnabled &&
+            fastLaneProtection.isChainAccepted(chainId)
+        ) {
+            // Show tooltip message
+            return;
+        }
+
         if (tokenAorB === 'A') {
             setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked);
         } else {
@@ -828,6 +870,7 @@ function Swap(props: propsIF) {
                     slippage={swapSlippage}
                     dexBalSwap={dexBalSwap}
                     bypassConfirm={bypassConfirmSwap}
+                    fastLaneProtection={fastLaneProtection}
                     settingsTitle='Swap'
                     isSwapPage={!isOnTradeRoute}
                 />
@@ -904,6 +947,11 @@ function Swap(props: propsIF) {
                         isTokenAPrimary={isTokenAPrimary}
                         priceImpactWarning={priceImpactWarning}
                         isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                        isMevProtectionEnabled={
+                            fastLaneProtection.isChainAccepted(chainId)
+                                ? fastLaneProtection?.isEnabled
+                                : undefined
+                        }
                         percentDiffUsdValue={percentDiffUsdValue}
                     />
                 ) : (
@@ -976,12 +1024,9 @@ function Swap(props: propsIF) {
                                                 101n) /
                                             100n
                                       : ethers.MaxUint256,
-                                //   tokenABalance
-                                //   ? fromDisplayQty(
-                                //         tokenABalance,
-                                //         tokenA.decimals,
-                                //     )
-                                //   : undefined,
+                                fastLaneProtection.isEnabled
+                                    ? ATLAS_ROUTER
+                                    : undefined,
                             );
                         }}
                         flat

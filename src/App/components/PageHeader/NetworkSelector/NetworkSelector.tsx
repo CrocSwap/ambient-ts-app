@@ -34,6 +34,7 @@ import {
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import styles from './NetworkSelector.module.css';
+import { useFastLaneProtection } from '../../../hooks/useFastLaneProtection';
 
 interface propsIF {
     customBR?: string;
@@ -58,6 +59,7 @@ export default function NetworkSelector(props: propsIF) {
     } = useContext(AppStateContext);
     const { networks, platformName, includeCanto } = useContext(BrandContext);
     const { setCrocEnv } = useContext(CrocEnvContext);
+    const fastLaneProtection = useFastLaneProtection();
     const isFuta = brand === 'futa';
 
     const [isNetworkUpdateInProgress, setIsNetworkUpdateInProgress] =
@@ -96,8 +98,20 @@ export default function NetworkSelector(props: propsIF) {
         setSelectedNetworkDisplayName(selectedNetwork.displayName);
 
         if (isConnected) {
+            // Disable fastlane protection if switching away from accepted chains
+            if (
+                fastLaneProtection.isEnabled &&
+                !fastLaneProtection.isChainAccepted(targetChainId)
+            ) {
+                fastLaneProtection.disable();
+            }
+
+            if (fastLaneProtection.isChainAccepted(targetChainId)) {
+                fastLaneProtection.toggle();
+            }
+
             setCrocEnv(undefined);
-            switchNetwork(selectedNetwork.chainSpecForAppKit);
+            await switchNetwork(selectedNetwork.chainSpecForAppKit);
 
             if (chainParam || networkParam) {
                 linkGenIndex.navigate();

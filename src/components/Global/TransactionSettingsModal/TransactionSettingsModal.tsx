@@ -1,7 +1,8 @@
-import { KeyboardEvent, useContext, useState } from 'react';
+import { KeyboardEvent, useContext, useEffect, useState } from 'react';
 import { FiAlertTriangle } from 'react-icons/fi';
 import { isStablePair } from '../../../ambient-utils/dataLayer';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { FastLaneProtectionIF } from '../../../App/hooks/useFastLaneProtection';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -12,6 +13,7 @@ import { SettingsContainer } from '../../../styled/Components/TradeModules';
 import Button from '../../Form/Button';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
 import DollarizationModalControl from '../DollarizationModalControl/DollarizationModalControl';
+import FastLaneProtectionControl from '../FastLaneProtectionControl/FastLaneProtectionControl';
 import Modal from '../Modal/Modal';
 import SendToDexBalControl from '../SendToDexBalControl/SendToDexBalControl';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
@@ -28,11 +30,19 @@ interface propsIF {
     slippage: SlippageMethodsIF;
     dexBalSwap?: dexBalanceMethodsIF;
     bypassConfirm: skipConfirmIF;
+    fastLaneProtection?: FastLaneProtectionIF;
     onClose: () => void;
 }
 
 export default function TransactionSettingsModal(props: propsIF) {
-    const { module, slippage, dexBalSwap, onClose, bypassConfirm } = props;
+    const {
+        module,
+        slippage,
+        dexBalSwap,
+        onClose,
+        bypassConfirm,
+        fastLaneProtection,
+    } = props;
     const { tokenA, tokenB } = useContext(TradeDataContext);
     const {
         activeNetwork: { chainId },
@@ -67,6 +77,18 @@ export default function TransactionSettingsModal(props: propsIF) {
     const [currentDollarizationMode, setCurrentDollarizationMode] =
         useState<boolean>(isTradeDollarizationEnabled);
 
+    const persistedFastLane = fastLaneProtection?.isEnabled ?? false;
+    const [currentFastLane, setCurrentFastLane] =
+        useState<boolean>(persistedFastLane);
+
+    useEffect(() => {
+        if (currentFastLane && fastLaneProtection?.isChainAccepted(chainId)) {
+            setCurrentSaveSwapToDexBal(false);
+        } else if (dexBalSwap?.outputToDexBal.isEnabled) {
+            setCurrentSaveSwapToDexBal(true);
+        }
+    }, [currentFastLane, dexBalSwap]);
+
     const updateSettings = (): void => {
         isPairStable
             ? slippage.updateStable(currentSlippage)
@@ -78,6 +100,11 @@ export default function TransactionSettingsModal(props: propsIF) {
                 : dexBalSwap.outputToDexBal.disable()
             : undefined;
         setIsTradeDollarizationEnabled(currentDollarizationMode);
+        if (fastLaneProtection) {
+            currentFastLane
+                ? fastLaneProtection.enable()
+                : fastLaneProtection.disable();
+        }
         onClose();
     };
 
@@ -133,9 +160,20 @@ export default function TransactionSettingsModal(props: propsIF) {
                             tempSaveToDex={currentSaveSwapToDexBal}
                             setTempSaveToDex={setCurrentSaveSwapToDexBal}
                             displayInSettings={true}
+                            disabled={
+                                fastLaneProtection?.isChainAccepted(chainId) &&
+                                currentFastLane
+                            }
                         />
                     )}
 
+                    {fastLaneProtection?.isChainAccepted(chainId) && (
+                        <FastLaneProtectionControl
+                            tempEnableFastLane={currentFastLane}
+                            setTempEnableFastLane={setCurrentFastLane}
+                            displayInSettings={true}
+                        />
+                    )}
                     <ConfirmationModalControl
                         tempBypassConfirm={currentSkipConfirm}
                         setTempBypassConfirm={setCurrentSkipConfirm}

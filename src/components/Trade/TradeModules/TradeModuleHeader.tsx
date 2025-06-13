@@ -10,6 +10,7 @@ import { LuSettings, LuSettings2 } from 'react-icons/lu';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { FastLaneProtectionIF } from '../../../App/hooks/useFastLaneProtection';
 import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
 import { AppStateContext } from '../../../contexts';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -23,13 +24,20 @@ interface propsIF {
     slippage: SlippageMethodsIF;
     dexBalSwap?: dexBalanceMethodsIF;
     bypassConfirm: skipConfirmIF;
+    fastLaneProtection?: FastLaneProtectionIF;
     settingsTitle: TransactionModuleType;
     isSwapPage?: boolean;
 }
 
 function TradeModuleHeader(props: propsIF) {
-    const { slippage, dexBalSwap, bypassConfirm, settingsTitle, isSwapPage } =
-        props;
+    const {
+        slippage,
+        dexBalSwap,
+        bypassConfirm,
+        fastLaneProtection,
+        settingsTitle,
+        isSwapPage,
+    } = props;
 
     const [isSettingsModalOpen, openSettingsModal, closeSettingsModal] =
         useModal();
@@ -97,6 +105,7 @@ function TradeModuleHeader(props: propsIF) {
                         slippage={slippage}
                         dexBalSwap={dexBalSwap}
                         bypassConfirm={bypassConfirm}
+                        fastLaneProtection={fastLaneProtection!}
                         onClose={closeSettingsModal}
                     />
                 )}
@@ -168,6 +177,7 @@ function TradeModuleHeader(props: propsIF) {
                     slippage={slippage}
                     dexBalSwap={dexBalSwap}
                     bypassConfirm={bypassConfirm}
+                    fastLaneProtection={fastLaneProtection!}
                     onClose={closeSettingsModal}
                 />
             )}
