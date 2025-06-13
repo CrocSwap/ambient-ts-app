@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction, useContext, useId } from 'react';
-import Toggle from '../../Form/Toggle';
-import styles from './FastLaneProtectionControl.module.css';
-import { FlexContainer } from '../../../styled/Common';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { AppStateContext } from '../../../contexts';
+import { FlexContainer } from '../../../styled/Common';
 import { ExplanationButton } from '../../Form/Icons/Icons.styles';
+import Toggle from '../../Form/Toggle';
+import styles from './FastLaneProtectionControl.module.css';
 
 interface propsIF {
     tempEnableFastLane: boolean;
@@ -33,11 +33,11 @@ export default function FastLaneProtectionControl(props: propsIF) {
                     onClick={() =>
                         openGlobalPopup(
                             <div>
-                                MEV-Protection by Fastlane helps protect your
-                                transactions from Maximal Extractable Value
-                                (MEV) attacks, such as front-running and
-                                sandwich attacks, by routing trades through a
-                                secure network.
+                                Fastlane MEV Protection prevents users from
+                                leaking MEV (maximal extractable value) to
+                                searchers and validators and instead rebates
+                                that value back to the user, resulting in better
+                                pricing on swaps.
                             </div>,
                             'MEV protection by Fastlane',
                             'right',

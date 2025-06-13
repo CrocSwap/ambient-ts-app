@@ -1,13 +1,13 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 
+import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { TokenPairIF } from '../../../ambient-utils/types';
+import { AppStateContext } from '../../../contexts';
 import { FlexContainer, Text } from '../../../styled/Common';
+import { ExplanationButton } from '../../Form/Icons/Icons.styles';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
-import { AiOutlineInfoCircle } from 'react-icons/ai';
-import { AppStateContext } from '../../../contexts';
-import { ExplanationButton } from '../../Form/Icons/Icons.styles';
 
 interface propsIF {
     initiateSwapMethod: () => Promise<void>;
@@ -205,11 +205,13 @@ export default function ConfirmSwapModal(props: propsIF) {
                             onClick={() =>
                                 openGlobalPopup(
                                     <div>
-                                        MEV-Protection by Fastlane helps protect
-                                        your transactions from Maximal
-                                        Extractable Value (MEV) attacks, such as
-                                        front-running and sandwich attacks, by
-                                        routing trades through a secure network.
+                                        This can be modified in swap settings.
+                                        Fastlane MEV Protection prevents users
+                                        from leaking MEV (maximal extractable
+                                        value) to searchers and validators and
+                                        instead rebates that value back to the
+                                        user, resulting in better pricing on
+                                        swaps.
                                     </div>,
                                     'MEV protection by Fastlane',
                                     'right',
