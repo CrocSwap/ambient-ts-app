@@ -204,15 +204,22 @@ export default function ConfirmSwapModal(props: propsIF) {
                         <ExplanationButton
                             onClick={() =>
                                 openGlobalPopup(
-                                    <div>
-                                        This can be modified in swap settings.
+                                    <FlexContainer
+                                        flexDirection='column'
+                                        alignItems='center'
+                                        gap={8}
+                                    >
+                                        <Text fontSize='body' color='accent1'>
+                                            This can be modified in swap
+                                            settings.
+                                        </Text>
                                         Fastlane MEV Protection prevents users
                                         from leaking MEV (maximal extractable
                                         value) to searchers and validators and
                                         instead rebates that value back to the
                                         user, resulting in better pricing on
                                         swaps.
-                                    </div>,
+                                    </FlexContainer>,
                                     'MEV protection by Fastlane',
                                     'right',
                                 )
