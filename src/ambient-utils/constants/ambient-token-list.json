@@ -833,6 +833,14 @@
             "chainId": 98866,
             "address": "0xa5f78b2a0ab85429d2dfbf8b60abc70f4cec066c",
             "logoURI": "https://assets.plume.org/images/logos/nest/nCREDIT/nCREDIT-token.svg"
+        },
+        {
+            "name": "Lorenzo stBTC",
+            "address": "0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3",
+            "symbol": "stBTC",
+            "decimals": 18,
+            "chainId": 98866,
+            "logoURI": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/1bd908177ce4eef8d4a90.svg"
         }
     ]
 }
