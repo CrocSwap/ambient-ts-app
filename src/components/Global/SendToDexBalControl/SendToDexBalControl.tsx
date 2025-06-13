@@ -11,10 +11,16 @@ interface propsIF {
     tempSaveToDex: boolean;
     setTempSaveToDex: Dispatch<SetStateAction<boolean>>;
     displayInSettings?: boolean;
+    disabled?: boolean;
 }
 
 export default function SaveToDexBalanceModalControl(props: propsIF) {
-    const { tempSaveToDex, setTempSaveToDex, displayInSettings } = props;
+    const {
+        tempSaveToDex,
+        setTempSaveToDex,
+        displayInSettings,
+        disabled = false,
+    } = props;
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
@@ -66,7 +72,7 @@ export default function SaveToDexBalanceModalControl(props: propsIF) {
             <Toggle
                 key={compKey}
                 isOn={tempSaveToDex}
-                disabled={false}
+                disabled={disabled}
                 handleToggle={() => setTempSaveToDex(!tempSaveToDex)}
                 id='disabled_confirmation_modal_toggle'
                 aria-label={toggleAriaLabel}

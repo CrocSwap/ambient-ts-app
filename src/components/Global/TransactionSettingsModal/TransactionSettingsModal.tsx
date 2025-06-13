@@ -1,4 +1,4 @@
-import { KeyboardEvent, useContext, useState } from 'react';
+import { KeyboardEvent, useContext, useEffect, useState } from 'react';
 import { FiAlertTriangle } from 'react-icons/fi';
 import { isStablePair } from '../../../ambient-utils/dataLayer';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
@@ -81,6 +81,14 @@ export default function TransactionSettingsModal(props: propsIF) {
     const [currentFastLane, setCurrentFastLane] =
         useState<boolean>(persistedFastLane);
 
+    useEffect(() => {
+        if (currentFastLane) {
+            setCurrentSaveSwapToDexBal(false);
+        } else if (dexBalSwap?.outputToDexBal.isEnabled) {
+            setCurrentSaveSwapToDexBal(true);
+        }
+    }, [currentFastLane, dexBalSwap]);
+
     const updateSettings = (): void => {
         isPairStable
             ? slippage.updateStable(currentSlippage)
@@ -152,6 +160,7 @@ export default function TransactionSettingsModal(props: propsIF) {
                             tempSaveToDex={currentSaveSwapToDexBal}
                             setTempSaveToDex={setCurrentSaveSwapToDexBal}
                             displayInSettings={true}
+                            disabled={currentFastLane}
                         />
                     )}
 
