@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './Tooltip.module.css';
 
 const isTouchDevice = () => {
@@ -150,7 +150,7 @@ const Tooltip = ({
         >
             {children}
 
-            {isVisible && (
+            {isVisible && content && (
                 <div
                     ref={tooltipRef}
                     style={{ maxWidth }}

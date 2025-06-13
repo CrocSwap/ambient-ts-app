@@ -111,10 +111,27 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                         filter: !isDexSelected
                             ? 'grayscale(100%)'
                             : 'contrast(1) brightness(1) saturate(1)',
-                        cursor: isWithdraw ? 'pointer' : 'default',
-                        opacity: fastLaneProtection?.isEnabled ? 0.5 : 1,
+                        cursor:
+                            isWithdraw &&
+                            !(
+                                fastLaneProtection.isChainAccepted(chainId) &&
+                                fastLaneProtection?.isEnabled
+                            )
+                                ? 'pointer'
+                                : 'default',
+                        opacity:
+                            isSwap &&
+                            fastLaneProtection.isChainAccepted(chainId) &&
+                            fastLaneProtection?.isEnabled
+                                ? 0.5
+                                : 1,
                     }}
-                    onClick={onToggleDex}
+                    onClick={
+                        !isSwap ||
+                        (isWithdraw && !fastLaneProtection?.isEnabled)
+                            ? onToggleDex
+                            : undefined
+                    }
                 >
                     <img src={ambientLogo} width='20' alt='surplus' />
                 </div>

@@ -584,14 +584,24 @@ function Swap(props: propsIF) {
     ]);
 
     useEffect(() => {
-        if (fastLaneProtection?.isEnabled) {
+        if (
+            fastLaneProtection?.isEnabled &&
+            fastLaneProtection.isChainAccepted(chainId)
+        ) {
             setIsWithdrawFromDexChecked(false);
+            dexBalSwap?.outputToDexBal.disable();
         } else {
             setIsWithdrawFromDexChecked(
                 fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
             );
+            setIsSaveAsDexSurplusChecked(dexBalSwap?.outputToDexBal.isEnabled);
         }
-    }, [tokenADexBalance, fastLaneProtection?.isEnabled]);
+    }, [
+        tokenADexBalance,
+        fastLaneProtection?.isEnabled,
+        dexBalSwap?.outputToDexBal.isEnabled,
+        fastLaneProtection.isChainAccepted(chainId),
+    ]);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
