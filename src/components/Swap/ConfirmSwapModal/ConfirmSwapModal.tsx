@@ -1,10 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { TokenPairIF } from '../../../ambient-utils/types';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { AppStateContext } from '../../../contexts';
+import { ExplanationButton } from '../../Form/Icons/Icons.styles';
 
 interface propsIF {
     initiateSwapMethod: () => Promise<void>;
@@ -52,7 +55,9 @@ export default function ConfirmSwapModal(props: propsIF) {
         percentDiffUsdValue,
         isMevProtectionEnabled,
     } = props;
-
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
     const sellTokenData = tokenPair.dataTokenA;
     const buyTokenData = tokenPair.dataTokenB;
 
@@ -192,9 +197,30 @@ export default function ConfirmSwapModal(props: propsIF) {
                     justifyContent='space-between'
                     alignItems='center'
                 >
-                    <Text fontSize='body' color='text2'>
-                        MEV-Protection
-                    </Text>
+                    <FlexContainer alignItems='center' gap={8}>
+                        <Text fontSize='body' color='text2'>
+                            MEV-Protection
+                        </Text>
+                        <ExplanationButton
+                            onClick={() =>
+                                openGlobalPopup(
+                                    <div>
+                                        MEV-Protection by Fastlane helps protect
+                                        your transactions from Maximal
+                                        Extractable Value (MEV) attacks, such as
+                                        front-running and sandwich attacks, by
+                                        routing trades through a secure network.
+                                    </div>,
+                                    'MEV protection by Fastlane',
+                                    'right',
+                                )
+                            }
+                            aria-label='Open range width explanation popup.'
+                        >
+                            <AiOutlineInfoCircle color='var(--text2)' />
+                        </ExplanationButton>
+                    </FlexContainer>
+
                     <Text fontSize='body' color='text2'>
                         {isMevProtectionEnabled ? 'Enabled' : 'Disabled'}
                     </Text>
