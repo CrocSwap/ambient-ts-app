@@ -12,12 +12,12 @@ export interface FastLaneProtectionIF {
 export const useFastLaneProtection = (): FastLaneProtectionIF => {
     const LS_KEY = 'fastlane_protection';
     const ACCEPTED_NETWORKS = [monadTestnet];
-
     const [enabled, setEnabled] = useState<boolean>(() => {
         const stored = localStorage.getItem(LS_KEY);
         return stored ? JSON.parse(stored) : false;
     });
 
+    // Effect to persist enabled state to localStorage
     useEffect(() => {
         localStorage.setItem(LS_KEY, JSON.stringify(enabled));
     }, [enabled]);
@@ -29,15 +29,14 @@ export const useFastLaneProtection = (): FastLaneProtectionIF => {
         );
     };
 
-    const result = useMemo(
-        () => ({
+    const result = useMemo(() => {
+        return {
             isEnabled: enabled,
             enable: () => setEnabled(true),
             disable: () => setEnabled(false),
             toggle: () => setEnabled((prev) => !prev),
             isChainAccepted,
-        }),
-        [enabled],
-    );
+        };
+    }, [enabled]);
     return result;
 };

@@ -110,7 +110,6 @@ function Range() {
         isTokenABase,
         baseToken: { decimals: baseTokenDecimals },
         quoteToken: { decimals: quoteTokenDecimals },
-        fastLaneProtection,
     } = useContext(TradeTokenContext);
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
@@ -1149,7 +1148,6 @@ function Range() {
                 <TradeModuleHeader
                     slippage={mintSlippage}
                     bypassConfirm={bypassConfirmRange}
-                    fastLaneProtection={fastLaneProtection}
                     settingsTitle='Pool'
                 />
             }

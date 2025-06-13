@@ -482,6 +482,7 @@ function SwapTokenInput(props: propsIF) {
                         ? undefined
                         : usdValueTokenA
                 }
+                isSwap={true}
             />
             <FlexContainer
                 fullWidth
@@ -526,6 +527,7 @@ function SwapTokenInput(props: propsIF) {
                 percentDiffUsdValue={
                     isLiquidityInsufficient ? undefined : percentDiffUsdValue
                 }
+                isSwap={true}
             />
         </FlexContainer>
     );

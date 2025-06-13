@@ -92,7 +92,6 @@ export default function Limit() {
             balance: quoteTokenBalance,
             dexBalance: quoteTokenDexBalance,
         },
-        fastLaneProtection,
     } = useContext(TradeTokenContext);
     const {
         addPendingTx,
@@ -963,7 +962,6 @@ export default function Limit() {
                 <TradeModuleHeader
                     slippage={mintSlippage}
                     bypassConfirm={bypassConfirmLimit}
-                    fastLaneProtection={fastLaneProtection}
                     settingsTitle='Limit Order'
                 />
             }

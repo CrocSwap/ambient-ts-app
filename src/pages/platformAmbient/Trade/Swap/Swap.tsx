@@ -584,10 +584,14 @@ function Swap(props: propsIF) {
     ]);
 
     useEffect(() => {
-        setIsWithdrawFromDexChecked(
-            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
-        );
-    }, [tokenADexBalance]);
+        if (fastLaneProtection?.isEnabled) {
+            setIsWithdrawFromDexChecked(false);
+        } else {
+            setIsWithdrawFromDexChecked(
+                fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
+            );
+        }
+    }, [tokenADexBalance, fastLaneProtection?.isEnabled]);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
@@ -702,6 +706,14 @@ function Swap(props: propsIF) {
     const { approve, isApprovalPending } = useApprove();
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (
+            fastLaneProtection?.isEnabled &&
+            fastLaneProtection.isChainAccepted(chainId)
+        ) {
+            // Show tooltip message
+            return;
+        }
+
         if (tokenAorB === 'A') {
             setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked);
         } else {
