@@ -21,7 +21,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: var(--zIndex-modal);
+    z-index: 99999999;
 
     background: rgba(1, 0, 16, 0.25);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);

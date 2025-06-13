@@ -308,9 +308,7 @@
         #62ebf1 100%
     );
 
-    /* z-index */
-    --zIndex-modal: 99999999;
-    --zIndex-popup: 999999999
+  
 }
 
 *::placeholder {
