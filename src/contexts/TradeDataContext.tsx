@@ -226,6 +226,10 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
 
     const [soloToken, setSoloToken] = useState<TokenIF>(defaultBaseToken);
 
+    useEffect(() => {
+        setSoloToken(defaultBaseToken);
+    }, [defaultBaseToken]);
+
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         useState<boolean>(false);
 
