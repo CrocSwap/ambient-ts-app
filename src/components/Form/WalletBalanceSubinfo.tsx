@@ -128,7 +128,11 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                     }}
                     onClick={
                         !isSwap ||
-                        (isWithdraw && !fastLaneProtection?.isEnabled)
+                        (isWithdraw &&
+                            !(
+                                fastLaneProtection.isChainAccepted(chainId) &&
+                                fastLaneProtection?.isEnabled
+                            ))
                             ? onToggleDex
                             : undefined
                     }
