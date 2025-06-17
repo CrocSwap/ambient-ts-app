@@ -22,6 +22,7 @@ import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
+import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 
 interface propsIF {
     ensName: string;
@@ -278,7 +279,13 @@ export default function PortfolioBannerAccount(props: propsIF) {
                     </div>
                     {areQueriesPending || totalValueUSD === 0 ? undefined : (
                         <div className={styles.account_total}>
-                            Total on {chainName}: {formattedTotalValueUSD}
+                            <span>
+                                Total on {chainName}: {formattedTotalValueUSD}
+                            </span>{' '}
+                            <TooltipComponent
+                                placement='bottom'
+                                title='The sum of estimated USD values for all liquidity positions, exchange balances, and wallet balances on the active chain for this account.'
+                            />
                         </div>
                     )}
                 </div>
