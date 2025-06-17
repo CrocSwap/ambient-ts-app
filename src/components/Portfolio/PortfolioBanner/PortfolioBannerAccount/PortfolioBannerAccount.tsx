@@ -277,7 +277,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
                         )}
                     </div>
                     {areQueriesPending || totalValueUSD === 0 ? undefined : (
-                        <div className={styles.address_detail}>
+                        <div className={styles.account_total}>
                             Total on {chainName}: {formattedTotalValueUSD}
                         </div>
                     )}
