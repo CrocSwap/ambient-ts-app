@@ -347,11 +347,12 @@ export default function PortfolioTabs(props: propsIF) {
 
     const { tokenBalances } = useContext(TokenBalanceContext);
 
+    const tokensToRender = useMemo(() => {
+        return connectedAccountActive ? tokenBalances : resolvedAddressTokens;
+    }, [connectedAccountActive, tokenBalances, resolvedAddressTokens]);
+
     useEffect(() => {
         async function calculateBalances() {
-            const tokensToRender = connectedAccountActive
-                ? tokenBalances
-                : resolvedAddressTokens;
             if (!tokensToRender || tokensToRender.length === 0) {
                 setTotalExchangeBalanceValue(undefined);
                 setTotalWalletBalanceValue(undefined);
@@ -396,13 +397,7 @@ export default function PortfolioTabs(props: propsIF) {
             );
         }
         calculateBalances();
-    }, [
-        connectedAccountActive,
-        tokenBalances,
-        resolvedAddressTokens,
-        cachedFetchTokenPrice,
-        chainId,
-    ]);
+    }, [tokensToRender, cachedFetchTokenPrice]);
 
     // props for <Wallet/> React Element
     const walletProps = {
