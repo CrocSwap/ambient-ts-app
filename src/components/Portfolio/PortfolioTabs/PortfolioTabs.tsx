@@ -76,6 +76,7 @@ export default function PortfolioTabs(props: propsIF) {
         setTotalLiquidityValue,
         setTotalWalletBalanceValue,
         setTotalExchangeBalanceValue,
+        userAddress,
     } = useContext(UserDataContext);
 
     const {
@@ -91,6 +92,67 @@ export default function PortfolioTabs(props: propsIF) {
     const { tokens } = useContext(TokenContext);
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
+
+    const [
+        intermediateTotalWalletBalanceValue,
+        setIntermediateTotalWalletBalanceValue,
+    ] = useState<
+        | {
+              value: number;
+              chainId: string;
+              address: string;
+          }
+        | undefined
+    >(undefined);
+    const [
+        intermediateTotalExchangeBalanceValue,
+        setIntermediateTotalExchangeBalanceValue,
+    ] = useState<
+        | {
+              value: number;
+              chainId: string;
+              address: string;
+          }
+        | undefined
+    >(undefined);
+
+    const activePortfolioAddress = useMemo(() => {
+        return connectedAccountActive
+            ? userAddress || ''
+            : resolvedAddress || '';
+    }, [connectedAccountActive, userAddress, resolvedAddress]);
+
+    useEffect(() => {
+        if (
+            !intermediateTotalWalletBalanceValue ||
+            !intermediateTotalExchangeBalanceValue ||
+            intermediateTotalWalletBalanceValue.chainId !== chainId ||
+            intermediateTotalExchangeBalanceValue.chainId !== chainId ||
+            intermediateTotalWalletBalanceValue.address !==
+                activePortfolioAddress ||
+            intermediateTotalExchangeBalanceValue.address !==
+                activePortfolioAddress
+        ) {
+            setTotalExchangeBalanceValue(undefined);
+            setTotalWalletBalanceValue(undefined);
+            return;
+        }
+        setTotalExchangeBalanceValue({
+            value: intermediateTotalExchangeBalanceValue.value,
+            chainId: chainId,
+            address: activePortfolioAddress,
+        });
+        setTotalWalletBalanceValue({
+            value: intermediateTotalWalletBalanceValue.value,
+            chainId: chainId,
+            address: activePortfolioAddress,
+        });
+    }, [
+        intermediateTotalWalletBalanceValue,
+        intermediateTotalExchangeBalanceValue,
+        chainId,
+        activePortfolioAddress,
+    ]);
 
     // TODO: can pull into GraphDataContext
     const filterFn = <T extends { chainId: string }>(x: T) =>
@@ -308,8 +370,14 @@ export default function PortfolioTabs(props: propsIF) {
     );
 
     useEffect(() => {
-        setTotalLiquidityValue(sumTotalValueUSD(activeAccountPositionData));
-    }, [activeAccountPositionData]);
+        setTotalLiquidityValue({
+            value: sumTotalValueUSD(activeAccountPositionData),
+            chainId: chainId,
+            address: connectedAccountActive
+                ? userAddress || ''
+                : resolvedAddress || '',
+        });
+    }, [activeAccountPositionData, chainId, userAddress, resolvedAddress]);
 
     const activeAccountLimitOrderData = useMemo(
         () =>
@@ -389,15 +457,19 @@ export default function PortfolioTabs(props: propsIF) {
                     };
                 }),
             );
-            setTotalExchangeBalanceValue(
-                results.reduce((sum, v) => sum + v.exchange, 0),
-            );
-            setTotalWalletBalanceValue(
-                results.reduce((sum, v) => sum + v.wallet, 0),
-            );
+            setIntermediateTotalExchangeBalanceValue({
+                value: results.reduce((sum, v) => sum + v.exchange, 0),
+                chainId: chainId,
+                address: activePortfolioAddress,
+            });
+            setIntermediateTotalWalletBalanceValue({
+                value: results.reduce((sum, v) => sum + v.wallet, 0),
+                chainId: chainId,
+                address: activePortfolioAddress,
+            });
         }
         calculateBalances();
-    }, [tokensToRender, cachedFetchTokenPrice]);
+    }, [tokensToRender]);
 
     // props for <Wallet/> React Element
     const walletProps = {

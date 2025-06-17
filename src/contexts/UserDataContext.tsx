@@ -52,17 +52,29 @@ export interface UserDataContextIF {
     setUserVaultData: React.Dispatch<
         React.SetStateAction<UserVaultsServerIF[] | undefined>
     >;
-    totalLiquidityValue: number | undefined;
+    totalLiquidityValue:
+        | { value: number; chainId: string; address: string }
+        | undefined;
     setTotalLiquidityValue: React.Dispatch<
-        React.SetStateAction<number | undefined>
+        React.SetStateAction<
+            { value: number; chainId: string; address: string } | undefined
+        >
     >;
-    totalExchangeBalanceValue: number | undefined;
+    totalExchangeBalanceValue:
+        | { value: number; chainId: string; address: string }
+        | undefined;
     setTotalExchangeBalanceValue: React.Dispatch<
-        React.SetStateAction<number | undefined>
+        React.SetStateAction<
+            { value: number; chainId: string; address: string } | undefined
+        >
     >;
-    totalWalletBalanceValue: number | undefined;
+    totalWalletBalanceValue:
+        | { value: number; chainId: string; address: string }
+        | undefined;
     setTotalWalletBalanceValue: React.Dispatch<
-        React.SetStateAction<number | undefined>
+        React.SetStateAction<
+            { value: number; chainId: string; address: string } | undefined
+        >
     >;
 }
 
@@ -90,19 +102,26 @@ export const UserDataContextProvider = (props: {
     const [secondaryEnsFromContext, setSecondaryEnsInContext] =
         React.useState<string>('');
     const [totalLiquidityValue, setTotalLiquidityValue] = React.useState<
-        number | undefined
+        { value: number; chainId: string; address: string } | undefined
     >(undefined);
     const [totalExchangeBalanceValue, setTotalExchangeBalanceValue] =
-        React.useState<number | undefined>(undefined);
+        React.useState<
+            { value: number; chainId: string; address: string } | undefined
+        >(undefined);
     const [totalWalletBalanceValue, setTotalWalletBalanceValue] =
-        React.useState<number | undefined>(undefined);
+        React.useState<
+            { value: number; chainId: string; address: string } | undefined
+        >(undefined);
 
     const { address: userAddress, isConnected: isUserConnected } =
         useAppKitAccount();
 
     const { chainId: walletChain } = useAppKitNetwork();
 
-    const { isUserOnline } = useContext(AppStateContext);
+    const {
+        isUserOnline,
+        activeNetwork: { chainId: activeChainId },
+    } = useContext(AppStateContext);
 
     const { disconnect } = useDisconnect();
     const { walletProvider } = useAppKitProvider('eip155');
@@ -115,6 +134,12 @@ export const UserDataContextProvider = (props: {
             }
         }
     }
+
+    useEffect(() => {
+        setTotalLiquidityValue(undefined);
+        setTotalExchangeBalanceValue(undefined);
+        setTotalWalletBalanceValue(undefined);
+    }, [activeChainId, userAddress]);
 
     const isBlacklisted = userAddress ? checkBlacklist(userAddress) : false;
     if (isBlacklisted) disconnectUser();
