@@ -52,6 +52,18 @@ export interface UserDataContextIF {
     setUserVaultData: React.Dispatch<
         React.SetStateAction<UserVaultsServerIF[] | undefined>
     >;
+    totalLiquidityValue: number | undefined;
+    setTotalLiquidityValue: React.Dispatch<
+        React.SetStateAction<number | undefined>
+    >;
+    totalExchangeBalanceValue: number | undefined;
+    setTotalExchangeBalanceValue: React.Dispatch<
+        React.SetStateAction<number | undefined>
+    >;
+    totalWalletBalanceValue: number | undefined;
+    setTotalWalletBalanceValue: React.Dispatch<
+        React.SetStateAction<number | undefined>
+    >;
 }
 
 export interface UserXpDataIF {
@@ -77,6 +89,13 @@ export const UserDataContextProvider = (props: {
         React.useState<string>('');
     const [secondaryEnsFromContext, setSecondaryEnsInContext] =
         React.useState<string>('');
+    const [totalLiquidityValue, setTotalLiquidityValue] = React.useState<
+        number | undefined
+    >(undefined);
+    const [totalExchangeBalanceValue, setTotalExchangeBalanceValue] =
+        React.useState<number | undefined>(undefined);
+    const [totalWalletBalanceValue, setTotalWalletBalanceValue] =
+        React.useState<number | undefined>(undefined);
 
     const { address: userAddress, isConnected: isUserConnected } =
         useAppKitAccount();
@@ -191,6 +210,12 @@ export const UserDataContextProvider = (props: {
         updateUserAvatarData,
         userVaultData,
         setUserVaultData,
+        totalLiquidityValue,
+        setTotalLiquidityValue,
+        totalExchangeBalanceValue,
+        setTotalExchangeBalanceValue,
+        totalWalletBalanceValue,
+        setTotalWalletBalanceValue,
     };
 
     return (

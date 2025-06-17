@@ -3,11 +3,15 @@ import {
     SetStateAction,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from 'react';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
-import { trimString } from '../../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    trimString,
+} from '../../../../ambient-utils/dataLayer';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
@@ -60,12 +64,18 @@ export default function PortfolioBannerAccount(props: propsIF) {
         isUserConnected,
         disconnectUser,
         resolvedAddressFromContext,
+        totalLiquidityValue,
+        totalExchangeBalanceValue,
+        totalWalletBalanceValue,
+        setTotalLiquidityValue,
+        setTotalExchangeBalanceValue,
+        setTotalWalletBalanceValue,
     } = useContext(UserDataContext);
 
     const { NFTData } = useContext(TokenBalanceContext);
 
     const {
-        activeNetwork: { blockExplorer },
+        activeNetwork: { displayName: chainName, blockExplorer, chainId },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
@@ -160,6 +170,46 @@ export default function PortfolioBannerAccount(props: propsIF) {
         );
     }, []);
 
+    const [totalValueUSD, setTotalValueUSD] = useState<number | undefined>();
+
+    useEffect(() => {
+        setTotalValueUSD(undefined);
+        setTotalLiquidityValue(undefined);
+        setTotalExchangeBalanceValue(undefined);
+        setTotalWalletBalanceValue(undefined);
+    }, [addressToDisplay, chainId]);
+
+    useEffect(() => {
+        setTotalValueUSD(
+            (totalLiquidityValue || 0) +
+                (totalExchangeBalanceValue || 0) +
+                (totalWalletBalanceValue || 0),
+        );
+    }, [
+        totalLiquidityValue,
+        totalExchangeBalanceValue,
+        totalWalletBalanceValue,
+    ]);
+
+    const areQueriesPending = useMemo(() => {
+        return (
+            totalLiquidityValue === undefined ||
+            totalExchangeBalanceValue === undefined ||
+            totalWalletBalanceValue === undefined
+        );
+    }, [
+        totalLiquidityValue,
+        totalExchangeBalanceValue,
+        totalWalletBalanceValue,
+    ]);
+
+    const formattedTotalValueUSD = useMemo(() => {
+        return getFormattedNumber({
+            value: totalValueUSD,
+            prefix: '$',
+        });
+    }, [totalValueUSD]);
+
     return (
         <div className={styles.portfolio_banner_account}>
             <div
@@ -226,6 +276,11 @@ export default function PortfolioBannerAccount(props: propsIF) {
                             />
                         )}
                     </div>
+                    {areQueriesPending || totalValueUSD === 0 ? undefined : (
+                        <div className={styles.address_detail}>
+                            Total on {chainName}: {formattedTotalValueUSD}
+                        </div>
+                    )}
                 </div>
                 {
                     // differential view for small screens

@@ -1,11 +1,16 @@
-import { useContext } from 'react';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { useContext, useEffect, useState } from 'react';
 import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import {
     ZERO_ADDRESS,
     tokenListURIs,
 } from '../../../../../ambient-utils/constants';
-import { isUsdcToken } from '../../../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    isUsdcToken,
+} from '../../../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../../../ambient-utils/types';
+import { UserDataContext } from '../../../../../contexts';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import Spinner from '../../../Spinner/Spinner';
@@ -22,13 +27,11 @@ interface propsIF {
 }
 
 export default function Wallet(props: propsIF) {
-    const {
-        connectedAccountActive,
-        resolvedAddressTokens,
-        cachedFetchTokenPrice,
-    } = props;
+    const { connectedAccountActive, resolvedAddressTokens } = props;
 
     const { tokens } = useContext(TokenContext);
+
+    const { setTotalWalletBalanceValue } = useContext(UserDataContext);
 
     const { tokenBalances } = useContext(TokenBalanceContext);
 
@@ -99,19 +102,67 @@ export default function Wallet(props: propsIF) {
     // TODO:   ... appears to be fully static, please code it locally in this file
     // TODO:   ... and make sure that it is a <header> semantic element  --Emily
 
+    const [tokenValues, setTokenValues] = useState<
+        {
+            token: TokenIF;
+            balanceValue: number;
+            walletBalanceTruncated: string;
+        }[]
+    >([]);
+
+    useEffect(() => {
+        async function fetchTokenValues() {
+            if (!tokensToRender || tokensToRender.length === 0) {
+                setTokenValues([]);
+                return;
+            }
+            const values = await Promise.all(
+                sequenceTokens(tokensToRender as TokenIF[]).map(
+                    async (token) => {
+                        let price = 0;
+                        try {
+                            const priceObj = await props.cachedFetchTokenPrice(
+                                token.address,
+                                props.chainId,
+                            );
+                            price = priceObj?.usdPrice ?? 0;
+                        } catch {}
+                        const walletBalanceDisplay = token.walletBalance
+                            ? toDisplayQty(token.walletBalance, token.decimals)
+                            : undefined;
+                        const walletBalanceDisplayNum = walletBalanceDisplay
+                            ? parseFloat(walletBalanceDisplay)
+                            : 0;
+                        const balanceValue = price * walletBalanceDisplayNum;
+                        const walletBalanceTruncated = walletBalanceDisplayNum
+                            ? getFormattedNumber({
+                                  value: walletBalanceDisplayNum,
+                              })
+                            : '0';
+                        return { token, balanceValue, walletBalanceTruncated };
+                    },
+                ),
+            );
+            setTokenValues(values);
+        }
+        fetchTokenValues();
+    }, [tokensToRender, props.cachedFetchTokenPrice, props.chainId]);
+
     return (
         <div className={styles.container}>
             <WalletHeader />
             <div className={`${styles.item_container} custom_scroll_ambient`}>
-                {tokensToRender && tokensToRender.length > 0 ? (
-                    // values can be `undefined` but this fn will filter them out
-                    sequenceTokens(tokensToRender as TokenIF[]).map((token) => (
-                        <WalletCard
-                            key={token.address}
-                            token={token}
-                            cachedFetchTokenPrice={cachedFetchTokenPrice}
-                        />
-                    ))
+                {tokenValues.length > 0 ? (
+                    tokenValues.map(
+                        ({ token, balanceValue, walletBalanceTruncated }) => (
+                            <WalletCard
+                                key={token.address}
+                                token={token}
+                                balanceValue={balanceValue}
+                                walletBalanceTruncated={walletBalanceTruncated}
+                            />
+                        ),
+                    )
                 ) : (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 )}

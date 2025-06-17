@@ -1,3 +1,4 @@
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { fetchUserRecentChanges } from '../../../ambient-utils/api';
@@ -6,6 +7,7 @@ import {
     filterLimitArray,
     getLimitOrderData,
     getPositionData,
+    sumTotalValueUSD,
 } from '../../../ambient-utils/dataLayer';
 import {
     LimitOrderIF,
@@ -21,6 +23,7 @@ import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
+import { TokenBalanceContext } from '../../../contexts';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
@@ -30,6 +33,7 @@ import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import {
     BlastUserXpDataIF,
+    UserDataContext,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -67,6 +71,12 @@ export default function PortfolioTabs(props: propsIF) {
         useContext(CachedDataContext);
 
     const { activePoolList } = useContext(ChainDataContext);
+
+    const {
+        setTotalLiquidityValue,
+        setTotalWalletBalanceValue,
+        setTotalExchangeBalanceValue,
+    } = useContext(UserDataContext);
 
     const {
         server: { isEnabled: isServerEnabled },
@@ -296,6 +306,11 @@ export default function PortfolioTabs(props: propsIF) {
                 : lookupAccountPositionData,
         [connectedAccountActive, _positionsByUser, lookupAccountPositionData],
     );
+
+    useEffect(() => {
+        setTotalLiquidityValue(sumTotalValueUSD(activeAccountPositionData));
+    }, [activeAccountPositionData]);
+
     const activeAccountLimitOrderData = useMemo(
         () =>
             connectedAccountActive
@@ -329,6 +344,65 @@ export default function PortfolioTabs(props: propsIF) {
                   }),
         [connectedAccountActive, _txsByUser, lookupAccountTransactionData],
     );
+
+    const { tokenBalances } = useContext(TokenBalanceContext);
+
+    useEffect(() => {
+        async function calculateBalances() {
+            const tokensToRender = connectedAccountActive
+                ? tokenBalances
+                : resolvedAddressTokens;
+            if (!tokensToRender || tokensToRender.length === 0) {
+                setTotalExchangeBalanceValue(undefined);
+                setTotalWalletBalanceValue(undefined);
+                return;
+            }
+            const results = await Promise.all(
+                tokensToRender.map(async (token) => {
+                    if (!token) {
+                        return { exchange: 0, wallet: 0 };
+                    }
+                    let price = 0;
+                    try {
+                        const priceObj = await cachedFetchTokenPrice(
+                            token.address,
+                            chainId,
+                        );
+                        price = priceObj?.usdPrice ?? 0;
+                    } catch {}
+                    const dexBalanceDisplay = token.dexBalance
+                        ? toDisplayQty(token.dexBalance, token.decimals)
+                        : undefined;
+                    const dexBalanceDisplayNum = dexBalanceDisplay
+                        ? parseFloat(dexBalanceDisplay)
+                        : 0;
+                    const walletBalanceDisplay = token.walletBalance
+                        ? toDisplayQty(token.walletBalance, token.decimals)
+                        : undefined;
+                    const walletBalanceDisplayNum = walletBalanceDisplay
+                        ? parseFloat(walletBalanceDisplay)
+                        : 0;
+                    return {
+                        exchange: price * dexBalanceDisplayNum,
+                        wallet: price * walletBalanceDisplayNum,
+                    };
+                }),
+            );
+            setTotalExchangeBalanceValue(
+                results.reduce((sum, v) => sum + v.exchange, 0),
+            );
+            setTotalWalletBalanceValue(
+                results.reduce((sum, v) => sum + v.wallet, 0),
+            );
+        }
+        calculateBalances();
+    }, [
+        connectedAccountActive,
+        tokenBalances,
+        resolvedAddressTokens,
+        cachedFetchTokenPrice,
+        chainId,
+    ]);
 
     // props for <Wallet/> React Element
     const walletProps = {

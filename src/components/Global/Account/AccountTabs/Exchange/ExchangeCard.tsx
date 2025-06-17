@@ -24,6 +24,8 @@ import styles from './ExchangeCard.module.css';
 
 interface propsIF {
     token: TokenIF;
+    balanceValue: number;
+    dexBalanceTruncated: string;
     cachedFetchTokenPrice: TokenPriceFn;
 }
 

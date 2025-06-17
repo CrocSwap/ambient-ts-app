@@ -1,13 +1,10 @@
-import { useContext } from 'react';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { useContext, useEffect, useState } from 'react';
 import { TokenPriceFn } from '../../../../../ambient-utils/api';
-import {
-    tokenListURIs,
-    ZERO_ADDRESS,
-} from '../../../../../ambient-utils/constants';
-import { isUsdcToken } from '../../../../../ambient-utils/dataLayer';
+import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../../../ambient-utils/types';
+import { UserDataContext } from '../../../../../contexts';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
-import { TokenContext } from '../../../../../contexts/TokenContext';
 import Spinner from '../../../Spinner/Spinner';
 import styles from './Exchange.module.css';
 import ExchangeCard from './ExchangeCard';
@@ -28,84 +25,69 @@ export default function Exchange(props: propsIF) {
         cachedFetchTokenPrice,
     } = props;
 
-    const { tokens } = useContext(TokenContext);
+    const { setTotalExchangeBalanceValue } = useContext(UserDataContext);
     const { tokenBalances } = useContext(TokenBalanceContext);
 
     const tokensToRender = connectedAccountActive
         ? tokenBalances
         : resolvedAddressTokens;
 
-    function sequenceTokens(tkns: TokenIF[]) {
-        const tokensWithOrigins: TokenIF[] = tkns.map((tkn: TokenIF) => {
-            return {
-                ...tkn,
-                listedBy: tokens.getTokenByAddress(tkn.address)?.listedBy ?? [
-                    'unknown',
-                ],
-            };
-        });
-        const sequencedTokens: TokenIF[] = tokensWithOrigins
-            .sort((a: TokenIF, b: TokenIF) => {
-                // output value
-                let rank: number;
-                // decision tree to determine sort order
-                // sort ambient-listed token higher if only one is listed by us
-                // otherwise sort by number of lists featuring the token overall
-                if (isOnAmbientList(a) && isOnAmbientList(b)) {
-                    rank = comparePopularity();
-                } else if (isOnAmbientList(a)) {
-                    rank = -1;
-                } else if (isOnAmbientList(b)) {
-                    rank = 1;
-                } else {
-                    rank = comparePopularity();
-                }
-                // fn to determine if a given token is on the ambient list
-                function isOnAmbientList(t: TokenIF): boolean {
-                    return !!t.listedBy?.includes(tokenListURIs.ambient);
-                }
-                // fn to determine which of the two tokens is more popular
-                function comparePopularity(): number {
-                    const getPopularity = (tkn: TokenIF): number =>
-                        tkn.listedBy?.length ?? 1;
-                    return getPopularity(b) - getPopularity(a);
-                }
-                // return the output variable
-                return rank;
-            })
-            // promote privileged tokens to the top of the list
-            .sort((a: TokenIF, b: TokenIF) => {
-                // fn to numerically prioritize a token (high = important)
-                const getPriority = (tkn: TokenIF): number => {
-                    if (tkn.address === ZERO_ADDRESS) {
-                        return 1000;
-                    } else if (isUsdcToken(tkn.address)) {
-                        return 900;
-                    } else {
-                        return 0;
-                    }
-                };
-                // sort tokens by relative priority level
-                return getPriority(b) - getPriority(a);
-            });
-        return sequencedTokens;
-    }
+    const [tokenValues, setTokenValues] = useState<
+        { token: TokenIF; balanceValue: number; dexBalanceTruncated: string }[]
+    >([]);
+
+    useEffect(() => {
+        async function fetchTokenValues() {
+            if (!tokensToRender || tokensToRender.length === 0) {
+                setTokenValues([]);
+                return;
+            }
+            const values = await Promise.all(
+                (tokensToRender as TokenIF[]).map(async (token) => {
+                    // Fetch price
+                    let price = 0;
+                    try {
+                        const priceObj = await cachedFetchTokenPrice(
+                            token.address,
+                            props.chainId,
+                        );
+                        price = priceObj?.usdPrice ?? 0;
+                    } catch {}
+                    // Calculate display balance
+                    const dexBalanceDisplay = token.dexBalance
+                        ? toDisplayQty(token.dexBalance, token.decimals)
+                        : undefined;
+                    const dexBalanceDisplayNum = dexBalanceDisplay
+                        ? parseFloat(dexBalanceDisplay)
+                        : 0;
+                    const balanceValue = price * dexBalanceDisplayNum;
+                    const dexBalanceTruncated = dexBalanceDisplayNum
+                        ? getFormattedNumber({ value: dexBalanceDisplayNum })
+                        : '0';
+                    return { token, balanceValue, dexBalanceTruncated };
+                }),
+            );
+            setTokenValues(values);
+        }
+        fetchTokenValues();
+    }, [tokensToRender, cachedFetchTokenPrice, props.chainId]);
 
     return (
         <div className={styles.container}>
             <ExchangeHeader />
             <div className={styles.item_container}>
-                {tokensToRender &&
-                tokensToRender.length > 0 &&
-                tokensToRender[0] !== undefined ? (
-                    // values can be `undefined` but this fn will filter them out
-                    sequenceTokens(tokensToRender as TokenIF[]).map((token) => (
-                        <ExchangeCard
-                            key={token.address}
-                            token={token}
-                            cachedFetchTokenPrice={cachedFetchTokenPrice}
-                        />
-                    ))
+                {tokenValues.length > 0 ? (
+                    tokenValues.map(
+                        ({ token, balanceValue, dexBalanceTruncated }) => (
+                            <ExchangeCard
+                                key={token.address}
+                                token={token}
+                                balanceValue={balanceValue}
+                                dexBalanceTruncated={dexBalanceTruncated}
+                                cachedFetchTokenPrice={cachedFetchTokenPrice}
+                            />
+                        ),
+                    )
                 ) : (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 )}
