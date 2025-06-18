@@ -133,7 +133,7 @@ export default function PortfolioTabs(props: propsIF) {
             setTotalVaultsValue({
                 value: totalValue,
                 chainId: chainId,
-                address: userVaultData[0].walletAddress,
+                address: userVaultData[0]?.walletAddress || '',
             });
         }
     }, [JSON.stringify(userVaultData)]);
