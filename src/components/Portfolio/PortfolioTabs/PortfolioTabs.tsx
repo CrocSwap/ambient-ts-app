@@ -1,3 +1,4 @@
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { fetchUserRecentChanges } from '../../../ambient-utils/api';
@@ -6,6 +7,7 @@ import {
     filterLimitArray,
     getLimitOrderData,
     getPositionData,
+    sumTotalValueUSD,
 } from '../../../ambient-utils/dataLayer';
 import {
     LimitOrderIF,
@@ -21,6 +23,7 @@ import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
+import { TokenBalanceContext } from '../../../contexts';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
@@ -30,6 +33,7 @@ import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import {
     BlastUserXpDataIF,
+    UserDataContext,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -69,6 +73,13 @@ export default function PortfolioTabs(props: propsIF) {
     const { activePoolList } = useContext(ChainDataContext);
 
     const {
+        setTotalLiquidityValue,
+        setTotalWalletBalanceValue,
+        setTotalExchangeBalanceValue,
+        userAddress,
+    } = useContext(UserDataContext);
+
+    const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
         activeNetwork: { GCGO_URL, chainId },
@@ -81,6 +92,12 @@ export default function PortfolioTabs(props: propsIF) {
     const { tokens } = useContext(TokenContext);
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
+
+    const activePortfolioAddress = useMemo(() => {
+        return connectedAccountActive
+            ? userAddress || ''
+            : resolvedAddress || '';
+    }, [connectedAccountActive, userAddress, resolvedAddress]);
 
     // TODO: can pull into GraphDataContext
     const filterFn = <T extends { chainId: string }>(x: T) =>
@@ -296,6 +313,17 @@ export default function PortfolioTabs(props: propsIF) {
                 : lookupAccountPositionData,
         [connectedAccountActive, _positionsByUser, lookupAccountPositionData],
     );
+
+    useEffect(() => {
+        setTotalLiquidityValue({
+            value: sumTotalValueUSD(activeAccountPositionData),
+            chainId: chainId,
+            address: connectedAccountActive
+                ? userAddress || ''
+                : resolvedAddress || '',
+        });
+    }, [JSON.stringify(activeAccountPositionData)]);
+
     const activeAccountLimitOrderData = useMemo(
         () =>
             connectedAccountActive
@@ -329,6 +357,68 @@ export default function PortfolioTabs(props: propsIF) {
                   }),
         [connectedAccountActive, _txsByUser, lookupAccountTransactionData],
     );
+
+    const { tokenBalances } = useContext(TokenBalanceContext);
+
+    const tokensToRender = useMemo(() => {
+        return connectedAccountActive ? tokenBalances : resolvedAddressTokens;
+    }, [connectedAccountActive, tokenBalances, resolvedAddressTokens]);
+
+    useEffect(() => {
+        async function calculateBalances() {
+            if (
+                !tokensToRender ||
+                tokensToRender.length === 0 ||
+                Number(chainId) !== Number(tokensToRender[0]?.chainId)
+            ) {
+                setTotalExchangeBalanceValue(undefined);
+                setTotalWalletBalanceValue(undefined);
+                return;
+            }
+            const results = await Promise.all(
+                tokensToRender.map(async (token) => {
+                    if (!token) {
+                        return { exchange: 0, wallet: 0 };
+                    }
+                    let price = 0;
+                    try {
+                        const priceObj = await cachedFetchTokenPrice(
+                            token.address,
+                            chainId,
+                        );
+                        price = priceObj?.usdPrice ?? 0;
+                    } catch {}
+                    const dexBalanceDisplay = token.dexBalance
+                        ? toDisplayQty(token.dexBalance, token.decimals)
+                        : undefined;
+                    const dexBalanceDisplayNum = dexBalanceDisplay
+                        ? parseFloat(dexBalanceDisplay)
+                        : 0;
+                    const walletBalanceDisplay = token.walletBalance
+                        ? toDisplayQty(token.walletBalance, token.decimals)
+                        : undefined;
+                    const walletBalanceDisplayNum = walletBalanceDisplay
+                        ? parseFloat(walletBalanceDisplay)
+                        : 0;
+                    return {
+                        exchange: price * dexBalanceDisplayNum,
+                        wallet: price * walletBalanceDisplayNum,
+                    };
+                }),
+            );
+            setTotalExchangeBalanceValue({
+                value: results.reduce((sum, v) => sum + v.exchange, 0),
+                chainId: chainId,
+                address: activePortfolioAddress,
+            });
+            setTotalWalletBalanceValue({
+                value: results.reduce((sum, v) => sum + v.wallet, 0),
+                chainId: chainId,
+                address: activePortfolioAddress,
+            });
+        }
+        calculateBalances();
+    }, [JSON.stringify(tokensToRender)]);
 
     // props for <Wallet/> React Element
     const walletProps = {
