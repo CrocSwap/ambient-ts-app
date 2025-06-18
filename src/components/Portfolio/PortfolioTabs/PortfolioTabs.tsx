@@ -121,22 +121,20 @@ export default function PortfolioTabs(props: propsIF) {
     const userLimitOrdersCacheEndpoint = GCGO_URL + '/user_limit_orders?';
 
     useEffect(() => {
+        let totalValue = 0;
         if (userVaultData) {
-            const totalValue = userVaultData.reduce(
-                (total: number, vault: any) => {
-                    // Parse balanceUsd as a float, default to 0 if empty or invalid
-                    const usd = parseFloat(vault.balanceUsd);
-                    return total + (isNaN(usd) ? 0 : usd);
-                },
-                0,
-            );
-            setTotalVaultsValue({
-                value: totalValue,
-                chainId: chainId,
-                address: userVaultData[0]?.walletAddress || '',
-            });
+            totalValue = userVaultData.reduce((total: number, vault: any) => {
+                // Parse balanceUsd as a float, default to 0 if empty or invalid
+                const usd = parseFloat(vault.balanceUsd);
+                return total + (isNaN(usd) ? 0 : usd);
+            }, 0);
         }
-    }, [JSON.stringify(userVaultData)]);
+        setTotalVaultsValue({
+            value: totalValue,
+            chainId: userVaultData?.[0]?.chainId || chainId,
+            address: userVaultData?.[0]?.walletAddress || userAddress || '',
+        });
+    }, [JSON.stringify(userVaultData), chainId, userAddress]);
 
     const getLookupUserPositions = async (accountToSearch: string) => {
         fetch(

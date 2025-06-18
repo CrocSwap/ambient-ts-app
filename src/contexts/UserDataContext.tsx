@@ -151,7 +151,6 @@ export const UserDataContextProvider = (props: {
         setTotalLiquidityValue(undefined);
         setTotalExchangeBalanceValue(undefined);
         setTotalWalletBalanceValue(undefined);
-        setTotalVaultsValue(undefined);
     }, [activeChainId, userAddress]);
 
     const isBlacklisted = userAddress ? checkBlacklist(userAddress) : false;

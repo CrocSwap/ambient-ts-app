@@ -69,11 +69,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
         totalLiquidityValue,
         totalExchangeBalanceValue,
         totalVaultsValue,
-        setTotalVaultsValue,
         totalWalletBalanceValue,
-        setTotalLiquidityValue,
-        setTotalExchangeBalanceValue,
-        setTotalWalletBalanceValue,
     } = useContext(UserDataContext);
 
     const { NFTData } = useContext(TokenBalanceContext);
@@ -190,29 +186,25 @@ export default function PortfolioBannerAccount(props: propsIF) {
     }, [resolvedAddress, userAddress]);
 
     useEffect(() => {
+        if (
+            totalLiquidityValue?.chainId.toLowerCase() !==
+                chainId.toLowerCase() ||
+            totalExchangeBalanceValue?.chainId.toLowerCase() !==
+                chainId.toLowerCase() ||
+            totalWalletBalanceValue?.chainId.toLowerCase() !==
+                chainId.toLowerCase() ||
+            !activePortfolioAddress ||
+            totalLiquidityValue?.address.toLowerCase() !==
+                activePortfolioAddress.toLowerCase() ||
+            totalExchangeBalanceValue?.address.toLowerCase() !==
+                activePortfolioAddress.toLowerCase() ||
+            totalWalletBalanceValue?.address.toLowerCase() !==
+                activePortfolioAddress.toLowerCase()
+        ) {
+            setTotalValueUSD(undefined);
+            return;
+        }
         if (connectedAccountActive && isVaultSupportedOnNetwork) {
-            if (
-                totalLiquidityValue?.chainId.toLowerCase() !==
-                    chainId.toLowerCase() ||
-                totalExchangeBalanceValue?.chainId.toLowerCase() !==
-                    chainId.toLowerCase() ||
-                totalWalletBalanceValue?.chainId.toLowerCase() !==
-                    chainId.toLowerCase() ||
-                totalVaultsValue?.chainId.toLowerCase() !==
-                    chainId.toLowerCase() ||
-                !activePortfolioAddress ||
-                totalLiquidityValue?.address.toLowerCase() !==
-                    activePortfolioAddress.toLowerCase() ||
-                totalExchangeBalanceValue?.address.toLowerCase() !==
-                    activePortfolioAddress.toLowerCase() ||
-                totalWalletBalanceValue?.address.toLowerCase() !==
-                    activePortfolioAddress.toLowerCase() ||
-                totalVaultsValue?.address.toLowerCase() !==
-                    activePortfolioAddress.toLowerCase()
-            ) {
-                setTotalValueUSD(undefined);
-                return;
-            }
             setTotalValueUSD(
                 (totalLiquidityValue?.value || 0) +
                     (totalExchangeBalanceValue?.value || 0) +
@@ -220,24 +212,6 @@ export default function PortfolioBannerAccount(props: propsIF) {
                     (totalVaultsValue?.value || 0),
             );
         } else {
-            if (
-                totalLiquidityValue?.chainId.toLowerCase() !==
-                    chainId.toLowerCase() ||
-                totalExchangeBalanceValue?.chainId.toLowerCase() !==
-                    chainId.toLowerCase() ||
-                totalWalletBalanceValue?.chainId.toLowerCase() !==
-                    chainId.toLowerCase() ||
-                !activePortfolioAddress ||
-                totalLiquidityValue?.address.toLowerCase() !==
-                    activePortfolioAddress.toLowerCase() ||
-                totalExchangeBalanceValue?.address.toLowerCase() !==
-                    activePortfolioAddress.toLowerCase() ||
-                totalWalletBalanceValue?.address.toLowerCase() !==
-                    activePortfolioAddress.toLowerCase()
-            ) {
-                setTotalValueUSD(undefined);
-                return;
-            }
             setTotalValueUSD(
                 (totalLiquidityValue?.value || 0) +
                     (totalExchangeBalanceValue?.value || 0) +
