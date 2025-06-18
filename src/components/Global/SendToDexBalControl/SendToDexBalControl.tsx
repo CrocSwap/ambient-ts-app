@@ -5,16 +5,23 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer } from '../../../styled/Common';
 import { ExplanationButton } from '../../Form/Icons/Icons.styles';
 import Toggle from '../../Form/Toggle';
+import Tooltip from '../Tooltip/Tooltip';
 import styles from './SendToDexBalControl.module.css';
 
 interface propsIF {
     tempSaveToDex: boolean;
     setTempSaveToDex: Dispatch<SetStateAction<boolean>>;
     displayInSettings?: boolean;
+    disabled?: boolean;
 }
 
 export default function SaveToDexBalanceModalControl(props: propsIF) {
-    const { tempSaveToDex, setTempSaveToDex, displayInSettings } = props;
+    const {
+        tempSaveToDex,
+        setTempSaveToDex,
+        displayInSettings,
+        disabled = false,
+    } = props;
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
@@ -62,15 +69,23 @@ export default function SaveToDexBalanceModalControl(props: propsIF) {
             ) : (
                 <p tabIndex={0}>Send to exchange balance</p>
             )}
-
-            <Toggle
-                key={compKey}
-                isOn={tempSaveToDex}
-                disabled={false}
-                handleToggle={() => setTempSaveToDex(!tempSaveToDex)}
-                id='disabled_confirmation_modal_toggle'
-                aria-label={toggleAriaLabel}
-            />
+            <Tooltip
+                content={
+                    disabled
+                        ? 'This toggle is disabled because MEV-Protection is enabled.'
+                        : undefined
+                }
+                position='left'
+            >
+                <Toggle
+                    key={compKey}
+                    isOn={tempSaveToDex}
+                    disabled={disabled}
+                    handleToggle={() => setTempSaveToDex(!tempSaveToDex)}
+                    id='disabled_confirmation_modal_toggle'
+                    aria-label={toggleAriaLabel}
+                />
+            </Tooltip>
         </div>
     );
 }

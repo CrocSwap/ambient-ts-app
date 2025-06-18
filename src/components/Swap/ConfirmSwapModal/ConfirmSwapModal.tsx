@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 
+import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { TokenPairIF } from '../../../ambient-utils/types';
+import { AppStateContext } from '../../../contexts';
 import { FlexContainer, Text } from '../../../styled/Common';
+import { ExplanationButton } from '../../Form/Icons/Icons.styles';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
 
@@ -26,6 +29,7 @@ interface propsIF {
     priceImpactWarning: JSX.Element | undefined;
     isSaveAsDexSurplusChecked: boolean;
     percentDiffUsdValue: number | undefined;
+    isMevProtectionEnabled: boolean | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -49,8 +53,11 @@ export default function ConfirmSwapModal(props: propsIF) {
         priceImpactWarning,
         isSaveAsDexSurplusChecked,
         percentDiffUsdValue,
+        isMevProtectionEnabled,
     } = props;
-
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
     const sellTokenData = tokenPair.dataTokenA;
     const buyTokenData = tokenPair.dataTokenB;
 
@@ -185,6 +192,49 @@ export default function ConfirmSwapModal(props: propsIF) {
                     </Text>
                 </FlexContainer>
             }
+            {isMevProtectionEnabled !== undefined && (
+                <FlexContainer
+                    justifyContent='space-between'
+                    alignItems='center'
+                >
+                    <FlexContainer alignItems='center' gap={8}>
+                        <Text fontSize='body' color='text2'>
+                            MEV-Protection
+                        </Text>
+                        <ExplanationButton
+                            onClick={() =>
+                                openGlobalPopup(
+                                    <FlexContainer
+                                        flexDirection='column'
+                                        alignItems='center'
+                                        gap={8}
+                                    >
+                                        <Text fontSize='body' color='accent1'>
+                                            This can be modified in swap
+                                            settings.
+                                        </Text>
+                                        Fastlane MEV Protection prevents users
+                                        from leaking MEV (maximal extractable
+                                        value) to searchers and validators and
+                                        instead rebates that value back to the
+                                        user, resulting in better pricing on
+                                        swaps.
+                                    </FlexContainer>,
+                                    'MEV protection by Fastlane',
+                                    'right',
+                                )
+                            }
+                            aria-label='Open range width explanation popup.'
+                        >
+                            <AiOutlineInfoCircle color='var(--text2)' />
+                        </ExplanationButton>
+                    </FlexContainer>
+
+                    <Text fontSize='body' color='text2'>
+                        {isMevProtectionEnabled ? 'Enabled' : 'Disabled'}
+                    </Text>
+                </FlexContainer>
+            )}
             <FlexContainer justifyContent='space-between' alignItems='center'>
                 <Text fontSize='body' color='text2'>
                     Effective Conversion Rate
