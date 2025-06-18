@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import { ATLAS_ROUTER } from '../../ambient-utils/constants';
 import {
     AppStateContext,
     ChainDataContext,
@@ -6,6 +7,7 @@ import {
     UserDataContext,
 } from '../../contexts';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFastLaneProtection } from './useFastLaneProtection';
 
 export function useTokenPairAllowance() {
     const { isTradeRoute } = useContext(AppStateContext);
@@ -25,6 +27,8 @@ export function useTokenPairAllowance() {
     const [recheckTokenBApproval, setRecheckTokenBApproval] =
         useState<boolean>(false);
 
+    const fastLaneProtection = useFastLaneProtection();
+
     // useEffect to check if user has approved CrocSwap to sell the token A
     useEffect(() => {
         (async () => {
@@ -36,9 +40,21 @@ export function useTokenPairAllowance() {
                 Number((await crocEnv.context).chain.chainId) === tokenA.chainId
             ) {
                 try {
+                    const context = await crocEnv.context;
+                    const acceptedChainId = fastLaneProtection?.isChainAccepted(
+                        (await crocEnv.context).chain.chainId,
+                    );
+                    // Default to false if fastLaneProtection is undefined during initialization
+                    const isFastLaneEnabled =
+                        (fastLaneProtection?.isEnabled && acceptedChainId) ??
+                        false;
+                    const spender = isFastLaneEnabled
+                        ? ATLAS_ROUTER
+                        : await context.dex.getAddress();
+
                     const allowance = await crocEnv
                         .token(tokenA.address)
-                        .allowance(userAddress);
+                        .allowance(userAddress, spender);
 
                     if (tokenAAllowance !== allowance) {
                         setTokenAAllowance(allowance);
@@ -55,6 +71,7 @@ export function useTokenPairAllowance() {
         tokenA.address + tokenA.chainId + userAddress,
         lastBlockNumber,
         recheckTokenAApproval,
+        fastLaneProtection?.isEnabled,
     ]);
 
     // useEffect to check if user has approved CrocSwap to sell the token B
@@ -62,9 +79,21 @@ export function useTokenPairAllowance() {
         (async () => {
             if (isTradeRoute && crocEnv && userAddress && tokenB.address) {
                 try {
+                    const context = await crocEnv.context;
+                    const acceptedChainId = fastLaneProtection?.isChainAccepted(
+                        (await crocEnv.context).chain.chainId,
+                    );
+                    // Default to false if fastLaneProtection is undefined during initialization
+                    const isFastLaneEnabled =
+                        (fastLaneProtection?.isEnabled && acceptedChainId) ??
+                        false;
+                    const spender = isFastLaneEnabled
+                        ? ATLAS_ROUTER
+                        : await context.dex.getAddress();
+
                     const allowance = await crocEnv
                         .token(tokenB.address)
-                        .allowance(userAddress);
+                        .allowance(userAddress, spender);
 
                     if (tokenBAllowance !== allowance) {
                         setTokenBAllowance(allowance);
@@ -81,6 +110,7 @@ export function useTokenPairAllowance() {
         lastBlockNumber,
         isTradeRoute,
         recheckTokenBApproval,
+        fastLaneProtection?.isEnabled,
     ]);
 
     return {
@@ -88,5 +118,6 @@ export function useTokenPairAllowance() {
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
+        fastLaneProtection,
     };
 }
