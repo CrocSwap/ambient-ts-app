@@ -93,66 +93,11 @@ export default function PortfolioTabs(props: propsIF) {
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
 
-    const [
-        intermediateTotalWalletBalanceValue,
-        setIntermediateTotalWalletBalanceValue,
-    ] = useState<
-        | {
-              value: number;
-              chainId: string;
-              address: string;
-          }
-        | undefined
-    >(undefined);
-    const [
-        intermediateTotalExchangeBalanceValue,
-        setIntermediateTotalExchangeBalanceValue,
-    ] = useState<
-        | {
-              value: number;
-              chainId: string;
-              address: string;
-          }
-        | undefined
-    >(undefined);
-
     const activePortfolioAddress = useMemo(() => {
         return connectedAccountActive
             ? userAddress || ''
             : resolvedAddress || '';
     }, [connectedAccountActive, userAddress, resolvedAddress]);
-
-    useEffect(() => {
-        if (
-            !intermediateTotalWalletBalanceValue ||
-            !intermediateTotalExchangeBalanceValue ||
-            intermediateTotalWalletBalanceValue.chainId !== chainId ||
-            intermediateTotalExchangeBalanceValue.chainId !== chainId ||
-            intermediateTotalWalletBalanceValue.address !==
-                activePortfolioAddress ||
-            intermediateTotalExchangeBalanceValue.address !==
-                activePortfolioAddress
-        ) {
-            setTotalExchangeBalanceValue(undefined);
-            setTotalWalletBalanceValue(undefined);
-            return;
-        }
-        setTotalExchangeBalanceValue({
-            value: intermediateTotalExchangeBalanceValue.value,
-            chainId: chainId,
-            address: activePortfolioAddress,
-        });
-        setTotalWalletBalanceValue({
-            value: intermediateTotalWalletBalanceValue.value,
-            chainId: chainId,
-            address: activePortfolioAddress,
-        });
-    }, [
-        intermediateTotalWalletBalanceValue,
-        intermediateTotalExchangeBalanceValue,
-        chainId,
-        activePortfolioAddress,
-    ]);
 
     // TODO: can pull into GraphDataContext
     const filterFn = <T extends { chainId: string }>(x: T) =>
@@ -377,7 +322,7 @@ export default function PortfolioTabs(props: propsIF) {
                 ? userAddress || ''
                 : resolvedAddress || '',
         });
-    }, [activeAccountPositionData, chainId, userAddress, resolvedAddress]);
+    }, [JSON.stringify(activeAccountPositionData)]);
 
     const activeAccountLimitOrderData = useMemo(
         () =>
@@ -461,12 +406,12 @@ export default function PortfolioTabs(props: propsIF) {
                     };
                 }),
             );
-            setIntermediateTotalExchangeBalanceValue({
+            setTotalExchangeBalanceValue({
                 value: results.reduce((sum, v) => sum + v.exchange, 0),
                 chainId: chainId,
                 address: activePortfolioAddress,
             });
-            setIntermediateTotalWalletBalanceValue({
+            setTotalWalletBalanceValue({
                 value: results.reduce((sum, v) => sum + v.wallet, 0),
                 chainId: chainId,
                 address: activePortfolioAddress,

@@ -70,7 +70,7 @@ export default function Exchange(props: propsIF) {
             setTokenValues(values);
         }
         fetchTokenValues();
-    }, [tokensToRender, cachedFetchTokenPrice, props.chainId]);
+    }, [JSON.stringify(tokensToRender)]);
 
     return (
         <div className={styles.container}>

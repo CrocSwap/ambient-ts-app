@@ -146,7 +146,7 @@ export default function Wallet(props: propsIF) {
             setTokenValues(values);
         }
         fetchTokenValues();
-    }, [tokensToRender, props.cachedFetchTokenPrice, props.chainId]);
+    }, [JSON.stringify(tokensToRender)]);
 
     return (
         <div className={styles.container}>
