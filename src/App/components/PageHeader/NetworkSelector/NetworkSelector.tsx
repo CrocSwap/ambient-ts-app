@@ -111,7 +111,7 @@ export default function NetworkSelector(props: propsIF) {
             }
 
             setCrocEnv(undefined);
-            await switchNetwork(selectedNetwork.chainSpecForAppKit);
+            switchNetwork(selectedNetwork.chainSpecForAppKit);
 
             if (chainParam || networkParam) {
                 linkGenIndex.navigate();
