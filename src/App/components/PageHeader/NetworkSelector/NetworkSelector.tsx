@@ -33,8 +33,8 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
-import styles from './NetworkSelector.module.css';
 import { useFastLaneProtection } from '../../../hooks/useFastLaneProtection';
+import styles from './NetworkSelector.module.css';
 
 interface propsIF {
     customBR?: string;
@@ -130,22 +130,22 @@ export default function NetworkSelector(props: propsIF) {
 
         const checkChainId = setInterval(async () => {
             console.log(
-                `Re-attempting to switch networks (Attempt ${attemptCount + 1}/2)`,
+                `Re-attempting to switch networks (Attempt ${attemptCount + 1}/3)`,
                 {
                     chainId,
                     targetChainId,
                 },
             );
 
-            if (chainId !== targetChainId && attemptCount < 2) {
+            if (chainId !== targetChainId && attemptCount < 3) {
                 switchNetwork(
                     supportedNetworks[targetChainId].chainSpecForAppKit,
                 );
                 attemptCount++; // Increment attempt counter
             }
 
-            if (chainId === targetChainId || attemptCount >= 2) {
-                clearInterval(checkChainId); // Stop after 2 attempts or successful switch
+            if (chainId === targetChainId || attemptCount >= 3) {
+                clearInterval(checkChainId); // Stop after 3 attempts or successful switch
                 setIsNetworkUpdateInProgress(false);
                 const selectedNetwork = supportedNetworks[chainId];
                 setTargetChainId(chainId);
