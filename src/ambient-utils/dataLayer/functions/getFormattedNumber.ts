@@ -37,7 +37,7 @@ export function getFormattedNumber({
     abbrevThreshold = 10000,
     isLevel = false,
     isPercentage = false,
-    mantissa = 2,
+    mantissa = 1,
     removeExtraTrailingZeros = false,
     isTickerDisplay = false,
 }: FormatParams) {
@@ -192,7 +192,7 @@ export const formatSubscript = (value: number, precision = 3) => {
     return `0.${subscriptUnicode[zeros]}${valueNonZero}`;
 };
 
-const formatAbbrev = (value: number, isTvl?: boolean, mantissa = 2) => {
+const formatAbbrev = (value: number, isTvl?: boolean, mantissa = 1) => {
     return numbro(value).format({
         average: true,
         ...(isTvl

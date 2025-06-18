@@ -395,6 +395,10 @@ export const getPositionData = async (
     return newPosition;
 };
 
+export function sumTotalValueUSD(positions: PositionIF[]): number {
+    return positions.reduce((sum, position) => sum + position.totalValueUSD, 0);
+}
+
 export type PositionStatsFn = (
     user: string,
     askTick: number,
