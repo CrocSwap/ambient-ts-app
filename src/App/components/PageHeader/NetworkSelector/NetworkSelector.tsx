@@ -129,15 +129,14 @@ export default function NetworkSelector(props: propsIF) {
         let attemptCount = 0; // Initialize attempt counter
 
         const checkChainId = setInterval(async () => {
-            console.log(
-                `Re-attempting to switch networks (Attempt ${attemptCount + 1}/3)`,
-                {
-                    chainId,
-                    targetChainId,
-                },
-            );
-
             if (chainId !== targetChainId && attemptCount < 3) {
+                console.log(
+                    `Re-attempting to switch networks (Attempt ${attemptCount + 1}/3)`,
+                    {
+                        chainId,
+                        targetChainId,
+                    },
+                );
                 switchNetwork(
                     supportedNetworks[targetChainId].chainSpecForAppKit,
                 );
