@@ -76,6 +76,14 @@ export interface UserDataContextIF {
             { value: number; chainId: string; address: string } | undefined
         >
     >;
+    totalVaultsValue:
+        | { value: number; chainId: string; address: string }
+        | undefined;
+    setTotalVaultsValue: React.Dispatch<
+        React.SetStateAction<
+            { value: number; chainId: string; address: string } | undefined
+        >
+    >;
 }
 
 export interface UserXpDataIF {
@@ -101,6 +109,7 @@ export const UserDataContextProvider = (props: {
         React.useState<string>('');
     const [secondaryEnsFromContext, setSecondaryEnsInContext] =
         React.useState<string>('');
+
     const [totalLiquidityValue, setTotalLiquidityValue] = React.useState<
         { value: number; chainId: string; address: string } | undefined
     >(undefined);
@@ -112,6 +121,9 @@ export const UserDataContextProvider = (props: {
         React.useState<
             { value: number; chainId: string; address: string } | undefined
         >(undefined);
+    const [totalVaultsValue, setTotalVaultsValue] = React.useState<
+        { value: number; chainId: string; address: string } | undefined
+    >(undefined);
 
     const { address: userAddress, isConnected: isUserConnected } =
         useAppKitAccount();
@@ -139,6 +151,7 @@ export const UserDataContextProvider = (props: {
         setTotalLiquidityValue(undefined);
         setTotalExchangeBalanceValue(undefined);
         setTotalWalletBalanceValue(undefined);
+        setTotalVaultsValue(undefined);
     }, [activeChainId, userAddress]);
 
     const isBlacklisted = userAddress ? checkBlacklist(userAddress) : false;
@@ -241,6 +254,8 @@ export const UserDataContextProvider = (props: {
         setTotalExchangeBalanceValue,
         totalWalletBalanceValue,
         setTotalWalletBalanceValue,
+        totalVaultsValue,
+        setTotalVaultsValue,
     };
 
     return (

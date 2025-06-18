@@ -67,6 +67,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
         resolvedAddressFromContext,
         totalLiquidityValue,
         totalExchangeBalanceValue,
+        totalVaultsValue,
+        setTotalVaultsValue,
         totalWalletBalanceValue,
         setTotalLiquidityValue,
         setTotalExchangeBalanceValue,
@@ -185,54 +187,87 @@ export default function PortfolioBannerAccount(props: propsIF) {
     }, [resolvedAddress, userAddress]);
 
     useEffect(() => {
-        setTotalValueUSD(undefined);
-        setTotalLiquidityValue(undefined);
-        setTotalExchangeBalanceValue(undefined);
-        setTotalWalletBalanceValue(undefined);
-    }, [activePortfolioAddress]);
-
-    useEffect(() => {
-        if (
-            totalLiquidityValue?.chainId.toLowerCase() !==
-                chainId.toLowerCase() ||
-            totalExchangeBalanceValue?.chainId.toLowerCase() !==
-                chainId.toLowerCase() ||
-            totalWalletBalanceValue?.chainId.toLowerCase() !==
-                chainId.toLowerCase() ||
-            !activePortfolioAddress ||
-            totalLiquidityValue?.address.toLowerCase() !==
-                activePortfolioAddress.toLowerCase() ||
-            totalExchangeBalanceValue?.address.toLowerCase() !==
-                activePortfolioAddress.toLowerCase() ||
-            totalWalletBalanceValue?.address.toLowerCase() !==
-                activePortfolioAddress.toLowerCase()
-        ) {
-            setTotalValueUSD(undefined);
-            return;
+        if (connectedAccountActive) {
+            if (
+                totalLiquidityValue?.chainId.toLowerCase() !==
+                    chainId.toLowerCase() ||
+                totalExchangeBalanceValue?.chainId.toLowerCase() !==
+                    chainId.toLowerCase() ||
+                totalWalletBalanceValue?.chainId.toLowerCase() !==
+                    chainId.toLowerCase() ||
+                totalVaultsValue?.chainId.toLowerCase() !==
+                    chainId.toLowerCase() ||
+                !activePortfolioAddress ||
+                totalLiquidityValue?.address.toLowerCase() !==
+                    activePortfolioAddress.toLowerCase() ||
+                totalExchangeBalanceValue?.address.toLowerCase() !==
+                    activePortfolioAddress.toLowerCase() ||
+                totalWalletBalanceValue?.address.toLowerCase() !==
+                    activePortfolioAddress.toLowerCase() ||
+                totalVaultsValue?.address.toLowerCase() !==
+                    activePortfolioAddress.toLowerCase()
+            ) {
+                setTotalValueUSD(undefined);
+                return;
+            }
+            setTotalValueUSD(
+                (totalLiquidityValue?.value || 0) +
+                    (totalExchangeBalanceValue?.value || 0) +
+                    (totalWalletBalanceValue?.value || 0) +
+                    (totalVaultsValue?.value || 0),
+            );
+        } else {
+            if (
+                totalLiquidityValue?.chainId.toLowerCase() !==
+                    chainId.toLowerCase() ||
+                totalExchangeBalanceValue?.chainId.toLowerCase() !==
+                    chainId.toLowerCase() ||
+                totalWalletBalanceValue?.chainId.toLowerCase() !==
+                    chainId.toLowerCase() ||
+                !activePortfolioAddress ||
+                totalLiquidityValue?.address.toLowerCase() !==
+                    activePortfolioAddress.toLowerCase() ||
+                totalExchangeBalanceValue?.address.toLowerCase() !==
+                    activePortfolioAddress.toLowerCase() ||
+                totalWalletBalanceValue?.address.toLowerCase() !==
+                    activePortfolioAddress.toLowerCase()
+            ) {
+                setTotalValueUSD(undefined);
+                return;
+            }
+            setTotalValueUSD(
+                (totalLiquidityValue?.value || 0) +
+                    (totalExchangeBalanceValue?.value || 0) +
+                    (totalWalletBalanceValue?.value || 0),
+            );
         }
-        setTotalValueUSD(
-            (totalLiquidityValue?.value || 0) +
-                (totalExchangeBalanceValue?.value || 0) +
-                (totalWalletBalanceValue?.value || 0),
-        );
     }, [
         JSON.stringify(totalLiquidityValue),
         JSON.stringify(totalExchangeBalanceValue),
         JSON.stringify(totalWalletBalanceValue),
+        JSON.stringify(totalVaultsValue),
         activePortfolioAddress,
         chainId,
     ]);
 
     const queriesPending = useMemo(() => {
         return (
-            totalLiquidityValue === undefined ||
-            totalExchangeBalanceValue === undefined ||
-            totalWalletBalanceValue === undefined
+            (connectedAccountActive &&
+                (totalLiquidityValue === undefined ||
+                    totalExchangeBalanceValue === undefined ||
+                    totalWalletBalanceValue === undefined ||
+                    totalVaultsValue === undefined)) ||
+            (!connectedAccountActive &&
+                (totalLiquidityValue === undefined ||
+                    totalExchangeBalanceValue === undefined ||
+                    totalWalletBalanceValue === undefined))
         );
     }, [
+        connectedAccountActive,
         totalLiquidityValue === undefined,
         totalExchangeBalanceValue === undefined,
         totalWalletBalanceValue === undefined,
+        totalVaultsValue === undefined,
     ]);
 
     const formattedTotalValueUSD = useMemo(() => {
@@ -315,7 +350,11 @@ export default function PortfolioBannerAccount(props: propsIF) {
                             </span>
                             <TooltipComponent
                                 placement='bottom'
-                                title='The sum of estimated USD values for all liquidity positions, exchange balances, and wallet balances on the active chain for this account.'
+                                title={
+                                    connectedAccountActive
+                                        ? 'The sum of estimated USD values for all liquidity positions, vault deposits, exchange balances, and wallet balances on the active chain for this account.'
+                                        : 'The sum of estimated USD values for all liquidity positions, exchange balances, and wallet balances on the active chain for this account.'
+                                }
                             />
                         </div>
                     )}

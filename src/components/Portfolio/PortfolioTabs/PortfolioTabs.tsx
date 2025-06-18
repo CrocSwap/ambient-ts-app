@@ -77,6 +77,8 @@ export default function PortfolioTabs(props: propsIF) {
         setTotalWalletBalanceValue,
         setTotalExchangeBalanceValue,
         userAddress,
+        setTotalVaultsValue,
+        userVaultData,
     } = useContext(UserDataContext);
 
     const {
@@ -108,15 +110,33 @@ export default function PortfolioTabs(props: propsIF) {
     const _limitsByUser = limitOrdersByUser.limitOrders.filter(filterFn);
 
     const [lookupAccountPositionData, setLookupAccountPositionData] = useState<
-        PositionIF[]
-    >([]);
+        PositionIF[] | undefined
+    >();
     const [lookupAccountLimitOrderData, setLookupAccountLimitOrderData] =
-        useState<LimitOrderIF[]>([]);
+        useState<LimitOrderIF[] | undefined>();
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
-        useState<TransactionIF[]>([]);
+        useState<TransactionIF[] | undefined>();
 
     const userPositionsCacheEndpoint = GCGO_URL + '/user_positions?';
     const userLimitOrdersCacheEndpoint = GCGO_URL + '/user_limit_orders?';
+
+    useEffect(() => {
+        if (userVaultData) {
+            const totalValue = userVaultData.reduce(
+                (total: number, vault: any) => {
+                    // Parse balanceUsd as a float, default to 0 if empty or invalid
+                    const usd = parseFloat(vault.balanceUsd);
+                    return total + (isNaN(usd) ? 0 : usd);
+                },
+                0,
+            );
+            setTotalVaultsValue({
+                value: totalValue,
+                chainId: chainId,
+                address: activePortfolioAddress,
+            });
+        }
+    }, [JSON.stringify(userVaultData)]);
 
     const getLookupUserPositions = async (accountToSearch: string) => {
         fetch(
@@ -316,7 +336,9 @@ export default function PortfolioTabs(props: propsIF) {
 
     useEffect(() => {
         setTotalLiquidityValue({
-            value: sumTotalValueUSD(activeAccountPositionData),
+            value: activeAccountPositionData
+                ? sumTotalValueUSD(activeAccountPositionData)
+                : 0,
             chainId: chainId,
             address: connectedAccountActive
                 ? userAddress || ''
@@ -418,7 +440,7 @@ export default function PortfolioTabs(props: propsIF) {
             });
         }
         calculateBalances();
-    }, [JSON.stringify(tokensToRender)]);
+    }, [JSON.stringify(tokensToRender), activePortfolioAddress]);
 
     // props for <Wallet/> React Element
     const walletProps = {
