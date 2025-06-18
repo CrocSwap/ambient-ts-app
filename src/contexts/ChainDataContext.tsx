@@ -325,6 +325,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     useEffect(() => {
         if (
+            isVaultSupportedOnNetwork &&
             isAccountOrVaultRoute &&
             userAddress &&
             chainId &&
@@ -337,6 +338,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             return () => clearInterval(interval);
         }
     }, [
+        isVaultSupportedOnNetwork,
         isAccountOrVaultRoute,
         chainId,
         userAddress,
@@ -347,7 +349,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     // logic to fetch vault data from API
     useEffect(() => {
-        if (!isAccountOrVaultRoute) return;
+        if (!isAccountOrVaultRoute || !isVaultSupportedOnNetwork) return;
         // run the first fetch immediately
         getAllVaultsData();
         // run subsequent fetches on an interval
@@ -359,7 +361,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
     useEffect(() => {
         // also run the user data fetch after a receipt is received
-        if (sessionReceipts.length === 0) return;
+        if (sessionReceipts.length === 0 || !isVaultSupportedOnNetwork) return;
         getUserVaultData();
         // and repeat after a delay
         const t1 = setTimeout(() => {
@@ -378,7 +380,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         return () => {
             receiptRefreshTimeouts.forEach((timeout) => clearTimeout(timeout));
         };
-    }, [sessionReceipts.length]);
+    }, [sessionReceipts.length, isVaultSupportedOnNetwork]);
 
     useEffect(() => {
         // clear the timeouts when the user or chain changes

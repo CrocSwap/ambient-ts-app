@@ -18,6 +18,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import styles from './PortfolioBannerAccount.module.css';
 
 import { useNavigate } from 'react-router-dom';
+import { ChainDataContext } from '../../../../contexts';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
@@ -81,6 +82,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
         activeNetwork: { displayName: chainName, blockExplorer, chainId },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+
+    const { isVaultSupportedOnNetwork } = useContext(ChainDataContext);
 
     const navigate = useNavigate();
 
@@ -187,7 +190,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
     }, [resolvedAddress, userAddress]);
 
     useEffect(() => {
-        if (connectedAccountActive) {
+        if (connectedAccountActive && isVaultSupportedOnNetwork) {
             if (
                 totalLiquidityValue?.chainId.toLowerCase() !==
                     chainId.toLowerCase() ||
@@ -247,12 +250,14 @@ export default function PortfolioBannerAccount(props: propsIF) {
         JSON.stringify(totalWalletBalanceValue),
         JSON.stringify(totalVaultsValue),
         activePortfolioAddress,
+        isVaultSupportedOnNetwork,
         chainId,
     ]);
 
     const queriesPending = useMemo(() => {
         return (
             (connectedAccountActive &&
+                isVaultSupportedOnNetwork &&
                 (totalLiquidityValue === undefined ||
                     totalExchangeBalanceValue === undefined ||
                     totalWalletBalanceValue === undefined ||
@@ -264,6 +269,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
         );
     }, [
         connectedAccountActive,
+        isVaultSupportedOnNetwork,
         totalLiquidityValue === undefined,
         totalExchangeBalanceValue === undefined,
         totalWalletBalanceValue === undefined,
