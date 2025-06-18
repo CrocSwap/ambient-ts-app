@@ -180,16 +180,16 @@ export default function PortfolioBannerAccount(props: propsIF) {
 
     const [totalValueUSD, setTotalValueUSD] = useState<number | undefined>();
 
+    const activePortfolioAddress = useMemo(() => {
+        return resolvedAddress ? resolvedAddress : userAddress;
+    }, [resolvedAddress, userAddress]);
+
     useEffect(() => {
         setTotalValueUSD(undefined);
         setTotalLiquidityValue(undefined);
         setTotalExchangeBalanceValue(undefined);
         setTotalWalletBalanceValue(undefined);
-    }, [resolvedAddress]);
-
-    const activePortfolioAddress = useMemo(() => {
-        return resolvedAddress ? resolvedAddress : userAddress;
-    }, [resolvedAddress, userAddress]);
+    }, [activePortfolioAddress]);
 
     useEffect(() => {
         if (
@@ -223,7 +223,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
         chainId,
     ]);
 
-    const areQueriesPending = useMemo(() => {
+    const queriesPending = useMemo(() => {
         return (
             totalLiquidityValue === undefined ||
             totalExchangeBalanceValue === undefined ||
@@ -308,7 +308,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
                             />
                         )}
                     </div>
-                    {areQueriesPending || !totalValueUSD ? undefined : (
+                    {queriesPending || !totalValueUSD ? undefined : (
                         <div className={styles.account_total}>
                             <span>
                                 Total on {chainName}: {formattedTotalValueUSD}
