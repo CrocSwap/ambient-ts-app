@@ -421,7 +421,11 @@ export default function PortfolioTabs(props: propsIF) {
 
     useEffect(() => {
         async function calculateBalances() {
-            if (!tokensToRender || tokensToRender.length === 0) {
+            if (
+                !tokensToRender ||
+                tokensToRender.length === 0 ||
+                Number(chainId) !== Number(tokensToRender[0]?.chainId)
+            ) {
                 setTotalExchangeBalanceValue(undefined);
                 setTotalWalletBalanceValue(undefined);
                 return;
@@ -469,7 +473,7 @@ export default function PortfolioTabs(props: propsIF) {
             });
         }
         calculateBalances();
-    }, [tokensToRender]);
+    }, [JSON.stringify(tokensToRender)]);
 
     // props for <Wallet/> React Element
     const walletProps = {
