@@ -334,18 +334,6 @@ export default function PortfolioTabs(props: propsIF) {
         [connectedAccountActive, _positionsByUser, lookupAccountPositionData],
     );
 
-    useEffect(() => {
-        setTotalLiquidityValue({
-            value: activeAccountPositionData
-                ? sumTotalValueUSD(activeAccountPositionData)
-                : 0,
-            chainId: chainId,
-            address: connectedAccountActive
-                ? userAddress || ''
-                : resolvedAddress || '',
-        });
-    }, [JSON.stringify(activeAccountPositionData)]);
-
     const activeAccountLimitOrderData = useMemo(
         () =>
             connectedAccountActive
@@ -353,6 +341,26 @@ export default function PortfolioTabs(props: propsIF) {
                 : lookupAccountLimitOrderData,
         [connectedAccountActive, _limitsByUser, lookupAccountLimitOrderData],
     );
+    useEffect(() => {
+        setTotalLiquidityValue({
+            value:
+                activeAccountPositionData && activeAccountLimitOrderData
+                    ? sumTotalValueUSD(activeAccountPositionData) +
+                      sumTotalValueUSD(activeAccountLimitOrderData)
+                    : activeAccountPositionData
+                      ? sumTotalValueUSD(activeAccountPositionData)
+                      : activeAccountLimitOrderData
+                        ? sumTotalValueUSD(activeAccountLimitOrderData)
+                        : 0,
+            chainId: chainId,
+            address: connectedAccountActive
+                ? userAddress || ''
+                : resolvedAddress || '',
+        });
+    }, [
+        JSON.stringify(activeAccountPositionData),
+        JSON.stringify(activeAccountLimitOrderData),
+    ]);
 
     const activeAccountTransactionData = useMemo(
         () =>

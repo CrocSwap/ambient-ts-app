@@ -10,7 +10,13 @@ import {
 import { Provider } from 'ethers';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
-import { PoolIF, PositionIF, PositionServerIF, TokenIF } from '../../types';
+import {
+    LimitOrderIF,
+    PoolIF,
+    PositionIF,
+    PositionServerIF,
+    TokenIF,
+} from '../../types';
 import { getFormattedNumber } from './getFormattedNumber';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
 import { getPositionHash } from './getPositionHash';
@@ -395,7 +401,9 @@ export const getPositionData = async (
     return newPosition;
 };
 
-export function sumTotalValueUSD(positions: PositionIF[]): number {
+export function sumTotalValueUSD(
+    positions: PositionIF[] | LimitOrderIF[],
+): number {
     return positions.reduce((sum, position) => sum + position.totalValueUSD, 0);
 }
 
