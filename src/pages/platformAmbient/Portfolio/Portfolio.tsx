@@ -260,6 +260,10 @@ function Portfolio(props: propsIF) {
         TokenIF[]
     >([]);
 
+    useEffect(() => {
+        setResolvedAddressTokens([]);
+    }, [resolvedAddress]);
+
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
 
@@ -277,7 +281,6 @@ function Portfolio(props: propsIF) {
                 )
                     return;
                 try {
-                    setResolvedAddressTokens([]);
                     const combinedBalances: TokenIF[] = [];
 
                     // fetch wallet balances for tokens in ambient token list
