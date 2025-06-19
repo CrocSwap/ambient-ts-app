@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { TokenIF } from '../ambient-utils/types';
+import { AppStateContext } from './AppStateContext';
 import { UserDataContext } from './UserDataContext';
 
 export interface NftListByChain {
@@ -56,6 +57,10 @@ export const TokenBalanceContextProvider = (props: {
         undefined,
     );
 
+    const {
+        activeNetwork: { chainId },
+    } = useContext(AppStateContext);
+
     const [NFTFetchSettings, setNFTFetchSettings] =
         useState<NftFetchSettingsIF>({ pageKey: '', pageSize: 100 });
 
@@ -66,7 +71,7 @@ export const TokenBalanceContextProvider = (props: {
     };
     useEffect(() => {
         resetTokenBalances();
-    }, [isUserConnected, userAddress]);
+    }, [isUserConnected, userAddress, chainId]);
 
     const setTokenBalance = (params: {
         tokenAddress: string;

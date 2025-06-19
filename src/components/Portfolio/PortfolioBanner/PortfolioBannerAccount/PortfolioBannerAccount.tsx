@@ -18,6 +18,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import styles from './PortfolioBannerAccount.module.css';
 
 import { useNavigate } from 'react-router-dom';
+import { ChainDataContext } from '../../../../contexts';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
@@ -67,10 +68,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
         resolvedAddressFromContext,
         totalLiquidityValue,
         totalExchangeBalanceValue,
+        totalVaultsValue,
         totalWalletBalanceValue,
-        setTotalLiquidityValue,
-        setTotalExchangeBalanceValue,
-        setTotalWalletBalanceValue,
     } = useContext(UserDataContext);
 
     const { NFTData } = useContext(TokenBalanceContext);
@@ -79,6 +78,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
         activeNetwork: { displayName: chainName, blockExplorer, chainId },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+
+    const { isVaultSupportedOnNetwork } = useContext(ChainDataContext);
 
     const navigate = useNavigate();
 
@@ -185,13 +186,6 @@ export default function PortfolioBannerAccount(props: propsIF) {
     }, [resolvedAddress, userAddress]);
 
     useEffect(() => {
-        setTotalValueUSD(undefined);
-        setTotalLiquidityValue(undefined);
-        setTotalExchangeBalanceValue(undefined);
-        setTotalWalletBalanceValue(undefined);
-    }, [activePortfolioAddress]);
-
-    useEffect(() => {
         if (
             totalLiquidityValue?.chainId.toLowerCase() !==
                 chainId.toLowerCase() ||
@@ -210,29 +204,50 @@ export default function PortfolioBannerAccount(props: propsIF) {
             setTotalValueUSD(undefined);
             return;
         }
-        setTotalValueUSD(
-            (totalLiquidityValue?.value || 0) +
-                (totalExchangeBalanceValue?.value || 0) +
-                (totalWalletBalanceValue?.value || 0),
-        );
+        if (connectedAccountActive && isVaultSupportedOnNetwork) {
+            setTotalValueUSD(
+                (totalLiquidityValue?.value || 0) +
+                    (totalExchangeBalanceValue?.value || 0) +
+                    (totalWalletBalanceValue?.value || 0) +
+                    (totalVaultsValue?.value || 0),
+            );
+        } else {
+            setTotalValueUSD(
+                (totalLiquidityValue?.value || 0) +
+                    (totalExchangeBalanceValue?.value || 0) +
+                    (totalWalletBalanceValue?.value || 0),
+            );
+        }
     }, [
         JSON.stringify(totalLiquidityValue),
         JSON.stringify(totalExchangeBalanceValue),
         JSON.stringify(totalWalletBalanceValue),
+        JSON.stringify(totalVaultsValue),
         activePortfolioAddress,
+        isVaultSupportedOnNetwork,
         chainId,
     ]);
 
     const queriesPending = useMemo(() => {
         return (
-            totalLiquidityValue === undefined ||
-            totalExchangeBalanceValue === undefined ||
-            totalWalletBalanceValue === undefined
+            (connectedAccountActive &&
+                isVaultSupportedOnNetwork &&
+                (totalLiquidityValue === undefined ||
+                    totalExchangeBalanceValue === undefined ||
+                    totalWalletBalanceValue === undefined ||
+                    totalVaultsValue === undefined)) ||
+            (!connectedAccountActive &&
+                (totalLiquidityValue === undefined ||
+                    totalExchangeBalanceValue === undefined ||
+                    totalWalletBalanceValue === undefined))
         );
     }, [
+        connectedAccountActive,
+        isVaultSupportedOnNetwork,
         totalLiquidityValue === undefined,
         totalExchangeBalanceValue === undefined,
         totalWalletBalanceValue === undefined,
+        totalVaultsValue === undefined,
     ]);
 
     const formattedTotalValueUSD = useMemo(() => {
@@ -315,7 +330,11 @@ export default function PortfolioBannerAccount(props: propsIF) {
                             </span>
                             <TooltipComponent
                                 placement='bottom'
-                                title='The sum of estimated USD values for all liquidity positions, exchange balances, and wallet balances on the active chain for this account.'
+                                title={
+                                    connectedAccountActive
+                                        ? 'The sum of estimated USD values for all liquidity positions, vault deposits, exchange balances, and wallet balances on the active chain for this account.'
+                                        : 'The sum of estimated USD values for all liquidity positions, exchange balances, and wallet balances on the active chain for this account.'
+                                }
                             />
                         </div>
                     )}

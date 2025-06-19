@@ -54,6 +54,7 @@ export interface AppStateContextIF {
     isTradeRoute: boolean;
     isAccountRoute: boolean;
     isHomeRoute: boolean;
+    isAccountOrVaultRoute: boolean;
 }
 
 export const AppStateContext = createContext({} as AppStateContextIF);
@@ -88,6 +89,9 @@ export const AppStateContextProvider = (props: {
         pathNoLeadingSlash?.startsWith('account/0x');
     const isAccountRoute =
         isAddressEns || isAddressHex || pathNoLeadingSlash?.includes('account');
+
+    const isAccountOrVaultRoute =
+        isAccountRoute || pathNoLeadingSlash?.includes('vaults');
 
     const isHomeRoute = pathNoLeadingSlash === '';
 
@@ -307,6 +311,7 @@ export const AppStateContextProvider = (props: {
             isTradeRoute,
             isAccountRoute,
             isHomeRoute,
+            isAccountOrVaultRoute,
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -332,6 +337,7 @@ export const AppStateContextProvider = (props: {
             isTradeRoute,
             isAccountRoute,
             isHomeRoute,
+            isAccountOrVaultRoute,
         ],
     );
 
