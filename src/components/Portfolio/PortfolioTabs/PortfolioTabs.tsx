@@ -339,6 +339,13 @@ export default function PortfolioTabs(props: propsIF) {
                 : lookupAccountLimitOrderData,
         [connectedAccountActive, _limitsByUser, lookupAccountLimitOrderData],
     );
+
+    useEffect(() => {
+        setTotalLiquidityValue(undefined);
+        setTotalExchangeBalanceValue(undefined);
+        setTotalWalletBalanceValue(undefined);
+    }, [chainId, userAddress]);
+
     useEffect(() => {
         setTotalLiquidityValue({
             value:
@@ -358,6 +365,8 @@ export default function PortfolioTabs(props: propsIF) {
     }, [
         JSON.stringify(activeAccountPositionData),
         JSON.stringify(activeAccountLimitOrderData),
+        chainId,
+        connectedAccountActive ? userAddress : resolvedAddress,
     ]);
 
     const activeAccountTransactionData = useMemo(

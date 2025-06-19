@@ -130,10 +130,7 @@ export const UserDataContextProvider = (props: {
 
     const { chainId: walletChain } = useAppKitNetwork();
 
-    const {
-        isUserOnline,
-        activeNetwork: { chainId: activeChainId },
-    } = useContext(AppStateContext);
+    const { isUserOnline } = useContext(AppStateContext);
 
     const { disconnect } = useDisconnect();
     const { walletProvider } = useAppKitProvider('eip155');
@@ -146,12 +143,6 @@ export const UserDataContextProvider = (props: {
             }
         }
     }
-
-    useEffect(() => {
-        setTotalLiquidityValue(undefined);
-        setTotalExchangeBalanceValue(undefined);
-        setTotalWalletBalanceValue(undefined);
-    }, [activeChainId, userAddress]);
 
     const isBlacklisted = userAddress ? checkBlacklist(userAddress) : false;
     if (isBlacklisted) disconnectUser();
