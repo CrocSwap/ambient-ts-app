@@ -1,9 +1,8 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../../../ambient-utils/types';
-import { UserDataContext } from '../../../../../contexts';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 import Spinner from '../../../Spinner/Spinner';
 import styles from './Exchange.module.css';
@@ -25,12 +24,12 @@ export default function Exchange(props: propsIF) {
         cachedFetchTokenPrice,
     } = props;
 
-    const { setTotalExchangeBalanceValue } = useContext(UserDataContext);
     const { tokenBalances } = useContext(TokenBalanceContext);
 
-    const tokensToRender = connectedAccountActive
-        ? tokenBalances
-        : resolvedAddressTokens;
+    const tokensToRender = useMemo(
+        () => (connectedAccountActive ? tokenBalances : resolvedAddressTokens),
+        [connectedAccountActive, tokenBalances, resolvedAddressTokens],
+    );
 
     const [tokenValues, setTokenValues] = useState<
         { token: TokenIF; balanceValue: number; dexBalanceTruncated: string }[]
@@ -70,7 +69,7 @@ export default function Exchange(props: propsIF) {
             setTokenValues(values);
         }
         fetchTokenValues();
-    }, [JSON.stringify(tokensToRender)]);
+    }, [tokensToRender, cachedFetchTokenPrice, props.chainId]);
 
     return (
         <div className={styles.container}>

@@ -1,5 +1,5 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import {
     ZERO_ADDRESS,
@@ -10,7 +10,6 @@ import {
     isUsdcToken,
 } from '../../../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../../../ambient-utils/types';
-import { UserDataContext } from '../../../../../contexts';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import Spinner from '../../../Spinner/Spinner';
@@ -31,12 +30,12 @@ export default function Wallet(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { setTotalWalletBalanceValue } = useContext(UserDataContext);
-
     const { tokenBalances } = useContext(TokenBalanceContext);
 
-    const tokensToRender: Array<TokenIF | undefined> | undefined =
-        connectedAccountActive ? tokenBalances : resolvedAddressTokens;
+    const tokensToRender = useMemo(
+        () => (connectedAccountActive ? tokenBalances : resolvedAddressTokens),
+        [connectedAccountActive, tokenBalances, resolvedAddressTokens],
+    );
 
     function sequenceTokens(tkns: TokenIF[]): TokenIF[] {
         const tokensWithOrigins: TokenIF[] = tkns
@@ -127,6 +126,7 @@ export default function Wallet(props: propsIF) {
                             );
                             price = priceObj?.usdPrice ?? 0;
                         } catch {}
+
                         const walletBalanceDisplay = token.walletBalance
                             ? toDisplayQty(token.walletBalance, token.decimals)
                             : undefined;
@@ -146,7 +146,7 @@ export default function Wallet(props: propsIF) {
             setTokenValues(values);
         }
         fetchTokenValues();
-    }, [JSON.stringify(tokensToRender)]);
+    }, [tokensToRender, props.cachedFetchTokenPrice, props.chainId]);
 
     return (
         <div className={styles.container}>
