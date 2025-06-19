@@ -262,7 +262,7 @@ function Portfolio(props: propsIF) {
 
     useEffect(() => {
         setResolvedAddressTokens([]);
-    }, [resolvedAddress]);
+    }, [resolvedAddress, chainId]);
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
