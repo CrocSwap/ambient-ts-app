@@ -76,6 +76,14 @@ export interface UserDataContextIF {
             { value: number; chainId: string; address: string } | undefined
         >
     >;
+    totalVaultsValue:
+        | { value: number; chainId: string; address: string }
+        | undefined;
+    setTotalVaultsValue: React.Dispatch<
+        React.SetStateAction<
+            { value: number; chainId: string; address: string } | undefined
+        >
+    >;
 }
 
 export interface UserXpDataIF {
@@ -101,6 +109,7 @@ export const UserDataContextProvider = (props: {
         React.useState<string>('');
     const [secondaryEnsFromContext, setSecondaryEnsInContext] =
         React.useState<string>('');
+
     const [totalLiquidityValue, setTotalLiquidityValue] = React.useState<
         { value: number; chainId: string; address: string } | undefined
     >(undefined);
@@ -112,16 +121,16 @@ export const UserDataContextProvider = (props: {
         React.useState<
             { value: number; chainId: string; address: string } | undefined
         >(undefined);
+    const [totalVaultsValue, setTotalVaultsValue] = React.useState<
+        { value: number; chainId: string; address: string } | undefined
+    >(undefined);
 
     const { address: userAddress, isConnected: isUserConnected } =
         useAppKitAccount();
 
     const { chainId: walletChain } = useAppKitNetwork();
 
-    const {
-        isUserOnline,
-        activeNetwork: { chainId: activeChainId },
-    } = useContext(AppStateContext);
+    const { isUserOnline } = useContext(AppStateContext);
 
     const { disconnect } = useDisconnect();
     const { walletProvider } = useAppKitProvider('eip155');
@@ -134,12 +143,6 @@ export const UserDataContextProvider = (props: {
             }
         }
     }
-
-    useEffect(() => {
-        setTotalLiquidityValue(undefined);
-        setTotalExchangeBalanceValue(undefined);
-        setTotalWalletBalanceValue(undefined);
-    }, [activeChainId, userAddress]);
 
     const isBlacklisted = userAddress ? checkBlacklist(userAddress) : false;
     if (isBlacklisted) disconnectUser();
@@ -241,6 +244,8 @@ export const UserDataContextProvider = (props: {
         setTotalExchangeBalanceValue,
         totalWalletBalanceValue,
         setTotalWalletBalanceValue,
+        totalVaultsValue,
+        setTotalVaultsValue,
     };
 
     return (

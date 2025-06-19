@@ -77,6 +77,8 @@ export default function PortfolioTabs(props: propsIF) {
         setTotalWalletBalanceValue,
         setTotalExchangeBalanceValue,
         userAddress,
+        setTotalVaultsValue,
+        userVaultData,
     } = useContext(UserDataContext);
 
     const {
@@ -108,15 +110,31 @@ export default function PortfolioTabs(props: propsIF) {
     const _limitsByUser = limitOrdersByUser.limitOrders.filter(filterFn);
 
     const [lookupAccountPositionData, setLookupAccountPositionData] = useState<
-        PositionIF[]
-    >([]);
+        PositionIF[] | undefined
+    >();
     const [lookupAccountLimitOrderData, setLookupAccountLimitOrderData] =
-        useState<LimitOrderIF[]>([]);
+        useState<LimitOrderIF[] | undefined>();
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
-        useState<TransactionIF[]>([]);
+        useState<TransactionIF[] | undefined>();
 
     const userPositionsCacheEndpoint = GCGO_URL + '/user_positions?';
     const userLimitOrdersCacheEndpoint = GCGO_URL + '/user_limit_orders?';
+
+    useEffect(() => {
+        let totalValue = 0;
+        if (userVaultData) {
+            totalValue = userVaultData.reduce((total: number, vault: any) => {
+                // Parse balanceUsd as a float, default to 0 if empty or invalid
+                const usd = parseFloat(vault.balanceUsd);
+                return total + (isNaN(usd) ? 0 : usd);
+            }, 0);
+        }
+        setTotalVaultsValue({
+            value: totalValue,
+            chainId: userVaultData?.[0]?.chainId || chainId,
+            address: userVaultData?.[0]?.walletAddress || userAddress || '',
+        });
+    }, [JSON.stringify(userVaultData), chainId, userAddress]);
 
     const getLookupUserPositions = async (accountToSearch: string) => {
         fetch(
@@ -314,16 +332,6 @@ export default function PortfolioTabs(props: propsIF) {
         [connectedAccountActive, _positionsByUser, lookupAccountPositionData],
     );
 
-    useEffect(() => {
-        setTotalLiquidityValue({
-            value: sumTotalValueUSD(activeAccountPositionData),
-            chainId: chainId,
-            address: connectedAccountActive
-                ? userAddress || ''
-                : resolvedAddress || '',
-        });
-    }, [JSON.stringify(activeAccountPositionData)]);
-
     const activeAccountLimitOrderData = useMemo(
         () =>
             connectedAccountActive
@@ -331,6 +339,35 @@ export default function PortfolioTabs(props: propsIF) {
                 : lookupAccountLimitOrderData,
         [connectedAccountActive, _limitsByUser, lookupAccountLimitOrderData],
     );
+
+    useEffect(() => {
+        setTotalLiquidityValue(undefined);
+        setTotalExchangeBalanceValue(undefined);
+        setTotalWalletBalanceValue(undefined);
+    }, [chainId, userAddress]);
+
+    useEffect(() => {
+        setTotalLiquidityValue({
+            value:
+                activeAccountPositionData && activeAccountLimitOrderData
+                    ? sumTotalValueUSD(activeAccountPositionData) +
+                      sumTotalValueUSD(activeAccountLimitOrderData)
+                    : activeAccountPositionData
+                      ? sumTotalValueUSD(activeAccountPositionData)
+                      : activeAccountLimitOrderData
+                        ? sumTotalValueUSD(activeAccountLimitOrderData)
+                        : 0,
+            chainId: chainId,
+            address: connectedAccountActive
+                ? userAddress || ''
+                : resolvedAddress || '',
+        });
+    }, [
+        JSON.stringify(activeAccountPositionData),
+        JSON.stringify(activeAccountLimitOrderData),
+        chainId,
+        connectedAccountActive ? userAddress : resolvedAddress,
+    ]);
 
     const activeAccountTransactionData = useMemo(
         () =>
@@ -418,7 +455,7 @@ export default function PortfolioTabs(props: propsIF) {
             });
         }
         calculateBalances();
-    }, [JSON.stringify(tokensToRender)]);
+    }, [JSON.stringify(tokensToRender), activePortfolioAddress]);
 
     // props for <Wallet/> React Element
     const walletProps = {
