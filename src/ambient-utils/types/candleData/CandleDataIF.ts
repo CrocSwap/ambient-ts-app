@@ -4,6 +4,7 @@ export interface CandleDataIF {
     tvlData: {
         time: number;
         tvl: number;
+        tvlRaw: number;
     };
     volumeUSD: number;
     averageLiquidityFee: number;

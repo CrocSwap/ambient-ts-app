@@ -71,7 +71,7 @@ export function usePoolMetadata() {
         limitOrdersByPool,
     } = useContext(GraphDataContext);
 
-    const { blockPollingUrl, activePoolList } = useContext(ChainDataContext);
+    const { activePoolList } = useContext(ChainDataContext);
 
     const {
         tokenA,
@@ -645,7 +645,6 @@ export function usePoolMetadata() {
             : Math.floor(Date.now() / 10000), // cache for 10 seconds if not idle
         provider,
         sessionReceipts.length,
-        blockPollingUrl,
         isTradeRoute,
         activePoolList,
     ]);

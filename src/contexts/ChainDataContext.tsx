@@ -5,6 +5,7 @@ import {
     Dispatch,
     ReactNode,
     SetStateAction,
+    useCallback,
     useContext,
     useEffect,
     useMemo,
@@ -62,8 +63,6 @@ export interface ChainDataContextIF {
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
     rpcNodeStatus: RpcNodeStatus;
-    isPrimaryRpcNodeInactive: React.MutableRefObject<boolean>;
-    blockPollingUrl: string;
     connectedUserXp: UserXpDataIF;
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
@@ -98,13 +97,7 @@ export const ChainDataContext = createContext({} as ChainDataContextIF);
 
 export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: {
-            chainId,
-            evmRpcUrl,
-            fallbackRpcUrl,
-            GCGO_URL,
-            isTestnet,
-        },
+        activeNetwork: { chainId, GCGO_URL, isTestnet },
         isUserIdle,
         isUserOnline,
         isTradeRoute,
@@ -126,7 +119,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         blastProvider,
         swellProvider,
         plumeProvider,
-        isPrimaryRpcNodeInactive,
     } = useContext(CrocEnvContext);
 
     const [
@@ -195,10 +187,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const [totalFeesString, setTotalFeesString] = useState<
         string | undefined
     >();
-
-    const blockPollingUrl = !isPrimaryRpcNodeInactive.current
-        ? evmRpcUrl
-        : fallbackRpcUrl;
 
     // array of network IDs for supported L2 networks
     const L1_NETWORKS: string[] = [
@@ -411,28 +399,25 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         })();
     }, [
         chainId,
-        blockPollingUrl,
         provider,
         poolStatsPollingCacheTime,
         isTradeRoute,
         isGasPriceFetchManuallyTriggerered,
     ]);
 
-    async function pollBlockNum(): Promise<void> {
+    const pollBlockNum = useCallback(async () => {
         try {
-            const lastBlockNumber = await fetchBlockNumber(blockPollingUrl);
+            const lastBlockNumber = await fetchBlockNumber(provider);
             if (lastBlockNumber > 0) {
                 setLastBlockNumber(lastBlockNumber);
                 setRpcNodeStatus('active');
             } else {
                 setRpcNodeStatus('inactive');
-                isPrimaryRpcNodeInactive.current = true;
             }
         } catch (error) {
             setRpcNodeStatus('inactive');
-            isPrimaryRpcNodeInactive.current = true;
         }
-    }
+    }, [provider]);
 
     useEffect(() => {
         if (!isUserOnline) return;
@@ -445,7 +430,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
         // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(interval);
-    }, [isUserOnline, chainId, BLOCK_NUM_POLL_MS, blockPollingUrl]);
+    }, [isUserOnline, chainId, BLOCK_NUM_POLL_MS, provider]);
 
     const [gcgoPoolList, setGcgoPoolList] = useState<PoolIF[] | undefined>();
 
@@ -537,10 +522,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
               ? gcgoPoolList
               : undefined;
     }, [gcgoPoolList, analyticsPoolList]);
-
-    useEffect(() => {
-        isPrimaryRpcNodeInactive.current = false;
-    }, [chainId]);
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
@@ -1138,8 +1119,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         lastBlockNumber,
         setLastBlockNumber,
         rpcNodeStatus,
-        isPrimaryRpcNodeInactive,
-        blockPollingUrl,
         gasPriceInGwei,
         connectedUserXp,
         connectedUserBlastXp,
