@@ -300,7 +300,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         }
 
         // Periodically reset the provider to the highest priority one
-        if (Date.now() - this.lastProviderReset > 30000) {
+        if (Date.now() - this.lastProviderReset > 30_000) {
             this.lastProviderReset = Date.now();
             this.goodProviderIndex = 0;
         }
@@ -373,13 +373,11 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
     }
 
     canSendAsGet(method: string, params: any[]): string | undefined {
-        const url = this.urls[this.goodProviderIndex];
+        const rpcUrl = this.urls[this.goodProviderIndex];
+        const url = new URL(rpcUrl);
+        const possibleGETHosts = ['ambindexer.net', '127.0.0.1', 'localhost'];
         if (
-            !(
-                url.includes('ambindexer.net') ||
-                url.includes('127.0.0.1') ||
-                url.includes('localhost')
-            ) ||
+            !possibleGETHosts.some((host) => url.host.endsWith(host)) ||
             // Retry GET gateway every 5 minutes
             Date.now() - this.GETGatewayClosedAt < 300_000
         )
@@ -395,7 +393,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                 'eth_chainId',
             ].includes(method)
         )
-            return url;
+            return rpcUrl;
 
         if (method == 'eth_call') {
             const callParams = params as EthCallWithBlockTag;
@@ -411,7 +409,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                     '0xdc91a6ad', // queryCurveTick
                 ].includes(callParams[0].data.slice(0, 10))
             )
-                return url;
+                return rpcUrl;
         }
         return undefined;
     }
