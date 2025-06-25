@@ -93,8 +93,7 @@ export const blastMainnet: NetworkIF = {
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
     GCGO_URL: GCGO_BLAST_URL,
-    evmRpcUrl: PRIMARY_RPC_URL,
-    fallbackRpcUrl: FALLBACK_RPC_URL,
+    evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit: chainSpecForAppKit,
     defaultPair: [BLAST_TOKENS.ETH, BLAST_TOKENS.USDB],
     blockExplorer: (

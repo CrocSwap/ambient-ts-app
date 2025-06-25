@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Contract, JsonRpcProvider } from 'ethers';
+import { JsonRpcProvider, Contract, JsonRpcApiProviderOptions } from 'ethers';
 
 export const MULTICALL_ABI = [
     {
@@ -104,7 +104,7 @@ type CachedResponse = {
 };
 
 export class BatchedJsonRpcProvider extends JsonRpcProvider {
-    url: string;
+    urls: string[];
     multicall: Multicall;
     payloads: Array<Payload>;
     drainTimer: null | Timer;
@@ -124,10 +124,19 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         foreverContractMethods: string[];
         fastContractMethods: string[]; // These methods are cached for `fastCallTtlMsec`
     };
+    providers: Array<JsonRpcProvider>;
+    goodProviderIndex: number;
+    lastProviderReset: number;
+    providerTimeoutMsec: number;
     GETGatewayClosedAt: number;
-    constructor(url: string, network: number, options?: any) {
-        super(url, network, options);
-        this.url = url;
+    constructor(
+        urls: string[],
+        network?: number,
+        options?: JsonRpcApiProviderOptions,
+    ) {
+        super(urls[0], network, options);
+        this.urls = urls;
+
         this.multicall = new Multicall(this);
         this.payloads = [];
         this.drainTimer = null;
@@ -152,7 +161,15 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
             ], // ERC20 methods: decimals, name, symbol, totalSupply
             fastContractMethods: ['0x4a6c44bf'], // calcImpact
         };
+
         this.GETGatewayClosedAt = 0;
+        this.goodProviderIndex = 0;
+        this.lastProviderReset = Date.now();
+        this.providerTimeoutMsec = 5000;
+        this.providers = [];
+        for (const url of urls) {
+            this.providers.push(new JsonRpcProvider(url, network, options));
+        }
     }
 
     async send(method: string, params: any[]): Promise<any> {
@@ -169,7 +186,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
             ) ||
             !this.multicall.ready
         ) {
-            return this.sendCached(
+            return this.faultTolerantSend(
                 method,
                 params,
                 this.pickTTL(method, params),
@@ -180,16 +197,22 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                 callParams[1] != 'latest' ||
                 callParams[0].to == this.multicall.contractAddress
             ) {
-                return super.send(method, params);
+                return this.faultTolerantSend(
+                    method,
+                    params,
+                    this.pickTTL(method, params),
+                );
             }
 
             const cached = this.getFromCache('eth_call', callParams);
             if (cached) return cached;
 
             const ttlMsec = this.pickTTL(method, params);
-            if (this.canSendAsGet('eth_call', callParams)) {
+            const getURL = this.canSendAsGet(method, params);
+            if (getURL) {
                 try {
                     const response = await this.sendAsGet(
+                        getURL,
                         'eth_call',
                         callParams,
                     );
@@ -228,8 +251,11 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                 resolve,
                 reject: (_) => {
                     // attempt to call directly if multicall fails
-                    super
-                        .send(payload.method, payload.params)
+                    this.faultTolerantSend(
+                        payload.method,
+                        payload.params,
+                        this.pickTTL(payload.method, payload.params),
+                    )
                         .then((result) => {
                             this.saveInCache(
                                 payload.method,
@@ -246,16 +272,18 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         });
     }
 
-    async sendCached(
+    async faultTolerantSend(
         method: string,
         params: any[],
         ttlMsec: number,
     ): Promise<any> {
         const cachedResponse = this.getFromCache(method, params);
         if (cachedResponse) return cachedResponse;
-        if (this.canSendAsGet(method, params)) {
+        let getURL = this.canSendAsGet(method, params);
+
+        if (getURL) {
             try {
-                const response = await this.sendAsGet(method, params);
+                const response = await this.sendAsGet(getURL, method, params);
                 this.saveInCache(method, params, response, ttlMsec);
                 return response;
             } catch (err) {
@@ -270,13 +298,46 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                 }
             }
         }
-        const response = await super.send(method, params);
-        this.saveInCache(method, params, response, ttlMsec);
-        return response;
+
+        // Periodically reset the provider to the highest priority one
+        if (Date.now() - this.lastProviderReset > 30000) {
+            this.lastProviderReset = Date.now();
+            this.goodProviderIndex = 0;
+        }
+        let providerIndex = this.goodProviderIndex;
+        let error = null;
+        for (let i = 0; i < this.providers.length; i++) {
+            try {
+                const response = await Promise.race([
+                    this.providers[providerIndex].send(method, params),
+                    new Promise((_, reject) =>
+                        setTimeout(
+                            () => reject(new Error('RPC call timed out')),
+                            this.providerTimeoutMsec,
+                        ),
+                    ),
+                ]);
+                if (response.error) throw new Error(response.error);
+                this.goodProviderIndex = providerIndex;
+                this.saveInCache(method, params, response, ttlMsec);
+                return response;
+            } catch (e) {
+                error = e;
+                console.warn('Error in faultTolerantSend:', e);
+                providerIndex = (providerIndex + 1) % this.providers.length;
+            }
+        }
+        if (error) {
+            throw error;
+        }
     }
 
-    async sendAsGet(method: string, params: any[]): Promise<any> {
-        const url = new URL(this.url);
+    async sendAsGet(
+        getURL: string,
+        method: string,
+        params: any[],
+    ): Promise<any> {
+        const url = new URL(getURL);
         // Add params to the URL for methods that need it
         url.pathname += url.pathname.endsWith('/') ? '' : '/';
         let path = `get/${method}`;
@@ -311,17 +372,18 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
         return data.result;
     }
 
-    canSendAsGet(method: string, params: any[]): boolean {
+    canSendAsGet(method: string, params: any[]): string | undefined {
+        const url = this.urls[this.goodProviderIndex];
         if (
             !(
-                this.url.includes('ambindexer.net') ||
-                this.url.includes('127.0.0.1') ||
-                this.url.includes('localhost')
+                url.includes('ambindexer.net') ||
+                url.includes('127.0.0.1') ||
+                url.includes('localhost')
             ) ||
             // Retry GET gateway every 5 minutes
             Date.now() - this.GETGatewayClosedAt < 300_000
         )
-            return false;
+            return undefined;
 
         if (
             [
@@ -333,11 +395,11 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                 'eth_chainId',
             ].includes(method)
         )
-            return true;
+            return url;
 
         if (method == 'eth_call') {
             const callParams = params as EthCallWithBlockTag;
-            if (callParams[1] != 'latest') return false;
+            if (callParams[1] != 'latest') return undefined;
             if (
                 [
                     '0x313ce567', // decimals
@@ -349,9 +411,9 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                     '0xdc91a6ad', // queryCurveTick
                 ].includes(callParams[0].data.slice(0, 10))
             )
-                return true;
+                return url;
         }
-        return false;
+        return undefined;
     }
 
     getFromCache(method: string, params: any[]): any | undefined {
@@ -431,11 +493,11 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                 }
                 await (async () => {
                     if (batch.length === 1) {
-                        super
-                            .send(
-                                batch[0].payload.method,
-                                batch[0].payload.params,
-                            )
+                        this.faultTolerantSend(
+                            batch[0].payload.method,
+                            batch[0].payload.params,
+                            0,
+                        )
                             .then((result) => {
                                 this.saveInCache(
                                     batch[0].payload.method,
@@ -445,6 +507,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                                 );
                                 batch[0].resolve(result);
                             })
+
                             .catch(batch[0].reject);
                         return;
                     }

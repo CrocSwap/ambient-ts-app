@@ -17,8 +17,7 @@ export interface NetworkIF {
     chainId: string;
     GCGO_URL: string;
     chainSpecForAppKit: Chain;
-    evmRpcUrl: string;
-    fallbackRpcUrl: string;
+    evmRpcUrls: string[];
     poolIndex: number;
     gridSize: number;
     isTestnet: boolean;
