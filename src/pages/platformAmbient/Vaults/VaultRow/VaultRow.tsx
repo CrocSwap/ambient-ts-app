@@ -1,5 +1,5 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import {
     getFormattedNumber,
@@ -13,8 +13,7 @@ import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 import TooltipComponent from '../../../../components/Global/TooltipComponent/TooltipComponent';
 import {
     AppStateContext,
-    CrocEnvContext,
-    ReceiptContext,
+    ChainDataContext,
     TokenContext,
     UserDataContext,
 } from '../../../../contexts';
@@ -47,6 +46,8 @@ export default function VaultRow(props: propsIF) {
     const {
         activeNetwork: { chainId, tempestApiNetworkName },
     } = useContext(AppStateContext);
+
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const mainAsset = tokens.getTokenByAddress(vault.mainAsset);
     const secondaryAssetAddress =
@@ -140,7 +141,7 @@ export default function VaultRow(props: propsIF) {
         </FlexContainer>
     );
 
-    const isAprUnknown = !(parseFloat(vault.apr) > 0);
+    const isAprUnknown = !(parseFloat(vault.apr) > 0) || isActiveNetworkPlume;
 
     const formattedAPR = isAprUnknown
         ? '...'
