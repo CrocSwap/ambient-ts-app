@@ -167,7 +167,7 @@ function TradeModuleHeader(props: propsIF) {
                                     aria-label='Chart settings button'
                                 />
                             ) : (
-                                <LuSettings size={220} />
+                                <LuSettings />
                             )}
                         </div>
                     </IconWithTooltip>
