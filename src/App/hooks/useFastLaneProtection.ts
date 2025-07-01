@@ -1,4 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import {
+    FASTLANE_LS_KEY,
+    MEV_PROTECTION_PREF_LS_KEY,
+} from '../../ambient-utils/constants';
 import { monadTestnet } from '../../ambient-utils/constants/networks/monadTestnet';
 
 export interface FastLaneProtectionIF {
@@ -10,16 +14,23 @@ export interface FastLaneProtectionIF {
 }
 
 export const useFastLaneProtection = (): FastLaneProtectionIF => {
-    const LS_KEY = 'fastlane_protection';
     const ACCEPTED_NETWORKS = [monadTestnet];
     const [enabled, setEnabled] = useState<boolean>(() => {
-        const stored = localStorage.getItem(LS_KEY);
+        const stored = localStorage.getItem(MEV_PROTECTION_PREF_LS_KEY);
         return stored ? JSON.parse(stored) : false;
     });
 
+    useEffect(() => {
+        // remove old fastlane key on mount
+        localStorage.removeItem(FASTLANE_LS_KEY);
+    }, []);
+
     // Effect to persist enabled state to localStorage
     useEffect(() => {
-        localStorage.setItem(LS_KEY, JSON.stringify(enabled));
+        localStorage.setItem(
+            MEV_PROTECTION_PREF_LS_KEY,
+            JSON.stringify(enabled),
+        );
     }, [enabled]);
 
     const isChainAccepted = (chainId: string): boolean => {
