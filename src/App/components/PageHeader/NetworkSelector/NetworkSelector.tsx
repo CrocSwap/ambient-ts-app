@@ -7,7 +7,7 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import { useSearchParams } from 'react-router-dom';
 import {
     brand,
-    MEV_PROXY_PREF_LS_KEY,
+    MEV_PROTECTION_PREF_LS_KEY,
     supportedNetworks,
 } from '../../../../ambient-utils/constants';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
@@ -112,7 +112,7 @@ export default function NetworkSelector(props: propsIF) {
 
             if (
                 fastLaneProtection.isChainAccepted(targetChainId) &&
-                localStorage.getItem(MEV_PROXY_PREF_LS_KEY) === 'true'
+                localStorage.getItem(MEV_PROTECTION_PREF_LS_KEY) === 'true'
             ) {
                 fastLaneProtection.enable();
             }

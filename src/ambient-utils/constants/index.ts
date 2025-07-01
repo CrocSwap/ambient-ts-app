@@ -20,7 +20,7 @@ export const APP_ENVIRONMENT: AppEnvironment =
     (BRANCH_NAME as AppEnvironment) || 'local';
 
 export const FASTLANE_LS_KEY = 'fastlane_protection';
-export const MEV_PROXY_PREF_LS_KEY = 'mev_proxy_preference';
+export const MEV_PROTECTION_PREF_LS_KEY = 'mev_protection_preference';
 
 export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
