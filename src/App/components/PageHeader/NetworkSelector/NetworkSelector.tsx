@@ -5,7 +5,11 @@ import { motion } from 'framer-motion';
 import { useContext, useEffect, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { useSearchParams } from 'react-router-dom';
-import { brand, supportedNetworks } from '../../../../ambient-utils/constants';
+import {
+    brand,
+    MEV_PROXY_PREF_LS_KEY,
+    supportedNetworks,
+} from '../../../../ambient-utils/constants';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 // import baseLogo from '../../../../assets/images/networks/Base_Network_Logo.svg';
 import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
@@ -106,8 +110,11 @@ export default function NetworkSelector(props: propsIF) {
                 fastLaneProtection.disable();
             }
 
-            if (fastLaneProtection.isChainAccepted(targetChainId)) {
-                fastLaneProtection.toggle();
+            if (
+                fastLaneProtection.isChainAccepted(targetChainId) &&
+                localStorage.getItem(MEV_PROXY_PREF_LS_KEY) === 'true'
+            ) {
+                fastLaneProtection.enable();
             }
 
             setCrocEnv(undefined);
