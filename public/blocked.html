@@ -72,9 +72,7 @@
                 .then(response => response.json())
                 .then(data => {
                     const countryISOCode = data.country;
-                    console.log(countryISOCode);
                     const countryName = getCountryName(countryISOCode);
-                    console.log(countryName);
                     document.getElementById('location').textContent = countryName;
                 })
                 .catch(error => {
