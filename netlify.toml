@@ -78,7 +78,7 @@
 [[redirects]]
   from = "/*"
   to = "/blocked.html"
-  status = 301
+  status = 302
   force = true
   conditions = {Country = [
     "AF", # Afghanistan
