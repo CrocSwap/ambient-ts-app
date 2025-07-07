@@ -68,15 +68,18 @@
                     }
                     return countries[isoCode.toUpperCase()] || isoCode;
                 }
-                fetch(window.location.href, { method: 'HEAD' })
-                    .then((response) => {
-                        console.log({response})
-                        const countryName = getCountryName(response.headers.get('X-Country'));
-                        console.log(response.headers.get('X-Country'));
-                        console.log(countryName);
-                        document.getElementById('location').textContent =
-                            countryName;
-                    });
+                fetch('/.netlify/functions/show-country')
+                .then(response => response.json())
+                .then(data => {
+                    const countryISOCode = data.country;
+                    console.log(countryISOCode);
+                    const countryName = getCountryName(countryISOCode);
+                    console.log(countryName);
+                    document.getElementById('location').textContent = countryName;
+                })
+                .catch(error => {
+                    console.error('Error fetching country:', error);
+                });
             </script>
             <p>
                 We're sorry, but this website is not available in
