@@ -1,9 +1,3 @@
-#https://stackoverflow.com/questions/58065603/netlify-renders-404-on-page-refresh-using-react-and-react-router 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 [[headers]]
   for = "/ambient-token-list.json"
   [headers.values]
@@ -112,6 +106,12 @@
     "YE", # Yemen
     "ZW"  # Zimbabwe
   ]}
+
+#https://stackoverflow.com/questions/58065603/netlify-renders-404-on-page-refresh-using-react-and-react-router 
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 [build]
   command = "npm run build && cp src/ambient-utils/constants/ambient-token-list.json src/ambient-utils/constants/testnet-token-list.json build/"
