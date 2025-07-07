@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Access Restricted</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>
+            body {
+                background: #f8f9fa;
+                color: #222;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                margin: 0;
+            }
+            .container {
+                background: #fff;
+                border-radius: 12px;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+                padding: 2rem 2.5rem;
+                max-width: 400px;
+                text-align: center;
+            }
+            h1 {
+                color: #d32f2f;
+                margin-bottom: 0.5em;
+            }
+            p {
+                margin: 1em 0;
+                font-size: 1.1em;
+            }
+            .icon {
+                font-size: 3em;
+                margin-bottom: 0.5em;
+                color: #d32f2f;
+            }
+            .contact {
+                margin-top: 1.5em;
+                font-size: 0.95em;
+                color: #555;
+            }
+            @media (max-width: 500px) {
+                .container {
+                    padding: 1.2rem 0.5rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="icon">🚫</div>
+            <h1>Access Restricted</h1>
+            <script>
+                fetch('https://ipapi.co/json/')
+                    .then((res) => res.json())
+                    .then((data) => {
+                        document.getElementById('location').textContent =
+                            data.country_name;
+                    });
+            </script>
+            <p>
+                We're sorry, but this website is not available in
+                <span id="location">your region</span>.
+            </p>
+            <p>
+                If you believe this is an error, please contact our support team
+                on Discord.
+            </p>
+            <div class="contact">
+                Discord:
+                <a href="https://discord.com/invite/ambient-finance"
+                    >Ambient Finance on Discord</a
+                >
+            </div>
+        </div>
+    </body>
+</html>
