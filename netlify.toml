@@ -114,14 +114,17 @@
 [[redirects]]
   from = "/"
   to = "https://deploy-preview-12--ambi-perps.netlify.app/"
+  force = true
   status = 200
 
 [[redirects]]
   from = "/v2/*"
   to = "https://deploy-preview-12--ambi-perps.netlify.app/v2/:splat"
+  force = true
   status = 200
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
+  force = true
   status = 200
