@@ -195,7 +195,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                     action={() => {
                                         // if this modal is launched we can infer user wants confirmation
                                         // if user enables bypass, update all settings in parallel
-                                        // otherwise do not not make any change to persisted preferences
+                                        // otherwise do not make any change to persisted preferences
                                         if (skipFutureConfirmation) {
                                             bypassConfirmSwap.enable();
                                             bypassConfirmLimit.enable();
