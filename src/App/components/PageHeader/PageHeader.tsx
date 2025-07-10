@@ -2,7 +2,10 @@ import { AnimateSharedLayout, motion } from 'framer-motion';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { Link, useLocation } from 'react-router-dom';
-import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
+import {
+    DISABLE_ALL_TUTOS,
+    LINK_TO_PERPS_HOME,
+} from '../../../ambient-utils/constants';
 import {
     chainNumToString,
     checkEoaHexAddress,
@@ -417,7 +420,7 @@ const PageHeader = function () {
                     }}
                     className={styles.left_side}
                 >
-                    {platformName === 'ambient' ? (
+                    {platformName === 'ambient' && LINK_TO_PERPS_HOME ? (
                         <a
                             href='/'
                             className={styles.logoContainer}
