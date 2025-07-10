@@ -417,8 +417,8 @@ const PageHeader = function () {
                     }}
                     className={styles.left_side}
                 >
-                    <Link
-                        to='/'
+                    <a
+                        href='/'
                         className={styles.logoContainer}
                         aria-label='Home'
                     >
@@ -436,7 +436,7 @@ const PageHeader = function () {
                                 width='60px'
                             />
                         )}
-                    </Link>
+                    </a>
                     {routeDisplay}
                 </div>
                 <div className={styles.rightSide}>

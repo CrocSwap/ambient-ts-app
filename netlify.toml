@@ -1,7 +1,3 @@
-[build]
-  command = "npm run build && cp src/ambient-utils/constants/ambient-token-list.json src/ambient-utils/constants/testnet-token-list.json build/"
-  publish = "build"
-
 [[headers]]
   for = "/ambient-token-list.json"
   [headers.values]
@@ -111,20 +107,12 @@
     "ZW"  # Zimbabwe
   ]}
 
-[[redirects]]
-  from = "/"
-  to = "https://deploy-preview-12--ambi-perps.netlify.app/"
-  force = true
-  status = 200
-
-[[redirects]]
-  from = "/v2/*"
-  to = "https://deploy-preview-12--ambi-perps.netlify.app/v2/:splat"
-  force = true
-  status = 200
-
+#https://stackoverflow.com/questions/58065603/netlify-renders-404-on-page-refresh-using-react-and-react-router 
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  force = true
   status = 200
+
+[build]
+  command = "npm run build && cp src/ambient-utils/constants/ambient-token-list.json src/ambient-utils/constants/testnet-token-list.json build/"
+  publish = "build"
