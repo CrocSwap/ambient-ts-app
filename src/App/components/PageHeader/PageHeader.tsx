@@ -42,7 +42,7 @@ const PageHeader = function () {
         walletModal: { open: openWalletModal },
         appHeaderDropdown,
     } = useContext(AppStateContext);
-    const { headerImage } = useContext(BrandContext);
+    const { headerImage, platformName } = useContext(BrandContext);
     const { setCrocEnv } = useContext(CrocEnvContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
@@ -417,26 +417,49 @@ const PageHeader = function () {
                     }}
                     className={styles.left_side}
                 >
-                    <a
-                        href='/'
-                        className={styles.logoContainer}
-                        aria-label='Home'
-                    >
-                        {desktopScreen ? (
-                            <img
-                                src={headerImage}
-                                alt='ambient'
-                                style={{ marginRight: '20px' }}
-                            />
-                        ) : (
-                            <img
-                                className={styles.logoText}
-                                src={logo}
-                                alt='ambient'
-                                width='60px'
-                            />
-                        )}
-                    </a>
+                    {platformName === 'ambient' ? (
+                        <a
+                            href='/'
+                            className={styles.logoContainer}
+                            aria-label='Home'
+                        >
+                            {desktopScreen ? (
+                                <img
+                                    src={headerImage}
+                                    alt='ambient'
+                                    style={{ marginRight: '20px' }}
+                                />
+                            ) : (
+                                <img
+                                    className={styles.logoText}
+                                    src={logo}
+                                    alt='ambient'
+                                    width='60px'
+                                />
+                            )}
+                        </a>
+                    ) : (
+                        <Link
+                            to='/'
+                            className={styles.logoContainer}
+                            aria-label='Home'
+                        >
+                            {desktopScreen ? (
+                                <img
+                                    src={headerImage}
+                                    alt='ambient'
+                                    style={{ marginRight: '20px' }}
+                                />
+                            ) : (
+                                <img
+                                    className={styles.logoText}
+                                    src={logo}
+                                    alt='ambient'
+                                    width='60px'
+                                />
+                            )}
+                        </Link>
+                    )}
                     {routeDisplay}
                 </div>
                 <div className={styles.rightSide}>
