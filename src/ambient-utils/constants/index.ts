@@ -24,6 +24,11 @@ export const MEV_PROTECTION_PREF_LS_KEY = 'mev_protection_preference';
 
 export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
+export const LINK_TO_PERPS_HOME =
+    import.meta.env.VITE_LINK_TO_PERPS_HOME !== undefined
+        ? import.meta.env.VITE_LINK_TO_PERPS_HOME.toLowerCase() === 'true'
+        : false;
+
 export const ANALYTICS_URL =
     import.meta.env.VITE_ANALYTICS_URL ||
     'https://ambindexer.net/analytics/run?';
