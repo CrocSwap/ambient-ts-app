@@ -42,8 +42,6 @@
   status = 200
   conditions = {Country = [
     "AF", # Afghanistan
-    "RS", # Serbia
-    "MK", # North Macedonia
     "BY", # Belarus
     "MM", # Burma
     "CF", # Central Africa Republic
@@ -61,7 +59,6 @@
     "SO", # Somalia
     "SS", # South Sudan
     "SD", # Sudan
-    "SY", # Syria
     "VE", # Venezuela
     "YE", # Yemen
     "ZW"  # Zimbabwe
@@ -82,8 +79,6 @@
   force = true
   conditions = {Country = [
     "AF", # Afghanistan
-    "RS", # Serbia
-    "MK", # North Macedonia
     "BY", # Belarus
     "MM", # Burma
     "CF", # Central Africa Republic
@@ -101,7 +96,6 @@
     "SO", # Somalia
     "SS", # South Sudan
     "SD", # Sudan
-    "SY", # Syria
     "VE", # Venezuela
     "YE", # Yemen
     "ZW"  # Zimbabwe
