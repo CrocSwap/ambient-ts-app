@@ -9,8 +9,8 @@ import { GCGO_SCROLL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://rpc.ankr.com/scroll',
-    SECONDARY_PUBLIC: 'https://rpc.scroll.io',
+    PUBLIC: 'https://rpc.scroll.io',
+    SECONDARY_PUBLIC: 'https://rpc.ankr.com/scroll',
     RESTRICTED: import.meta.env.VITE_SCROLL_RPC_URL,
 };
 const PRIMARY_RPC_URL = RPC_URLS.RESTRICTED || RPC_URLS.PUBLIC;
