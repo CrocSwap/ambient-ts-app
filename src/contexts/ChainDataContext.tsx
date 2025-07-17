@@ -279,7 +279,9 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                 const balance = (await balanceInt).toString();
                 const balanceAmount = toDisplayQty(
                     await balanceInt,
-                    vaultSpec.token1Decimals,
+                    vaultSpec.mainAsset == vaultSpec.token0Address
+                        ? vaultSpec.token0Decimals
+                        : vaultSpec.token1Decimals,
                 );
                 let price = 0;
                 try {
