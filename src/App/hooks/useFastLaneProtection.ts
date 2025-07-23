@@ -10,7 +10,7 @@ export interface FastLaneProtectionIF {
     enable: () => void;
     disable: () => void;
     toggle: () => void;
-    isChainAccepted: (chainId: string) => boolean;
+    isChainAccepted: boolean;
 }
 
 export const useFastLaneProtection = (): FastLaneProtectionIF => {
@@ -36,9 +36,9 @@ export const useFastLaneProtection = (): FastLaneProtectionIF => {
         );
     }, [enabled]);
 
-    const isChainAccepted = (chainId: string): boolean => {
+    const isChainAccepted = useMemo(() => {
         return fastLaneProtectionEnabled;
-    };
+    }, [fastLaneProtectionEnabled]);
 
     const result = useMemo(() => {
         return {
@@ -48,6 +48,6 @@ export const useFastLaneProtection = (): FastLaneProtectionIF => {
             toggle: () => setEnabled((prev) => !prev),
             isChainAccepted,
         };
-    }, [enabled]);
+    }, [enabled, isChainAccepted]);
     return result;
 };

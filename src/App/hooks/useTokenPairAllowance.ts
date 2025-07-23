@@ -41,9 +41,7 @@ export function useTokenPairAllowance() {
             ) {
                 try {
                     const context = await crocEnv.context;
-                    const acceptedChainId = fastLaneProtection?.isChainAccepted(
-                        (await crocEnv.context).chain.chainId,
-                    );
+                    const acceptedChainId = fastLaneProtection?.isChainAccepted;
                     // Default to false if fastLaneProtection is undefined during initialization
                     const isFastLaneEnabled =
                         (fastLaneProtection?.isEnabled && acceptedChainId) ??
@@ -80,9 +78,7 @@ export function useTokenPairAllowance() {
             if (isTradeRoute && crocEnv && userAddress && tokenB.address) {
                 try {
                     const context = await crocEnv.context;
-                    const acceptedChainId = fastLaneProtection?.isChainAccepted(
-                        (await crocEnv.context).chain.chainId,
-                    );
+                    const acceptedChainId = fastLaneProtection?.isChainAccepted;
                     // Default to false if fastLaneProtection is undefined during initialization
                     const isFastLaneEnabled =
                         (fastLaneProtection?.isEnabled && acceptedChainId) ??

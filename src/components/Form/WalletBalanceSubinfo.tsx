@@ -97,7 +97,7 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                 title={
                     fastLaneProtection?.isEnabled &&
                     isSwap &&
-                    fastLaneProtection.isChainAccepted(chainId)
+                    fastLaneProtection.isChainAccepted
                         ? 'Exchange Balance disabled with MEV Protection'
                         : isWithdraw
                           ? 'Use Wallet and Exchange Balance'
@@ -114,14 +114,14 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                         cursor:
                             isWithdraw &&
                             !(
-                                fastLaneProtection.isChainAccepted(chainId) &&
+                                fastLaneProtection.isChainAccepted &&
                                 fastLaneProtection?.isEnabled
                             )
                                 ? 'pointer'
                                 : 'default',
                         opacity:
                             isSwap &&
-                            fastLaneProtection.isChainAccepted(chainId) &&
+                            fastLaneProtection.isChainAccepted &&
                             fastLaneProtection?.isEnabled
                                 ? 0.5
                                 : 1,
@@ -130,7 +130,7 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                         !isSwap ||
                         (isWithdraw &&
                             !(
-                                fastLaneProtection.isChainAccepted(chainId) &&
+                                fastLaneProtection.isChainAccepted &&
                                 fastLaneProtection?.isEnabled
                             ))
                             ? onToggleDex

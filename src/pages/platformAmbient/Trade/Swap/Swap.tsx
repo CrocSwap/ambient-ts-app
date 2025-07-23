@@ -586,7 +586,7 @@ function Swap(props: propsIF) {
     useEffect(() => {
         if (
             fastLaneProtection?.isEnabled &&
-            fastLaneProtection.isChainAccepted(chainId)
+            fastLaneProtection.isChainAccepted
         ) {
             setIsWithdrawFromDexChecked(false);
             dexBalSwap?.outputToDexBal.disable();
@@ -600,7 +600,7 @@ function Swap(props: propsIF) {
         tokenADexBalance,
         fastLaneProtection?.isEnabled,
         dexBalSwap?.outputToDexBal.isEnabled,
-        fastLaneProtection.isChainAccepted(chainId),
+        fastLaneProtection.isChainAccepted,
     ]);
 
     const resetConfirmation = () => {
@@ -625,9 +625,7 @@ function Swap(props: propsIF) {
         try {
             const sellTokenAddress = tokenA.address;
             const buyTokenAddress = tokenB.address;
-            const acceptedChainId = fastLaneProtection?.isChainAccepted(
-                (await crocEnv.context).chain.chainId,
-            );
+            const acceptedChainId = fastLaneProtection?.isChainAccepted;
 
             tx = await (fastLaneProtection.isEnabled && acceptedChainId
                 ? performFastLaneSwap({
@@ -718,7 +716,7 @@ function Swap(props: propsIF) {
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
         if (
             fastLaneProtection?.isEnabled &&
-            fastLaneProtection.isChainAccepted(chainId)
+            fastLaneProtection.isChainAccepted
         ) {
             // Show tooltip message
             return;
@@ -948,7 +946,7 @@ function Swap(props: propsIF) {
                         priceImpactWarning={priceImpactWarning}
                         isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                         isMevProtectionEnabled={
-                            fastLaneProtection.isChainAccepted(chainId)
+                            fastLaneProtection.isChainAccepted
                                 ? fastLaneProtection?.isEnabled
                                 : undefined
                         }
