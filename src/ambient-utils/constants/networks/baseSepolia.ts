@@ -97,6 +97,7 @@ export const baseSepolia: NetworkIF = {
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,
     tempestApiNetworkName: '',
+    fastLaneProtectionEnabled: false,
     topPools: [
         new TopPool(
             BASE_SEPOLIA_TOKENS.ETH,

@@ -32,6 +32,7 @@ export interface NetworkIF {
     tempestApiNetworkName: string;
     chainSpec: ChainSpec;
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
+    fastLaneProtectionEnabled: boolean;
     indexerTimeout?: number;
 }
 
