@@ -195,7 +195,7 @@ export const DISABLE_ALL_TUTOS =
 
 export const ATLAS_ROUTER_ADDRESS =
     import.meta.env.VITE_ATLAS_ROUTER_ADDRESS ||
-    '0x9958Ab9f64EF51194C5378a336D2A0b0A620D31c';
+    '0xbB010Cb7e71D44d7323aE1C267B333A48D05907C';
 export const ATLAS_AUCTIONEER_ENDPOINT =
     import.meta.env.VITE_ATLAS_AUCTIONEER_ENDPOINT ||
     'https://auctioneer-fra.fastlane-labs.xyz';
