@@ -35,7 +35,7 @@ import { WarningContainer } from '../../../../styled/Components/TradeModules';
 
 import { ethers } from 'ethers';
 import {
-    ATLAS_ROUTER,
+    ATLAS_ROUTER_ADDRESS,
     GAS_DROPS_ESTIMATE_SWAP_FROM_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET,
@@ -1025,7 +1025,7 @@ function Swap(props: propsIF) {
                                             100n
                                       : ethers.MaxUint256,
                                 fastLaneProtection.isEnabled
-                                    ? ATLAS_ROUTER
+                                    ? ATLAS_ROUTER_ADDRESS
                                     : undefined,
                             );
                         }}

@@ -81,6 +81,7 @@ export const scrollSepolia: NetworkIF = {
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,
     tempestApiNetworkName: '',
+    fastLaneProtectionEnabled: false,
     topPools: [
         new TopPool(
             SCROLL_SEPOLIA_TOKENS.ETH,

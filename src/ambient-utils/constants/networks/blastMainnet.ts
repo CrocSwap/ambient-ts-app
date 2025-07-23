@@ -103,6 +103,7 @@ export const blastMainnet: NetworkIF = {
     tokenPriceQueryAssetPlatform: 'blast',
     vaultsEnabled: false,
     tempestApiNetworkName: '',
+    fastLaneProtectionEnabled: false,
     topPools,
     getGasPriceInGwei,
 };

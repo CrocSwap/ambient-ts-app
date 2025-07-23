@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { ATLAS_ROUTER } from '../../ambient-utils/constants';
+import { ATLAS_ROUTER_ADDRESS } from '../../ambient-utils/constants';
 import {
     AppStateContext,
     ChainDataContext,
@@ -49,7 +49,7 @@ export function useTokenPairAllowance() {
                         (fastLaneProtection?.isEnabled && acceptedChainId) ??
                         false;
                     const spender = isFastLaneEnabled
-                        ? ATLAS_ROUTER
+                        ? ATLAS_ROUTER_ADDRESS
                         : await context.dex.getAddress();
 
                     const allowance = await crocEnv
@@ -88,7 +88,7 @@ export function useTokenPairAllowance() {
                         (fastLaneProtection?.isEnabled && acceptedChainId) ??
                         false;
                     const spender = isFastLaneEnabled
-                        ? ATLAS_ROUTER
+                        ? ATLAS_ROUTER_ADDRESS
                         : await context.dex.getAddress();
 
                     const allowance = await crocEnv
