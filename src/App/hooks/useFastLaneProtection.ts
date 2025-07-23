@@ -3,7 +3,7 @@ import {
     FASTLANE_LS_KEY,
     MEV_PROTECTION_PREF_LS_KEY,
 } from '../../ambient-utils/constants';
-import { monadTestnet } from '../../ambient-utils/constants/networks/monadTestnet';
+import { NetworkIF } from '../../ambient-utils/types';
 
 export interface FastLaneProtectionIF {
     isEnabled: boolean;
@@ -14,7 +14,8 @@ export interface FastLaneProtectionIF {
 }
 
 export const useFastLaneProtection = (): FastLaneProtectionIF => {
-    const ACCEPTED_NETWORKS = [monadTestnet];
+    const ACCEPTED_NETWORKS: NetworkIF[] = [];
+    // const ACCEPTED_NETWORKS = [monadTestnet];
     const [enabled, setEnabled] = useState<boolean>(() => {
         const stored = localStorage.getItem(MEV_PROTECTION_PREF_LS_KEY);
         return stored ? JSON.parse(stored) : false;
