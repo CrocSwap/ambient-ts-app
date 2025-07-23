@@ -1,21 +1,23 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     FASTLANE_LS_KEY,
     MEV_PROTECTION_PREF_LS_KEY,
 } from '../../ambient-utils/constants';
-import { NetworkIF } from '../../ambient-utils/types';
+import { AppStateContext } from '../../contexts';
 
 export interface FastLaneProtectionIF {
     isEnabled: boolean;
     enable: () => void;
     disable: () => void;
     toggle: () => void;
-    isChainAccepted: (chainId: string) => boolean;
+    isChainAccepted: boolean;
 }
 
 export const useFastLaneProtection = (): FastLaneProtectionIF => {
-    const ACCEPTED_NETWORKS: NetworkIF[] = [];
-    // const ACCEPTED_NETWORKS = [monadTestnet];
+    const {
+        activeNetwork: { fastLaneProtectionEnabled },
+    } = useContext(AppStateContext);
+
     const [enabled, setEnabled] = useState<boolean>(() => {
         const stored = localStorage.getItem(MEV_PROTECTION_PREF_LS_KEY);
         return stored ? JSON.parse(stored) : false;
@@ -34,12 +36,9 @@ export const useFastLaneProtection = (): FastLaneProtectionIF => {
         );
     }, [enabled]);
 
-    const isChainAccepted = (chainId: string): boolean => {
-        return ACCEPTED_NETWORKS.some(
-            (network) =>
-                network.chainId.toLowerCase() === chainId.toLowerCase(),
-        );
-    };
+    const isChainAccepted = useMemo(() => {
+        return fastLaneProtectionEnabled;
+    }, [fastLaneProtectionEnabled]);
 
     const result = useMemo(() => {
         return {
@@ -49,6 +48,6 @@ export const useFastLaneProtection = (): FastLaneProtectionIF => {
             toggle: () => setEnabled((prev) => !prev),
             isChainAccepted,
         };
-    }, [enabled]);
+    }, [enabled, isChainAccepted]);
     return result;
 };

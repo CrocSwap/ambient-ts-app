@@ -83,6 +83,7 @@ export const ethereumSepolia: NetworkIF = {
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
+    fastLaneProtectionEnabled: false,
     blockExplorer: (
         chainSpecForAppKit.blockExplorers?.default.url || ''
     ).replace(/\/?$/, '/'),

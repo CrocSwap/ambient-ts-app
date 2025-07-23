@@ -93,6 +93,7 @@ export const monadTestnet: NetworkIF = {
     tokenPriceQueryAssetPlatform: 'monad',
     vaultsEnabled: false,
     tempestApiNetworkName: '',
+    fastLaneProtectionEnabled: true,
     topPools: [
         new TopPool(
             MONAD_TESTNET_TOKENS.MON,

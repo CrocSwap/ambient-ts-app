@@ -82,7 +82,7 @@ export default function TransactionSettingsModal(props: propsIF) {
         useState<boolean>(persistedFastLane);
 
     useEffect(() => {
-        if (currentFastLane && fastLaneProtection?.isChainAccepted(chainId)) {
+        if (currentFastLane && fastLaneProtection?.isChainAccepted) {
             setCurrentSaveSwapToDexBal(false);
         } else if (dexBalSwap?.outputToDexBal.isEnabled) {
             setCurrentSaveSwapToDexBal(true);
@@ -161,13 +161,13 @@ export default function TransactionSettingsModal(props: propsIF) {
                             setTempSaveToDex={setCurrentSaveSwapToDexBal}
                             displayInSettings={true}
                             disabled={
-                                fastLaneProtection?.isChainAccepted(chainId) &&
+                                fastLaneProtection?.isChainAccepted &&
                                 currentFastLane
                             }
                         />
                     )}
 
-                    {fastLaneProtection?.isChainAccepted(chainId) && (
+                    {fastLaneProtection?.isChainAccepted && (
                         <FastLaneProtectionControl
                             tempEnableFastLane={currentFastLane}
                             setTempEnableFastLane={setCurrentFastLane}
