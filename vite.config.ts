@@ -99,6 +99,14 @@ export default defineConfig({
 
                     // Group other node modules
                     if (id.includes('node_modules/')) {
+                        // Only split React and its scheduler into a separate chunk
+                        if (
+                            id.includes('node_modules/react/') ||
+                            id.includes('node_modules/scheduler/')
+                        ) {
+                            return 'vendor-react';
+                        }
+                        // Group all other node_modules into a single vendor chunk
                         return 'vendor';
                     }
 
