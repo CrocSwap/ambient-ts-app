@@ -1,50 +1,26 @@
-import { Alert, AlertProps, Snackbar } from '@mui/material';
-import { motion } from 'framer-motion';
 import {
-    forwardRef,
     memo,
     SyntheticEvent,
     useContext,
-    useEffect,
     useRef,
+    useEffect,
+    useState,
 } from 'react';
-import { IoMdClose } from 'react-icons/io';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import { CustomSnackbar, SnackbarAlert } from './CustomSnackbar';
 import styles from './SnackbarComponent.module.css';
 
-const duration = 8000;
-
-const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
-    function SnackbarAlert(props, ref) {
-        return (
-            <Alert
-                elevation={6}
-                ref={ref}
-                {...props}
-                sx={{
-                    backgroundColor: '#171D27',
-                    color: 'white',
-                }}
-            />
-        );
-    },
-);
+const AUTO_HIDE_DURATION = 8000;
 
 // React functional component
 function SnackbarComponent() {
     const isSmallScreen = useMediaQuery('(max-width: 500px)');
+    const { snackbar } = useContext(AppStateContext);
+    const { isOpen, close, content, severity, anchorOrigin } = snackbar;
 
-    const {
-        snackbar: {
-            isOpen: isSnackbarOpen,
-            close,
-            content,
-            severity,
-            anchorOrigin,
-        },
-    } = useContext(AppStateContext);
+    const snackbarRef = useRef<HTMLDivElement>(null);
 
     const handleClose = (event?: SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -53,59 +29,79 @@ function SnackbarComponent() {
         close();
     };
 
+    // Track if the component is mounted
+    const [mounted, setMounted] = useState(false);
+    const [show, setShow] = useState(false);
+
+    // Set mounted flag on component mount
     useEffect(() => {
-        let timeoutId: NodeJS.Timeout;
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
 
-        if (isSnackbarOpen && isSmallScreen) {
-            timeoutId = setTimeout(() => {
-                handleClose();
-            }, duration);
+    // Handle showing/hiding the snackbar
+    useEffect(() => {
+        if (isOpen) {
+            setShow(true);
+        } else {
+            // Delay hiding to allow for exit animation
+            const timer = setTimeout(() => setShow(false), 300);
+            return () => clearTimeout(timer);
         }
+    }, [isOpen]);
 
-        return () => {
-            clearTimeout(timeoutId);
-        };
-    }, [isSnackbarOpen, handleClose]);
+    // Auto-hide the snackbar
+    useEffect(() => {
+        if (!isOpen) return;
 
-    const mobileRef = useRef<HTMLDivElement>(null);
+        const timer = setTimeout(() => {
+            if (mounted) {
+                handleClose();
+            }
+        }, AUTO_HIDE_DURATION);
 
-    useOnClickOutside(mobileRef, handleClose);
+        return () => clearTimeout(timer);
+    }, [isOpen, content, mounted]);
 
-    if (isSmallScreen)
-        return (
-            <div
-                className={styles.mainContainer}
-                ref={mobileRef}
-                style={{ display: isSnackbarOpen ? 'flex' : 'none' }}
-            >
-                <button className={styles.closeButton} onClick={handleClose}>
-                    <IoMdClose size={25} />
-                </button>
-                <div className={styles.mainContent}>{content}</div>
-            </div>
-        );
+    useOnClickOutside(snackbarRef, () => {
+        if (isOpen) {
+            handleClose();
+        }
+    });
+
+    if (!show) return null;
 
     return (
-        <motion.div>
-            <Snackbar
-                open={isSnackbarOpen}
-                autoHideDuration={duration}
+        <div
+            ref={snackbarRef}
+            className={styles.snackbar_container}
+            data-testid='snackbar-container'
+        >
+            <CustomSnackbar
+                open={isOpen}
+                autoHideDuration={AUTO_HIDE_DURATION}
                 onClose={handleClose}
-                anchorOrigin={anchorOrigin}
-                // z-index needs to be greater than globalPopup
-                style={{ width: '900px', zIndex: 99999999999 }}
+                anchorOrigin={{
+                    vertical: isSmallScreen ? 'top' : anchorOrigin.vertical,
+                    horizontal: isSmallScreen
+                        ? 'center'
+                        : anchorOrigin.horizontal,
+                }}
             >
-                <motion.div
-                    initial={{ scale: 0.5 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.3 }}
+                <SnackbarAlert
+                    severity={severity}
+                    onClose={handleClose}
+                    className={styles.snackbar_alert}
+                    data-testid='snackbar-alert'
                 >
-                    <SnackbarAlert onClose={handleClose} severity={severity}>
-                        {content}
-                    </SnackbarAlert>
-                </motion.div>
-            </Snackbar>
-        </motion.div>
+                    <div className={styles.snackbar_content}>
+                        <div className={styles.message_container}>
+                            <div className={styles.message}>{content}</div>
+                        </div>
+                    </div>
+                </SnackbarAlert>
+            </CustomSnackbar>
+        </div>
     );
 }
 

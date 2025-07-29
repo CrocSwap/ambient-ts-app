@@ -9,10 +9,7 @@ export default defineConfig({
     plugins: [
         // Base plugins
         react({
-            jsxImportSource: '@emotion/react',
-            babel: {
-                plugins: ['@emotion/babel-plugin'],
-            },
+            // React 17+ JSX transform is used by default
         }),
 
         // Type checking
