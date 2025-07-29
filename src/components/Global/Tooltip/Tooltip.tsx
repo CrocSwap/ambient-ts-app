@@ -111,54 +111,113 @@ const Tooltip = ({
         }
     }, [isVisible, position]);
 
+    const [isManuallyClosed, setIsManuallyClosed] = useState(false);
+    const hideTimeoutRef = useRef<NodeJS.Timeout>();
+    const isHovering = useRef(false);
+    const tooltipHovering = useRef(false);
+
     const handleTrigger = (show: boolean) => {
-        if (!isTouch) {
-            setIsVisible(show);
+        if (show) {
+            if (isManuallyClosed) return;
+
+            // Clear any pending hide operations
+            clearTimeout(hideTimeoutRef.current);
+            isHovering.current = true;
+
+            // Show the tooltip immediately on hover
+            setIsVisible(true);
+        } else {
+            isHovering.current = false;
+
+            // Only hide if not hovering over tooltip
+            if (!tooltipHovering.current) {
+                hideTimeoutRef.current = setTimeout(() => {
+                    if (!isTouch && !isManuallyClosed && !isHovering.current) {
+                        setIsVisible(false);
+                    }
+                }, 300);
+            }
         }
     };
 
     const handleClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         if (isTouch) {
-            e.preventDefault();
             setIsVisible(!isVisible);
+        } else {
+            // On desktop, clicking will keep the tooltip open
+            setIsManuallyClosed(false);
+            setIsVisible(true);
+        }
+    };
 
-            const handleOutsideClick = (e: MouseEvent) => {
-                if (
-                    triggerRef.current &&
-                    !triggerRef.current.contains(e.target as Node)
-                ) {
-                    setIsVisible(false);
-                    document.removeEventListener('click', handleOutsideClick);
-                }
-            };
+    // Close tooltip when clicking outside
+    useEffect(() => {
+        if (!isVisible || isTouch) return;
 
-            if (!isVisible) {
-                setTimeout(() => {
-                    document.addEventListener('click', handleOutsideClick);
-                }, 0);
+        const handleClickOutside = (e: MouseEvent) => {
+            if (
+                tooltipRef.current &&
+                !tooltipRef.current.contains(e.target as Node) &&
+                triggerRef.current &&
+                !triggerRef.current.contains(e.target as Node)
+            ) {
+                setIsVisible(false);
+                setIsManuallyClosed(true);
             }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            clearTimeout(hideTimeoutRef.current);
+        };
+    }, [isVisible, isTouch]);
+
+    const handleTooltipMouseEnter = () => {
+        clearTimeout(hideTimeoutRef.current);
+        console.log('entering');
+        tooltipHovering.current = true;
+        if (!isTouch) {
+            setIsVisible(true);
+        }
+    };
+
+    const handleTooltipMouseLeave = () => {
+        tooltipHovering.current = false;
+        console.log('leaving');
+        if (!isTouch && !isManuallyClosed) {
+            hideTimeoutRef.current = setTimeout(() => {
+                if (!isHovering.current) {
+                    console.log('hiding');
+                    setIsVisible(false);
+                }
+            }, 1500);
         }
     };
 
     return (
         <div
-            className={styles.tooltipWrapper}
+            className={`${styles.tooltipWrapper} ${className}`}
             ref={triggerRef}
             onMouseEnter={() => handleTrigger(true)}
             onMouseLeave={() => handleTrigger(false)}
             onClick={handleClick}
         >
-            {children}
+            <div className={styles.tooltipTrigger}>{children}</div>
 
             {isVisible && content && (
                 <div
                     ref={tooltipRef}
                     style={{ maxWidth }}
-                    className={`
-            ${styles.tooltip}
-            ${isTouch ? styles.mobileTooltip : ''}
-            ${className}
-          `}
+                    className={`${styles.tooltip} ${
+                        isTouch ? styles.mobileTooltip : ''
+                    }`}
+                    onMouseEnter={handleTooltipMouseEnter}
+                    onMouseLeave={handleTooltipMouseLeave}
+                    onClick={(e) => e.stopPropagation()}
                 >
                     {content}
                 </div>

@@ -1,4 +1,6 @@
-import isValidProp from '@emotion/is-prop-valid';
+// Simple prop validation for styled-components
+const isValidProp = (prop: string) =>
+    !['theme', 'as', 'forwardedAs'].includes(prop);
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';

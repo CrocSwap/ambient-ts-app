@@ -76,7 +76,7 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                                 : `Copy ${token.symbol} address to clipboard`
                         }
                         placement='bottom'
-                        enterDelay='1000'
+                        enterDelay={1000}
                     >
                         <FiCopy
                             size={16}
@@ -87,7 +87,7 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                     <IconWithTooltip
                         title='View on Block Explorer'
                         placement='bottom'
-                        enterDelay='1000'
+                        enterDelay={1000}
                     >
                         <a
                             href={

@@ -1,34 +1,96 @@
-
-
-.mainContainer {
-    width: 100%;
-    background: var(--dark2);
-    box-shadow: 100px 100px 100px 50px rgba(0, 0, 0, 0.25);
-
-    align-items: center;
-    flex-direction: column;
-
+.snackbar_container {
     position: fixed;
-    bottom: 56px;
-
-    z-index: 9999999999999999999;
-
-    font-size: 12px;
-    border-top: 1px solid var(--text3);
-    word-break: break-word;
-    overflow-wrap: break-word;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-}
-.closeButton {
-    outline: none;
-    border: none;
-    background: transparent;
+    z-index: 9999;
+    pointer-events: none;
     width: 100%;
     display: flex;
-    justify-content: flex-end;
-    align-items: flex-end;
+    justify-content: center;
+    bottom: 20px;
+    left: 0;
 }
-.mainContent {
-    padding: 1rem 8px;
+
+.snackbar_alert {
+    pointer-events: auto;
+    margin: 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    max-width: 90%;
+    min-width: 300px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Mobile styles */
+@media (max-width: 600px) {
+    .snackbar_container {
+        bottom: 16px;
+    }
+    
+    .snackbar_alert {
+        width: 95%;
+        max-width: 100%;
+    }
+}
+
+.alert {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: var(--dark2);
+    color: var(--text1);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.alert.info {
+    border-left: 4px solid var(--accent1);
+}
+
+.alert.success {
+    border-left: 4px solid var(--positive);
+}
+
+.alert.warning {
+    border-left: 4px solid var(--warning);
+}
+
+.alert.error {
+    border-left: 4px solid var(--negative);
+}
+
+.alertContent {
+    flex: 1;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.closeButton:hover {
+    opacity: 1;
+}
+
+.message_container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.snackbar_content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 }

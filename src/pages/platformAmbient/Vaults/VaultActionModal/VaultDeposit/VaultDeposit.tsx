@@ -324,12 +324,12 @@ export default function VaultDeposit(props: Props) {
         token?.symbol?.length > 4 ? (
             <DefaultTooltip
                 title={token.symbol}
-                placement={'top'}
-                arrow
+                placement='top'
+                arrow={true}
                 enterDelay={700}
                 leaveDelay={200}
             >
-                <>{token.symbol}</>
+                <span>{token.symbol}</span>
             </DefaultTooltip>
         ) : (
             <>{token.symbol}</>

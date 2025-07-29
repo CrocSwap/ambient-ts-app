@@ -6,14 +6,13 @@
     "dependencies": {
         "@crocswap-libs/sdk": "^2.0.14",
         "@d3fc/d3fc-extent": "^4.0.2",
-        "@emotion/react": "^11.14.0",
-        "@emotion/styled": "^11.14.0",
-        "@mui/material": "^6.4.3",
+        "@emoji-mart/data": "^1.2.1",
+        "@emoji-mart/react": "^1.1.1",
         "@reown/appkit": "^1.7.9",
         "@reown/appkit-adapter-ethers": "^1.7.9",
         "d3": "^7.4.4",
         "d3fc": "^15.2.4",
-        "emoji-picker-react": "^4.12.2",
+        "emoji-mart": "^5.6.0",
         "ethers": "^6.13.5",
         "framer-motion": "4.1.17",
         "modern-screenshot": "^4.6.0",
@@ -37,17 +36,22 @@
     "scripts": {
         "ambi": "yarn start --force",
         "start": "yarn install && vite",
+        "start:perf": "vite --port 3000 --mode production",
         "start-only": "vite",
         "force": "yarn start --force",
         "futa": "yarn start --force --mode futa --port 3001",
         "plume": "yarn start --force --mode plume --port 3001",
         "build": "tsc && vite build",
+        "build:analyze": "vite-bundle-visualizer",
         "preview": "vite preview",
         "dev": "vite --host",
         "test": "vitest",
         "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
         "prepare": "husky",
         "postbuild": "node generateManifest.js",
+        "perf:measure": "node performance-test.js",
+        "perf:audit": "lighthouse http://localhost:3000 --output-path=./performance-results/lighthouse-report.html --chrome-flags=\"--headless\"",
+        "perf:optimize": "vite build && node performance-test.js && npm run perf:audit",
         "test-serve": "yarn build && npx serve build"
     },
     "lint-staged": {
@@ -61,7 +65,7 @@
         "not op_mini all"
     ],
     "devDependencies": {
-        "@emotion/is-prop-valid": "^1.3.1",
+        "@playwright/test": "^1.54.1",
         "@testing-library/react": "^13.2.0",
         "@testing-library/user-event": "^14.5.2",
         "@types/adm-zip": "^0.5.7",
@@ -69,6 +73,7 @@
         "@types/p5": "^1.7.6",
         "@types/react-blockies": "^1.4.4",
         "@types/react-color": "^3.0.12",
+        "@types/react-transition-group": "^4.4.12",
         "@vitejs/plugin-react": "^4.4.1",
         "adm-zip": "^0.5.10",
         "dotenv": "^16.5.0",
@@ -80,6 +85,7 @@
         "eslint-plugin-react": "^7.37.3",
         "eslint-plugin-react-hooks": "^5.2.0",
         "husky": "^9.1.7",
+        "lighthouse": "^12.8.0",
         "lint-staged": "^16.0.0",
         "playwright": "^1.51.1",
         "prettier": "^3.4.2",
@@ -88,6 +94,7 @@
         "typescript": "^5.8.2",
         "vite": "^6.3.5",
         "vite-plugin-checker": "^0.9.3",
+        "vite-plugin-html": "^3.2.2",
         "vitest": "^3.1.4"
     }
 }

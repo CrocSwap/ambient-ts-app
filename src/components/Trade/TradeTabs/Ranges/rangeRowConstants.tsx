@@ -148,7 +148,6 @@ export default function rangeRowConstants(props: propsIF) {
                 }
                 placement={'right'}
                 enterDelay={750}
-                leaveDelay={0}
             >
                 <Text font='roboto'>{posHashTruncated}</Text>
             </TextOnlyTooltip>
@@ -219,7 +218,6 @@ export default function rangeRowConstants(props: propsIF) {
                 }
                 placement={'right'}
                 enterDelay={750}
-                leaveDelay={0}
             >
                 <Text
                     font={usernameColor === 'text1' ? 'roboto' : undefined}
@@ -412,7 +410,6 @@ export default function rangeRowConstants(props: propsIF) {
                         }
                         placement={'right'}
                         enterDelay={750}
-                        leaveDelay={0}
                     >
                         <div style={{ textTransform: 'lowercase' }}>
                             <Text

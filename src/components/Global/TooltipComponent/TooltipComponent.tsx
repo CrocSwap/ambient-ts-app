@@ -62,17 +62,30 @@ function TooltipComponent(props: TooltipComponentProps) {
         <div className={styles.mobilePopupContainer}>{props.title}</div>
     );
 
+    // Map unsupported placement values to supported ones
+    const getSupportedPlacement = (placement: string | undefined) => {
+        if (!placement) return 'right';
+        // Convert values like 'bottom-start' to 'bottom'
+        if (placement.includes('-')) {
+            return placement.split('-')[0] as
+                | 'top'
+                | 'bottom'
+                | 'left'
+                | 'right';
+        }
+        return placement as 'top' | 'bottom' | 'left' | 'right';
+    };
+
+    const supportedPlacement = getSupportedPlacement(props.placement);
+
     // For no background style tooltip
     if (props.noBg) {
         return (
             <div ref={containerRef}>
                 <TextOnlyTooltip
                     title={props.title}
-                    placement={props.placement || 'right'}
-                    arrow
-                    enterDelay={400}
-                    leaveDelay={200}
-                    open={props.usePopups && isMobile ? open : undefined} // Control open state only for mobile popups
+                    placement={supportedPlacement}
+                    arrow={true}
                 >
                     <div
                         className={styles.icon}
@@ -92,6 +105,7 @@ function TooltipComponent(props: TooltipComponentProps) {
                         )}
                     </div>
                 </TextOnlyTooltip>
+                {open && props.usePopups && isMobile && mobilePopup}
             </div>
         );
     }
@@ -99,14 +113,10 @@ function TooltipComponent(props: TooltipComponentProps) {
     // For default tooltip style
     return (
         <div ref={containerRef}>
-            {open && props.usePopups && isMobile && mobilePopup}
             <DefaultTooltip
                 title={props.title}
-                placement={props.placement || 'right'}
-                arrow
-                enterDelay={400}
-                leaveDelay={200}
-                open={props.usePopups && isMobile ? open : undefined} // Control open state only for mobile popups
+                placement={supportedPlacement}
+                arrow={true}
             >
                 <div
                     className={styles.icon}
@@ -125,6 +135,7 @@ function TooltipComponent(props: TooltipComponentProps) {
                     )}
                 </div>
             </DefaultTooltip>
+            {open && props.usePopups && isMobile && mobilePopup}
         </div>
     );
 }

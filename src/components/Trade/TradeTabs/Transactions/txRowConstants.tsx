@@ -138,31 +138,54 @@ export const txRowConstants = (props: propsIF) => {
         <RowItem hover data-label='id' role='button' tabIndex={0}>
             <TextOnlyTooltip
                 title={
-                    <FlexContainer
-                        justifyContent='center'
-                        background='dark3'
-                        color='text1'
-                        padding='12px'
-                        gap={8}
-                        rounded
-                        font='roboto'
-                        role='button'
-                        style={{ width: '470px', cursor: 'pointer' }}
-                        onClick={(event: React.MouseEvent<HTMLDivElement>) =>
-                            event.stopPropagation()
-                        }
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            backgroundColor: 'var(--dark3)',
+                            color: 'var(--text1)',
+                            padding: '8px 12px',
+                            borderRadius: '4px',
+                            maxWidth: '90vw',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            cursor: 'pointer',
+                        }}
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <span onClick={handleOpenExplorer}>{tx.txHash}</span>
-                        <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
-                        <FiExternalLink
-                            size={'12px'}
+                        <span
                             onClick={handleOpenExplorer}
-                        />
-                    </FlexContainer>
+                            style={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                fontFamily: 'var(--font-roboto)',
+                            }}
+                        >
+                            {tx.txHash}
+                        </span>
+                        <div
+                            style={{
+                                display: 'flex',
+                                gap: '8px',
+                                flexShrink: 0,
+                            }}
+                        >
+                            <FiCopy
+                                size='12px'
+                                onClick={handleCopyTxHash}
+                                style={{ cursor: 'pointer' }}
+                            />
+                            <FiExternalLink
+                                size='12px'
+                                onClick={handleOpenExplorer}
+                                style={{ cursor: 'pointer' }}
+                            />
+                        </div>
+                    </div>
                 }
                 placement={'right'}
                 enterDelay={750}
-                leaveDelay={0}
             >
                 <Text font='roboto'>{txHashTruncated}</Text>
             </TextOnlyTooltip>
@@ -213,43 +236,55 @@ export const txRowConstants = (props: propsIF) => {
         >
             <TextOnlyTooltip
                 title={
-                    <FlexContainer
-                        justifyContent='center'
-                        background='dark3'
-                        color='text1'
-                        padding='12px'
-                        gap={8}
-                        rounded
-                        font='roboto'
-                        role='button'
-                        style={{ width: '350px' }}
-                        onClick={(event: React.MouseEvent<HTMLDivElement>) =>
-                            event.stopPropagation()
-                        }
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            backgroundColor: 'var(--dark3)',
+                            color: 'var(--text1)',
+                            padding: '8px 12px',
+                            borderRadius: '4px',
+                            maxWidth: '90vw',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                        }}
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <Text
-                            font='roboto'
+                        <span
                             onClick={handleWalletClick}
-                            style={{ cursor: 'pointer' }}
+                            style={{
+                                cursor: 'pointer',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                fontFamily: 'var(--font-roboto)',
+                            }}
                         >
                             {ownerId}
-                        </Text>
-                        <FiCopy
-                            style={{ cursor: 'pointer' }}
-                            size={'12px'}
-                            onClick={() => handleWalletCopy()}
-                        />
-
-                        <FiExternalLink
-                            style={{ cursor: 'pointer' }}
-                            size={'12px'}
-                            onClick={handleWalletClick}
-                        />
-                    </FlexContainer>
+                        </span>
+                        <div
+                            style={{
+                                display: 'flex',
+                                gap: '8px',
+                                flexShrink: 0,
+                            }}
+                        >
+                            <FiCopy
+                                size='12px'
+                                onClick={handleWalletCopy}
+                                style={{ cursor: 'pointer' }}
+                            />
+                            <FiExternalLink
+                                size='12px'
+                                onClick={handleWalletClick}
+                                style={{ cursor: 'pointer' }}
+                            />
+                        </div>
+                    </div>
                 }
                 placement={'right'}
                 enterDelay={750}
-                leaveDelay={0}
+                leaveDelay={500}
             >
                 <Text
                     font={usernameColor === 'text1' ? 'roboto' : undefined}
@@ -290,7 +325,6 @@ export const txRowConstants = (props: propsIF) => {
             disableHoverListener={!isAccountView}
             arrow
             enterDelay={750}
-            leaveDelay={0}
         >
             <TokenIcon
                 token={baseToken}
@@ -312,7 +346,6 @@ export const txRowConstants = (props: propsIF) => {
             disableHoverListener={!isAccountView}
             arrow
             enterDelay={750}
-            leaveDelay={0}
         >
             <TokenIcon
                 token={quoteToken}
@@ -453,7 +486,6 @@ export const txRowConstants = (props: propsIF) => {
                 }
                 placement={'right'}
                 enterDelay={750}
-                leaveDelay={0}
             >
                 <Text style={{ textTransform: 'lowercase' }} tabIndex={0}>
                     {elapsedTimeString}
