@@ -61,59 +61,11 @@ export default defineConfig({
         chunkSizeWarningLimit: 1000, // Increase chunk size warning limit (in kbs)
         rollupOptions: {
             output: {
+                // Let Vite handle chunking automatically with these overrides
                 manualChunks: (id) => {
-                    // Keep React and its dependencies together
-                    if (
-                        id.includes('node_modules/react') ||
-                        id.includes('node_modules/scheduler') ||
-                        id.includes('node_modules/scheduler/')
-                    ) {
-                        return 'vendor';
-                    }
-
-                    // Keep charting libraries and their dependencies together
-                    if (
-                        id.includes('node_modules/recharts') ||
-                        id.includes('node_modules/d3-') ||
-                        id.includes('node_modules/d3-')
-                    ) {
-                        return 'vendor';
-                    }
-
-                    // Group UI libraries
-                    if (
-                        id.includes('node_modules/@radix-ui') ||
-                        id.includes('node_modules/@radix-ui/')
-                    ) {
-                        return 'vendor';
-                    }
-
-                    // Group utility libraries
-                    if (
-                        id.includes('node_modules/lodash') ||
-                        id.includes('node_modules/date-fns') ||
-                        id.includes('node_modules/ramda')
-                    ) {
-                        return 'vendor';
-                    }
-
-                    // Group other node modules
+                    // Group all node_modules into a single vendor chunk
                     if (id.includes('node_modules/')) {
-                        // Only split React and its scheduler into a separate chunk
-                        if (
-                            id.includes('node_modules/react/') ||
-                            id.includes('node_modules/scheduler/')
-                        ) {
-                            return 'vendor-react';
-                        }
-                        // Group all other node_modules into a single vendor chunk
                         return 'vendor';
-                    }
-
-                    // Group application code by feature
-                    if (id.includes('src/components/')) {
-                        const match = id.match(/src\/components\/([^/]+)/);
-                        return match ? `components-${match[1]}` : 'components';
                     }
                 },
                 chunkFileNames: 'assets/js/[name]-[hash].js',
