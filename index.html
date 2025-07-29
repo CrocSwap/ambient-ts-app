@@ -1,8 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0"/>
+        <meta
+            name="viewport"
+            content="width=device-width, height=device-height, initial-scale=1.0"
+        />
         <link
             rel="apple-touch-icon"
             sizes="180x180"
@@ -13,7 +16,7 @@
             type="image/png"
             sizes="16x16"
             href="%VITE_SITE_ICON_x16%"
-         />
+        />
         <link
             rel="icon"
             type="image/png"
@@ -21,7 +24,7 @@
             href="%VITE_SITE_ICON_x32%"
         />
         <link rel="manifest" href="/site.webmanifest" />
-       
+
         <!-- <meta name="msapplication-TileColor" content="#0d1117" />
         <meta name="theme-color" content="#7371fc" />  -->
 
@@ -32,14 +35,14 @@
         <meta name="print" content="__PRINT__" />
 
         <!-- Meta tags using environment variables -->
-        <meta name="description" content="%VITE_META_DESCRIPTION%">
-        <meta name="keywords" content="%VITE_META_KEYWORDS%">
+        <meta name="description" content="%VITE_META_DESCRIPTION%" />
+        <meta name="keywords" content="%VITE_META_KEYWORDS%" />
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website" />
         <meta property="og:url" content="%VITE_OG_URL%" />
-        <meta property="og:title" content="%VITE_OG_TITLE%">
-        <meta property="og:description" content="%VITE_OG_DESCRIPTION%">
+        <meta property="og:title" content="%VITE_OG_TITLE%" />
+        <meta property="og:description" content="%VITE_OG_DESCRIPTION%" />
         <meta property="og:image" content="%VITE_OG_IMAGE%" />
 
         <!-- Twitter -->
@@ -48,33 +51,65 @@
 
         <meta property="twitter:url" content="%VITE_OG_URL%" />
         <meta property="twitter:title" content="%VITE_OG_TITLE%" />
-        <meta
-            property="twitter:description"
-            content="%VITE_OG_DESCRIPTION%"
-        />
-        <meta
-            property="twitter:image"
-            content="%VITE_OG_IMAGE%"
-        />
-        
+        <meta property="twitter:description" content="%VITE_OG_DESCRIPTION%" />
+        <meta property="twitter:image" content="%VITE_OG_IMAGE%" />
+
         <style>
             /* background color shown during app load */
             body {
-                background-color: #0e0e14; 
+                background-color: #0e0e14;
             }
         </style>
 
-        <link rel="preload" as="image" href="/assets/home_wallpaper-KI3qiyrN.webp" type="image/webp">
-        <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/lexenddeca/v21/K2F1fZFYk-dHSE0UPPuwQ5qnJy8.woff2" crossorigin="anonymous">
-        <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/lexendexa/v30/UMBXrPdOoHOnxExyjdBeai3dAw.woff2" crossorigin="anonymous">
-        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@100;300;400;500&display=swap">
-        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap">
-        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;300&display=swap">
-        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;300;500&display=swap">
-        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-        <link rel="preload" as="fetch" href="https://tokens.coingecko.com/ethereum/all.json" crossorigin="anonymous">
-        <link rel="preload" as="fetch" href="https://tokens.coingecko.com/blast/all.json" crossorigin="anonymous">
-        <link rel="preload" as="fetch" href="https://tokens.coingecko.com/scroll/all.json" crossorigin="anonymous">
+        <link
+            rel="preload"
+            as="image"
+            href="/assets/home_wallpaper-KI3qiyrN.webp"
+            type="image/webp"
+        />
+        <link
+            rel="preload"
+            as="style"
+            href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@100;300;400;500&display=swap"
+        />
+        <link
+            rel="preload"
+            as="style"
+            href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap"
+        />
+        <link
+            rel="preload"
+            as="style"
+            href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;300&display=swap"
+        />
+        <link
+            rel="preload"
+            as="style"
+            href="https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;300;500&display=swap"
+        />
+        <link
+            rel="preload"
+            as="style"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        />
+        <link
+            rel="preload"
+            as="fetch"
+            href="https://tokens.coingecko.com/ethereum/all.json"
+            crossorigin="anonymous"
+        />
+        <link
+            rel="preload"
+            as="fetch"
+            href="https://tokens.coingecko.com/blast/all.json"
+            crossorigin="anonymous"
+        />
+        <link
+            rel="preload"
+            as="fetch"
+            href="https://tokens.coingecko.com/scroll/all.json"
+            crossorigin="anonymous"
+        />
         <!-- <link rel="preload" as="fetch" href="https://ambindexer.net/gcgo/chain_stats?chainId=0x1&n=10" crossorigin="anonymous">
         <link rel="preload" as="fetch" href="https://ambindexer.net/scroll-gcgo/chain_stats?chainId=0x82750&n=20" crossorigin="anonymous">
         <link rel="preload" as="fetch" href="https://ambindexer.net/blast-gcgo/chain_stats?chainId=0x13e31&n=10" crossorigin="anonymous">
@@ -82,8 +117,6 @@
         <link rel="preload" as="fetch" href="https://ambindexer.net/plume-gcgo/chain_stats?chainId=0x18232&n=10" crossorigin="anonymous"> -->
         <!-- <link rel="preload" as="fetch" href="https://raw.githubusercontent.com/scroll-tech/token-list/main/scroll.tokenlist.json" crossorigin="anonymous"> -->
         <!-- <link rel="preload" as="fetch" href="https://tokens.coingecko.com/base/all.json" crossorigin="anonymous"> -->
-
-        
     </head>
     <body>
         <script type="text/javascript">
@@ -95,5 +128,5 @@
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
         <script type="module" src="/src/index.tsx"></script>
-      </body>
+    </body>
 </html>
