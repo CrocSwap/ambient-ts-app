@@ -358,7 +358,7 @@ export default function NetworkSelector(props: propsIF) {
             chainId: '',
             name: 'Fogo',
             logo: FOGOLogo,
-            custom: 1,
+            custom: 2,
             isExternal: true,
             testnet: true,
             link: 'https://perps.ambient.finance/',
@@ -457,7 +457,8 @@ export default function NetworkSelector(props: propsIF) {
             <div
                 className={styles.dropdownMenuContainer}
                 style={{
-                    cursor: networks.length > 1 ? 'pointer' : 'default',
+                    cursor: 'pointer',
+                    // cursor: networks.length > 1 ? 'pointer' : 'default',
                     borderRadius: isFuta ? 0 : smallScreen ? '50%' : '0',
                     width: isFuta ? '25px' : smallScreen ? '35px' : 'auto',
                     height: isFuta ? '25px' : '35px',
@@ -472,7 +473,8 @@ export default function NetworkSelector(props: propsIF) {
                             ? selectedNetworkDisplayName
                             : networkSpec.displayName
                     }
-                    expandable={networks.length > 1}
+                    expandable={true}
+                    // expandable={networks.length > 1}
                     logo={
                         networksData.find(
                             (network) => network.chainId === chainId,
