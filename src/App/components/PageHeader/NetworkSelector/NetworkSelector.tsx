@@ -19,6 +19,7 @@ import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_n
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
 import sepoliaLogo from '../../../../assets/images/networks/ethereum_sepolia_no_margin.webp';
+import FOGOLogo from '../../../../assets/images/networks/FOGO.svg';
 import monadLogo from '../../../../assets/images/networks/monad_logo_small.svg';
 import plumeLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
 import scrollLogo from '../../../../assets/images/networks/scroll_logo_no_margin.webp';
@@ -352,6 +353,17 @@ export default function NetworkSelector(props: propsIF) {
             link: '',
             condition: chainMap.has('0x14a34'),
         },
+        {
+            id: 'fogo_network_selector',
+            chainId: '',
+            name: 'Fogo',
+            logo: FOGOLogo,
+            custom: 1,
+            isExternal: true,
+            testnet: true,
+            link: 'https://perps.ambient.finance/',
+            condition: true,
+        },
     ];
 
     const networkItems = networksData.map((network) =>
@@ -394,18 +406,31 @@ export default function NetworkSelector(props: propsIF) {
                     >
                         {network.name}
                     </Text>
-                    {network.testnet && (
-                        <Text
-                            color={'accent1'}
-                            fontSize={'mini'}
-                            style={{
-                                position: 'absolute', // Position Testnet absolutely
-                                right: '0', // Pin it to the right
-                            }}
-                        >
-                            Testnet
-                        </Text>
-                    )}
+                    {network.testnet ? (
+                        network.name === 'Fogo' ? (
+                            <Text
+                                color={'accent1'}
+                                fontSize={'mini'}
+                                style={{
+                                    position: 'absolute', // Position Testnet absolutely
+                                    right: '20px', // Pin it to the right
+                                }}
+                            >
+                                Perps Testnet
+                            </Text>
+                        ) : (
+                            <Text
+                                color={'accent1'}
+                                fontSize={'mini'}
+                                style={{
+                                    position: 'absolute', // Position Testnet absolutely
+                                    right: '0', // Pin it to the right
+                                }}
+                            >
+                                Testnet
+                            </Text>
+                        )
+                    ) : null}
                     {network.isExternal && (
                         <RiExternalLinkLine
                             size={14}
