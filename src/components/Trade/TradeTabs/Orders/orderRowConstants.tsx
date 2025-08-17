@@ -142,7 +142,6 @@ export const orderRowConstants = (props: propsIF) => {
                 }
                 placement={'right'}
                 enterDelay={750}
-                leaveDelay={0}
             >
                 <Text font='roboto'>{posHashTruncated}</Text>
             </TextOnlyTooltip>
@@ -214,7 +213,6 @@ export const orderRowConstants = (props: propsIF) => {
                 }
                 placement={'right'}
                 enterDelay={750}
-                leaveDelay={0}
             >
                 <Text
                     font={usernameColor === 'text1' ? 'roboto' : undefined}
@@ -385,7 +383,6 @@ export const orderRowConstants = (props: propsIF) => {
                         }
                         placement={'right'}
                         enterDelay={750}
-                        leaveDelay={0}
                     >
                         <div style={{ textTransform: 'lowercase' }}>
                             <Text

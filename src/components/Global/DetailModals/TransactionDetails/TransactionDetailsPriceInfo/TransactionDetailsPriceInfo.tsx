@@ -115,7 +115,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 <span>Order Value: </span>
                 <DefaultTooltip
                     title={usdValue}
-                    placement={'right-end'}
+                    placement={'right'}
                     arrow
                     enterDelay={750}
                     leaveDelay={200}

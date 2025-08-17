@@ -37,11 +37,16 @@ export const useSnackbar = (initialMode = false): snackbarMethodsIF => {
             horizontal: 'center',
         },
     ) => {
+        // First close any existing toast
         setIsOpen(false);
-        setContent(content);
-        setSeverity(severity);
-        setAnchorOrigin(anchorOrigin);
-        setIsOpen(true);
+
+        // Use setTimeout to ensure state updates are batched and to allow the close animation to complete
+        setTimeout(() => {
+            setContent(content);
+            setSeverity(severity);
+            setAnchorOrigin(anchorOrigin);
+            setIsOpen(true);
+        }, 100);
     };
 
     const close = () => {
