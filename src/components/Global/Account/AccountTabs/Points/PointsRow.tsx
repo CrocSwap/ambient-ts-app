@@ -5,7 +5,7 @@ interface propsIF {
     shortName: string;
     longName: string;
     pointsAccrued: string | number;
-    logo?: JSX.Element;
+    logo?: React.ReactNode;
 }
 
 export default function PointsRow(props: propsIF) {

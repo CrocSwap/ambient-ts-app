@@ -66,13 +66,22 @@
     border: var(--grey-light-border);
 }
 
-.underlineMotion {
+.underline {
     position: absolute;
     bottom: -1px;
     left: 0;
     right: 0;
     height: 1px;
     background: var(--text1);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease, opacity 0.2s ease;
+    opacity: 0;
+}
+
+.navigationLink.activeNavigationLink .underline {
+    transform: scaleX(1);
+    opacity: 1;
     box-shadow: var(--glow-light-box-shadow);
 }
 

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
@@ -26,7 +26,7 @@ interface propsIF {
     buyQtyString: string;
     onClose?: () => void;
     isTokenAPrimary: boolean;
-    priceImpactWarning: JSX.Element | undefined;
+    priceImpactWarning: React.ReactNode | undefined;
     isSaveAsDexSurplusChecked: boolean;
     percentDiffUsdValue: number | undefined;
     isMevProtectionEnabled: boolean | undefined;

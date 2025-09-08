@@ -79,7 +79,9 @@ export default function WalletDropdown(props: propsIF) {
         setIsTokenBalanceFetchManuallyTriggerered(true);
     }, [chainId, accountAddress]);
 
-    function TokenAmountDisplay(props: TokenAmountDisplayPropsIF): JSX.Element {
+    function TokenAmountDisplay(
+        props: TokenAmountDisplayPropsIF,
+    ): React.ReactNode {
         const { logoUri, symbol, address, amount, value } = props;
         const token = tokens.getTokenByAddress(address);
         const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${value} dollars`;

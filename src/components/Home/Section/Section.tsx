@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import styles from './Section.module.css';
 interface SectionProps {
-    page: React.ReactNode | JSX.Element;
+    page: React.ReactNode;
     scrollTo: (ref: React.RefObject<HTMLDivElement>) => void;
     goToSectionRef: React.RefObject<HTMLDivElement>;
     customBackground?: string;

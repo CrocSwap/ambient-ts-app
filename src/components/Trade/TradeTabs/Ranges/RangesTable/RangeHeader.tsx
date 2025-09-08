@@ -6,7 +6,7 @@ import { RangeSortType } from '../../useSortedPositions';
 
 interface propsIF {
     header: {
-        name: string | JSX.Element;
+        name: string | React.ReactNode;
         show: boolean;
         slug: string;
         sortable: boolean;

@@ -12,15 +12,17 @@ const useOnBoundryChange = (
     checkFrequency: number,
     handler: (newBoundries: ElementBoundry) => void,
 ) => {
-    const [boundryChecker, setBoundryChecker] = useState<NodeJS.Timeout>();
-    const checkerRef = useRef<NodeJS.Timeout>();
+    const [boundryChecker, setBoundryChecker] = useState<
+        NodeJS.Timeout | number | undefined
+    >();
+    const checkerRef = useRef<NodeJS.Timeout | number | undefined>(undefined);
     checkerRef.current = boundryChecker;
 
     const [elementWidth, setElementWidth] = useState<number>();
-    const widthRef = useRef<number>();
+    const widthRef = useRef<number>(undefined);
     widthRef.current = elementWidth;
     const [elementHeight, setElementHeight] = useState<number>();
-    const heightRef = useRef<number>();
+    const heightRef = useRef<number>(undefined);
     heightRef.current = elementHeight;
 
     const bindListener = () => {

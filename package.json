@@ -15,7 +15,7 @@
         "d3fc": "^15.2.4",
         "emoji-picker-react": "^4.12.2",
         "ethers": "^6.13.5",
-        "framer-motion": "4.1.17",
+        "framer-motion": "^12.23.12",
         "modern-screenshot": "^4.6.0",
         "moment": "^2.30.1",
         "numbro": "^2.5.0",
@@ -33,6 +33,19 @@
         "react-use-websocket": "^4.13.0",
         "styled-components": "^6.1.18",
         "web-vitals": "^2.1.0"
+    },
+    "resolutions": {
+        "@noble/hashes": "^1.8.0",
+        "@noble/curves": "^1.9.7"
+    },
+    "overrides": {
+        "chalk": "5.3.0",
+        "strip-ansi": "7.1.0",
+        "color-convert": "2.0.1",
+        "color-name": "1.1.4",
+        "is-core-module": "2.13.1",
+        "error-ex": "1.3.2",
+        "has-ansi": "5.0.1"
     },
     "scripts": {
         "ambi": "yarn start --force",
@@ -89,5 +102,9 @@
         "vite": "^6.3.5",
         "vite-plugin-checker": "^0.9.3",
         "vitest": "^3.1.4"
-    }
+    },
+    "main": "index.js",
+    "repository": "https://github.com/CrocSwap/ambient-ts-app.git",
+    "author": "Ben Wolski <570819+benwolski@users.noreply.github.com>",
+    "license": "MIT"
 }

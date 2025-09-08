@@ -19,7 +19,7 @@ export type HeaderItem = {
     sortable: boolean;
     pxValue?: number;
     onClick?: () => void;
-    tooltipText?: string | JSX.Element;
+    tooltipText?: string | React.ReactNode;
     classname?: boolean;
 };
 

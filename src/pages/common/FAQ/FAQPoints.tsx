@@ -9,9 +9,11 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import styles from './FAQ.module.css';
 import futaBg from '../../../assets/futa/home/background.png';
 import ambientBg from '../../../assets/images/backgrounds/background.png';
+import { ReactNode } from 'react';
+
 interface questionIF {
     question: string;
-    answer: string | string[] | JSX.Element | JSX.Element[];
+    answer: string | string[] | ReactNode | ReactNode[];
     slugs: string[];
 }
 
@@ -166,7 +168,7 @@ export default function FAQPoints() {
                         className='custom_scroll_ambient'
                     >
                         {questions.map((q: questionIF) => {
-                            const answerAsArray: (string | JSX.Element)[] = [
+                            const answerAsArray: (string | ReactNode)[] = [
                                 q.answer,
                             ].flat();
                             return (
@@ -174,11 +176,13 @@ export default function FAQPoints() {
                                     <div
                                         id={q.slugs[0]}
                                         className={styles.question}
-                                        ref={(el) =>
-                                            (elementRefs.current[
-                                                q.slugs.join('-')
-                                            ] = el)
-                                        }
+                                        ref={(el) => {
+                                            if (el) {
+                                                elementRefs.current[
+                                                    q.slugs.join('-')
+                                                ] = el;
+                                            }
+                                        }}
                                         onClick={() => copyLink(q.slugs[0])}
                                     >
                                         {q.question}
@@ -188,9 +192,9 @@ export default function FAQPoints() {
                                         />
                                     </div>
                                     {answerAsArray.map(
-                                        (a: string | JSX.Element) => (
+                                        (a: string | ReactNode) => (
                                             <div
-                                                key={a.toString()}
+                                                key={a?.toString() || ''}
                                                 className={styles.answer}
                                             >
                                                 {a}

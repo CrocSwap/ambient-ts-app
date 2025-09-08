@@ -1,4 +1,3 @@
-import { AnimateSharedLayout } from 'framer-motion';
 import {
     useCallback,
     useContext,
@@ -83,30 +82,28 @@ const NotificationCenter = () => {
     useOnClickOutside(notificationItemRef, clickOutsideHandler);
 
     return (
-        <AnimateSharedLayout>
-            <div>
-                <span ref={activityCenterRef}>
-                    <ActivityIndicator
-                        value={receivedReceiptHashes.length}
-                        pending={currentPendingTransactionsArray.length > 0}
-                        showNotificationTable={showNotificationTable}
-                        setShowNotificationTable={setShowNotificationTable}
-                        showRedDot={showRedDot}
-                        setShowRedDot={setShowRedDot}
-                    />
-                </span>
+        <div>
+            <span ref={activityCenterRef}>
+                <ActivityIndicator
+                    value={receivedReceiptHashes.length}
+                    pending={currentPendingTransactionsArray.length > 0}
+                    showNotificationTable={showNotificationTable}
+                    setShowNotificationTable={setShowNotificationTable}
+                    showRedDot={showRedDot}
+                    setShowRedDot={setShowRedDot}
+                />
+            </span>
 
-                <div>
-                    <NotificationTable
-                        showNotificationTable={showNotificationTable}
-                        setShowNotificationTable={setShowNotificationTable}
-                        pendingTransactions={currentPendingTransactionsArray}
-                        notificationItemRef={notificationItemRef}
-                    />
-                </div>
-                <div></div>
+            <div>
+                <NotificationTable
+                    showNotificationTable={showNotificationTable}
+                    setShowNotificationTable={setShowNotificationTable}
+                    pendingTransactions={currentPendingTransactionsArray}
+                    notificationItemRef={notificationItemRef}
+                />
             </div>
-        </AnimateSharedLayout>
+            <div></div>
+        </div>
     );
 };
 

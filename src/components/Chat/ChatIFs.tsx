@@ -56,7 +56,7 @@ export interface UserAvatarDataIF {
 }
 
 export interface TutorialStepExternalComponent {
-    component: JSX.Element;
+    component: React.ReactNode;
     placement?: 'nav-end' | 'nav-before' | 'nav-after';
 }
 
@@ -71,7 +71,7 @@ export interface TutorialStepIF {
     assignment?: string;
     actionTrigger?: string;
     actionOnComplete?: string;
-    component?: JSX.Element;
+    component?: React.ReactNode;
     navigate?: { label: string; path: string };
 }
 
@@ -83,7 +83,7 @@ export interface TutorialIF {
     noHelpModal?: boolean;
     helpModal?: {
         title?: string;
-        content: JSX.Element;
+        content: React.ReactNode;
     };
 }
 

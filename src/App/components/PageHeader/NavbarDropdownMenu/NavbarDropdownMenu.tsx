@@ -55,7 +55,7 @@ function NavbarDropdownMenu(props: propsIF) {
         'You are currently on a focus mode on the main dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
 
     interface navDataIF {
-        icon: JSX.Element;
+        icon: React.ReactNode;
         resource: string;
         text: string;
     }

@@ -18,7 +18,7 @@ export default function Pagination(props: PaginationPropsIF) {
     }
 
     // eslint-disable-next-line
-    const containerRef = useRef<any>();
+    const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (containerRef.current !== null) {
@@ -84,13 +84,17 @@ export default function Pagination(props: PaginationPropsIF) {
         : styles.not_expanded;
 
     const handleLeftButtonClick = () => {
-        sideScroll(containerRef.current, 25, 100, -60);
+        if (containerRef.current) {
+            sideScroll(containerRef.current, 25, 100, -60);
+        }
         if (currentPage > 1) {
             paginate(currentPage - 1);
         } else return;
     };
     const handlerightButtonClick = () => {
-        sideScroll(containerRef.current, 25, 100, 60);
+        if (containerRef.current) {
+            sideScroll(containerRef.current, 25, 100, 60);
+        }
         if (currentPage < totalPages) {
             paginate(currentPage + 1);
         } else return;

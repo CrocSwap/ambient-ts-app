@@ -10,7 +10,7 @@ import {
 interface DetailedBoxPropsIF {
     label: string;
     value: string;
-    tooltipText?: string | JSX.Element;
+    tooltipText?: string | React.ReactNode;
 }
 export function DetailedBox(props: DetailedBoxPropsIF) {
     const { label, value, tooltipText } = props;

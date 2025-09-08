@@ -17,9 +17,9 @@ import {
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import useChatApi from '../../Chat/Service/ChatApi';
-import { ProfileSettingsMotionContainer } from './ProfileSettings.styles';
+import { ProfileSettingsMotion } from './ProfileSettingsMotion';
 
-const pageVariant3D = {
+export const pageVariant3D = {
     initial: {
         opacity: 0,
         x: '-100vw',
@@ -120,13 +120,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     }
 
     return (
-        <ProfileSettingsMotionContainer
-            initial='initial'
-            animate='in'
-            exit='out'
-            variants={pageVariant3D}
-            transition={pageTransition}
-        >
+        <ProfileSettingsMotion>
             <div
                 style={{ cursor: 'pointer' }}
                 onClick={() => setShowProfileSettings(false)}
@@ -152,6 +146,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                     </button>
                 </FlexContainer>
             </FlexContainer>
-        </ProfileSettingsMotionContainer>
+        </ProfileSettingsMotion>
     );
 }

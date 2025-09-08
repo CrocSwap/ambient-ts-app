@@ -6,7 +6,7 @@ import { LimitSortType } from '../../useSortedLimits';
 
 interface propsIF {
     header: {
-        name: string | JSX.Element;
+        name: string | React.ReactNode;
         show: boolean;
         slug: string;
         sortable: boolean;
@@ -45,7 +45,7 @@ function OrderHeader(props: propsIF) {
         }
     }
 
-    const arrow = useMemo<JSX.Element | undefined>(() => {
+    const arrow = useMemo<React.ReactNode | undefined>(() => {
         if (sortable) {
             if (sortBy === slug.toLowerCase()) {
                 if (!reverseSort) {

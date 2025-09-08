@@ -1,53 +1,57 @@
-import { AnimatePresence, motion, useAnimation } from 'framer-motion';
 import React, {
     Dispatch,
     SetStateAction,
     useContext,
     useEffect,
     useRef,
+    useState,
+    CSSProperties,
 } from 'react';
 import styles from './ActivityIndicator.module.css';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
 
-interface AcitivtyIndicatorProps {
+interface ActivityIndicatorProps {
     value: number;
     pending: boolean;
-
     showNotificationTable: boolean;
     setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
-
     showRedDot: boolean;
     setShowRedDot: Dispatch<SetStateAction<boolean>>;
 }
-const animStates = {
-    hidden: { scale: 0, opacity: 0 },
-    visible: { scale: 1, opacity: 1 },
-    pop: { scale: [1.3, 1], opacity: 1 },
-    hover: { scale: 1.1 },
-    pressed: { scale: 0.95 },
-};
-const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
+
+// Animation state type
+type AnimationState = 'hidden' | 'visible' | 'pop' | 'hover' | 'pressed';
+
+const ActivityIndicator = (props: ActivityIndicatorProps) => {
     const { appHeaderDropdown } = useContext(AppStateContext);
     const { platformName } = useContext(BrandContext);
-
     const { showRedDot, setShowRedDot } = props;
-
-    const controls = useAnimation();
-    const isFirstRun = useRef(true);
-
     const { value, pending, showNotificationTable, setShowNotificationTable } =
         props;
 
+    const [animationState, setAnimationState] =
+        useState<AnimationState>('hidden');
+    const [isHovered, setIsHovered] = useState(false);
+    const isFirstRun = useRef(true);
+
     useEffect(() => {
-        if (!isFirstRun.current && value > 0) {
-            controls.start('pop');
+        if (value > 0) {
+            if (!isFirstRun.current) {
+                // Pop animation when value changes
+                setAnimationState('pop');
+                const timer = setTimeout(
+                    () => setAnimationState('visible'),
+                    200,
+                );
+                return () => clearTimeout(timer);
+            } else {
+                setAnimationState('visible');
+                isFirstRun.current = false;
+            }
         }
-        if (isFirstRun.current) {
-            isFirstRun.current = false;
-        }
-    }, [controls, value]);
+    }, [value]);
 
     const toggleNotificationCenter: React.MouseEventHandler<
         HTMLButtonElement
@@ -62,52 +66,86 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
 
     const isFuta = ['futa'].includes(platformName);
 
-    const pendingCircle = (
-        <button
-            className={
-                isFuta ? styles.circleContainerFuta : styles.circleContainer
-            }
-            onClick={toggleNotificationCenter}
-        >
-            <span className={isFuta ? styles.ringFuta : styles.ring} />
-        </button>
-    );
+    // Calculate styles based on animation state
+    const getButtonStyle = (): CSSProperties => {
+        switch (animationState) {
+            case 'hidden':
+                return { transform: 'scale(0)', opacity: 0 };
+            case 'pop':
+                return { transform: 'scale(1.3)', opacity: 1 };
+            case 'hover':
+                return { transform: 'scale(1.1)', opacity: 1 };
+            case 'pressed':
+                return { transform: 'scale(0.95)', opacity: 1 };
+            case 'visible':
+            default:
+                return { transform: 'scale(1)', opacity: 1 };
+        }
+    };
 
-    if (pending) return pendingCircle;
+    const buttonStyle: CSSProperties = {
+        ...getButtonStyle(),
+        cursor: 'pointer',
+        transition: isHovered
+            ? 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+            : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease-in-out',
+        borderRadius: isFuta ? '0' : '50%',
+    };
+
+    if (pending) {
+        return (
+            <button
+                className={
+                    isFuta ? styles.circleContainerFuta : styles.circleContainer
+                }
+                onClick={toggleNotificationCenter}
+                aria-label='Loading notifications'
+            >
+                <span className={isFuta ? styles.ringFuta : styles.ring} />
+            </button>
+        );
+    }
+
     return (
-        <AnimatePresence>
+        <>
             {value > 0 && (
-                <motion.button
-                    className={styles.circleButton}
-                    initial={false}
-                    exit='hidden'
-                    animate='visible'
-                    variants={animStates}
-                    style={{ cursor: 'pointer' }}
-                    onClick={toggleNotificationCenter}
-                    tabIndex={0}
-                    aria-label='Notification center'
-                >
-                    <motion.div
-                        className={styles.activityIndicatorDiv}
-                        style={{ borderRadius: isFuta ? '0' : '50%' }}
-                        animate={controls}
-                        whileHover='hover'
-                        whileTap='pressed'
-                        variants={animStates}
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                    <button
+                        className={styles.circleButton}
+                        onClick={toggleNotificationCenter}
+                        onMouseEnter={() => {
+                            setIsHovered(true);
+                            setAnimationState('hover');
+                        }}
+                        onMouseLeave={() => {
+                            setIsHovered(false);
+                            setAnimationState('visible');
+                        }}
+                        onMouseDown={() => setAnimationState('pressed')}
+                        onMouseUp={() =>
+                            setAnimationState(isHovered ? 'hover' : 'visible')
+                        }
+                        tabIndex={0}
+                        aria-label='Notification center'
+                        type='button'
+                        style={buttonStyle}
                     >
-                        <span
-                            aria-live='polite'
-                            aria-atomic='true'
-                            aria-relevant='text'
+                        <div
+                            className={`${styles.activityIndicatorDiv} ${isFuta ? '' : styles.circleButton}`}
                         >
-                            {value}
-                        </span>
-                    </motion.div>
+                            <span
+                                aria-live='polite'
+                                aria-atomic='true'
+                                aria-relevant='text'
+                            >
+                                {value}
+                            </span>
+                        </div>
+                    </button>
                     {showRedDot && <span className={styles.redDot} />}
-                </motion.button>
+                </div>
             )}
-        </AnimatePresence>
+        </>
     );
 };
 
