@@ -14,8 +14,8 @@ const DnaAnimation: React.FC = () => {
     const height = 480;
 
     // Generate lines and circles
-    const lines: JSX.Element[] = [];
-    const circles: JSX.Element[] = [];
+    const lines: React.ReactNode[] = [];
+    const circles: React.ReactNode[] = [];
 
     for (let i = 0; i < dotCount; i++) {
         const x = i * spacing + spacing; // x position based on index and spacing

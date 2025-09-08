@@ -149,7 +149,7 @@ function TokenIcon(props: propsIF) {
         );
     }
 
-    const noTokenIcon: JSX.Element = (
+    const noTokenIcon: React.ReactNode = (
         <NoTokenIcon
             tokenInitial={getTokenCharacter(token, alt) || ''}
             width={getIconWidth(size)}

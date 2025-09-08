@@ -76,10 +76,10 @@ function InfiniteScroll(props: propsIF) {
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
 
-    const componentLockRef = useRef<boolean>();
+    const componentLockRef = useRef<boolean>(undefined);
     componentLockRef.current = componentLock;
 
-    const prevTxFetchType = useRef<TxFetchType>();
+    const prevTxFetchType = useRef<TxFetchType>(undefined);
 
     const {
         fetchLimitOrders,
@@ -168,7 +168,7 @@ function InfiniteScroll(props: propsIF) {
 
     const fetchedTransactionsRef = useRef<
         LimitOrderIF[] | PositionIF[] | TransactionIF[]
-    >();
+    >(undefined);
     fetchedTransactionsRef.current = fetchedTransactions;
 
     const [hotTransactions, setHotTransactions] = useState<
@@ -178,7 +178,7 @@ function InfiniteScroll(props: propsIF) {
     const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
 
     const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
-    const moreDataAvailableRef = useRef<boolean>();
+    const moreDataAvailableRef = useRef<boolean>(undefined);
     moreDataAvailableRef.current = moreDataAvailable;
 
     const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
@@ -193,10 +193,10 @@ function InfiniteScroll(props: propsIF) {
     const [extraRequestCreditCount, setExtraRequestCreditCount] =
         useState<number>(EXTRA_REQUEST_CREDIT_COUNT);
 
-    const extraRequestCreditRef = useRef<number>();
+    const extraRequestCreditRef = useRef<number>(undefined);
     extraRequestCreditRef.current = extraRequestCreditCount;
 
-    const pageDataCountRef = useRef<PageDataCountIF>();
+    const pageDataCountRef = useRef<PageDataCountIF>(undefined);
     pageDataCountRef.current = pageDataCount;
 
     const [lastOldestTimeParam, setLastOldestTimeParam] = useState<number>(-1);

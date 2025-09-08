@@ -24,7 +24,7 @@ interface LevelsCardPropsIF {
         addedPoints: string;
         retroPoints: string;
     }[];
-    jazziconsToDisplay: JSX.Element | null;
+    jazziconsToDisplay: React.ReactNode | null;
     truncatedAccountAddressOrEnsName: string;
     pointsRemainingToNextLevel: number | undefined;
     isViewMoreActive?: boolean;

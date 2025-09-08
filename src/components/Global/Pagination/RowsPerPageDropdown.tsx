@@ -22,7 +22,7 @@ export const RowsPerPageDropdown = ({
     resetPageToFirst: () => void;
     setCurrentPage: Dispatch<SetStateAction<number>>;
 }) => {
-    const generateOptions = (count: number): JSX.Element[] => {
+    const generateOptions = (count: number): React.ReactNode[] => {
         // default pagination values (more may be added below)
         const options: number[] = [5, 10, 15, 20];
 

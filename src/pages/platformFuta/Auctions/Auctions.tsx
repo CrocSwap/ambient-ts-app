@@ -50,7 +50,7 @@ export default function Auctions({ hideTicker, placeholderTicker }: Props) {
     //     useMediaQuery('mobilePortrait') || useMediaQuery('mobileLandscape');
 
     // Refs
-    const tableParentRef = useRef<HTMLDivElement>(null);
+    const tableParentRef = useRef<HTMLElement>(undefined);
 
     // Derived Values
     const sorted: sortedAuctionsIF = useSortedAuctions(
@@ -65,31 +65,25 @@ export default function Auctions({ hideTicker, placeholderTicker }: Props) {
     }, [userAddress, chainId, cacheFrequency]);
 
     // Components
-    const ResizableTickers = (
-        <ResizableComponent
-            tableParentRef={tableParentRef}
-            searchableTickerHeights={searchableTickerHeights}
-            setSearchableTickerHeight={setSearchableTickerHeight}
-            setIsSearchableTickerHeightMinimum={
-                setIsSearchableTickerHeightMinimum
-            }
-        >
-            <SearchableTicker
-                auctions={sorted}
-                placeholderTicker={placeholderTicker}
-            />
-        </ResizableComponent>
-    );
+    // const ResizableTickers = (
+    //     <ResizableComponent
+    //         tableParentRef={tableParentRef}
+    //         searchableTickerHeights={searchableTickerHeights}
+    //         setSearchableTickerHeight={setSearchableTickerHeight}
+    //         setIsSearchableTickerHeightMinimum={
+    //             setIsSearchableTickerHeightMinimum
+    //         }
+    //     >
+    //         <SearchableTicker
+    //             auctions={sorted}
+    //             placeholderTicker={placeholderTicker}
+    //         />
+    //     </ResizableComponent>
+    // );
 
     const tickerComponentDisplay = (
         <AnimatePresence>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.8 }}
-                className={styles.flexColumn}
-            >
+            <span>
                 <HexReveal>
                     <p className={styles.label}>TICKER</p>
                 </HexReveal>
@@ -100,30 +94,30 @@ export default function Auctions({ hideTicker, placeholderTicker }: Props) {
                         placeholderTicker={placeholderTicker}
                     />
                 )}
-            </motion.div>
+            </span>
         </AnimatePresence>
     );
 
-    const resizableComponentDisplay = (
-        <div id='auctions_search_wrapper'>
-            <div
-                className={styles.searchable_ticker}
-                style={{
-                    height: isTabletPortrait ? 'calc(100svh - 60px)' : '100%',
-                }}
-                ref={canvasRef}
-            >
-                <FlexContainer
-                    flexDirection='column'
-                    fullHeight
-                    ref={tableParentRef}
-                >
-                    {ResizableTickers}
-                    {<Chart />}
-                </FlexContainer>
-            </div>
-        </div>
-    );
+    // const resizableComponentDisplay = (
+    //     <div id='auctions_search_wrapper'>
+    //         <div
+    //             className={styles.searchable_ticker}
+    //             style={{
+    //                 height: isTabletPortrait ? 'calc(100svh - 60px)' : '100%',
+    //             }}
+    //             ref={canvasRef}
+    //         >
+    //             <FlexContainer
+    //                 flexDirection='column'
+    //                 fullHeight
+    //                 ref={tableParentRef}
+    //             >
+    //                 {ResizableTickers}
+    //                 {<Chart />}
+    //             </FlexContainer>
+    //         </div>
+    //     </div>
+    // );
 
     if (isDesktop || isTabletLandscape) {
         return (
@@ -134,7 +128,7 @@ export default function Auctions({ hideTicker, placeholderTicker }: Props) {
                         gridTemplateColumns: hideTicker ? '1fr' : '1fr 390px',
                     }}
                 >
-                    {resizableComponentDisplay}
+                    {/* {resizableComponentDisplay} */}
                     {tickerComponentDisplay}
                 </div>
             </div>

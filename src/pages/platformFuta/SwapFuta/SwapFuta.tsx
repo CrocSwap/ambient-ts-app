@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import Comments from '../../../components/Futa/Comments/Comments';
 import { ChartContext } from '../../../contexts/ChartContext';
@@ -8,7 +8,6 @@ import Trade from '../../platformAmbient/Trade/Trade';
 import styles from './SwapFuta.module.css';
 import FutaDivider2 from '../../../components/Futa/Divider/FutaDivider2';
 import HexReveal from '../Home/Animations/HexReveal';
-import { motion, AnimatePresence } from 'framer-motion';
 import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
 
 function SwapFuta() {
@@ -124,31 +123,24 @@ function SwapFuta() {
             </div>
 
             {!isFullScreen && (
-                <AnimatePresence>
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.4 }}
-                    >
-                        <span id={tradeWrapperID}>
-                            <HexReveal>
-                                <p className={styles.label}>order</p>
-                            </HexReveal>
-                            <FutaDivider2 />
-                            <Swap isOnTradeRoute />
-                        </span>
+                <div className={styles.swapContainer}>
+                    <span id={tradeWrapperID}>
                         <HexReveal>
-                            <p className={styles.label}>comments</p>
+                            <p className={styles.label}>order</p>
                         </HexReveal>
                         <FutaDivider2 />
-                        <Comments
-                            isForTrade={true}
-                            isSmall={true}
-                            resizeEffectorSelector={tradeWrapperID}
-                        />
-                    </motion.div>
-                </AnimatePresence>
+                        <Swap isOnTradeRoute />
+                    </span>
+                    <HexReveal>
+                        <p className={styles.label}>comments</p>
+                    </HexReveal>
+                    <FutaDivider2 />
+                    <Comments
+                        isForTrade={true}
+                        isSmall={true}
+                        resizeEffectorSelector={tradeWrapperID}
+                    />
+                </div>
             )}
         </section>
     );

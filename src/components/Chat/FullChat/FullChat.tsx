@@ -39,9 +39,9 @@ import { Message } from '../Model/MessageModel';
 import styles from './FullChat.module.css';
 
 interface FullChatPropsIF {
-    messageList: JSX.Element;
-    chatNotification: JSX.Element;
-    messageInput: JSX.Element;
+    messageList: React.ReactNode;
+    chatNotification: React.ReactNode;
+    messageInput: React.ReactNode;
     setRoom: Dispatch<SetStateAction<string>>;
     setIsCurrentPool: Dispatch<SetStateAction<boolean>>;
     userName: string;
@@ -78,7 +78,7 @@ interface FullChatPropsIF {
     showDeleteConfirmation: boolean;
     handleConfirmDelete: () => void;
     handleCancelDelete: () => void;
-    rndShowPreviousMessages: () => JSX.Element;
+    rndShowPreviousMessages: () => React.ReactNode;
     room: string;
     isFocusMentions: boolean;
     setIsFocusMentions: any;
@@ -92,7 +92,7 @@ interface FullChatPropsIF {
         SetStateAction<ChatGoToChatParamsIF | undefined>
     >;
     setUserCurrentPool: any;
-    rndMentSkipper?: () => JSX.Element;
+    rndMentSkipper?: () => React.ReactNode;
     messageForNotificationBubble?: Message;
     setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
@@ -100,7 +100,7 @@ interface FullChatPropsIF {
         SetStateAction<Message | undefined>
     >;
     showReactionPicker: boolean;
-    reactionPicker: JSX.Element;
+    reactionPicker: React.ReactNode;
 }
 
 interface ChannelDisplayPropsIF {

@@ -1,4 +1,4 @@
-import { Dispatch, memo, SetStateAction, useMemo } from 'react';
+import React, { Dispatch, memo, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../ambient-utils/constants';
 import { FlexContainer, Text } from '../../../../../styled/Common';
@@ -6,7 +6,7 @@ import { TxSortType } from '../../useSortedTxs';
 
 interface TransactionHeaderPropsIF {
     header: {
-        name: string | JSX.Element;
+        name: string | React.ReactNode;
         show: boolean;
         slug: string;
         sortable: boolean;

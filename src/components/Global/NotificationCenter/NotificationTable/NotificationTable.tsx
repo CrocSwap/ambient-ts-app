@@ -13,7 +13,7 @@ interface NotificationTableProps {
     showNotificationTable: boolean;
     setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
     pendingTransactions: string[];
-    notificationItemRef: RefObject<HTMLDivElement>;
+    notificationItemRef: RefObject<HTMLDivElement | null>;
 }
 
 const NotificationTable = (props: NotificationTableProps) => {

@@ -260,7 +260,7 @@ function ChatPanel(props: propsIF) {
     } = useChatApi();
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
-    const focusedMessageRef = useRef<Message | undefined>();
+    const focusedMessageRef = useRef<Message | undefined>(undefined);
     focusedMessageRef.current = focusedMessage;
     const [showCustomEmojiPanel, setShowCustomEmojiPanel] = useState(false);
     const [showPicker, setShowPicker] = useState(false);
@@ -275,7 +275,7 @@ function ChatPanel(props: propsIF) {
     const [lastScrollListenerActive, setLastScrollListenerActive] =
         useState(false);
     const [pickerReady, setPickerReady] = useState(false);
-    const lastScrollListenerRef = useRef<boolean>();
+    const lastScrollListenerRef = useRef<boolean>(undefined);
     lastScrollListenerRef.current = lastScrollListenerActive;
 
     useEffect(() => {

@@ -1,4 +1,3 @@
-import { AnimateSharedLayout, motion } from 'framer-motion';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { Link, useLocation } from 'react-router-dom';
@@ -338,12 +337,11 @@ const PageHeader = function () {
     }
 
     const routeDisplay = (
-        <AnimateSharedLayout>
-            <nav className={styles.primaryNavigation} id='primary_navigation'>
-                {linkData.map((link, idx) =>
-                    link.shouldDisplay ? (
-                        <Link
-                            className={`${styles.navigationLink}
+        <nav className={styles.primaryNavigation} id='primary_navigation'>
+            {linkData.map((link, idx) =>
+                link.shouldDisplay ? (
+                    <Link
+                        className={`${styles.navigationLink}
                         ${
                             isActive(
                                 link.title,
@@ -353,29 +351,17 @@ const PageHeader = function () {
                                 ? styles.activeNavigationLink
                                 : ''
                         }
-
                         `}
-                            tabIndex={0}
-                            to={link.destination}
-                            key={idx}
-                        >
-                            {link.title}
-
-                            {isActive(
-                                link.title,
-                                link.destination,
-                                location.pathname,
-                            ) && (
-                                <motion.span
-                                    className={styles.underlineMotion}
-                                    layoutId='underline'
-                                />
-                            )}
-                        </Link>
-                    ) : null,
-                )}
-            </nav>
-        </AnimateSharedLayout>
+                        tabIndex={0}
+                        to={link.destination}
+                        key={idx}
+                    >
+                        {link.title}
+                        <span className={styles.underline} />
+                    </Link>
+                ) : null,
+            )}
+        </nav>
     );
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [show, handleShow] = useState(false);

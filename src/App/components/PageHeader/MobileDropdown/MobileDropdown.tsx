@@ -39,7 +39,7 @@ import ExchangeBalance from '../../../../components/Portfolio/ExchangeBalance/Ex
 import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
 import NavbarDropdownItem from '../NavbarDropdownMenu/NavbarDropdownItem';
 interface navDataIF {
-    icon: JSX.Element;
+    icon: React.ReactNode;
     resource: string;
     text: string;
 }

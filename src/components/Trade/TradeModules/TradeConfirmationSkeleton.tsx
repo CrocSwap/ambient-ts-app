@@ -36,7 +36,7 @@ interface propsIF {
     transactionDetails?: React.ReactNode;
     acknowledgeUpdate?: React.ReactNode;
     extraNotes?: React.ReactNode;
-    priceImpactWarning?: JSX.Element | undefined;
+    priceImpactWarning?: React.ReactNode | undefined;
     isAllowed?: boolean;
     percentDiffUsdValue?: number | undefined;
 }

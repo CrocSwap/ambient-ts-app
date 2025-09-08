@@ -39,7 +39,7 @@ import styles from './DropdownSearch.module.css';
 interface optionItem {
     id: number;
     name: string;
-    data: JSX.Element;
+    data: React.ReactNode;
 }
 
 const DropdownSearch = () => {
@@ -93,7 +93,7 @@ const DropdownSearch = () => {
         tokens,
     );
 
-    const searchContainer: JSX.Element = (
+    const searchContainer: React.ReactNode = (
         <SearchContainer
             flexDirection='row'
             alignItems='center'

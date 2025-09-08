@@ -4,7 +4,7 @@ import { IoCheckmarkCircleOutline } from 'react-icons/io5';
 import styles from './CircleLoader.module.css';
 const spinTransition = {
     loop: Infinity,
-    ease: 'linear',
+    ease: 'linear' as const,
     duration: 1,
 };
 

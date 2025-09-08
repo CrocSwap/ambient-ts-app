@@ -176,7 +176,9 @@ export default function FutaNewLanding() {
                 <div
                     key={index}
                     className={styles.content}
-                    ref={(el) => (sectionsRef.current[index] = el)}
+                    ref={(el) => {
+                        sectionsRef.current[index] = el;
+                    }}
                 >
                     {SectionComponent}
                 </div>

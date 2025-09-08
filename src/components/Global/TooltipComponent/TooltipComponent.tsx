@@ -9,10 +9,10 @@ import {
 import styles from './TooltipComponent.module.css';
 
 interface TooltipComponentProps {
-    title: string | JSX.Element;
+    title: string | React.ReactNode;
     noBg?: boolean;
     usePopups?: boolean;
-    icon?: JSX.Element;
+    icon?: React.ReactNode;
     svgColor?: string;
     placement?:
         | 'right'

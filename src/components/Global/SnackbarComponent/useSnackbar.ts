@@ -10,19 +10,19 @@ export type snackbarSeverityType = 'error' | 'warning' | 'info' | 'success';
 export interface snackbarMethodsIF {
     isOpen: boolean;
     open: (
-        content: string | JSX.Element,
+        content: string | React.ReactNode,
         severity?: snackbarSeverityType,
         anchorOrigin?: SnackbarOrigin,
     ) => void;
     close: () => void;
-    content: string | JSX.Element;
+    content: string | React.ReactNode;
     severity: snackbarSeverityType;
     anchorOrigin: SnackbarOrigin;
 }
 
 export const useSnackbar = (initialMode = false): snackbarMethodsIF => {
     const [isOpen, setIsOpen] = useState<boolean>(initialMode);
-    const [content, setContent] = useState<string | JSX.Element>('');
+    const [content, setContent] = useState<string | React.ReactNode>('');
     const [severity, setSeverity] = useState<snackbarSeverityType>('success');
     const [anchorOrigin, setAnchorOrigin] = useState<SnackbarOrigin>({
         vertical: 'bottom',
@@ -30,7 +30,7 @@ export const useSnackbar = (initialMode = false): snackbarMethodsIF => {
     });
 
     const open = (
-        content: string | JSX.Element,
+        content: string | React.ReactNode,
         severity: snackbarSeverityType = 'success',
         anchorOrigin: SnackbarOrigin = {
             vertical: 'bottom',
