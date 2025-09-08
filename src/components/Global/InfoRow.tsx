@@ -5,7 +5,7 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface ItemRowPropsIF {
     title: string;
-    content: string | JSX.Element;
+    content: string | React.ReactNode;
     explanation: string;
 }
 

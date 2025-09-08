@@ -28,7 +28,7 @@ export default function DomDebugger() {
 
     const [debugEnabled, setDebugEnabled] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
-    const isDraggingRef = useRef<boolean>();
+    const isDraggingRef = useRef<boolean>(false);
     isDraggingRef.current = isDragging;
     const [dragStart, setDragStart] = useState([0, 0]);
 

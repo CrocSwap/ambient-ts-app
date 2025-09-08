@@ -1,11 +1,10 @@
-import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
 import { GoChevronDown, GoChevronUp } from 'react-icons/go';
 import styles from './DotAnimation.module.css';
 
 interface SectionsIF {
     ref: React.RefObject<HTMLDivElement>;
-    page: JSX.Element;
+    page: React.ReactNode;
     goToSectionRef: React.RefObject<HTMLDivElement>;
 }
 
@@ -28,24 +27,6 @@ const DotAnimation: React.FC<DotAnimationProps> = ({
     handleUpClick,
     handleDownClick,
 }) => {
-    const dotVariants = {
-        //   hidden: { opacity: 0, width: '0px', height: '0px' },
-        visible: {
-            opacity: 1,
-            width: '20px',
-            height: '20px',
-            borderRadius: '50%',
-        },
-        exit: { opacity: 0, width: '0px', height: '0px' },
-        active: {
-            opacity: 1,
-            width: '20px',
-            height: '40px',
-            borderRadius: '40%',
-            transition: { duration: 0.5 },
-        }, // Morph animation for active dot
-    };
-
     return (
         <div className={styles.dots}>
             <GoChevronUp
@@ -56,36 +37,15 @@ const DotAnimation: React.FC<DotAnimationProps> = ({
                     activeIndex !== 0 ? styles.show_arrow : styles.disable_arrow
                 }
             />
-            <AnimatePresence initial={false}>
-                {/* { activateAutoScroll ? (
-          <FaPause
-            color='var(--text3)'
-            style={{ cursor: 'pointer' }}
-            onClick={() => setActivateAutoScroll(false)}
-          />
-          
-        ) : (
-          <FaPlay
-            color='var(--text3)'
-            style={{ cursor: 'pointer' }}
-            onClick={() => setActivateAutoScroll(true)}
-          />
-        )} */}
-
-                {sections.map((_, index) => (
-                    <motion.span
-                        key={index}
-                        className={`${styles.dot} ${
-                            index === activeIndex ? styles.activeDot : ''
-                        }`}
-                        initial='hidden'
-                        animate={index === activeIndex ? 'active' : 'visible'}
-                        exit='exit'
-                        variants={dotVariants}
-                        onClick={() => onClick(index)}
-                    />
-                ))}
-            </AnimatePresence>
+            {sections.map((_, index) => (
+                <span
+                    key={index}
+                    className={`${styles.dot} ${
+                        index === activeIndex ? styles.activeDot : ''
+                    }`}
+                    onClick={() => onClick(index)}
+                />
+            ))}
             <GoChevronDown
                 size={25}
                 onClick={handleDownClick}

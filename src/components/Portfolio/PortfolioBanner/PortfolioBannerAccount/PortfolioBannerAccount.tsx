@@ -30,7 +30,7 @@ interface propsIF {
     resolvedAddress: string;
     truncatedAccountAddress: string;
     ensNameAvailable: boolean;
-    jazziconsToDisplay: JSX.Element | null;
+    jazziconsToDisplay: React.ReactNode | null;
     connectedAccountActive: boolean;
     showTabsAndNotExchange: boolean;
     setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>;

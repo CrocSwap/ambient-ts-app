@@ -282,7 +282,7 @@ function Transactions(props: propsIF) {
         !!provider,
     ]);
 
-    const sideType: JSX.Element = (
+    const sideType: React.ReactNode = (
         <>
             <p>Type</p>
             <p>Side</p>
@@ -290,7 +290,7 @@ function Transactions(props: propsIF) {
     );
 
     const headerColumns: {
-        name: string | JSX.Element;
+        name: string | React.ReactNode;
         show: boolean;
         slug: string;
         sortable: boolean;
@@ -394,7 +394,7 @@ function Transactions(props: propsIF) {
         },
     ];
 
-    const headerColumnsDisplay: JSX.Element = (
+    const headerColumnsDisplay: React.ReactNode = (
         <TransactionRowStyled size={tableView} header account={isAccountView}>
             {headerColumns.map((header, idx) => (
                 <TransactionHeader
@@ -486,7 +486,7 @@ function Transactions(props: propsIF) {
         !txDataToDisplay.length &&
         unindexedNonFailedTransactions.length === 0;
 
-    const transactionDataOrNull: JSX.Element = shouldDisplayNoTableData ? (
+    const transactionDataOrNull: React.ReactNode = shouldDisplayNoTableData ? (
         <NoTableData
             setSelectedDate={setSelectedDate}
             type='transactions'

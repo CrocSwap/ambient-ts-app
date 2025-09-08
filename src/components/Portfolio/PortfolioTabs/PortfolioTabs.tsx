@@ -594,14 +594,14 @@ export default function PortfolioTabs(props: propsIF) {
     // TODO:    this file is changing state without changing URL, we should
     // TODO:    ... refactor to trigger a nav action and update state responsively
 
-    const renderTabContent = (): JSX.Element | null => {
+    const renderTabContent = (): React.ReactNode | null => {
         const selectedTabData = dataToUse.find(
             (tab) => tab.label === activeTab,
         );
         return selectedTabData ? selectedTabData.content : null;
     };
 
-    const mobileTabs: JSX.Element = (
+    const mobileTabs: React.ReactNode = (
         <div className={styles.mobile_tabs_container}>
             <div className={styles.mobile_tabs_button_container}>
                 {dataToUse
